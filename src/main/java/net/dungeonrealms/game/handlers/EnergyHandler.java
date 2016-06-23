@@ -143,9 +143,6 @@ public class EnergyHandler implements GenericMechanic {
                 regenAmount = regenAmount / 6.3F;
                 if (gp == null || gp.getStats() == null) return;
                 regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
-                if(Fishing.fishBuffs.containsKey(player.getUniqueId()) && Fishing.fishBuffs.get(player.getUniqueId()).equalsIgnoreCase("Energy Regen")){
-                	regenAmount += .15F;
-                }
                 addEnergyToPlayerAndUpdate(player, regenAmount);
             }
         }

@@ -480,7 +480,7 @@ public class Fishing implements GenericMechanic {
             fish_lore.add(fish_buff_s);
         }
         fish_lore.add(ChatColor.RED + "-" + hunger_to_heal + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)");
-        fish_lore.add(EnumFish.getFishDesc(fish_name));
+        fish_lore.add(ChatColor.GRAY.toString() + EnumFish.getFishDesc(fish_name));
 
         // Helps prevent stackability.
 
@@ -560,15 +560,21 @@ public class Fishing implements GenericMechanic {
      */
     public static void gainExp(ItemStack stack, Player p, int exp) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        int tier = Fishing.getRodTier(stack);
-        int xp = nms.getTag().getInt("XP");
+        int currentXP = nms.getTag().getInt("XP");
         int maxXP = nms.getTag().getInt("maxXP");
-        xp += exp;
-        nms.getTag().setInt("XP", xp);
+        int tier = nms.getTag().getInt("itemTier");
+        currentXP += exp;
+        if (currentXP > maxXP) {
+            lvlUp(tier, p);
+            return;
+        } else
+            nms.getTag().setInt("XP", currentXP);
+        stack = CraftItemStack.asBukkitCopy(nms);
+        p.setItemInHand(stack);
         ItemMeta meta = stack.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
+        List<String> lore = stack.getItemMeta().getLore();
         String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-        double percentDone = 100.0 * xp / maxXP;
+        double percentDone = 100.0 * currentXP / maxXP;
         double percentDoneDisplay = (percentDone / 100) * 50.0D;
         int display = (int) percentDoneDisplay;
         if (display <= 0) {
@@ -577,14 +583,88 @@ public class Fishing implements GenericMechanic {
         if (display > 50) {
             display = 50;
         }
-        expBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
+        String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
                 + expBar.substring(display, expBar.length());
-        lore.add(ChatColor.GRAY.toString() + "Tier: " + ChatColor.WHITE.toString() + tier);
-        lore.add(ChatColor.WHITE.toString() + xp + ChatColor.GRAY + "/" + ChatColor.GRAY + maxXP);
-        lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
+        int lvl = CraftItemStack.asNMSCopy(stack).getTag().getInt("level");
+        lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+        lore.set(1, ChatColor.GRAY.toString() + currentXP + ChatColor.GRAY + " / " + ChatColor.GRAY + maxXP);
+        lore.set(2, ChatColor.GRAY + "EXP: " + newexpBar);
+
         meta.setLore(lore);
         stack.setItemMeta(meta);
         p.setItemInHand(stack);
+    }
+
+    private static void lvlUp(int tier, Player p) {
+        ItemStack rod = p.getEquipment().getItemInMainHand();
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rod);
+        int lvl = nms.getTag().getInt("level") + 1;
+        boolean addEnchant = false;
+        if (lvl < 101) {
+            switch (lvl) {
+                case 20:
+                    tier = 2;
+                    addEnchant = true;
+                    break;
+                case 40:
+                    tier = 3;
+                    addEnchant = true;
+                    break;
+                case 60:
+                    tier = 4;
+                    addEnchant = true;
+                    break;
+                case 80:
+                    tier = 5;
+                    addEnchant = true;
+                    break;
+            }
+
+            p.sendMessage(ChatColor.YELLOW + "Your pick has increased to level " + ChatColor.AQUA + lvl);
+            nms.getTag().setInt("maxXP", getEXPNeeded(lvl));
+            nms.getTag().setInt("XP", 0);
+            nms.getTag().setInt("level", lvl);
+            nms.getTag().setInt("itemTier", tier);
+
+            rod = CraftItemStack.asBukkitCopy(nms);
+            ItemMeta meta = rod.getItemMeta();
+            List<String> lore = meta.getLore();
+            String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+            lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+            lore.set(1, 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+            lore.set(2, ChatColor.GRAY.toString() + "EXP: " + expBar);
+            String name = "Novice Fishingrod";
+
+            switch (tier) {
+                case 1:
+                    name = ChatColor.WHITE + "Basic Fishingrod";
+                    break;
+                case 2:
+                    name = ChatColor.GREEN.toString() + "Advanced Fishingrod";
+                    break;
+                case 3:
+                    name = ChatColor.AQUA.toString() + "Expert Fishingrod";
+                    break;
+                case 4:
+                    name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishingrod";
+                    break;
+                case 5:
+                    name = ChatColor.YELLOW.toString() + "Master Fishingrod";
+                    break;
+                default:
+                    break;
+            }
+            meta.setDisplayName(name);
+            if (addEnchant) {
+                giveEnchant(rod);
+            }
+            meta.setLore(lore);
+            rod.setItemMeta(meta);
+            p.setItemInHand(rod);
+        }
+    }
+
+    private static void giveEnchant(ItemStack rod) {
     }
 
     /**

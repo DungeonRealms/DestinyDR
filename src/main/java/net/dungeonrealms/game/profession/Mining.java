@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R1.NBTTagCompound;
@@ -26,6 +27,7 @@ import java.util.*;
  * Created by Chase on Oct 27, 2015
  */
 public class Mining implements GenericMechanic {
+
 
     public static int getOreEXP(ItemStack stackInHand, Material m) {
         //TODO incorporate Modifiers? Enchants? etc.
@@ -168,9 +170,9 @@ public class Mining implements GenericMechanic {
         String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
                 + expBar.substring(display, expBar.length());
         int lvl = CraftItemStack.asNMSCopy(stackInHand).getTag().getInt("level");
-        lore.set(0, ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
-        lore.set(1, ChatColor.GRAY + "EXP: " + currentXP + ChatColor.GRAY + "/" + ChatColor.GRAY + maxXP);
-        lore.set(2, newexpBar);
+        lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+        lore.set(1, ChatColor.GRAY.toString() + currentXP + ChatColor.GRAY + " / " + ChatColor.GRAY + maxXP);
+        lore.set(2, ChatColor.GRAY + "EXP: " + newexpBar);
 
         meta.setLore(lore);
         stackInHand.setItemMeta(meta);
@@ -237,28 +239,28 @@ public class Mining implements GenericMechanic {
 
             pick = CraftItemStack.asBukkitCopy(nms);
             ItemMeta meta = pick.getItemMeta();
-            ArrayList<String> lore = new ArrayList<>();
+            List<String> lore = meta.getLore();
             String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
             lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
-            lore.set(1, 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+            lore.set(1, ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
             lore.set(2, ChatColor.GRAY.toString() + "EXP: " + expBar);
-            String name = "Novice Fishingrod";
+            String name = "Novice Pickaxe";
 
             switch (tier) {
                 case 1:
-                    name = ChatColor.WHITE + "Basic Fishingrod";
+                    name = ChatColor.WHITE + "Novice Pickaxe";
                     break;
                 case 2:
-                    name = ChatColor.GREEN.toString() + "Advanced Fishingrod";
+                    name = ChatColor.GREEN.toString() + "Apprentice Pickaxe";
                     break;
                 case 3:
-                    name = ChatColor.AQUA.toString() + "Expert Fishingrod";
+                    name = ChatColor.AQUA.toString() + "Expert Pickaxe";
                     break;
                 case 4:
-                    name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishingrod";
+                    name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Pickaxe";
                     break;
                 case 5:
-                    name = ChatColor.YELLOW.toString() + "Master Fishingrod";
+                    name = ChatColor.YELLOW.toString() + "Master Pickaxe";
                     break;
                 default:
                     break;
@@ -317,6 +319,40 @@ public class Mining implements GenericMechanic {
             default:
                 return 0;
         }
+    }
+
+    public static ItemStack getBlock(Material mat) {
+        if (coalOre == null)
+            initializeOre();
+        switch (mat) {
+            case COAL_ORE:
+                return coalOre;
+            case EMERALD_ORE:
+                return emeraldOre;
+            case IRON_ORE:
+                return ironOre;
+            case DIAMOND_ORE:
+                return diamondOre;
+            case GOLD_ORE:
+                return goldOre;
+            default:
+                return coalOre;
+        }
+    }
+
+    private static ItemStack coalOre;
+    private static ItemStack emeraldOre;
+    private static ItemStack ironOre;
+    private static ItemStack diamondOre;
+    private static ItemStack goldOre;
+
+
+    private static void initializeOre() {
+        coalOre = new ItemBuilder().setItem(Material.COAL_ORE, (short) 0, API.getTierColor(1).toString() + "Coal Ore", new String[]{ChatColor.GRAY + "A chunk of coal ore."}).build();
+        emeraldOre = new ItemBuilder().setItem(Material.EMERALD_ORE, (short) 0, API.getTierColor(2).toString() + "Emerald Ore", new String[]{ChatColor.GRAY + "An unrefined piece of emerald ore."}).build();
+        ironOre = new ItemBuilder().setItem(Material.IRON_ORE, (short) 0, API.getTierColor(3).toString() + "Iron Ore", new String[]{ChatColor.GRAY + "A piece of raw iron."}).build();
+        diamondOre = new ItemBuilder().setItem(Material.DIAMOND_ORE, (short) 0, API.getTierColor(4).toString() + "Diamond Ore", new String[]{ChatColor.GRAY + "A sharp chunk of diamond ore."}).build();
+        goldOre = new ItemBuilder().setItem(Material.GOLD_ORE, (short) 0, API.getTierColor(5).toString() + "Gold Ore", new String[]{ChatColor.GRAY + "A sparking piece of gold ore"}).build();
     }
 
     private HashMap<Location, Material> ORE_LOCATIONS = new HashMap<>();
