@@ -184,7 +184,7 @@ public class RealmListener implements Listener {
                 event.setTo(Realms.getInstance().getRealmWorld(realm.getOwner()).getSpawnLocation().clone().add(0, 1, 0));
                 realm.getPlayersInRealm().add(event.getPlayer().getUniqueId());
 
-                if (event.getPlayer().getPlayer().getUniqueId().equals(realm.getOwner()))
+                if (!event.getPlayer().getPlayer().getUniqueId().equals(realm.getOwner()))
                     event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + Bukkit.getPlayer(realm.getOwner()).getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
 
                 if (!Realms.getInstance().getRealmTitle(realm.getOwner()).equals(""))
