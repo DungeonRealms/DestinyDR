@@ -70,8 +70,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
             if (!shardName.contains("sub") && !shardName.contains("yt"))
                 server.add(getProxy().getServerInfo(shardName));
 
+        //Arrays.
         Collections.sort(server, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
-        Collections.reverse(server);
+        //Collections.reverse(server);
 
         return server;
     }
