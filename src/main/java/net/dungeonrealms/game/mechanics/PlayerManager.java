@@ -30,11 +30,11 @@ public class PlayerManager {
     public static void checkInventory(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
 
-        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 7))
-            player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
+        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 8))
+            player.getInventory().setItem(8, ItemManager.createRealmPortalRune(uuid));
 
-        if (!hasItem(player.getInventory(), "journal") && isSlotFree(player.getInventory(), 8))
-            player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
+        if (!hasItem(player.getInventory(), "journal") && isSlotFree(player.getInventory(), 7))
+            player.getInventory().setItem(7, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
 
         for (ItemStack is : player.getInventory().getContents()) {
             if (is == ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
