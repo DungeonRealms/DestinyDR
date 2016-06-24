@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -35,13 +34,6 @@ public class PlayerManager {
 
         if (!hasItem(player.getInventory(), "journal") && isSlotFree(player.getInventory(), 7))
             player.getInventory().setItem(7, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
-
-        for (ItemStack is : player.getInventory().getContents()) {
-            if (is == ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
-                    ChatColor.GREEN + "Right Click: " + ChatColor.GRAY + "Open Profile"})) {
-                is.setType(Material.AIR);
-            }
-        }
     }
 
     public static boolean isSlotFree(PlayerInventory inv, int slot) {
@@ -55,7 +47,10 @@ public class PlayerManager {
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsStack.getTag();
             if (tag == null) continue;
-            if (tag.hasKey(type) && !(tag.getString(type).equalsIgnoreCase("true"))) return true;
+            if (!tag.hasKey(type)) continue;
+            if (tag.getString(type).equalsIgnoreCase("true")) {
+                return true;
+            }
         }
         return false;
     }

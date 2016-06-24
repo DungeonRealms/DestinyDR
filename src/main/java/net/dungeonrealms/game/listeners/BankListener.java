@@ -103,7 +103,7 @@ public class BankListener implements Listener {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
             }
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
-            if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
+            if (nms.hasTag() && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                 int gems = event.getItem().getItemStack().getAmount();
 
                 for (int i = 0; i < event.getPlayer().getInventory().getSize(); i++) {
@@ -435,126 +435,6 @@ public class BankListener implements Listener {
                     }
                 }
             }
-        } else if (e.getInventory().getTitle().equalsIgnoreCase("How Many?")) {
-            e.setCancelled(true);
-            if (e.getRawSlot() < 27) {
-                ItemStack current = e.getCurrentItem();
-                if (current != null) {
-                    if (current.getType() == Material.STAINED_GLASS_PANE) {
-                        int number = getAmount(e.getRawSlot());
-                        int currentWith = CraftItemStack.asNMSCopy(e.getInventory().getItem(4)).getTag().getInt("withdraw");
-                        int finalNum;
-                        finalNum = currentWith + number;
-                        if (finalNum < 0)
-                            finalNum = 0;
-                        ItemStack item = new ItemStack(Material.EMERALD, 1);
-                        ItemMeta meta = item.getItemMeta();
-                        meta.setDisplayName("Withdraw " + finalNum + " Gems");
-                        item.setItemMeta(meta);
-                        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                        nms.getTag().setInt("withdraw", finalNum);
-                        e.getInventory().setItem(4, CraftItemStack.asBukkitCopy(nms));
-                    } else if (current.getType() == Material.INK_SACK) {
-                        int number = CraftItemStack.asNMSCopy(e.getInventory().getItem(4)).getTag().getInt("withdraw");
-                        if (number == 0) {
-                            return;
-                        }
-                        int currentGems = getPlayerGems(player.getUniqueId());
-                        try {
-                            if (number <= 0) {
-                                player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
-                            } else if (number > currentGems) {
-                                player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but you only have " + currentGems + " GEM(s) stored in our bank.");
-                                player.sendMessage(ChatColor.GRAY + "You cannot withdraw more GEM(s) than you have stored.");
-                            } else {
-                                ItemStack stack = BankMechanics.gem.clone();
-                                if (hasSpaceInInventory(player.getUniqueId(), number)) {
-                                    DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC,
-                                            EnumData.GEMS, -number, true);
-                                    while (number > 0) {
-                                        while (number > 64) {
-                                            ItemStack item = stack.clone();
-                                            item.setAmount(64);
-                                            player.getInventory().setItem(player.getInventory().firstEmpty(), item);
-                                            number -= 64;
-                                        }
-                                        ItemStack item = stack.clone();
-                                        item.setAmount(number);
-                                        player.getInventory().setItem(player.getInventory().firstEmpty(), item);
-                                        number = 0;
-                                    }
-                                    player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
-                                    player.sendMessage(ChatColor.GRAY + "You have withdrawn " + number + " GEM(s) from your bank account.");
-                                    player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
-                                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "You do not have space for all those gems");
-                                }
-                            }
-                            player.closeInventory();
-                        } catch (Exception exc) {
-                            exc.printStackTrace();
-                        }
-
-                    }
-                }
-            }
-        } else if (e.getInventory().getTitle().equalsIgnoreCase("How much?")) {
-            e.setCancelled(true);
-            if (e.getRawSlot() < 27) {
-                ItemStack current = e.getCurrentItem();
-                if (current != null) {
-                    if (current.getType() == Material.STAINED_GLASS_PANE) {
-                        int number = getAmount(e.getRawSlot());
-                        int currentWith = CraftItemStack.asNMSCopy(e.getInventory().getItem(4)).getTag().getInt("withdraw");
-                        int finalNum;
-                        finalNum = currentWith + number;
-                        if (finalNum < 0)
-                            finalNum = 0;
-                        ItemStack item = new ItemStack(Material.PAPER, 1);
-                        ItemMeta meta = item.getItemMeta();
-                        meta.setDisplayName("Withdraw " + finalNum + " Gems");
-                        item.setItemMeta(meta);
-                        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                        nms.getTag().setInt("withdraw", finalNum);
-                        e.getInventory().setItem(4, CraftItemStack.asBukkitCopy(nms));
-                    } else if (current.getType() == Material.INK_SACK) {
-                        int number = CraftItemStack.asNMSCopy(e.getInventory().getItem(4)).getTag().getInt("withdraw");
-                        if (number == 0) {
-                            return;
-                        }
-                        int currentGems = getPlayerGems(player.getUniqueId());
-                        try {
-                            if (number < 0) {
-                                player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
-                            } else if (number > currentGems) {
-                                player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but you only have " + currentGems + " GEM(s) stored in our bank.");
-                                player.sendMessage(ChatColor.GRAY + "You cannot withdraw more GEM(s) than you have stored.");
-                            } else {
-                                ItemStack stack = BankMechanics.banknote.clone();
-                                ItemMeta meta = stack.getItemMeta();
-                                ArrayList<String> lore = new ArrayList<>();
-                                lore.add(ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString() + number);
-                                meta.setLore(lore);
-                                stack.setItemMeta(meta);
-                                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-                                nms.getTag().setInt("worth", number);
-                                Player p = player.getPlayer();
-                                p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
-                                DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC, EnumData.GEMS, -number, true);
-                                player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
-                                player.sendMessage(ChatColor.GRAY + "You have converted " + number + " GEM(s) from your bank account into a " + ChatColor.BOLD.toString() + "GEM NOTE.");
-                                player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
-                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                            }
-                            player.closeInventory();
-                        } catch (Exception exc) {
-                            exc.printStackTrace();
-                        }
-
-                    }
-                }
-            }
         } else if (e.getInventory().getTitle().equalsIgnoreCase("Collection Bin")) {
             if (e.isShiftClick()) {
                 e.setCancelled(true);
@@ -571,7 +451,6 @@ public class BankListener implements Listener {
                 }
             }
         } else if (e.getInventory().getTitle().equalsIgnoreCase("container.crafting")) {
-
             if (e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR && e.getCursor() != null && e.getCursor().getType() != Material.AIR) {
                 if (BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && BankMechanics.getInstance().isBankNote(e.getCursor())) {
                     int note1Worth = BankMechanics.getInstance().getNoteValue(e.getCurrentItem());
@@ -647,36 +526,7 @@ public class BankListener implements Listener {
     }
 
     /**
-     * Gets amount to add, or subtract for each slot clicked in How Many?
-     * Inventory.
-     *
-     * @param slot
-     * @since 1.0
-     */
-    private int getAmount(int slot) {
-        switch (slot) {
-            case 0:
-                return -1000;
-            case 1:
-                return -100;
-            case 2:
-                return -10;
-            case 3:
-                return -1;
-            case 5:
-                return 1;
-            case 6:
-                return 10;
-            case 7:
-                return 100;
-            case 8:
-                return 1000;
-        }
-        return 0;
-    }
-
-    /**
-     * Checks if player has room in inventory for ammount of gems to withdraw.
+     * Checks if player has room in inventory for amount of gems to withdraw.
      *
      * @param uuid
      * @param Gems_worth being added
