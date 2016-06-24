@@ -215,10 +215,10 @@ public class RealmInstance implements Realms {
             if (!downloadRealm(player.getUniqueId()).get()) {
                 // CREATE NEW REALM //
                 realm.setStatus(RealmStatus.CREATING);
+                player.sendMessage(ChatColor.GREEN + "Creating a new realm for you...");
                 loadTemplate(player.getUniqueId());
 
             } else loadRealmWorld(player.getUniqueId());
-
 
         } catch (Exception e) {
             CACHED_REALMS.remove(player.getUniqueId());
@@ -249,17 +249,20 @@ public class RealmInstance implements Realms {
 
     @Override
     public void doLogout(Player player) {
-        if (isRealmCached(player.getUniqueId())) {
+        RealmToken realm = Realms.getInstance().getRealm(player.getLocation().getWorld());
 
+        if (realm != null) {
+            realm.getPlayersInRealm().remove(player.getUniqueId());
+            Utils.log.info("Removed player from realm.");
+        }
+
+        if (isRealmCached(player.getUniqueId())) {
             getRealm(player.getUniqueId()).getPlayersInRealm().stream()
                     .filter(uuid -> Bukkit.getPlayer(uuid) != null)
                     .forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
 
             removeRealm(player.getUniqueId(), true);
         }
-
-        RealmToken realm = Realms.getInstance().getRealm(player.getLocation().getWorld());
-        if (realm != null) realm.getPlayersInRealm().remove(player.getUniqueId());
     }
 
     public void loadTemplate(UUID uuid) throws ZipException {
@@ -278,6 +281,7 @@ public class RealmInstance implements Realms {
             FTPClient ftpClient = new FTPClient();
             FileOutputStream fos;
             String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+            File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
 
             try {
                 ftpClient.connect(FTP_HOST_NAME, FTP_PORT);
@@ -288,7 +292,7 @@ public class RealmInstance implements Realms {
                 ftpClient.enterLocalPassiveMode();
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                 Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
-                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
+
                 fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
 
                 if (ftpClient.retrieveFile(REMOTE_FILE, fos)) {
@@ -300,13 +304,15 @@ public class RealmInstance implements Realms {
                     Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
                     fos.close();
 
-                    FileUtils.forceDelete(TEMP_LOCAL_LOCATION);
+
                     return true;
                 }
 
                 fos.close();
                 return false;
             } finally {
+                FileUtils.forceDelete(TEMP_LOCAL_LOCATION);
+
                 if (ftpClient.isConnected()) {
                     ftpClient.logout();
                     ftpClient.disconnect();
@@ -400,6 +406,8 @@ public class RealmInstance implements Realms {
         } else {
             System.out.println("ERROR ERROR, HOLY SHIT");
         }
+
+
     }
 
 
@@ -463,10 +471,8 @@ public class RealmInstance implements Realms {
             closeRealmPortal(uuid, true);
 
         // UNLOAD WORLD
-        if (getRealmWorld(uuid) != null) {
-            Bukkit.getWorlds().remove(getRealmWorld(uuid));
-            Bukkit.getServer().unloadWorld(getRealmWorld(uuid), true);
-        }
+        //if (isRealmLoaded(uuid))
+        Bukkit.getServer().unloadWorld(getRealmWorld(uuid), true);
 
         // SUBMITS ASYNC UPLOAD THREAD //
         uploadRealm(uuid, runAync, success -> removeCachedRealm(uuid));
