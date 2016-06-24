@@ -97,6 +97,7 @@ public interface Realms extends GenericMechanic {
      */
     ListenableFuture<Boolean> downloadRealm(UUID uuid);
 
+
     /**
      * This function uploads the player's realm to master ftp server for it to be downloaded
      * by the other shards

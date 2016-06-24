@@ -219,6 +219,7 @@ public class RealmInstance implements Realms {
                 // MAKE SURE WE ARE GOING BACK TO SYNC //
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                     loadRealm(player, !success);
+
                     player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
                     player.sendMessage(ChatColor.GRAY + "You may now right click your realm portal rune to open your portal.");
 
