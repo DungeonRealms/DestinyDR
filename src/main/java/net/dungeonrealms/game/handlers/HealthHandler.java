@@ -657,7 +657,6 @@ public class HealthHandler implements GenericMechanic {
             entity.damage(entity.getHealth());
             entity.setMaximumNoDamageTicks(2000);
             entity.setNoDamageTicks(1000);
-            //TODO: find out why this code is here...
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 if (!entity.isDead()) {
                     entity.setMaximumNoDamageTicks(200);
