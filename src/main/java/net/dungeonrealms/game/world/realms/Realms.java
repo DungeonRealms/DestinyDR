@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.realms;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.realms.instance.RealmInstance;
@@ -10,7 +11,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 /**
@@ -82,13 +82,20 @@ public interface Realms extends GenericMechanic {
      */
     void doLogout(Player player);
 
+    /**
+     * Executed when we have failed to load player realm.
+     *
+     * @param player Player
+     * @param thrown Error thrown.
+     */
+    void handleRealmLoadFailure(Player player, Throwable thrown);
 
     /**
      * This function downloads the player's realm from the realm FTP database if it exists
      *
      * @param uuid Owner of realm
      */
-    Future<Boolean> downloadRealm(UUID uuid);
+    ListenableFuture<Boolean> downloadRealm(UUID uuid);
 
     /**
      * This function uploads the player's realm to master ftp server for it to be downloaded
@@ -133,6 +140,7 @@ public interface Realms extends GenericMechanic {
 
     /**
      * Sets the title of realm.
+     *
      * @param uuid Owner of realm
      */
     void setRealmTitle(UUID uuid, String title);

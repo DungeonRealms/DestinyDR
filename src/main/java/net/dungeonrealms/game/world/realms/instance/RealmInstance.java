@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.realms.instance;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.google.common.util.concurrent.*;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -28,11 +29,11 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 /**
@@ -209,30 +210,30 @@ public class RealmInstance implements Realms {
 
         CACHED_REALMS.put(player.getUniqueId(), realm);
 
-        try {
-            player.sendMessage(ChatColor.YELLOW + "Please wait whilst your realm is being loaded...");
+        player.sendMessage(ChatColor.YELLOW + "Please wait whilst your realm is being loaded...");
 
-            if (!downloadRealm(player.getUniqueId()).get()) {
-                // CREATE NEW REALM //
-                realm.setStatus(RealmStatus.CREATING);
-                loadTemplate(player.getUniqueId());
+        Futures.addCallback(downloadRealm(player.getUniqueId()), new FutureCallback<Boolean>() {
 
-            } else loadRealmWorld(player.getUniqueId());
+            @Override
+            public void onSuccess(Boolean success) {
+                // MAKE SURE WE ARE GOING BACK TO SYNC //
+                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                    loadRealm(player, !success);
+                    player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
+                    player.sendMessage(ChatColor.GRAY + "You may now right click your realm portal rune to open your portal.");
 
+                    realm.setLoaded(true);
+                    realm.setStatus(RealmStatus.CLOSED);
+                });
+            }
 
-        } catch (Exception e) {
-            CACHED_REALMS.remove(player.getUniqueId());
-            player.sendMessage(ChatColor.RED + "There was an error whilst trying to loaded your realm!");
-            e.printStackTrace();
-            return;
-        }
-
-        player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
-        player.sendMessage(ChatColor.GRAY + "You may now right click your realm portal rune to open your portal.");
-
-        realm.setLoaded(true);
-        realm.setStatus(RealmStatus.CLOSED);
+            @ParametersAreNonnullByDefault
+            public void onFailure(Throwable thrown) {
+                handleRealmLoadFailure(player, thrown);
+            }
+        });
     }
+
 
     @Override
     public void loadRealmWorld(UUID uuid) {
@@ -249,18 +250,22 @@ public class RealmInstance implements Realms {
 
     @Override
     public void doLogout(Player player) {
-        if (isRealmCached(player.getUniqueId())) {
+        RealmToken realm = Realms.getInstance().getRealm(player.getLocation().getWorld());
 
+        if (realm != null) {
+            realm.getPlayersInRealm().remove(player.getUniqueId());
+            Utils.log.info("Removed player from realm.");
+        }
+
+        if (isRealmCached(player.getUniqueId())) {
             getRealm(player.getUniqueId()).getPlayersInRealm().stream()
                     .filter(uuid -> Bukkit.getPlayer(uuid) != null)
                     .forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
 
             removeRealm(player.getUniqueId(), true);
         }
-
-        RealmToken realm = Realms.getInstance().getRealm(player.getLocation().getWorld());
-        if (realm != null) realm.getPlayersInRealm().remove(player.getUniqueId());
     }
+
 
     public void loadTemplate(UUID uuid) throws ZipException {
         //Create the player realm folder
@@ -273,11 +278,12 @@ public class RealmInstance implements Realms {
         generateRealmBase(uuid);
     }
 
-    public Future<Boolean> downloadRealm(UUID uuid) {
-        return AsyncUtils.pool.submit(() -> {
+    public ListenableFuture<Boolean> downloadRealm(UUID uuid) {
+        return MoreExecutors.listeningDecorator(AsyncUtils.pool).submit(() -> {
             FTPClient ftpClient = new FTPClient();
-            FileOutputStream fos;
+            FileOutputStream fos = null;
             String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+            File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
 
             try {
                 ftpClient.connect(FTP_HOST_NAME, FTP_PORT);
@@ -288,7 +294,7 @@ public class RealmInstance implements Realms {
                 ftpClient.enterLocalPassiveMode();
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                 Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
-                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
+
                 fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
 
                 if (ftpClient.retrieveFile(REMOTE_FILE, fos)) {
@@ -298,15 +304,16 @@ public class RealmInstance implements Realms {
                     Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
                     zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
                     Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
-                    fos.close();
 
-                    FileUtils.forceDelete(TEMP_LOCAL_LOCATION);
                     return true;
                 }
 
-                fos.close();
                 return false;
             } finally {
+                if (fos != null) fos.close();
+
+                FileUtils.forceDelete(TEMP_LOCAL_LOCATION);
+
                 if (ftpClient.isConnected()) {
                     ftpClient.logout();
                     ftpClient.disconnect();
@@ -339,6 +346,8 @@ public class RealmInstance implements Realms {
     private void uploadRealm(UUID uuid, Consumer<Boolean> doAfter) {
         Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
 
+        InputStream inputStream = null;
+
         try {
             zip(rootFolder.getAbsolutePath() + "/" + uuid.toString() + "/", pluginFolder.getAbsolutePath() + "/" + "realms/" + "uploading" + "/" + uuid.toString() + ".zip");
             FTPClient ftpClient = new FTPClient();
@@ -350,7 +359,7 @@ public class RealmInstance implements Realms {
 
             String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
 
-            InputStream inputStream = new FileInputStream(pluginFolder.getAbsolutePath() + "/realms/uploading/" + uuid.toString() + ".zip");
+            inputStream = new FileInputStream(pluginFolder.getAbsolutePath() + "/realms/uploading/" + uuid.toString() + ".zip");
 
             Utils.log.info("[REALM] [ASYNC] Started upload for player realm " + uuid.toString() + " ... STARTING");
             ftpClient.storeFile(REMOTE_FILE, inputStream);
@@ -363,6 +372,14 @@ public class RealmInstance implements Realms {
                 doAfter.accept(false);
         } finally {
             Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
+
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             try {
                 FileUtils.forceDelete(new File(pluginFolder.getAbsolutePath() + "/realms/uploading/" + uuid.toString() + ".zip"));
@@ -400,6 +417,8 @@ public class RealmInstance implements Realms {
         } else {
             System.out.println("ERROR ERROR, HOLY SHIT");
         }
+
+
     }
 
 
@@ -458,18 +477,17 @@ public class RealmInstance implements Realms {
     }
 
     @Override
-    public void removeRealm(UUID uuid, boolean runAync) {
+    public void removeRealm(UUID uuid, boolean runAsync) {
         if (isRealmPortalOpen(uuid))
             closeRealmPortal(uuid, true);
 
         // UNLOAD WORLD
-        if (getRealmWorld(uuid) != null) {
-            Bukkit.getWorlds().remove(getRealmWorld(uuid));
-            Bukkit.getServer().unloadWorld(getRealmWorld(uuid), true);
-        }
+        //if (isRealmLoaded(uuid))
+        Utils.log.info("[REALM] [SYNC] Unloading realm world for " + uuid.toString());
+        Bukkit.getServer().unloadWorld(getRealmWorld(uuid), true);
 
         // SUBMITS ASYNC UPLOAD THREAD //
-        uploadRealm(uuid, runAync, success -> removeCachedRealm(uuid));
+        uploadRealm(uuid, runAsync, success -> removeCachedRealm(uuid));
     }
 
     @Override
@@ -555,6 +573,28 @@ public class RealmInstance implements Realms {
         return isRealmLoaded(uuid) && getRealm(uuid).getStatus() == RealmStatus.OPENED;
     }
 
+    private void loadRealm(Player player, boolean create) {
+        try {
+            if (create) {
+                player.sendMessage(ChatColor.GREEN + "Creating a new realm for you...");
+                loadTemplate(player.getUniqueId());
+            } else
+                loadRealmWorld(player.getUniqueId());
+        } catch (Exception e) {
+            this.handleRealmLoadFailure(player, e);
+        }
+    }
+
+    @Override
+    public void handleRealmLoadFailure(Player player, Throwable thrown) {
+        if (CACHED_REALMS.containsKey(player.getUniqueId()))
+            CACHED_REALMS.remove(player.getUniqueId());
+
+        player.sendMessage(ChatColor.RED + "There was an error whilst trying to loaded your realm!");
+        thrown.printStackTrace();
+    }
+
+
     public void generateRealmBase(UUID uuid) {
         WorldCreator worldCreator = new WorldCreator(uuid.toString());
         worldCreator.type(WorldType.FLAT);
@@ -585,5 +625,4 @@ public class RealmInstance implements Realms {
 
         Utils.log.info("[REALMS] Base Realm generated for player " + uuid.toString());
     }
-
 }
