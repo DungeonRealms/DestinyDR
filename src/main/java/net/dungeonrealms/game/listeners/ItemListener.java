@@ -60,7 +60,6 @@ public class ItemListener implements Listener {
         if (!API.isItemDroppable(item)) { //Realm Portal, Character Journal.
             event.setCancelled(true);
             event.getItemDrop().remove();
-            return;
         } else if (!API.isItemTradeable(item)) {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();
@@ -113,7 +112,7 @@ public class ItemListener implements Listener {
                 if (TeleportAPI.canTeleportToLocation(player, nmsItem.getTag())) {
                     Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
                     if (player.getEquipment().getItemInMainHand().getAmount() == 1) {
-                        player.setItemInHand(new ItemStack(Material.AIR));
+                        player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                     } else {
                         player.getEquipment().getItemInMainHand().setAmount((player.getEquipment().getItemInMainHand().getAmount() - 1));
                     }
@@ -210,16 +209,16 @@ public class ItemListener implements Listener {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
 
         Player p = event.getPlayer();
-        if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.BANNER) return;
-        if (!p.getItemInHand().hasItemMeta()) return;
-        if (p.getItemInHand().getItemMeta().getDisplayName() == null) return;
-        if (!p.getItemInHand().getItemMeta().getDisplayName().contains("Guild banner")) return;
+        if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() != Material.BANNER) return;
+        if (!p.getInventory().getItemInMainHand().hasItemMeta()) return;
+        if (p.getInventory().getItemInMainHand().getItemMeta().getDisplayName() == null) return;
+        if (!p.getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Guild banner")) return;
 
-        String guildName = p.getItemInHand().getItemMeta().getDisplayName().substring(2).replace("'s Guild banner", "").replaceAll("\\s", "").toLowerCase();
+        String guildName = p.getInventory().getItemInMainHand().getItemMeta().getDisplayName().substring(2).replace("'s Guild banner", "").replaceAll("\\s", "").toLowerCase();
 
-        final ItemStack banner = p.getItemInHand();
+        final ItemStack banner = p.getInventory().getItemInMainHand();
 
-        p.setItemInHand(p.getInventory().getHelmet());
+        p.getInventory().setItemInMainHand(p.getInventory().getHelmet());
         p.getInventory().setHelmet(banner);
 
         GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
@@ -272,14 +271,13 @@ public class ItemListener implements Listener {
                             return;
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
-                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
-                                BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20);
+                        BankMechanics.getInstance().getStorage(player.getUniqueId()).update();
                         if (event.getPlayer().getEquipment().getItemInMainHand().getAmount() == 1) {
-                            event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                            event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                         } else {
                             ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
                             item.setAmount(item.getAmount() - 1);
-                            event.getPlayer().setItemInHand(item);
+                            event.getPlayer().getEquipment().setItemInMainHand(item);
                         }
                         event.getPlayer().sendMessage(ChatColor.YELLOW + "Your banks storage has been increased by 9 slots.");
                     }

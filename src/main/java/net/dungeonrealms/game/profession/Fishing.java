@@ -588,7 +588,7 @@ public class Fishing implements GenericMechanic {
         } else
             nms.getTag().setInt("XP", currentXP);
         stack = CraftItemStack.asBukkitCopy(nms);
-        p.setItemInHand(stack);
+        p.getEquipment().setItemInMainHand(stack);
         ItemMeta meta = stack.getItemMeta();
         List<String> lore = stack.getItemMeta().getLore();
         String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
@@ -610,7 +610,7 @@ public class Fishing implements GenericMechanic {
 
         meta.setLore(lore);
         stack.setItemMeta(meta);
-        p.setItemInHand(stack);
+        p.getEquipment().setItemInMainHand(stack);
     }
 
 
@@ -882,7 +882,7 @@ public class Fishing implements GenericMechanic {
                 lore.add(getRandomStatBuff(tier));
             meta.setLore(lore);
             rod.setItemMeta(meta);
-            p.setItemInHand(rod);
+            p.getEquipment().setItemInMainHand(rod);
         }
     }
 

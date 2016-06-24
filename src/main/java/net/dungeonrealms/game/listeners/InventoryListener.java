@@ -1148,7 +1148,7 @@ public class InventoryListener implements Listener {
             if (BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())) {
                 ItemStack stack = event.getWhoClicked().getEquipment().getItemInMainHand();
                 RepairAPI.setCustomItemDurability(stack, 1500);
-                event.getWhoClicked().setItemInHand(stack);
+                event.getWhoClicked().getEquipment().setItemInMainHand(stack);
                 event.getWhoClicked().closeInventory();
             } else {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You do not have " + cost + " gems!");

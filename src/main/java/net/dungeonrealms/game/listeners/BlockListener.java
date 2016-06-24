@@ -14,7 +14,6 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
-import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -371,7 +370,7 @@ public class BlockListener implements Listener {
 
     private void returnItem(Player player, ItemStack item) {
         if (player.getEquipment().getItemInMainHand() == null) {
-            player.setItemInHand(item);
+            player.getEquipment().setItemInMainHand(item);
         } else {
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), item);

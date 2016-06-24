@@ -1,17 +1,11 @@
 package net.dungeonrealms.game.profession;
 
-import com.google.common.collect.Lists;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_9_R1.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagList;
-import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,7 +15,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 27, 2015
@@ -154,7 +151,7 @@ public class Mining implements GenericMechanic {
         } else
             nms.getTag().setInt("XP", currentXP);
         stackInHand = CraftItemStack.asBukkitCopy(nms);
-        p.setItemInHand(stackInHand);
+        p.getEquipment().setItemInMainHand(stackInHand);
         ItemMeta meta = stackInHand.getItemMeta();
         List<String> lore = stackInHand.getItemMeta().getLore();
         String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
@@ -176,7 +173,7 @@ public class Mining implements GenericMechanic {
 
         meta.setLore(lore);
         stackInHand.setItemMeta(meta);
-        p.setItemInHand(stackInHand);
+        p.getEquipment().setItemInMainHand(stackInHand);
     }
 
 
@@ -273,7 +270,7 @@ public class Mining implements GenericMechanic {
 
             meta.setLore(lore);
             pick.setItemMeta(meta);
-            p.setItemInHand(pick);
+            p.getEquipment().setItemInMainHand(pick);
         }
     }
 

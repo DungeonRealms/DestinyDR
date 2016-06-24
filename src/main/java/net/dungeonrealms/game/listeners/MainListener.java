@@ -554,7 +554,7 @@ public class MainListener implements Listener {
         final Player pl = e.getPlayer();
         e.setExpToDrop(0);
 
-        if (!(Fishing.isDRFishingPole(pl.getItemInHand()))) {
+        if (!(Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()))) {
             e.setCancelled(true);
             return; // Get out of here.
         }
@@ -569,9 +569,9 @@ public class MainListener implements Listener {
         }
 
         if (e.getState() == State.FAILED_ATTEMPT || e.getState() == State.CAUGHT_ENTITY) {
-            RepairAPI.subtractCustomDurability(pl, pl.getItemInHand(), 1);
+            RepairAPI.subtractCustomDurability(pl, pl.getEquipment().getItemInMainHand(), 1);
         } else if (e.getState() == State.CAUGHT_FISH) {
-            RepairAPI.subtractCustomDurability(pl, pl.getItemInHand(), 2);
+            RepairAPI.subtractCustomDurability(pl, pl.getEquipment().getItemInMainHand(), 2);
         }
 
         if (e.getState() == State.CAUGHT_FISH) {
@@ -589,21 +589,21 @@ public class MainListener implements Listener {
                 public void run() {
                     int do_i_get_fish = new Random().nextInt(100);
 
-                    int item_tier = Fishing.getRodTier(pl.getItemInHand());
+                    int item_tier = Fishing.getRodTier(pl.getEquipment().getItemInMainHand());
                     int success_rate = 0;
 
                     if (item_tier > spot_tier) {
                         success_rate = 100;
                     }
                     if (item_tier == spot_tier) {
-                        int lvl = CraftItemStack.asNMSCopy(pl.getItemInHand()).getTag().getInt("level");
+                        int lvl = CraftItemStack.asNMSCopy(pl.getEquipment().getItemInMainHand()).getTag().getInt("level");
                         success_rate = 50 + (2 * (20 - Math.abs((Fishing.getNextLevelUp(item_tier) - lvl))));
                     }
 
-                    int success_mod = Fishing.getSuccessChance(pl.getItemInHand());
+                    int success_mod = Fishing.getSuccessChance(pl.getEquipment().getItemInMainHand());
                     success_rate += success_mod; // %CHANCE
 
-                    if (Fishing.isDRFishingPole(pl.getItemInHand()) && success_rate >= do_i_get_fish) {
+                    if (Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()) && success_rate >= do_i_get_fish) {
                         // They get fish!
                         ItemStack fish = Fishing.getFishDrop(spot_tier);
                         if (pl.getInventory().firstEmpty() != -1) {
@@ -616,7 +616,7 @@ public class MainListener implements Listener {
 
                         // Special Effects!
                         int doi_double_drop = new Random().nextInt(100) + 1;
-                        if (Fishing.getDoubleDropChance(pl.getItemInHand()) >= doi_double_drop) {
+                        if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
                             fish = Fishing.getFishDrop(spot_tier);
                             if (pl.getInventory().firstEmpty() != -1) {
                                 pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
@@ -630,7 +630,7 @@ public class MainListener implements Listener {
                         }
 
                         int doi_triple_drop = new Random().nextInt(100) + 1;
-                        if (Fishing.getTripleDropChance(pl.getItemInHand()) >= doi_triple_drop) {
+                        if (Fishing.getTripleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_triple_drop) {
                             fish = Fishing.getFishDrop(spot_tier);
                             if (pl.getInventory().firstEmpty() != -1) {
                                 pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
@@ -651,7 +651,7 @@ public class MainListener implements Listener {
                             }
                         }
 
-                        int junk_chance = Fishing.getJunkFindChance(pl.getItemInHand());
+                        int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());
                         if (junk_chance >= (new Random().nextInt(100) + 1)) {
                             int junk_type = new Random().nextInt(100) + 1; // 0, 1, 2
                             ItemStack junk = null;
@@ -731,7 +731,7 @@ public class MainListener implements Listener {
                             }
                         }
 
-                        int treasure_chance = Fishing.getTreasureFindChance(pl.getItemInHand());
+                        int treasure_chance = Fishing.getTreasureFindChance(pl.getEquipment().getItemInMainHand());
                         if (treasure_chance >= (new Random().nextInt(300) + 1)) {
                             // Give em treasure!
                             int treasure_type = new Random().nextInt(3); // 0, 1
@@ -817,13 +817,13 @@ public class MainListener implements Listener {
         Player pl = e.getPlayer();
         if (Fishing.getInstance().isCustomFish(is)) {
             e.setCancelled(true);
-            ItemStack fish = pl.getItemInHand();
+            ItemStack fish = pl.getEquipment().getItemInMainHand();
             if (fish.getAmount() > 1) {
                 // Subtract just 1.
                 fish.setAmount(fish.getAmount() - 1);
-                pl.setItemInHand(fish);
+                pl.getEquipment().setItemInMainHand(fish);
             } else if (fish.getAmount() <= 1) {
-                pl.setItemInHand(new ItemStack(Material.AIR));
+                pl.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
             }
             pl.updateInventory();
             /*
@@ -1134,7 +1134,7 @@ public class MainListener implements Listener {
             if (event.getItemDrop().getItemStack().getType() == Material.MAP) {
                 event.getItemDrop().remove();
                 if (pl.getEquipment().getItemInMainHand().getType() == Material.MAP) {
-                    pl.setItemInHand(new ItemStack(Material.AIR));
+                    pl.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                 } else if (pl.getItemOnCursor().getType() == Material.MAP) {
                     pl.setItemOnCursor(new ItemStack(Material.AIR));
                 }
@@ -1286,7 +1286,7 @@ public class MainListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void characterJournalPartyInvnite(EntityDamageByEntityEvent event) {
+    public void characterJournalPartyInvite(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             if (!API.isPlayer(event.getEntity())) return;
             if (((Player) event.getDamager()).getEquipment().getItemInMainHand() != null) {
