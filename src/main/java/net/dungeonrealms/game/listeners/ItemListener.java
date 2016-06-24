@@ -6,7 +6,6 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -15,7 +14,6 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -204,10 +202,6 @@ public class ItemListener implements Listener {
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
-        ItemStack stack = ItemManager.createCharacterJournal(p);
-
-        p.getInventory().setItem(7, stack);
-        p.updateInventory();
     }
 
 

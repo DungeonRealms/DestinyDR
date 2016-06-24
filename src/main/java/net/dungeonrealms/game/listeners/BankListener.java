@@ -607,7 +607,7 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void splitBankNote(PlayerInteractEvent interactEvent) {
         Player player = interactEvent.getPlayer();
-        if (interactEvent.getAction() == Action.LEFT_CLICK_BLOCK || interactEvent.getAction() == Action.LEFT_CLICK_AIR) {
+        if (interactEvent.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (interactEvent.getPlayer().getInventory().getItemInMainHand() != null && BankMechanics.getInstance().isBankNote(interactEvent.getPlayer().getInventory().getItemInMainHand())) {
                 int noteWorth = BankMechanics.getInstance().getNoteValue(player.getInventory().getItemInMainHand());
                 player.sendMessage(ChatColor.GRAY + "This bank note is worth " + ChatColor.GREEN + noteWorth + " Gems." + ChatColor.GRAY + " Please enter the amount");
@@ -631,14 +631,13 @@ public class BankListener implements Listener {
                     } else if (number > noteWorth) {
                         player.sendMessage(ChatColor.GRAY + "You cannot split a note more than what it's worth.");
                     } else {
-                        if (hasSpaceInInventory(player.getUniqueId(), number)) {
-
-                            if (number == noteWorth)
-                                return;
-
+                        if (player.getInventory().firstEmpty() != -1) {
+                            if (number == noteWorth) return;
                             int newValue = noteWorth - number;
-                            player.setItemInHand(BankMechanics.createBankNote(newValue));
+                            player.getInventory().setItemInMainHand(BankMechanics.createBankNote(newValue));
                             player.getInventory().addItem(BankMechanics.createBankNote(number));
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You do not have enough space in your inventory to perform this action.");
                         }
                     }
                 }, p -> p.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED"));

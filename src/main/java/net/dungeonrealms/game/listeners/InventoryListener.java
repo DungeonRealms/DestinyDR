@@ -540,10 +540,14 @@ public class InventoryListener implements Listener {
         if (nmsCursor.getTag().getString("type").equalsIgnoreCase("protection")) {
             if (!EnchantmentAPI.isItemProtected(slotItem)) {
                 int tier = nmsCursor.getTag().getInt("tier");
-                int itemTier = 1;
+                int itemTier;
                 itemTier = nmsItem.getTag().getInt("itemTier");
                 if (tier != itemTier) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "This protection scroll is made for a higher tier!");
+                    return;
+                }
+                if (EnchantmentAPI.getEnchantLvl(slotItem) > 8) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "This item can no longer be protected!");
                     return;
                 }
 

@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.enchantments;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -10,7 +8,8 @@ import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * Created by Chase on Nov 19, 2015
@@ -65,7 +64,11 @@ public class EnchantmentAPI {
 	public static boolean isItemProtected(ItemStack itemStack) {
 		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
 		NBTTagCompound tag = nmsItem.getTag();
-		return tag.getString("protected").equalsIgnoreCase("true");
+		if (tag != null) {
+			return tag.getString("protected").equalsIgnoreCase("true");
+		} else {
+			return false;
+		}
 	}
 
 	private static void registerEnchant() {
@@ -80,7 +83,7 @@ public class EnchantmentAPI {
 		}
 		try {
 			EnchantmentWrapper.registerEnchantment(glow);
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException ignored) {
 
 		}
 		glowEnchant = glow;
@@ -93,7 +96,11 @@ public class EnchantmentAPI {
 	public static int getEnchantLvl(ItemStack itemStack) {
 		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
 		NBTTagCompound tag = nmsItem.getTag();
-		return tag.getInt("enchant");
+		if (tag != null) {
+			return tag.getInt("enchant");
+		} else {
+			return 0;
+		}
 	}
 
 }
