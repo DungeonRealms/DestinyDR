@@ -21,7 +21,6 @@ public enum EnumData {
     ALIGNMENT("info.alignment"),
     ALIGNMENT_TIME("info.alignmentTime"),
     CURRENT_LOCATION("info.currentLocation"),
-    IS_REALM_UPLOAD("info.isRealmUpload"),
     HASSHOP("info.shopOpen"),
     SHOPLEVEL("info.shopLevel"),
     MULELEVEL("info.muleLevel"),
@@ -51,6 +50,10 @@ public enum EnumData {
 
     GUILD_INVITATION("notices.guildInvitation"),
     FRIEND_REQUSTS("notices.friendRequest"),
+
+
+    REALM_UPLOAD("realm.uploading"),
+    REALM_TITLE("realm.title"),
 
     MOUNTS("collectibles.mounts"),
     PETS("collectibles.pets"),

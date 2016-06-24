@@ -87,8 +87,7 @@ public class DatabaseAPI {
                 return ((Document) doc.get("info")).get("lastShardTransfer", Long.class);
             case IS_PLAYING:
                 return ((Document) doc.get("info")).get("isPlaying", Boolean.class);
-            case IS_REALM_UPLOAD:
-                return ((Document) doc.get("info")).get("isRealmUpload", Boolean.class);
+
             case LEVEL:
                 return ((Document) doc.get("info")).get("netLevel", Integer.class);
             case EXPERIENCE:
@@ -161,6 +160,15 @@ public class DatabaseAPI {
                 return ((Document) doc.get("attributes")).get("resets", Integer.class);
             case FREERESETS:
                 return ((Document) doc.get("attributes")).get("freeresets", Integer.class);
+            /*
+              REALMS
+             */
+
+            case REALM_TITLE:
+                return ((Document) doc.get("realm")).get("title", String.class);
+            case REALM_UPLOAD:
+                return ((Document) doc.get("realm")).get("uploading", Boolean.class);
+
             /*
             Player Storage
              */
@@ -310,7 +318,6 @@ public class DatabaseAPI {
                                 .append("alignment", "lawful")
                                 .append("alignmentTime", 0)
                                 .append("guild", "")
-                                .append("isRealmUpload", false)
                                 .append("shopOpen", false)
                                 .append("foodLevel", 20)
                                 .append("shopLevel", 1)
@@ -330,6 +337,9 @@ public class DatabaseAPI {
                                         .append("vitality", 0)
                                         .append("resets", 0)
                                         .append("freeresets", 0))
+                        .append("realm",
+                                new Document("uploading", false)
+                                        .append("title", ""))
                         .append("collectibles",
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())

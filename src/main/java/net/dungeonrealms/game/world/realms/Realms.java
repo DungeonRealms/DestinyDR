@@ -54,7 +54,7 @@ public interface Realms extends GenericMechanic {
     /**
      * Loads the player's realm*
      *
-     * @param player   Owner of realm
+     * @param player Owner of realm
      */
     void loadRealm(Player player);
 
@@ -122,6 +122,26 @@ public interface Realms extends GenericMechanic {
      * @param uuid Owner of realm
      */
     void removeCachedRealm(UUID uuid);
+
+    /**
+     * Set realm spawn and realm portal back to main world
+     *
+     * @param uuid        Owner of realm
+     * @param newLocation Location must be above air to place portal
+     */
+    void setRealmSpawn(UUID uuid, Location newLocation);
+
+    /**
+     * Sets the title of realm.
+     * @param uuid Owner of realm
+     */
+    void setRealmTitle(UUID uuid, String title);
+
+    /**
+     * @param uuid Owner of realm
+     * @return Title of realm
+     */
+    String getRealmTitle(UUID uuid);
 
 
     /**
