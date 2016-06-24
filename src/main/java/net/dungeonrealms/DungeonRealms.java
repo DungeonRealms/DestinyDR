@@ -92,7 +92,7 @@ public class DungeonRealms extends JavaPlugin {
 
     // End of Shard Config
     public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
-    volatile boolean hasFinishedSetup = false;
+    private volatile boolean hasFinishedSetup = false;
 
     @Getter
     private List<String> loggingOut = new ArrayList<>();
@@ -349,6 +349,8 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Sendsa message to local chat."));
 
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "Will help remove you if you're stuck in a block."));
+
+            cm.registerCommand(new CommandRealm("realm", "/<command> [args]", "Realm command"));
 
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));

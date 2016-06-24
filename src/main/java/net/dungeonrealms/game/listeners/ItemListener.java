@@ -168,6 +168,19 @@ public class ItemListener implements Listener {
             if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
             Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
+
+            if (Realms.getInstance().isRealmLoaded(event.getPlayer().getUniqueId()) && Realms.getInstance().getRealmWorld(p.getUniqueId()).equals(p.getLocation().getWorld())) {
+                Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
+
+                if (API.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+                    return;
+                }
+
+                Realms.getInstance().setRealmSpawn(event.getPlayer().getUniqueId(), newLocation);
+                return;
+            }
+
             if (!Realms.getInstance().isRealmCached(event.getPlayer().getUniqueId())) {
                 Realms.getInstance().loadRealm(p);
                 return;

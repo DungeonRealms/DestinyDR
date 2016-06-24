@@ -815,6 +815,18 @@ public class API {
         );
     }
 
+    public static String locationToString(Location location) {
+        return location.getX() + "," + (location.getY() + 1) + "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch();
+    }
+
+    public static Location getLocationFromString(String locationString) {
+        String[] locationStringArray = locationString.split(",");
+
+        return new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationStringArray[0]),
+                Double.parseDouble(locationStringArray[1]), Double.parseDouble(locationStringArray[2]),
+                Float.parseFloat(locationStringArray[3]), Float.parseFloat(locationStringArray[4]));
+    }
+
     /**
      * Returns if a player is online. (LOCAL SERVER)
      *
@@ -982,32 +994,6 @@ public class API {
         }
     }
 
-    /**
-     * Spawn our Entity at Location
-     * <p>
-     * Use SpawningMechanics.getMob for Entity
-     * lvlRange = "high" or "low"
-     *
-     * @param location
-     * @param entity
-     * @param tier
-     * @param lvlRange
-     */
-    public void spawnMonsterAt(Location location, net.minecraft.server.v1_9_R2.Entity entity, int tier, String lvlRange) {
-        net.minecraft.server.v1_9_R2.World world = ((CraftWorld) location.getWorld()).getHandle();
-        int level = Utils.getRandomFromTier(tier, "low");
-        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
-        EntityStats.setMonsterRandomStats(entity, level, tier);
-        String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-        int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
-        String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-        entity.setCustomName(lvlName + ChatColor.RESET + customName);
-        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-        world.addEntity(entity, SpawnReason.CUSTOM);
-        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-
-    }
-
     public static File getRemoteDataFolder() {
         String filePath = DungeonRealms.getInstance().getDataFolder().getAbsolutePath();
         File file = DungeonRealms.getInstance().getDataFolder();
@@ -1061,7 +1047,7 @@ public class API {
      * and health, takes into account benefits given from stats (str, dex, vit, int).
      *
      * @param type - an attribute, can be either an armor or weapon attribute
-     * @param p - the player to calculate the total value for
+     * @param p    - the player to calculate the total value for
      * @return - the total value of the attribute from the player's equipment. If the
      * attribute has ranged values, the first index is the min and second the max.
      * Otherwise, the first index is the value.
@@ -1090,8 +1076,7 @@ public class API {
             if (WeaponAttributeType.getByName(armorType.getName()) != null) {
 
             }
-        }
-        else  if (type instanceof WeaponAttributeType) {
+        } else if (type instanceof WeaponAttributeType) {
             WeaponAttributeType weaponType = (WeaponAttributeType) type;
 
             // check if armor can also have this attribute
@@ -1100,7 +1085,7 @@ public class API {
             }
         }
 
-        return new int[] { 0, 0 };
+        return new int[]{0, 0};
     }
 
     /**
@@ -1119,10 +1104,10 @@ public class API {
 
         // populate the map with empty values
         for (WeaponAttributeType type : WeaponAttributeType.values()) {
-            attributes.put(type.getNBTName(), new Integer[] { 0, 0 });
+            attributes.put(type.getNBTName(), new Integer[]{0, 0});
         }
         for (ArmorAttributeType type : ArmorAttributeType.values()) {
-            attributes.put(type.getNBTName(), new Integer[] { 0, 0 });
+            attributes.put(type.getNBTName(), new Integer[]{0, 0});
         }
 
         gp.setAttributes(attributes);
@@ -1140,10 +1125,9 @@ public class API {
                 assert type != null;
 
                 if (type.isRange()) {
-                    gp.changeAttributeVal(type, new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
-                }
-                else {
-                    gp.changeAttributeVal(type, new Integer[] { 0, tag.getInt(modifier) });
+                    gp.changeAttributeVal(type, new Integer[]{tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max")});
+                } else {
+                    gp.changeAttributeVal(type, new Integer[]{0, tag.getInt(modifier)});
                 }
             });
         }
@@ -1161,10 +1145,9 @@ public class API {
                 assert type != null;
 
                 if (type.isRange()) {
-                    gp.changeAttributeVal(type, new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
-                }
-                else {
-                    gp.changeAttributeVal(type, new Integer[] { 0, tag.getInt(modifier) });
+                    gp.changeAttributeVal(type, new Integer[]{tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max")});
+                } else {
+                    gp.changeAttributeVal(type, new Integer[]{0, tag.getInt(modifier)});
                 }
             });
         }
@@ -1176,6 +1159,7 @@ public class API {
 
     /**
      * Gets all the modifier names of an item.
+     *
      * @param item
      * @return - null if the item does not contain any modifiers
      */
@@ -1261,5 +1245,31 @@ public class API {
         NBTTagCompound tag = nms.getTag();
         if (!tag.hasKey("untradeable")) return false;
         return tag.getInt("untradeable") == 1;
+    }
+
+    /**
+     * Spawn our Entity at Location
+     * <p>
+     * Use SpawningMechanics.getMob for Entity
+     * lvlRange = "high" or "low"
+     *
+     * @param location
+     * @param entity
+     * @param tier
+     * @param lvlRange
+     */
+    public void spawnMonsterAt(Location location, net.minecraft.server.v1_9_R2.Entity entity, int tier, String lvlRange) {
+        net.minecraft.server.v1_9_R2.World world = ((CraftWorld) location.getWorld()).getHandle();
+        int level = Utils.getRandomFromTier(tier, "low");
+        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+        EntityStats.setMonsterRandomStats(entity, level, tier);
+        String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+        int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
+        String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
+        entity.setCustomName(lvlName + ChatColor.RESET + customName);
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+        world.addEntity(entity, SpawnReason.CUSTOM);
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+
     }
 }
