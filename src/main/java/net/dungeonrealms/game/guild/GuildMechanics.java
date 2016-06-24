@@ -460,9 +460,9 @@ public class GuildMechanics {
                     BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
                     // guild tags in scoreboard disabled
-                    /*GamePlayer gp = API.getGamePlayer(player);
+                    GamePlayer gp = API.getGamePlayer(player);
                     if (gp != null)
-                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());*/
+                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
                     player.getInventory().addItem(info.getCurrentBanner());
                     API.updatePlayerData(player.getUniqueId());

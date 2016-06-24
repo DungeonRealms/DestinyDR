@@ -21,6 +21,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -107,7 +110,7 @@ public interface DRMonster {
                     gem_drop_amount = (random.nextInt(50 - 20) + 20) * gold_drop_multiplier;
                     break;
                 case 5:
-                    gem_drop_amount = (random.nextInt(200- 75) + 75) * gold_drop_multiplier;
+                    gem_drop_amount = (random.nextInt(200 - 75) + 75) * gold_drop_multiplier;
                     break;
             }
 
@@ -121,22 +124,24 @@ public interface DRMonster {
 
         int armorRoll = random.nextInt(1000);
         int drops = 0;
+        List<ItemStack> toDrop = new ArrayList<>();
         for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
             if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL || stack.getType() == Material.SKULL_ITEM) {
                 continue;
             }
-            if (drops < 1) {
-                if (armorRoll < chance + (chance * killerItemFind / 100)) {
-                    if (armorRoll >= chance) {
-                        if (toggleDebug) {
-                            killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
-                        }
-                    }
-                    RepairAPI.setCustomItemDurability(stack, RandomHelper.getRandomNumberBetween(200, 1000));
-                    world.getWorld().dropItem(loc.add(0, 1, 0), stack);
-                    drops++;
+            toDrop.add(stack);
+        }
+        //Random drop choice, as opposed dropping in the same order (boots>legs>chest>head)
+        Collections.shuffle(toDrop);
+        if (armorRoll < chance + (chance * killerItemFind / 100)) {
+            if (armorRoll >= chance) {
+                if (toggleDebug) {
+                    killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                 }
             }
+            RepairAPI.setCustomItemDurability(toDrop.get(0), RandomHelper.getRandomNumberBetween(200, 1000));
+            world.getWorld().dropItem(loc.add(0, 1, 0), toDrop.get(0));
+            drops++;
         }
         if (!ent.hasMetadata("elite")) {
             ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(API.getItemRarity(false)).generateItem().getItem();

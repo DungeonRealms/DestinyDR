@@ -618,7 +618,7 @@ public class PlayerMenus {
                 "",
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open the E-Cash Vendor."
         }));
-        inv.setItem(24, editItem(new ItemStack(Material.TORCH), ChatColor.GOLD + "Achievements", new String[]{
+        inv.setItem(24, editItem(new ItemStack(Material.COMPASS), ChatColor.GOLD + "Achievements", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Check your progress.",
                 "",

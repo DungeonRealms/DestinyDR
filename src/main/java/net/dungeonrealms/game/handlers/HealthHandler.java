@@ -24,6 +24,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -45,6 +46,7 @@ public class HealthHandler implements GenericMechanic {
         }
         return instance;
     }
+
     public static List<Player> COMBAT_ARMORSWITCH = new ArrayList<>();
 
     @Override
@@ -53,15 +55,15 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
                 setPlayerOverheadHP(pl, getPlayerHPLive(pl));
             }
         }, 0L, 5L);
-		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
-        @Override
+    @Override
     public void stopInvocation() {
 
     }
@@ -239,7 +241,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public int getMonsterMaxHPOnSpawn(LivingEntity entity) {
-           return calculateMaxHPFromItems(entity);
+        return calculateMaxHPFromItems(entity);
     }
 
     /**
@@ -555,7 +557,7 @@ public class HealthHandler implements GenericMechanic {
                     }
                     final String finalDeadPlayerName = deadPlayerName;
                     final String finalKillerName = killerName;
-                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName  + " was killed by a(n) " + finalKillerName));
+                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
                     final LivingEntity finalLeAttacker = leAttacker;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -656,19 +658,15 @@ public class HealthHandler implements GenericMechanic {
             entity.setMaximumNoDamageTicks(2000);
             entity.setNoDamageTicks(1000);
             //TODO: find out why this code is here...
-//            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-//                if (!entity.isDead()) {
-//                    entity.setMaximumNoDamageTicks(200);
-//                    entity.setNoDamageTicks(10);
-//                    EntityDeathEvent event = new EntityDeathEvent(entity,  new ArrayList<>());
-//                    Bukkit.getPluginManager().callEvent(event);
-//                    entity.setHealth(0);
-//                    entity.remove();
-//                }
-//                if (!entity1.dead) {
-//                    entity1.dead = true;
-//                }
-//            }, 5L);
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+                if (!entity.isDead()) {
+                    entity.setMaximumNoDamageTicks(200);
+                    entity.setNoDamageTicks(100);
+                    EntityDeathEvent event = new EntityDeathEvent(entity, new ArrayList<>());
+                    Bukkit.getPluginManager().callEvent(event);
+                    entity.setHealth(0);
+                }
+            }, 1L);
             if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {
                 Entities.MONSTER_LAST_ATTACK.remove(entity);
             }
@@ -798,7 +796,7 @@ public class HealthHandler implements GenericMechanic {
         if (entity.hasMetadata("dungeon")) {
             totalHP *= 2;
         }
-        
+
         if (entity.hasMetadata("elite")) {
             totalHP *= 4;
         }
