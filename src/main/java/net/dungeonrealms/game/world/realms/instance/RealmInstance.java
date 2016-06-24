@@ -2,7 +2,10 @@ package net.dungeonrealms.game.world.realms.instance;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.google.common.util.concurrent.*;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -114,6 +117,10 @@ public class RealmInstance implements Realms {
             switch (realm.getStatus()) {
                 case CREATING:
                     message = message + "created";
+                    break;
+
+                case REMOVING:
+                    message = message + "removed";
                     break;
 
                 case DOWNLOADING:
@@ -251,20 +258,19 @@ public class RealmInstance implements Realms {
 
     @Override
     public void doLogout(Player player) {
+        if (!isRealmCached(player.getUniqueId())) return;
+
         RealmToken realm = Realms.getInstance().getRealm(player.getLocation().getWorld());
 
-        if (realm != null) {
-            realm.getPlayersInRealm().remove(player.getUniqueId());
-            Utils.log.info("Removed player from realm.");
-        }
+        getRealm(player.getUniqueId()).getPlayersInRealm().stream()
+                .filter(uuid -> Bukkit.getPlayer(uuid) != null)
+                .forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
 
-        if (isRealmCached(player.getUniqueId())) {
-            getRealm(player.getUniqueId()).getPlayersInRealm().stream()
-                    .filter(uuid -> Bukkit.getPlayer(uuid) != null)
-                    .forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
+        closeRealmPortal(player.getUniqueId(), true);
+        realm.setStatus(RealmStatus.REMOVING);
 
-            removeRealm(player.getUniqueId(), true);
-        }
+        // MUST BE SYNC //
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> removeRealm(player.getUniqueId(), true), 60L);
     }
 
 
@@ -422,7 +428,6 @@ public class RealmInstance implements Realms {
 
     }
 
-
     private boolean isPortalNearby(Location location, int radius) {
         double rad = Math.pow(radius, 2);
         for (RealmToken realm : CACHED_REALMS.values())
@@ -482,9 +487,12 @@ public class RealmInstance implements Realms {
         if (isRealmPortalOpen(uuid))
             closeRealmPortal(uuid, true);
 
+        getRealm(uuid).setStatus(RealmStatus.REMOVING);
+
         // UNLOAD WORLD
-        //if (isRealmLoaded(uuid))
         Utils.log.info("[REALM] [SYNC] Unloading realm world for " + uuid.toString());
+
+        Bukkit.getWorlds().remove(getRealmWorld(uuid));
         Bukkit.getServer().unloadWorld(getRealmWorld(uuid), true);
 
         // SUBMITS ASYNC UPLOAD THREAD //
