@@ -109,7 +109,7 @@ public class ShardSelector extends AbstractMenu {
                 continue;
 
 
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("SUB") && !Rank.isSubscriber(player)))
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("SUB") && !Rank.isSubscriber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)))
                 continue;
 
             filteredServers.put(bungeeName, info);
@@ -123,7 +123,7 @@ public class ShardSelector extends AbstractMenu {
         if (shardID.contains("YT")) return "YouTubers Only";
         if (shardID.contains("BR")) return "Brazilian Shard";
         if (shardID.contains("RP")) return "Role-playing Shard";
-        if (shardID.contains("SUPPORT")) return "Support Agents Only";
+        if (shardID.contains("CS")) return "Support Agents Only";
         return "";
     }
 

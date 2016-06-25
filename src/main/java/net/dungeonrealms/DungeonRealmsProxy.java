@@ -67,7 +67,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         List<ServerInfo> server = new ArrayList<>();
 
         for (String shardName : DR_SHARDS)
-            if (!shardName.contains("sub") && !shardName.contains("yt"))
+            // We want to only put them on a US as they may fail the criteria for another shard.
+            // They are free to join another shard once connected.
+            if (shardName.startsWith("us"))
                 server.add(getProxy().getServerInfo(shardName));
 
         //Arrays.
