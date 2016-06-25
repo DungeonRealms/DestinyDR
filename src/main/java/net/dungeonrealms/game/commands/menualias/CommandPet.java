@@ -43,13 +43,14 @@ public class CommandPet extends BasicCommand {
                 if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
                     DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                 }
-                player.sendMessage(ChatColor.AQUA + "Pet dismissed.");
+                player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
                 EntityAPI.removePlayerPetList(player.getUniqueId());
                 return true;
             }
+
             String petType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
             if (petType == null || petType.equals("")) {
-                player.sendMessage(ChatColor.RED + "You don't have an active pet, please enter the pets section in your profile to set one.");
+                player.sendMessage(ChatColor.RED + "You currently don't have an active pet. Please select one from your profile.");
                 player.closeInventory();
                 return true;
             }
@@ -60,7 +61,7 @@ public class CommandPet extends BasicCommand {
             } else {
                 petName = EnumPets.getByName(petType).getDisplayName();
             }
-            player.sendMessage(ChatColor.GREEN + "Pet summoned.");
+            player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
             PetUtils.spawnPet(player.getUniqueId(), petType, petName);
             return true;
         } else if (args.length == 1) {

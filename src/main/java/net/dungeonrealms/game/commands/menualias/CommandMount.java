@@ -45,12 +45,12 @@ public class CommandMount extends BasicCommand {
                 if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
                     DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                 }
-                player.sendMessage(ChatColor.AQUA + "Mount dismissed.");
+                player.sendMessage(ChatColor.AQUA + "Your mount has been dismissed.");
                 EntityAPI.removePlayerMountList(player.getUniqueId());
                 return true;
             }
             if (CombatLog.isInCombat(player)) {
-                player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
+                player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                 return true;
             }
             String mountType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
@@ -59,7 +59,7 @@ public class CommandMount extends BasicCommand {
                 player.closeInventory();
                 return true;
             }
-            player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
+            player.sendMessage(ChatColor.GREEN + "Your mount is being summoned into this world!");
             final int[] count = {0};
             Location startingLocation = player.getLocation();
             final boolean[] cancelled = {false};
