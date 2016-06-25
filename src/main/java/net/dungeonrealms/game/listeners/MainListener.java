@@ -622,6 +622,9 @@ public class MainListener implements Listener {
                     }
                     pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 
+                    int exp = Fishing.getFishEXP(spot_tier);
+                    Fishing.gainExp(pl.getEquipment().getItemInMainHand(), pl, exp);
+                    API.getGamePlayer(pl).addExperience(exp / 8, false);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
                         fish = Fishing.getFishDrop(spot_tier);
