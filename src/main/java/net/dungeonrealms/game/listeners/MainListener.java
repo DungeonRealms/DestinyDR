@@ -622,6 +622,9 @@ public class MainListener implements Listener {
                     }
                     pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 
+                    int exp = Fishing.getFishEXP(spot_tier);
+                    Fishing.gainExp(pl.getEquipment().getItemInMainHand(), pl, exp);
+                    API.getGamePlayer(pl).addExperience(exp / 8, false);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
                         fish = Fishing.getFishDrop(spot_tier);
@@ -747,24 +750,19 @@ public class MainListener implements Listener {
                             // OOA
                             treasure = CraftItemStack.asCraftCopy(ItemManager.createOrbofAlteration());
                         }
-                        if (treasure_type == 1) {
-                            // OOF
-//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_flight);
-                        }
-                        if (treasure_type == 2) {
-                            // OOP
-//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_peace);
-                        }
 
-                        if (pl.getInventory().firstEmpty() != -1) {
-                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), treasure);
-                        } else {
-                            // Full inventory!
-                            pl.getWorld().dropItem(pl.getLocation(), treasure);
-                        }
+                        if (treasure != null) {
 
-                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
-                                + treasure.getItemMeta().getDisplayName());
+                            if (pl.getInventory().firstEmpty() != -1) {
+                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), treasure);
+                            } else {
+                                // Full inventory!
+                                pl.getWorld().dropItem(pl.getLocation(), treasure);
+                            }
+
+                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
+                                    + treasure.getItemMeta().getDisplayName());
+                        }
                     }
                 }
             }, 10l);
