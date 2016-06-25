@@ -35,7 +35,6 @@ public class Database {
         database = mongoClient.getDatabase("dungeonrealms");
         collection = database.getCollection("player_data");
         guilds = database.getCollection("guilds");
-        ranks = database.getCollection("ranks");
 
         GuildDatabase.setGuilds(guilds);
         Utils.log.info("DungeonRealms [MONGODB] has connected successfully!");
