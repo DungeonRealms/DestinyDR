@@ -109,7 +109,7 @@ public class Profile implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerRequestItem(InventoryClickEvent event) {
         if (event.getInventory().getTitle().equals("Profile")) {
-            if (event.getClick() == ClickType.MIDDLE) {
+            if (event.getClick() == ClickType.RIGHT) {
                 switch (event.getRawSlot()) {
                     case 6:
                         event.setCancelled(true);

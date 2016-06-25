@@ -467,6 +467,7 @@ public class ItemListener implements Listener {
         if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) return;
         if (player.getEquipment().getItemInMainHand().getType() != Material.NAME_TAG) return;
         event.setCancelled(true);
+        player.updateInventory();
         if (!EntityAPI.hasPetOut(player.getUniqueId())) return;
         if (EntityAPI.getPlayerPet(player.getUniqueId()).equals(((CraftEntity) event.getRightClicked()).getHandle())) {
             player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE +"cancel" + ChatColor.GRAY + " to end the process.");

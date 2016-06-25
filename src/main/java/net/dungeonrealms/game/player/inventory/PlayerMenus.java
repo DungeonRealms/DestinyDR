@@ -580,30 +580,30 @@ public class PlayerMenus {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Stand out amongst the rest",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "with powerful effects.",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained trails.",
-                ChatColor.WHITE + "Middle-Click:" + ChatColor.GREEN + " Receive trail item."
+                ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View obtained trails.",
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive trail item."
         }));
         inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GOLD + "Mounts", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Travel Andalucia quickly.",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained mounts.",
-                ChatColor.WHITE + "Middle Click:" + ChatColor.GREEN + " Receive Saddle."
+                ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View obtained mounts.",
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Saddle."
         }));
         inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GOLD + "Pets", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Travel with a cute companion.",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View available pets.",
-                ChatColor.WHITE + "Middle-Click:" + ChatColor.GREEN + " Receive Pet Leash."
+                ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View available pets.",
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Pet Leash."
         }));
         inv.setItem(16, editItem(new ItemStack(Material.LEASH), ChatColor.GOLD + "Storage Mule", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Inventory getting full on your travels?",
 				ChatColor.GRAY.toString() + ChatColor.ITALIC + "purchase a Mule from the Animal Tamer.",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Spawn Storage Mule.",
-                ChatColor.WHITE + "Middle-Click:" + ChatColor.GREEN + " Receive Mule Leash."
+                ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " Spawn Storage Mule.",
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Mule Leash."
         }));
         inv.setItem(17, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GOLD + "Mount Skins", new String[]{
                 "",

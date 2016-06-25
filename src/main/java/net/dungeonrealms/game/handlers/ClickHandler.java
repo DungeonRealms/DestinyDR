@@ -799,7 +799,6 @@ public class ClickHandler {
                 break;
             case "Profile":
                 event.setCancelled(true);
-                if (event.getClick() == ClickType.MIDDLE) return;
                 switch (slot) {
                     case 0:
                         player.openInventory(StatsManager.getInventory(player));
@@ -808,15 +807,19 @@ public class ClickHandler {
                         PlayerMenus.openFriendInventory(player);
                         break;
                     case 6:
+                        if (event.getClick() == ClickType.RIGHT) return;
                         PlayerMenus.openPlayerParticleMenu(player);
                         break;
                     case 7:
+                        if (event.getClick() == ClickType.RIGHT) return;
                         PlayerMenus.openPlayerMountMenu(player);
                         break;
                     case 8:
+                        if (event.getClick() == ClickType.RIGHT) return;
                         PlayerMenus.openPlayerPetMenu(player);
                         break;
                     case 16: {
+                        if (event.getClick() == ClickType.RIGHT) return;
                         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
                         if (!playerMounts.contains("MULE")) {
                             player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
