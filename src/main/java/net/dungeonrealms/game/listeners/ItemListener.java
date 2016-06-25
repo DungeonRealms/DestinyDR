@@ -5,7 +5,9 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handlers.TutorialIslandHandler;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -20,6 +22,7 @@ import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
@@ -35,6 +38,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -146,9 +150,6 @@ public class ItemListener implements Listener {
     }
 
 
-    /**
-     * Handles Right Click of Realm portal rune
-     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUsePortalRune(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
@@ -169,6 +170,13 @@ public class ItemListener implements Listener {
             if (Realms.getInstance().isRealmLoaded(event.getPlayer().getUniqueId()) && Realms.getInstance().getRealmWorld(p.getUniqueId()).equals(p.getLocation().getWorld())) {
                 Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
 
+
+                if (TutorialIslandHandler.getInstance().onTutorialIsland(event.getPlayer().getUniqueId())) {
+                    p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
+                            + " open a portal to your realm until you have completed Tutorial Island.");
+                    return;
+                }
+
                 if (API.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
                     return;
@@ -179,7 +187,7 @@ public class ItemListener implements Listener {
             }
 
             if (!Realms.getInstance().isRealmCached(event.getPlayer().getUniqueId())) {
-                Realms.getInstance().loadRealm(p);
+                Realms.getInstance().loadRealm(p, event.getClickedBlock().getLocation());
                 return;
             }
 
@@ -209,7 +217,8 @@ public class ItemListener implements Listener {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
 
         Player p = event.getPlayer();
-        if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() != Material.BANNER) return;
+        if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() != Material.BANNER)
+            return;
         if (!p.getInventory().getItemInMainHand().hasItemMeta()) return;
         if (p.getInventory().getItemInMainHand().getItemMeta().getDisplayName() == null) return;
         if (!p.getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Guild banner")) return;
