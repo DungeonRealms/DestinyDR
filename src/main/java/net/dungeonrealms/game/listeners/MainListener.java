@@ -519,7 +519,6 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Dungeoneer")) {
             NPCMenus.openDungeoneerMenu(event.getPlayer());
-//            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Skill Trainer")) {
@@ -543,9 +542,10 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
-            event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
-            ItemManager.giveStarter(event.getPlayer());
-            return;
+            if (API.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {
+                event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
+                ItemManager.giveStarter(event.getPlayer());
+            }
         }
     }
 

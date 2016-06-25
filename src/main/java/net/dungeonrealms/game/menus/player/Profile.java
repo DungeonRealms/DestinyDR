@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -77,16 +78,16 @@ public class Profile implements Listener {
     }
 
     public static void addMuleItem(Player player) {
-        if(player.getInventory().contains(Material.LEASH))return;
+        if (player.getInventory().contains(Material.LEASH)) return;
 
         Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
-        if(muleTier == null){
+        if (muleTier == null) {
             player.sendMessage(ChatColor.RED + "No mule data found.");
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, false);
             muleTier = 1;
         }
-        MuleTier tier = MuleTier.getByTier((int)muleTier);
-        if(tier == null){
+        MuleTier tier = MuleTier.getByTier((int) muleTier);
+        if (tier == null) {
             System.out.println("Invalid mule tier!");
             return;
         }
@@ -113,19 +114,27 @@ public class Profile implements Listener {
                 switch (event.getRawSlot()) {
                     case 6:
                         event.setCancelled(true);
+                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"trail")) {
                         addTrailItem((Player) event.getWhoClicked());
-                        break;
+                        }
+                    break;
                     case 7:
                         event.setCancelled(true);
-                        addMountItem((Player) event.getWhoClicked());
+                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mount")) {
+                            addMountItem((Player) event.getWhoClicked());
+                        }
                         break;
                     case 8:
                         event.setCancelled(true);
-                        addPetItem((Player) event.getWhoClicked());
+                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"pet")) {
+                            addPetItem((Player) event.getWhoClicked());
+                        }
                         break;
                     case 16:
                         event.setCancelled(true);
-                        addMuleItem((Player)event.getWhoClicked());
+                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mule")) {
+                            addMuleItem((Player) event.getWhoClicked());
+                        }
                         break;
                 }
             }
