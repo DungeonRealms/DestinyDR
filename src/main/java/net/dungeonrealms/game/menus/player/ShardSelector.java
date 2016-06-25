@@ -48,6 +48,10 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
 
+            // Do not show YT / CS shards unless they've got the appropriate permission to see them.
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
+                continue;
+            }
 
             GUIButton button = new GUIButton(Material.END_CRYSTAL) {
                 @Override
@@ -65,9 +69,14 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
 
                     Cooldown.addCooldown(player.getUniqueId(), 1000L);
 
-                    if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("SUB") && !Rank.isSubscriber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
-                        //TODO: BRAD CHANGE THIS MESSAGE
-                        player.sendMessage(ChatColor.RED + "Purchase subscriber @ www.dungeonrealm.net/shop");
+                    if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
+                        player.sendMessage(new String[] {
+                                ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + "SUBSCRIBER ONLY" + ChatColor.RED + " shard!",
+                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
+                        });
+                        return;
+                    } else if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
+                        player.sendMessage(ChatColor.RED + "You are " + ChatColor.BOLD + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " authorized to connect to this shard.");
                         return;
                     }
 
