@@ -950,7 +950,7 @@ public class Fishing implements GenericMechanic {
         return -1;
     }
 
-    public boolean isCustomFish(ItemStack is) {
+    public static boolean isCustomFish(ItemStack is) {
         if (is != null && is.getType() == Material.COOKED_FISH && is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()) {
             return true;
         }

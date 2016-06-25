@@ -15,11 +15,13 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -42,6 +44,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -462,13 +466,14 @@ public class ItemListener implements Listener {
         if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         Player player = event.getPlayer();
         if (event.getRightClicked() instanceof Player) return;
-        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) return;
+        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR)
+            return;
         if (player.getEquipment().getItemInMainHand().getType() != Material.NAME_TAG) return;
         event.setCancelled(true);
         player.updateInventory();
         if (!EntityAPI.hasPetOut(player.getUniqueId())) return;
         if (EntityAPI.getPlayerPet(player.getUniqueId()).equals(((CraftEntity) event.getRightClicked()).getHandle())) {
-            player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE +"cancel" + ChatColor.GRAY + " to end the process.");
+            player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
             player.closeInventory();
             Chat.listenForMessage(player, newPetName -> {
                 if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
@@ -505,6 +510,280 @@ public class ItemListener implements Listener {
             }, null);
         }
     }
+
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerInteract(PlayerInteractEvent e) {
+        final Player pl = e.getPlayer();
+        if (e.hasItem()) {
+            final ItemStack is = e.getItem();
+            if (Fishing.isCustomFish(is) && pl.getFoodLevel() >= 20) {
+                e.setUseInteractedBlock(Event.Result.DENY);
+
+                pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1F);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    // TODO: This could be abused with a macro.
+                    if (Fishing.isCustomFish(pl.getItemInHand())) {
+                        ItemStack fish = pl.getItemInHand();
+                        if (fish.getAmount() > 1) {
+                            // Subtract just 1.
+                            fish.setAmount(fish.getAmount() - 1);
+                            pl.setItemInHand(fish);
+                        } else if (fish.getAmount() <= 1) {
+                            pl.setItemInHand(new ItemStack(Material.AIR));
+                        }
+
+                        pl.updateInventory();
+                    }
+                }, 1L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1.5F);
+                }, 4L);
+                // Ok, so now we need to see what we need to do for the player when they eat this. Let's handle the food aspect first.
+                List<String> lore = is.getItemMeta().getLore();
+                int food_to_restore = 0;
+                for (String s : lore) {
+                    if (s.contains("% HUNGER")) {
+                        double percent = Integer.parseInt(s.substring(s.indexOf("-") + 1, s.indexOf("%")));
+                        int local_amount = (int) ((percent / 100.0D) * 20D);
+                        food_to_restore += local_amount;
+                    }
+                }
+
+                int cur_food = pl.getFoodLevel();
+                if (cur_food + food_to_restore >= 20) {
+                    pl.setFoodLevel(20);
+                    pl.setSaturation(20);
+                } else {
+                    pl.setFoodLevel(cur_food + food_to_restore);
+                    pl.setSaturation(pl.getSaturation() + food_to_restore);
+                }
+
+                // Ok, food handled, now let's handle any misc. buffs that the fish might have.
+                for (String s : lore) {
+                    s = ChatColor.stripColor(s);
+                    if (s.contains("% HP (instant)")) {
+                        // Instant heal.
+                        double percent_to_heal = Double.parseDouble(s.substring(s.indexOf("+") + 1, s.indexOf("%"))) / 100;
+                        double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(pl);
+                        int amount_to_heal = (int) Math.round((percent_to_heal * max_hp));
+                        double current_hp = HealthHandler.getInstance().getPlayerHPLive(pl);
+                        if (current_hp + 1 > max_hp) {
+                            continue;
+                        } // They have max HP.
+                        // amount_to_heal += getHealthRegenAmount(p);
+
+                        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, pl.getUniqueId())) {
+                            pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) amount_to_heal + ChatColor.BOLD + " HP"
+                                    + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " ["
+                                    + ((int) current_hp + (int) amount_to_heal) + "/" + (int) max_hp + "HP]");
+                        }
+
+                        if ((current_hp + amount_to_heal) >= max_hp) {
+                            pl.setHealth(20);
+                            HealthHandler.getInstance().setPlayerHPLive(pl, (int) max_hp);
+                            continue; // Full HP.
+                        } else if (pl.getHealth() <= 19 && ((current_hp + amount_to_heal) < max_hp)) {
+                            HealthHandler.getInstance().setPlayerHPLive(pl, (int) HealthHandler.getInstance().getPlayerHPLive(pl) + amount_to_heal);
+                            double health_percent = (HealthHandler.getInstance().getPlayerHPLive(pl) + amount_to_heal) / max_hp;
+                            double new_health_display = health_percent * 20;
+                            if (new_health_display > 19) {
+                                if (health_percent >= 1) {
+                                    new_health_display = 20;
+                                } else if (health_percent < 1) {
+                                    new_health_display = 19;
+                                }
+                            }
+                            if (new_health_display < 1) {
+                                new_health_display = 1;
+                            }
+                            pl.setHealth((int) new_health_display);
+
+                        }
+                    }
+
+                    if (s.startsWith("REGEN")) {
+                        // Regen % of HP over X seconds.
+                        double percent_to_regen = Double.parseDouble(s.substring(s.indexOf(" ") + 1, s.indexOf("%"))) / 100.0D;
+                        int regen_interval = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("s")));
+                        double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(pl);
+
+                        final int amount_to_regen_per_interval = (int) (max_hp * percent_to_regen) / regen_interval;
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + amount_to_regen_per_interval + ChatColor.BOLD
+                                + " HP/s" + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + regen_interval + "s]");
+
+//                        fish_health_regen.put(pl.getName(), amount_to_regen_per_interval);
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) percent_to_regen);
+
+                        pl.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (int) (regen_interval + (regen_interval * 0.25)), 0));
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                pl.removePotionEffect(PotionEffectType.REGENERATION);
+//                                fish_health_regen.remove(pl.getName());
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) -percent_to_regen);
+
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "   " + amount_to_regen_per_interval + " HP/s " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, regen_interval * 20L);
+                    }
+
+                    if (s.startsWith("SPEED")) {
+                        // Speed effect.
+                        String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
+                        int effect_tier = 0;
+                        if (tier_symbol.equalsIgnoreCase("II")) {
+                            effect_tier = 1;
+                        }
+
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effect_time * 20, effect_tier));
+                    }
+
+                    if (s.startsWith("NIGHTVISION")) {
+                        // Night vision effect
+                        String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
+                        int effect_tier = 0;
+                        if (tier_symbol.equalsIgnoreCase("II")) {
+                            effect_tier = 1;
+                        }
+
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        pl.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, effect_time * 20, effect_tier));
+                    }
+
+                    if (s.contains("ENERGY REGEN")) {
+                        // Increased energy regen.
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, bonus_percent);
+
+//                        fish_energy_regen.put(pl.getName(), bonus_percent);
+//                        RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0xa47c48, (effect_time * 20));
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + " Energy/s"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//                                fish_energy_regen.remove(pl.getName());
+                            API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, -bonus_percent);
+
+                            pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + " +" + bonus_percent + "% Energy " + ChatColor.RED + "FROM "
+                                    + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                        }, effect_time * 20L);
+                    }
+
+                    if (s.contains("% DMG")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, bonus_percent);
+
+//                        fish_bonus_dmg.put(pl.getName(), bonus_percent);
+//                        RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0xdd0000, (effect_time * 20));
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% DMG"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, -bonus_percent);
+//                                fish_bonus_dmg.remove(pl.getName());
+                            pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% DMG " + ChatColor.RED + "FROM "
+                                    + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                        }, effect_time * 20L);
+                    }
+
+                    if (s.contains("% ARMOR")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, bonus_percent);
+
+//                        fish_bonus_armor.put(pl.getName(), bonus_percent);
+//                        RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0xacacac, (effect_time * 20));
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% ARMOR"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, -bonus_percent);
+//                                fish_bonus_armor.remove(pl.getName());
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% ARMOR " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, effect_time * 20L);
+                    }
+
+                    if (s.contains("% BLOCK")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, bonus_percent);
+
+
+//                        fish_bonus_block.put(pl.getName(), bonus_percent);
+//                        RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0x014421, (effect_time * 20));
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% BLOCK"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, -bonus_percent);
+
+//                                fish_bonus_block.remove(pl.getName());
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% BLOCK " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, effect_time * 20L);
+                    }
+
+                    if (s.contains("% LIFESTEAL")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, bonus_percent);
+
+//                        fish_bonus_lifesteal.put(pl.getName(), bonus_percent);
+//                        RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0x4d2177, (effect_time * 20));
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% LIFESTEAL"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, -bonus_percent);
+
+//                                fish_bonus_lifesteal.remove(pl.getName());
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% LIFESTEAL " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, effect_time * 20L);
+                    }
+
+                    if (s.contains("% CRIT")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, bonus_percent);
+
+//                        fish_bonus_critical_hit.put(pl.getName(), bonus_percent);
+//                        RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0xe52d00, (effect_time * 20));
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% CRIT"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, -bonus_percent);
+//                                fish_bonus_critical_hit.remove(pl.getName());
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% CRIT " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, effect_time * 20L);
+                    }
+                }
+
+            }
+        }
+    }
+
+    @EventHandler
+    public void playerEatFishItem(PlayerInteractEvent event) {
+
+    }
+
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUseSpecialItem(PlayerInteractEvent event) {
