@@ -114,24 +114,25 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY + " (...)");
+            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY);
             button.setLore(lore);
-            button.setSlot(slot);
-            button.setGui(this);
 
-            if (!CACHED_PING_SHARD_BUTTONS.containsKey(playerHostName)) {
-                Map<String, GUIButton> map = new HashMap<>();
-                map.put(bungeeName, button);
-
-                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
-            } else {
-                Map<String, GUIButton> map = CACHED_PING_SHARD_BUTTONS.get(playerHostName);
-                map.put(bungeeName, button);
-
-                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
-            }
-
-            NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Ping", playerHostName);
+//            button.setSlot(slot);
+//            button.setGui(this);
+//
+//            if (!CACHED_PING_SHARD_BUTTONS.containsKey(playerHostName)) {
+//                Map<String, GUIButton> map = new HashMap<>();
+//                map.put(bungeeName, button);
+//
+//                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
+//            } else {
+//                Map<String, GUIButton> map = CACHED_PING_SHARD_BUTTONS.get(playerHostName);
+//                map.put(bungeeName, button);
+//
+//                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
+//            }
+//
+//            NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Ping", playerHostName);
 
             set(slot, button);
         }
