@@ -45,8 +45,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -479,19 +477,15 @@ public class ItemListener implements Listener {
                 }
                 String inputName = newPetName.getMessage();
 
-                // Name must be below 12 characters
-                if (inputName.length() > 12) {
+                // Name must be below 14 characters
+                if (inputName.length() > 14) {
                     player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 12 characters.");
-                    player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 16) + " characters over the limit.");
+                    player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 14) + " characters over the limit.");
                     return;
                 }
-                Pattern pattern = Pattern.compile("^([A-Za-z]|[0-9])+$");
-                Matcher matcher = pattern.matcher(inputName);
 
-                // Name must be alphanumerical
-                if (!matcher.find()) {
-                    player.sendMessage(ChatColor.RED + "Your pet name can only contain alphanumerical values.");
-                    return;
+                if (inputName.contains("@")) {
+                    inputName = inputName.replaceAll("@", "_");
                 }
 
                 String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
