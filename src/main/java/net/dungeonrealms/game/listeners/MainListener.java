@@ -750,24 +750,19 @@ public class MainListener implements Listener {
                             // OOA
                             treasure = CraftItemStack.asCraftCopy(ItemManager.createOrbofAlteration());
                         }
-                        if (treasure_type == 1) {
-                            // OOF
-//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_flight);
-                        }
-                        if (treasure_type == 2) {
-                            // OOP
-//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_peace);
-                        }
 
-                        if (pl.getInventory().firstEmpty() != -1) {
-                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), treasure);
-                        } else {
-                            // Full inventory!
-                            pl.getWorld().dropItem(pl.getLocation(), treasure);
-                        }
+                        if (treasure != null) {
 
-                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
-                                + treasure.getItemMeta().getDisplayName());
+                            if (pl.getInventory().firstEmpty() != -1) {
+                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), treasure);
+                            } else {
+                                // Full inventory!
+                                pl.getWorld().dropItem(pl.getLocation(), treasure);
+                            }
+
+                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
+                                    + treasure.getItemMeta().getDisplayName());
+                        }
                     }
                 }
             }, 10l);
