@@ -4,11 +4,13 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.pets.*;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
@@ -180,12 +182,14 @@ public class PetUtils implements GenericMechanic{
         public void e() {
             Entity owner = ((CraftPlayer) Bukkit.getPlayer(p)).getHandle();
             this.entity.a(owner, 10.0F, 10.0F);
-            try {
-                controllerRotate.invoke(this.entity.getControllerMove(), this.entity.yaw, true);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (this.entity.getBukkitEntity().getLocation().distanceSquared(owner.getBukkitEntity().getLocation()) <= 6) {
+                try {
+                    controllerRotate.invoke(this.entity.getControllerMove(), this.entity.yaw, true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                this.entity.getNavigation().a(owner, this.speed);
             }
-            this.entity.getNavigation().a(owner, this.speed);
         }
     }
 
@@ -203,6 +207,21 @@ public class PetUtils implements GenericMechanic{
             player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [PetType]");
             return;
         }
+        ChatColor prefix = ChatColor.WHITE;
+        if (Rank.isSubscriber(player)) {
+            String rank = Rank.getInstance().getRank(player.getUniqueId());
+            if (rank.equalsIgnoreCase("sub")) {
+                prefix = ChatColor.GREEN;
+            } else if (rank.equalsIgnoreCase("sub+")) {
+                prefix = ChatColor.GOLD;
+            } else if (rank.equalsIgnoreCase("sub++")) {
+                prefix = ChatColor.DARK_AQUA;
+            }
+        }
+        if (Rank.isDev(player)) {
+            prefix = ChatColor.AQUA;
+        }
+        name = prefix + name;
         EnumPets enumPets = EnumPets.getByName(petType.toUpperCase());
         switch (enumPets) {
             case CAVE_SPIDER: {

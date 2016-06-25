@@ -16,6 +16,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -505,7 +506,21 @@ public class ItemListener implements Listener {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, false);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, newPet, true);
                 Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
-                pet.setCustomName(checkedPetName);
+                ChatColor prefix = ChatColor.WHITE;
+                if (Rank.isSubscriber(player)) {
+                    String rank = Rank.getInstance().getRank(player.getUniqueId());
+                    if (rank.equalsIgnoreCase("sub")) {
+                        prefix = ChatColor.GREEN;
+                    } else if (rank.equalsIgnoreCase("sub+")) {
+                        prefix = ChatColor.GOLD;
+                    } else if (rank.equalsIgnoreCase("sub++")) {
+                        prefix = ChatColor.DARK_AQUA;
+                    }
+                }
+                if (Rank.isDev(player)) {
+                    prefix = ChatColor.AQUA;
+                }
+                pet.setCustomName(prefix + checkedPetName);
                 player.sendMessage(ChatColor.GRAY + "Pet name changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName);
             }, null);
         }
@@ -532,14 +547,14 @@ public class ItemListener implements Listener {
                 pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1F);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     // TODO: This could be abused with a macro.
-                    if (Fishing.isCustomFish(pl.getItemInHand())) {
-                        ItemStack fish = pl.getItemInHand();
+                    if (Fishing.isCustomFish(pl.getEquipment().getItemInMainHand())) {
+                        ItemStack fish = pl.getEquipment().getItemInMainHand();
                         if (fish.getAmount() > 1) {
                             // Subtract just 1.
                             fish.setAmount(fish.getAmount() - 1);
-                            pl.setItemInHand(fish);
+                            pl.getEquipment().setItemInMainHand(fish);
                         } else if (fish.getAmount() <= 1) {
-                            pl.setItemInHand(new ItemStack(Material.AIR));
+                            pl.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                         }
 
                         pl.updateInventory();
@@ -787,12 +802,6 @@ public class ItemListener implements Listener {
             }
         }
     }
-
-    @EventHandler
-    public void playerEatFishItem(PlayerInteractEvent event) {
-
-    }
-
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUseSpecialItem(PlayerInteractEvent event) {
