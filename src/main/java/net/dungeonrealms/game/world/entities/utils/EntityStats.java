@@ -184,8 +184,8 @@ public class EntityStats {
         if (!entity.getBukkitEntity().hasMetadata("dungeon")) {
             switch (tier) {
                 case 1:
-                    if (maxHp >= 50) {
-                        maxHp = 15 + (random.nextInt(25) - 10);
+                    if (maxHp >= 60) {
+                        maxHp = 20 + (random.nextInt(25) - 10);
                     }
                     break;
                 case 2:

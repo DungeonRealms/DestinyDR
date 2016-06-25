@@ -285,7 +285,7 @@ public class BaseMobSpawner {
                             Bukkit.getScheduler().cancelTask(timerID);
                         } else
                             spawnIn();
-                    }, 0, 40L);
+                    }, 0, 20L);
                 }
             } else {
                 if (timerID != -1) {
@@ -293,7 +293,7 @@ public class BaseMobSpawner {
                     timerID = -1;
                 }
             }
-        }, 0, 50L);
+        }, 0, 40L);
     }
 
     /**
