@@ -22,7 +22,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/18/2016
@@ -30,23 +32,14 @@ import java.util.List;
 public class ShardSelector extends AbstractMenu {
 
     public ShardSelector(Player player) {
-        super("DungeonRealms Shards", AbstractMenu.round(BungeeServerTracker.getTrackedSize()), player.getUniqueId());
+        super("DungeonRealms Shards", AbstractMenu.round(getFilteredServers(player).size()), player.getUniqueId());
         setDestroyOnExit(true);
 
         // DISPLAY AVAILABLE SHARDS //
-        for (Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet()) {
-
+        for (Entry<String, BungeeServerInfo> e : getFilteredServers(player).entrySet()) {
             String bungeeName = e.getKey();
-            if (!DungeonRealms.getInstance().DR_SHARDS.containsKey(bungeeName)) continue;
             String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
-
-            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().equals("offline"))
-                continue;
-
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("SUB") && !Rank.isSubscriber(player)))
-                continue;
-
 
             GUIButton button = new GUIButton(Material.END_CRYSTAL) {
                 @Override
@@ -100,6 +93,29 @@ public class ShardSelector extends AbstractMenu {
 
             set(getSize(), button);
         }
+    }
+
+    private static Map<String, BungeeServerInfo> getFilteredServers(Player player) {
+        Map<String, BungeeServerInfo> filteredServers = new HashMap<>();
+
+        for (Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet()) {
+            String bungeeName = e.getKey();
+            String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
+            BungeeServerInfo info = e.getValue();
+
+            if (!DungeonRealms.getInstance().DR_SHARDS.containsKey(bungeeName)) continue;
+
+            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().equals("offline"))
+                continue;
+
+
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("SUB") && !Rank.isSubscriber(player)))
+                continue;
+
+            filteredServers.put(bungeeName, info);
+        }
+
+        return filteredServers;
     }
 
     public String getServerType(String shardID) {
