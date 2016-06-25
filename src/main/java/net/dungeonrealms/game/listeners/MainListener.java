@@ -1152,7 +1152,6 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUNload(ChunkUnloadEvent event) {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
-            //TODO: Check for better ways of doing this
             if (event.getChunk().getEntities().length > 0) {
                 SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSpawnedMonsters().size() > 2).forEach(spawner -> spawner.setFirstSpawn(true));
                 for (Entity entity : event.getChunk().getEntities()) {

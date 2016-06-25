@@ -94,7 +94,7 @@ public class BlockListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         if (event.getLocation().getWorld().getName().contains("DUNGEON")) {
             event.setCancelled(true);
-            event.getLocation().getWorld().playEffect(event.getLocation(), Effect.WITHER_BREAK_BLOCK, 10);
+            event.getLocation().getWorld().playEffect(event.getLocation(), Effect.PARTICLE_SMOKE, 10);
             List<Block> list = event.blockList();
             for (Block b : list) {
                 b.setType(Material.AIR);
