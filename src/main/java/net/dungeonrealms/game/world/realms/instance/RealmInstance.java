@@ -477,6 +477,8 @@ public class RealmInstance implements Realms {
 
         // CLOSE REALM //
         getRealm(uuid).setStatus(RealmStatus.CLOSED);
+
+        setRealmTitle(uuid, "");
     }
 
     @Override
@@ -584,7 +586,7 @@ public class RealmInstance implements Realms {
             realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
             realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
         } else {
-            realmHologram.insertTextLine(0, (ChatColor.WHITE.toString() + ChatColor.BOLD + name + ChatColor.WHITE + " - [" + ChatColor.DARK_PURPLE + getRealmTitle(realm.getOwner()) + ChatColor.WHITE + "]").trim());
+            realmHologram.insertTextLine(0, (ChatColor.WHITE.toString() + ChatColor.BOLD + name + ChatColor.WHITE + " - [" + ChatColor.LIGHT_PURPLE + getRealmTitle(realm.getOwner()) + ChatColor.WHITE + "]").trim());
             realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
         }
     }
