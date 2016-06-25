@@ -55,8 +55,9 @@ public interface Realms extends GenericMechanic {
      * Loads the player's realm*
      *
      * @param player Owner of realm
+     * @param portalLocation Where do you want the portal to open? (Can be null)
      */
-    void loadRealm(Player player);
+    void loadRealm(Player player, Location portalLocation);
 
 
     /**
