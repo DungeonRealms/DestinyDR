@@ -72,18 +72,12 @@ public class NetworkAPI implements PluginMessageListener {
                     final long currentTime = System.currentTimeMillis();
                     String hostname = in.readUTF();
 
-                    System.out.print("Attempting to ping: " + hostname);
-
                     // Make sure server has access to ping //
                     Futures.addCallback(MoreExecutors.listeningDecorator(AsyncUtils.pool).submit(() -> InetAddress.getByName(hostname).isReachable(2000)), new FutureCallback<Boolean>() {
                         @Override
                         public void onSuccess(Boolean isPinged) {
                             long ping = System.currentTimeMillis() - currentTime;
-
-                            if (isPinged) {
-                                NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Pinged", hostname, DungeonRealms.getInstance().bungeeName, String.valueOf(ping));
-                                System.out.print("Sending Pinged");
-                            }
+                            NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Pinged", hostname, DungeonRealms.getInstance().bungeeName, isPinged ? String.valueOf(ping) : String.valueOf(0));
                         }
 
                         @ParametersAreNonnullByDefault
@@ -95,8 +89,6 @@ public class NetworkAPI implements PluginMessageListener {
                 }
 
                 if (subChannel.equals("Pinged")) {
-                    System.out.print("Got pinged packet");
-
                     String hostname = in.readUTF();
 
 
@@ -108,7 +100,6 @@ public class NetworkAPI implements PluginMessageListener {
 
                     String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
 
-                    System.out.print("Updated item");
                     obj.b().setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY + " (" + ping + " ms)");
                 }
 
