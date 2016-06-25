@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -243,6 +242,7 @@ public class ItemManager {
         tag.set("destroy", new NBTTagString("yes"));
         tag.setInt("muleTier", tier.getTier());
         tag.setString("usage", "mule");
+        tag.setString("mule", "true");
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
@@ -887,6 +887,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
+        tag.set("mount", new NBTTagString("true"));
         tag.set("usage", new NBTTagString("mount"));
         tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
@@ -900,6 +901,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
+        tag.set("pet", new NBTTagString("true"));
         tag.set("usage", new NBTTagString("pet"));
         tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
@@ -913,6 +915,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
+        tag.set("trail", new NBTTagString("true"));
         tag.set("usage", new NBTTagString("trail"));
         tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
