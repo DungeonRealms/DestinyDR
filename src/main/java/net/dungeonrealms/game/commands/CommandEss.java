@@ -45,143 +45,170 @@ public class CommandEss extends BasicCommand {
             switch (args[0]) {
                 case "hearthstone":
                     if (args.length == 3) {
-                        Player player = Bukkit.getPlayer(args[1]);
-                        if (player == null) {
-                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
+                        try {
+                            String playerName = args[1];
+                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            String locationName = args[2];
+                            String locationFriendly = locationName.toUpperCase().replace("_", " ");
+                            if (TeleportAPI.getLocationFromString(locationName) == null) {
+                                commandSender.sendMessage(ChatColor.RED + "The hearthstone location " + ChatColor.BOLD + ChatColor.UNDERLINE + locationFriendly + ChatColor.RED + " does not exist.");
+                                return false;
+                            }
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HEARTHSTONE, locationName, true);
+                            commandSender.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + locationFriendly + ChatColor.GREEN + ".");
+                            API.updatePlayerData(uuid);
+                        } catch (IllegalArgumentException ex) {
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
                         }
-                        String locationName = args[2];
-                        if (TeleportAPI.getLocationFromString(locationName) == null) {
-                            commandSender.sendMessage(ChatColor.RED + "This location is not correct!");
-                            return false;
-                        }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, locationName, true);
-                        player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your HearthStone location has been set to " + ChatColor.AQUA + locationName.toUpperCase() + ChatColor.YELLOW + "!");
-                        break;
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr hearthstone Proxying Cyrennica)");
+                        commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr hearthstone <player> <location>");
                         return false;
                     }
+                    break;
                 case "pet":
                     if (args.length == 3) {
-                        Player player = Bukkit.getPlayer(args[1]);
-                        if (player == null) {
-                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
-                            return false;
-                        }
-                        String petType = args[2];
-                        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
-                        String petName;
-                        String particleType = "";
-                        if (!petType.contains("-")) {
-                            petName = petType;
-                        } else {
-                            petName = petType.split("-")[0];
-                            particleType = petType.split("-")[1];
-                        }
-                        if (!API.isStringPet(petName)) {
-                            commandSender.sendMessage(ChatColor.RED + "This pet is not a real pet!");
-                            return false;
-                        }
-                        if (!particleType.equals("")) {
-                            if (!API.isStringTrail(particleType)) {
-                                commandSender.sendMessage(ChatColor.RED + "This pet cannot have that trail!");
+                        try {
+                            String playerName = args[1];
+                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            String petType = args[2];
+                            List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
+                            String petName;
+                            String particleType = "";
+                            if (!petType.contains("-")) {
+                                petName = petType;
+                            } else {
+                                petName = petType.split("-")[0];
+                                particleType = petType.split("-")[1];
+                            }
+                            String petNameFriendly = petName.toUpperCase().replace("_", " ");
+
+                            if (!API.isStringPet(petName)) {
+                                commandSender.sendMessage(ChatColor.RED + "The pet " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.RED + " does not exist.");
                                 return false;
                             }
-                        }
-                        if (!playerPets.isEmpty()) {
-                            if (playerPets.contains(petType.toUpperCase())) {
-                                commandSender.sendMessage(ChatColor.RED + "The player already has this pet!");
-                                return false;
+
+                            if (!particleType.equals("")) {
+                                if (!API.isStringTrail(particleType)) {
+                                    commandSender.sendMessage(ChatColor.RED + "The pet " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.RED + " cannot have the trail " + ChatColor.BOLD + ChatColor.UNDERLINE + particleType.toUpperCase().replace("_", " ") + ChatColor.RED + ".");
+                                    return false;
+                                }
                             }
+
+                            if (!playerPets.isEmpty()) {
+                                if (playerPets.contains(petType.toUpperCase())) {
+                                    commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.RED + " pet.");
+                                    return false;
+                                }
+                            }
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petType.toUpperCase(), true);
+                            commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                            API.updatePlayerData(uuid);
+                        } catch (IllegalArgumentException ex) {
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
+                            return false;
                         }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + petType.toUpperCase() + ChatColor.AQUA + " pet!");
-                        break;
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr pet Proxying snowman)");
+                        commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr pet <player> <pet>");
                         return false;
                     }
+                    break;
                 case "mount":
                     if (args.length == 3) {
-                        Player player = Bukkit.getPlayer(args[1]);
-                        if (player == null) {
-                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
-                            return false;
-                        }
-                        String mountType = args[2];
-                        if (!API.isStringMount(mountType)) {
-                            commandSender.sendMessage(ChatColor.RED + "This mount is not a real mount!");
-                            return false;
-                        }
-                        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
-                        if (!playerMounts.isEmpty()) {
-                            if (playerMounts.contains(mountType.toUpperCase())) {
-                                commandSender.sendMessage(ChatColor.RED + "The player already has this mount!");
+                        try {
+                            String playerName = args[1];
+                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            String mountType = args[2];
+                            String mountFriendly = mountType.toUpperCase().replace("_", " ");
+                            if (!API.isStringMount(mountType)) {
+                                commandSender.sendMessage(ChatColor.RED + "The mount " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.RED + " does not exist.");
                                 return false;
                             }
+                            List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
+                            if (!playerMounts.isEmpty()) {
+                                if (playerMounts.contains(mountType.toUpperCase())) {
+                                    commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.RED + " mount.");
+                                    return false;
+                                }
+                            }
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.MOUNTS, mountType.toUpperCase(), true);
+                            commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                            API.updatePlayerData(uuid);
+                        } catch (IllegalArgumentException ex) {
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
+                            return false;
                         }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mountType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + mountType.toUpperCase() + ChatColor.AQUA + " mount!");
-                        break;
+
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr mount Proxying skeletonhorse)");
+                        commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr mount <player> <mount>");
                         return false;
                     }
+                    break;
+                case "trail":
                 case "playertrail":
                     if (args.length == 3) {
-                        Player player = Bukkit.getPlayer(args[1]);
-                        if (player == null) {
-                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
-                            return false;
-                        }
-                        String trailType = args[2];
-                        if (!API.isStringTrail(trailType)) {
-                            commandSender.sendMessage(ChatColor.RED + "This is not a real trail!");
-                            return false;
-                        }
-                        List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
-                        if (!playerTrails.isEmpty()) {
-                            if (playerTrails.contains(trailType.toUpperCase())) {
-                                commandSender.sendMessage(ChatColor.RED + "The player already has this trail!");
+                        try {
+                            String playerName = args[1];
+                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            String trailType = args[2];
+                            String trailFriendly = trailType.toUpperCase().replace("_", " ");
+
+                            if (!API.isStringTrail(trailType)) {
+                                commandSender.sendMessage(ChatColor.RED + "The trail " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " does not exist.");
                                 return false;
                             }
-                        }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, trailType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() + ChatColor.AQUA + " player trail!");
-                        break;
-                    } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr playertrail Proxying flame)");
-                        return false;
-                    }
-                case "ecash":
-                    if (args.length == 4) {
-                        int amount = Math.abs(Integer.parseInt(args[3]));
-                        Player player = Bukkit.getPlayer(args[2]);
-                        if (player == null) {
-                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
+
+                            List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
+                            if (!playerTrails.isEmpty()) {
+                                if (playerTrails.contains(trailType.toUpperCase())) {
+                                    commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.RED + " trail.");
+                                    return false;
+                                }
+                            }
+
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailType.toUpperCase(), true);
+                            commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                            API.updatePlayerData(uuid);
+                        } catch (IllegalArgumentException ex) {
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
                         }
-                        int previousAmount = (int) DatabaseAPI.getInstance().getData(EnumData.ECASH, player.getUniqueId());
-                        switch (args[1]) {
-                            case "add":
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, amount, true);
-                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received " + ChatColor.YELLOW + amount + ChatColor.AQUA + " E-Cash! Your new balance is " + ChatColor.YELLOW + (previousAmount + amount) + ChatColor.AQUA + "!");
-                                break;
-                            case "take":
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);
-                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "] " + ChatColor.YELLOW + amount + ChatColor.AQUA + " E-Cash has been taken from you! Your new balance is " + ChatColor.YELLOW + (previousAmount - amount) + ChatColor.AQUA + "!");
-                                break;
-                            case "set":
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, amount, true);
-                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your E-Cash balance has been set to " + ChatColor.YELLOW + amount + ChatColor.AQUA + "!");
-                                break;
-                            default:
-                                commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr ecash add Proxying 100)");
-                                break;
+                    } else {
+                        commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr trail <player> <trail>");
+                        return false;
+                    }
+                    break;
+                case "ecash":
+                    if (args.length == 4) {
+                        try {
+                            String playerName = args[1];
+                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            int amount = Math.abs(Integer.parseInt(args[3]));
+
+                            switch (args[2]) {
+                                case "add":
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, amount, true);
+                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                    break;
+                                case "set":
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ECASH, amount, true);
+                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully set the E-Cash of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + ".");
+                                    break;
+                                case "remove":
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);
+                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash from " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                    break;
+                                default:
+                                    commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
+                                    return false;
+                            }
+                            API.updatePlayerData(uuid);
+                        } catch (IllegalArgumentException ex) {
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
+                            return false;
                         }
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr ecash add Proxying 100)");
+                        commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr ecash <player> <add|set|remove> <amount>");
                         return false;
                     }
                     break;
@@ -217,17 +244,17 @@ public class CommandEss extends BasicCommand {
                                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true);
                                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, subscriptionLength, true);
                                 API.updatePlayerData(uuid);
-                                commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + playerName + ".");
+                                commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                             } else {
                                 commandSender.sendMessage(ChatColor.RED + "Invalid rank, please use: SUB | SUB+");
                                 return false;
                             }
                         } catch (IllegalArgumentException ex) {
-                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + args[1] + ", maybe they've not played Dungeon Realms before?");
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
                         }
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Invalid ussage! /dr subscription <name> <rank> <add|set|remove> <days>");
+                        commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr subscription <name> <rank> <add|set|remove> <days>");
                         return false;
                     }
                     break;
@@ -266,7 +293,7 @@ public class CommandEss extends BasicCommand {
                                     return false;
                             }
                         } catch (IllegalArgumentException ex) {
-                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + args[1] + ", maybe they've not played Dungeon Realms before?");
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
                         }
                     } else {
@@ -276,10 +303,10 @@ public class CommandEss extends BasicCommand {
                     break;
                 case "resetmule":
                     DatabaseAPI.getInstance().update(((Player)commandSender).getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, false);
-                    commandSender.sendMessage(ChatColor.RED + "Mule level reset.");
+                    commandSender.sendMessage(ChatColor.GREEN + "Your mule level has been reset.");
                     break;
                 default:
-                    commandSender.sendMessage(ChatColor.RED + "Invalid command " + args[0] + ".");
+                    commandSender.sendMessage(ChatColor.RED + "The command " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0].toUpperCase() + ChatColor.RED + " does not exist.");
                     break;
             }
         } else {
