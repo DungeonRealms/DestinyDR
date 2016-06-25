@@ -652,8 +652,13 @@ public class ClickHandler {
                             return;
                         }
                         String petType = nmsStack.getTag().getString("petType");
+                        String petName = "";
+                        if (nmsStack.getTag().getString("petName") != null) {
+                            petName = nmsStack.getTag().getString("petName");
+                        }
                         player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE +"cancel" + ChatColor.GRAY + " to end the process.");
                         player.closeInventory();
+                        String finalPetName = petName;
                         Chat.listenForMessage(player, newPetName -> {
                             if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
                                 player.sendMessage(ChatColor.GRAY + "Pet naming " + ChatColor.RED + ChatColor.UNDERLINE + "CANCELLED.");
@@ -680,6 +685,7 @@ public class ClickHandler {
 
                             String newPet = petType + "@" + checkedPetName;
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType, false);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType + "@" + finalPetName, false);
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true);
                             player.sendMessage(ChatColor.GRAY + "Pet name changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName);
                         }, null);

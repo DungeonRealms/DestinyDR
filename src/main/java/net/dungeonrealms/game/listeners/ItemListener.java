@@ -5,7 +5,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
-import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.TutorialIslandHandler;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -22,12 +21,12 @@ import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,6 +45,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -455,6 +456,58 @@ public class ItemListener implements Listener {
                     HealthHandler.getInstance().healPlayerByAmount((Player) entity, nmsItem.getTag().getInt("healAmount"));
                 }
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void petRename(PlayerInteractEntityEvent event) {
+        if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+        Player player = event.getPlayer();
+        if (event.getRightClicked() instanceof Player) return;
+        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) return;
+        if (player.getEquipment().getItemInMainHand().getType() != Material.NAME_TAG) return;
+        event.setCancelled(true);
+        if (!EntityAPI.hasPetOut(player.getUniqueId())) return;
+        if (EntityAPI.getPlayerPet(player.getUniqueId()).equals(((CraftEntity) event.getRightClicked()).getHandle())) {
+            player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE +"cancel" + ChatColor.GRAY + " to end the process.");
+            player.closeInventory();
+            Chat.listenForMessage(player, newPetName -> {
+                if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
+                    player.sendMessage(ChatColor.GRAY + "Pet naming " + ChatColor.RED + ChatColor.UNDERLINE + "CANCELLED.");
+                    return;
+                }
+                String inputName = newPetName.getMessage();
+
+                // Name must be below 12 characters
+                if (inputName.length() > 12) {
+                    player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 12 characters.");
+                    player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 16) + " characters over the limit.");
+                    return;
+                }
+                Pattern pattern = Pattern.compile("^([A-Za-z]|[0-9])+$");
+                Matcher matcher = pattern.matcher(inputName);
+
+                // Name must be alphanumerical
+                if (!matcher.find()) {
+                    player.sendMessage(ChatColor.RED + "Your pet name can only contain alphanumerical values.");
+                    return;
+                }
+
+                String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
+
+                String activePet = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false);
+                if (activePet.contains("@")) {
+                    activePet = activePet.split("@")[0];
+                }
+                String newPet = activePet + "@" + checkedPetName;
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, false);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, newPet, true);
+                Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
+                pet.setCustomName(checkedPetName);
+                player.sendMessage(ChatColor.GRAY + "Pet name changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName);
+            }, null);
         }
     }
 
