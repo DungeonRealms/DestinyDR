@@ -11,7 +11,6 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -72,33 +71,23 @@ public class ShopListener implements Listener {
         if (block.getType() != Material.CHEST) return;
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
-        if (event.getPlayer().getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.WRITTEN_BOOK) return;
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand());
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return;
-        if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
-        Action actionType = event.getAction();
-        switch (actionType) {
-            case LEFT_CLICK_BLOCK:
-                if (!shop.isopen) {
-                    if (event.getPlayer().isSneaking()) {
-                        if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
-                            event.setCancelled(true);
-                            shop.promptUpgrade();
-                        } else {
-                            event.getPlayer().sendMessage(ChatColor.RED + "You do not own this shop.");
-                        }
-                    }
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (!shop.isopen) {
+            if (event.getPlayer().isSneaking()) {
+                if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
+                    event.setCancelled(true);
+                    shop.promptUpgrade();
                 } else {
-                    if (event.getPlayer().isSneaking()) {
-                        if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
-                            event.setCancelled(true);
-                            event.getPlayer().sendMessage(ChatColor.RED + "You must close your shop to upgrade it.");
-                        }
-                    }
+                    event.getPlayer().sendMessage(ChatColor.RED + "You do not own this shop.");
                 }
-                break;
-            default:
+            }
+        } else {
+            if (event.getPlayer().isSneaking()) {
+                if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(ChatColor.RED + "You must close your shop to upgrade it.");
+                }
+            }
         }
     }
 
@@ -504,12 +493,11 @@ public class ShopListener implements Listener {
     public void punchShop(PlayerInteractEvent event) {
         if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
         if (event.getClickedBlock().getType() != Material.CHEST) return;
-        if (event.getPlayer().isSneaking()) return;
+        if (!event.getPlayer().isSneaking()) return;
         Shop shop = ShopMechanics.getShop(event.getClickedBlock());
         if (shop == null) return;
         if (event.getPlayer().getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
             shop.deleteShop(false);
-
         } else if (event.getPlayer().isOp()) {
             shop.deleteShop(false);
         }

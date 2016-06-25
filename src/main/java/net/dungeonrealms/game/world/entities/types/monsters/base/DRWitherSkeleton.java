@@ -31,7 +31,6 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
         super(world);
         enumMonster = mon;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         setSkeletonType(1);
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();

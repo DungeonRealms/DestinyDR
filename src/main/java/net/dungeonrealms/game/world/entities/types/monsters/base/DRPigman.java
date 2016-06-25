@@ -41,7 +41,6 @@ public class DRPigman extends EntityPigZombie implements DRMonster {
 		super(world);
 		enumMonster = mon;
 		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		setArmor(tier);
 		this.angerLevel = 30000;

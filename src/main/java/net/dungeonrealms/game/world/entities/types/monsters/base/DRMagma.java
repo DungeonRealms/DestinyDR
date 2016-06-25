@@ -35,7 +35,6 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 	public DRMagma(World name, EnumMonster enumMonster, int tier) {
 		super(name);
 		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
-		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
 		this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		monsterType = EnumMonster.MagmaCube;
 		setArmor(tier);
