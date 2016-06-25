@@ -17,28 +17,30 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.ui.GUIButtonClickEvent;
 import net.dungeonrealms.game.ui.VolatileGUI;
 import net.dungeonrealms.game.ui.item.GUIButton;
-import net.minecraft.server.v1_9_R2.Tuple;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/18/2016
  */
 public class ShardSelector extends AbstractMenu implements VolatileGUI {
 
-    public static Map<String, Tuple<String, GUIButton>> CACHED_PING_SHARD_BUTTONS = new WeakHashMap<>();
+    public static Map<String, Map<String, GUIButton>> CACHED_PING_SHARD_BUTTONS = new HashMap<>();
     private final String playerHostName;
 
     public ShardSelector(Player player) {
         super("DungeonRealms Shards", AbstractMenu.round(getFilteredServers().size()), player.getUniqueId());
         setDestroyOnExit(true);
 
-        this.playerHostName = player.getAddress().getAddress().getHostName();
+        this.playerHostName = player.getAddress().getHostName();
 
         // DISPLAY AVAILABLE SHARDS //
         for (Entry<String, BungeeServerInfo> e : getFilteredServers().entrySet()) {
@@ -108,7 +110,18 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             button.setSlot(slot);
             button.setGui(this);
 
-            CACHED_PING_SHARD_BUTTONS.put(playerHostName, new Tuple<>(bungeeName, button));
+            if (!CACHED_PING_SHARD_BUTTONS.containsKey(playerHostName)) {
+                Map<String, GUIButton> map = new HashMap<>();
+                map.put(bungeeName, button);
+
+                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
+            } else {
+                Map<String, GUIButton> map = CACHED_PING_SHARD_BUTTONS.get(playerHostName);
+                map.put(bungeeName, button);
+
+                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
+            }
+
             NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Ping", playerHostName);
 
             set(slot, button);
