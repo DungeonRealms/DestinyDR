@@ -196,6 +196,9 @@ public class RealmInstance implements Realms {
         realm.setStatus(RealmStatus.OPENED);
         player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "                   " + "* Realm Portal OPENED *");
 
+        player.getWorld().playEffect(portalLocation, Effect.ENDER_SIGNAL, 10);
+        player.playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
+
         if (getRealmTitle(player.getUniqueId()).equals(""))
             player.sendMessage(ChatColor.GRAY + "Type /realm <TITLE> to set the description of your realm, it will be displayed to all visitors.");
         else
@@ -203,9 +206,9 @@ public class RealmInstance implements Realms {
     }
 
 
-    public void loadRealm(Player player) {
+    public void loadRealm(Player player, Location portalLocation) {
         if (((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPLOAD, player.getUniqueId()))) {
-            player.sendMessage(ChatColor.YELLOW + "Your realm is still being uploaded.. Please wait.");
+            player.sendMessage(ChatColor.RED + "Your realm is still being uploaded from another shard.");
             return;
         }
 
@@ -228,10 +231,13 @@ public class RealmInstance implements Realms {
                     loadRealm(player, !success);
 
                     player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
-                    player.sendMessage(ChatColor.GRAY + "You may now right click your realm portal rune to open your portal.");
+                    // player.sendMessage(ChatColor.GRAY + "You may now right click your realm portal rune to open your portal.");
 
                     realm.setLoaded(true);
                     realm.setStatus(RealmStatus.CLOSED);
+
+                    if (portalLocation != null)
+                        openRealmPortal(player, portalLocation);
                 });
             }
 
