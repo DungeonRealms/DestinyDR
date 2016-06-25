@@ -40,12 +40,14 @@ import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.md_5.bungee.api.*;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import org.bukkit.*;
+import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
@@ -283,7 +285,7 @@ public class MainListener implements Listener {
                 if (metaValue.equalsIgnoreCase("mount")) {
                     event.getVehicle().remove();
                     EntityAPI.removePlayerMountList(event.getExited().getUniqueId());
-                    event.getExited().sendMessage("For it's own safety, your mount has returned to the stable.");
+                    event.getExited().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For it's own safety, your mount has returned to the stable.");
                 }
             }
         }
