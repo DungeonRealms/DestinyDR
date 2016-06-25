@@ -26,6 +26,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -39,6 +40,25 @@ import java.util.Map;
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
  */
 public class RealmListener implements Listener {
+
+    @EventHandler
+    public void onWorld(PlayerChangedWorldEvent event) {
+        World to = event.getPlayer().getWorld();
+
+        if (Realms.getInstance().getRealm(to) != null) {
+            RealmToken realm = Realms.getInstance().getRealm(to);
+            realm.getPlayersInRealm().add(event.getPlayer().getUniqueId());
+
+            if (!event.getPlayer().getPlayer().getUniqueId().equals(realm.getOwner()))
+                event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + Bukkit.getPlayer(realm.getOwner()).getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
+
+            if (!Realms.getInstance().getRealmTitle(realm.getOwner()).equals(""))
+                event.getPlayer().sendMessage(ChatColor.GRAY + Realms.getInstance().getRealmTitle(realm.getOwner()));
+
+        } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
+            Realms.getInstance().getRealm(event.getFrom()).getPlayersInRealm().remove(event.getPlayer().getUniqueId());
+        }
+    }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
@@ -427,15 +447,8 @@ public class RealmListener implements Listener {
 
                 // SAVES THEIR LOCATION
                 DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, API.locationToString(event.getFrom()), true);
-
                 event.setTo(Realms.getInstance().getRealmWorld(realm.getOwner()).getSpawnLocation().clone().add(0, 2, 0));
-                realm.getPlayersInRealm().add(event.getPlayer().getUniqueId());
 
-                if (!event.getPlayer().getPlayer().getUniqueId().equals(realm.getOwner()))
-                    event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + Bukkit.getPlayer(realm.getOwner()).getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
-
-                if (!Realms.getInstance().getRealmTitle(realm.getOwner()).equals(""))
-                    event.getPlayer().sendMessage(ChatColor.GRAY + Realms.getInstance().getRealmTitle(realm.getOwner()));
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in combat!");
@@ -454,7 +467,6 @@ public class RealmListener implements Listener {
 
             RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getLocation().getWorld());
             event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
-            realm.getPlayersInRealm().remove(event.getPlayer().getUniqueId());
         }
     }
 }

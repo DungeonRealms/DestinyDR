@@ -158,7 +158,7 @@ public class RealmInstance implements Realms {
         }
 
         if (isPortalNearby(location.clone().add(0, 1, 0), 6) || API.isMaterialNearby(location.clone().getBlock(), 6, Material.PORTAL)) {
-            player.sendMessage(ChatColor.RED + "You cannot place a portal so close to another! (Min 3 Blocks)");
+            player.sendMessage(ChatColor.RED + "You cannot place a portal so close to another! (Min 6 Blocks)");
             return;
         }
 
@@ -556,7 +556,7 @@ public class RealmInstance implements Realms {
             realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
             realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
         } else {
-            realmHologram.insertTextLine(0, (ChatColor.WHITE.toString() + ChatColor.BOLD + name + ChatColor.WHITE + " - [" + ChatColor.YELLOW + getRealmTitle(realm.getOwner()) + ChatColor.WHITE + "]").trim());
+            realmHologram.insertTextLine(0, (ChatColor.WHITE.toString() + ChatColor.BOLD + name + ChatColor.WHITE + " - [" + ChatColor.DARK_PURPLE + getRealmTitle(realm.getOwner()) + ChatColor.WHITE + "]").trim());
             realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
         }
     }
