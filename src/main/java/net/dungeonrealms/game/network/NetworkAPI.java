@@ -3,16 +3,26 @@ package net.dungeonrealms.game.network;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.menus.player.ShardSelector;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.game.ui.item.GUIButton;
+import net.minecraft.server.v1_9_R2.Tuple;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
+import java.net.InetAddress;
 import java.util.UUID;
 
 /**
@@ -54,7 +64,54 @@ public class NetworkAPI implements PluginMessageListener {
                 if (subChannel.equals("Update")) {
                     UUID uuid = UUID.fromString(in.readUTF());
                     if (Bukkit.getPlayer(uuid) != null) DatabaseAPI.getInstance().requestPlayer(uuid);
+
+                    return;
                 }
+
+                if (subChannel.equals("Ping")) {
+                    final long currentTime = System.currentTimeMillis();
+                    String hostname = in.readUTF();
+
+                    System.out.print("Attempting to ping: " + hostname);
+
+                    // Make sure server has access to ping //
+                    Futures.addCallback(MoreExecutors.listeningDecorator(AsyncUtils.pool).submit(() -> InetAddress.getByName(hostname).isReachable(2000)), new FutureCallback<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean isPinged) {
+                            long ping = System.currentTimeMillis() - currentTime;
+
+                            if (isPinged) {
+                                NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Pinged", hostname, DungeonRealms.getInstance().bungeeName, String.valueOf(ping));
+                                System.out.print("Sending Pinged");
+                            }
+                        }
+
+                        @ParametersAreNonnullByDefault
+                        public void onFailure(Throwable ignored) {
+                        }
+                    });
+
+                    return;
+                }
+
+                if (subChannel.equals("Pinged")) {
+                    System.out.print("Got pinged packet");
+
+                    String hostname = in.readUTF();
+
+
+                    if (!ShardSelector.CACHED_PING_SHARD_BUTTONS.containsKey(hostname)) return;
+                    Tuple<String, GUIButton> obj = ShardSelector.CACHED_PING_SHARD_BUTTONS.get(hostname);
+
+                    String bungeeName = in.readUTF();
+                    String ping = in.readUTF();
+
+                    String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
+
+                    System.out.print("Updated item");
+                    obj.b().setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY + " (" + ping + " ms)");
+                }
+
             } else {
                 try {
                     if (subChannel.equals("PlayerCount")) {

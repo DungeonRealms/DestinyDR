@@ -555,6 +555,8 @@ public class MainListener implements Listener {
         final Player pl = e.getPlayer();
         e.setExpToDrop(0);
 
+        if (e.getCaught() != null)
+            e.getCaught().remove();
         if (!(Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()))) {
             e.setCancelled(true);
             return; // Get out of here.
@@ -576,190 +578,193 @@ public class MainListener implements Listener {
         }
 
         if (e.getState() == State.CAUGHT_FISH) {
-            final Location fish_loc = Fishing.getInstance().getFishingSpot(e.getHook().getLocation());
-            final int spot_tier = Fishing.getInstance().getFishingSpotTier(fish_loc);
+            final Location fish_loc = Fishing.getInstance().getFishingSpot(pl.getLocation());
+            final int spot_tier = Fishing.getInstance().getFishingSpotTier(pl.getLocation());
+            if (e.getCaught() != null)
+                e.getCaught().remove();
 
             if (fish_loc == null || spot_tier == -1) {
                 pl.sendMessage(ChatColor.RED + "You must be near a Fishing Location to catch fish!");
                 return;
             }
 
-
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new BukkitRunnable() {
-                public void run() {
-                    int do_i_get_fish = new Random().nextInt(100);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                int do_i_get_fish = new Random().nextInt(100);
 
-                    int item_tier = Fishing.getRodTier(pl.getEquipment().getItemInMainHand());
-                    int success_rate = 0;
+                int item_tier = Fishing.getRodTier(pl.getEquipment().getItemInMainHand());
+                int success_rate = 0;
 
-                    if (item_tier > spot_tier) {
-                        success_rate = 100;
+                if (item_tier > spot_tier) {
+                    success_rate = 100;
+                }
+                if (item_tier == spot_tier) {
+                    int lvl = CraftItemStack.asNMSCopy(pl.getEquipment().getItemInMainHand()).getTag().getInt("level");
+                    success_rate = 50 + (2 * (20 - Math.abs((Fishing.getNextLevelUp(item_tier) - lvl))));
+                }
+
+                int success_mod = Fishing.getSuccessChance(pl.getEquipment().getItemInMainHand());
+                success_rate += success_mod; // %CHANCE
+
+                if (success_rate >= do_i_get_fish) {
+                    pl.sendMessage(ChatColor.RED + "It got away..");
+                    return;
+                }
+
+                if (Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand())) {
+                    // They get fish!
+                    ItemStack fish = Fishing.getFishDrop(spot_tier);
+                    if (pl.getInventory().firstEmpty() != -1) {
+                        pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
+                    } else {
+                        // Full inventory!
+                        pl.getWorld().dropItem(pl.getLocation(), fish);
                     }
-                    if (item_tier == spot_tier) {
-                        int lvl = CraftItemStack.asNMSCopy(pl.getEquipment().getItemInMainHand()).getTag().getInt("level");
-                        success_rate = 50 + (2 * (20 - Math.abs((Fishing.getNextLevelUp(item_tier) - lvl))));
-                    }
+                    pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 
-                    int success_mod = Fishing.getSuccessChance(pl.getEquipment().getItemInMainHand());
-                    success_rate += success_mod; // %CHANCE
-
-                    if (Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()) && success_rate >= do_i_get_fish) {
-                        // They get fish!
-                        ItemStack fish = Fishing.getFishDrop(spot_tier);
+                    int doi_double_drop = new Random().nextInt(100) + 1;
+                    if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
+                        fish = Fishing.getFishDrop(spot_tier);
                         if (pl.getInventory().firstEmpty() != -1) {
                             pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
                         } else {
                             // Full inventory!
                             pl.getWorld().dropItem(pl.getLocation(), fish);
                         }
-                        pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
+                        if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
+                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
+                        }
+                    }
 
-                        // Special Effects!
-                        int doi_double_drop = new Random().nextInt(100) + 1;
-                        if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
-                            fish = Fishing.getFishDrop(spot_tier);
-                            if (pl.getInventory().firstEmpty() != -1) {
-                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
-                            } else {
-                                // Full inventory!
-                                pl.getWorld().dropItem(pl.getLocation(), fish);
+                    int doi_triple_drop = new Random().nextInt(100) + 1;
+                    if (Fishing.getTripleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_triple_drop) {
+                        fish = Fishing.getFishDrop(spot_tier);
+                        if (pl.getInventory().firstEmpty() != -1) {
+                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
+                        } else {
+                            // Full inventory!
+                            pl.getWorld().dropItem(pl.getLocation(), fish);
+                        }
+
+                        fish = Fishing.getFishDrop(spot_tier);
+                        if (pl.getInventory().firstEmpty() != -1) {
+                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
+                        } else {
+                            // Full inventory!
+                            pl.getWorld().dropItem(pl.getLocation(), fish);
+                        }
+                        if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
+                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
+                        }
+                    }
+
+                    int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());
+                    if (junk_chance >= (new Random().nextInt(100) + 1)) {
+                        int junk_type = new Random().nextInt(100) + 1; // 0, 1, 2
+                        ItemStack junk = null;
+                        if (junk_type > 70 && junk_type < 95) {
+                            if (spot_tier == 1) {
+                                junk = ItemManager.createHealthPotion(1, false, false);
+                                junk.setAmount(5 + new Random().nextInt(3));
                             }
-                            if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
-                                pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
+                            if (spot_tier == 2) {
+                                junk = ItemManager.createHealthPotion(2, false, false);
+                                junk.setAmount(4 + new Random().nextInt(3));
+                            }
+                            if (spot_tier == 3) {
+                                junk = ItemManager.createHealthPotion(3, false, false);
+                                junk.setAmount(2 + new Random().nextInt(3));
+                            }
+                            if (spot_tier == 4) {
+                                junk = ItemManager.createHealthPotion(4, false, false);
+                                junk.setAmount(1 + new Random().nextInt(3));
+                            }
+                            if (spot_tier == 5) {
+                                junk = ItemManager.createHealthPotion(5, false, false);
+                                junk.setAmount(1 + new Random().nextInt(3));
                             }
                         }
 
-                        int doi_triple_drop = new Random().nextInt(100) + 1;
-                        if (Fishing.getTripleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_triple_drop) {
-                            fish = Fishing.getFishDrop(spot_tier);
-                            if (pl.getInventory().firstEmpty() != -1) {
-                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
-                            } else {
-                                // Full inventory!
-                                pl.getWorld().dropItem(pl.getLocation(), fish);
+                        if (junk_type >= 95) {
+                            if (spot_tier == 1) {
+                                junk = ItemManager.createArmorScrap(1);
+                                junk.setAmount(20 + new Random().nextInt(7));
                             }
-
-                            fish = Fishing.getFishDrop(spot_tier);
-                            if (pl.getInventory().firstEmpty() != -1) {
-                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
-                            } else {
-                                // Full inventory!
-                                pl.getWorld().dropItem(pl.getLocation(), fish);
+                            if (spot_tier == 2) {
+                                junk = ItemManager.createArmorScrap(2);
+                                junk.setAmount(15 + new Random().nextInt(7));
                             }
-                            if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
-                                pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
+                            if (spot_tier == 3) {
+                                junk = ItemManager.createArmorScrap(3);
+                                junk.setAmount(10 + new Random().nextInt(7));
+                            }
+                            if (spot_tier == 4) {
+                                junk = ItemManager.createArmorScrap(4);
+                                junk.setAmount(5 + new Random().nextInt(7));
+                            }
+                            if (spot_tier == 5) {
+                                junk = ItemManager.createArmorScrap(5);
+                                junk.setAmount(2 + new Random().nextInt(6));
                             }
                         }
 
-                        int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());
-                        if (junk_chance >= (new Random().nextInt(100) + 1)) {
-                            int junk_type = new Random().nextInt(100) + 1; // 0, 1, 2
-                            ItemStack junk = null;
-                            if (junk_type > 70 && junk_type < 95) {
-                                if (spot_tier == 1) {
-                                    junk = ItemManager.createHealthPotion(1, false, false);
-                                    junk.setAmount(5 + new Random().nextInt(3));
-                                }
-                                if (spot_tier == 2) {
-                                    junk = ItemManager.createHealthPotion(2, false, false);
-                                    junk.setAmount(4 + new Random().nextInt(3));
-                                }
-                                if (spot_tier == 3) {
-                                    junk = ItemManager.createHealthPotion(3, false, false);
-                                    junk.setAmount(2 + new Random().nextInt(3));
-                                }
-                                if (spot_tier == 4) {
-                                    junk = ItemManager.createHealthPotion(4, false, false);
-                                    junk.setAmount(1 + new Random().nextInt(3));
-                                }
-                                if (spot_tier == 5) {
-                                    junk = ItemManager.createHealthPotion(5, false, false);
-                                    junk.setAmount(1 + new Random().nextInt(3));
-                                }
-                            }
-
-                            if (junk_type >= 95) {
-                                if (spot_tier == 1) {
-                                    junk = ItemManager.createArmorScrap(1);
-                                    junk.setAmount(20 + new Random().nextInt(7));
-                                }
-                                if (spot_tier == 2) {
-                                    junk = ItemManager.createArmorScrap(2);
-                                    junk.setAmount(15 + new Random().nextInt(7));
-                                }
-                                if (spot_tier == 3) {
-                                    junk = ItemManager.createArmorScrap(3);
-                                    junk.setAmount(10 + new Random().nextInt(7));
-                                }
-                                if (spot_tier == 4) {
-                                    junk = ItemManager.createArmorScrap(4);
-                                    junk.setAmount(5 + new Random().nextInt(7));
-                                }
-                                if (spot_tier == 5) {
-                                    junk = ItemManager.createArmorScrap(5);
-                                    junk.setAmount(2 + new Random().nextInt(6));
-                                }
-                            }
-
-                            if (junk != null) {
-                                int item_count = junk.getAmount();
-                                if (junk.getType() == Material.POTION) {
-                                    // Not stackable.
-                                    int amount = junk.getAmount();
-                                    ItemStack single_junk = junk;
-                                    single_junk.setAmount(1);
-                                    while (amount > 0) {
-                                        amount--;
-                                        if (pl.getInventory().firstEmpty() != -1) {
-                                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), single_junk);
-                                        } else {
-                                            // Full inventory!
-                                            pl.getWorld().dropItem(pl.getLocation(), single_junk);
-                                        }
-                                    }
-                                } else {
+                        if (junk != null) {
+                            int item_count = junk.getAmount();
+                            if (junk.getType() == Material.POTION) {
+                                // Not stackable.
+                                int amount = junk.getAmount();
+                                ItemStack single_junk = junk;
+                                single_junk.setAmount(1);
+                                while (amount > 0) {
+                                    amount--;
                                     if (pl.getInventory().firstEmpty() != -1) {
-                                        pl.getInventory().setItem(pl.getInventory().firstEmpty(), junk);
+                                        pl.getInventory().setItem(pl.getInventory().firstEmpty(), single_junk);
                                     } else {
                                         // Full inventory!
-                                        pl.getWorld().dropItem(pl.getLocation(), junk);
+                                        pl.getWorld().dropItem(pl.getLocation(), single_junk);
                                     }
                                 }
-
-                                pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + item_count + "x "
-                                        + junk.getItemMeta().getDisplayName());
-                            }
-                        }
-
-                        int treasure_chance = Fishing.getTreasureFindChance(pl.getEquipment().getItemInMainHand());
-                        if (treasure_chance >= (new Random().nextInt(300) + 1)) {
-                            // Give em treasure!
-                            int treasure_type = new Random().nextInt(3); // 0, 1
-                            ItemStack treasure = null;
-                            if (treasure_type == 0) {
-                                // OOA
-                                treasure = CraftItemStack.asCraftCopy(ItemManager.createOrbofAlteration());
-                            }
-                            if (treasure_type == 1) {
-                                // OOF
-//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_flight);
-                            }
-                            if (treasure_type == 2) {
-                                // OOP
-//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_peace);
-                            }
-
-                            if (pl.getInventory().firstEmpty() != -1) {
-                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), treasure);
                             } else {
-                                // Full inventory!
-                                pl.getWorld().dropItem(pl.getLocation(), treasure);
+                                if (pl.getInventory().firstEmpty() != -1) {
+                                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), junk);
+                                } else {
+                                    // Full inventory!
+                                    pl.getWorld().dropItem(pl.getLocation(), junk);
+                                }
                             }
 
-                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
-                                    + treasure.getItemMeta().getDisplayName());
+                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + item_count + "x "
+                                    + junk.getItemMeta().getDisplayName());
                         }
+                    }
+
+                    int treasure_chance = Fishing.getTreasureFindChance(pl.getEquipment().getItemInMainHand());
+                    if (treasure_chance >= (new Random().nextInt(300) + 1)) {
+                        // Give em treasure!
+                        int treasure_type = new Random().nextInt(3); // 0, 1
+                        ItemStack treasure = null;
+                        if (treasure_type == 0) {
+                            // OOA
+                            treasure = CraftItemStack.asCraftCopy(ItemManager.createOrbofAlteration());
+                        }
+                        if (treasure_type == 1) {
+                            // OOF
+//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_flight);
+                        }
+                        if (treasure_type == 2) {
+                            // OOP
+//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_peace);
+                        }
+
+                        if (pl.getInventory().firstEmpty() != -1) {
+                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), treasure);
+                        } else {
+                            // Full inventory!
+                            pl.getWorld().dropItem(pl.getLocation(), treasure);
+                        }
+
+                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
+                                + treasure.getItemMeta().getDisplayName());
                     }
                 }
             }, 10l);
@@ -811,242 +816,6 @@ public class MainListener implements Listener {
         event.setCancelled(true);
     }
 
-
-    @EventHandler
-    public void onPlayerConsume(PlayerItemConsumeEvent e) {
-        ItemStack is = e.getItem();
-        Player pl = e.getPlayer();
-        if (Fishing.getInstance().isCustomFish(is)) {
-            e.setCancelled(true);
-            ItemStack fish = pl.getEquipment().getItemInMainHand();
-            if (fish.getAmount() > 1) {
-                // Subtract just 1.
-                fish.setAmount(fish.getAmount() - 1);
-                pl.getEquipment().setItemInMainHand(fish);
-            } else if (fish.getAmount() <= 1) {
-                pl.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
-            }
-            pl.updateInventory();
-            /*
-             * pl.getWorld().playSound(pl.getLocation(), Sound.EAT, 1F, 1F); this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-             * public void run() { pl.setItemInHand(new ItemStack(Material.AIR)); pl.updateInventory(); } }, 1L);
-             * this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() { public void run() { pl.getWorld().playSound(pl.getLocation(),
-             * Sound.EAT, 1F, 1.5F); } }, 4L);
-             */
-            // Ok, so now we need to see what we need to do for the player when they eat this. Let's handle the food aspect first.
-            List<String> lore = is.getItemMeta().getLore();
-            int food_to_restore = 0;
-            for (String s : lore) {
-                if (s.contains("% HUNGER")) {
-                    double percent = Integer.parseInt(s.substring(s.indexOf("-") + 1, s.indexOf("%")));
-                    int local_amount = (int) ((percent / 100.0D) * 20D);
-                    food_to_restore += local_amount;
-                }
-            }
-
-            int cur_food = pl.getFoodLevel();
-            if (cur_food + food_to_restore >= 20) {
-                pl.setFoodLevel(20);
-                pl.setSaturation(20);
-            } else {
-                pl.setFoodLevel(cur_food + food_to_restore);
-                pl.setSaturation(cur_food + food_to_restore);
-            }
-
-            // Ok, food handled, now let's handle any misc. buffs that the fish might have.
-            for (String s : lore) {
-                s = ChatColor.stripColor(s);
-                if (s.contains("% HP (instant)")) {
-                    // Instant heal.
-                    double percent_to_heal = Double.parseDouble(s.substring(s.indexOf("+") + 1, s.indexOf("%"))) / 100;
-                    double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(pl);
-                    int amount_to_heal = (int) Math.round((percent_to_heal * max_hp));
-                    double current_hp = HealthHandler.getInstance().getPlayerHPLive(pl);
-                    if (current_hp + 1 > max_hp) {
-                        continue;
-                    } // They have max HP.
-                    // amount_to_heal += getHealthRegenAmount(p);
-
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, pl.getUniqueId())) {
-                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) amount_to_heal + ChatColor.BOLD + " HP"
-                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " ["
-                                + ((int) current_hp + (int) amount_to_heal) + "/" + (int) max_hp + "HP]");
-                    }
-                    if (current_hp <= 0 || pl.isDead() || !pl.isOnline()) {
-                        continue;
-                    }
-                    if ((current_hp + amount_to_heal) >= max_hp) {
-                        pl.setHealth(20);
-                        // HealthMechanics.setPlayerHP(pl.getName(), (int)max_hp);
-                        HealthHandler.getInstance().setPlayerHPLive(pl, (int) max_hp);
-                        continue; // Full HP.
-                    } else if (pl.getHealth() <= 19 && ((current_hp + amount_to_heal) < max_hp)) {
-                        HealthHandler.getInstance().setPlayerHPLive(pl, HealthHandler.getInstance().getPlayerHPLive(pl) + amount_to_heal);
-                        double health_percent = ((HealthHandler.getInstance().getPlayerHPLive(pl)) + amount_to_heal) / max_hp;
-                        double new_health_display = health_percent * 20;
-                        if (new_health_display > 19) {
-                            if (health_percent >= 1) {
-                                new_health_display = 20;
-                            } else if (health_percent < 1) {
-                                new_health_display = 19;
-                            }
-                        }
-                        if (new_health_display < 1) {
-                            new_health_display = 1;
-                        }
-                        pl.setHealth((int) new_health_display);
-
-                    }
-                }
-
-                if (s.startsWith("REGEN")) {
-                    // Regen % of HP over X seconds.
-                    double percent_to_regen = Double.parseDouble(s.substring(s.indexOf(" ") + 1, s.indexOf("%"))) / 100.0D;
-                    int regen_interval = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("s")));
-                    double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(pl);
-
-                    final int amount_to_regen_per_interval = (int) (max_hp * percent_to_regen) / regen_interval;
-                    pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + (int) amount_to_regen_per_interval + ChatColor.BOLD
-                            + " HP/s" + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + regen_interval + "s]");
-
-                    //TODO ?
-//                    fish_health_regen.put(pl.getName(), amount_to_regen_per_interval);
-                    pl.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (int) (regen_interval * 20), 0));
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
-                        public void run() {
-                            pl.removePotionEffect(PotionEffectType.REGENERATION);
-//                            fish_health_regen.remove(pl.getName());
-                            pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "   " + amount_to_regen_per_interval + " HP/s " + ChatColor.RED + "FROM "
-                                    + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                        }
-                    }, regen_interval * 20L);
-                }
-
-                if (s.startsWith("SPEED")) {
-                    // Speed effect.
-                    String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
-                    int effect_tier = 0;
-                    if (tier_symbol.equalsIgnoreCase("II")) {
-                        effect_tier = 1;
-                    }
-
-                    int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                    pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effect_time * 20, effect_tier));
-                }
-
-                if (s.startsWith("NIGHTVISION")) {
-                    // Night vision effect
-                    String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
-                    int effect_tier = 0;
-                    if (tier_symbol.equalsIgnoreCase("II")) {
-                        effect_tier = 1;
-                    }
-
-                    int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                    pl.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, effect_time * 20, effect_tier));
-                }
-
-                if (s.contains("ENERGY REGEN")) {
-                    // Increased energy regen.
-                    final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                    int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-
-//                    fish_energy_regen.put(pl.getName(), bonus_percent);
-//                    RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0xa47c48, (effect_time * 20));
-                    pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + " Energy/s"
-                            + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
-                        public void run() {
-//                            fish_energy_regen.remove(pl.getName());
-                            pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + " +" + bonus_percent + "% Energy " + ChatColor.RED + "FROM "
-                                    + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                        }
-                    }, effect_time * 20L);
-                }
-
-                if (s.contains("% DMG")) {
-                    final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                    int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-
-//                    fish_bonus_dmg.put(pl.getName(), bonus_percent);
-//                    RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0xdd0000, (effect_time * 20));
-                    pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      +" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% DMG"
-                            + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//                            fish_bonus_dmg.remove(pl.getName());
-                        pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + " +" + bonus_percent + "% DMG " + ChatColor.RED + "FROM "
-                                + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                    }, effect_time * 20L);
-                }
-
-                if (s.contains("% ARMOR")) {
-                    final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                    int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-
-//                    fish_bonus_armor.put(pl.getName(), bonus_percent);
-//                    RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0xacacac, (effect_time * 20));
-                    pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% ARMOR"
-                            + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//                            fish_bonus_armor.remove(pl.getName());
-                        pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% ARMOR " + ChatColor.RED + "FROM "
-                                + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                    }, effect_time * 20L);
-                }
-
-                if (s.contains("% BLOCK")) {
-                    final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                    int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-
-//                    fish_bonus_block.put(pl.getName(), bonus_percent);
-//                    RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0x014421, (effect_time * 20));
-                    pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% BLOCK"
-                            + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), (Runnable) () -> {
-//                        fish_bonus_block.remove(pl.getName());
-                        pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% BLOCK " + ChatColor.RED + "FROM "
-                                + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                    }, effect_time * 20L);
-                }
-
-                if (s.contains("% LIFESTEAL")) {
-                    final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                    int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-
-//                    fish_bonus_lifesteal.put(pl.getName(), bonus_percent);
-//                    RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0x4d2177, (effect_time * 20));
-                    pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% LIFESTEAL"
-                            + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//                        fish_bonus_lifesteal.remove(pl.getName());
-                        pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% LIFESTEAL " + ChatColor.RED + "FROM "
-                                + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                    }, effect_time * 20L);
-                }
-
-                if (s.contains("% CRIT")) {
-                    final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
-                    int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-
-//                    fish_bonus_critical_hit.put(pl.getName(), bonus_percent);
-//                    RealmMechanics.playPotionEffect(pl, (LivingEntity) pl, 0xe52d00, (effect_time * 20));
-                    pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% CRIT"
-                            + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//                        fish_bonus_critical_hit.remove(pl.getName());
-                        pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% CRIT " + ChatColor.RED + "FROM "
-                                + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
-                    }, effect_time * 20L);
-                }
-            }
-        }
-    }
 
     @EventHandler
     public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
