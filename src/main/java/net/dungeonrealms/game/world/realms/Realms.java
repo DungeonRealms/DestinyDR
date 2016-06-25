@@ -54,7 +54,7 @@ public interface Realms extends GenericMechanic {
     /**
      * Loads the player's realm*
      *
-     * @param player Owner of realm
+     * @param player         Owner of realm
      * @param portalLocation Where do you want the portal to open? (Can be null)
      */
     void loadRealm(Player player, Location portalLocation);
@@ -157,9 +157,9 @@ public interface Realms extends GenericMechanic {
     /**
      * Updates the realm hologram to Chaotic or Peaceful
      *
-     * @param realm Realm
+     * @param uuid Owner of realm
      */
-    void updateRealmHologram(RealmToken realm);
+    void updateRealmHologram(UUID uuid);
 
 
     /**

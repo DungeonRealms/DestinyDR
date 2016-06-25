@@ -188,11 +188,10 @@ public class RealmInstance implements Realms {
         Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), location.add(0.5, 1.5, 0.5));
         KarmaHandler.EnumPlayerAlignments playerAlignment = KarmaHandler.EnumPlayerAlignments.getByName(KarmaHandler.getInstance().getPlayerRawAlignment(player));
         assert playerAlignment != null;
-        realmHologram.appendTextLine(ChatColor.WHITE.toString() + ChatColor.BOLD + player.getName());
-        realmHologram.appendTextLine(ChatColor.RED + "Chaotic");
         realmHologram.getVisibilityManager().setVisibleByDefault(true);
-
         realm.setHologram(realmHologram);
+        updateRealmHologram(player.getUniqueId());
+
         realm.setStatus(RealmStatus.OPENED);
         player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "                   " + "* Realm Portal OPENED *");
 
@@ -252,7 +251,7 @@ public class RealmInstance implements Realms {
     @Override
     public void loadRealmWorld(UUID uuid) {
         Utils.log.info("[REALM] [SYNC] Loading world for " + uuid.toString());
-        Bukkit.getServer().createWorld(new WorldCreator(uuid.toString()));
+        Bukkit.getServer().createWorld(new WorldCreator(uuid.toString())).setKeepSpawnInMemory(false);
     }
 
 
@@ -467,12 +466,13 @@ public class RealmInstance implements Realms {
 
         RealmToken realm = getRealm(uuid);
 
+        if (realm.getPortalLocation() == null) return;
+
         Location portalLocation = realm.getPortalLocation().clone();
 
-        if (realm.getPortalLocation() != null) {
-            portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
-            portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
-        }
+        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+
 
         if (realm.getHologram() != null)
             realm.getHologram().delete();
@@ -483,7 +483,7 @@ public class RealmInstance implements Realms {
         for (UUID u : realm.getPlayersInRealm()) {
             Player p = Bukkit.getPlayer(u);
 
-            if (p != null && portalLocation != null)
+            if (p != null)
                 p.teleport(portalLocation);
         }
     }
@@ -540,10 +540,23 @@ public class RealmInstance implements Realms {
     }
 
     @Override
-    public void updateRealmHologram(RealmToken realm) {
+    public void updateRealmHologram(UUID uuid) {
+        if (!isRealmCached(uuid)) return;
+
+        RealmToken realm = getRealm(uuid);
+
         Hologram realmHologram = realm.getHologram();
 
-        if (realmHologram != null) {
+        String name = Bukkit.getPlayer(uuid).getName();
+
+        if (realmHologram == null) return;
+        realmHologram.clearLines();
+
+        if (getRealmTitle(realm.getOwner()).equals("")) {
+            realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
+            realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
+        } else {
+            realmHologram.insertTextLine(0, (ChatColor.WHITE.toString() + ChatColor.BOLD + name + ChatColor.WHITE + " - [" + ChatColor.YELLOW + getRealmTitle(realm.getOwner()) + ChatColor.WHITE + "]").trim());
             realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
         }
     }
@@ -616,6 +629,7 @@ public class RealmInstance implements Realms {
         worldCreator.generateStructures(false);
         worldCreator.generator(new RealmGenerator());
         World world = Bukkit.createWorld(worldCreator);
+        world.setKeepSpawnInMemory(false);
         world.setSpawnLocation(24, 130, 24);
         world.getBlockAt(0, 64, 0).setType(Material.AIR);
 
