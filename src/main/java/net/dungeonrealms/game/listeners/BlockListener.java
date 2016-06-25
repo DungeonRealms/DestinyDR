@@ -22,6 +22,8 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -151,7 +153,7 @@ public class BlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void cookFish(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block block = e.getClickedBlock();
@@ -162,8 +164,13 @@ public class BlockListener implements Listener {
                 return;
             if (e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.RAW_FISH) {
                 e.setCancelled(true);
-                e.getPlayer().getEquipment().getItemInMainHand().setType(Material.COOKED_FISH);
+                if (block.getState() instanceof Furnace) {
+                    final Furnace furnace = (Furnace) block.getState();
+                    furnace.setBurnTime((short) 20);
+                }
                 e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1);
+                e.getPlayer().getEquipment().getItemInMainHand().setType(Material.COOKED_FISH);
+                e.getPlayer().updateInventory();
             }
         }
     }

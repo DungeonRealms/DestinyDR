@@ -514,10 +514,19 @@ public class ItemListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_AIR)
+            return;
+
         final Player pl = e.getPlayer();
         if (e.hasItem()) {
             final ItemStack is = e.getItem();
-            if (Fishing.isCustomFish(is) && pl.getFoodLevel() >= 20) {
+            if (Fishing.getInstance().isCustomRawFish(is)) {
+                pl.sendMessage(ChatColor.RED + "You must cook this fish before you can eat it!");
+                return;
+            }
+
+
+            if (Fishing.isCustomFish(is)) {
                 e.setUseInteractedBlock(Event.Result.DENY);
 
                 pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1F);

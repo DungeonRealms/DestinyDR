@@ -555,6 +555,8 @@ public class MainListener implements Listener {
         final Player pl = e.getPlayer();
         e.setExpToDrop(0);
 
+        if (e.getCaught() != null)
+            e.getCaught().remove();
         if (!(Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()))) {
             e.setCancelled(true);
             return; // Get out of here.
@@ -576,190 +578,193 @@ public class MainListener implements Listener {
         }
 
         if (e.getState() == State.CAUGHT_FISH) {
-            final Location fish_loc = Fishing.getInstance().getFishingSpot(e.getHook().getLocation());
-            final int spot_tier = Fishing.getInstance().getFishingSpotTier(fish_loc);
+            final Location fish_loc = Fishing.getInstance().getFishingSpot(pl.getLocation());
+            final int spot_tier = Fishing.getInstance().getFishingSpotTier(pl.getLocation());
+            if (e.getCaught() != null)
+                e.getCaught().remove();
 
             if (fish_loc == null || spot_tier == -1) {
                 pl.sendMessage(ChatColor.RED + "You must be near a Fishing Location to catch fish!");
                 return;
             }
 
-
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new BukkitRunnable() {
-                public void run() {
-                    int do_i_get_fish = new Random().nextInt(100);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                int do_i_get_fish = new Random().nextInt(100);
 
-                    int item_tier = Fishing.getRodTier(pl.getEquipment().getItemInMainHand());
-                    int success_rate = 0;
+                int item_tier = Fishing.getRodTier(pl.getEquipment().getItemInMainHand());
+                int success_rate = 0;
 
-                    if (item_tier > spot_tier) {
-                        success_rate = 100;
+                if (item_tier > spot_tier) {
+                    success_rate = 100;
+                }
+                if (item_tier == spot_tier) {
+                    int lvl = CraftItemStack.asNMSCopy(pl.getEquipment().getItemInMainHand()).getTag().getInt("level");
+                    success_rate = 50 + (2 * (20 - Math.abs((Fishing.getNextLevelUp(item_tier) - lvl))));
+                }
+
+                int success_mod = Fishing.getSuccessChance(pl.getEquipment().getItemInMainHand());
+                success_rate += success_mod; // %CHANCE
+
+                if (success_rate >= do_i_get_fish) {
+                    pl.sendMessage(ChatColor.RED + "It got away..");
+                    return;
+                }
+
+                if (Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand())) {
+                    // They get fish!
+                    ItemStack fish = Fishing.getFishDrop(spot_tier);
+                    if (pl.getInventory().firstEmpty() != -1) {
+                        pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
+                    } else {
+                        // Full inventory!
+                        pl.getWorld().dropItem(pl.getLocation(), fish);
                     }
-                    if (item_tier == spot_tier) {
-                        int lvl = CraftItemStack.asNMSCopy(pl.getEquipment().getItemInMainHand()).getTag().getInt("level");
-                        success_rate = 50 + (2 * (20 - Math.abs((Fishing.getNextLevelUp(item_tier) - lvl))));
-                    }
+                    pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 
-                    int success_mod = Fishing.getSuccessChance(pl.getEquipment().getItemInMainHand());
-                    success_rate += success_mod; // %CHANCE
-
-                    if (Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()) && success_rate >= do_i_get_fish) {
-                        // They get fish!
-                        ItemStack fish = Fishing.getFishDrop(spot_tier);
+                    int doi_double_drop = new Random().nextInt(100) + 1;
+                    if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
+                        fish = Fishing.getFishDrop(spot_tier);
                         if (pl.getInventory().firstEmpty() != -1) {
                             pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
                         } else {
                             // Full inventory!
                             pl.getWorld().dropItem(pl.getLocation(), fish);
                         }
-                        pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
+                        if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
+                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
+                        }
+                    }
 
-                        // Special Effects!
-                        int doi_double_drop = new Random().nextInt(100) + 1;
-                        if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
-                            fish = Fishing.getFishDrop(spot_tier);
-                            if (pl.getInventory().firstEmpty() != -1) {
-                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
-                            } else {
-                                // Full inventory!
-                                pl.getWorld().dropItem(pl.getLocation(), fish);
+                    int doi_triple_drop = new Random().nextInt(100) + 1;
+                    if (Fishing.getTripleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_triple_drop) {
+                        fish = Fishing.getFishDrop(spot_tier);
+                        if (pl.getInventory().firstEmpty() != -1) {
+                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
+                        } else {
+                            // Full inventory!
+                            pl.getWorld().dropItem(pl.getLocation(), fish);
+                        }
+
+                        fish = Fishing.getFishDrop(spot_tier);
+                        if (pl.getInventory().firstEmpty() != -1) {
+                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
+                        } else {
+                            // Full inventory!
+                            pl.getWorld().dropItem(pl.getLocation(), fish);
+                        }
+                        if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
+                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
+                        }
+                    }
+
+                    int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());
+                    if (junk_chance >= (new Random().nextInt(100) + 1)) {
+                        int junk_type = new Random().nextInt(100) + 1; // 0, 1, 2
+                        ItemStack junk = null;
+                        if (junk_type > 70 && junk_type < 95) {
+                            if (spot_tier == 1) {
+                                junk = ItemManager.createHealthPotion(1, false, false);
+                                junk.setAmount(5 + new Random().nextInt(3));
                             }
-                            if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
-                                pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
+                            if (spot_tier == 2) {
+                                junk = ItemManager.createHealthPotion(2, false, false);
+                                junk.setAmount(4 + new Random().nextInt(3));
+                            }
+                            if (spot_tier == 3) {
+                                junk = ItemManager.createHealthPotion(3, false, false);
+                                junk.setAmount(2 + new Random().nextInt(3));
+                            }
+                            if (spot_tier == 4) {
+                                junk = ItemManager.createHealthPotion(4, false, false);
+                                junk.setAmount(1 + new Random().nextInt(3));
+                            }
+                            if (spot_tier == 5) {
+                                junk = ItemManager.createHealthPotion(5, false, false);
+                                junk.setAmount(1 + new Random().nextInt(3));
                             }
                         }
 
-                        int doi_triple_drop = new Random().nextInt(100) + 1;
-                        if (Fishing.getTripleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_triple_drop) {
-                            fish = Fishing.getFishDrop(spot_tier);
-                            if (pl.getInventory().firstEmpty() != -1) {
-                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
-                            } else {
-                                // Full inventory!
-                                pl.getWorld().dropItem(pl.getLocation(), fish);
+                        if (junk_type >= 95) {
+                            if (spot_tier == 1) {
+                                junk = ItemManager.createArmorScrap(1);
+                                junk.setAmount(20 + new Random().nextInt(7));
                             }
-
-                            fish = Fishing.getFishDrop(spot_tier);
-                            if (pl.getInventory().firstEmpty() != -1) {
-                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), fish);
-                            } else {
-                                // Full inventory!
-                                pl.getWorld().dropItem(pl.getLocation(), fish);
+                            if (spot_tier == 2) {
+                                junk = ItemManager.createArmorScrap(2);
+                                junk.setAmount(15 + new Random().nextInt(7));
                             }
-                            if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
-                                pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
+                            if (spot_tier == 3) {
+                                junk = ItemManager.createArmorScrap(3);
+                                junk.setAmount(10 + new Random().nextInt(7));
+                            }
+                            if (spot_tier == 4) {
+                                junk = ItemManager.createArmorScrap(4);
+                                junk.setAmount(5 + new Random().nextInt(7));
+                            }
+                            if (spot_tier == 5) {
+                                junk = ItemManager.createArmorScrap(5);
+                                junk.setAmount(2 + new Random().nextInt(6));
                             }
                         }
 
-                        int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());
-                        if (junk_chance >= (new Random().nextInt(100) + 1)) {
-                            int junk_type = new Random().nextInt(100) + 1; // 0, 1, 2
-                            ItemStack junk = null;
-                            if (junk_type > 70 && junk_type < 95) {
-                                if (spot_tier == 1) {
-                                    junk = ItemManager.createHealthPotion(1, false, false);
-                                    junk.setAmount(5 + new Random().nextInt(3));
-                                }
-                                if (spot_tier == 2) {
-                                    junk = ItemManager.createHealthPotion(2, false, false);
-                                    junk.setAmount(4 + new Random().nextInt(3));
-                                }
-                                if (spot_tier == 3) {
-                                    junk = ItemManager.createHealthPotion(3, false, false);
-                                    junk.setAmount(2 + new Random().nextInt(3));
-                                }
-                                if (spot_tier == 4) {
-                                    junk = ItemManager.createHealthPotion(4, false, false);
-                                    junk.setAmount(1 + new Random().nextInt(3));
-                                }
-                                if (spot_tier == 5) {
-                                    junk = ItemManager.createHealthPotion(5, false, false);
-                                    junk.setAmount(1 + new Random().nextInt(3));
-                                }
-                            }
-
-                            if (junk_type >= 95) {
-                                if (spot_tier == 1) {
-                                    junk = ItemManager.createArmorScrap(1);
-                                    junk.setAmount(20 + new Random().nextInt(7));
-                                }
-                                if (spot_tier == 2) {
-                                    junk = ItemManager.createArmorScrap(2);
-                                    junk.setAmount(15 + new Random().nextInt(7));
-                                }
-                                if (spot_tier == 3) {
-                                    junk = ItemManager.createArmorScrap(3);
-                                    junk.setAmount(10 + new Random().nextInt(7));
-                                }
-                                if (spot_tier == 4) {
-                                    junk = ItemManager.createArmorScrap(4);
-                                    junk.setAmount(5 + new Random().nextInt(7));
-                                }
-                                if (spot_tier == 5) {
-                                    junk = ItemManager.createArmorScrap(5);
-                                    junk.setAmount(2 + new Random().nextInt(6));
-                                }
-                            }
-
-                            if (junk != null) {
-                                int item_count = junk.getAmount();
-                                if (junk.getType() == Material.POTION) {
-                                    // Not stackable.
-                                    int amount = junk.getAmount();
-                                    ItemStack single_junk = junk;
-                                    single_junk.setAmount(1);
-                                    while (amount > 0) {
-                                        amount--;
-                                        if (pl.getInventory().firstEmpty() != -1) {
-                                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), single_junk);
-                                        } else {
-                                            // Full inventory!
-                                            pl.getWorld().dropItem(pl.getLocation(), single_junk);
-                                        }
-                                    }
-                                } else {
+                        if (junk != null) {
+                            int item_count = junk.getAmount();
+                            if (junk.getType() == Material.POTION) {
+                                // Not stackable.
+                                int amount = junk.getAmount();
+                                ItemStack single_junk = junk;
+                                single_junk.setAmount(1);
+                                while (amount > 0) {
+                                    amount--;
                                     if (pl.getInventory().firstEmpty() != -1) {
-                                        pl.getInventory().setItem(pl.getInventory().firstEmpty(), junk);
+                                        pl.getInventory().setItem(pl.getInventory().firstEmpty(), single_junk);
                                     } else {
                                         // Full inventory!
-                                        pl.getWorld().dropItem(pl.getLocation(), junk);
+                                        pl.getWorld().dropItem(pl.getLocation(), single_junk);
                                     }
                                 }
-
-                                pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + item_count + "x "
-                                        + junk.getItemMeta().getDisplayName());
-                            }
-                        }
-
-                        int treasure_chance = Fishing.getTreasureFindChance(pl.getEquipment().getItemInMainHand());
-                        if (treasure_chance >= (new Random().nextInt(300) + 1)) {
-                            // Give em treasure!
-                            int treasure_type = new Random().nextInt(3); // 0, 1
-                            ItemStack treasure = null;
-                            if (treasure_type == 0) {
-                                // OOA
-                                treasure = CraftItemStack.asCraftCopy(ItemManager.createOrbofAlteration());
-                            }
-                            if (treasure_type == 1) {
-                                // OOF
-//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_flight);
-                            }
-                            if (treasure_type == 2) {
-                                // OOP
-//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_peace);
-                            }
-
-                            if (pl.getInventory().firstEmpty() != -1) {
-                                pl.getInventory().setItem(pl.getInventory().firstEmpty(), treasure);
                             } else {
-                                // Full inventory!
-                                pl.getWorld().dropItem(pl.getLocation(), treasure);
+                                if (pl.getInventory().firstEmpty() != -1) {
+                                    pl.getInventory().setItem(pl.getInventory().firstEmpty(), junk);
+                                } else {
+                                    // Full inventory!
+                                    pl.getWorld().dropItem(pl.getLocation(), junk);
+                                }
                             }
 
-                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
-                                    + treasure.getItemMeta().getDisplayName());
+                            pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME JUNK! -- " + item_count + "x "
+                                    + junk.getItemMeta().getDisplayName());
                         }
+                    }
+
+                    int treasure_chance = Fishing.getTreasureFindChance(pl.getEquipment().getItemInMainHand());
+                    if (treasure_chance >= (new Random().nextInt(300) + 1)) {
+                        // Give em treasure!
+                        int treasure_type = new Random().nextInt(3); // 0, 1
+                        ItemStack treasure = null;
+                        if (treasure_type == 0) {
+                            // OOA
+                            treasure = CraftItemStack.asCraftCopy(ItemManager.createOrbofAlteration());
+                        }
+                        if (treasure_type == 1) {
+                            // OOF
+//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_flight);
+                        }
+                        if (treasure_type == 2) {
+                            // OOP
+//                                treasure = CraftItemStack.asCraftCopy(ItemMechanics.orb_of_peace);
+                        }
+
+                        if (pl.getInventory().firstEmpty() != -1) {
+                            pl.getInventory().setItem(pl.getInventory().firstEmpty(), treasure);
+                        } else {
+                            // Full inventory!
+                            pl.getWorld().dropItem(pl.getLocation(), treasure);
+                        }
+
+                        pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  YOU FOUND SOME TREASURE! -- a(n) "
+                                + treasure.getItemMeta().getDisplayName());
                     }
                 }
             }, 10l);
