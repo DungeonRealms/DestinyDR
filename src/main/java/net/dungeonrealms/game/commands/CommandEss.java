@@ -59,7 +59,7 @@ public class CommandEss extends BasicCommand {
                         player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your HearthStone location has been set to " + ChatColor.AQUA + locationName.toUpperCase() + ChatColor.YELLOW + "!");
                         break;
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials hearthstone Proxying Cyrennica)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr hearthstone Proxying Cyrennica)");
                         return false;
                     }
                 case "pet":
@@ -99,7 +99,7 @@ public class CommandEss extends BasicCommand {
                         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + petType.toUpperCase() + ChatColor.AQUA + " pet!");
                         break;
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials pet Proxying snowman)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr pet Proxying snowman)");
                         return false;
                     }
                 case "mount":
@@ -125,7 +125,7 @@ public class CommandEss extends BasicCommand {
                         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + mountType.toUpperCase() + ChatColor.AQUA + " mount!");
                         break;
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials mount Proxying skeletonhorse)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr mount Proxying skeletonhorse)");
                         return false;
                     }
                 case "playertrail":
@@ -151,7 +151,7 @@ public class CommandEss extends BasicCommand {
                         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() + ChatColor.AQUA + " player trail!");
                         break;
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials playertrail Proxying flame)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr playertrail Proxying flame)");
                         return false;
                     }
                 case "ecash":
@@ -177,11 +177,11 @@ public class CommandEss extends BasicCommand {
                                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your E-Cash balance has been set to " + ChatColor.YELLOW + amount + ChatColor.AQUA + "!");
                                 break;
                             default:
-                                commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
+                                commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr ecash add Proxying 100)");
                                 break;
                         }
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (e.g. /dr ecash add Proxying 100)");
                         return false;
                     }
                     break;
@@ -227,7 +227,50 @@ public class CommandEss extends BasicCommand {
                             return false;
                         }
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Invalid ussage! /essentials subscription <name> <rank> <add|set|remove> <days>");
+                        commandSender.sendMessage(ChatColor.RED + "Invalid ussage! /dr subscription <name> <rank> <add|set|remove> <days>");
+                        return false;
+                    }
+                    break;
+                case "purchase":
+                    if (args.length >= 4) {
+                        try {
+                            String playerName = args[1];
+                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            String type = args[2].toLowerCase();
+                            String rankName = args[3].toUpperCase();
+
+                            switch (type) {
+                                case "rank":
+                                    String currentRank = DatabaseAPI.getInstance().getData(EnumData.RANK, uuid).toString().toUpperCase();
+                                    if (currentRank.equals("DEFAULT") || currentRank.startsWith("SUB")) {
+                                        if (rankName.equalsIgnoreCase("SUB++")) {
+                                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true);
+                                            if (Bukkit.getPlayer(playerName) != null) {
+                                                Rank.getInstance().setRank(uuid, rankName);
+                                            } else {
+                                                API.updatePlayerData(uuid);
+                                            }
+                                            commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rankName + ChatColor.GREEN + ".");
+                                        } else {
+                                            commandSender.sendMessage(ChatColor.RED + "The rank " + ChatColor.BOLD + ChatColor.UNDERLINE + type + ChatColor.RED + " is invalid or unsupported through this command.");
+                                            return false;
+                                        }
+                                    } else {
+                                        commandSender.sendMessage(ChatColor.RED + "Failed to update the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.RED + " because they're " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank + ChatColor.RED + ".");
+                                        return false;
+                                    }
+                                    break;
+
+                                default:
+                                    commandSender.sendMessage(ChatColor.RED + "Invalid purchase type: " + type + ".");
+                                    return false;
+                            }
+                        } catch (IllegalArgumentException ex) {
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + args[1] + ", maybe they've not played Dungeon Realms before?");
+                            return false;
+                        }
+                    } else {
+                        commandSender.sendMessage(ChatColor.RED + "Invalid usage /dr purchase <player> <type> [args]");
                         return false;
                     }
                     break;

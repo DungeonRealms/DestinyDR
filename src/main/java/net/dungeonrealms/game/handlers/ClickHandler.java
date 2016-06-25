@@ -1170,14 +1170,14 @@ public class ClickHandler {
                         return;
                 }
 
+                // Always update the database with the new rank.
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true);
+
                 if (Bukkit.getPlayer(playerName) != null) {
                     Rank.getInstance().setRank(uuid, newRank);
                 } else {
                     API.updatePlayerData(uuid);
                 }
-
-                // Always update the database with the new rank.
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true);
 
                 player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
