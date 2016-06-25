@@ -38,9 +38,7 @@ public class CommandShard extends BasicCommand {
             player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> {
-                        NetworkAPI.getInstance().sendToServer(player.getName(), args[0]);
-                    }, 10);
+                    () -> NetworkAPI.getInstance().sendToServer(player.getName(), args[0]), 10);
         }
 
         return true;

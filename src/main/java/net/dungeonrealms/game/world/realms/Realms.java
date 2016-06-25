@@ -4,12 +4,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.realms.instance.RealmInstance;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.lingala.zip4j.exception.ZipException;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -54,10 +56,10 @@ public interface Realms extends GenericMechanic {
     /**
      * Loads the player's realm*
      *
-     * @param player         Owner of realm
-     * @param portalLocation Where do you want the portal to open? (Can be null)
+     * @param player  Owner of realm
+     * @param doAfter What should be executed after?
      */
-    void loadRealm(Player player, Location portalLocation);
+    void loadRealm(Player player, Consumer<?> doAfter);
 
 
     /**
@@ -116,6 +118,21 @@ public interface Realms extends GenericMechanic {
      */
     void closeRealmPortal(UUID uuid, boolean kickPlayers);
 
+    /**
+     * Reset realm for player
+     *
+     * @param uuid Owner of realm
+     */
+    void resetRealm(UUID uuid) throws IOException, ZipException;
+
+
+    /**
+     * Unloads realm world
+     *
+     * @param uuid Owner of realm
+     */
+    void unloadRealmWorld(UUID uuid);
+
 
     /**
      * Removes entire realm for server and uploads it to FTP
@@ -152,6 +169,13 @@ public interface Realms extends GenericMechanic {
      * @return Title of realm
      */
     String getRealmTitle(UUID uuid);
+
+
+    /**
+     * @param status Status of realm
+     * @return Status message
+     */
+    String getRealmStatusMessage(RealmStatus status);
 
 
     /**
@@ -222,6 +246,12 @@ public interface Realms extends GenericMechanic {
      * @return Players realm.
      */
     RealmToken getRealm(UUID uuid);
+
+    /**
+     * @param uuid Owner of realm
+     * @return Players realm status.
+     */
+    RealmStatus getRealmStatus(UUID uuid);
 
     /**
      * @param portalLocation Location
