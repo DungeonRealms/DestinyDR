@@ -100,10 +100,11 @@ public class ShardSelector extends AbstractMenu {
 
         for (Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet()) {
             String bungeeName = e.getKey();
+            if (!DungeonRealms.getInstance().DR_SHARDS.containsKey(bungeeName)) continue;
+
             String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
 
-            if (!DungeonRealms.getInstance().DR_SHARDS.containsKey(bungeeName)) continue;
 
             if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().equals("offline"))
                 continue;
