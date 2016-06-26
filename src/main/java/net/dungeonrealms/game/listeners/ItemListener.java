@@ -476,12 +476,17 @@ public class ItemListener implements Listener {
                     player.sendMessage(ChatColor.GRAY + "Pet naming " + ChatColor.RED + ChatColor.UNDERLINE + "CANCELLED.");
                     return;
                 }
+                Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
+                if (pet == null) {
+                    return;
+                }
+
                 String inputName = newPetName.getMessage();
 
-                // Name must be below 14 characters
-                if (inputName.length() > 14) {
-                    player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 12 characters.");
-                    player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 14) + " characters over the limit.");
+                // Name must be below 20 characters
+                if (inputName.length() > 20) {
+                    player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 20 characters.");
+                    player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 20) + " characters over the limit.");
                     return;
                 }
 
@@ -500,7 +505,6 @@ public class ItemListener implements Listener {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, false);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, newPet, true);
-                Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
                 ChatColor prefix = ChatColor.WHITE;
                 if (Rank.isSubscriber(player)) {
                     String rank = Rank.getInstance().getRank(player.getUniqueId());

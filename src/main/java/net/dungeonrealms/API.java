@@ -445,10 +445,12 @@ public class API {
         String inventory = ItemSerialization.toString(inv);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
         if (GAMEPLAYERS.size() > 0) {
-            if (API.getGamePlayer(player) != null) {
-                API.getGamePlayer(player).getStats().updateDatabase(true);
+            GamePlayer gp = API.getGamePlayer(player);
+            if (gp != null) {
+                gp.getPlayerStatistics().updatePlayerStatistics();
+                gp.getStats().updateDatabase(false);
+                GAMEPLAYERS.remove(player.getName());
             }
-            GAMEPLAYERS.remove(player.getName());
         }
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
@@ -804,7 +806,11 @@ public class API {
                         String inventory = ItemSerialization.toString(inv);
                         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
                         if (API.GAMEPLAYERS.size() > 0) {
-                            API.GAMEPLAYERS.get(player.getName()).getStats().updateDatabase(false);
+                            GamePlayer gp = API.getGamePlayer(player);
+                            if (gp != null) {
+                                gp.getPlayerStatistics().updatePlayerStatistics();
+                                gp.getStats().updateDatabase(false);
+                            }
                         }
                         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
                         Utils.log.info("Backed up information for uuid: " + uuid.toString());

@@ -12,6 +12,7 @@ import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
@@ -31,7 +32,9 @@ import java.util.Map;
 public class GamePlayer {
 
     private Player T;
-    private PlayerStats stats;
+    private PlayerStats playerStats;
+    @Getter
+    private PlayerStatistics playerStatistics;
 
     /**
      * Attribute values and their values
@@ -45,7 +48,8 @@ public class GamePlayer {
 
     public GamePlayer(Player player) {
         T = player;
-        stats = new PlayerStats(player.getUniqueId());
+        this.playerStats = new PlayerStats(player.getUniqueId());
+        this.playerStatistics = new PlayerStatistics(player.getUniqueId());
         API.GAMEPLAYERS.put(player.getName(), this);
     }
 
@@ -108,7 +112,7 @@ public class GamePlayer {
      * @since 1.0
      */
     public int getLevel() {
-        return stats.getLevel();
+        return playerStats.getLevel();
     }
 
 
@@ -343,7 +347,7 @@ public class GamePlayer {
      * @return Player Stats
      */
     public PlayerStats getStats() {
-        return stats;
+        return playerStats;
     }
 
     public int getPlayerGemFind() {

@@ -134,6 +134,10 @@ public class BankMechanics implements GenericMechanic {
                 paid_off += to_take;
             }
             if (paid_off >= amount) {
+                GamePlayer gp = API.getGamePlayer(p);
+                if (gp != null) {
+                    gp.getPlayerStatistics().setGemsSpent(gp.getPlayerStatistics().getGemsSpent() + amount);
+                }
                 p.updateInventory();
                 return true;
             }
@@ -158,6 +162,10 @@ public class BankMechanics implements GenericMechanic {
             }
 
             if (paid_off >= amount) {
+                GamePlayer gp = API.getGamePlayer(p);
+                if (gp != null) {
+                    gp.getPlayerStatistics().setGemsSpent(gp.getPlayerStatistics().getGemsSpent() + amount);
+                }
                 p.updateInventory();
                 return true;
             }
