@@ -114,6 +114,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void breakOre(BlockBreakEvent e) {
         Block block = e.getBlock();
+        Random rand = new Random();
         if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         if (block == null) return;
@@ -136,14 +137,19 @@ public class BlockListener implements Listener {
                 GamePlayer gamePlayer = API.getGamePlayer(e.getPlayer());
                 if (gamePlayer == null) return;
                 gamePlayer.addExperience((experienceGain / 8), false);
-                RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
+                int duraBuff = Mining.getDurabilityBuff(stackInHand);
+                if (rand.nextInt(100) > duraBuff)
+                    RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int breakChance = Mining.getBreakChance(stackInHand);
                 breakChance += Mining.getSuccessChance(stackInHand);
-                int willBreak = new Random().nextInt(100);
+                int willBreak = rand.nextInt(100);
                 if (willBreak < breakChance) {
                     Mining.addExperience(stackInHand, experienceGain, p);
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
-                        p.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "   +" + experienceGain + "EXP for mining ore!");
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
+                        String expPrefix = org.bukkit.ChatColor.YELLOW.toString() + org.bukkit.ChatColor.BOLD + "        + ";
+                        p.sendMessage(expPrefix + org.bukkit.ChatColor.YELLOW + Math.round(experienceGain) + org.bukkit.ChatColor.BOLD + "t EXP " + org.bukkit.ChatColor.GRAY + "[" + Math.round(Mining.getExperience(stackInHand)) + org.bukkit.ChatColor.BOLD + "/" + org.bukkit.ChatColor.GRAY + Math.round(Mining.getEXPNeeded(Mining.getLvl(stackInHand))) + " EXP]");
+
+                    }
                     p.getInventory().addItem(Mining.getBlock(type));
                     gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
                 } else {
@@ -156,14 +162,14 @@ public class BlockListener implements Listener {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
 
 
-                int doubleDrop = new Random().nextInt(100) + 1;
+                int doubleDrop = rand.nextInt(100) + 1;
                 if (Mining.getDoubleDropChance(stackInHand) >= doubleDrop) {
                     p.getInventory().addItem(Mining.getBlock(type));
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                         p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE ORE DROP" + ChatColor.YELLOW + " (2x)");
                 }
 
-                int tripleDrop = new Random().nextInt(100) + 1;
+                int tripleDrop = rand.nextInt(100) + 1;
                 if (Mining.getTripleDropChance(stackInHand) >= tripleDrop) {
                     p.getInventory().addItem(Mining.getBlock(type));
                     p.getInventory().addItem(Mining.getBlock(type));
@@ -171,10 +177,9 @@ public class BlockListener implements Listener {
                         p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE ORE DROP" + ChatColor.YELLOW + " (3x)");
                 }
 
-                int dropGems = new Random().nextInt(100) + 1;
+                int dropGems = rand.nextInt(100) + 1;
                 if (Mining.getGemFindChance(stackInHand) >= dropGems) {
                     int amount = 0;
-                    Random rand = new Random();
                     switch (tier) {
                         case 1:
                             amount = rand.nextInt(20) + 1;

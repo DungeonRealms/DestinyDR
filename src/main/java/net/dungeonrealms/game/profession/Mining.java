@@ -149,6 +149,10 @@ public class Mining implements GenericMechanic {
 
     }
 
+    public static float getExperience(ItemStack stackInHand) {
+        return CraftItemStack.asNMSCopy(stackInHand).getTag().getInt("XP");
+    }
+
     public enum EnumMiningEnchant {
         // 0 = Double Ore 1 = Chance for Gems 2 = Chance of success increase 3 = Triple Ore 4 = Durability increase
 
@@ -551,7 +555,7 @@ public class Mining implements GenericMechanic {
         return chance;
     }
 
-    public int getDurabilityBuff(ItemStack is) {
+    public static int getDurabilityBuff(ItemStack is) {
         int buff = 0;
 
         if (!(isDRPickaxe(is))) {
@@ -727,7 +731,7 @@ public class Mining implements GenericMechanic {
      * @param i
      * @return
      */
-    public static double getLvl(ItemStack i) {
+    public static int getLvl(ItemStack i) {
         return CraftItemStack.asNMSCopy(i).getTag().getInt("level");
     }
 }
