@@ -909,8 +909,8 @@ public class ItemManager {
     }
 
     public static ItemStack getPlayerTrailItem() {
-        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Trail", new String[]{
-                ChatColor.DARK_GRAY + "Equips your active Trail.",
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Effect", new String[]{
+                ChatColor.DARK_GRAY + "Equips your active Effect.",
         });
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();

@@ -182,7 +182,7 @@ public class PetUtils implements GenericMechanic{
         public void e() {
             Entity owner = ((CraftPlayer) Bukkit.getPlayer(p)).getHandle();
             this.entity.a(owner, 10.0F, 10.0F);
-            if (this.entity.getBukkitEntity().getLocation().distanceSquared(owner.getBukkitEntity().getLocation()) <= 6) {
+            if (this.entity.getBukkitEntity().getLocation().distanceSquared(owner.getBukkitEntity().getLocation()) >= 6) {
                 try {
                     controllerRotate.invoke(this.entity.getControllerMove(), this.entity.yaw, true);
                 } catch (Exception e) {

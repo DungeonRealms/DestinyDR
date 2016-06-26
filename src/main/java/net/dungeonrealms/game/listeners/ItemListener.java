@@ -190,7 +190,7 @@ public class ItemListener implements Listener {
                 return;
             }
 
-            Realms.getInstance().loadRealm(p, doAfter -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
+            Realms.getInstance().loadRealm(p, () -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
         }
     }
 
@@ -516,7 +516,7 @@ public class ItemListener implements Listener {
                     prefix = ChatColor.AQUA;
                 }
                 pet.setCustomName(prefix + checkedPetName);
-                player.sendMessage(ChatColor.GRAY + "Pet name changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName);
+                player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
             }, null);
         }
     }

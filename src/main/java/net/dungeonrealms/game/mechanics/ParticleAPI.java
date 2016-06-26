@@ -23,9 +23,9 @@ public class ParticleAPI {
     public enum ParticleEffect {
         FIREWORKS_SPARK(0, "FIREWORKS", EnumParticle.FIREWORKS_SPARK, new org.bukkit.inventory.ItemStack(Material.FIREWORK), "Fireworks"),
         BUBBLE(1, "BUBBLE", EnumParticle.WATER_BUBBLE, new org.bukkit.inventory.ItemStack(Material.WATER_BUCKET), "Bubble"),
-        TOWN_AURA(2, "TOWNAURA", EnumParticle.TOWN_AURA, new org.bukkit.inventory.ItemStack(Material.FIREWORK), "Stubble"),
-        CRIT(3, "CRITICAL", EnumParticle.CRIT, new org.bukkit.inventory.ItemStack(Material.GOLD_SWORD), "Light Stars"),
-        MAGIC_CRIT(4, "MAGICCRIT", EnumParticle.CRIT_MAGIC, new org.bukkit.inventory.ItemStack(Material.GOLD_HOE), "Dark Stars"),
+        TOWN_AURA(2, "TOWNAURA", EnumParticle.TOWN_AURA, new org.bukkit.inventory.ItemStack(Material.SULPHUR), "Stubble"),
+        CRIT(3, "CRITICAL", EnumParticle.CRIT, new org.bukkit.inventory.ItemStack(Material.NETHER_STAR), "Light Stars"),
+        MAGIC_CRIT(4, "MAGICCRIT", EnumParticle.CRIT_MAGIC, new org.bukkit.inventory.ItemStack(Material.FIREWORK_CHARGE), "Dark Stars"),
         WITCH_MAGIC(5, "WITCHMAGIC", EnumParticle.SPELL_WITCH, new org.bukkit.inventory.ItemStack(Material.CAULDRON_ITEM), "Magic"),
         NOTE(6, "NOTE", EnumParticle.NOTE, new org.bukkit.inventory.ItemStack(Material.NOTE_BLOCK), "Notes"),
         PORTAL(7, "PORTAL", EnumParticle.PORTAL, new org.bukkit.inventory.ItemStack(Material.EYE_OF_ENDER), "Portal"),
@@ -34,13 +34,13 @@ public class ParticleAPI {
         LAVA(10, "LAVA", EnumParticle.LAVA, new org.bukkit.inventory.ItemStack(Material.LAVA_BUCKET), "Lava"),
         SPLASH(11, "SPLASH", EnumParticle.WATER_SPLASH, new org.bukkit.inventory.ItemStack(Material.WATER_BUCKET), "Splash"),
         LARGE_SMOKE(12, "LARGESMOKE", EnumParticle.SMOKE_LARGE, new org.bukkit.inventory.ItemStack(Material.MELON), "Thick Smoke"),
-        RED_DUST(13, "REDDUST", EnumParticle.REDSTONE, new org.bukkit.inventory.ItemStack(Material.REDSTONE), "Birthday"),
-        SNOWBALL_POOF(14, "SNOWBALL", EnumParticle.SNOWBALL, new org.bukkit.inventory.ItemStack(Material.SNOW_BLOCK), "Snowball"),
+        RED_DUST(13, "REDDUST", EnumParticle.REDSTONE, new org.bukkit.inventory.ItemStack(Material.CAKE), "Birthday"),
+        SNOWBALL_POOF(14, "SNOWBALL", EnumParticle.SNOWBALL, new org.bukkit.inventory.ItemStack(Material.SNOW_BALL), "Snowball"),
         SMALL_SMOKE(15, "SMOKEY", EnumParticle.SMOKE_NORMAL, new org.bukkit.inventory.ItemStack(Material.SUGAR), "Thin Smoke"),
         CLOUD(16, "CLOUD", EnumParticle.CLOUD, new org.bukkit.inventory.ItemStack(Material.BEACON), "Cloudy"),
-        HAPPY_VILLAGER(17, "POISON", EnumParticle.VILLAGER_HAPPY, new org.bukkit.inventory.ItemStack(Material.FIREWORK), "Poison"),
+        HAPPY_VILLAGER(17, "POISON", EnumParticle.VILLAGER_HAPPY, new org.bukkit.inventory.ItemStack(Material.SPIDER_EYE), "Poison"),
         SPELL(18, "SPELL", EnumParticle.SPELL, new org.bukkit.inventory.ItemStack(Material.BLAZE_POWDER), "Potion"),
-        SNOW_SHOVEL(19, "SNOWING", EnumParticle.SNOW_SHOVEL, new org.bukkit.inventory.ItemStack(Material.SNOW_BALL), "Snowfall");
+        SNOW_SHOVEL(19, "SNOWING", EnumParticle.SNOW_SHOVEL, new org.bukkit.inventory.ItemStack(Material.SNOW), "Snowfall");
 
         private int id;
         private String rawName;

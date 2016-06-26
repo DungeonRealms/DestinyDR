@@ -64,18 +64,16 @@ public class CommandResetRealm extends BasicCommand {
 
             // Run sync cuz listen for chat is async -_-
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(),
-                    () -> Realms.getInstance().loadRealm(player, doAfter -> {
+                    () -> Realms.getInstance().loadRealm(player, () -> {
                                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Resetting your realm ...");
 
                                 try {
-                                    Realms.getInstance().resetRealm(player.getUniqueId());
-                                } catch (IOException | ZipException e) {
+                                    Realms.getInstance().resetRealm(player);
+                                } catch (IOException e) {
                                     e.printStackTrace();
                                     player.sendMessage(ChatColor.RED + "We failed to reset your realm!");
-                                    return;
                                 }
 
-                                player.sendMessage(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "Your realm has successfully been reset!");
                             }
                     ));
         }, null);

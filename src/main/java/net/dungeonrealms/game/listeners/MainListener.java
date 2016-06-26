@@ -9,7 +9,6 @@ import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
@@ -38,16 +37,13 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.md_5.bungee.api.*;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import org.bukkit.*;
-import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
@@ -73,9 +69,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -626,7 +620,10 @@ public class MainListener implements Listener {
 
                     int exp = Fishing.getFishEXP(Fishing.getFishTier(fish));
                     Fishing.gainExp(pl.getEquipment().getItemInMainHand(), pl, exp);
-                    API.getGamePlayer(pl).addExperience(exp, false);
+                    GamePlayer gamePlayer = API.getGamePlayer(pl);
+                    if (gamePlayer == null) return;
+                    gamePlayer.addExperience(exp / 8, false);
+                    gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
                         fish = Fishing.getFishDrop(spot_tier);
@@ -919,12 +916,11 @@ public class MainListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void chunkUNload(ChunkUnloadEvent event) {
+    public void chunkUnload(ChunkUnloadEvent event) {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
             if (event.getChunk().getEntities().length > 0) {
-                SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSpawnedMonsters().size() > 2).forEach(spawner -> spawner.setFirstSpawn(true));
                 for (Entity entity : event.getChunk().getEntities()) {
-                    if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {
+                    if (!(entity instanceof Item) && !(entity instanceof Player)) {
                         if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
                             entity.remove();
                         }

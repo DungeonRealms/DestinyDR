@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.loot;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -104,7 +105,14 @@ public class LootSpawner {
                 }
             }
         }
-        player.getWorld().playEffect(block.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, 25);
+        GamePlayer gamePlayer = API.getGamePlayer(player);
+        if (gamePlayer == null) return;
+        gamePlayer.getPlayerStatistics().setLootChestsOpened(gamePlayer.getPlayerStatistics().getLootChestsOpened() + 1);
+        for (int i = 0; i < 6; i++) {
+            player.getWorld().playEffect(block.getLocation().add(i, 0.5, i), Effect.TILE_BREAK, 25, 12);
+            player.getWorld().playEffect(block.getLocation().add(i, 0.35, i), Effect.TILE_BREAK, 25, 12);
+            player.getWorld().playEffect(block.getLocation().add(i, 0.2, i), Effect.TILE_BREAK, 25, 12);
+        }
         player.playSound(block.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
         block.getDrops().clear();
         block.setType(Material.AIR);

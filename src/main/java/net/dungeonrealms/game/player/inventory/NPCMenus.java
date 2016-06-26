@@ -8,7 +8,6 @@ import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
@@ -131,35 +130,23 @@ public class NPCMenus {
     }
 
     public static void openECashPurchaseMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "E-Cash Vendor");
+        Inventory inv = Bukkit.createInventory(null, 18, "E-Cash Vendor");
 
-        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.BLAZE_POWDER), ChatColor.RED + "Flame Trail", new String[]{
-                ChatColor.AQUA + "649 E-Cash"}).setNBTString("playerTrailType", "FLAME").setNBTInt("ecashCost", 649).build());
-        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.JUKEBOX), ChatColor.LIGHT_PURPLE + "Musical Trail", new String[]{
-                ChatColor.AQUA + "649 E-Cash"}).setNBTString("playerTrailType", "NOTE").setNBTInt("ecashCost", 649).build());
-        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Cloud Trail", new String[]{
-                ChatColor.AQUA + "649 E-Cash"}).setNBTString("playerTrailType", "CLOUD").setNBTInt("ecashCost", 649).build());
-        inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.POTION), ChatColor.DARK_PURPLE + "Cursed Trail", new String[]{
-                ChatColor.AQUA + "649 E-Cash"}).setNBTString("playerTrailType", "WITCHMAGIC").setNBTInt("ecashCost", 649).build());
-        inv.setItem(4, new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 2, ChatColor.GREEN + "Zombie Horse Skin", new String[]{
-                ChatColor.RED + "Requires a mount to purchase",
-                ChatColor.AQUA + "749 E-Cash"}).setNBTString("skinType", EnumMountSkins.ZOMBIE_HORSE.getRawName()).setNBTInt("ecashCost", 749).build());
-        inv.setItem(5, new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 0, ChatColor.GRAY + "Skeleton Horse Skin", new String[]{
-                ChatColor.RED + "Requires a mount to purchase",
-                ChatColor.AQUA + "749 E-Cash"}).setNBTString("skinType", EnumMountSkins.SKELETON_HORSE.getRawName()).setNBTInt("ecashCost", 749).build());
-        inv.setItem(6, new ItemBuilder().setItem(Material.MONSTER_EGG, (short) 101, ChatColor.YELLOW + "Rabbit Pet", new String[]{
-                ChatColor.AQUA + "749 E-Cash"}).setNBTString("petType", "RABBIT").setNBTInt("ecashCost", 749).build());
-        inv.setItem(7, new ItemBuilder().setItem(Material.MONSTER_EGG, (short) 98, ChatColor.YELLOW + "Ocelot Pet", new String[]{
-                ChatColor.AQUA + "749 E-Cash"}).setNBTString("petType", "OCELOT").setNBTInt("ecashCost", 749).build());
-        inv.setItem(8, new ItemBuilder().setItem(new ItemStack(Material.ENDER_CHEST), ChatColor.GREEN + "Storage Expansion", new String[]{
-                ChatColor.RED + "Expand Your Bank!",
-                ChatColor.AQUA + "999 E-Cash"}).setNBTString("storageExpansion", "xFiniTEAPro").setNBTInt("ecashCost", 999).build());
-        inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
+        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.MONSTER_EGG), ChatColor.GOLD + "Pets", new String[]{
+                ChatColor.GRAY + "View the available E-Cash Pets."
+        }).build());
+        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.GLOWSTONE_DUST), ChatColor.GOLD + "Effects", new String[]{
+                ChatColor.GRAY + "View the available E-Cash Effects."
+        }).build());
+        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.SKULL_ITEM), ChatColor.GOLD + "Skins", new String[]{
+                ChatColor.GRAY + "View the available E-Cash Skins."
+        }).build());
+        inv.setItem(8, new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
                 ChatColor.RED + "Refund ALL Stat Points!",
                 ChatColor.AQUA + "399 E-Cash"}).setNBTString("retrainingBook", "_Atlassie").setNBTInt("ecashCost", 399).build());
-        inv.setItem(18, new ItemBuilder().setItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Our Store", new String[]{
+        inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Our Store", new String[]{
                 ChatColor.AQUA + "Click here to visit our store!"}).setNBTString("donationStore", "ProxyIsAwesome").build());
-        inv.setItem(26, new ItemBuilder().setItem(new ItemStack(Material.GOLDEN_APPLE), ChatColor.GREEN + "Current E-Cash", new String[]{
+        inv.setItem(17, new ItemBuilder().setItem(new ItemStack(Material.GOLDEN_APPLE), ChatColor.GREEN + "Current E-Cash", new String[]{
                 ChatColor.AQUA + "Your E-Cash Balance is: " + ChatColor.YELLOW.toString() + ChatColor.BOLD + API.getGamePlayer(player).getEcashBalance()}).build());
 
         player.openInventory(inv);
