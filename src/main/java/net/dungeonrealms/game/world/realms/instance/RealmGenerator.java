@@ -30,9 +30,7 @@ public class RealmGenerator extends ChunkGenerator {
 
     public byte[] generate(World world, Random rand, int chunkx, int chunkz) {
         byte[] result = new byte[32768];
-        if ((chunkx == 0) && (chunkz == 0)) {
-            result[xyzToByte(0, 64, 0)] = ((byte) Material.BEDROCK.getId());
-        }
+        if ((chunkx == 0) && (chunkz == 0)) result[xyzToByte(0, 64, 0)] = ((byte) Material.BEDROCK.getId());
         return result;
     }
 

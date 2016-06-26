@@ -190,7 +190,7 @@ public class ItemListener implements Listener {
                 return;
             }
 
-            Realms.getInstance().loadRealm(p, doAfter -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
+            Realms.getInstance().loadRealm(p, () -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
         }
     }
 

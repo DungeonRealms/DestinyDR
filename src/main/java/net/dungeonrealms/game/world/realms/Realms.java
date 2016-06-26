@@ -59,8 +59,16 @@ public interface Realms extends GenericMechanic {
      * @param player  Owner of realm
      * @param doAfter What should be executed after?
      */
-    void loadRealm(Player player, Consumer<?> doAfter);
+    void loadRealm(Player player, Runnable doAfter);
 
+
+    /**
+     * Loads the player's realm*
+     *
+     * @param player  Owner of realm
+     * @param doAfter What should be executed after?
+     */
+    void AsyncLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter);
 
     /**
      * Loads the realm world
@@ -86,19 +94,18 @@ public interface Realms extends GenericMechanic {
     void doLogout(Player player);
 
     /**
-     * Executed when we have failed to load player realm.
-     *
-     * @param player Player
-     * @param thrown Error thrown.
-     */
-    void handleRealmLoadFailure(Player player, Throwable thrown);
-
-    /**
      * This function downloads the player's realm from the realm FTP database if it exists
      *
      * @param uuid Owner of realm
      */
     ListenableFuture<Boolean> downloadRealm(UUID uuid);
+
+    /**
+     * Unzips default world for realms
+     *
+     * @param player Owner of realm
+     */
+    ListenableFuture<Boolean> loadTemplate(UUID player);
 
 
     /**
@@ -121,9 +128,9 @@ public interface Realms extends GenericMechanic {
     /**
      * Reset realm for player
      *
-     * @param uuid Owner of realm
+     * @param player Owner of realm
      */
-    void resetRealm(UUID uuid) throws IOException, ZipException;
+    void resetRealm(Player player) throws IOException;
 
 
     /**
@@ -231,14 +238,6 @@ public interface Realms extends GenericMechanic {
      * @param uuid Owner of realm
      */
     boolean isRealmPortalOpen(UUID uuid);
-
-
-    /**
-     * Unzips default world for realms
-     *
-     * @param player Owner of realm
-     */
-    void loadTemplate(UUID player) throws ZipException;
 
 
     /**
