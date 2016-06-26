@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
@@ -315,6 +316,10 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
     private void doBossDrops() {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         for (Player pl : livingEntity.getWorld().getPlayers()) {
+            GamePlayer gp = API.getGamePlayer(pl);
+            if (gp != null) {
+                gp.getPlayerStatistics().setBurickKills(gp.getPlayerStatistics().getInfernalAbyssKills() + 1);
+            }
             pl.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
                     + "You...have... defeated me...ARGHHHH!!!!!");
             pushAwayPlayer(livingEntity, pl, 6.0F);

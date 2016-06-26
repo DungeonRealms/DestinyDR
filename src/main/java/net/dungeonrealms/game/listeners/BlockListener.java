@@ -3,6 +3,7 @@ package net.dungeonrealms.game.listeners;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -22,7 +23,6 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -133,9 +133,9 @@ public class BlockListener implements Listener {
                     return;
                 }
                 int experienceGain = Mining.getOreEXP(stackInHand, type);
-                if (API.getGamePlayer(e.getPlayer()) != null) {
-                    API.getGamePlayer(e.getPlayer()).addExperience((experienceGain / 8), false);
-                }
+                GamePlayer gamePlayer = API.getGamePlayer(e.getPlayer());
+                if (gamePlayer == null) return;
+                gamePlayer.addExperience((experienceGain / 8), false);
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int break_chance = Mining.getBreakChance(stackInHand);
                 int do_i_break = new Random().nextInt(100);
@@ -144,6 +144,7 @@ public class BlockListener implements Listener {
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                         p.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "   +" + experienceGain + "EXP for mining ore!");
                     p.getInventory().addItem(Mining.getBlock(type));
+                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
                 } else {
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }

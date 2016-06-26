@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.loot;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -104,6 +105,9 @@ public class LootSpawner {
                 }
             }
         }
+        GamePlayer gamePlayer = API.getGamePlayer(player);
+        if (gamePlayer == null) return;
+        gamePlayer.getPlayerStatistics().setLootChestsOpened(gamePlayer.getPlayerStatistics().getLootChestsOpened() + 1);
         for (int i = 0; i < 6; i++) {
             player.getWorld().playEffect(block.getLocation().add(i, 0.5, i), Effect.TILE_BREAK, 25, 12);
             player.getWorld().playEffect(block.getLocation().add(i, 0.35, i), Effect.TILE_BREAK, 25, 12);

@@ -488,16 +488,19 @@ public class InventoryListener implements Listener {
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
         net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
-        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
-            return;
-        if (API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30) {
-            event.setCancelled(true);
-            event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
-            return;
-        }
+        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb")) return;
         ItemStack slotItem = event.getCurrentItem();
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
+        GamePlayer gp = API.getGamePlayer((Player) event.getWhoClicked());
+        if (gp != null) {
+            if (gp.getLevel() < 30) {
+                event.setCancelled(true);
+                event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
+                return;
+            }
+            gp.getPlayerStatistics().setOrbsUsed(gp.getPlayerStatistics().getOrbsUsed() + 1);
+        }
         event.setCancelled(true);
         if (cursorItem.getAmount() == 1) {
             event.setCursor(new ItemStack(Material.AIR));
@@ -527,6 +530,8 @@ public class InventoryListener implements Listener {
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem)) return;
         event.setCancelled(true);
+        GamePlayer gamePlayer = API.getGamePlayer((Player) event.getWhoClicked());
+        if (gamePlayer == null) return;
 
 
         if (nmsCursor.getTag().getString("type").equalsIgnoreCase("protection")) {
@@ -640,6 +645,7 @@ public class InventoryListener implements Listener {
                 }
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
+                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 return;
             }
 
@@ -702,6 +708,7 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (API.isArmor(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")) {
                 return;
@@ -787,6 +794,7 @@ public class InventoryListener implements Listener {
 
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
+                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 return;
             }
 
@@ -867,6 +875,7 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (Fishing.isDRFishingPole(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("fishingenchant")) {
                 return;
@@ -931,7 +940,8 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
+            //TODO: Chase when mining ones can be applied, increment stat.
         }
     }
 

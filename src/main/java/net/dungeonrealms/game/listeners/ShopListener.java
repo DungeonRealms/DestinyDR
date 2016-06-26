@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.listeners;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -402,6 +404,10 @@ public class ShopListener implements Listener {
                             } else {
                                 shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             }
+                            GamePlayer gamePlayer = API.getGamePlayer(shop.getOwner());
+                            if (gamePlayer != null) {
+                                gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + totalPrice);
+                            }
                             Achievements.getInstance().giveAchievement(shop.getOwner().getUniqueId(), Achievements.EnumAchievements.SHOP_MERCHANT);
                         } else {
                             if (shop.hasCustomName(itemClicked)) {
@@ -409,6 +415,8 @@ public class ShopListener implements Listener {
                             } else {
                                 NetworkAPI.getInstance().sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             }
+                            DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS_EARNED, totalPrice, true);
+                            API.updatePlayerData(shop.ownerUUID);
                         }
                         int itemsLeft = 0;
                         for (ItemStack itemStack : event.getInventory().getContents()) {

@@ -620,7 +620,10 @@ public class MainListener implements Listener {
 
                     int exp = Fishing.getFishEXP(Fishing.getFishTier(fish));
                     Fishing.gainExp(pl.getEquipment().getItemInMainHand(), pl, exp);
-                    API.getGamePlayer(pl).addExperience(exp, false);
+                    GamePlayer gamePlayer = API.getGamePlayer(pl);
+                    if (gamePlayer == null) return;
+                    gamePlayer.addExperience(exp / 8, false);
+                    gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
                         fish = Fishing.getFishDrop(spot_tier);

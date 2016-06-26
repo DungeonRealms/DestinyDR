@@ -130,7 +130,7 @@ public class NPCMenus {
     }
 
     public static void openECashPurchaseMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "E-Cash Vendor");
+        Inventory inv = Bukkit.createInventory(null, 18, "E-Cash Vendor");
 
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.MONSTER_EGG), ChatColor.GOLD + "Pets", new String[]{
                 ChatColor.GRAY + "View the available E-Cash Pets."
@@ -141,7 +141,7 @@ public class NPCMenus {
         inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.SKULL_ITEM), ChatColor.GOLD + "Skins", new String[]{
                 ChatColor.GRAY + "View the available E-Cash Skins."
         }).build());
-        inv.setItem(4, new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
+        inv.setItem(8, new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
                 ChatColor.RED + "Refund ALL Stat Points!",
                 ChatColor.AQUA + "399 E-Cash"}).setNBTString("retrainingBook", "_Atlassie").setNBTInt("ecashCost", 399).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Our Store", new String[]{
