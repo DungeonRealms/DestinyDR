@@ -169,7 +169,14 @@ public class BlockListener implements Listener {
                     furnace.setBurnTime((short) 20);
                 }
                 e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1);
-                e.getPlayer().getEquipment().getItemInMainHand().setType(Material.COOKED_FISH);
+                ItemStack stack = e.getPlayer().getEquipment().getItemInMainHand();
+                if (stack.getAmount() > 1) {
+                    ItemStack cookedFish = stack.clone();
+                    cookedFish.setType(Material.COOKED_FISH);
+                    e.getPlayer().getInventory().addItem(cookedFish);
+                    stack.setAmount(stack.getAmount() - 1);
+                } else
+                    e.getPlayer().getEquipment().getItemInMainHand().setType(Material.COOKED_FISH);
                 e.getPlayer().updateInventory();
             }
         }

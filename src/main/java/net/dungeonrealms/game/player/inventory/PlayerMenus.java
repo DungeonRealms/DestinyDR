@@ -580,8 +580,8 @@ public class PlayerMenus {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Stand out amongst the rest",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "with powerful effects.",
                 "",
-                ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View obtained trails.",
-                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive trail item."
+                ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View obtained effect.",
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive effect item."
         }));
         inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GOLD + "Mounts", new String[]{
                 "",

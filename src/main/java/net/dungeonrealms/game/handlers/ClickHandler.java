@@ -17,6 +17,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.inventory.ECashMenus;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
@@ -147,68 +148,23 @@ public class ClickHandler {
             case "E-Cash Vendor":
                 event.setCancelled(true);
                 if (slot > 25) return;
+                switch (slot) {
+                    case 0:
+                        ECashMenus.openEcashPets(player);
+                        break;
+                    case 1:
+                        ECashMenus.openEcashEffects(player);
+                        break;
+                    case 2:
+                        ECashMenus.openMountSkins(player);
+                        break;
+                    default:
+                        break;
+                }
                 if (event.getCurrentItem().getType() != Material.AIR) {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack == null) return;
                     if (nmsStack.getTag() == null) return;
-                    if (nmsStack.getTag().hasKey("playerTrailType")) {
-                        List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
-                        if (playerTrails.contains(nmsStack.getTag().getString("playerTrailType"))) {
-                            player.sendMessage(ChatColor.RED + "You already own this trail!");
-                            return;
-                        } else {
-                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, nmsStack.getTag().getString("playerTrailType").toUpperCase(), false);
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, nmsStack.getTag().getString("playerTrailType").toUpperCase(), true);
-                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")).getDisplayName() + " trail.");
-                                player.closeInventory();
-                                return;
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this trail, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                return;
-                            }
-                        }
-                    }
-                    if (nmsStack.getTag().hasKey("skinType")) {
-                        if (DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId()).equals("")) {
-                            player.sendMessage(ChatColor.RED + "You cannot purchase a mount skin as you do not own a mount!");
-                            return;
-                        }
-                        List<String> playerMountSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, player.getUniqueId());
-                        if (playerMountSkins.contains(nmsStack.getTag().getString("skinType"))) {
-                            player.sendMessage(ChatColor.RED + "You already own this mount skin!");
-                            return;
-                        } else {
-                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, nmsStack.getTag().getString("skinType").toUpperCase(), false);
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, nmsStack.getTag().getString("skinType").toUpperCase(), true);
-                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + EnumMountSkins.getByName(nmsStack.getTag().getString("skinType")).getDisplayName() + " mount skin");
-                                player.closeInventory();
-                                return;
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this mount skin, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                return;
-                            }
-                        }
-                    }
-                    if (nmsStack.getTag().hasKey("petType")) {
-                        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
-                        if (playerPets.contains(nmsStack.getTag().getString("petType"))) {
-                            player.sendMessage(ChatColor.RED + "You already own this pet.");
-                            return;
-                        } else {
-                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, nmsStack.getTag().getString("petType").toUpperCase(), false);
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, nmsStack.getTag().getString("petType").toUpperCase(), true);
-                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + EnumPets.getByName(nmsStack.getTag().getString("petType")).getDisplayName() + " pet.");
-                                player.closeInventory();
-                                return;
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                return;
-                            }
-                        }
-                    }
                     /*if (nmsStack.getTag().hasKey("donationStore")) {
                         player.closeInventory();
                         TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
@@ -681,7 +637,7 @@ public class ClickHandler {
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType, false);
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType + "@" + finalPetName, false);
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true);
-                            player.sendMessage(ChatColor.GRAY + "Your pet's name have been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
+                            player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
                         }, null);
                     }
                 }
@@ -764,7 +720,7 @@ public class ClickHandler {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
                 }
                 break;
-            case "Player Trail Selection":
+            case "Player Effect Selection":
                 event.setCancelled(true);
                 if (event.getCurrentItem().getType() == Material.BARRIER) {
                     PlayerMenus.openPlayerProfileMenu(player);
@@ -773,16 +729,16 @@ public class ClickHandler {
                 if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
                     if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                         DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                        player.sendMessage(ChatColor.GREEN + "You have disabled your trail.");
+                        player.sendMessage(ChatColor.GREEN + "You have disabled your effect.");
                     } else {
-                        player.sendMessage(ChatColor.RED + "You don't have a player trail currently activated.");
+                        player.sendMessage(ChatColor.RED + "You don't have a player effect currently activated.");
                     }
                     return;
                 }
                 if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("playerTrailType") == null) {
-                        player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your player trail! Please inform a developer! [PTS-NBT]");
+                        player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your player effect! Please inform a developer! [PTS-NBT]");
                         player.closeInventory();
                         return;
                     }
@@ -1548,6 +1504,114 @@ public class ClickHandler {
                 }
 
                 PlayerMenus.openGameMasterTogglesMenu(player);
+                break;
+            case "E-Cash Pets":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (slot == 0) {
+                    NPCMenus.openECashPurchaseMenu(player);
+                    return;
+                }
+                net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (!nmsStack.getTag().hasKey("petType")) return;
+                if (!nmsStack.getTag().hasKey("eCash")) return;
+                String petType = nmsStack.getTag().getString("petType");
+                List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
+                EnumPets pets = EnumPets.getByName(petType);
+                if (pets == null) {
+                    return;
+                }
+                if (!playerPets.isEmpty()) {
+                    for (String pet : playerPets) {
+                        if (pet.contains(petType.toUpperCase())) {
+                            player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + pets.getDisplayName() + ChatColor.RED + " pet.");
+                            return;
+                        }
+                    }
+                }
+                int eCashCost = nmsStack.getTag().getInt("eCash");
+                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true);
+                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
+                    player.closeInventory();
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                }
+                break;
+            case "E-Cash Effects":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (slot == 0) {
+                    NPCMenus.openECashPurchaseMenu(player);
+                    return;
+                }
+                nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (!nmsStack.getTag().hasKey("effectType")) return;
+                if (!nmsStack.getTag().hasKey("eCash")) return;
+                String effectType = nmsStack.getTag().getString("effectType");
+                List<String> playerEffects = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
+                ParticleAPI.ParticleEffect effect = ParticleAPI.ParticleEffect.getByName(effectType);
+                if (effect == null) {
+                    return;
+                }
+                if (!playerEffects.isEmpty()) {
+                    if (playerEffects.contains(effectType)) {
+                        player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + effect.getDisplayName() + ChatColor.RED + " effect.");
+                        return;
+                    }
+                }
+                eCashCost = nmsStack.getTag().getInt("eCash");
+                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, effectType, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true);
+                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect.");
+                    player.closeInventory();
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot afford this effect, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                }
+                break;
+            case "E-Cash Skins":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (slot == 0) {
+                    NPCMenus.openECashPurchaseMenu(player);
+                    return;
+                }
+                nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (!nmsStack.getTag().hasKey("skinType")) return;
+                if (!nmsStack.getTag().hasKey("eCash")) return;
+                if (DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId()).equals("")) {
+                    player.sendMessage(ChatColor.RED + "You cannot purchase a mount skin as you do not own a mount!");
+                    return;
+                }
+                String skinType = nmsStack.getTag().getString("skinType");
+                List<String> playerSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, player.getUniqueId());
+                EnumMountSkins skin = EnumMountSkins.getByName(skinType);
+                if (skin == null) {
+                    return;
+                }
+                if (!playerSkins.isEmpty()) {
+                    if (playerSkins.contains(skinType)) {
+                        player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + skin.getDisplayName() + ChatColor.RED + " mount skin.");
+                        return;
+                    }
+                }
+                eCashCost = nmsStack.getTag().getInt("eCash");
+                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, skinType, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, skinType, true);
+                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + skin.getDisplayName() + " mount skin.");
+                    player.closeInventory();
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot afford this mount skin, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                }
                 break;
         }
     }

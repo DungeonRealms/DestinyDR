@@ -74,13 +74,7 @@ public class CommandEss extends BasicCommand {
                             String petType = args[2];
                             List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
                             String petName;
-                            String particleType = "";
-                            if (!petType.contains("-")) {
-                                petName = petType;
-                            } else {
-                                petName = petType.split("-")[0];
-                                particleType = petType.split("-")[1];
-                            }
+                            petName = petType;
                             String petNameFriendly = petName.toUpperCase().replace("_", " ");
 
                             if (!API.isStringPet(petName)) {
@@ -88,20 +82,16 @@ public class CommandEss extends BasicCommand {
                                 return false;
                             }
 
-                            if (!particleType.equals("")) {
-                                if (!API.isStringTrail(particleType)) {
-                                    commandSender.sendMessage(ChatColor.RED + "The pet " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.RED + " cannot have the trail " + ChatColor.BOLD + ChatColor.UNDERLINE + particleType.toUpperCase().replace("_", " ") + ChatColor.RED + ".");
-                                    return false;
-                                }
-                            }
-
                             if (!playerPets.isEmpty()) {
-                                if (playerPets.contains(petType.toUpperCase())) {
-                                    commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.RED + " pet.");
-                                    return false;
+                                for (String pet : playerPets) {
+                                    if (pet.contains(petType.toUpperCase())) {
+                                        commandSender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + playerName + ChatColor.RED + " already has the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.RED + " pet.");
+                                        return false;
+                                    }
                                 }
                             }
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petType.toUpperCase(), true);
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petType.toUpperCase(), false);
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_PET, petType.toUpperCase(), true);
                             commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                             API.updatePlayerData(uuid);
                         } catch (IllegalArgumentException ex) {
@@ -131,7 +121,8 @@ public class CommandEss extends BasicCommand {
                                     return false;
                                 }
                             }
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.MOUNTS, mountType.toUpperCase(), true);
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.MOUNTS, mountType.toUpperCase(), false);
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mountType.toUpperCase(), true);
                             commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                             API.updatePlayerData(uuid);
                         } catch (IllegalArgumentException ex) {
@@ -165,8 +156,8 @@ public class CommandEss extends BasicCommand {
                                     return false;
                                 }
                             }
-
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailType.toUpperCase(), true);
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailType.toUpperCase(), false);
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_TRAIL, trailType.toUpperCase(), true);
                             commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                             API.updatePlayerData(uuid);
                         } catch (IllegalArgumentException ex) {
