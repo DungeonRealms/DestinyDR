@@ -52,8 +52,6 @@ public class CommandRealm extends BasicCommand {
         player.sendMessage("");
 
         Realms.getInstance().setRealmTitle(player.getUniqueId(), fixedTitle);
-        Realms.getInstance().updateRealmHologram(player.getUniqueId());
-
         return true;
     }
 }

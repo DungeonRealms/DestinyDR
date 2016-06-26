@@ -34,7 +34,7 @@ public class CommandTrail extends BasicCommand {
         if (args.length == 0) {
             if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                 DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                player.sendMessage(ChatColor.AQUA + "You have disabled your trail.");
+                player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
                 return true;
             }
             String trailType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_TRAIL, player.getUniqueId());
@@ -44,7 +44,7 @@ public class CommandTrail extends BasicCommand {
                 return true;
             }
             DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(trailType));
-            player.sendMessage(ChatColor.GREEN + "Enabling trail.");
+            player.sendMessage(ChatColor.GREEN + "Your active trail has been activated.");
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {

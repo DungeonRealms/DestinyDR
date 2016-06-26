@@ -351,6 +351,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "Will help remove you if you're stuck in a block."));
 
             cm.registerCommand(new CommandRealm("realm", "/<command> [args]", "Realm command"));
+            cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
 
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));

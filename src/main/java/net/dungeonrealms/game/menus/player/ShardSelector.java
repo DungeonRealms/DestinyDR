@@ -17,28 +17,30 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.ui.GUIButtonClickEvent;
 import net.dungeonrealms.game.ui.VolatileGUI;
 import net.dungeonrealms.game.ui.item.GUIButton;
-import net.minecraft.server.v1_9_R2.Tuple;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/18/2016
  */
 public class ShardSelector extends AbstractMenu implements VolatileGUI {
 
-    public static Map<String, Tuple<String, GUIButton>> CACHED_PING_SHARD_BUTTONS = new WeakHashMap<>();
+    public static Map<String, Map<String, GUIButton>> CACHED_PING_SHARD_BUTTONS = new HashMap<>();
     private final String playerHostName;
 
     public ShardSelector(Player player) {
         super("DungeonRealms Shards", AbstractMenu.round(getFilteredServers().size()), player.getUniqueId());
         setDestroyOnExit(true);
 
-        this.playerHostName = player.getAddress().getAddress().getHostName();
+        this.playerHostName = player.getAddress().getHostName();
 
         // DISPLAY AVAILABLE SHARDS //
         for (Entry<String, BungeeServerInfo> e : getFilteredServers().entrySet()) {
@@ -46,6 +48,10 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
 
+            // Do not show YT / CS shards unless they've got the appropriate permission to see them.
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
+                continue;
+            }
 
             GUIButton button = new GUIButton(Material.END_CRYSTAL) {
                 @Override
@@ -63,9 +69,14 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
 
                     Cooldown.addCooldown(player.getUniqueId(), 1000L);
 
-                    if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("SUB") && !Rank.isSubscriber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
-                        //TODO: BRAD CHANGE THIS MESSAGE
-                        player.sendMessage(ChatColor.RED + "Purchase subscriber @ www.dungeonrealm.net/shop");
+                    if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
+                        player.sendMessage(new String[] {
+                                ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + "SUBSCRIBER ONLY" + ChatColor.RED + " shard!",
+                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
+                        });
+                        return;
+                    } else if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
+                        player.sendMessage(ChatColor.RED + "You are " + ChatColor.BOLD + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " authorized to connect to this shard.");
                         return;
                     }
 
@@ -103,13 +114,25 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY + " (...)");
+            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY);
             button.setLore(lore);
-            button.setSlot(slot);
-            button.setGui(this);
 
-            CACHED_PING_SHARD_BUTTONS.put(playerHostName, new Tuple<>(bungeeName, button));
-            NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Ping", playerHostName);
+//            button.setSlot(slot);
+//            button.setGui(this);
+//
+//            if (!CACHED_PING_SHARD_BUTTONS.containsKey(playerHostName)) {
+//                Map<String, GUIButton> map = new HashMap<>();
+//                map.put(bungeeName, button);
+//
+//                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
+//            } else {
+//                Map<String, GUIButton> map = CACHED_PING_SHARD_BUTTONS.get(playerHostName);
+//                map.put(bungeeName, button);
+//
+//                CACHED_PING_SHARD_BUTTONS.put(playerHostName, map);
+//            }
+//
+//            NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Ping", playerHostName);
 
             set(slot, button);
         }

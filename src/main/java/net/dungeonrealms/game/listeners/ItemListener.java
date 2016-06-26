@@ -190,12 +190,7 @@ public class ItemListener implements Listener {
                 return;
             }
 
-            if (!Realms.getInstance().isRealmCached(event.getPlayer().getUniqueId())) {
-                Realms.getInstance().loadRealm(p, event.getClickedBlock().getLocation());
-                return;
-            }
-
-            Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation());
+            Realms.getInstance().loadRealm(p, doAfter -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
         }
     }
 
@@ -766,12 +761,12 @@ public class ItemListener implements Listener {
                         if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
                             DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                         }
-                        player.sendMessage(ChatColor.AQUA + "Mount dismissed.");
+                        player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
                         EntityAPI.removePlayerMountList(player.getUniqueId());
                         return;
                     }
                     if (CombatLog.isInCombat(player)) {
-                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
+                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                         return;
                     }
                     String mountType = tag.getString("usage").equals("mule") ? "MULE" : (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
@@ -787,7 +782,7 @@ public class ItemListener implements Listener {
                             return;
                         }
                     }
-                    player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
+                    player.sendMessage(ChatColor.GREEN + "Your mount is being summoned into this world!");
                     final int[] count = {0};
                     Location startingLocation = player.getLocation();
                     final boolean[] cancelled = {false};
@@ -830,7 +825,7 @@ public class ItemListener implements Listener {
                         if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
                             DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                         }
-                        player.sendMessage(ChatColor.AQUA + "Pet dismissed.");
+                        player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
                         EntityAPI.removePlayerPetList(player.getUniqueId());
                         return;
                     }
@@ -848,12 +843,12 @@ public class ItemListener implements Listener {
                         petName = EnumPets.getByName(petType).getDisplayName();
                     }
                     PetUtils.spawnPet(player.getUniqueId(), petType, petName);
-                    player.sendMessage(ChatColor.GREEN + "Pet summoned.");
+                    player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
                     break;
                 case "trail":
                     if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                         DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                        player.sendMessage(ChatColor.AQUA + "You have disabled your trail.");
+                        player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
                         return;
                     }
                     String trailType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_TRAIL, player.getUniqueId());
@@ -863,7 +858,7 @@ public class ItemListener implements Listener {
                         return;
                     }
                     DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(trailType));
-                    player.sendMessage(ChatColor.GREEN + "Enabling trail.");
+                    player.sendMessage(ChatColor.GREEN + "Your active trail has been activated.");
                     break;
             }
         }

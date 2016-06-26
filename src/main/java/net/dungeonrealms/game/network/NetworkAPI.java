@@ -14,7 +14,6 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.game.ui.item.GUIButton;
-import net.minecraft.server.v1_9_R2.Tuple;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -23,6 +22,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -91,16 +91,17 @@ public class NetworkAPI implements PluginMessageListener {
                 if (subChannel.equals("Pinged")) {
                     String hostname = in.readUTF();
 
-
                     if (!ShardSelector.CACHED_PING_SHARD_BUTTONS.containsKey(hostname)) return;
-                    Tuple<String, GUIButton> obj = ShardSelector.CACHED_PING_SHARD_BUTTONS.get(hostname);
 
                     String bungeeName = in.readUTF();
                     String ping = in.readUTF();
 
-                    String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
+                    Map<String, GUIButton> map = ShardSelector.CACHED_PING_SHARD_BUTTONS.get(hostname);
 
-                    obj.b().setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY + " (" + ping + " ms)");
+                    if (!map.containsKey(bungeeName)) return;
+
+                    String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
+                    map.get(bungeeName).setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY + " (" + ping + " ms)");
                 }
 
             } else {

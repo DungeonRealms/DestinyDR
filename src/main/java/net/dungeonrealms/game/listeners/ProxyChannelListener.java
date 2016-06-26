@@ -43,9 +43,13 @@ public class ProxyChannelListener implements Listener {
         try {
             String subChannel = in.readUTF();
 
+
             // RELAY PACKET //
-            if (subChannel.equals("Update") || subChannel.equals("Ping") || subChannel.equals("Pinged"))
+            if (subChannel.equals("Update")
+                //|| subChannel.equals("Ping") || subChannel.equals("Pinged")
+                    ) {
                 plugin.relayPacket("DungeonRealms", event.getData());
+            }
 
 
             if (subChannel.equals("Guilds")) {
