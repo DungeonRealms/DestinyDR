@@ -120,7 +120,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
             GamePlayer gp = API.getGamePlayer(p);
             if (gp != null) {
-                gp.getPlayerStatistics().setBurickKills(gp.getPlayerStatistics().getMayelKills() + 1);
+                gp.getPlayerStatistics().setMayelKills(gp.getPlayerStatistics().getMayelKills() + 1);
             }
             p.sendMessage(ChatColor.RED.toString() + "Mayel The Cruel" + ChatColor.RESET.toString() + ": " + "No... how could it be?");
         }

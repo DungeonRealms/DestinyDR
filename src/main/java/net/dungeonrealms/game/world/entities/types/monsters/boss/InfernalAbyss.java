@@ -318,7 +318,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         for (Player pl : livingEntity.getWorld().getPlayers()) {
             GamePlayer gp = API.getGamePlayer(pl);
             if (gp != null) {
-                gp.getPlayerStatistics().setBurickKills(gp.getPlayerStatistics().getInfernalAbyssKills() + 1);
+                gp.getPlayerStatistics().setInfernalAbyssKills(gp.getPlayerStatistics().getInfernalAbyssKills() + 1);
             }
             pl.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
                     + "You...have... defeated me...ARGHHHH!!!!!");
