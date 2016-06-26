@@ -531,7 +531,7 @@ public class InventoryListener implements Listener {
             return;
         ItemStack slotItem = event.getCurrentItem();
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
-        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem)) return;
+        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem) && !Mining.isDRPickaxe(slotItem)) return;
         event.setCancelled(true);
 
 
@@ -900,11 +900,72 @@ public class InventoryListener implements Listener {
             }
 
 
+            String clone = lore.get(lore.size() - 1).toString();
+            lore.remove(lore.size() - 1);
+            lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
+            lore.add(clone);
+            meta.setLore(lore);
+            slotItem.setItemMeta(meta);
+
+
+            ItemStack newItem = slotItem.clone();
+            event.getCurrentItem().setType(Material.AIR);
+            event.setCurrentItem(new ItemStack(Material.AIR));
+
+
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(newItem);
+            nms.getTag().setInt(enchant.name(), value);
+            event.getWhoClicked().getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+            ((Player) event.getWhoClicked()).updateInventory();
+
+
+            if (cursorItem.getAmount() == 1) {
+                event.setCursor(new ItemStack(Material.AIR));
+            } else {
+                ItemStack newStack = cursorItem.clone();
+                newStack.setAmount(newStack.getAmount() - 1);
+                event.setCursor(newStack);
+            }
+
+
+            event.getWhoClicked().getWorld().playSound(event.getWhoClicked().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
+            Firework fw = (Firework) event.getWhoClicked().getWorld().spawnEntity(event.getWhoClicked().getLocation(), EntityType.FIREWORK);
+            FireworkMeta fwm = fw.getFireworkMeta();
+            FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.YELLOW).withFade(Color.YELLOW).with(FireworkEffect.Type.BURST).trail(true).build();
+            fwm.addEffect(effect);
+            fwm.setPower(0);
+            fw.setFireworkMeta(fwm);
+
+        } else if (Mining.isDRPickaxe(slotItem)) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("pickaxeenchant")) {
+                return;
+            }
+
+            Mining.EnumMiningEnchant enchant = null;
+            int value = 1;
+            for (Mining.EnumMiningEnchant tempEnchant : Mining.EnumMiningEnchant.values()) {
+                if (nmsCursor.getTag().hasKey(tempEnchant.name())) {
+                    enchant = tempEnchant;
+                    value = nmsCursor.getTag().getInt(tempEnchant.name());
+                    break;
+                }
+            }
+
+            ItemMeta meta = slotItem.getItemMeta();
+            List<String> lore = meta.getLore();
+
+            Iterator<String> i = lore.iterator();
+
+            while (i.hasNext()) {
+                String line = i.next();
+                if (line.contains(enchant.display))
+                    i.remove();
+            }
 
 
             String clone = lore.get(lore.size() - 1).toString();
             lore.remove(lore.size() - 1);
-            lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
+            lore.add(ChatColor.RED + enchant.display + " +" + value + "%");
             lore.add(clone);
             meta.setLore(lore);
             slotItem.setItemMeta(meta);

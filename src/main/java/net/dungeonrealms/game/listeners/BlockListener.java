@@ -22,7 +22,6 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -106,7 +105,7 @@ public class BlockListener implements Listener {
     }
 
     /**
-     * Handles breaking ore
+     * Handles `ing ore
      *
      * @param e
      * @since 1.0
@@ -137,9 +136,10 @@ public class BlockListener implements Listener {
                     API.getGamePlayer(e.getPlayer()).addExperience((experienceGain / 8), false);
                 }
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
-                int break_chance = Mining.getBreakChance(stackInHand);
-                int do_i_break = new Random().nextInt(100);
-                if (do_i_break < break_chance) {
+                int breakChance = Mining.getBreakChance(stackInHand);
+                breakChance += Mining.getSuccessChance(stackInHand);
+                int willBreak = new Random().nextInt(100);
+                if (willBreak < breakChance) {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                         p.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "   +" + experienceGain + "EXP for mining ore!");
@@ -147,10 +147,57 @@ public class BlockListener implements Listener {
                 } else {
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }
+
+                p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 1F, 0.75F);
+
                 e.getBlock().setType(Material.STONE);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
+
+
+                int doubleDrop = new Random().nextInt(100) + 1;
+                if (Mining.getDoubleDropChance(stackInHand) >= doubleDrop) {
+                    p.getInventory().addItem(Mining.getBlock(type));
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE ORE DROP" + ChatColor.YELLOW + " (2x)");
+                }
+
+                int tripleDrop = new Random().nextInt(100) + 1;
+                if (Mining.getTripleDropChance(stackInHand) >= tripleDrop) {
+                    p.getInventory().addItem(Mining.getBlock(type));
+                    p.getInventory().addItem(Mining.getBlock(type));
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE ORE DROP" + ChatColor.YELLOW + " (3x)");
+                }
+
+                int dropGems = new Random().nextInt(100) + 1;
+                if (Mining.getGemFindChance(stackInHand) >= dropGems) {
+                    int amount = 0;
+                    Random rand = new Random();
+                    switch (tier) {
+                        case 1:
+                            amount = rand.nextInt(20) + 1;
+                            break;
+                        case 2:
+                            amount = rand.nextInt(40 - 20) + 20;
+                            break;
+                        case 3:
+                            amount = rand.nextInt(60 - 40) + 40;
+                            break;
+                        case 4:
+                            amount = rand.nextInt(90 - 70) + 70;
+                            break;
+                        case 5:
+                            amount = rand.nextInt(110 - 90) + 90;
+                            break;
+                    }
+                    amount = (int) (amount * 0.80D);
+                    p.getWorld().dropItemNaturally(p.getLocation(), BankMechanics.createGems(amount));
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          FOUND " + amount + " GEM(s)" + ChatColor.YELLOW + "");
+                }
             }
         }
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -172,6 +219,7 @@ public class BlockListener implements Listener {
                 ItemStack stack = e.getPlayer().getEquipment().getItemInMainHand();
                 if (stack.getAmount() > 1) {
                     ItemStack cookedFish = stack.clone();
+                    cookedFish.setAmount(1);
                     cookedFish.setType(Material.COOKED_FISH);
                     e.getPlayer().getInventory().addItem(cookedFish);
                     stack.setAmount(stack.getAmount() - 1);

@@ -7,6 +7,7 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +29,6 @@ public class TradeCalculator {
         int t1_Splash_pot = 0, t2_Splash_pot = 0, t3_Splash_pot = 0, t4_Splash_pot = 0, t5_Splash_pot = 0;
         int orbs = 0;
 
-        //TODO: Skill Scrolls (Professions)
         //TODO: Potions
 
         for (ItemStack is : player_Offer) {
@@ -215,6 +215,17 @@ public class TradeCalculator {
                     Fishing.FishingRodEnchant enchant = Fishing.FishingRodEnchant.getEnchant(enchantString);
                     int percent = CraftItemStack.asNMSCopy(is).getTag().getInt(enchant.name());
                     ItemStack enchantItem = Fishing.getEnchant(tier, enchant, percent);
+                    merchant_offer.add(enchantItem);
+                }
+            } else if (Mining.isDRPickaxe(is) && Mining.hasEnchants(is)) {
+                for (String line : is.getItemMeta().getLore()) {
+                    if (!line.contains("%"))
+                        continue;
+                    String enchantString = line.substring(2, line.indexOf("+")).trim();
+                    Bukkit.getServer().getLogger().info(enchantString);
+                    Mining.EnumMiningEnchant enchant = Mining.EnumMiningEnchant.getEnchant(enchantString);
+                    int percent = CraftItemStack.asNMSCopy(is).getTag().getInt(enchant.name());
+                    ItemStack enchantItem = Mining.getEnchant(tier, enchant, percent);
                     merchant_offer.add(enchantItem);
                 }
             }
