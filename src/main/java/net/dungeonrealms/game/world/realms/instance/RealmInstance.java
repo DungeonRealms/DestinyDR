@@ -123,7 +123,7 @@ public class RealmInstance implements Realms {
 
         player.sendMessage(ChatColor.YELLOW + "Please wait whilst your realm is being loaded...");
 
-        AsyncLoadCallback(player, false, downloadRealm(player.getUniqueId()), callback -> {
+        AsyncRealmLoadCallback(player, false, downloadRealm(player.getUniqueId()), callback -> {
             // RUN SYNC AGAIN //
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                 if (!callback) player.sendMessage(ChatColor.GREEN + "Creating a new realm for you...");
@@ -141,7 +141,7 @@ public class RealmInstance implements Realms {
     }
 
     @Override
-    public void AsyncLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter) {
+    public void AsyncRealmLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter) {
         Futures.addCallback(task, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean success) {
@@ -164,7 +164,7 @@ public class RealmInstance implements Realms {
 
     private void loadRealm(Player player, boolean create, Runnable doAfter) {
         if (create) {
-            AsyncLoadCallback(player, false, loadTemplate(player.getUniqueId()), callback -> {
+            AsyncRealmLoadCallback(player, false, loadTemplate(player.getUniqueId()), callback -> {
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                             loadRealmWorld(player.getUniqueId());
                             doAfter.run();

@@ -66,9 +66,11 @@ public interface Realms extends GenericMechanic {
      * Loads the player's realm*
      *
      * @param player  Owner of realm
+     * @param callOnException Should call comsumer if exeception is caught
+     * @param task Async task
      * @param doAfter What should be executed after?
      */
-    void AsyncLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter);
+    void AsyncRealmLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter);
 
     /**
      * Loads the realm world
