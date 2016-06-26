@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
@@ -16,6 +17,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Kieran Quigley (Proxying) on 09-Jun-16.
  */
@@ -24,6 +28,8 @@ public class DRWitch extends EntityWitch implements DRMonster {
     EnumMonster monster;
     int tier;
     ItemStack weapon = getTierWeapon(tier);
+    @Getter
+    protected Map<String, Integer[]> attributes = new HashMap<>();
 
     public DRWitch(World world) {
         super(world);
@@ -43,7 +49,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
-
+        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     public void setArmor(int tier) {

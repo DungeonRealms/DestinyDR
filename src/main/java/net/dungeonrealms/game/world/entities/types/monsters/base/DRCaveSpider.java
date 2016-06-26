@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
@@ -14,6 +15,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -25,6 +28,8 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
     protected EnumEntityType entityType;
     protected EnumMonster monsterType;
     public int tier;
+    @Getter
+    protected Map<String, Integer[]> attributes = new HashMap<>();
 
     public DRCaveSpider(World world, EnumMonster monsterType, int tier) {
         this(world);
@@ -42,6 +47,7 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
         setStats();
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
+        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     public DRCaveSpider(World world) {

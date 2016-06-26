@@ -21,6 +21,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,8 @@ public interface DRMonster {
     void onMonsterDeath(Player killer);
 
     EnumMonster getEnum();
+
+    Map<String, Integer[]> getAttributes();
 
     default void checkItemDrop(int tier, EnumMonster monster, Entity ent, Player killer) {
         if (ent.getWorld().getName().contains("DUNGEON")) {

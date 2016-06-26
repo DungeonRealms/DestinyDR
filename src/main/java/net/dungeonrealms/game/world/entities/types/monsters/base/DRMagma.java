@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import lombok.Getter;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -20,12 +21,17 @@ import net.minecraft.server.v1_9_R2.EntityMagmaCube;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Chase on Oct 17, 2015
  */
 public class DRMagma extends EntityMagmaCube implements DRMonster {
 
 	private EnumMonster monsterType;
+	@Getter
+	protected Map<String, Integer[]> attributes = new HashMap<>();
 
 	/**
 	 * @param name
@@ -51,6 +57,7 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 		this.b_ = 4;
 		this.noDamageTicks = 0;
 		this.maxNoDamageTicks = 0;
+		attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
 	}
 
 	public DRMagma(World world) {

@@ -314,7 +314,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (API.isPlayer(event.getDamager()))
-            return; // THIS METHOD WAS BREAKING EVERYTHING BECAUSE IT WASN'T MAKING SURE DAMAGER WAS A PLAYER FCKING NIGGERS I SPENT SO LONG ON THIS
+            return;
         if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
@@ -399,7 +399,7 @@ public class DamageListener implements Listener {
         if (!API.isNonPvPRegion(p1.getLocation()) && !API.isNonPvPRegion(p2.getLocation())) return;
         if (!DuelingMechanics.isDueling(p2.getUniqueId())) return;
         if (!DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
-            p1.sendMessage("That's not you're dueling partner!");
+            p1.sendMessage("That's not your dueling partner!");
             event.setDamage(0);
             event.setCancelled(true);
             return;
