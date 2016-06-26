@@ -13,6 +13,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.items.EnumItem;
@@ -245,6 +246,19 @@ public class CommandAdd extends BasicCommand {
                 case "protectscroll":
                     tier = Integer.parseInt(args[1]);
                     player.getInventory().addItem(ItemManager.createProtectScroll(tier));
+                    break;
+                case "rodenchant":
+                    tier = Integer.parseInt(args[1]);
+                    String enchantTypeString = args[2];
+                    if(args.length == 4) {
+                        int percent = Integer.parseInt(args[3]);
+                        Fishing.FishingRodEnchant enchantType = Fishing.FishingRodEnchant.getEnchant(enchantTypeString);
+                        player.getInventory().addItem(Fishing.getEnchant(tier, enchantType, percent));
+
+                    }else {
+                        Fishing.FishingRodEnchant enchantType = Fishing.FishingRodEnchant.getEnchant(enchantTypeString);
+                        player.getInventory().addItem(Fishing.getEnchant(tier, enchantType));
+                    }
                     break;
                 case "pouch":
                     tier = Integer.parseInt(args[1]);

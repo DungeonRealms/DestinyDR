@@ -606,7 +606,7 @@ public class MainListener implements Listener {
                 int success_mod = Fishing.getSuccessChance(pl.getEquipment().getItemInMainHand());
                 success_rate += success_mod; // %CHANCE
 
-                if (success_rate >= do_i_get_fish) {
+                if (success_rate <= do_i_get_fish) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
                     return;
                 }
@@ -622,9 +622,9 @@ public class MainListener implements Listener {
                     }
                     pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 
-                    int exp = Fishing.getFishEXP(spot_tier);
+                    int exp = Fishing.getFishEXP(Fishing.getFishTier(fish));
                     Fishing.gainExp(pl.getEquipment().getItemInMainHand(), pl, exp);
-                    API.getGamePlayer(pl).addExperience(exp / 8, false);
+                    API.getGamePlayer(pl).addExperience(exp, false);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {
                         fish = Fishing.getFishDrop(spot_tier);

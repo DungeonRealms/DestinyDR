@@ -7,6 +7,8 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.world.items.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -60,6 +62,10 @@ public class Fishing implements GenericMechanic {
             return 100;
         }
         return -1;
+    }
+
+    public static int getFishTier(ItemStack fish) {
+        return CraftItemStack.asNMSCopy(fish).getTag().getInt("itemTier");
     }
 
     public enum EnumFish {
@@ -149,11 +155,9 @@ public class Fishing implements GenericMechanic {
 
             if (fish_type == 0) {
                 fish_name = ChatColor.WHITE.toString() + "Shrimp";
-            }
-            if (fish_type == 1) {
+            } else if (fish_type == 1) {
                 fish_name = ChatColor.WHITE.toString() + "Anchovies";
-            }
-            if (fish_type == 2) {
+            } else if (fish_type == 2) {
                 fish_name = ChatColor.WHITE.toString() + "Crayfish";
             }
 
@@ -166,54 +170,43 @@ public class Fishing implements GenericMechanic {
                     buff_val = new Random().nextInt(2) + 1;
                     fish_name += " of Lesser Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(20s)";
-                }
-                if (buff_type > 15 && buff_type <= 25) {
+                } else if (buff_type > 15 && buff_type <= 25) {
                     // Of Health 1-3% HP (instant heal)
                     buff_val = new Random().nextInt(3) + 1;
                     fish_name = ChatColor.WHITE.toString() + "Small, Healing " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 25 && buff_type <= 50) {
+                } else if (buff_type > 25 && buff_type <= 50) {
                     // Of Speed 15 seconds of speed I.
                     fish_name += " of Lesser Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(15s)";
-                }
-                if (buff_type > 50 && buff_type <= 60) {
+                } else if (buff_type > 50 && buff_type <= 60) {
                     // Of Satiety, fill up 20% of food (2 full squares)
                     buff_val = 20;
                     fish_name += " of Minor Satiety";
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 60 && buff_type <= 70) {
+                } else if (buff_type > 60 && buff_type <= 70) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
                     buff_val = new Random().nextInt(2) + 1;
                     fish_name += " of Weak Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(20s)";
-                }
-                if (buff_type > 70) {
+                } else if (buff_type > 70) {
                     // Nightvision for 60 seconds.
                     buff_val = new Random().nextInt(2) + 1;
                     fish_name += " of Vision";
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(30s)";
                 }
             }
-        }
-
-        if (tier == 2) {
+        } else if (tier == 2) {
             buff_chance = 25;
             hunger_to_heal = 20;// %
 
             if (fish_type == 0) {
                 fish_name = ChatColor.GREEN.toString() + "Heron";
-            }
-            if (fish_type == 1) {
+            } else if (fish_type == 1) {
                 fish_name = ChatColor.GREEN.toString() + "Herring";
-            }
-            if (fish_type == 2) {
+            } else if (fish_type == 2) {
                 fish_name = ChatColor.GREEN.toString() + "Sardine";
-            }
-
-            if (buff_chance >= do_i_buff) {
+            } else if (buff_chance >= do_i_buff) {
                 fish_buff = true;
                 int buff_type = new Random().nextInt(100);
                 int buff_val = 0;
@@ -222,65 +215,52 @@ public class Fishing implements GenericMechanic {
                     buff_val = new Random().nextInt(3) + 1;
                     fish_name += " of Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(25s)";
-                }
-                if (buff_type > 10 && buff_type <= 15) {
+                } else if (buff_type > 10 && buff_type <= 15) {
                     // Of HP REGEN
                     buff_val = new Random().nextInt(5) + 5;
                     fish_name += " of Regeneration";
                     fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
-                }
-                if (buff_type > 15 && buff_type <= 20) {
+                } else if (buff_type > 15 && buff_type <= 20) {
                     // OF BLOCK%
                     buff_val = new Random().nextInt(5) + 1;
                     fish_name += " of Blocking";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(25s)";
-                }
-                if (buff_type > 20 && buff_type <= 30) {
+                } else if (buff_type > 20 && buff_type <= 30) {
                     // Of Health (instant heal)
                     buff_val = new Random().nextInt(5) + 1;
                     fish_name = ChatColor.GREEN.toString() + "Healing " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 30 && buff_type <= 55) {
+                } else if (buff_type > 30 && buff_type <= 55) {
                     fish_name += " of Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(20s)";
-                }
-                if (buff_type > 55 && buff_type <= 65) {
+                } else if (buff_type > 55 && buff_type <= 65) {
                     // Of Satiety, fill up 20% of food (2 full squares)
                     buff_val = 25;
                     fish_name += " of Satiety";
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 65 && buff_type <= 75) {
+                } else if (buff_type > 65 && buff_type <= 75) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
                     buff_val = new Random().nextInt(3) + 1;
                     fish_name += " of Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(25s)";
-                }
-                if (buff_type > 75) {
+                } else if (buff_type > 75) {
                     // Nightvision for 60 seconds.
                     buff_val = new Random().nextInt(2) + 1;
                     fish_name += " of Vision";
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(45s)";
                 }
             }
-        }
-
-        if (tier == 3) {
+        } else if (tier == 3) {
             buff_chance = 33;
             hunger_to_heal = 30;// %
 
             if (fish_type == 0) {
                 fish_name = ChatColor.AQUA.toString() + "Salmon";
-            }
-            if (fish_type == 1) {
+            } else if (fish_type == 1) {
                 fish_name = ChatColor.AQUA.toString() + "Trout";
-            }
-            if (fish_type == 2) {
+            } else if (fish_type == 2) {
                 fish_name = ChatColor.AQUA.toString() + "Cod";
-            }
-
-            if (buff_chance >= do_i_buff) {
+            } else if (buff_chance >= do_i_buff) {
                 fish_buff = true;
                 int buff_type = new Random().nextInt(100);
                 int buff_val = 0;
@@ -289,61 +269,50 @@ public class Fishing implements GenericMechanic {
                     buff_val = new Random().nextInt(3) + 3;
                     fish_name += " of Greater Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(30s)";
-                }
-                if (buff_type > 10 && buff_type <= 15) {
+                } else if (buff_type > 10 && buff_type <= 15) {
                     // Of HP REGEN
                     buff_val = new Random().nextInt(11) + 5;
                     fish_name += " of Mighty Regeneration";
                     fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
-                }
-                if (buff_type > 15 && buff_type <= 20) {
+                } else if (buff_type > 15 && buff_type <= 20) {
                     // OF BLOCK%
                     buff_val = new Random().nextInt(5) + 1;
                     fish_name += " of Blocking";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(30s)";
-                }
-                if (buff_type > 20 && buff_type <= 30) {
+                } else if (buff_type > 20 && buff_type <= 30) {
                     // Of Health (instant heal)
                     buff_val = new Random().nextInt(4) + 4;
                     fish_name = ChatColor.AQUA.toString() + "Large, Healing " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 30 && buff_type <= 55) {
+                } else if (buff_type > 30 && buff_type <= 55) {
                     fish_name += " of Lasting Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(30s)";
-                }
-                if (buff_type > 55 && buff_type <= 65) {
+                } else if (buff_type > 55 && buff_type <= 65) {
                     // Of Satiety, fill up 20% of food (2 full squares)
                     buff_val = 30;
                     fish_name += " of Great Satiety";
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 65 && buff_type <= 75) {
+                } else if (buff_type > 65 && buff_type <= 75) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
                     buff_val = new Random().nextInt(3) + 3;
                     fish_name += " of Mighty Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(30s)";
-                }
-                if (buff_type > 75) {
+                } else if (buff_type > 75) {
                     // Nightvision for 60 seconds.
                     buff_val = new Random().nextInt(2) + 1;
                     fish_name += " of Lasting Vision";
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(60s)";
                 }
             }
-        }
-
-        if (tier == 4) {
+        } else if (tier == 4) {
             buff_chance = 33;
             hunger_to_heal = 40;// %
 
             if (fish_type == 0) {
                 fish_name = ChatColor.LIGHT_PURPLE.toString() + "Lobster";
-            }
-            if (fish_type == 1) {
+            } else if (fish_type == 1) {
                 fish_name = ChatColor.LIGHT_PURPLE.toString() + "Tuna";
-            }
-            if (fish_type == 2) {
+            } else if (fish_type == 2) {
                 fish_name = ChatColor.LIGHT_PURPLE.toString() + "Bass";
             }
 
@@ -358,66 +327,54 @@ public class Fishing implements GenericMechanic {
                     buff_val = new Random().nextInt(6) + 5;
                     fish_name += " of Ancient Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type > 10 && buff_type <= 15) {
+                } else if (buff_type > 10 && buff_type <= 15) {
                     // Of HP REGEN
                     buff_val = new Random().nextInt(6) + 10;
                     fish_name += " of Enhanced Regeneration";
                     fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
-                }
-                if (buff_type > 15 && buff_type <= 20) {
+                } else if (buff_type > 15 && buff_type <= 20) {
                     // OF BLOCK%
                     buff_val = new Random().nextInt(5) + 4;
                     fish_name += " of Greater Blocking";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type > 20 && buff_type <= 30) {
+                } else if (buff_type > 20 && buff_type <= 30) {
                     // Of Health (instant heal)
                     buff_val = new Random().nextInt(4) + 4;
                     fish_name = ChatColor.LIGHT_PURPLE.toString() + "Healthy " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 30 && buff_type <= 55) {
+                } else if (buff_type > 30 && buff_type <= 55) {
                     fish_name += " of Bursting Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (II) BUFF " + ChatColor.GRAY.toString() + "(15s)";
-                }
-                if (buff_type > 55 && buff_type <= 65) {
+                } else if (buff_type > 55 && buff_type <= 65) {
                     // Of Satiety, fill up 20% of food (2 full squares)
                     buff_val = 30;
                     fish_name = ChatColor.LIGHT_PURPLE.toString() + "Huge " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 65 && buff_type <= 75) {
+                } else if (buff_type > 65 && buff_type <= 75) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
                     buff_val = new Random().nextInt(5) + 4;
-                    fish_name += " of Fortified Defense";
+                    fish_name += " of Fortelse ified Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type >= 75 && buff_type < 80) {
+                } else if (buff_type >= 75 && buff_type < 80) {
                     // Vampirism
                     buff_val = new Random().nextInt(2) + 4;
                     fish_name = "Albino " + ChatColor.LIGHT_PURPLE.toString() + fish_name;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFESTEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type > 80) {
+                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% Lelse ifESTEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
+                } else if (buff_type > 80) {
                     // Nightvision for 60 seconds.
                     fish_name += " of Eagle Vision";
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (II) BUFF " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 }
             }
-        }
-
-        if (tier == 5) {
+        } else if (tier == 5) {
             buff_chance = 45;
             hunger_to_heal = 50;// %
 
             if (fish_type == 0) {
                 fish_name = ChatColor.YELLOW.toString() + "Shark";
-            }
-            if (fish_type == 1) {
+            } else if (fish_type == 1) {
                 fish_name = ChatColor.YELLOW.toString() + "Swordfish";
-            }
-            if (fish_type == 2) {
+            } else if (fish_type == 2) {
                 fish_name = ChatColor.YELLOW.toString() + "Monkfish";
             }
 
@@ -432,59 +389,49 @@ public class Fishing implements GenericMechanic {
                     buff_val = new Random().nextInt(11) + 5;
                     fish_name += " of Legendary Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type > 10 && buff_type <= 15) {
+                } else if (buff_type > 10 && buff_type <= 15) {
                     // Of HP REGEN
                     buff_val = new Random().nextInt(6) + 10;
                     fish_name += " of Extreme Regeneration";
                     fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
-                }
-                if (buff_type > 15 && buff_type <= 20) {
+                } else if (buff_type > 15 && buff_type <= 20) {
                     // OF BLOCK%
                     buff_val = new Random().nextInt(5) + 4;
                     fish_name += " of Greater Blocking";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type > 20 && buff_type <= 30) {
+                } else if (buff_type > 20 && buff_type <= 30) {
                     // Of Health (instant heal)
                     buff_val = new Random().nextInt(6) + 5;
                     fish_name = ChatColor.YELLOW.toString() + "Legendary " + fish_name + " of Medicine";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 30 && buff_type <= 45) {
+                } else if (buff_type > 30 && buff_type <= 45) {
                     fish_name += " of Godlike Speed";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (II) BUFF " + ChatColor.GRAY.toString() + "(30s)";
-                }
-                if (buff_type > 45 && buff_type <= 50) {
+                } else if (buff_type > 45 && buff_type <= 50) {
                     // Of Satiety, fill up 20% of food (2 full squares)
                     buff_val = 40;
                     fish_name = ChatColor.YELLOW.toString() + "Gigantic " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
-                }
-                if (buff_type > 50 && buff_type <= 60) {
+                } else if (buff_type > 50 && buff_type <= 60) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
                     buff_val = new Random().nextInt(6) + 5;
                     fish_name = ChatColor.YELLOW.toString() + "Hardended " + fish_name + " of Legendary Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type > 60 && buff_type <= 65) {
+                } else if (buff_type > 60 && buff_type <= 65) {
                     // Vampirism
                     buff_val = new Random().nextInt(5) + 3;
                     fish_name = "Albino " + ChatColor.YELLOW.toString() + fish_name;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFESTEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type > 65 && buff_type <= 85) {
+                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% Lelse ifESTEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
+                } else if (buff_type > 65 && buff_type <= 85) {
                     // Nightvision for 60 seconds.
                     fish_name += " of Omniscient Vision";
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (II) BUFF " + ChatColor.GRAY.toString() + "(" + (buff_time + 60) + "s)";
-                }
-                if (buff_type > 85 && buff_type <= 90) {
+                } else if (buff_type > 85 && buff_type <= 90) {
                     // Critical hit bonus
                     buff_val = new Random().nextInt(5) + 1;
                     fish_name = "Perfect " + ChatColor.YELLOW.toString() + fish_name + " of Accuracy";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% CRITICAL HIT " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
-                }
-                if (buff_type > 90) {
+                } else if (buff_type > 90) {
                     // Energy Regen Buff
                     buff_val = new Random().nextInt(5) + 1;
                     fish_name = ChatColor.YELLOW.toString() + fish_name + " of Hidden Energy";
@@ -493,37 +440,37 @@ public class Fishing implements GenericMechanic {
             }
         }
 
-        List<String> fish_lore = new ArrayList<String>();
+        List<String> fish_lore = new ArrayList<>();
         if (fish_buff == true) {
             fish_lore.add(fish_buff_s);
         }
         fish_lore.add(ChatColor.RED + "-" + hunger_to_heal + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)");
         fish_lore.add(ChatColor.GRAY.toString() + EnumFish.getFishDesc(fish_name));
 
-        // Helps prevent stackability.
 
         if (fish_name.contains(ChatColor.WHITE.toString())) {
             fish_name = ChatColor.WHITE.toString() + "Raw " + fish_name;
-        }
-        if (fish_name.contains(ChatColor.GREEN.toString())) {
+        } else if (fish_name.contains(ChatColor.GREEN.toString())) {
             fish_name = ChatColor.GREEN.toString() + "Raw " + fish_name;
-        }
-        if (fish_name.contains(ChatColor.AQUA.toString())) {
+        } else if (fish_name.contains(ChatColor.AQUA.toString())) {
             fish_name = ChatColor.AQUA.toString() + "Raw " + fish_name;
-        }
-        if (fish_name.contains(ChatColor.LIGHT_PURPLE.toString())) {
+        } else if (fish_name.contains(ChatColor.LIGHT_PURPLE.toString())) {
             fish_name = ChatColor.LIGHT_PURPLE.toString() + "Raw " + fish_name;
-        }
-        if (fish_name.contains(ChatColor.YELLOW.toString())) {
+        } else if (fish_name.contains(ChatColor.YELLOW.toString())) {
             fish_name = ChatColor.YELLOW.toString() + "Raw " + fish_name;
         }
 
         ItemStack fish = new ItemStack(Material.RAW_FISH, 1);
+
         ItemMeta im = fish.getItemMeta();
         im.setDisplayName(fish_name);
         im.setLore(fish_lore);
         fish.setItemMeta(im);
-        return fish;
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(fish);
+        nms.getTag().setInt("itemTier", tier);
+
+        return CraftItemStack.asBukkitCopy(nms);
     }
 
 
@@ -540,19 +487,19 @@ public class Fishing implements GenericMechanic {
 
     public static int getFishEXP(int tier) {
         if (tier == 1) {
-            return (int) (2.5D * (250 + random.nextInt((int) (250 * 0.3D))));
+            return (int) (2.0D * (250 + random.nextInt((int) (250 * 0.3D))));
         }
         if (tier == 2) {
-            return (int) (2.5D * (430 + random.nextInt((int) (430 * 0.3D))));
+            return (int) (2.0D * (430 + random.nextInt((int) (430 * 0.3D))));
         }
         if (tier == 3) {
-            return (int) (2.5D * (820 + random.nextInt((int) (820 * 0.3D))));
+            return (int) (2.0D * (820 + random.nextInt((int) (820 * 0.3D))));
         }
         if (tier == 4) {
-            return (int) (2.5D * (1050 + random.nextInt((int) (1050 * 0.3D))));
+            return (int) (2.0D * (1050 + random.nextInt((int) (1050 * 0.3D))));
         }
         if (tier == 5) {
-            return (int) (2.5D * (1230 + random.nextInt((int) (1230 * 0.3D))));
+            return (int) (2.0D * (1230 + random.nextInt((int) (1230 * 0.3D))));
         }
         return 1;
     }
@@ -566,7 +513,7 @@ public class Fishing implements GenericMechanic {
      */
     public static boolean isDRFishingPole(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("rod");
+        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("rod") && stack.getType() == Material.FISHING_ROD;
     }
 
 //    public static HashMap<UUID, String> fishBuffs = new HashMap<>();
@@ -682,23 +629,6 @@ public class Fishing implements GenericMechanic {
         return chance;
     }
 
-    public static int getGemFindChance(ItemStack is) {
-        int chance = 0;
-
-        if (!(isDRFishingPole(is))) {
-            return chance;
-        }
-
-        for (String s : is.getItemMeta().getLore()) {
-            if (s.contains("GEM FIND")) {
-                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
-                return chance;
-            }
-        }
-
-        return chance;
-    }
-
     public static int getSuccessChance(ItemStack is) {
         int chance = 0;
 
@@ -734,88 +664,62 @@ public class Fishing implements GenericMechanic {
     }
 
 
-    public static String getRandomStatBuff(int cur_tier) {
-        int buff_type = new Random().nextInt(6);
-            /*
-             * 0 = Double Fish 1 = Chance for Treasure 2 = Chance of success increase 3 = Triple Fish 4 = Durability Increase
-             */
-
-        if (cur_tier == 2) {
-            if (buff_type == 0 || buff_type == 1) {
-                int buff_percent = new Random().nextInt(5) + 1;
-                return ChatColor.RED.toString() + "DOUBLE FISH: " + buff_percent + "%";
-            } else if (buff_type == 2) {
-                int buff_percent = new Random().nextInt(2) + 1;
-                return ChatColor.RED.toString() + "FISHING SUCCESS: +" + buff_percent + "%";
-            } else if (buff_type == 3) {
-                int buff_percent = new Random().nextInt(2) + 1;
-                return ChatColor.RED.toString() + "TRIPLE FISH: " + buff_percent + "%";
-            } else if (buff_type == 4) {
-                int buff_percent = new Random().nextInt(10) + 1;
-                return ChatColor.RED.toString() + "DURABILITY: +" + buff_percent + "%";
-            } else if (buff_type == 5) {
-                int buff_percent = new Random().nextInt(11) + 1;
-                return ChatColor.RED.toString() + "JUNK FIND: " + buff_percent + "%";
-            }
-        } else if (cur_tier == 3) {
-            if (buff_type == 0 || buff_type == 1) {
-                int buff_percent = new Random().nextInt(9) + 1;
-                return ChatColor.RED.toString() + "DOUBLE FISH: " + buff_percent + "%";
-            } else if (buff_type == 2) {
-                int buff_percent = new Random().nextInt(2) + 3;
-                return ChatColor.RED.toString() + "FISHING SUCCESS: +" + buff_percent + "%";
-            } else if (buff_type == 3) {
-                int buff_percent = new Random().nextInt(3) + 1;
-                return ChatColor.RED.toString() + "TRIPLE FISH: " + buff_percent + "%";
-            } else if (buff_type == 4) {
-                int buff_percent = new Random().nextInt(15) + 1;
-                return ChatColor.RED.toString() + "DURABILITY: +" + buff_percent + "%";
-            } else if (buff_type == 5) {
-                int buff_percent = new Random().nextInt(12) + 1;
-                return ChatColor.RED.toString() + "JUNK FIND: " + buff_percent + "%";
-            }
-        } else if (cur_tier == 4) {
-            if (buff_type == 0) {
-                int buff_percent = new Random().nextInt(13) + 1;
-                return ChatColor.RED.toString() + "DOUBLE FISH: " + buff_percent + "%";
-            } else if (buff_type == 1) {
-                int buff_percent = 1;
-                return ChatColor.RED.toString() + "TREASURE FIND: " + buff_percent + "%";
-            } else if (buff_type == 2) {
-                int buff_percent = new Random().nextInt(2) + 4;
-                return ChatColor.RED.toString() + "FISHING SUCCESS: +" + buff_percent + "%";
-            } else if (buff_type == 3) {
-                int buff_percent = new Random().nextInt(4) + 1;
-                return ChatColor.RED.toString() + "TRIPLE FISH: " + buff_percent + "%";
-            } else if (buff_type == 4) {
-                int buff_percent = new Random().nextInt(20) + 1;
-                return ChatColor.RED.toString() + "DURABILITY: +" + buff_percent + "%";
-            } else if (buff_type == 5) {
-                int buff_percent = new Random().nextInt(13) + 1;
-                return ChatColor.RED.toString() + "JUNK FIND: " + buff_percent + "%";
-            }
-        } else if (cur_tier == 5) {
-            if (buff_type == 0) {
-                int buff_percent = new Random().nextInt(24) + 1;
-                return ChatColor.RED.toString() + "DOUBLE FISH: " + buff_percent + "%";
-            } else if (buff_type == 1) {
-                int buff_percent = 1;
-                return ChatColor.RED.toString() + "TREASURE FIND: " + buff_percent + "%";
-            } else if (buff_type == 2) {
-                int buff_percent = new Random().nextInt(6) + 1;
-                return ChatColor.RED.toString() + "FISHING SUCCESS: +" + buff_percent + "%";
-            } else if (buff_type == 3) {
-                int buff_percent = new Random().nextInt(5) + 1;
-                return ChatColor.RED.toString() + "TRIPLE FISH: " + buff_percent + "%";
-            } else if (buff_type == 4) {
-                int buff_percent = new Random().nextInt(25) + 1;
-                return ChatColor.RED.toString() + "DURABILITY: +" + buff_percent + "%";
-            } else if (buff_type == 5) {
-                int buff_percent = new Random().nextInt(15) + 1;
-                return ChatColor.RED.toString() + "JUNK FIND: " + buff_percent + "%";
-            }
+    public static void giveRandomStatBuff(ItemStack stack, int tier) {
+        int typeID = new Random().nextInt(6);
+        ItemMeta meta = stack.getItemMeta();
+        List<String> lore = meta.getLore();
+        FishingRodEnchant enchant = null;
+        main:
+        switch (tier) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                switch (typeID) {
+                    case 0:
+                    case 1:
+                        enchant = FishingRodEnchant.DoubleCatch;
+                        break main;
+                    case 2:
+                        enchant = FishingRodEnchant.CatchingSuccess;
+                        break main;
+                    case 3:
+                        enchant = FishingRodEnchant.TripleCatch;
+                        break main;
+                    case 4:
+                        enchant = FishingRodEnchant.Durability;
+                        break main;
+                    case 5:
+                        enchant = FishingRodEnchant.JunkFind;
+                        break main;
+                }
+            case 4:
+            case 5:
+                switch (typeID) {
+                    case 0:
+                        enchant = FishingRodEnchant.DoubleCatch;
+                        break main;
+                    case 1:
+                        enchant = FishingRodEnchant.TreasureFind;
+                        break main;
+                    case 2:
+                        enchant = FishingRodEnchant.CatchingSuccess;
+                        break main;
+                    case 3:
+                        enchant = FishingRodEnchant.TripleCatch;
+                        break main;
+                    case 4:
+                        enchant = FishingRodEnchant.Durability;
+                        break main;
+                    case 5:
+                        enchant = FishingRodEnchant.JunkFind;
+                        break main;
+                }
         }
-        return null;
+        lore.add(enchant.name + " " + enchant.getBuff(tier));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+
     }
 
     private static void lvlUp(int tier, Player p) {
@@ -841,8 +745,18 @@ public class Fishing implements GenericMechanic {
                     tier = 5;
                     addEnchant = true;
                     break;
+                case 100:
+                    rod.getItemMeta().setDisplayName(ChatColor.YELLOW.toString() + "Grand Master Fishingrod");
+                    p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Fishingrod has reached " + ChatColor.UNDERLINE + "LVL 100"
+                            + ChatColor.YELLOW + " this means you can no longe repair it. You now have TWO options.");
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Fishingrod at the merchant for a 'Buff Token' that will hold all the custom stats of your Fishingrod and may be applied to a new Fishingrod.");
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(2) " + ChatColor.YELLOW + "If you continue to use this" +
+                            " Fishingrod until it runs out of durability, it will transform into a LVL 1 Fishingrod "
+                            + ", but it will retain all its custom stats.");
+                    p.sendMessage("");
+                    break;
             }
-
+            nms = CraftItemStack.asNMSCopy(rod);
             p.sendMessage(ChatColor.YELLOW + "Your pick has increased to level " + ChatColor.AQUA + lvl);
             nms.getTag().setInt("maxXP", getEXPNeeded(lvl));
             nms.getTag().setInt("XP", 0);
@@ -878,10 +792,11 @@ public class Fishing implements GenericMechanic {
                     break;
             }
             meta.setDisplayName(name);
-            if (addEnchant)
-                lore.add(getRandomStatBuff(tier));
             meta.setLore(lore);
             rod.setItemMeta(meta);
+            if (addEnchant)
+                giveRandomStatBuff(rod, tier);
+
             p.getEquipment().setItemInMainHand(rod);
         }
     }
@@ -898,37 +813,144 @@ public class Fishing implements GenericMechanic {
         return CraftItemStack.asNMSCopy(rodStack).getTag().getInt("itemTier");
     }
 
+
+    public enum FishingRodEnchant {
+        DoubleCatch("DOUBLE CATCH"), TripleCatch("TRIPLE CATCH"), TreasureFind("TREASURE FIND"),
+        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND");
+
+
+        public String name;
+
+        FishingRodEnchant(String display) {
+            this.name = display;
+        }
+
+        public int getBuff(int tier) {
+            Random rand = new Random();
+            switch (this) {
+                case DoubleCatch:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                        case 2:
+                            return rand.nextInt(5) + 1;
+                        case 3:
+                            return rand.nextInt(9) + 1;
+                        case 4:
+                            return rand.nextInt(13) + 1;
+                        case 5:
+                            return rand.nextInt(24) + 1;
+                    }
+                case TripleCatch:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                        case 2:
+                            return rand.nextInt(2) + 1;
+                        case 3:
+                            return rand.nextInt(3) + 1;
+                        case 4:
+                            return rand.nextInt(4) + 1;
+                        case 5:
+                            return rand.nextInt(5) + 1;
+                    }
+                    break;
+                case TreasureFind:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                            return 0;
+                        case 4:
+                        case 5:
+                            return 1;
+                    }
+                    break;
+                case Durability:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                            return rand.nextInt(5) + 1;
+                        case 2:
+                            return rand.nextInt(10) + 1;
+                        case 3:
+                            return rand.nextInt(15) + 1;
+                        case 4:
+                            return rand.nextInt(20) + 1;
+                        case 5:
+                            return rand.nextInt(25) + 1;
+                    }
+                    break;
+                case CatchingSuccess:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                            return rand.nextInt(2) + 1;
+                        case 5:
+                            return rand.nextInt(6) + 1;
+                    }
+                    break;
+                case JunkFind:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                            return rand.nextInt(11) + 1;
+                        case 2:
+                            return rand.nextInt(12) + 1;
+                        case 3:
+                            return rand.nextInt(13) + 1;
+                        case 4:
+                            return rand.nextInt(14) + 1;
+                        case 5:
+                            return rand.nextInt(15) + 1;
+                    }
+                    break;
+            }
+
+            return 1;
+        }
+
+        public static FishingRodEnchant getEnchant(String enchantTypeString) {
+            for (FishingRodEnchant temp : values()) {
+                if (temp.name().equalsIgnoreCase(enchantTypeString))
+                    return temp;
+            }
+            return FishingRodEnchant.DoubleCatch;
+        }
+    }
+
+    public static ItemStack getEnchant(int tier, FishingRodEnchant enchant) {
+        int stat = enchant.getBuff(tier);
+        String statBuff = ChatColor.RED + enchant.name + " " + stat + "%";
+        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishingrod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishingrod with special attributes."}).build();
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        nms.getTag().setString("type", "fishingenchant");
+        nms.getTag().setInt(enchant.name(), stat);
+        return CraftItemStack.asBukkitCopy(nms);
+    }
+
+    public static ItemStack getEnchant(int tier, FishingRodEnchant enchant, int percent) {
+        String statBuff = ChatColor.RED + enchant.name + " " + percent + "%";
+        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishingrod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishingrod with special attributes."}).build();
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        nms.getTag().setString("type", "fishingenchant");
+        nms.getTag().setInt(enchant.name(), percent);
+        return CraftItemStack.asBukkitCopy(nms);
+
+    }
+
+
+
     public HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
     public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
 
     public void generateFishingParticleBlockList() {
-        int count = 0;
 
-        for (Entry<Location, Integer> data : FISHING_LOCATIONS.entrySet()) {
-            Location epicenter = data.getKey();
-            List<Location> lfishingParticles = new ArrayList<>();
-            int radius = 10;
-            for (int x = -(radius); x <= radius; x++) {
-                for (int y = -(radius); y <= radius; y++) {
-                    for (int z = -(radius); z <= radius; z++) {
-                        Location loc = epicenter.getBlock().getRelative(x, y, z).getLocation();
-                        if (loc.getBlock().getType() == Material.WATER
-                                || loc.getBlock().getType() == Material.STATIONARY_WATER) {
-                            if (loc.add(0, 1, 0).getBlock().getType() == Material.AIR) {
-                                if (!(lfishingParticles.contains(loc))) {
-                                    lfishingParticles.add(loc);
-                                    count++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            FISHING_PARTICLES.put(epicenter, lfishingParticles);
-        }
-
-        Utils.log.info("[Professions] Loaded a total of " + count + " possible FISHING PARTICLE locations.");
     }
 
     public Location getFishingSpot(Location loc) {

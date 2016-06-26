@@ -52,6 +52,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -293,8 +294,7 @@ public class InventoryListener implements Listener {
                             newTotalVal = gp.changeAttributeVal(type, new Integer[]{newTag.getInt(modifier + "Min") -
                                     oldTag.getInt(modifier + "Min"), newTag.getInt(modifier + "Max") - oldTag.getInt
                                     (modifier + "Max")});
-                        }
-                        else {
+                        } else {
                             newTotalVal = gp.changeAttributeVal(type, new Integer[]{0, newTag.getInt(modifier) -
                                     oldTag.getInt(modifier)});
                         }
@@ -303,8 +303,7 @@ public class InventoryListener implements Listener {
                             p.sendMessage(ChatColor.GREEN + "+" + (newArmorVal - oldArmorVal)
                                     + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
                                     + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
-                        }
-                        else { // decrease in the stat
+                        } else { // decrease in the stat
                             p.sendMessage(ChatColor.RED + "-" + (oldArmorVal - newArmorVal)
                                     + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
                                     + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
@@ -327,8 +326,7 @@ public class InventoryListener implements Listener {
                                     + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
                         }
                     });
-                }
-                else { // only equipping
+                } else { // only equipping
                     newModifiers.stream().forEach(modifier -> {
                         // get the attribute type to determine if we need a percentage or not and to get the
                         // correct display name
@@ -337,9 +335,9 @@ public class InventoryListener implements Listener {
                         String tagName = type.isRange() ? modifier + "Max" : modifier;
                         // calculate new values
                         Integer[] newTotalVal = type.isRange()
-                                ? new Integer[] { gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
-                                gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max") }
-                                : new Integer[] { 0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier) };
+                                ? new Integer[]{gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
+                                gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max")}
+                                : new Integer[]{0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier)};
                         // get the tag values (if the armor piece doesn't have the modifier, set equal to 0)
                         int newArmorVal = newTag.hasKey(tagName) ? newTag.getInt(tagName) : 0;
                         gp.setAttributeVal(type, newTotalVal);
@@ -533,7 +531,7 @@ public class InventoryListener implements Listener {
             return;
         ItemStack slotItem = event.getCurrentItem();
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
-        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
+        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem)) return;
         event.setCancelled(true);
 
 
@@ -875,6 +873,58 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
+        } else if (Fishing.isDRFishingPole(slotItem)) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("fishingenchant")) {
+                return;
+            }
+
+            Fishing.FishingRodEnchant enchant = null;
+            int value = 1;
+            for (Fishing.FishingRodEnchant tempEnchant : Fishing.FishingRodEnchant.values()) {
+                if (nmsCursor.getTag().hasKey(tempEnchant.name())) {
+                    enchant = tempEnchant;
+                    value = nmsCursor.getTag().getInt(tempEnchant.name());
+                    break;
+                }
+            }
+
+            ItemMeta meta = slotItem.getItemMeta();
+            List<String> lore = meta.getLore();
+
+            Iterator<String> i = lore.iterator();
+
+            while (i.hasNext()) {
+                String line = i.next();
+                if (line.contains(enchant.name))
+                    i.remove();
+            }
+
+
+
+            String clone = lore.get(lore.size() - 1).toString();
+            lore.remove(lore.size() - 1);
+            lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
+            lore.add(clone);
+            meta.setLore(lore);
+            slotItem.setItemMeta(meta);
+
+            if (cursorItem.getAmount() == 1) {
+                event.setCursor(new ItemStack(Material.AIR));
+            } else {
+                ItemStack newStack = cursorItem.clone();
+                newStack.setAmount(newStack.getAmount() - 1);
+                event.setCursor(newStack);
+            }
+
+
+            event.getWhoClicked().getWorld().playSound(event.getWhoClicked().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
+            Firework fw = (Firework) event.getWhoClicked().getWorld().spawnEntity(event.getWhoClicked().getLocation(), EntityType.FIREWORK);
+            FireworkMeta fwm = fw.getFireworkMeta();
+            FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.YELLOW).withFade(Color.YELLOW).with(FireworkEffect.Type.BURST).trail(true).build();
+            fwm.addEffect(effect);
+            fwm.setPower(0);
+            fw.setFireworkMeta(fwm);
+
         }
     }
 
@@ -932,7 +982,8 @@ public class InventoryListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         if (!RepairAPI.isItemArmorScrap(cursorItem)) return;
         if (!RepairAPI.canItemBeRepaired(slotItem)) return;
-        if (!(RepairAPI.isItemArmorOrWeapon(slotItem)) && !Mining.isDRPickaxe(slotItem) && !Fishing.isDRFishingPole(slotItem)) return;
+        if (!(RepairAPI.isItemArmorOrWeapon(slotItem)) && !Mining.isDRPickaxe(slotItem) && !Fishing.isDRFishingPole(slotItem))
+            return;
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
