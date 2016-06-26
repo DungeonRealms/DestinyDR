@@ -1043,10 +1043,11 @@ public class InventoryListener implements Listener {
             }
             int repairPercent = (int) ((newPercent / 1500) * 100);
 
-            player.getWorld().playEffect(player.getLocation().add(0, 1.3, 0), Effect.TILE_BREAK, particleID, 12);
-            player.getWorld().playEffect(player.getLocation().add(0, 1.2, 0), Effect.TILE_BREAK, particleID, 12);
-            player.getWorld().playEffect(player.getLocation().add(0, 1.1, 0), Effect.TILE_BREAK, particleID, 12);
-
+            for (int i = 0; i < 6; i++) {
+                player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
+            }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
@@ -1099,9 +1100,11 @@ public class InventoryListener implements Listener {
                 particleID = 5;
             }
             int repairPercent = (int) ((newPercent / 1500) * 100);
-            player.getWorld().playEffect(player.getLocation().add(0, 1.3, 0), Effect.TILE_BREAK, particleID, 12);
-            player.getWorld().playEffect(player.getLocation().add(0, 1.2, 0), Effect.TILE_BREAK, particleID, 12);
-            player.getWorld().playEffect(player.getLocation().add(0, 1.1, 0), Effect.TILE_BREAK, particleID, 12);
+            for (int i = 0; i < 6; i++) {
+                player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
+            }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
