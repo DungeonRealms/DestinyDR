@@ -620,10 +620,10 @@ public class ClickHandler {
                             }
                             String inputName = newPetName.getMessage();
 
-                            // Name cannot be greater than 14 characters
-                            if (inputName.length() > 14) {
-                                player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 14 characters.");
-                                player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 14) + " characters over the limit.");
+                            // Name must be below 20 characters
+                            if (inputName.length() > 20) {
+                                player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 20 characters.");
+                                player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 20) + " characters over the limit.");
                                 return;
                             }
 
