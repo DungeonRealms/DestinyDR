@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
+    public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+    public volatile ConcurrentHashMap<UUID, Integer> PLAYER_TIME = new ConcurrentHashMap<>();
 
     public static DatabaseAPI getInstance() {
         if (instance == null) {
@@ -23,9 +25,6 @@ public class DatabaseAPI {
         }
         return instance;
     }
-
-    public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
-    public volatile ConcurrentHashMap<UUID, Integer> PLAYER_TIME = new ConcurrentHashMap<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.
@@ -88,6 +87,7 @@ public class DatabaseAPI {
                 return ((Document) doc.get("info")).get("lastShardTransfer", Long.class);
             case IS_PLAYING:
                 return ((Document) doc.get("info")).get("isPlaying", Boolean.class);
+
             case LEVEL:
                 return ((Document) doc.get("info")).get("netLevel", Integer.class);
             case EXPERIENCE:
@@ -161,6 +161,16 @@ public class DatabaseAPI {
             case FREERESETS:
                 return ((Document) doc.get("attributes")).get("freeresets", Integer.class);
             /*
+              REALMS
+             */
+
+            case REALM_TITLE:
+                return ((Document) doc.get("realm")).get("title", String.class);
+            case REALM_UPLOAD:
+                return ((Document) doc.get("realm")).get("uploading", Boolean.class);
+            case REALM_LAST_RESET:
+                return ((Document) doc.get("realm")).get("lastReset", Long.class);
+            /*
             Player Storage
              */
             case INVENTORY_LEVEL:
@@ -224,6 +234,34 @@ public class DatabaseAPI {
                 return ((Document) doc.get("collectibles")).get("achievements", ArrayList.class);
             case MOUNT_SKINS:
                 return ((Document) doc.get("collectibles")).get("mountskins", ArrayList.class);
+            /*
+            Player Statistics
+             */
+            case PLAYER_KILLS:
+            case LAWFUL_KILLS:
+            case UNLAWFUL_KILLS:
+            case DEATHS:
+            case T1_MOB_KILLS:
+            case T2_MOB_KILLS:
+            case T3_MOB_KILLS:
+            case T4_MOB_KILLS:
+            case T5_MOB_KILLS:
+            case BOSS_KILLS_MAYEL:
+            case BOSS_KILLS_BURICK:
+            case BOSS_KILLS_INFERNALABYSS:
+            case LOOT_OPENED:
+            case DUELS_WON:
+            case DUELS_LOST:
+            case ORE_MINED:
+            case FISH_CAUGHT:
+            case TIME_PLAYED:
+            case SUCCESSFUL_ENCHANTS:
+            case FAILED_ENCHANTS:
+            case ECASH_SPENT:
+            case GEMS_EARNED:
+            case GEMS_SPENT:
+                String data_key = data.getKey().split(".")[1];
+                return ((Document) doc.get("stats")).get(data_key, Integer.class);
             default:
         }
         return null;
@@ -328,6 +366,10 @@ public class DatabaseAPI {
                                         .append("vitality", 0)
                                         .append("resets", 0)
                                         .append("freeresets", 0))
+                        .append("realm",
+                                new Document("uploading", false)
+                                        .append("title", "")
+                                        .append("lastReset", 0L))
                         .append("collectibles",
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())
@@ -363,7 +405,32 @@ public class DatabaseAPI {
                                         .append("storage", "")
                                         .append("level", 1)
                                         .append("player", "")
-                                        .append("armor", new ArrayList<String>()));
+                                        .append("armor", new ArrayList<String>()))
+                        .append("stats",
+                                new Document("player_kills", 0)
+                                        .append("lawful_kills", 0)
+                                        .append("unlawful_kills", 0)
+                                        .append("deaths", 0)
+                                        .append("monster_kills_t1", 0)
+                                        .append("monster_kills_t2", 0)
+                                        .append("monster_kills_t3", 0)
+                                        .append("monster_kills_t4", 0)
+                                        .append("monster_kills_t5", 0)
+                                        .append("boss_kills_mayel", 0)
+                                        .append("boss_kills_burick", 0)
+                                        .append("boss_kills_infernalAbyss", 0)
+                                        .append("loot_opened", 0)
+                                        .append("duels_won", 0)
+                                        .append("duels_lost", 0)
+                                        .append("ore_mined", 0)
+                                        .append("fish_caught", 0)
+                                        .append("orbs_used", 0)
+                                        .append("time_played", 0)
+                                        .append("successful_enchants", 0)
+                                        .append("failed_enchants", 0)
+                                        .append("ecash_spent", 0)
+                                        .append("gems_earned", 0)
+                                        .append("gems_spent", 0));
         Database.collection.insertOne(newPlayerDocument);
         requestPlayer(uuid);
         Utils.log.info("Requesting new data for : " + uuid);

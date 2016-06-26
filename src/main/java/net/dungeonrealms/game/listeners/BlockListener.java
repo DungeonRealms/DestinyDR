@@ -3,6 +3,7 @@ package net.dungeonrealms.game.listeners;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -14,7 +15,6 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
-import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -23,6 +23,7 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -95,7 +96,7 @@ public class BlockListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         if (event.getLocation().getWorld().getName().contains("DUNGEON")) {
             event.setCancelled(true);
-            event.getLocation().getWorld().playEffect(event.getLocation(), Effect.WITHER_BREAK_BLOCK, 10);
+            event.getLocation().getWorld().playEffect(event.getLocation(), Effect.PARTICLE_SMOKE, 10);
             List<Block> list = event.blockList();
             for (Block b : list) {
                 b.setType(Material.AIR);
@@ -116,7 +117,8 @@ public class BlockListener implements Listener {
         if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         if (block == null) return;
-        if (e.getPlayer().getEquipment().getItemInMainHand() == null || e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR) return;
+        if (e.getPlayer().getEquipment().getItemInMainHand() == null || e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
+            return;
         if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
             e.setCancelled(true);
             ItemStack stackInHand = e.getPlayer().getEquipment().getItemInMainHand();
@@ -131,9 +133,9 @@ public class BlockListener implements Listener {
                     return;
                 }
                 int experienceGain = Mining.getOreEXP(stackInHand, type);
-                if (API.getGamePlayer(e.getPlayer()) != null) {
-                    API.getGamePlayer(e.getPlayer()).addExperience((experienceGain / 8), false);
-                }
+                GamePlayer gamePlayer = API.getGamePlayer(e.getPlayer());
+                if (gamePlayer == null) return;
+                gamePlayer.addExperience((experienceGain / 8), false);
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int break_chance = Mining.getBreakChance(stackInHand);
                 int do_i_break = new Random().nextInt(100);
@@ -141,7 +143,8 @@ public class BlockListener implements Listener {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                         p.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "   +" + experienceGain + "EXP for mining ore!");
-                    p.getInventory().addItem(new ItemStack(type));
+                    p.getInventory().addItem(Mining.getBlock(type));
+                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
                 } else {
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }
@@ -151,18 +154,31 @@ public class BlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void cookFish(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block block = e.getClickedBlock();
         if (block == null) return;
-        if (block.getType() == Material.TORCH || block.getType() == Material.BURNING_FURNACE || block.getType() == Material.FURNACE) {
+        if (block.getType() == Material.TORCH || block.getType() == Material.BURNING_FURNACE || block.getType() == Material.FURNACE || block.getType() == Material.STATIONARY_LAVA || block.getType() == Material.STATIONARY_LAVA || block.getType() == Material.FIRE) {
+            e.setCancelled(true);
             if (e.getPlayer().getEquipment().getItemInMainHand() == null || e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
                 return;
             if (e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.RAW_FISH) {
                 e.setCancelled(true);
-                e.getPlayer().getEquipment().getItemInMainHand().setType(Material.COOKED_FISH);
-                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GHAST_SHOOT, 1, 1);
+                if (block.getState() instanceof Furnace) {
+                    final Furnace furnace = (Furnace) block.getState();
+                    furnace.setBurnTime((short) 20);
+                }
+                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1);
+                ItemStack stack = e.getPlayer().getEquipment().getItemInMainHand();
+                if (stack.getAmount() > 1) {
+                    ItemStack cookedFish = stack.clone();
+                    cookedFish.setType(Material.COOKED_FISH);
+                    e.getPlayer().getInventory().addItem(cookedFish);
+                    stack.setAmount(stack.getAmount() - 1);
+                } else
+                    e.getPlayer().getEquipment().getItemInMainHand().setType(Material.COOKED_FISH);
+                e.getPlayer().updateInventory();
             }
         }
     }
@@ -369,7 +385,7 @@ public class BlockListener implements Listener {
 
     private void returnItem(Player player, ItemStack item) {
         if (player.getEquipment().getItemInMainHand() == null) {
-            player.setItemInHand(item);
+            player.getEquipment().setItemInMainHand(item);
         } else {
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), item);
@@ -536,7 +552,7 @@ public class BlockListener implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerCloseLootChest(InventoryCloseEvent event) {
         if (LootManager.getOpenChests().containsKey(event.getPlayer().getName())) {
             Inventory inventory = LootManager.getOpenChests().get(event.getPlayer().getName());

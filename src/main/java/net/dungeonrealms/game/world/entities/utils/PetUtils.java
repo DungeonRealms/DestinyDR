@@ -4,11 +4,13 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.pets.*;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
@@ -180,12 +182,14 @@ public class PetUtils implements GenericMechanic{
         public void e() {
             Entity owner = ((CraftPlayer) Bukkit.getPlayer(p)).getHandle();
             this.entity.a(owner, 10.0F, 10.0F);
-            try {
-                controllerRotate.invoke(this.entity.getControllerMove(), this.entity.yaw, true);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (this.entity.getBukkitEntity().getLocation().distanceSquared(owner.getBukkitEntity().getLocation()) >= 6) {
+                try {
+                    controllerRotate.invoke(this.entity.getControllerMove(), this.entity.yaw, true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                this.entity.getNavigation().a(owner, this.speed);
             }
-            this.entity.getNavigation().a(owner, this.speed);
         }
     }
 
@@ -203,9 +207,24 @@ public class PetUtils implements GenericMechanic{
             player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [PetType]");
             return;
         }
+        ChatColor prefix = ChatColor.WHITE;
+        if (Rank.isSubscriber(player)) {
+            String rank = Rank.getInstance().getRank(player.getUniqueId());
+            if (rank.equalsIgnoreCase("sub")) {
+                prefix = ChatColor.GREEN;
+            } else if (rank.equalsIgnoreCase("sub+")) {
+                prefix = ChatColor.GOLD;
+            } else if (rank.equalsIgnoreCase("sub++")) {
+                prefix = ChatColor.DARK_AQUA;
+            }
+        }
+        if (Rank.isDev(player)) {
+            prefix = ChatColor.AQUA;
+        }
+        name = prefix + name;
         EnumPets enumPets = EnumPets.getByName(petType.toUpperCase());
         switch (enumPets) {
-            case CAVE_SPIDER: {
+            case CAVE_SPIDER:
                 CaveSpider petCaveSpider = new CaveSpider(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petCaveSpider, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -215,8 +234,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petCaveSpider);
                 player.closeInventory();
                 break;
-            }
-            case BABY_ZOMBIE: {
+            case BABY_ZOMBIE:
                 BabyZombie petBabyZombie = new BabyZombie(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBabyZombie, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -226,8 +244,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombie);
                 player.closeInventory();
                 break;
-            }
-            case BABY_PIGZOMBIE: {
+            case BABY_PIGZOMBIE:
                 BabyZombiePig petBabyZombiePig = new BabyZombiePig(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBabyZombiePig, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -239,8 +256,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombiePig);
                 player.closeInventory();
                 break;
-            }
-            case WOLF: {
+            case WOLF:
                 Wolf petWolf = new Wolf(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petWolf.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petWolf, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -254,8 +270,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petWolf);
                 player.closeInventory();
                 break;
-            }
-            case CHICKEN: {
+            case CHICKEN:
                 Chicken petChicken = new Chicken(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petChicken, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -267,8 +282,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petChicken);
                 player.closeInventory();
                 break;
-            }
-            case OCELOT: {
+            case OCELOT:
                 Ocelot petOcelot = new Ocelot(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petOcelot, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -281,8 +295,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petOcelot);
                 player.closeInventory();
                 break;
-            }
-            case RABBIT: {
+            case RABBIT:
                 Rabbit petRabbit = new Rabbit(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petRabbit.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petRabbit, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -294,8 +307,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petRabbit);
                 player.closeInventory();
                 break;
-            }
-            case SILVERFISH: {
+            case SILVERFISH:
                 Silverfish petSilverfish = new Silverfish(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petSilverfish.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSilverfish, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -305,8 +317,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petSilverfish);
                 player.closeInventory();
                 break;
-            }
-            case ENDERMITE: {
+            case ENDERMITE:
                 Endermite petEndermite = new Endermite(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petEndermite.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petEndermite, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -316,8 +327,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petEndermite);
                 player.closeInventory();
                 break;
-            }
-            case SNOWMAN: {
+            case SNOWMAN:
                 Snowman petSnowman = new Snowman(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSnowman, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -327,8 +337,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petSnowman);
                 player.closeInventory();
                 break;
-            }
-            case BAT: {
+            case BAT:
                 Bat petBat = new Bat(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petBat.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBat, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -337,8 +346,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBat);
                 player.closeInventory();
                 break;
-            }
-            case SLIME: {
+            case SLIME:
                 Slime petSlime = new Slime(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petSlime.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSlime, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -348,8 +356,7 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petSlime);
                 player.closeInventory();
                 break;
-            }
-            case MAGMA_CUBE: {
+            case MAGMA_CUBE:
                 MagmaCube petMagmaCube = new MagmaCube(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petMagmaCube.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petMagmaCube, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -359,7 +366,18 @@ public class PetUtils implements GenericMechanic{
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petMagmaCube);
                 player.closeInventory();
                 break;
-            }
+            case CREEPER_OF_INDEPENDENCE:
+                Creeper petIndependenceCreeper = new Creeper(world, name, player.getUniqueId(), EnumEntityType.PET);
+                petIndependenceCreeper.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                petIndependenceCreeper.setPowered(true);
+                world.addEntity(petIndependenceCreeper, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                petIndependenceCreeper.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                petIndependenceCreeper.setPowered(true);
+                player.playSound(player.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 1F);
+                makePet(petIndependenceCreeper, player.getUniqueId(), 1.2D, EnumPets.CREEPER_OF_INDEPENDENCE);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petIndependenceCreeper);
+                player.closeInventory();
+                break;
         }
     }
 }

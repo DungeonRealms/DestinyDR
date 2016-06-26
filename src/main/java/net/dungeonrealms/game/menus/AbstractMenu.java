@@ -2,9 +2,9 @@ package net.dungeonrealms.game.menus;
 
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.gui.GUI;
-import net.dungeonrealms.game.gui.item.GUIDisplayer;
-import net.dungeonrealms.game.gui.item.GUIItem;
+import net.dungeonrealms.game.ui.GUI;
+import net.dungeonrealms.game.ui.item.GUIDisplayer;
+import net.dungeonrealms.game.ui.item.GUIItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -37,6 +37,10 @@ public abstract class AbstractMenu extends GUI {
         register(plugin);
     }
 
+    public static int round(int num) {
+        return (num > 54) ? 54 : (num % 9 == 0) ? num : ((num / 9) + 1) * 9;
+    }
+
     protected void fillSpace(int slot1, int slot2) {
         for (int i = 0; i < this.size; i++) {
             if ((i >= slot1) && (i <= slot2)) {
@@ -44,7 +48,6 @@ public abstract class AbstractMenu extends GUI {
             }
         }
     }
-
 
     protected void fillSpace(GUIItem item, int slot1, int slot2) {
         for (int i = 0; i < this.size; i++) {
@@ -65,10 +68,6 @@ public abstract class AbstractMenu extends GUI {
     protected void fillEmptySpaces(GUIItem item) {
         for (int i = 0; i < size; i++)
             if (!containsKey(i)) set(i, item);
-    }
-
-    public static int round(int num) {
-        return (num > 54) ? 54 : (num % 9 == 0) ? num : ((num / 9) + 1) * 9;
     }
 
     public abstract void open(Player player) throws Exception;

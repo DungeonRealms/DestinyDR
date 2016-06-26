@@ -178,6 +178,9 @@ public class AchievementManager implements GenericMechanic, Listener {
             case "achievement_easteregg_portal_cakelie":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CAKE_IS_A_LIE);
                 break;
+            case "cityofcyrennica":
+                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CYRENNICA);
+                break;
         }
     }
 }

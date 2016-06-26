@@ -2,21 +2,13 @@ package net.dungeonrealms.game.world.loot;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.loot.types.LootType;
-import net.minecraft.server.v1_9_R2.BlockPosition;
-import net.minecraft.server.v1_9_R2.Packet;
-import net.minecraft.server.v1_9_R2.PacketPlayOutWorldEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -113,9 +105,15 @@ public class LootSpawner {
                 }
             }
         }
-        Bukkit.getWorlds().get(0).playSound(block.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
-        Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(block.getLocation().getX()), (int) Math.round(block.getLocation().getY() + 2), (int) Math.round(block.getLocation().getZ())), 25, false);
-        ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), block.getLocation().getX(), block.getLocation().getY(), block.getLocation().getZ(), 36, ((CraftWorld) block.getWorld()).getHandle().dimension, particles);
+        GamePlayer gamePlayer = API.getGamePlayer(player);
+        if (gamePlayer == null) return;
+        gamePlayer.getPlayerStatistics().setLootChestsOpened(gamePlayer.getPlayerStatistics().getLootChestsOpened() + 1);
+        for (int i = 0; i < 6; i++) {
+            player.getWorld().playEffect(block.getLocation().add(i, 0.5, i), Effect.TILE_BREAK, 25, 12);
+            player.getWorld().playEffect(block.getLocation().add(i, 0.35, i), Effect.TILE_BREAK, 25, 12);
+            player.getWorld().playEffect(block.getLocation().add(i, 0.2, i), Effect.TILE_BREAK, 25, 12);
+        }
+        player.playSound(block.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
         block.getDrops().clear();
         block.setType(Material.AIR);
         broken = true;

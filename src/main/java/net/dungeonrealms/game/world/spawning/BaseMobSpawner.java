@@ -39,7 +39,6 @@ public class BaseMobSpawner {
     private String monsterCustomName;
     private EnumMonster monsterType;
     private boolean firstSpawn = true;
-    private boolean isDungeonSpawner;
     private boolean hasCustomName = false;
     private int respawnDelay;
     private int counter;
@@ -285,7 +284,7 @@ public class BaseMobSpawner {
                             Bukkit.getScheduler().cancelTask(timerID);
                         } else
                             spawnIn();
-                    }, 0, 40L);
+                    }, 0L, 40L);
                 }
             } else {
                 if (timerID != -1) {
@@ -293,14 +292,7 @@ public class BaseMobSpawner {
                     timerID = -1;
                 }
             }
-        }, 0, 50L);
-    }
-
-    /**
-     * @param b
-     */
-    public void setDungeonSpawner(boolean b) {
-        isDungeonSpawner = b;
+        }, 0L, 40L);
     }
 
     //Checks whether mobs can spawn based on their delay set in config.
@@ -429,10 +421,6 @@ public class BaseMobSpawner {
 
     public void setFirstSpawn(boolean firstSpawn) {
         this.firstSpawn = firstSpawn;
-    }
-
-    public boolean isDungeonSpawner() {
-        return isDungeonSpawner;
     }
 
     public boolean isHasCustomName() {

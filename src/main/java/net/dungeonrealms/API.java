@@ -332,7 +332,7 @@ public class API {
     public static List<Player> getNearbyPlayers(Location location, int radius) {
         List<Player> playersNearby = new ArrayList<>();
         for (Player player : location.getWorld().getPlayers()) {
-            if (!API.isPlayer(player)) {
+            if (!API.isPlayer(player) || API._hiddenPlayers.contains(player)) {
                 continue;
             }
             if (location.distanceSquared(player.getLocation()) <= radius * radius) {
@@ -352,6 +352,12 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        if (!DatabaseAPI.getInstance().PLAYER_TIME.containsKey(uuid) || DatabaseAPI.getInstance().PLAYER_TIME.get(uuid) <= 5) {
+            //Dont save.
+            DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
+            return;
+        }
+        DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
         if (player.getWorld().getName().contains("DUNGEON")) {
             for (ItemStack stack : player.getInventory().getContents()) {
                 if (stack != null && stack.getType() != Material.AIR) {
@@ -440,10 +446,12 @@ public class API {
         String inventory = ItemSerialization.toString(inv);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
         if (GAMEPLAYERS.size() > 0) {
-            if (API.getGamePlayer(player) != null) {
-                API.getGamePlayer(player).getStats().updateDatabase(true);
+            GamePlayer gp = API.getGamePlayer(player);
+            if (gp != null) {
+                gp.getPlayerStatistics().updatePlayerStatistics();
+                gp.getStats().updateDatabase(false);
+                GAMEPLAYERS.remove(player.getName());
             }
-            GAMEPLAYERS.remove(player.getName());
         }
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
@@ -799,7 +807,11 @@ public class API {
                         String inventory = ItemSerialization.toString(inv);
                         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
                         if (API.GAMEPLAYERS.size() > 0) {
-                            API.GAMEPLAYERS.get(player.getName()).getStats().updateDatabase(false);
+                            GamePlayer gp = API.getGamePlayer(player);
+                            if (gp != null) {
+                                gp.getPlayerStatistics().updatePlayerStatistics();
+                                gp.getStats().updateDatabase(false);
+                            }
                         }
                         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
                         Utils.log.info("Backed up information for uuid: " + uuid.toString());
@@ -808,6 +820,18 @@ public class API {
                 }
 
         );
+    }
+
+    public static String locationToString(Location location) {
+        return location.getX() + "," + (location.getY() + 1) + "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch();
+    }
+
+    public static Location getLocationFromString(String locationString) {
+        String[] locationStringArray = locationString.split(",");
+
+        return new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationStringArray[0]),
+                Double.parseDouble(locationStringArray[1]), Double.parseDouble(locationStringArray[2]),
+                Float.parseFloat(locationStringArray[3]), Float.parseFloat(locationStringArray[4]));
     }
 
     /**
@@ -977,32 +1001,6 @@ public class API {
         }
     }
 
-    /**
-     * Spawn our Entity at Location
-     * <p>
-     * Use SpawningMechanics.getMob for Entity
-     * lvlRange = "high" or "low"
-     *
-     * @param location
-     * @param entity
-     * @param tier
-     * @param lvlRange
-     */
-    public void spawnMonsterAt(Location location, net.minecraft.server.v1_9_R2.Entity entity, int tier, String lvlRange) {
-        net.minecraft.server.v1_9_R2.World world = ((CraftWorld) location.getWorld()).getHandle();
-        int level = Utils.getRandomFromTier(tier, "low");
-        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
-        EntityStats.setMonsterRandomStats(entity, level, tier);
-        String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-        int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
-        String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-        entity.setCustomName(lvlName + ChatColor.RESET + customName);
-        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-        world.addEntity(entity, SpawnReason.CUSTOM);
-        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-
-    }
-
     public static File getRemoteDataFolder() {
         String filePath = DungeonRealms.getInstance().getDataFolder().getAbsolutePath();
         File file = DungeonRealms.getInstance().getDataFolder();
@@ -1056,7 +1054,7 @@ public class API {
      * and health, takes into account benefits given from stats (str, dex, vit, int).
      *
      * @param type - an attribute, can be either an armor or weapon attribute
-     * @param p - the player to calculate the total value for
+     * @param p    - the player to calculate the total value for
      * @return - the total value of the attribute from the player's equipment. If the
      * attribute has ranged values, the first index is the min and second the max.
      * Otherwise, the first index is the value.
@@ -1085,8 +1083,7 @@ public class API {
             if (WeaponAttributeType.getByName(armorType.getName()) != null) {
 
             }
-        }
-        else  if (type instanceof WeaponAttributeType) {
+        } else if (type instanceof WeaponAttributeType) {
             WeaponAttributeType weaponType = (WeaponAttributeType) type;
 
             // check if armor can also have this attribute
@@ -1095,7 +1092,7 @@ public class API {
             }
         }
 
-        return new int[] { 0, 0 };
+        return new int[]{0, 0};
     }
 
     /**
@@ -1236,6 +1233,7 @@ public class API {
 
     /**
      * Gets all the modifier names of an item.
+     *
      * @param item
      * @return - null if the item does not contain any modifiers
      */
@@ -1321,5 +1319,31 @@ public class API {
         NBTTagCompound tag = nms.getTag();
         if (!tag.hasKey("untradeable")) return false;
         return tag.getInt("untradeable") == 1;
+    }
+
+    /**
+     * Spawn our Entity at Location
+     * <p>
+     * Use SpawningMechanics.getMob for Entity
+     * lvlRange = "high" or "low"
+     *
+     * @param location
+     * @param entity
+     * @param tier
+     * @param lvlRange
+     */
+    public void spawnMonsterAt(Location location, net.minecraft.server.v1_9_R2.Entity entity, int tier, String lvlRange) {
+        net.minecraft.server.v1_9_R2.World world = ((CraftWorld) location.getWorld()).getHandle();
+        int level = Utils.getRandomFromTier(tier, "low");
+        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+        EntityStats.setMonsterRandomStats(entity, level, tier);
+        String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+        int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
+        String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
+        entity.setCustomName(lvlName + ChatColor.RESET + customName);
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+        world.addEntity(entity, SpawnReason.CUSTOM);
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+
     }
 }

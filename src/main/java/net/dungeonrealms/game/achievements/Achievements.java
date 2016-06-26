@@ -191,6 +191,10 @@ public class Achievements {
                 "Explorer: Sebrata",
         }, 2500, "achievement.explorer_sebrata", false),
 
+        CYRENNICA("Cyrennica", new String[]{
+                "Explorer: Cyrennica",
+        }, 500, "achievement.explorer_cyrennica", false),
+
         FIERY_DUNGEON("The Infernal Abyss", new String[]{
                 "Explorer: The Infernal Abyss",
         }, 5000, "achievement.explorer_the_infernal_abyss", false),

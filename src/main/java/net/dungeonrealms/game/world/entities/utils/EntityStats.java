@@ -184,12 +184,12 @@ public class EntityStats {
         if (!entity.getBukkitEntity().hasMetadata("dungeon")) {
             switch (tier) {
                 case 1:
-                    if (maxHp >= 50) {
-                        maxHp = 15 + (random.nextInt(25) - 10);
+                    if (maxHp >= 65) {
+                        maxHp = 20 + (random.nextInt(25) - 10);
                     }
                     break;
                 case 2:
-                    if (maxHp > 300) {
+                    if (maxHp > 350) {
                         maxHp -= 100;
                     }
                     break;
@@ -212,7 +212,6 @@ public class EntityStats {
         livingEntity.getEquipment().setLeggings(armor[1]);
         livingEntity.getEquipment().setChestplate(armor[2]);
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn(livingEntity);
-        maxHp *= 1.25;
         livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
         HealthHandler.getInstance().setMonsterHPLive(livingEntity, maxHp);
     }

@@ -788,7 +788,7 @@ public class DamageListener implements Listener {
                 pet.getBukkitEntity().remove();
             }
             EntityAPI.removePlayerPetList(player.getUniqueId());
-            player.sendMessage("For it's own safety, your pet has returned to its home.");
+            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For it's own safety, your pet has returned to its home.");
         }
         if (EntityAPI.hasMountOut(player.getUniqueId())) {
             net.minecraft.server.v1_9_R2.Entity mount = EntityAPI.getPlayerMount(player.getUniqueId());
@@ -796,7 +796,7 @@ public class DamageListener implements Listener {
                 mount.getBukkitEntity().remove();
             }
             EntityAPI.getPlayerMount(player.getUniqueId());
-            player.sendMessage("For it's own safety, your mount has returned to the stable.");
+            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For it's own safety, your mount has returned to the stable.");
         }
 
 //        for(ItemStack stack : event.getEntity().getInventory()){

@@ -123,6 +123,7 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("PetBat", 65, EntityBat.class, Bat.class);
         nmsUtils.registerEntity("PetSlime", 55, EntitySlime.class, Slime.class);
         nmsUtils.registerEntity("PetMagmaCube", 62, EntityMagmaCube.class, MagmaCube.class);
+        nmsUtils.registerEntity("PetCreeper", 50, EntityCreeper.class, Creeper.class);
 
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0, 20L);
     }

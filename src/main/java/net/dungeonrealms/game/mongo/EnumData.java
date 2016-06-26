@@ -50,6 +50,12 @@ public enum EnumData {
 
     GUILD_INVITATION("notices.guildInvitation"),
     FRIEND_REQUSTS("notices.friendRequest"),
+    MAILBOX("notices.mailbox"),
+
+
+    REALM_UPLOAD("realm.uploading"),
+    REALM_TITLE("realm.title"),
+    REALM_LAST_RESET("realm.lastReset"),
 
     MOUNTS("collectibles.mounts"),
     PETS("collectibles.pets"),
@@ -72,8 +78,30 @@ public enum EnumData {
     PORTAL_SHARDS_T4("portalKeyShards.tier4"),
     PORTAL_SHARDS_T5("portalKeyShards.tier5"),
 
-
-    MAILBOX("notices.mailbox"),
+    PLAYER_KILLS("stats.player_kills"),
+    LAWFUL_KILLS("stats.lawful_kills"),
+    UNLAWFUL_KILLS("stats.unlawful_kills"),
+    DEATHS("stats.deaths"),
+    T1_MOB_KILLS("stats.monster_kills_t1"),
+    T2_MOB_KILLS("stats.monster_kills_t2"),
+    T3_MOB_KILLS("stats.monster_kills_t3"),
+    T4_MOB_KILLS("stats.monster_kills_t4"),
+    T5_MOB_KILLS("stats.monster_kills_t5"),
+    BOSS_KILLS_MAYEL("stats.boss_kills_mayel"),
+    BOSS_KILLS_BURICK("stats.boss_kills_burick"),
+    BOSS_KILLS_INFERNALABYSS("stats.boss_kills_infernalAbyss"),
+    LOOT_OPENED("stats.loot_opened"),
+    DUELS_WON("stats.duels_won"),
+    DUELS_LOST("stats.duels_lost"),
+    ORE_MINED("stats.ore_mined"),
+    FISH_CAUGHT("stats.fish_caught"),
+    ORBS_USED("stats.orbs_used"),
+    TIME_PLAYED("stats.time_played"),
+    SUCCESSFUL_ENCHANTS("stats.successful_enchants"),
+    FAILED_ENCHANTS("stats.failed_enchants"),
+    ECASH_SPENT("stats.ecash_spent"),
+    GEMS_EARNED("stats.gems_earned"),
+    GEMS_SPENT("stats.gems_spent"),
 
 
     /*

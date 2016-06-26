@@ -28,14 +28,8 @@ import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_9_R2.BlockPosition;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.Packet;
-import net.minecraft.server.v1_9_R2.PacketPlayOutWorldEvent;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -52,6 +46,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -293,8 +288,7 @@ public class InventoryListener implements Listener {
                             newTotalVal = gp.changeAttributeVal(type, new Integer[]{newTag.getInt(modifier + "Min") -
                                     oldTag.getInt(modifier + "Min"), newTag.getInt(modifier + "Max") - oldTag.getInt
                                     (modifier + "Max")});
-                        }
-                        else {
+                        } else {
                             newTotalVal = gp.changeAttributeVal(type, new Integer[]{0, newTag.getInt(modifier) -
                                     oldTag.getInt(modifier)});
                         }
@@ -303,8 +297,7 @@ public class InventoryListener implements Listener {
                             p.sendMessage(ChatColor.GREEN + "+" + (newArmorVal - oldArmorVal)
                                     + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
                                     + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
-                        }
-                        else { // decrease in the stat
+                        } else { // decrease in the stat
                             p.sendMessage(ChatColor.RED + "-" + (oldArmorVal - newArmorVal)
                                     + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
                                     + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
@@ -327,8 +320,7 @@ public class InventoryListener implements Listener {
                                     + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
                         }
                     });
-                }
-                else { // only equipping
+                } else { // only equipping
                     newModifiers.stream().forEach(modifier -> {
                         // get the attribute type to determine if we need a percentage or not and to get the
                         // correct display name
@@ -337,9 +329,9 @@ public class InventoryListener implements Listener {
                         String tagName = type.isRange() ? modifier + "Max" : modifier;
                         // calculate new values
                         Integer[] newTotalVal = type.isRange()
-                                ? new Integer[] { gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
-                                gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max") }
-                                : new Integer[] { 0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier) };
+                                ? new Integer[]{gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
+                                gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max")}
+                                : new Integer[]{0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier)};
                         // get the tag values (if the armor piece doesn't have the modifier, set equal to 0)
                         int newArmorVal = newTag.hasKey(tagName) ? newTag.getInt(tagName) : 0;
                         gp.setAttributeVal(type, newTotalVal);
@@ -496,16 +488,19 @@ public class InventoryListener implements Listener {
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
         net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
-        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
-            return;
-        if (API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30) {
-            event.setCancelled(true);
-            event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
-            return;
-        }
+        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb")) return;
         ItemStack slotItem = event.getCurrentItem();
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
+        GamePlayer gp = API.getGamePlayer((Player) event.getWhoClicked());
+        if (gp != null) {
+            if (gp.getLevel() < 30) {
+                event.setCancelled(true);
+                event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
+                return;
+            }
+            gp.getPlayerStatistics().setOrbsUsed(gp.getPlayerStatistics().getOrbsUsed() + 1);
+        }
         event.setCancelled(true);
         if (cursorItem.getAmount() == 1) {
             event.setCursor(new ItemStack(Material.AIR));
@@ -533,17 +528,23 @@ public class InventoryListener implements Listener {
             return;
         ItemStack slotItem = event.getCurrentItem();
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
-        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
+        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem)) return;
         event.setCancelled(true);
+        GamePlayer gamePlayer = API.getGamePlayer((Player) event.getWhoClicked());
+        if (gamePlayer == null) return;
 
 
         if (nmsCursor.getTag().getString("type").equalsIgnoreCase("protection")) {
             if (!EnchantmentAPI.isItemProtected(slotItem)) {
                 int tier = nmsCursor.getTag().getInt("tier");
-                int itemTier = 1;
+                int itemTier;
                 itemTier = nmsItem.getTag().getInt("itemTier");
                 if (tier != itemTier) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "This protection scroll is made for a higher tier!");
+                    return;
+                }
+                if (EnchantmentAPI.getEnchantLvl(slotItem) > 8) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "This item can no longer be protected!");
                     return;
                 }
 
@@ -644,6 +645,7 @@ public class InventoryListener implements Listener {
                 }
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
+                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 return;
             }
 
@@ -706,6 +708,7 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (API.isArmor(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")) {
                 return;
@@ -791,6 +794,7 @@ public class InventoryListener implements Listener {
 
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
+                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 return;
             }
 
@@ -871,6 +875,73 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
+        } else if (Fishing.isDRFishingPole(slotItem)) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("fishingenchant")) {
+                return;
+            }
+
+            Fishing.FishingRodEnchant enchant = null;
+            int value = 1;
+            for (Fishing.FishingRodEnchant tempEnchant : Fishing.FishingRodEnchant.values()) {
+                if (nmsCursor.getTag().hasKey(tempEnchant.name())) {
+                    enchant = tempEnchant;
+                    value = nmsCursor.getTag().getInt(tempEnchant.name());
+                    break;
+                }
+            }
+
+            ItemMeta meta = slotItem.getItemMeta();
+            List<String> lore = meta.getLore();
+
+            Iterator<String> i = lore.iterator();
+
+            while (i.hasNext()) {
+                String line = i.next();
+                if (line.contains(enchant.name))
+                    i.remove();
+            }
+
+
+
+
+            String clone = lore.get(lore.size() - 1).toString();
+            lore.remove(lore.size() - 1);
+            lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
+            lore.add(clone);
+            meta.setLore(lore);
+            slotItem.setItemMeta(meta);
+
+
+            ItemStack newItem = slotItem.clone();
+            event.getCurrentItem().setType(Material.AIR);
+            event.setCurrentItem(new ItemStack(Material.AIR));
+
+
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(newItem);
+            nms.getTag().setInt(enchant.name(), value);
+            event.getWhoClicked().getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+            ((Player) event.getWhoClicked()).updateInventory();
+
+
+            if (cursorItem.getAmount() == 1) {
+                event.setCursor(new ItemStack(Material.AIR));
+            } else {
+                ItemStack newStack = cursorItem.clone();
+                newStack.setAmount(newStack.getAmount() - 1);
+                event.setCursor(newStack);
+            }
+
+
+            event.getWhoClicked().getWorld().playSound(event.getWhoClicked().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
+            Firework fw = (Firework) event.getWhoClicked().getWorld().spawnEntity(event.getWhoClicked().getLocation(), EntityType.FIREWORK);
+            FireworkMeta fwm = fw.getFireworkMeta();
+            FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.YELLOW).withFade(Color.YELLOW).with(FireworkEffect.Type.BURST).trail(true).build();
+            fwm.addEffect(effect);
+            fwm.setPower(0);
+            fw.setFireworkMeta(fwm);
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
+            //TODO: Chase when mining ones can be applied, increment stat.
         }
     }
 
@@ -928,7 +999,8 @@ public class InventoryListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         if (!RepairAPI.isItemArmorScrap(cursorItem)) return;
         if (!RepairAPI.canItemBeRepaired(slotItem)) return;
-        if (!(RepairAPI.isItemArmorOrWeapon(slotItem)) && !Mining.isDRPickaxe(slotItem) && !Fishing.isDRFishingPole(slotItem)) return;
+        if (!(RepairAPI.isItemArmorOrWeapon(slotItem)) && !Mining.isDRPickaxe(slotItem) && !Fishing.isDRFishingPole(slotItem))
+            return;
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
@@ -981,8 +1053,11 @@ public class InventoryListener implements Listener {
             }
             int repairPercent = (int) ((newPercent / 1500) * 100);
 
-            Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
-            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
+            for (int i = 0; i < 6; i++) {
+                player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
+            }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
@@ -1035,8 +1110,11 @@ public class InventoryListener implements Listener {
                 particleID = 5;
             }
             int repairPercent = (int) ((newPercent / 1500) * 100);
-            Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
-            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
+            for (int i = 0; i < 6; i++) {
+                player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
+            }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
@@ -1144,7 +1222,7 @@ public class InventoryListener implements Listener {
             if (BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())) {
                 ItemStack stack = event.getWhoClicked().getEquipment().getItemInMainHand();
                 RepairAPI.setCustomItemDurability(stack, 1500);
-                event.getWhoClicked().setItemInHand(stack);
+                event.getWhoClicked().getEquipment().setItemInMainHand(stack);
                 event.getWhoClicked().closeInventory();
             } else {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You do not have " + cost + " gems!");

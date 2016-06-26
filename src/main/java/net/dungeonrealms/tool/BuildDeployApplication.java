@@ -36,8 +36,8 @@ public class BuildDeployApplication {
                     executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us4");
                     break;
                 case "-updateAllDev1":
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat d1");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat d2");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us2");
                     break;
                 case "-updateAllDev":
                     executeCommand("cd " + TOOL_PATH + " && pushDev3.bat yt1");

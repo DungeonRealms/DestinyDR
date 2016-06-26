@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -243,6 +242,7 @@ public class ItemManager {
         tag.set("destroy", new NBTTagString("yes"));
         tag.setInt("muleTier", tier.getTier());
         tag.setString("usage", "mule");
+        tag.setString("mule", "true");
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
@@ -548,6 +548,7 @@ public class ItemManager {
         }
     }
 
+
     /**
      * Creates a pickaxe based on the given tier
      *
@@ -560,10 +561,10 @@ public class ItemManager {
         String name = "";
         ArrayList<String> lore = new ArrayList<>();
 
-        String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
+        String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
         int lvl = Mining.getTierLvl(tier);
-        lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
-        lore.add(ChatColor.WHITE.toString() + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+        lore.add(ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+        lore.add(ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
         lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
         switch (tier) {
             case 1:
@@ -573,7 +574,7 @@ public class ItemManager {
                 break;
             case 2:
                 rawStack = new ItemStack(Material.STONE_PICKAXE);
-                name = ChatColor.GREEN.toString() + "Expert Pickaxe";
+                name = ChatColor.GREEN.toString() + "Apprentice Pickaxe";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of cave stone.");
                 break;
             case 3:
@@ -652,28 +653,32 @@ public class ItemManager {
         ArrayList<String> lore = new ArrayList<>();
         rawStack = new ItemStack(Material.FISHING_ROD, 1);
         ItemMeta meta = rawStack.getItemMeta();
-        String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
-//        int lvl = Mining.getTierLvl(tier);
-        lore.add(ChatColor.GRAY.toString() + "Tier: " + ChatColor.WHITE.toString() + tier);
-        lore.add(ChatColor.WHITE.toString() + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Fishing.getMaxXP(tier));
+        String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+        int lvl = Fishing.getTierLvl(tier);
+        lore.add(ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+        lore.add(ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
         lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
-        lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of wood and thread.");
 
         switch (tier) {
             case 1:
-                name = ChatColor.WHITE + "Novice Fishingrod";
+                name = ChatColor.WHITE + "Basic Fishingrod";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of wood and thread.");
                 break;
             case 2:
-                name = ChatColor.GREEN.toString() + "Basic Fishingrod";
+                name = ChatColor.GREEN.toString() + "Advanced Fishingrod";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of oak wood and thread.");
                 break;
             case 3:
-                name = ChatColor.AQUA.toString() + "Advanced Fishingrod";
+                name = ChatColor.AQUA.toString() + "Expert Fishingrod";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of ancient oak wood and spider silk.");
                 break;
             case 4:
-                name = ChatColor.LIGHT_PURPLE.toString() + "Expert Fishingrod";
+                name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishingrod";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of jungle bamboo and spider silk.");
                 break;
             case 5:
                 name = ChatColor.YELLOW.toString() + "Master Fishingrod";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of rich mahogany and enchanted silk");
                 break;
             default:
                 break;
@@ -686,8 +691,9 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.setString("type", "rod");
         tag.setInt("itemTier", tier);
+        tag.setInt("level", lvl);
         tag.setInt("XP", 0);
-        tag.setInt("maxXP", Fishing.getMaxXP(tier));
+        tag.setInt("maxXP", Fishing.getEXPNeeded(lvl));
         nmsStack.setTag(tag);
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
@@ -881,6 +887,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
+        tag.set("mount", new NBTTagString("true"));
         tag.set("usage", new NBTTagString("mount"));
         tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
@@ -894,6 +901,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
+        tag.set("pet", new NBTTagString("true"));
         tag.set("usage", new NBTTagString("pet"));
         tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
@@ -901,12 +909,13 @@ public class ItemManager {
     }
 
     public static ItemStack getPlayerTrailItem() {
-        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Trail", new String[]{
-                ChatColor.DARK_GRAY + "Equips your active Trail.",
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Effect", new String[]{
+                ChatColor.DARK_GRAY + "Equips your active Effect.",
         });
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
+        tag.set("trail", new NBTTagString("true"));
         tag.set("usage", new NBTTagString("trail"));
         tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);

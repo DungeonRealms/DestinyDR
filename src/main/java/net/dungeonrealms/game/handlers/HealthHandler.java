@@ -14,7 +14,6 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.rank.Rank;
-import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.party.Affair;
@@ -47,6 +46,7 @@ public class HealthHandler implements GenericMechanic {
         }
         return instance;
     }
+
     public static List<Player> COMBAT_ARMORSWITCH = new ArrayList<>();
 
     @Override
@@ -55,15 +55,15 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
                 setPlayerOverheadHP(pl, getPlayerHPLive(pl));
             }
         }, 0L, 5L);
-		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
-        @Override
+    @Override
     public void stopInvocation() {
 
     }
@@ -241,7 +241,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public int getMonsterMaxHPOnSpawn(LivingEntity entity) {
-           return calculateMaxHPFromItems(entity);
+        return calculateMaxHPFromItems(entity);
     }
 
     /**
@@ -328,10 +328,6 @@ public class HealthHandler implements GenericMechanic {
                     player.setHealth(20);
                     setPlayerHPLive(player, (int) maxHP);
                 } else if ((currentHP + amountToHealPlayer) < maxHP) {
-                    if(Fishing.fishBuffs.containsKey(player.getUniqueId()) && Fishing.fishBuffs.get(player.getUniqueId()).equalsIgnoreCase("HP Regen")){
-                    	amountToHealPlayer += (maxHP * 0.10);
-                    }
-
                     setPlayerHPLive(player, (int) (getPlayerHPLive(player) + amountToHealPlayer));
                     double playerHPPercent = (getPlayerHPLive(player) + amountToHealPlayer) / maxHP;
                     double newPlayerHP = playerHPPercent * 20;
@@ -519,7 +515,7 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
-                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]");
             }
             player.playEffect(EntityEffect.HURT);
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
@@ -561,7 +557,7 @@ public class HealthHandler implements GenericMechanic {
                     }
                     final String finalDeadPlayerName = deadPlayerName;
                     final String finalKillerName = killerName;
-                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName  + " was killed by a(n) " + finalKillerName));
+                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
                     final LivingEntity finalLeAttacker = leAttacker;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -661,20 +657,15 @@ public class HealthHandler implements GenericMechanic {
             entity.damage(entity.getHealth());
             entity.setMaximumNoDamageTicks(2000);
             entity.setNoDamageTicks(1000);
-            //TODO: find out why this code is here...
-//            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-//                if (!entity.isDead()) {
-//                    entity.setMaximumNoDamageTicks(200);
-//                    entity.setNoDamageTicks(10);
-//                    EntityDeathEvent event = new EntityDeathEvent(entity,  new ArrayList<>());
-//                    Bukkit.getPluginManager().callEvent(event);
-//                    entity.setHealth(0);
-//                    entity.remove();
-//                }
-//                if (!entity1.dead) {
-//                    entity1.dead = true;
-//                }
-//            }, 5L);
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+                if (!entity.isDead()) {
+                    entity.setMaximumNoDamageTicks(200);
+                    entity.setNoDamageTicks(100);
+                    EntityDeathEvent event = new EntityDeathEvent(entity, new ArrayList<>());
+                    Bukkit.getPluginManager().callEvent(event);
+                    entity.setHealth(0);
+                }
+            }, 1L);
             if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {
                 Entities.MONSTER_LAST_ATTACK.remove(entity);
             }
@@ -800,7 +791,11 @@ public class HealthHandler implements GenericMechanic {
             }
             totalHP = getVitalityValueOfArmor(itemStack, totalHP);
         }
-        
+
+        if (entity.hasMetadata("dungeon")) {
+            totalHP *= 2;
+        }
+
         if (entity.hasMetadata("elite")) {
             totalHP *= 4;
         }

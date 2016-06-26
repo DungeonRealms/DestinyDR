@@ -17,6 +17,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.inventory.ECashMenus;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
@@ -40,12 +41,12 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -147,68 +148,23 @@ public class ClickHandler {
             case "E-Cash Vendor":
                 event.setCancelled(true);
                 if (slot > 25) return;
+                switch (slot) {
+                    case 0:
+                        ECashMenus.openEcashPets(player);
+                        break;
+                    case 1:
+                        ECashMenus.openEcashEffects(player);
+                        break;
+                    case 2:
+                        ECashMenus.openMountSkins(player);
+                        break;
+                    default:
+                        break;
+                }
                 if (event.getCurrentItem().getType() != Material.AIR) {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack == null) return;
                     if (nmsStack.getTag() == null) return;
-                    if (nmsStack.getTag().hasKey("playerTrailType")) {
-                        List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
-                        if (playerTrails.contains(nmsStack.getTag().getString("playerTrailType"))) {
-                            player.sendMessage(ChatColor.RED + "You already own this trail!");
-                            return;
-                        } else {
-                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, nmsStack.getTag().getString("playerTrailType").toUpperCase(), false);
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, nmsStack.getTag().getString("playerTrailType").toUpperCase(), true);
-                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")).getDisplayName() + " trail.");
-                                player.closeInventory();
-                                return;
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this trail, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                return;
-                            }
-                        }
-                    }
-                    if (nmsStack.getTag().hasKey("skinType")) {
-                        if (DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId()).equals("")) {
-                            player.sendMessage(ChatColor.RED + "You cannot purchase a mount skin as you do not own a mount!");
-                            return;
-                        }
-                        List<String> playerMountSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, player.getUniqueId());
-                        if (playerMountSkins.contains(nmsStack.getTag().getString("skinType"))) {
-                            player.sendMessage(ChatColor.RED + "You already own this mount skin!");
-                            return;
-                        } else {
-                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, nmsStack.getTag().getString("skinType").toUpperCase(), false);
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, nmsStack.getTag().getString("skinType").toUpperCase(), true);
-                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + EnumMountSkins.getByName(nmsStack.getTag().getString("skinType")).getDisplayName() + " mount skin");
-                                player.closeInventory();
-                                return;
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this mount skin, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                return;
-                            }
-                        }
-                    }
-                    if (nmsStack.getTag().hasKey("petType")) {
-                        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
-                        if (playerPets.contains(nmsStack.getTag().getString("petType"))) {
-                            player.sendMessage(ChatColor.RED + "You already own this pet.");
-                            return;
-                        } else {
-                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, nmsStack.getTag().getString("petType").toUpperCase(), false);
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, nmsStack.getTag().getString("petType").toUpperCase(), true);
-                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + EnumPets.getByName(nmsStack.getTag().getString("petType")).getDisplayName() + " pet.");
-                                player.closeInventory();
-                                return;
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                return;
-                            }
-                        }
-                    }
                     /*if (nmsStack.getTag().hasKey("donationStore")) {
                         player.closeInventory();
                         TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
@@ -557,13 +513,13 @@ public class ClickHandler {
                     PlayerMenus.openFriendsMenu(player);
                 }
                 if (slot == 0) {
-                    player.sendMessage(ChatColor.GREEN + "Please enter the player's name...");
+                    player.sendMessage(ChatColor.GREEN + "Please enter the name of the player you would like to add...");
                     player.closeInventory();
                     Chat.listenForMessage(player, chat -> {
                         Player target = Bukkit.getPlayer(chat.getMessage());
                         if (target != null) {
                             FriendHandler.getInstance().sendRequest(player, target);
-                            player.sendMessage(ChatColor.GREEN + "Friend request sent to " + target.getName());
+                            player.sendMessage(ChatColor.GREEN + "Friend request sent to " + ChatColor.BOLD + target.getName() + ChatColor.GREEN + ".");
                         } else {
                             player.sendMessage(ChatColor.RED + "Oops, I can't find that player!");
                         }
@@ -584,7 +540,7 @@ public class ClickHandler {
             case "Mailbox":
                 event.setCancelled(true);
                 if (slot == 0) {
-                    player.sendMessage(ChatColor.RED + "You cannot send mail yet! It's coming soon! :-)");
+                    player.sendMessage(ChatColor.RED + "You cannot send mail yet, this feature is coming soon...");
                     return;
                 } else if (slot == 8) {
                     return;
@@ -611,9 +567,9 @@ public class ClickHandler {
                             DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                         }
                         EntityAPI.removePlayerPetList(player.getUniqueId());
-                        player.sendMessage(ChatColor.AQUA + "Pet dismissed.");
+                        player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
                     } else {
-                        player.sendMessage(ChatColor.AQUA + "You currently do not have a pet in the world.");
+                        player.sendMessage(ChatColor.RED + "You currently do not have a pet in the world.");
                     }
                     return;
                 }
@@ -631,7 +587,7 @@ public class ClickHandler {
                         }
                         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                         if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
-                            player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [NBTTag]");
+                            player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your pet! Please inform a developer! [PS-NBT-1]");
                             player.closeInventory();
                             return;
                         }
@@ -645,41 +601,43 @@ public class ClickHandler {
                     } else if (event.getClick() == ClickType.RIGHT) {
                         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                         if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
-                            player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [NBTTag]");
+                            player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your pet! Please inform a developer! [PS-NBT-2]");
                             player.closeInventory();
                             return;
                         }
                         String petType = nmsStack.getTag().getString("petType");
+                        String petName = "";
+                        if (nmsStack.getTag().getString("petName") != null) {
+                            petName = nmsStack.getTag().getString("petName");
+                        }
                         player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE +"cancel" + ChatColor.GRAY + " to end the process.");
                         player.closeInventory();
+                        String finalPetName = petName;
                         Chat.listenForMessage(player, newPetName -> {
                             if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
-                                player.sendMessage(ChatColor.GRAY + "Pet naming " + ChatColor.RED + ChatColor.UNDERLINE + "CANCELLED.");
+                                player.sendMessage(ChatColor.RED + "Pet naming - " + ChatColor.BOLD + "CANCELLED" + ChatColor.RED + ".");
                                 return;
                             }
                             String inputName = newPetName.getMessage();
 
-                            // Name must be below 12 characters
-                            if (inputName.length() > 12) {
-                                player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 12 characters.");
-                                player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 16) + " characters over the limit.");
+                            // Name must be below 20 characters
+                            if (inputName.length() > 20) {
+                                player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 20 characters.");
+                                player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 20) + " characters over the limit.");
                                 return;
                             }
-                            Pattern pattern = Pattern.compile("^([A-Za-z]|[0-9])+$");
-                            Matcher matcher = pattern.matcher(inputName);
 
-                            // Name must be alphanumerical
-                            if (!matcher.find()) {
-                                player.sendMessage(ChatColor.RED + "Your pet name can only contain alphanumerical values.");
-                                return;
+                            if (inputName.contains("@")) {
+                                inputName = inputName.replaceAll("@", "_");
                             }
 
                             String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
 
                             String newPet = petType + "@" + checkedPetName;
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType, false);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType + "@" + finalPetName, false);
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true);
-                            player.sendMessage(ChatColor.GRAY + "Pet name changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName);
+                            player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
                         }, null);
                     }
                 }
@@ -700,9 +658,9 @@ public class ClickHandler {
                             DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                         }
                         EntityAPI.removePlayerMountList(player.getUniqueId());
-                        player.sendMessage(ChatColor.AQUA + "Mount dismissed.");
+                        player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
                     } else {
-                        player.sendMessage(ChatColor.AQUA + "You currently do not have a mount in the world.");
+                        player.sendMessage(ChatColor.RED + "You currently do not have a mount in the world.");
                     }
                     return;
                 }
@@ -718,17 +676,17 @@ public class ClickHandler {
                         EntityAPI.removePlayerMountList(player.getUniqueId());
                     }
                     if (CombatLog.isInCombat(player)) {
-                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
+                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                         return;
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
-                        player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
+                        player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your mount! Please inform a developer! [MS-NBT]");
                         player.closeInventory();
                         return;
                     }
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, nmsStack.getTag().getString("mountType"), true);
-                    player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
+                    player.sendMessage(ChatColor.GREEN + "Your mount is currently being summoned into this world...");
                     final int[] count = {0};
                     Location startingLocation = player.getLocation();
                     final boolean[] cancelled = {false};
@@ -762,7 +720,7 @@ public class ClickHandler {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
                 }
                 break;
-            case "Player Trail Selection":
+            case "Player Effect Selection":
                 event.setCancelled(true);
                 if (event.getCurrentItem().getType() == Material.BARRIER) {
                     PlayerMenus.openPlayerProfileMenu(player);
@@ -771,27 +729,26 @@ public class ClickHandler {
                 if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
                     if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                         DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                        player.sendMessage(ChatColor.AQUA + "You have disabled your trail.");
+                        player.sendMessage(ChatColor.GREEN + "You have disabled your effect.");
                     } else {
-                        player.sendMessage(ChatColor.AQUA + "You don't have a Player trail enabled.");
+                        player.sendMessage(ChatColor.RED + "You don't have a player effect currently activated.");
                     }
                     return;
                 }
                 if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("playerTrailType") == null) {
-                        player.sendMessage("Uh oh... Something went wrong with your Player trail! Please inform a staff member! [NBTTag]");
+                        player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your player effect! Please inform a developer! [PTS-NBT]");
                         player.closeInventory();
                         return;
                     }
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, nmsStack.getTag().getString("playerTrailType"), true);
                     DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
-                    player.sendMessage(ChatColor.AQUA + "Enabling " + ChatColor.RED + ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")).getDisplayName() + ChatColor.AQUA + " trail.");
+                    player.sendMessage(ChatColor.GREEN + "The " + ChatColor.BOLD + ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")).getDisplayName().toLowerCase() + ChatColor.GREEN + " trail has been activated.");
                 }
                 break;
             case "Profile":
                 event.setCancelled(true);
-                if (event.getClick() == ClickType.MIDDLE) return;
                 switch (slot) {
                     case 0:
                         player.openInventory(StatsManager.getInventory(player));
@@ -800,15 +757,19 @@ public class ClickHandler {
                         PlayerMenus.openFriendInventory(player);
                         break;
                     case 6:
+                        if (event.getClick() == ClickType.RIGHT) return;
                         PlayerMenus.openPlayerParticleMenu(player);
                         break;
                     case 7:
+                        if (event.getClick() == ClickType.RIGHT) return;
                         PlayerMenus.openPlayerMountMenu(player);
                         break;
                     case 8:
+                        if (event.getClick() == ClickType.RIGHT) return;
                         PlayerMenus.openPlayerPetMenu(player);
                         break;
                     case 16: {
+                        if (event.getClick() == ClickType.RIGHT) return;
                         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
                         if (!playerMounts.contains("MULE")) {
                             player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
@@ -823,7 +784,7 @@ public class ClickHandler {
                                 DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                             }
                             EntityAPI.removePlayerMountList(player.getUniqueId());
-                            player.sendMessage(ChatColor.AQUA + " Mount dismissed.");
+                            player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
                         }
                         if (EntityAPI.hasPetOut(player.getUniqueId())) {
                             Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
@@ -834,29 +795,28 @@ public class ClickHandler {
                                 DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                             }
                             EntityAPI.removePlayerPetList(player.getUniqueId());
-                            player.sendMessage(ChatColor.AQUA + "Pet dismissed.");
+                            player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
                         }
                         if (CombatLog.isInCombat(player)) {
-                            player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in Combat!");
+                            player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in combat!");
                             return;
                         }
                         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                         if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
-                            player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
+                            player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your mount! Please inform a developer! [P-NBT]");
                             player.closeInventory();
                             return;
                         }
-                        player.sendMessage(ChatColor.GREEN + "Summoning storage mule.");
+                        player.sendMessage(ChatColor.GREEN + "Please wait whilst your storage mule is summoned...");
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                             if (!EntityAPI.hasMountOut(player.getUniqueId())) {
                                 MountUtils.spawnMount(player.getUniqueId(), "MULE", "");
                             } else {
-                                player.sendMessage(ChatColor.RED + "You just summoned your mount!");
+                                player.sendMessage(ChatColor.RED + "Your mount is currently summoned, you fail to summon your storage mule.");
                             }
                         }, 60L);
                         player.closeInventory();
                         break;
-                        //SPAWN
                     }
                     case 17:
                         PlayerMenus.openPlayerMountSkinMenu(player);
@@ -878,20 +838,20 @@ public class ClickHandler {
                 GamePlayer gp = API.getGamePlayer(player);
                 if (gp.getLevel() >= 10) {
                     if (gp.getStats().resetAmounts > 0) {
-                        player.sendMessage(ChatColor.GREEN + "ONE stat reset available. Type 'yes' or 'y' to continue.");
+                        player.sendMessage(ChatColor.GREEN + "One free stat reset available. Type 'yes' or 'y' to continue.");
                         player.closeInventory();
                         Chat.listenForMessage(player, e -> {
                             if (e.getMessage().equalsIgnoreCase("Yes") || e.getMessage().equalsIgnoreCase("y")) {
                                 gp.getStats().freeResets -= 1;
-                                player.sendMessage(ChatColor.GREEN + "Stats reset");
+                                player.sendMessage(ChatColor.GREEN + "Your stats have been reset.");
                             }
-                        }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+                        }, p -> p.sendMessage(ChatColor.RED + "Stat reset - " + ChatColor.BOLD + "cancelled" + ChatColor.RED + "."));
                     } else {
                         player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
                         player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!");
                     }
                 } else {
-                    player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
+                    player.sendMessage(ChatColor.RED + "You need to be level 10 in order to use your one free stat reset.");
                 }
                 break;
             case "Toggles":
@@ -971,9 +931,9 @@ public class ClickHandler {
                             DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                         }
                         EntityAPI.removePlayerMountList(player.getUniqueId());
-                        player.sendMessage(ChatColor.AQUA + "Mount skin removed. Please re-summon your mount.");
+                        player.sendMessage(ChatColor.GREEN + "Your mount skin has been removed. Please re-summon your mount.");
                     } else {
-                        player.sendMessage(ChatColor.AQUA + "Mount skin removed.");
+                        player.sendMessage(ChatColor.GREEN + "Your mount skin has been removed.");
                     }
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, "", true);
                     return;
@@ -991,12 +951,12 @@ public class ClickHandler {
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("skinType") == null) {
-                        player.sendMessage("Uh oh... Something went wrong with your mount skin! Please inform a staff member! [NBTTag]");
+                        player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your mount skin! Please inform a developer! [MSS-NBT]");
                         player.closeInventory();
                         return;
                     }
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, nmsStack.getTag().getString("skinType"), true);
-                    player.sendMessage(ChatColor.AQUA + "Mount skin set. Please re-summon your mount.");
+                    player.sendMessage(ChatColor.GREEN + "Your mount skin has been changed. Please re-summon your mount.");
                 }
                 break;
             case "Achievements":
@@ -1128,7 +1088,7 @@ public class ClickHandler {
 
                 // Only continue if the playerName & uuid aren't empty.
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
-                // Only developers can apply certain ranks (GM / Builder / Support)
+                // Only developers can apply certain ranks (GM / Builder / Support / YouTuber)
                 if (!Rank.isDev(player) && (slot == 29 || slot == 30 || slot == 32 || slot == 33)) return;
 
                 String newRank;
@@ -1168,14 +1128,14 @@ public class ClickHandler {
                         return;
                 }
 
+                // Always update the database with the new rank.
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true);
+
                 if (Bukkit.getPlayer(playerName) != null) {
                     Rank.getInstance().setRank(uuid, newRank);
                 } else {
                     API.updatePlayerData(uuid);
                 }
-
-                // Always update the database with the new rank.
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true);
 
                 player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
@@ -1506,6 +1466,152 @@ public class ClickHandler {
                 }
                 break;
             default:
+                break;
+            case "Game Master Toggles":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+
+                switch (slot) {
+                    case 0: // Invisible
+                        if (API._hiddenPlayers.contains(player)) {
+                            API._hiddenPlayers.remove(player);
+                            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                                if (player1.getUniqueId().toString().equals(player.getUniqueId().toString())) {
+                                    continue;
+                                }
+                                player1.showPlayer(player);
+                            }
+                            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
+                            player.setCustomNameVisible(true);
+                            player.setGameMode(GameMode.SURVIVAL);
+                        } else {
+                            API._hiddenPlayers.add(player);
+                            player.setCustomNameVisible(false);
+                            player.hidePlayer(player);
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
+                            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
+                            player.setGameMode(GameMode.SPECTATOR);
+                        }
+                        break;
+
+                    case 1:
+                        player.sendMessage(ChatColor.RED + "Coming soon."); // @todo: Alan - change this to toggle fight enabled mode.
+                        break;
+
+                    default:
+                        break;
+                }
+
+                PlayerMenus.openGameMasterTogglesMenu(player);
+                break;
+            case "E-Cash Pets":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (slot == 0) {
+                    NPCMenus.openECashPurchaseMenu(player);
+                    return;
+                }
+                net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (!nmsStack.getTag().hasKey("petType")) return;
+                if (!nmsStack.getTag().hasKey("eCash")) return;
+                String petType = nmsStack.getTag().getString("petType");
+                List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
+                EnumPets pets = EnumPets.getByName(petType);
+                if (pets == null) {
+                    return;
+                }
+                if (!playerPets.isEmpty()) {
+                    for (String pet : playerPets) {
+                        if (pet.contains(petType.toUpperCase())) {
+                            player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + pets.getDisplayName() + ChatColor.RED + " pet.");
+                            return;
+                        }
+                    }
+                }
+                int eCashCost = nmsStack.getTag().getInt("eCash");
+                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true);
+                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
+                    player.closeInventory();
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                }
+                break;
+            case "E-Cash Effects":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (slot == 0) {
+                    NPCMenus.openECashPurchaseMenu(player);
+                    return;
+                }
+                nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (!nmsStack.getTag().hasKey("effectType")) return;
+                if (!nmsStack.getTag().hasKey("eCash")) return;
+                String effectType = nmsStack.getTag().getString("effectType");
+                List<String> playerEffects = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
+                ParticleAPI.ParticleEffect effect = ParticleAPI.ParticleEffect.getByName(effectType);
+                if (effect == null) {
+                    return;
+                }
+                if (!playerEffects.isEmpty()) {
+                    if (playerEffects.contains(effectType)) {
+                        player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + effect.getDisplayName() + ChatColor.RED + " effect.");
+                        return;
+                    }
+                }
+                eCashCost = nmsStack.getTag().getInt("eCash");
+                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, effectType, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true);
+                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect.");
+                    player.closeInventory();
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot afford this effect, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                }
+                break;
+            case "E-Cash Skins":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (slot == 0) {
+                    NPCMenus.openECashPurchaseMenu(player);
+                    return;
+                }
+                nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (!nmsStack.getTag().hasKey("skinType")) return;
+                if (!nmsStack.getTag().hasKey("eCash")) return;
+                if (DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId()).equals("")) {
+                    player.sendMessage(ChatColor.RED + "You cannot purchase a mount skin as you do not own a mount!");
+                    return;
+                }
+                String skinType = nmsStack.getTag().getString("skinType");
+                List<String> playerSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, player.getUniqueId());
+                EnumMountSkins skin = EnumMountSkins.getByName(skinType);
+                if (skin == null) {
+                    return;
+                }
+                if (!playerSkins.isEmpty()) {
+                    if (playerSkins.contains(skinType)) {
+                        player.sendMessage(ChatColor.RED + "You already own the " + ChatColor.BOLD + ChatColor.UNDERLINE + skin.getDisplayName() + ChatColor.RED + " mount skin.");
+                        return;
+                    }
+                }
+                eCashCost = nmsStack.getTag().getInt("eCash");
+                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, skinType, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, skinType, true);
+                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + skin.getDisplayName() + " mount skin.");
+                    player.closeInventory();
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot afford this mount skin, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                }
                 break;
         }
     }

@@ -3,11 +3,14 @@ package net.dungeonrealms.game.mechanics;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.UUID;
 
@@ -25,16 +28,31 @@ public class PlayerManager {
      */
     public static void checkInventory(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        player.getInventory().setItem(7, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
-        player.getInventory().setItem(8, ItemManager.createRealmPortalRune(uuid));
 
-        for (ItemStack is : player.getInventory().getContents()) {
-            if (is == ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
-                    ChatColor.GREEN + "Right Click: " + ChatColor.GRAY + "Open Profile"})) {
-                is.setType(Material.AIR);
+        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 7))
+            player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
+
+        if (!hasItem(player.getInventory(), "journal") && isSlotFree(player.getInventory(), 8))
+            player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
+    }
+
+    public static boolean isSlotFree(PlayerInventory inv, int slot) {
+        ItemStack item = inv.getItem(slot);
+        return (item == null || item.getType() == null || item.getType() == Material.AIR);
+    }
+
+    public static boolean hasItem(PlayerInventory inv, String type) {
+        for (ItemStack item : inv.getContents()) {
+            if (item == null || item.getType() == null || item.getType() == Material.AIR) continue;
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+            NBTTagCompound tag = nmsStack.getTag();
+            if (tag == null) continue;
+            if (!tag.hasKey(type)) continue;
+            if (tag.getString(type).equalsIgnoreCase("true")) {
+                return true;
             }
         }
-
+        return false;
     }
 
     public enum PlayerToggles {

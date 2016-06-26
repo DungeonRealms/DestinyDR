@@ -27,7 +27,8 @@ public enum EnumPets {
     BAT(10, "BAT", 65, "Bat"),
     SLIME(11, "SLIME", 55, "Slime"),
     MAGMA_CUBE(12, "MAGMA_CUBE", 62, "Magma Cube"),
-    BABY_HORSE(13, "BABY_HORSE", 64, "Baby Horse");
+    CREEPER_OF_INDEPENDENCE(13, "CREEPER_INDEPENDENCE", 50, "Independence Creeper"),
+    BABY_HORSE(14, "BABY_HORSE", 64, "Baby Horse");
 
     private int id;
     private String name;

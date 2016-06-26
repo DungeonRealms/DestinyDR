@@ -3,6 +3,7 @@ package net.dungeonrealms.game.miscellaneous;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -23,8 +24,8 @@ public class TradeCalculator {
         List<ItemStack> to_remove = new ArrayList<>();
         int t1_scraps = 0, t2_scraps = 0, t3_scraps = 0, t4_scraps = 0, t5_scraps = 0;
         int t1_ore = 0, t2_ore = 0, t3_ore = 0, t4_ore = 0, t5_ore = 0;
-        int t1_pot = 0, t2_pot = 0, t3_pot = 0, t4_pot = 0 , t5_pot = 0;
-        int t1_Splash_pot = 0, t2_Splash_pot = 0, t3_Splash_pot = 0, t4_Splash_pot = 0 , t5_Splash_pot = 0;
+        int t1_pot = 0, t2_pot = 0, t3_pot = 0, t4_pot = 0, t5_pot = 0;
+        int t1_Splash_pot = 0, t2_Splash_pot = 0, t3_Splash_pot = 0, t4_Splash_pot = 0, t5_Splash_pot = 0;
         int orbs = 0;
 
         //TODO: Skill Scrolls (Professions)
@@ -206,10 +207,18 @@ public class TradeCalculator {
                         merchant_offer.add(scrap);
                     }
                 }
+            } else if (Fishing.isDRFishingPole(is) && Fishing.hasEnchants(is)) {
+                for (String line : is.getItemMeta().getLore()) {
+                    if (!line.contains("%"))
+                        continue;
+                    String enchantString = line.substring(0, line.indexOf("+"));
+                    Fishing.FishingRodEnchant enchant = Fishing.FishingRodEnchant.getEnchant(enchantString);
+                    int percent = CraftItemStack.asNMSCopy(is).getTag().getInt(enchant.name());
+                    ItemStack enchantItem = Fishing.getEnchant(tier, enchant, percent);
+                    merchant_offer.add(enchantItem);
+                }
             }
         }
-
-        //TODO: Gem Pouches
         if (t1_pot > 0) {
             while (t1_pot >= 6) {
                 t1_pot -= 6;
@@ -499,7 +508,7 @@ public class TradeCalculator {
                 merchant_offer.add(scrap);
             }
         }
-        
+
         if (t1_scraps > 0) {
             while (t1_scraps >= 80) {
                 t1_scraps -= 80;
@@ -525,7 +534,7 @@ public class TradeCalculator {
             }
         }
         if (t2_scraps > 0) {
-        	
+
             while (t2_scraps >= 140) {
                 t2_scraps -= 140;
                 ItemStack scroll = ItemManager.createWeaponEnchant(2);
@@ -537,7 +546,7 @@ public class TradeCalculator {
                 ItemStack scroll = ItemManager.createArmorEnchant(2);
                 merchant_offer.add(scroll);
             }
-        	
+
             int payout = 2 * t2_scraps;
             while (payout > 64) {
                 ItemStack scrap = ItemManager.createArmorScrap(1);
@@ -637,15 +646,15 @@ public class TradeCalculator {
                 merchant_offer.add(scrap);
             }
         }
-        
-        if(orbs > 0){
-        	while(orbs > 0){
+
+        if (orbs > 0) {
+            while (orbs > 0) {
                 ItemStack scrap = ItemManager.createArmorScrap(5);
                 scrap.setAmount(20);
                 merchant_offer.add(scrap);
-        	}
+            }
         }
-        
+
         //TODO: Trade Enchantment Scrolls for Scraps based on upcoming poll.
         return merchant_offer;
     }

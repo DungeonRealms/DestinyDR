@@ -10,10 +10,6 @@
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
             <id>central</id>
             <name>Maven Repository Switchboard</name>
             <layout>default</layout>
@@ -25,6 +21,10 @@
         <repository>
             <id>codingforcookies-releases</id>
             <url>http://repo.codingforcookies.com/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>bungeecord-repo</id>
@@ -209,6 +209,12 @@
             <version>1.16.8</version>
             <systemPath>${project.basedir}/lib/lombok.jar</systemPath>
             <scope>system</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.9.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>

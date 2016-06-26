@@ -6,8 +6,9 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.handlers.TutorialIslandHandler;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -15,17 +16,20 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,10 +40,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +68,6 @@ public class ItemListener implements Listener {
         if (!API.isItemDroppable(item)) { //Realm Portal, Character Journal.
             event.setCancelled(true);
             event.getItemDrop().remove();
-            return;
         } else if (!API.isItemTradeable(item)) {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();
@@ -114,7 +120,7 @@ public class ItemListener implements Listener {
                 if (TeleportAPI.canTeleportToLocation(player, nmsItem.getTag())) {
                     Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
                     if (player.getEquipment().getItemInMainHand().getAmount() == 1) {
-                        player.setItemInHand(new ItemStack(Material.AIR));
+                        player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                     } else {
                         player.getEquipment().getItemInMainHand().setAmount((player.getEquipment().getItemInMainHand().getAmount() - 1));
                     }
@@ -148,9 +154,6 @@ public class ItemListener implements Listener {
     }
 
 
-    /**
-     * Handles Right Click of Realm portal rune
-     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUsePortalRune(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
@@ -164,12 +167,30 @@ public class ItemListener implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            if (!Realms.getInstance().isRealmCached(event.getPlayer().getUniqueId())) {
-                Realms.getInstance().loadRealm(p);
+            if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
+            Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
+
+
+            if (Realms.getInstance().isRealmLoaded(event.getPlayer().getUniqueId()) && Realms.getInstance().getRealmWorld(p.getUniqueId()).equals(p.getLocation().getWorld())) {
+                Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
+
+
+                if (TutorialIslandHandler.getInstance().onTutorialIsland(event.getPlayer().getUniqueId())) {
+                    p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
+                            + " open a portal to your realm until you have completed Tutorial Island.");
+                    return;
+                }
+
+                if (API.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+                    return;
+                }
+
+                Realms.getInstance().setRealmSpawn(event.getPlayer().getUniqueId(), newLocation);
                 return;
             }
 
-            Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation());
+            Realms.getInstance().loadRealm(p, () -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
         }
     }
 
@@ -187,10 +208,6 @@ public class ItemListener implements Listener {
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
-        ItemStack stack = ItemManager.createCharacterJournal(p);
-
-        p.getInventory().setItem(7, stack);
-        p.updateInventory();
     }
 
 
@@ -199,16 +216,17 @@ public class ItemListener implements Listener {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
 
         Player p = event.getPlayer();
-        if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.BANNER) return;
-        if (!p.getItemInHand().hasItemMeta()) return;
-        if (p.getItemInHand().getItemMeta().getDisplayName() == null) return;
-        if (!p.getItemInHand().getItemMeta().getDisplayName().contains("Guild banner")) return;
+        if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() != Material.BANNER)
+            return;
+        if (!p.getInventory().getItemInMainHand().hasItemMeta()) return;
+        if (p.getInventory().getItemInMainHand().getItemMeta().getDisplayName() == null) return;
+        if (!p.getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Guild banner")) return;
 
-        String guildName = p.getItemInHand().getItemMeta().getDisplayName().substring(2).replace("'s Guild banner", "").replaceAll("\\s", "").toLowerCase();
+        String guildName = p.getInventory().getItemInMainHand().getItemMeta().getDisplayName().substring(2).replace("'s Guild banner", "").replaceAll("\\s", "").toLowerCase();
 
-        final ItemStack banner = p.getItemInHand();
+        final ItemStack banner = p.getInventory().getItemInMainHand();
 
-        p.setItemInHand(p.getInventory().getHelmet());
+        p.getInventory().setItemInMainHand(p.getInventory().getHelmet());
         p.getInventory().setHelmet(banner);
 
         GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
@@ -261,14 +279,13 @@ public class ItemListener implements Listener {
                             return;
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
-                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
-                                BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20);
+                        BankMechanics.getInstance().getStorage(player.getUniqueId()).update();
                         if (event.getPlayer().getEquipment().getItemInMainHand().getAmount() == 1) {
-                            event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                            event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                         } else {
                             ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
                             item.setAmount(item.getAmount() - 1);
-                            event.getPlayer().setItemInHand(item);
+                            event.getPlayer().getEquipment().setItemInMainHand(item);
                         }
                         event.getPlayer().sendMessage(ChatColor.YELLOW + "Your banks storage has been increased by 9 slots.");
                     }
@@ -421,14 +438,6 @@ public class ItemListener implements Listener {
                     event.getPlayer().removeMetadata("FoodRegen", DungeonRealms.getInstance());
                 }
             }, 300L);
-        } else if (event.getItem().getType() == Material.COOKED_FISH && nmsItem.getTag().getString("type").equalsIgnoreCase("fishBuff") && nmsItem.getTag().hasKey("buff")) {
-            if (Fishing.fishBuffs.containsKey(event.getPlayer().getUniqueId())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You have an active fish buff already!");
-                return;
-            }
-            Fishing.fishBuffs.put(event.getPlayer().getUniqueId(), nmsItem.getTag().getString("buff"));
-            event.getPlayer().sendMessage("    " + ChatColor.BOLD.toString() + ChatColor.YELLOW + nmsItem.getTag().getString("buff") + " Active for 10 seconds!");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Fishing.fishBuffs.remove(event.getPlayer().getUniqueId()));
         }
     }
 
@@ -444,6 +453,291 @@ public class ItemListener implements Listener {
                     }
                     HealthHandler.getInstance().healPlayerByAmount((Player) entity, nmsItem.getTag().getInt("healAmount"));
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void petRename(PlayerInteractEntityEvent event) {
+        if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+        Player player = event.getPlayer();
+        if (event.getRightClicked() instanceof Player) return;
+        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR)
+            return;
+        if (player.getEquipment().getItemInMainHand().getType() != Material.NAME_TAG) return;
+        event.setCancelled(true);
+        player.updateInventory();
+        if (!EntityAPI.hasPetOut(player.getUniqueId())) return;
+        if (EntityAPI.getPlayerPet(player.getUniqueId()).equals(((CraftEntity) event.getRightClicked()).getHandle())) {
+            player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
+            player.closeInventory();
+            Chat.listenForMessage(player, newPetName -> {
+                if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
+                    player.sendMessage(ChatColor.GRAY + "Pet naming " + ChatColor.RED + ChatColor.UNDERLINE + "CANCELLED.");
+                    return;
+                }
+                Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
+                if (pet == null) {
+                    return;
+                }
+
+                String inputName = newPetName.getMessage();
+
+                // Name must be below 20 characters
+                if (inputName.length() > 20) {
+                    player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 20 characters.");
+                    player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 20) + " characters over the limit.");
+                    return;
+                }
+
+                if (inputName.contains("@")) {
+                    inputName = inputName.replaceAll("@", "_");
+                }
+
+                String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
+
+                String activePet = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false);
+                if (activePet.contains("@")) {
+                    activePet = activePet.split("@")[0];
+                }
+                String newPet = activePet + "@" + checkedPetName;
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, false);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, newPet, true);
+                ChatColor prefix = ChatColor.WHITE;
+                if (Rank.isSubscriber(player)) {
+                    String rank = Rank.getInstance().getRank(player.getUniqueId());
+                    if (rank.equalsIgnoreCase("sub")) {
+                        prefix = ChatColor.GREEN;
+                    } else if (rank.equalsIgnoreCase("sub+")) {
+                        prefix = ChatColor.GOLD;
+                    } else if (rank.equalsIgnoreCase("sub++")) {
+                        prefix = ChatColor.DARK_AQUA;
+                    }
+                }
+                if (Rank.isDev(player)) {
+                    prefix = ChatColor.AQUA;
+                }
+                pet.setCustomName(prefix + checkedPetName);
+                player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
+            }, null);
+        }
+    }
+
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void playerEatFish(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_AIR)
+            return;
+
+        final Player pl = e.getPlayer();
+        if (e.hasItem()) {
+            final ItemStack is = e.getItem();
+            if (Fishing.getInstance().isCustomRawFish(is)) {
+                pl.sendMessage(ChatColor.RED + "You must cook this fish before you can eat it!");
+                return;
+            }
+
+
+            if (Fishing.isCustomFish(is)) {
+                e.setUseInteractedBlock(Event.Result.DENY);
+
+                pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1F);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    if (Fishing.isCustomFish(pl.getEquipment().getItemInMainHand())) {
+                        ItemStack fish = pl.getEquipment().getItemInMainHand();
+                        if (fish.getAmount() > 1) {
+                            fish.setAmount(fish.getAmount() - 1);
+                            pl.getEquipment().setItemInMainHand(fish);
+                        } else if (fish.getAmount() <= 1) {
+                            pl.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
+                        }
+
+                        pl.updateInventory();
+                    }
+                }, 1L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1.5F);
+                }, 4L);
+                List<String> lore = is.getItemMeta().getLore();
+                int food_to_restore = 0;
+
+
+                for (String s : lore) {
+                    if (s.contains("% HUNGER")) {
+                        double percent = Integer.parseInt(s.substring(s.indexOf("-") + 1, s.indexOf("%")));
+                        int local_amount = (int) ((percent / 100.0D) * 20D);
+                        food_to_restore += local_amount;
+                    }
+                }
+
+                int cur_food = pl.getFoodLevel();
+                if (cur_food + food_to_restore >= 20) {
+                    pl.setFoodLevel(20);
+                    pl.setSaturation(20);
+                } else {
+                    pl.setFoodLevel(cur_food + food_to_restore);
+                    pl.setSaturation(pl.getSaturation() + food_to_restore);
+                }
+
+                for (String s : lore) {
+                    s = ChatColor.stripColor(s);
+                    if (s.contains("% HP (instant)")) {
+                        double percent_to_heal = Double.parseDouble(s.substring(s.indexOf("+") + 1, s.indexOf("%"))) / 100;
+                        double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(pl);
+                        int amount_to_heal = (int) Math.round((percent_to_heal * max_hp));
+                        double current_hp = HealthHandler.getInstance().getPlayerHPLive(pl);
+                        if (current_hp + 1 > max_hp) {
+                            continue;
+                        }
+                        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, pl.getUniqueId())) {
+                            pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) amount_to_heal + ChatColor.BOLD + " HP"
+                                    + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " ["
+                                    + ((int) current_hp + amount_to_heal) + "/" + (int) max_hp + "HP]");
+                        }
+
+                        if ((current_hp + amount_to_heal) >= max_hp) {
+                            pl.setHealth(20);
+                            HealthHandler.getInstance().setPlayerHPLive(pl, (int) max_hp);
+                            continue;
+                        } else if (pl.getHealth() <= 19 && ((current_hp + amount_to_heal) < max_hp)) {
+                            HealthHandler.getInstance().setPlayerHPLive(pl, HealthHandler.getInstance().getPlayerHPLive(pl) + amount_to_heal);
+                            double health_percent = (HealthHandler.getInstance().getPlayerHPLive(pl) + amount_to_heal) / max_hp;
+                            double new_health_display = health_percent * 20;
+                            if (new_health_display > 19) {
+                                if (health_percent >= 1) {
+                                    new_health_display = 20;
+                                } else if (health_percent < 1) {
+                                    new_health_display = 19;
+                                }
+                            }
+                            if (new_health_display < 1) {
+                                new_health_display = 1;
+                            }
+                            pl.setHealth((int) new_health_display);
+
+                        }
+                    } else if (s.startsWith("REGEN")) {
+                        double percent_to_regen = Double.parseDouble(s.substring(s.indexOf(" ") + 1, s.indexOf("%"))) / 100.0D;
+                        int regen_interval = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("s")));
+                        double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(pl);
+
+                        final int amount_to_regen_per_interval = (int) (max_hp * percent_to_regen) / regen_interval;
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + amount_to_regen_per_interval + ChatColor.BOLD
+                                + " HP/s" + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + regen_interval + "s]");
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) percent_to_regen);
+
+                        pl.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (int) (regen_interval + (regen_interval * 0.25)), 0));
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                pl.removePotionEffect(PotionEffectType.REGENERATION);
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) -percent_to_regen);
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "   " + amount_to_regen_per_interval + " HP/s " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, regen_interval * 20L);
+                    } else if (s.startsWith("SPEED")) {
+                        String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
+                        int effect_tier = 0;
+                        if (tier_symbol.equalsIgnoreCase("II")) {
+                            effect_tier = 1;
+                        }
+
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effect_time * 20, effect_tier));
+                    } else if (s.startsWith("NIGHTVISION")) {
+                        String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
+                        int effect_tier = 0;
+                        if (tier_symbol.equalsIgnoreCase("II")) {
+                            effect_tier = 1;
+                        }
+
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        pl.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, effect_time * 20, effect_tier));
+                    } else if (s.contains("ENERGY REGEN")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, bonus_percent);
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + " Energy/s"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, -bonus_percent);
+                            pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + " +" + bonus_percent + "% Energy " + ChatColor.RED + "FROM "
+                                    + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                        }, effect_time * 20L);
+                    } else if (s.contains("% DMG")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, bonus_percent);
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% DMG"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, -bonus_percent);
+                            pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% DMG " + ChatColor.RED + "FROM "
+                                    + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                        }, effect_time * 20L);
+                    } else if (s.contains("% ARMOR")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, bonus_percent);
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% ARMOR"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, -bonus_percent);
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% ARMOR " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, effect_time * 20L);
+                    } else if (s.contains("% BLOCK")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, bonus_percent);
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% BLOCK"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, -bonus_percent);
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% BLOCK " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, effect_time * 20L);
+                    } else if (s.contains("% LIFESTEAL")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, bonus_percent);
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% LIFESTEAL"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, -bonus_percent);
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% LIFESTEAL " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, effect_time * 20L);
+                    } else if (s.contains("% CRIT")) {
+                        final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                        int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                        API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, bonus_percent);
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + (int) bonus_percent + ChatColor.BOLD + "% CRIT"
+                                + ChatColor.GREEN + " FROM " + is.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
+                            public void run() {
+                                API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, -bonus_percent);
+                                pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% CRIT " + ChatColor.RED + "FROM "
+                                        + is.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                            }
+                        }, effect_time * 20L);
+                    }
+                }
+
             }
         }
     }
@@ -471,12 +765,12 @@ public class ItemListener implements Listener {
                         if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
                             DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                         }
-                        player.sendMessage(ChatColor.AQUA + "Mount dismissed.");
+                        player.sendMessage(ChatColor.GREEN + "Your mount has been dismissed.");
                         EntityAPI.removePlayerMountList(player.getUniqueId());
                         return;
                     }
                     if (CombatLog.isInCombat(player)) {
-                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
+                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                         return;
                     }
                     String mountType = tag.getString("usage").equals("mule") ? "MULE" : (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
@@ -492,7 +786,7 @@ public class ItemListener implements Listener {
                             return;
                         }
                     }
-                    player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
+                    player.sendMessage(ChatColor.GREEN + "Your mount is being summoned into this world!");
                     final int[] count = {0};
                     Location startingLocation = player.getLocation();
                     final boolean[] cancelled = {false};
@@ -535,7 +829,7 @@ public class ItemListener implements Listener {
                         if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
                             DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                         }
-                        player.sendMessage(ChatColor.AQUA + "Pet dismissed.");
+                        player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
                         EntityAPI.removePlayerPetList(player.getUniqueId());
                         return;
                     }
@@ -553,12 +847,12 @@ public class ItemListener implements Listener {
                         petName = EnumPets.getByName(petType).getDisplayName();
                     }
                     PetUtils.spawnPet(player.getUniqueId(), petType, petName);
-                    player.sendMessage(ChatColor.GREEN + "Pet summoned.");
+                    player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
                     break;
                 case "trail":
                     if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                         DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                        player.sendMessage(ChatColor.AQUA + "You have disabled your trail.");
+                        player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
                         return;
                     }
                     String trailType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_TRAIL, player.getUniqueId());
@@ -568,7 +862,7 @@ public class ItemListener implements Listener {
                         return;
                     }
                     DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(trailType));
-                    player.sendMessage(ChatColor.GREEN + "Enabling trail.");
+                    player.sendMessage(ChatColor.GREEN + "Your active trail has been activated.");
                     break;
             }
         }

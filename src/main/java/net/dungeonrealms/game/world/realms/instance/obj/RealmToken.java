@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
@@ -39,10 +37,10 @@ public class RealmToken {
     private Hologram hologram;
 
     @Getter
-    private List<UUID> playersInRealm = new ArrayList<>();
+    private Set<UUID> playersInRealm = new HashSet<>();
 
     @Getter
-    private List<UUID> builders = new ArrayList<>();
+    private Set<UUID> builders = new HashSet<>();
 
 
     public RealmToken(UUID owner) {

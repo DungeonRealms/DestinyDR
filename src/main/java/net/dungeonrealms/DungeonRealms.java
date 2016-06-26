@@ -36,7 +36,6 @@ import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -93,7 +92,7 @@ public class DungeonRealms extends JavaPlugin {
 
     // End of Shard Config
     public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
-    volatile boolean hasFinishedSetup = false;
+    private volatile boolean hasFinishedSetup = false;
 
     @Getter
     private List<String> loggingOut = new ArrayList<>();
@@ -161,7 +160,7 @@ public class DungeonRealms extends JavaPlugin {
         Database.getInstance().startInitialization();
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
-        AntiCheat.getInstance().startInitialization();
+        //AntiCheat.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
         ItemGenerator.loadModifiers();
@@ -284,6 +283,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandISay("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
         cm.registerCommand(new CommandModeration("moderation", "/<command> [args]", "Moderation command for Dungeon Realms staff."));
         cm.registerCommand(new CommandStaffChat("staffchat", "/<command> [args]", "Send a message to the staff chat.", Collections.singletonList("sc")));
+        cm.registerCommand(new CommandGm("gm", "/<command> [args]", "Displays the Game Master toggles."));
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party.", Collections.singletonList("pkick")));
@@ -305,7 +305,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandToggleTradeChat("toggletradechat", "/<command> [args]", "Toggles receiving <T>rade chat."));
         cm.registerCommand(new CommandToggleDuel("toggleduel", "/<command> [args]", "Toggles dueling requests."));
         cm.registerCommand(new CommandToggleTips("toggletips", "/<command> [args]", "Toggles tip messages."));
-        //Toggles dueling requests.
 
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Checks the identity of a Dungeon Realms signed item."));
         cm.registerCommand(new CommandStats("stat", "/<command> [args]", "Allows you to view and manage your stat points.", Collections.singletonList("stats")));
@@ -351,13 +350,16 @@ public class DungeonRealms extends JavaPlugin {
 
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "Will help remove you if you're stuck in a block."));
 
+            cm.registerCommand(new CommandRealm("realm", "/<command> [args]", "Realm command"));
+            cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
+
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));
             cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Will announce a purchase messages."));
 
             cm.registerCommand(new CommandMount("mount", "/<command> [args]", "Opens the player mounts menu.", Collections.singletonList("mounts")));
             cm.registerCommand(new CommandPet("pet", "/<command> [args]", "Opens the player pets menu.", Collections.singletonList("pets")));
-            cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "Opens the player trails menu.", Collections.singletonList("trails")));
+            cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "Opens the player trails menu.", Arrays.asList("trails", "effect", "effects")));
             cm.registerCommand(new CommandAchievements("achievements", "/<command> [args]", "Opens the player achievements menu.", Collections.singletonList("achievement")));
             cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "Opens the player profile menu."));
 

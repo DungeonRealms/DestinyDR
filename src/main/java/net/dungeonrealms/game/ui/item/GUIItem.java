@@ -1,5 +1,8 @@
-package net.dungeonrealms.game.gui.item;
+package net.dungeonrealms.game.ui.item;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.dungeonrealms.game.ui.GUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -16,6 +19,11 @@ import java.util.List;
 public abstract class GUIItem {
     private ItemStack item;
 
+    @Setter
+    @Getter
+    private int slot;
+
+    private GUI gui;
 
     public GUIItem(ItemStack item) {
         this.item = item;
@@ -51,6 +59,9 @@ public abstract class GUIItem {
         ItemMeta meta = this.item.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
         this.item.setItemMeta(meta);
+
+        if (gui != null)
+            gui.set(slot, this);
     }
 
     public void setLore(List<String> lore) {
@@ -62,6 +73,9 @@ public abstract class GUIItem {
         }
         meta.setLore(finalLore);
         this.item.setItemMeta(meta);
+
+        if (gui != null)
+            gui.set(slot, this);
     }
 
     public void setItem(ItemStack item) {
@@ -70,5 +84,9 @@ public abstract class GUIItem {
 
     public ItemStack getItemStack() {
         return this.item;
+    }
+
+    public void setGui(GUI gui) {
+        this.gui = gui;
     }
 }

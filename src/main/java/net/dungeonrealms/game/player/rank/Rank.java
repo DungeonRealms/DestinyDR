@@ -1,25 +1,18 @@
 package net.dungeonrealms.game.player.rank;
 
-import com.mongodb.Block;
-import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -90,7 +83,7 @@ public class Rank implements GenericMechanic {
      */
     public static boolean isYouTuber(Player player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
+        return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
     }
 
     /**
@@ -156,7 +149,7 @@ public class Rank implements GenericMechanic {
      */
     public String getRank(UUID uuid) {
         String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid);
-        return (rank == null || rank == "" ? "default" : rank).toUpperCase();
+        return (rank == null || rank.equals("") ? "default" : rank).toUpperCase();
     }
 
     /**
