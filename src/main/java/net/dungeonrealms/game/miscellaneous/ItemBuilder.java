@@ -37,6 +37,7 @@ public class ItemBuilder {
     }
     public ItemBuilder setItem(Material material, short shortID, String name, String[] lore) {
         ItemStack tempItem = new ItemStack(material, 1, shortID);
+        tempItem.setDurability(shortID);
         ItemMeta meta = tempItem.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));

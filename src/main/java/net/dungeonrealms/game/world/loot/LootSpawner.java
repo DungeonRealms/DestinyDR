@@ -104,7 +104,9 @@ public class LootSpawner {
                 }
             }
         }
-        player.getWorld().playEffect(block.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, 25);
+        player.getWorld().playEffect(block.getLocation().add(0, 0.5, 0), Effect.TILE_BREAK, 25, 12);
+        player.getWorld().playEffect(block.getLocation().add(0, 0.4, 0), Effect.TILE_BREAK, 25, 12);
+        player.getWorld().playEffect(block.getLocation().add(0, 0.3, 0), Effect.TILE_BREAK, 25, 12);
         player.playSound(block.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
         block.getDrops().clear();
         block.setType(Material.AIR);

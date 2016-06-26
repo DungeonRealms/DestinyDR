@@ -516,7 +516,7 @@ public class ItemListener implements Listener {
                     prefix = ChatColor.AQUA;
                 }
                 pet.setCustomName(prefix + checkedPetName);
-                player.sendMessage(ChatColor.GRAY + "Pet name changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName);
+                player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
             }, null);
         }
     }

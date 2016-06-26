@@ -55,14 +55,16 @@ public class CommandPet extends BasicCommand {
                 return true;
             }
             String petName;
+            String petToSummon;
             if (petType.contains("@")) {
-                petType = petType.split("@")[0];
+                petToSummon = petType.split("@")[0];
                 petName = petType.split("@")[1];
             } else {
-                petName = EnumPets.getByName(petType).getDisplayName();
+                petToSummon = petType;
+                petName = EnumPets.getByName(petToSummon).getDisplayName();
             }
             player.sendMessage(ChatColor.GREEN + "Your pet has been summoned.");
-            PetUtils.spawnPet(player.getUniqueId(), petType, petName);
+            PetUtils.spawnPet(player.getUniqueId(), petToSummon, petName);
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {

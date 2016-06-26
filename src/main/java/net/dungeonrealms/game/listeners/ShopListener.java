@@ -47,6 +47,7 @@ public class ShopListener implements Listener {
         Block block = event.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
+        if (event.getPlayer().isSneaking()) return;
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
         if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {

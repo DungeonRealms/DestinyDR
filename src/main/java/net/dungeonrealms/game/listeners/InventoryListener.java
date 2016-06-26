@@ -28,14 +28,8 @@ import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_9_R2.BlockPosition;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.Packet;
-import net.minecraft.server.v1_9_R2.PacketPlayOutWorldEvent;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -1049,7 +1043,10 @@ public class InventoryListener implements Listener {
             }
             int repairPercent = (int) ((newPercent / 1500) * 100);
 
-            player.getWorld().playEffect(player.getLocation().add(0, 1.3, 0), Effect.TILE_BREAK, particleID);
+            player.getWorld().playEffect(player.getLocation().add(0, 1.3, 0), Effect.TILE_BREAK, particleID, 12);
+            player.getWorld().playEffect(player.getLocation().add(0, 1.2, 0), Effect.TILE_BREAK, particleID, 12);
+            player.getWorld().playEffect(player.getLocation().add(0, 1.1, 0), Effect.TILE_BREAK, particleID, 12);
+
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
@@ -1102,8 +1099,9 @@ public class InventoryListener implements Listener {
                 particleID = 5;
             }
             int repairPercent = (int) ((newPercent / 1500) * 100);
-            Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
-            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
+            player.getWorld().playEffect(player.getLocation().add(0, 1.3, 0), Effect.TILE_BREAK, particleID, 12);
+            player.getWorld().playEffect(player.getLocation().add(0, 1.2, 0), Effect.TILE_BREAK, particleID, 12);
+            player.getWorld().playEffect(player.getLocation().add(0, 1.1, 0), Effect.TILE_BREAK, particleID, 12);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
