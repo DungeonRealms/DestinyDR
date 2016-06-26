@@ -901,12 +901,25 @@ public class InventoryListener implements Listener {
 
 
 
+
             String clone = lore.get(lore.size() - 1).toString();
             lore.remove(lore.size() - 1);
             lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
             lore.add(clone);
             meta.setLore(lore);
             slotItem.setItemMeta(meta);
+
+
+            ItemStack newItem = slotItem.clone();
+            event.getCurrentItem().setType(Material.AIR);
+            event.setCurrentItem(new ItemStack(Material.AIR));
+
+
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(newItem);
+            nms.getTag().setInt(enchant.name(), value);
+            event.getWhoClicked().getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+            ((Player) event.getWhoClicked()).updateInventory();
+
 
             if (cursorItem.getAmount() == 1) {
                 event.setCursor(new ItemStack(Material.AIR));

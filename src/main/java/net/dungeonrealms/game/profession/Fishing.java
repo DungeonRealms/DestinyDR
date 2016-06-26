@@ -68,6 +68,18 @@ public class Fishing implements GenericMechanic {
         return CraftItemStack.asNMSCopy(fish).getTag().getInt("itemTier");
     }
 
+    public static boolean hasEnchants(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        List<String> lore = meta.getLore();
+        for (String line : lore) {
+            for (FishingRodEnchant enchants : FishingRodEnchant.values()) {
+                if (line.contains(enchants.name))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public enum EnumFish {
         Shrimp("A raw and pink crustacean", 1), Anchovie("A small blue, oily fish", 1), Crayfish("A lobster-like and brown crustacean", 1),
         Carp("A Large, silver-scaled fish", 2), Herring("A colourful and medium-sized fish", 2), Sardine("A small and oily green fish", 2),
@@ -816,7 +828,7 @@ public class Fishing implements GenericMechanic {
 
     public enum FishingRodEnchant {
         DoubleCatch("DOUBLE CATCH"), TripleCatch("TRIPLE CATCH"), TreasureFind("TREASURE FIND"),
-        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND");
+        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND"), ;
 
 
         public String name;
@@ -916,7 +928,7 @@ public class Fishing implements GenericMechanic {
 
         public static FishingRodEnchant getEnchant(String enchantTypeString) {
             for (FishingRodEnchant temp : values()) {
-                if (temp.name().equalsIgnoreCase(enchantTypeString))
+                if (temp.name().equalsIgnoreCase(enchantTypeString) || temp.name.contains(enchantTypeString))
                     return temp;
             }
             return FishingRodEnchant.DoubleCatch;
@@ -943,7 +955,6 @@ public class Fishing implements GenericMechanic {
         return CraftItemStack.asBukkitCopy(nms);
 
     }
-
 
 
     public HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
