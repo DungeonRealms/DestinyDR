@@ -580,15 +580,9 @@ public class RealmInstance implements Realms {
         String name = Bukkit.getPlayer(uuid).getName();
 
         if (realmHologram == null) return;
-        realmHologram.clearLines();
 
-        if (getRealmTitle(realm.getOwner()).equals("")) {
-            realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
-            realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
-        } else {
-            realmHologram.insertTextLine(0, (ChatColor.WHITE.toString() + ChatColor.BOLD + name + ChatColor.WHITE + " - [" + ChatColor.LIGHT_PURPLE + getRealmTitle(realm.getOwner()) + ChatColor.WHITE + "]").trim());
-            realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
-        }
+        realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
+        realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
     }
 
     @Override
