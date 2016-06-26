@@ -1587,7 +1587,7 @@ public class ClickHandler {
                 if (nmsStack.getTag() == null) return;
                 if (!nmsStack.getTag().hasKey("skinType")) return;
                 if (!nmsStack.getTag().hasKey("eCash")) return;
-                if (DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId()).equals("")) {
+                if (DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId()).equals("")) {
                     player.sendMessage(ChatColor.RED + "You cannot purchase a mount skin as you do not own a mount!");
                     return;
                 }
