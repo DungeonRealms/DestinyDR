@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.realms.instance;
 
 import lombok.Setter;
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.menus.AbstractMenu;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -441,8 +442,11 @@ public class RealmMaterialFactory {
 
             }
 
-            if (isEcash) gamePlayer.setECash(gamePlayer.getEcashBalance() - total_price);
-            else BankMechanics.getInstance().takeGemsFromInventory(total_price, player);
+            if (isEcash) {
+                DonationEffects.getInstance().removeECashFromPlayer(player, total_price);
+            } else {
+                BankMechanics.getInstance().takeGemsFromInventory(total_price, player);
+            }
 
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
             player.sendMessage(ChatColor.GREEN + "Transaction successful.");

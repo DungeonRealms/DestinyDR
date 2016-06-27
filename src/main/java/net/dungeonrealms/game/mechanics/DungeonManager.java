@@ -619,13 +619,13 @@ public class DungeonManager implements GenericMechanic {
         });
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            World w = Bukkit.getServer().createWorld(new WorldCreator(worldName));
-            w.setKeepSpawnInMemory(false);
-            w.setAutoSave(false);
-            w.setPVP(false);
+            WorldCreator worldCreator = new WorldCreator(worldName);
+            worldCreator.generateStructures(false);
+            World w = Bukkit.getServer().createWorld(worldCreator);
             w.setStorm(false);
-            w.setMonsterSpawnLimit(600);
-            w.setGameRuleValue("doFireTick", "false");
+            w.setAutoSave(false);
+            w.setKeepSpawnInMemory(false);
+            w.setPVP(false);
             w.setGameRuleValue("randomTickSpeed", "0");
             Bukkit.getWorlds().add(w);
 

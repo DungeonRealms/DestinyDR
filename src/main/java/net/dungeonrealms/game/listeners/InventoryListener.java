@@ -938,6 +938,7 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
 
         } else if (Mining.isDRPickaxe(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("pickaxeenchant")) {
@@ -1002,7 +1003,6 @@ public class InventoryListener implements Listener {
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
             gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
-            //TODO: Chase when mining ones can be applied, increment stat.
         }
     }
 
