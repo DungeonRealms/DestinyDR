@@ -67,14 +67,12 @@ public class HearthStone implements Listener {
                 player.sendMessage("You cannot restart a teleport during a cast!");
                 return;
             }
-            if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
+            if (TeleportAPI.canUseHearthstone(player)) {
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(getItem(player));
                 Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
-            } else {
-                player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because of Alignment, World or Cooldown issues!" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
             }
         } else {
-            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
+            player.sendMessage(ChatColor.RED + "You are in combat! Please wait " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
         }
     }
 

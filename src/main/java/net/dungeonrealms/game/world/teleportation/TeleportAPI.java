@@ -27,16 +27,28 @@ public class TeleportAPI {
     /**
      * Checks if the player can use their hearthstone
      *
-     * @param uuid
+     * @param player
      * @return boolean
      * @since 1.0
      */
-    public static boolean canUseHearthstone(UUID uuid) {
-        if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(uuid)) {
-            if (API.getGamePlayer(Bukkit.getPlayer(uuid)).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(uuid) <= 0 && Bukkit.getPlayer(uuid).getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()) && (!TutorialIslandHandler.getInstance().onTutorialIsland(uuid))) {
-                    return true;
+    public static boolean canUseHearthstone(Player player) {
+        if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(player.getUniqueId())) {
+            if (API.getGamePlayer(Bukkit.getPlayer(player.getUniqueId())).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                    if (!TutorialIslandHandler.getInstance().onTutorialIsland(player.getUniqueId())) {
+                        if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(player.getUniqueId()) <= 0) {
+                            return true;
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because it has not finished its cooldown" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because have not yet completed our tutorial.");
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because you are not in the main world.");
                 }
+            } else {
+                player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because of your unlawful alignment.");
             }
         }
         return false;

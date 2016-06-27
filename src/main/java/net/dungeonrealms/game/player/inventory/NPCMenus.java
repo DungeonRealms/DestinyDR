@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -111,12 +112,11 @@ public class NPCMenus {
                 }
             } else if (event.getMessage().equalsIgnoreCase("ecash")) {
                 if (gp.getEcashBalance() >= 500) {
-                    int ecash = gp.getEcashBalance() - 500;
-                    gp.setECash(ecash);
+                    DonationEffects.getInstance().removeECashFromPlayer(player, 500);
                     gp.getStats().addReset();
                     gp.getStats().unallocateAllPoints();
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
-                    event.getPlayer().sendMessage(ChatColor.RED.toString() + ecash + "E-CASH taken from your account.");
+                    event.getPlayer().sendMessage(ChatColor.RED.toString() + 500 + "E-CASH taken from your account.");
                 } else {
                     p.sendMessage(ChatColor.RED + "Stat Reset - Cancelled");
                     p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: 500 ECASH" + ChatColor.RED + " insufficient funds.");

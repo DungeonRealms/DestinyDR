@@ -126,7 +126,7 @@ public class RealmInstance implements Realms {
         AsyncRealmLoadCallback(player, false, downloadRealm(player.getUniqueId()), callback -> {
             // RUN SYNC AGAIN //
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-                if (!callback) player.sendMessage(ChatColor.GREEN + "Creating a new realm for you...");
+                if (!callback) Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* REALM CREATED *");
 
                 loadRealm(player, !callback, () -> {
                     player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
@@ -245,7 +245,8 @@ public class RealmInstance implements Realms {
         updateRealmHologram(player.getUniqueId());
 
         realm.setStatus(RealmStatus.OPENED);
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "                   " + "* Realm Portal OPENED *");
+
+        Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* Realm Portal OPENED *");
 
         player.getWorld().playEffect(portalLocation, Effect.ENDER_SIGNAL, 10);
         player.playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
@@ -260,7 +261,16 @@ public class RealmInstance implements Realms {
     @Override
     public void loadRealmWorld(UUID uuid) {
         Utils.log.info("[REALM] [SYNC] Loading world for " + uuid.toString());
-        Bukkit.getServer().createWorld(new WorldCreator(uuid.toString())).setKeepSpawnInMemory(false);
+        Utils.log.info("[REALM] [SYNC] Server will halt during this process");
+
+        WorldCreator wc = new WorldCreator(uuid.toString());
+        wc.generator(new RealmGenerator());
+
+        World world = Bukkit.getServer().createWorld(new WorldCreator(uuid.toString()));
+        world.setKeepSpawnInMemory(false);
+        world.setStorm(false);
+
+        Utils.log.info("[REALM] [SYNC] World loaded for " + uuid.toString());
     }
 
     @Override
@@ -279,7 +289,7 @@ public class RealmInstance implements Realms {
                 () -> Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                     setRealmTitle(player.getUniqueId(), "");
                     getRealm(player.getUniqueId()).setStatus(RealmStatus.CLOSED);
-                    player.sendMessage(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "Your realm has successfully been reset!");
+                    Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
                 }));
     }
 

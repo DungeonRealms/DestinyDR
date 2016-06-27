@@ -44,6 +44,17 @@ public interface Realms extends GenericMechanic {
 
 
     /**
+     * Async realm loader callback
+     *
+     * @param player          Owner of realm
+     * @param callOnException Should call callback if exception is caught
+     * @param task            Async task
+     * @param callback        Callback method?
+     */
+    void AsyncRealmLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> callback);
+
+
+    /**
      * Opens the player's realm portal
      * Realm should be already cached before executing this command
      *
@@ -61,16 +72,6 @@ public interface Realms extends GenericMechanic {
      */
     void loadRealm(Player player, Runnable doAfter);
 
-
-    /**
-     * Loads the player's realm*
-     *
-     * @param player  Owner of realm
-     * @param callOnException Should call comsumer if exeception is caught
-     * @param task Async task
-     * @param doAfter What should be executed after?
-     */
-    void AsyncRealmLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter);
 
     /**
      * Loads the realm world

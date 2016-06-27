@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.FriendHandler;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -14,6 +15,7 @@ import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.PacketPlayOutWorldEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -51,6 +53,10 @@ public class RealmListener implements Listener {
 
             if (!event.getPlayer().getPlayer().getUniqueId().equals(realm.getOwner()))
                 event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + Bukkit.getPlayer(realm.getOwner()).getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
+            else {
+                event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have returned to " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
+            }
+
 
             if (!Realms.getInstance().getRealmTitle(realm.getOwner()).equals(""))
                 event.getPlayer().sendMessage(ChatColor.GRAY + Realms.getInstance().getRealmTitle(realm.getOwner()));
@@ -58,6 +64,7 @@ public class RealmListener implements Listener {
         } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
             Realms.getInstance().getRealm(event.getFrom()).getPlayersInRealm().remove(event.getPlayer().getUniqueId());
         }
+
     }
 
     @EventHandler
@@ -328,10 +335,8 @@ public class RealmListener implements Listener {
             loot.setTypeId(356);
         }
 
-        p.getWorld().playEffect(b.getLocation(), Effect.SMOKE, 20);
-        p.getWorld().playSound(b.getLocation(), getSoundEffect(b.getType()), 1.0F, 0.5F);
+        b.getLocation().getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getTypeId());
         b.setType(Material.AIR);
-
 
         int amount = loot.getAmount();
         int max_stack = loot.getMaxStackSize();
@@ -369,35 +374,6 @@ public class RealmListener implements Listener {
         }
 
         p.updateInventory();
-    }
-
-    private Sound getSoundEffect(Material type) {
-        switch (type) {
-            case WOOL:
-                return Sound.BLOCK_CLOTH_BREAK;
-            case ANVIL:
-                return Sound.BLOCK_ANVIL_BREAK;
-            case LADDER:
-                return Sound.BLOCK_LADDER_BREAK;
-            case GRAVEL:
-                return Sound.BLOCK_GRAVEL_BREAK;
-            case SOUL_SAND:
-            case SAND:
-                return Sound.BLOCK_SAND_BREAK;
-            case GRASS:
-                return Sound.BLOCK_GRASS_BREAK;
-            case DIRT:
-                return Sound.BLOCK_GRAVEL_BREAK;
-            case GLASS:
-                return Sound.BLOCK_GLASS_BREAK;
-            case CHEST:
-            case WOOD:
-                return Sound.BLOCK_WOOD_BREAK;
-            case SNOW:
-                return Sound.BLOCK_SNOW_BREAK;
-            default:
-                return Sound.BLOCK_STONE_BREAK;
-        }
     }
 
 

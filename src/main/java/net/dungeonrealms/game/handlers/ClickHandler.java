@@ -21,6 +21,7 @@ import net.dungeonrealms.game.player.inventory.ECashMenus;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.support.Support;
@@ -165,39 +166,11 @@ public class ClickHandler {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack == null) return;
                     if (nmsStack.getTag() == null) return;
-                    /*if (nmsStack.getTag().hasKey("donationStore")) {
+                    if (nmsStack.getTag().hasKey("donationStore")) {
                         player.closeInventory();
-                        TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                        bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
-                        bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Shop").create()));
-                        TextComponent test = new TextComponent(ChatColor.RED + "To Purchase E-Cash from our Shop, Click ");
-                        test.addExtra(bungeeMessage);
-                        player.spigot().sendMessage(test);
-                        return;
-                    }*/
-                    if (nmsStack.getTag().hasKey("storageExpansion")) {
-                        if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                            player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
-                            player.sendMessage(ChatColor.GREEN + "You have purchased a Storage Expansion.");
-                            player.closeInventory();
-                            return;
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                            return;
-                        }
-                    }
-                    if (nmsStack.getTag().hasKey("repairHammer")) {
-                        player.sendMessage(ChatColor.RED + "This is currently not implemented");
-                        player.closeInventory();
-                    /*if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                        player.getInventory().addItem(ItemManager.createItem(EnumItem.RepairHammer));
-                        player.sendMessage(ChatColor.GREEN + "You have purchased Five Repair Hammers.");
-                        player.closeInventory();
-                        return;
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                        return;
-                    }*/
+                        final JSONMessage normal4 = new JSONMessage(ChatColor.GOLD + "To Purchase E-Cash from our Shop, Click ", ChatColor.GOLD);
+                        normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://shop.dungeonrealms.net");
+                        normal4.sendToPlayer(player);
                     }
                     if (nmsStack.getTag().hasKey("retrainingBook")) {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
@@ -209,19 +182,6 @@ public class ClickHandler {
                             player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
                             return;
                         }
-                    }
-                    if (nmsStack.getTag().hasKey("medalOfGathering")) {
-                        player.sendMessage(ChatColor.RED + "This is currently not implemented!");
-                        player.closeInventory();
-                    /*if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                        player.getInventory().addItem(ItemManager.createItem(EnumItem.MedalOfGathering));
-                        player.sendMessage(ChatColor.GREEN + "You have purchased a Medal Of Gathering.");
-                        player.closeInventory();
-                        return;
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
-                        return;
-                    }*/
                     }
                 }
                 break;
@@ -610,7 +570,7 @@ public class ClickHandler {
                         if (nmsStack.getTag().getString("petName") != null) {
                             petName = nmsStack.getTag().getString("petName");
                         }
-                        player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE +"cancel" + ChatColor.GRAY + " to end the process.");
+                        player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
                         player.closeInventory();
                         String finalPetName = petName;
                         Chat.listenForMessage(player, newPetName -> {
