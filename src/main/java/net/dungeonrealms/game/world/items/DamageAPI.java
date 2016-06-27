@@ -89,21 +89,21 @@ public class DamageAPI {
         damage += attackerAttributes.get("pureDamage")[1];
 
         Item.ItemType type = Item.ItemType.getTypeFromMaterial(attacker.getEquipment().getItemInMainHand().getType());
-        switch (type) {
-            case Item.ItemType.AXE:
-            case Item.ItemType.POLEARM:
-                if (attackerAttributes.get("strength")[1] != 0) {
-                    damage += (damage / 100) * (attackerAttributes.get("strength")[1] * 0.023D);
-                }
-                break;
-            case Item.ItemType.SWORD:
-                if (attackerAttributes.get("vitality")[1] != 0) {
-                    damage += (damage / 100) * (attackerAttributes.get("vitality")[1] * 0.023D);
-                }
-                break;
-            default:
-                break;
-        }
+//        switch (type) {
+//            case Item.ItemType.AXE:
+//            case Item.ItemType.POLEARM:
+//                if (attackerAttributes.get("strength")[1] != 0) {
+//                    damage += (damage / 100) * (attackerAttributes.get("strength")[1] * 0.023D);
+//                }
+//                break;
+//            case Item.ItemType.SWORD:
+//                if (attackerAttributes.get("vitality")[1] != 0) {
+//                    damage += (damage / 100) * (attackerAttributes.get("vitality")[1] * 0.023D);
+//                }
+//                break;
+//            default:
+//                break;
+//        }
 
         if (attackerAttributes.get("fireDamage")[1] != 0) {
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
@@ -177,15 +177,15 @@ public class DamageAPI {
                     break;
             }
         }
-        for (NBTTagCompound nmsTag : nmsTags) {
-            if (nmsTag == null) {
-                damage += 0;
-            } else {
-                if (nmsTag.getDouble("dpsMin") != 0) {
-                    damage += (damage * (Utils.randInt((int) nmsTag.getDouble("dpsMin"), (int) nmsTag.getDouble("dpsMax")) / 100));
-                }
-            }
-        }
+//        for (NBTTagCompound nmsTag : nmsTags) {
+//            if (nmsTag == null) {
+//                damage += 0;
+//            } else {
+//                if (nmsTag.getDouble("dpsMin") != 0) {
+//                    damage += (damage * (Utils.randInt((int) nmsTag.getDouble("dpsMin"), (int) nmsTag.getDouble("dpsMax")) / 100));
+//                }
+//            }
+//        }
         if (!(attacker instanceof Player)) {
             if (attacker.hasMetadata("attack")) {
                 damage += (damage * (attacker.getMetadata("attack").get(0).asDouble() / 100));

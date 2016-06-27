@@ -28,6 +28,7 @@ import net.dungeonrealms.game.player.inventory.GUI;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -364,11 +365,6 @@ public class MainListener implements Listener {
                                 if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(playerClicked.getLocation())) {
                                     DuelingMechanics.sendDuelRequest(p1, playerClicked);
                                 }
-                            } else if (item.getType() == Material.EMERALD) {
-                                event.setWillClose(true);
-                                event.setWillDestroy(true);
-                                event.willDestroy();
-                                TradeManager.sendTradeRequest(theevent.getPlayer().getUniqueId(), playerClicked.getUniqueId());
                             } else if (item.getType() == Material.PAPER) {
                                 theevent.getPlayer().closeInventory();
                                 theevent.getPlayer().chat("@i@ " + playerClicked.getName() + " ");
@@ -913,6 +909,26 @@ public class MainListener implements Listener {
                 return;
             if (nms.getTag().hasKey("subtype")) event.getItemDrop().remove();
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerAttemptTrade(PlayerDropItemEvent event) {
+        Player pl = event.getPlayer();
+        Player trader = TradeManager.getTarget(pl);
+        if (trader == null) {
+            return;
+        }
+
+        if (!TradeManager.canTrade(trader.getUniqueId())) {
+            return;
+        }
+        event.setCancelled(true);
+        TradeManager.startTrade(pl, trader);
+        Trade trade = TradeManager.getTrade(pl.getUniqueId());
+        trade.inv.addItem(event.getItemDrop().getItemStack().clone());
+        event.getPlayer().getEquipment().setItemInMainHand(null);
+
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
