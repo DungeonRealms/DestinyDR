@@ -211,7 +211,7 @@ public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener 
     }
 
     public void add(GUIItem item) {
-        this.put(this.size() != 0 ? this.size() - 1 : 0, item);
+        this.put(this.size(), item);
         this.inventory.addItem(item.getItemStack());
     }
 

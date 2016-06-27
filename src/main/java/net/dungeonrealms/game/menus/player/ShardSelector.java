@@ -70,7 +70,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
                     Cooldown.addCooldown(player.getUniqueId(), 1000L);
 
                     if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
-                        player.sendMessage(new String[] {
+                        player.sendMessage(new String[]{
                                 ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + "SUBSCRIBER ONLY" + ChatColor.RED + " shard!",
                                 ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
                         });
@@ -114,7 +114,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY);
+            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID);
             button.setLore(lore);
 
 //            button.setSlot(slot);
