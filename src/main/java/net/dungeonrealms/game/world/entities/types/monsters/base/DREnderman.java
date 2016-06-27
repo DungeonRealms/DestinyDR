@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
@@ -13,6 +14,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Kieran Quigley (Proxying) on 21-Jun-16.
  */
@@ -22,6 +26,8 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
     protected EnumEntityType entityType;
     protected EnumMonster monsterType;
     public int tier;
+    @Getter
+    protected Map<String, Integer[]> attributes = new HashMap<>();
 
     protected DREnderman(World world, EnumMonster monsterType, int tier) {
         this(world);
@@ -40,6 +46,7 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
         livingEntity.getEquipment().setHelmet(monsterType.getSkullItem(monsterType));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
+        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     protected DREnderman(World world) {

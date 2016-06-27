@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
@@ -15,12 +16,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Kieran Quigley (Proxying) on 06-Jun-16.
  */
 public class DRWolf extends EntityWolf implements DRMonster {
 
     public EnumMonster enumMonster;
+    @Getter
+    protected Map<String, Integer[]> attributes = new HashMap<>();
 
     public DRWolf(World world, EnumMonster type, int tier) {
         super(world);
@@ -38,6 +44,7 @@ public class DRWolf extends EntityWolf implements DRMonster {
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
+        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     public void setArmor(int tier) {

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss.subboss;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -23,6 +24,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Chase on Oct 21, 2015
  */
@@ -30,6 +34,8 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements Boss {
 	
 	public boolean died = false;
 	public InfernalAbyss boss;
+	@Getter
+	protected Map<String, Integer[]> attributes = new HashMap<>();
 	
 	public InfernalLordsGuard(InfernalAbyss boss) {
 		super(boss.getWorld());

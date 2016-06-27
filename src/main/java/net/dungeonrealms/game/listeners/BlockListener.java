@@ -106,7 +106,7 @@ public class BlockListener implements Listener {
     }
 
     /**
-     * Handles breaking ore
+     * Handles `ing ore
      *
      * @param e
      * @since 1.0
@@ -114,6 +114,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void breakOre(BlockBreakEvent e) {
         Block block = e.getBlock();
+        Random rand = new Random();
         if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         if (block == null) return;
@@ -136,22 +137,74 @@ public class BlockListener implements Listener {
                 GamePlayer gamePlayer = API.getGamePlayer(e.getPlayer());
                 if (gamePlayer == null) return;
                 gamePlayer.addExperience((experienceGain / 8), false);
-                RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
-                int break_chance = Mining.getBreakChance(stackInHand);
-                int do_i_break = new Random().nextInt(100);
-                if (do_i_break < break_chance) {
+                int duraBuff = Mining.getDurabilityBuff(stackInHand);
+                if (rand.nextInt(100) > duraBuff)
+                    RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
+                int breakChance = Mining.getBreakChance(stackInHand);
+                breakChance += Mining.getSuccessChance(stackInHand);
+                int willBreak = rand.nextInt(100);
+                if (willBreak < breakChance) {
                     Mining.addExperience(stackInHand, experienceGain, p);
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
-                        p.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "   +" + experienceGain + "EXP for mining ore!");
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
+                        String expPrefix = org.bukkit.ChatColor.YELLOW.toString() + org.bukkit.ChatColor.BOLD + "        + ";
+                        p.sendMessage(expPrefix + org.bukkit.ChatColor.YELLOW + Math.round(experienceGain) + org.bukkit.ChatColor.BOLD + "t EXP " + org.bukkit.ChatColor.GRAY + "[" + Math.round(Mining.getExperience(stackInHand)) + org.bukkit.ChatColor.BOLD + "/" + org.bukkit.ChatColor.GRAY + Math.round(Mining.getEXPNeeded(Mining.getLvl(stackInHand))) + " EXP]");
+
+                    }
                     p.getInventory().addItem(Mining.getBlock(type));
                     gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
                 } else {
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }
+
+                p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 1F, 0.75F);
+
                 e.getBlock().setType(Material.STONE);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
+
+
+                int doubleDrop = rand.nextInt(100) + 1;
+                if (Mining.getDoubleDropChance(stackInHand) >= doubleDrop) {
+                    p.getInventory().addItem(Mining.getBlock(type));
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE ORE DROP" + ChatColor.YELLOW + " (2x)");
+                }
+
+                int tripleDrop = rand.nextInt(100) + 1;
+                if (Mining.getTripleDropChance(stackInHand) >= tripleDrop) {
+                    p.getInventory().addItem(Mining.getBlock(type));
+                    p.getInventory().addItem(Mining.getBlock(type));
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE ORE DROP" + ChatColor.YELLOW + " (3x)");
+                }
+
+                int dropGems = rand.nextInt(100) + 1;
+                if (Mining.getGemFindChance(stackInHand) >= dropGems) {
+                    int amount = 0;
+                    switch (tier) {
+                        case 1:
+                            amount = rand.nextInt(20) + 1;
+                            break;
+                        case 2:
+                            amount = rand.nextInt(40 - 20) + 20;
+                            break;
+                        case 3:
+                            amount = rand.nextInt(60 - 40) + 40;
+                            break;
+                        case 4:
+                            amount = rand.nextInt(90 - 70) + 70;
+                            break;
+                        case 5:
+                            amount = rand.nextInt(110 - 90) + 90;
+                            break;
+                    }
+                    amount = (int) (amount * 0.80D);
+                    p.getWorld().dropItemNaturally(p.getLocation(), BankMechanics.createGems(amount));
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          FOUND " + amount + " GEM(s)" + ChatColor.YELLOW + "");
+                }
             }
         }
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -173,6 +226,7 @@ public class BlockListener implements Listener {
                 ItemStack stack = e.getPlayer().getEquipment().getItemInMainHand();
                 if (stack.getAmount() > 1) {
                     ItemStack cookedFish = stack.clone();
+                    cookedFish.setAmount(1);
                     cookedFish.setType(Material.COOKED_FISH);
                     e.getPlayer().getInventory().addItem(cookedFish);
                     stack.setAmount(stack.getAmount() - 1);

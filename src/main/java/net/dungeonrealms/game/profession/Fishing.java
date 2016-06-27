@@ -728,7 +728,20 @@ public class Fishing implements GenericMechanic {
                         break main;
                 }
         }
-        lore.add(enchant.name + " " + enchant.getBuff(tier));
+
+        Iterator<String> i = lore.iterator();
+
+        while (i.hasNext()) {
+            String line = i.next();
+            if (line.contains(enchant.name))
+                i.remove();
+        }
+
+
+        String clone = lore.get(lore.size() - 1).toString();
+        lore.remove(lore.size() - 1);
+        lore.add(ChatColor.RED + enchant.name + " +" + enchant.getBuff(tier) + "%");
+        lore.add(clone);
         meta.setLore(lore);
         stack.setItemMeta(meta);
 
@@ -787,18 +800,23 @@ public class Fishing implements GenericMechanic {
             switch (tier) {
                 case 1:
                     name = ChatColor.WHITE + "Basic Fishingrod";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of wood and thread.");
                     break;
                 case 2:
                     name = ChatColor.GREEN.toString() + "Advanced Fishingrod";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of oak wood and thread.");
                     break;
                 case 3:
                     name = ChatColor.AQUA.toString() + "Expert Fishingrod";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of ancient oak wood and spider silk.");
                     break;
                 case 4:
                     name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishingrod";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of jungle bamboo and spider silk.");
                     break;
                 case 5:
                     name = ChatColor.YELLOW.toString() + "Master Fishingrod";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of rich mahogany and enchanted silk");
                     break;
                 default:
                     break;
@@ -828,7 +846,7 @@ public class Fishing implements GenericMechanic {
 
     public enum FishingRodEnchant {
         DoubleCatch("DOUBLE CATCH"), TripleCatch("TRIPLE CATCH"), TreasureFind("TREASURE FIND"),
-        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND"), ;
+        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND"),;
 
 
         public String name;

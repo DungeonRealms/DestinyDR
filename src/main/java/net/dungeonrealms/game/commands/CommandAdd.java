@@ -14,6 +14,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.items.EnumItem;
@@ -87,26 +88,22 @@ public class CommandAdd extends BasicCommand {
                             tier = Integer.parseInt(args[1]);
                             player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
                                     .setType(ItemType.getRandomWeapon()).generateItem().getItem());
-                        }
-                        else if (args.length == 3) {
+                        } else if (args.length == 3) {
                             tier = Integer.parseInt(args[1]);
                             type = ItemType.getByName(args[2]);
                             player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
                                     .setType(type).generateItem().getItem());
-                        }
-                        else if (args.length == 4) {
+                        } else if (args.length == 4) {
                             tier = Integer.parseInt(args[1]);
                             type = ItemType.getByName(args[2]);
                             rarity = ItemRarity.getByName(args[3]);
                             player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
                                     .setType(type).setRarity(rarity).generateItem().getItem());
-                        }
-                        else {
+                        } else {
                             player.getInventory().addItem(
                                     new ItemGenerator().setType(ItemType.getRandomWeapon()).generateItem().getItem());
                         }
-                    }
-                    catch (NullPointerException ex) {
+                    } catch (NullPointerException ex) {
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
@@ -116,26 +113,22 @@ public class CommandAdd extends BasicCommand {
                             tier = Integer.parseInt(args[1]);
                             player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
                                     .setType(ItemType.getRandomArmor()).generateItem().getItem());
-                        }
-                        else if (args.length == 3) {
+                        } else if (args.length == 3) {
                             tier = Integer.parseInt(args[1]);
                             type = ItemType.getByName(args[2]);
                             player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
                                     .setType(type).generateItem().getItem());
-                        }
-                        else if (args.length == 4) {
+                        } else if (args.length == 4) {
                             tier = Integer.parseInt(args[1]);
                             type = ItemType.getByName(args[2]);
                             rarity = ItemRarity.getByName(args[3]);
                             player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
                                     .setType(type).setRarity(rarity).generateItem().getItem());
-                        }
-                        else {
+                        } else {
                             player.getInventory().addItem(
                                     new ItemGenerator().setType(ItemType.getRandomArmor()).generateItem().getItem());
                         }
-                    }
-                    catch (NullPointerException ex) {
+                    } catch (NullPointerException ex) {
                         player.sendMessage("Format: /ad armor [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
@@ -249,14 +242,27 @@ public class CommandAdd extends BasicCommand {
                 case "rodenchant":
                     tier = Integer.parseInt(args[1]);
                     String enchantTypeString = args[2];
-                    if(args.length == 4) {
+                    if (args.length == 4) {
                         int percent = Integer.parseInt(args[3]);
                         Fishing.FishingRodEnchant enchantType = Fishing.FishingRodEnchant.getEnchant(enchantTypeString);
                         player.getInventory().addItem(Fishing.getEnchant(tier, enchantType, percent));
 
-                    }else {
+                    } else {
                         Fishing.FishingRodEnchant enchantType = Fishing.FishingRodEnchant.getEnchant(enchantTypeString);
                         player.getInventory().addItem(Fishing.getEnchant(tier, enchantType));
+                    }
+                    break;
+                case "pickenchant":
+                    tier = Integer.parseInt(args[1]);
+                    enchantTypeString = args[2];
+                    if (args.length == 4) {
+                        int percent = Integer.parseInt(args[3]);
+                        Mining.EnumMiningEnchant enchantType = Mining.EnumMiningEnchant.getEnchant(enchantTypeString);
+                        player.getInventory().addItem(Mining.getEnchant(tier, enchantType, percent));
+
+                    } else {
+                        Mining.EnumMiningEnchant enchantType = Mining.EnumMiningEnchant.getEnchant(enchantTypeString);
+                        player.getInventory().addItem(Mining.getEnchant(tier, enchantType));
                     }
                     break;
                 case "pouch":
@@ -297,7 +303,7 @@ public class CommandAdd extends BasicCommand {
                     break;
                 case "teleport":
                 case "teleports":
-                    String[] teleports = new String[] { "Cyrennica", "Harrison_Field", "Dark_Oak", "Trollsbane", "Tripoli", "Gloomy_Hollows", "Crestguard", "Deadpeaks" };
+                    String[] teleports = new String[]{"Cyrennica", "Harrison_Field", "Dark_Oak", "Trollsbane", "Tripoli", "Gloomy_Hollows", "Crestguard", "Deadpeaks"};
                     if (args.length == 1) {
                         for (String tp : teleports) {
                             player.getInventory().addItem(ItemManager.createTeleportBook(tp));

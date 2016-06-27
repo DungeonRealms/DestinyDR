@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.items;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -9,6 +10,7 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -19,11 +21,13 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -42,39 +46,31 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double calculateWeaponDamage(LivingEntity attacker, Entity receiver, NBTTagCompound tag) {
-        EntityEquipment entityEquipment = attacker.getEquipment();
+        if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) return 0;
+
+        // get the attacker's attributes
+        Map<String, Integer[]> attackerAttributes;
         if (API.isPlayer(attacker)) {
             RepairAPI.subtractCustomDurability((Player) attacker, attacker.getEquipment().getItemInMainHand(), 1);
+            attackerAttributes = API.getGamePlayer((Player) attacker).getAttributes();
+            // a player switches weapons, so we need to recalculate weapon attributes
+            attackerAttributes.putAll(API.calculateWeaponAttributes(attacker.getEquipment().getItemInMainHand(), false));
         }
-        ItemStack[] attackerArmor = entityEquipment.getArmorContents();
-        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
-        double damage;
-        if (attackerArmor[3] != null && attackerArmor[3].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(attackerArmor[3]).getTag() != null) {
-                nmsTags[0] = CraftItemStack.asNMSCopy(attackerArmor[3]).getTag();
-            }
+        else if (attacker instanceof DRMonster) {
+            attackerAttributes = ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes();
         }
-        if (attackerArmor[2] != null && attackerArmor[2].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(attackerArmor[2]).getTag() != null) {
-                nmsTags[1] = CraftItemStack.asNMSCopy(attackerArmor[2]).getTag();
-            }
+        else if (attacker instanceof Boss) {
+            attackerAttributes = ((Boss) ((CraftLivingEntity) attacker).getHandle()).getAttributes();
         }
-        if (attackerArmor[1] != null && attackerArmor[1].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(attackerArmor[1]).getTag() != null) {
-                nmsTags[2] = CraftItemStack.asNMSCopy(attackerArmor[1]).getTag();
-            }
+        else {
+            return 0;
         }
-        if (attackerArmor[0] != null && attackerArmor[0].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(attackerArmor[0]).getTag() != null) {
-                nmsTags[3] = CraftItemStack.asNMSCopy(attackerArmor[0]).getTag();
-            }
-        }
-        damage = Utils.randInt(tag.getInt("damageMin"), tag.getInt("damageMax"));
+
+        double damage = Utils.randInt(attackerAttributes.get("damage")[0], attackerAttributes.get("damage")[1]);
         boolean isHitCrit = false;
+
         if (API.isPlayer(receiver)) {
-            if (tag.getDouble("vsPlayers") != 0) {
-                damage += ((tag.getDouble("vsPlayers") / 100) * damage);
-            }
+            damage += ((((double) attackerAttributes.get("vsPlayers")[1]) / 100) * damage);
             if (attacker.hasMetadata("type")) {
                 if (attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                     if (((CraftLivingEntity)attacker).getHandle() instanceof DRMonster) {
@@ -85,55 +81,48 @@ public class DamageAPI {
         } else {
             if (receiver.hasMetadata("type")) {
                 if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                    if (tag.getDouble("vsMonsters") != 0) {
-                        damage += ((tag.getDouble("vsMonsters") / 100) * damage);
-                    }
+                        damage += ((((double) attackerAttributes.get("vsPlayers")[1]) / 100) * damage);
                 }
             }
         }
 
-        if (tag.getInt("pureDamage") != 0) {
-            damage += tag.getInt("pureDamage");
+        damage += attackerAttributes.get("pureDamage")[1];
+
+        Item.ItemType type = Item.ItemType.getTypeFromMaterial(attacker.getEquipment().getItemInMainHand().getType());
+        switch (type) {
+            case Item.ItemType.AXE:
+            case Item.ItemType.POLEARM:
+                if (attackerAttributes.get("strength")[1] != 0) {
+                    damage += (damage / 100) * (attackerAttributes.get("strength")[1] * 0.023D);
+                }
+                break;
+            case Item.ItemType.SWORD:
+                if (attackerAttributes.get("vitality")[1] != 0) {
+                    damage += (damage / 100) * (attackerAttributes.get("vitality")[1] * 0.023D);
+                }
+                break;
+            default:
+                break;
         }
 
-        if (tag.getInt("armorPenetration") != 0) {
-            damage += tag.getInt("armorPenetration");
-        }
-
-        if (tag.getInt("accuracy") != 0) {
-            damage += tag.getInt("accuracy");
-        }
-
-        if (tag.getDouble("strength") != 0) {
-            damage += (damage / 100) * (tag.getDouble("strength") * 0.023D);
-        }
-
-        if (tag.getDouble("vitality") != 0) {
-            damage += (damage / 100) * (tag.getDouble("vitality") * 0.023D);
-        }
-
-        if (tag.getInt("fireDamage") != 0) {
+        if (attackerAttributes.get("fireDamage")[1] != 0) {
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8195);
-            damage += tag.getInt("fireDamage");
+            damage += attackerAttributes.get("fireDamage")[1];
         }
-
-        if (tag.getInt("iceDamage") != 0) {
+        else if (attackerAttributes.get("iceDamage")[1] != 0) {
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8194);
-            damage += tag.getInt("iceDamage");
+            damage += attackerAttributes.get("iceDamage")[1];
         }
-
-        if (tag.getInt("poisonDamage") != 0) {
+        else if (attackerAttributes.get("poisonDamage")[1] != 0) {
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8196);
-            damage += tag.getInt("poisonDamage");
+            damage += attackerAttributes.get("poisonDamage")[1];
         }
 
-        int critHit = 0;
-        if (tag.getInt("criticalHit") != 0) {
-            critHit += tag.getInt("criticalHit");
-        }
+        int critHit = attackerAttributes.get("criticalHit")[1];
+
         if (attacker.getEquipment().getItemInMainHand() != null) {
             if (new Attribute(attacker.getEquipment().getItemInMainHand()).getItemType() == Item.ItemType.AXE) {
                 critHit += 3;
@@ -734,5 +723,47 @@ public class DamageAPI {
         EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
         eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
         MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
+    }
+
+    /**
+     * Sets a blanket damage bonus for a specified entity. When the entity
+     * attacks, the damage bonus will be added on to the final calculated
+     * damage.
+     *
+     * @param ent
+     * @param bonusPercent - the bonus amount as a percentage. (e.g. 50.0 will
+     *                     increase damage by 50%).
+     */
+    public static void setDamageBonus(Entity ent, float bonusPercent) {
+        ent.setMetadata("damageBonus", new FixedMetadataValue(DungeonRealms.getInstance(), bonusPercent));
+    }
+
+    public static float getDamageBonus(Entity ent) {
+        return ent.hasMetadata("damageBonus") ? ent.getMetadata("damageBonus").get(0).asFloat() : 0;
+    }
+
+    public static void removeDamageBonus(Entity ent) {
+        if (ent.hasMetadata("damageBonus")) ent.removeMetadata("damageBonus", DungeonRealms.getInstance());
+    }
+
+    /**
+     * Sets a blanket armor ignore bonus for a specified entity. When the entity
+     * attacks, the armor reduction of the attacked entity will be reduced by this
+     * bonus.
+     *
+     * @param ent
+     * @param bonusPercent - the bonus amount as a percentage. (e.g. 50.0 will
+     *                     reduce armor reduction by 50%).
+     */
+    public static void setArmorIgnoreBonus(Entity ent, float bonusPercent) {
+        ent.setMetadata("armorIgnoreBonus", new FixedMetadataValue(DungeonRealms.getInstance(), bonusPercent));
+    }
+
+    public static float getArmorIgnoreBonus(Entity ent) {
+        return ent.hasMetadata("armorIgnoreBonus") ? ent.getMetadata("armorIgnoreBonus").get(0).asFloat() : 0;
+    }
+
+    public static void removeArmorIgnoreBonus(Entity ent) {
+        if (ent.hasMetadata("armorIgnoreBonus")) ent.removeMetadata("armorIgnoreBonus", DungeonRealms.getInstance());
     }
 }

@@ -9,12 +9,16 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 
+import java.util.Map;
+
 /**
  * Created by Chase on Oct 18, 2015
  */
 public interface Boss {
 	
 	EnumBoss getEnumBoss();
+
+	Map<String, Integer[]> getAttributes();
 	
 	void onBossDeath();
 	

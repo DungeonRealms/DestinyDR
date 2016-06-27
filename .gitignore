@@ -15,3 +15,6 @@ resources/META_INF/MANIFEST.MF
 /target
 .settings
 tools/WinSCP.*
+tools/pushBuildToServer/pushDev.bat
+tools/pushBuildToServer/WinSCP.com
+tools/pushBuildToServer/WinSCP.map

@@ -6,19 +6,16 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Chase on Oct 27, 2015
@@ -131,6 +128,132 @@ public class Mining implements GenericMechanic {
         return 0;
     }
 
+    public static ItemStack getEnchant(int tier, EnumMiningEnchant enchant) {
+        int stat = enchant.getBuff(tier);
+        String statBuff = ChatColor.RED + enchant.display + " " + stat + "%";
+        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Pickaxe Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a pickaxe with special attributes."}).build();
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        nms.getTag().setString("type", "pickaxeenchant");
+        nms.getTag().setInt(enchant.name(), stat);
+        return CraftItemStack.asBukkitCopy(nms);
+    }
+
+    public static ItemStack getEnchant(int tier, EnumMiningEnchant enchant, int percent) {
+        String statBuff = ChatColor.RED + enchant.display + " " + percent + "%";
+        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Pickaxe Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a pickaxe with special attributes."}).build();
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        nms.getTag().setString("type", "pickaxeenchant");
+        nms.getTag().setInt(enchant.name(), percent);
+        return CraftItemStack.asBukkitCopy(nms);
+
+    }
+
+    public static float getExperience(ItemStack stackInHand) {
+        return CraftItemStack.asNMSCopy(stackInHand).getTag().getInt("XP");
+    }
+
+    public enum EnumMiningEnchant {
+        // 0 = Double Ore 1 = Chance for Gems 2 = Chance of success increase 3 = Triple Ore 4 = Durability increase
+
+        DoubleOre("DOUBLE ORE"), GemFind("GEM FIND"), MiningSuccess("MINING SUCCESS"),
+        TripleOre("TRIPLE ORE"), Durability("DURABILITY");
+
+        public String display;
+
+        EnumMiningEnchant(String display) {
+            this.display = display;
+        }
+
+        public static EnumMiningEnchant getEnchant(String key) {
+            for (EnumMiningEnchant enchant : EnumMiningEnchant.values()) {
+                if (enchant.name().equalsIgnoreCase(key) || enchant.display.contains(key) || enchant.display.equalsIgnoreCase(key)) {
+                    return enchant;
+                }
+            }
+            return DoubleOre;
+        }
+
+        public int getBuff(int tier) {
+            Random rand = new Random();
+            switch (this) {
+                case DoubleOre:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                        case 2:
+                            return rand.nextInt(5) + 1;
+                        case 3:
+                            return rand.nextInt(9) + 1;
+                        case 4:
+                            return rand.nextInt(13) + 1;
+                        case 5:
+                            return rand.nextInt(17) + 1;
+                    }
+                case TripleOre:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                        case 2:
+                            return rand.nextInt(2) + 1;
+                        case 3:
+                            return rand.nextInt(3) + 1;
+                        case 4:
+                            return rand.nextInt(4) + 1;
+                        case 5:
+                            return rand.nextInt(5) + 1;
+                    }
+                    break;
+                case GemFind:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                        case 2:
+                            return rand.nextInt(3) + 1;
+                        case 3:
+                            return rand.nextInt(5) + 1;
+                        case 4:
+                            return rand.nextInt(8) + 1;
+                        case 5:
+                            return rand.nextInt(11) + 1;
+                    }
+                    break;
+                case Durability:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                            return rand.nextInt(5) + 1;
+                        case 2:
+                            return rand.nextInt(10) + 1;
+                        case 3:
+                            return rand.nextInt(15) + 1;
+                        case 4:
+                            return rand.nextInt(20) + 1;
+                        case 5:
+                            return rand.nextInt(25) + 1;
+                    }
+                    break;
+                case MiningSuccess:
+                    switch (tier) {
+                        case 0:
+                        case 1:
+                        case 2:
+                            return rand.nextInt(2) + 1;
+                        case 3:
+                            return rand.nextInt(3) + 1;
+                        case 4:
+                            return rand.nextInt(4) + 1;
+                        case 5:
+                            return rand.nextInt(5) + 1;
+                    }
+                    break;
+            }
+
+            return 1;
+        }
+    }
+
+
     /**
      * Adds experienceGain to players pick
      *
@@ -225,6 +348,8 @@ public class Mining implements GenericMechanic {
                     tier = 5;
                     addEnchant = true;
                     break;
+                default:
+                    break;
             }
 
             p.sendMessage(ChatColor.YELLOW + "Your pick has increased to level " + ChatColor.AQUA + lvl);
@@ -232,9 +357,8 @@ public class Mining implements GenericMechanic {
             nms.getTag().setInt("XP", 0);
             nms.getTag().setInt("level", lvl);
             nms.getTag().setInt("itemTier", tier);
-            pick.setType(getPickType(tier));
-
             pick = CraftItemStack.asBukkitCopy(nms);
+            pick.setType(getPickType(tier));
             ItemMeta meta = pick.getItemMeta();
             List<String> lore = meta.getLore();
             String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
@@ -263,18 +387,189 @@ public class Mining implements GenericMechanic {
                     break;
             }
             meta.setDisplayName(name);
-            if (addEnchant) {
-                giveEnchant(pick);
-            }
-
-
             meta.setLore(lore);
             pick.setItemMeta(meta);
+
+            if (addEnchant)
+                giveRandomEnchant(p, pick, tier);
+
+
             p.getEquipment().setItemInMainHand(pick);
         }
     }
 
-    private static void giveEnchant(ItemStack pick) {
+    public static boolean hasEnchants(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        List<String> lore = meta.getLore();
+        for (String line : lore) {
+            for (EnumMiningEnchant enchants : EnumMiningEnchant.values()) {
+                if (line.contains(enchants.display))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private static void giveRandomEnchant(Player p, ItemStack pick, int pickTier) {
+        int typeID = new Random().nextInt(5);
+        ItemMeta meta = pick.getItemMeta();
+        List<String> lore = meta.getLore();
+        EnumMiningEnchant enchant = null;
+        switch (typeID) {
+            case 0:
+                enchant = EnumMiningEnchant.DoubleOre;
+                break;
+            case 1:
+                enchant = EnumMiningEnchant.GemFind;
+                break;
+            case 2:
+                enchant = EnumMiningEnchant.MiningSuccess;
+                break;
+            case 3:
+                enchant = EnumMiningEnchant.TripleOre;
+                break;
+            case 4:
+                enchant = EnumMiningEnchant.Durability;
+                break;
+        }
+
+        Iterator<String> i = lore.iterator();
+
+        while (i.hasNext()) {
+            String line = i.next();
+            if (line.contains(enchant.display))
+                i.remove();
+        }
+
+
+        String clone = lore.get(lore.size() - 1).toString();
+        lore.remove(lore.size() - 1);
+        int value = enchant.getBuff(pickTier);
+        lore.add(ChatColor.RED + enchant.display + " +" + value + "%");
+        lore.add(clone);
+        meta.setLore(lore);
+        pick.setItemMeta(meta);
+
+
+        ItemStack newItem = pick.clone();
+        p.getEquipment().getItemInMainHand().setType(Material.AIR);
+        p.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
+
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(newItem);
+        nms.getTag().setInt(enchant.name(), value);
+        p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+        p.updateInventory();
+        p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
+        Firework fw = (Firework) p.getWorld().spawnEntity(p.getLocation(), EntityType.FIREWORK);
+        FireworkMeta fwm = fw.getFireworkMeta();
+        FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.YELLOW).withFade(Color.YELLOW).with(FireworkEffect.Type.BURST).trail(true).build();
+        fwm.addEffect(effect);
+        fwm.setPower(0);
+        fw.setFireworkMeta(fwm);
+
+
+//        Iterator<String> i = lore.iterator();
+//
+//        while (i.hasNext()) {
+//            String line = i.next();
+//            if (line.contains(enchant.display))
+//                i.remove();
+//        }
+//
+//
+//        String clone = lore.get(lore.size() - 1).toString();
+//        lore.remove(lore.size() - 1);
+//        lore.add(ChatColor.RED + enchant.display + " +" + enchant.getBuff(pickTier) + "%");
+//        lore.add(clone);
+//        meta.setLore(lore);
+//        pick.setItemMeta(meta);
+
+    }
+
+    public static int getDoubleDropChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRPickaxe(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("DOUBLE")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getTripleDropChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRPickaxe(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("TRIPLE")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getGemFindChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRPickaxe(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("GEM FIND")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getSuccessChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRPickaxe(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("SUCCESS")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getDurabilityBuff(ItemStack is) {
+        int buff = 0;
+
+        if (!(isDRPickaxe(is))) {
+            return buff;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("DURABILITY")) {
+                buff = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
+                return buff;
+            }
+        }
+
+        return buff;
     }
 
     /**
@@ -436,7 +731,7 @@ public class Mining implements GenericMechanic {
      * @param i
      * @return
      */
-    public static double getLvl(ItemStack i) {
+    public static int getLvl(ItemStack i) {
         return CraftItemStack.asNMSCopy(i).getTag().getInt("level");
     }
 }
