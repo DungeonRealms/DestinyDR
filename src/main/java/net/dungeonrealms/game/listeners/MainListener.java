@@ -340,54 +340,6 @@ public class MainListener implements Listener {
     }
 
     /**
-     * Handles players bringing up commands for a specific player.
-     *
-     * @param theevent
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerShiftRightClickPlayer(PlayerInteractEntityEvent theevent) {
-        if (API.isPlayer(theevent.getRightClicked())) {
-            if (theevent.getPlayer().isSneaking()) {
-                Player playerClicked = (Player) theevent.getRightClicked();
-                GUI gui = new GUI(playerClicked.getName(), 27, event -> {
-                    if (event.getPosition() < 27) {
-                        int slot = event.getPosition();
-                        if (event.getInventory().getItem(slot) != null
-                                && event.getInventory().getItem(slot).getType() != Material.AIR) {
-                            ItemStack item = event.getInventory().getItem(slot);
-                            // Duel Request
-                            if (item.getType() == Material.IRON_SWORD) {
-                                event.setWillClose(true);
-                                event.setWillDestroy(true);
-                                theevent.getPlayer().closeInventory();
-                                Player p1 = theevent.getPlayer();
-                                if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(playerClicked.getLocation())) {
-                                    DuelingMechanics.sendDuelRequest(p1, playerClicked);
-                                }
-                            } else if (item.getType() == Material.PAPER) {
-                                theevent.getPlayer().closeInventory();
-                                theevent.getPlayer().chat("@i@ " + playerClicked.getName() + " ");
-                            }
-                        }
-                    }
-                }, DungeonRealms.getInstance());
-
-                gui.setOption(4, Utils.getPlayerHead(playerClicked),
-                        ChatColor.AQUA.toString() + playerClicked.getName());
-                gui.setOption(8, new ItemStack(Material.IRON_SWORD), "Challenge to duel",
-                        ChatColor.GRAY + "Challenges " + playerClicked.getName() + " to a battle!");
-                gui.setOption(17, new ItemStack(Material.PAPER), "Private Message",
-                        ChatColor.GRAY + "Privately message " + playerClicked.getName());
-                gui.setOption(26, new ItemStack(Material.EMERALD), "Trade",
-                        ChatColor.GRAY + "Send a trade request to " + playerClicked.getName());
-                gui.open(theevent.getPlayer());
-            }
-        }
-    }
-
-
-    /**
      * Checks player movement, adds a trail of gold blocks if they have the perk
      * and the situation is correct.
      *
