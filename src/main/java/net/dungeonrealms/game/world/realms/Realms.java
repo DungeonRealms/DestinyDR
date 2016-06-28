@@ -65,6 +65,15 @@ public interface Realms extends GenericMechanic {
 
 
     /**
+     * Opens the material store for purchasing
+     * blocks used for building in realms
+     *
+     * @param player   Owner of realm
+     */
+    void openRealmMaterialStore(Player player);
+
+
+    /**
      * Loads the player's realm*
      *
      * @param player  Owner of realm

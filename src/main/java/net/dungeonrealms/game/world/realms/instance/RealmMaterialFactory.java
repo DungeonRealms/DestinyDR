@@ -12,7 +12,6 @@ import net.dungeonrealms.game.ui.item.GUIButton;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,27 +22,28 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/26/2016
  */
-public class RealmMaterialFactory {
+class RealmMaterialFactory {
 
-
+    // WHERE WE CACHE ALL THE STORES STATICALLY //
     private static List<RealmMaterialStore> REALM_MATERIAL_STORES = new CopyOnWriteArrayList<>();
 
+    // THIS IS HOW MANY PAGES WE NEED FOR NOW //
     private static final int MAX_PAGES = 3;
 
-    public static RealmMaterialFactory instance = null;
 
-    public static RealmMaterialFactory getInstance() {
+    // THE INSTANCE //
+    private static RealmMaterialFactory instance = null;
+
+    protected static RealmMaterialFactory getInstance() {
         if (instance == null) instance = new RealmMaterialFactory();
         return instance;
     }
 
-
-    public RealmMaterialFactory() {
-        // CREATE 3 STORES
+    private RealmMaterialFactory() {
         for (int i = 0; i < MAX_PAGES; i++)
-            REALM_MATERIAL_STORES.add(new RealmMaterialStore("Realm Material Store (" + i + "/" + MAX_PAGES + ")"));
+            REALM_MATERIAL_STORES.add(new RealmMaterialStore("Realm Material Store (" + (i + 1) + "/" + MAX_PAGES + ")"));
 
-        // FILL SHOP
+        // ALL SHOP ITEMS // IKR? FOKING MESSY //
         List<RealmMaterialItem> items = new ArrayList<>();
 
         items.add(new RealmMaterialItem(new ItemStack(Material.DIRT, 1)));
@@ -69,14 +69,14 @@ public class RealmMaterialFactory {
         items.add(new RealmMaterialItem(new ItemStack(Material.WOOL, 6, (short) 4)));
         items.add(new RealmMaterialItem(new ItemStack(Material.WOOL, 6, (short) 5)));
 
-        items.add(new RealmMaterialItem(new ItemStack(Material.WATER, 5)));
-        items.add(new RealmMaterialItem(new ItemStack(Material.LAVA, 15)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.WATER_BUCKET, 5)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.LAVA_BUCKET, 15)));
 
         items.add(new RealmMaterialItem(new ItemStack(Material.ICE, 3)));
         items.add(new RealmMaterialItem(new ItemStack(Material.OBSIDIAN, 55)));
         items.add(new RealmMaterialItem(new ItemStack(Material.LAPIS_BLOCK, 40)));
         //items.add( new RealmMaterialItem(new ItemStack(Material.QUARTZ, 50));
-        items.add(new RealmMaterialItem(new ItemStack(Material.FIRE, 10)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.FLINT_AND_STEEL, 10)));
 
         items.add(new RealmMaterialItem(new ItemStack(Material.WOOL, 6, (short) 6)));
         items.add(new RealmMaterialItem(new ItemStack(Material.WOOL, 6, (short) 7)));
@@ -123,7 +123,7 @@ public class RealmMaterialFactory {
         items.add(new RealmMaterialItem(new ItemStack(Material.DISPENSER, 64, (short) 100)));
         items.add(new RealmMaterialItem(new ItemStack(Material.HOPPER, 64, (short) 150)));
         items.add(new RealmMaterialItem(new ItemStack(Material.DROPPER, 64, (short) 120)));
-        items.add(new RealmMaterialItem(new ItemStack(Material.MINECART, 64, (short) 500)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.MINECART, 64)));
         items.add(new RealmMaterialItem(new ItemStack(Material.BOOKSHELF, 50, (short) 0)));
         items.add(new RealmMaterialItem(new ItemStack(Material.RAILS, 20)));
         items.add(new RealmMaterialItem(new ItemStack(Material.POWERED_RAIL, 20)));
@@ -149,8 +149,6 @@ public class RealmMaterialFactory {
         items.add(new RealmMaterialItem(new ItemStack(Material.QUARTZ_BLOCK, 50, (short) 0)));
         items.add(new RealmMaterialItem(new ItemStack(Material.QUARTZ_BLOCK, 55, (short) 1)));
         items.add(new RealmMaterialItem(new ItemStack(Material.QUARTZ_BLOCK, 60, (short) 2)));
-        items.add(new RealmMaterialItem(new ItemStack(Material.QUARTZ_BLOCK, 60, (short) 3)));
-        items.add(new RealmMaterialItem(new ItemStack(Material.QUARTZ_BLOCK, 60, (short) 4)));
 
         items.add(new RealmMaterialItem(new ItemStack(397, 50, (short) 0)));
         items.add(new RealmMaterialItem(new ItemStack(397, 50, (short) 1)));
@@ -214,15 +212,20 @@ public class RealmMaterialFactory {
         items.add(new RealmMaterialItem(new ItemStack(Material.PISTON_BASE, 64, (short) 80)));
         items.add(new RealmMaterialItem(new ItemStack(Material.PISTON_STICKY_BASE, 64, (short) 120)));
 
+
+        // FILLS UP STORES //
         Iterator<RealmMaterialStore> iterator = REALM_MATERIAL_STORES.iterator();
 
         RealmMaterialStore cursor = iterator.next();
 
         for (RealmMaterialItem item : items) {
-            if (cursor.getSize() == cursor.getInventorySize()) cursor = iterator.next();
-            cursor.set(cursor.getSize(), item);
-        }
+            if (cursor.getSize() == (cursor.getInventorySize() - 9)) {
+                cursor.fillEmptySpaces(cursor.getSpaceFillerItem());
+                cursor = iterator.next();
+            }
 
+            cursor.set(cursor.getSize() - 1, item);
+        }
     }
 
 
@@ -268,12 +271,11 @@ public class RealmMaterialFactory {
     }
 
 
-    private static class RealmMaterialStore extends AbstractMenu {
+    private class RealmMaterialStore extends AbstractMenu {
 
         private int page;
 
-
-        public RealmMaterialStore(String name) {
+        RealmMaterialStore(String name) {
             super(name, 63);
             this.page = getPage(name);
 
@@ -281,7 +283,7 @@ public class RealmMaterialFactory {
                 GUIButton nextPageButton = new GUIButton(Material.ARROW) {
                     @Override
                     public void action(GUIButtonClickEvent event) {
-                        Bukkit.getScheduler().runTask(plugin, () -> REALM_MATERIAL_STORES.get(page).open(event.getWhoClicked()));
+                        Bukkit.getScheduler().runTask(plugin, () -> openMaterialStore(event.getWhoClicked(), page));
                     }
                 };
 
@@ -296,7 +298,7 @@ public class RealmMaterialFactory {
                 GUIButton previousPageButton = new GUIButton(Material.ARROW) {
                     @Override
                     public void action(GUIButtonClickEvent event) {
-                        Bukkit.getScheduler().runTask(plugin, () -> REALM_MATERIAL_STORES.get(page - 1).open(event.getWhoClicked()));
+                        Bukkit.getScheduler().runTask(plugin, () -> openMaterialStore(event.getWhoClicked(), page - 2));
                     }
                 };
 
@@ -311,20 +313,19 @@ public class RealmMaterialFactory {
         public void open(Player player) {
             player.openInventory(inventory);
         }
-
-
     }
 
     private static int getPage(String title) {
-        String page = title.substring(title.length() - 4);
-        return Integer.parseInt(page);
+        char page = title.charAt(title.length() - 4);
+        return Integer.parseInt(String.valueOf(page));
     }
 
-    public static void openMaterialStore(Player player) {
-        REALM_MATERIAL_STORES.get(0).open(player);
+    public void openMaterialStore(Player player, int pageIndex) {
+        player.closeInventory();
+        REALM_MATERIAL_STORES.get(pageIndex).open(player);
     }
 
-    private static class RealmMaterialItem extends GUIButton {
+    private class RealmMaterialItem extends GUIButton {
 
         @Setter
         private double eCashPrice;
@@ -332,7 +333,7 @@ public class RealmMaterialFactory {
         @Setter
         private int price;
 
-        public RealmMaterialItem(ItemStack item) {
+        RealmMaterialItem(ItemStack item) {
             super(item);
             calculatePrices(this);
 
@@ -340,10 +341,6 @@ public class RealmMaterialFactory {
                     , ChatColor.WHITE.toString() + price + ChatColor.GREEN.toString() + " E-CASH",
                     ChatColor.ITALIC + "" + ChatColor.GRAY + "Left click to use gems, Right click to use E-CASH."));
 
-            net.minecraft.server.v1_9_R2.ItemStack craftItemstack = CraftItemStack.asNMSCopy(getItemStack());
-
-            if (craftItemstack.hasTag() && craftItemstack.getTag() != null && craftItemstack.getTag().getCompound("display") != null)
-                setDisplayName(ChatColor.WHITE + craftItemstack.getTag().getCompound("display").getString("Name"));
         }
 
 
@@ -353,13 +350,15 @@ public class RealmMaterialFactory {
             Player player = event.getWhoClicked();
 
             if (e.isLeftClick())
-                handleTransaction(player, getItemStack(), e.isLeftClick(), price);
-            else handleTransaction(player, getItemStack(), e.isRightClick(), eCashPrice);
+                handleTransaction(player, getItemStack(), false, price);
+            else handleTransaction(player, getItemStack(), true, eCashPrice);
         }
     }
 
 
     private static void handleTransaction(Player player, ItemStack item, boolean isEcash, double pricePerItem) {
+        player.closeInventory();
+
         if (isEcash) {
             player.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "QUANTITY" + ChatColor.GREEN + " (1-64) you'd like to purchase.");
             player.sendMessage(ChatColor.GRAY + "This material costs " + ChatColor.GOLD + pricePerItem + "EC/each.");
@@ -426,7 +425,7 @@ public class RealmMaterialFactory {
             }
 
 
-            if (!isEcash && BankMechanics.getInstance().getTotalGemsInInventory(player) < pricePerItem) {
+            if (!isEcash && !BankMechanics.getInstance().takeGemsFromInventory(total_price, player)) {
                 player.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
                 player.sendMessage(ChatColor.GRAY + "" + amount_to_buy + " X " + pricePerItem + " gem(s)/ea = " + (pricePerItem * amount_to_buy) + " gem(s).");
                 return;
@@ -444,8 +443,6 @@ public class RealmMaterialFactory {
 
             if (isEcash) {
                 DonationEffects.getInstance().removeECashFromPlayer(player, total_price);
-            } else {
-                BankMechanics.getInstance().takeGemsFromInventory(total_price, player);
             }
 
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
@@ -453,8 +450,6 @@ public class RealmMaterialFactory {
 
             player.getInventory().setItem(player.getInventory().firstEmpty(), new ItemStack(item.getType(), amount_to_buy, item.getDurability()));
         }, null);
-
     }
-
 
 }
