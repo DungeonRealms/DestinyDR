@@ -2,11 +2,14 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.FriendHandler;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.updater.UpdateEvent;
+import net.dungeonrealms.game.updater.UpdateType;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.realms.Realms;
@@ -75,6 +78,33 @@ public class RealmListener implements Listener {
         }
 
     }
+
+
+    @EventHandler
+    public void handlePortalEffects(UpdateEvent e) {
+        if (!e.getType().equals(UpdateType.SEC)) return;
+
+        for (RealmToken realm : Realms.getInstance().getCachedRealms().values()) {
+
+            Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
+
+            if (realm.getPortalLocation() == null || realm.getStatus() != RealmStatus.OPENED) continue;
+
+            if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())))
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.ENCHANTMENT_TABLE, loc.add(0.5D, 1.5D, 0.5D), 0, 0, 0, 0.02F, 75);
+
+            if (realm.getPropertyBoolean("peaceful")) {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.add(0.5D, 1.5D, 0.5D), 0, 0, 0, 0.02F, 20);
+                loc.subtract(.5D, 2D, .5D);
+            }
+
+            if (realm.getPropertyBoolean("flying")) {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.add(0.5D, 1.5D, 0.5D), 0, 0, 0, 0.02F, 20);
+                loc.subtract(.5D, 1.5D, .5D);
+            }
+        }
+    }
+
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {

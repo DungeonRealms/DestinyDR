@@ -6,12 +6,12 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
-import net.lingala.zip4j.exception.ZipException;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -68,7 +68,7 @@ public interface Realms extends GenericMechanic {
      * Opens the material store for purchasing
      * blocks used for building in realms
      *
-     * @param player   Owner of realm
+     * @param player Owner of realm
      */
     void openRealmMaterialStore(Player player);
 
@@ -251,6 +251,11 @@ public interface Realms extends GenericMechanic {
      */
     boolean isRealmPortalOpen(UUID uuid);
 
+
+    /**
+     * @return Players realms.
+     */
+    Map<UUID, RealmToken> getCachedRealms();
 
     /**
      * @param uuid Owner of realm

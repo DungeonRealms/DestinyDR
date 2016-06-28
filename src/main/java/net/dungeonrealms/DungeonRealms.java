@@ -36,6 +36,7 @@ import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.updater.UpdateTask;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -217,6 +218,9 @@ public class DungeonRealms extends JavaPlugin {
         }
 
         mm.loadMechanics();
+
+        // START UPDATER TASK //
+        new UpdateTask(this);
 
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");

@@ -28,9 +28,6 @@ public class RealmToken {
     @Setter
     private boolean isLoaded = false;
 
-    @Getter
-    @Setter
-    private boolean isPeaceful = false;
 
     @Getter
     @Setter
@@ -42,9 +39,27 @@ public class RealmToken {
     @Getter
     private Set<UUID> builders = new HashSet<>();
 
+    @Getter
+    private Map<String, RealmProperty> realmProperties = new HashMap<>();
+
 
     public RealmToken(UUID owner) {
         this.owner = owner;
+
+        addProperty(new RealmProperty<>("peaceful", false));
+        addProperty(new RealmProperty<>("flying", false));
     }
 
+
+    public void addProperty(RealmProperty<?> property) {
+        realmProperties.put(property.getName(), property);
+    }
+
+    public boolean getPropertyBoolean(String name) {
+        return (boolean) realmProperties.get(name).getValue();
+    }
+
+    public RealmProperty<?> getProperty(String name) {
+        return realmProperties.get(name);
+    }
 }

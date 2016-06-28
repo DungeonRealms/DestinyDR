@@ -19,6 +19,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.lingala.zip4j.core.ZipFile;
@@ -635,7 +636,7 @@ public class RealmInstance implements Realms {
         if (realmHologram == null) return;
 
         realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
-        realmHologram.insertTextLine(1, realm.isPeaceful() ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
+        realmHologram.insertTextLine(1, realm.getPropertyBoolean("peaceful") ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
     }
 
     @Override
@@ -676,6 +677,11 @@ public class RealmInstance implements Realms {
     @Override
     public boolean isRealmPortalOpen(UUID uuid) {
         return isRealmLoaded(uuid) && getRealm(uuid).getStatus() == RealmStatus.OPENED;
+    }
+
+    @Override
+    public Map<UUID, RealmToken> getCachedRealms() {
+        return CACHED_REALMS;
     }
 
 
