@@ -3,10 +3,13 @@ package net.dungeonrealms.game.listeners;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.AchievementManager;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
@@ -39,6 +42,7 @@ import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.Achievement;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.Material;
@@ -704,13 +708,12 @@ public class DamageListener implements Listener {
 
 
     /**
-     * Listen for Entities being damaged by non Entities.
-     * Mainly used for damage cancelling
+     * Listen for players being damaged by non Entities.
      *
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
         if (event.getEntity().hasMetadata("type")) {
             String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
@@ -744,10 +747,9 @@ public class DamageListener implements Listener {
                 event.getEntity().setFireTicks(0);
             }
         }
-        if (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK) {
+        if (event.getCause() == DamageCause.FIRE) {
             event.setDamage(0);
             event.setCancelled(true);
-            event.getEntity().setFireTicks(0);
         }
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
             event.setCancelled(true);
@@ -785,7 +787,7 @@ public class DamageListener implements Listener {
                 pet.getBukkitEntity().remove();
             }
             EntityAPI.removePlayerPetList(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For it's own safety, your pet has returned to its home.");
+            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For its own safety, your pet has returned to its home.");
         }
         if (EntityAPI.hasMountOut(player.getUniqueId())) {
             net.minecraft.server.v1_9_R2.Entity mount = EntityAPI.getPlayerMount(player.getUniqueId());
@@ -793,7 +795,7 @@ public class DamageListener implements Listener {
                 mount.getBukkitEntity().remove();
             }
             EntityAPI.getPlayerMount(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For it's own safety, your mount has returned to the stable.");
+            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For its own safety, your mount has returned to the stable.");
         }
 
 //        for(ItemStack stack : event.getEntity().getInventory()){
@@ -1137,64 +1139,96 @@ public class DamageListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityHurtByNonCombat(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player) && !(event.getEntity() instanceof CraftLivingEntity)) return;
+        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile"))) return;
         if (event.getDamage() <= 0) return;
-        if (event.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION && event.getCause() != EntityDamageEvent.DamageCause.DROWNING && event.getCause() != EntityDamageEvent.DamageCause.LAVA && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+        if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM) return;
+
+        double dmg = event.getDamage();
+        event.setDamage(0);
+        event.setCancelled(true);
+
+        int maxHP = 0;
+        if (API.isPlayer(event.getEntity())) {
+            maxHP = API.getGamePlayer((Player) event.getEntity()).getPlayerMaxHP();
+        }
+        else {
+            maxHP = HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity());
+        }
+        if (API.isInSafeRegion(event.getEntity().getLocation())) {
+            event.setDamage(0);
+            event.setCancelled(true);
             return;
         }
-        if (event.getEntity() instanceof Player) {
-            if (!API.isPlayer(event.getEntity())) {
-                event.setDamage(0);
+        if (event.getEntity().hasMetadata("last_environment_damage")) {
+            if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 800) {
                 event.setCancelled(true);
+                event.setDamage(0);
+                event.getEntity().setFireTicks(0);
                 return;
             }
-            if (API.isInSafeRegion(event.getEntity().getLocation())) {
-                event.setDamage(0);
-                event.setCancelled(true);
-                return;
-            }
-            if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
-                if (event.getEntity().hasMetadata("last_environment_damage")) {
-                    if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 500) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        event.getEntity().setFireTicks(0);
-                        return;
+        }
+        event.getEntity().setMetadata("last_environment_damage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+
+        switch (event.getCause()) {
+            case FALL:
+                double blocks = dmg;
+                if (blocks >= 2) {
+                    dmg = maxHP * 0.02D * event.getDamage();
+                }
+                if (API.isPlayer(event.getEntity())) {
+                    Player p = (Player) event.getEntity();
+                    GamePlayer gp = API.getGamePlayer(p);
+                    if (dmg >= gp.getPlayerCurrentHP()) {
+                        dmg = gp.getPlayerCurrentHP() - 1;
+                    }
+                    if (blocks >= 49 && dmg <= gp.getPlayerCurrentHP()) {
+                        Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.LEAP_OF_FAITH);
+
                     }
                 }
-                event.getEntity().setMetadata("last_environment_damage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                double actualDamage = ((Player) event.getEntity()).getMaxHealth() / event.getDamage();
-                int damageToHarmBy = (int) (HealthHandler.getInstance().getPlayerMaxHPLive((Player) event.getEntity()) / actualDamage);
-                if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 10), 0, 0);
+                break;
+            case DROWNING:
+                dmg = maxHP * 0.04;
+                break;
+            case FIRE_TICK:
+                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
+                    dmg = maxHP * 0.01;
                 }
-                event.setDamage(0);
-                event.setCancelled(true);
+                else {
+                    dmg = 0;
+                }
+                break;
+            case LAVA:
+            case FIRE:
+                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
+                    dmg = maxHP * 0.03;
+                }
+                else {
+                    dmg = 0;
+                }
+                break;
+            case POISON:
+                dmg = maxHP * 0.01;
+                break;
+            case SUFFOCATION:
+                dmg = 0;
+                break;
+            case VOID:
+                dmg = 0;
+                break;
+            default:
+                dmg = 0;
+                break;
+        }
+        if (dmg > 0) {
+            if (event.getEntity() instanceof Player) {
+                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0);
             }
-        } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-            if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
-                    || event.getCause() == EntityDamageEvent.DamageCause.LAVA) {
-                if (event.getEntity().hasMetadata("last_environment_damage")) {
-                    if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 500) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        event.getEntity().setFireTicks(0);
-                        return;
-                    }
-                }
-                event.getEntity().setMetadata("last_environment_damage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                double actualDamage = ((CraftLivingEntity) event.getEntity()).getMaxHealth() / event.getDamage();
-                int damageToHarmBy = (int) (HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity()) / actualDamage);
-                if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, (damageToHarmBy / 10));
-                }
-                event.setDamage(0);
-                event.setCancelled(true);
+            else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, dmg);
             }
-        } else {
-            event.setDamage(event.getDamage());
         }
     }
 
