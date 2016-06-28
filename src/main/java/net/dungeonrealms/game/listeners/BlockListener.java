@@ -243,7 +243,7 @@ public class BlockListener implements Listener {
         if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) return;
         if (event.getPlayer().getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
             return;
-        if (!API.isWeapon(event.getPlayer().getEquipment().getItemInMainHand()) && !Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand()))
+        if (!Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand()))
             return;
         if (!Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand())) return;
         ItemStack stackInHand = event.getPlayer().getEquipment().getItemInMainHand();
