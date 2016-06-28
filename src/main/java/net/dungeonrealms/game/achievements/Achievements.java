@@ -221,7 +221,7 @@ public class Achievements {
 
         LEAP_OF_FAITH("Leap of Faith", new String[]{
                 "You've taken a leap of faith.",
-        }, 1000, "achievement.leap_of_faith", false),
+        }, 1000, "achievement.character_leap_of_faith", false),
 
         PLAY_WITH_DEV("Play with Developer", new String[]{
                 "You're playing with a Developer!",
