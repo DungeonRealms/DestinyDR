@@ -65,6 +65,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -911,9 +912,15 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerAttemptTrade(PlayerDropItemEvent event) {
+        if (event.isCancelled())
+            return;
+        ItemStack stack = event.getItemDrop().getItemStack();
         Player pl = event.getPlayer();
+        pl.sendMessage(ChatColor.YELLOW + "Attemping Trade.");
+
         Player trader = TradeManager.getTarget(pl);
         if (trader == null) {
             return;
@@ -923,11 +930,12 @@ public class MainListener implements Listener {
             return;
         }
         event.setCancelled(true);
+        event.getPlayer().getEquipment().getItemInMainHand().setType(Material.AIR);
+        event.getPlayer().getEquipment().setItemInMainHand(null);
+
         TradeManager.startTrade(pl, trader);
         Trade trade = TradeManager.getTrade(pl.getUniqueId());
         trade.inv.addItem(event.getItemDrop().getItemStack().clone());
-        event.getPlayer().getEquipment().setItemInMainHand(null);
-
 
     }
 

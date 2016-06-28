@@ -43,29 +43,28 @@ public class TradeManager {
     }
 
     public static Player getTarget(Player trader) {
-        Stream<Entity> stream = trader.getNearbyEntities(1.0D, 1.0D, 1.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC") && canTrade(e.getUniqueId()));
-
-        if (stream.count() == 0) {
-            return null;
-        }
         ArrayList<Entity> list = new ArrayList<>();
-        stream.forEach(list::add);
+        trader.getNearbyEntities(4.0D, 4.0D, 4.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC") && canTrade(e.getUniqueId())).forEach(list::add);
+        if (list.size() == 0)
+            return null;
         return (Player) list.get(0);
     }
 
     public static boolean canTrade(UUID uniqueId) {
         Player p = Bukkit.getPlayer(uniqueId);
-        if (p == null)
+        if (p == null) {
             return false;
+        }
         if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, uniqueId)) {
             p.sendMessage(ChatColor.RED + "Trade attempted, but your trades are disabled.");
             p.sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/toggles " + ChatColor.RED + " to enable trades.");
-
             return false;
         }
 
-        if (getTrade(uniqueId) != null)
+        if (getTrade(uniqueId) != null) {
+            p.sendMessage(ChatColor.RED + "You're already in a trade, and were attempted to trade again.");
             return false;
+        }
         return true;
     }
 

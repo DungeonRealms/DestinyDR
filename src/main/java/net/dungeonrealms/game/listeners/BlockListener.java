@@ -147,7 +147,7 @@ public class BlockListener implements Listener {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
                         String expPrefix = org.bukkit.ChatColor.YELLOW.toString() + org.bukkit.ChatColor.BOLD + "        + ";
-                        p.sendMessage(expPrefix + org.bukkit.ChatColor.YELLOW + Math.round(experienceGain) + org.bukkit.ChatColor.BOLD + "t EXP " + org.bukkit.ChatColor.GRAY + "[" + Math.round(Mining.getExperience(stackInHand)) + org.bukkit.ChatColor.BOLD + "/" + org.bukkit.ChatColor.GRAY + Math.round(Mining.getEXPNeeded(Mining.getLvl(stackInHand))) + " EXP]");
+                        p.sendMessage(expPrefix + org.bukkit.ChatColor.YELLOW + Math.round(experienceGain) + ChatColor.GRAY.toString() + " (pick)" + ChatColor.YELLOW + org.bukkit.ChatColor.BOLD + " EXP " + org.bukkit.ChatColor.GRAY + "[" + Math.round(Mining.getExperience(stackInHand)) + org.bukkit.ChatColor.BOLD + "/" + org.bukkit.ChatColor.GRAY + Math.round(Mining.getEXPNeeded(Mining.getLvl(stackInHand))) + " EXP]");
 
                     }
                     p.getInventory().addItem(Mining.getBlock(type));

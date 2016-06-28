@@ -45,8 +45,7 @@ public class Trade {
         inv = Bukkit.createInventory(null, 36, "Trade Window");
         Bukkit.getPlayer(p1.getUniqueId()).closeInventory();
         Bukkit.getPlayer(p2.getUniqueId()).closeInventory();
-        ItemStack separator = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, " ", null,
-                DyeColor.BLACK.getDyeData());
+        ItemStack separator = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, " ", null, (short) 0);
         ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP",
                 null, DyeColor.GRAY.getDyeData());
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);

@@ -40,6 +40,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -518,6 +519,14 @@ public class InventoryListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getWhoClicked().getInventory().addItem(item));
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCraftingInventoryClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+            player.getOpenInventory().getTopInventory().setItem(1, null);
+            player.getOpenInventory().getTopInventory().setItem(2, null);
+        }
+    }
 
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
