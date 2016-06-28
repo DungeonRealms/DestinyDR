@@ -470,30 +470,29 @@ public class DamageListener implements Listener {
             double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage());
             armourReducedDamage = result[0];
             totalArmor = result[1];
-            if (attacker.getEquipment().getItemInMainHand() != null && attacker.getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInMainHand()));
-                if (nmsItem != null && nmsItem.getTag() != null) {
-                    if (new Attribute(attacker.getEquipment().getItemInMainHand()).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
-                        DamageAPI.polearmAOEProcessing.add(attacker);
-                        boolean attackerIsMob = attacker.hasMetadata("type");
-                        for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
-                            // mobs should only be able to damage players, not other mobs
-                            if (attackerIsMob && !(entity instanceof Player)) continue;
-                            if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
-                                if ((event.getDamage() - armourReducedDamage) > 0) {
-                                    if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                                        entity.playEffect(EntityEffect.HURT);
-                                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
-                                    }
-                                }
-                            }
-                            else if (entity instanceof Player) {
-                                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
+            ItemStack attackerWeapon = attacker.getEquipment().getItemInMainHand();
+            if (API.isWeapon(attackerWeapon) && new Attribute(attackerWeapon).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
+                DamageAPI.polearmAOEProcessing.add(attacker);
+                boolean attackerIsMob = attacker.hasMetadata("type");
+                for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                    // mobs should only be able to damage players, not other mobs
+                    if (attackerIsMob && (!(API.isPlayer(entity) || API.isInSafeRegion(entity.getLocation())))) continue;
+                    // let's not damage ourself
+                    if (entity.equals(attacker)) continue;
+                    if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
+                        if ((event.getDamage() - armourReducedDamage) > 0) {
+                            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                                entity.playEffect(EntityEffect.HURT);
+                                HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                             }
                         }
-                        DamageAPI.polearmAOEProcessing.remove(attacker);
+                    }
+                    else if (API.isPlayer(entity)) {
+                        if (attackerIsMob || !API.isNonPvPRegion(entity.getLocation()))
+                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                     }
                 }
+                DamageAPI.polearmAOEProcessing.remove(attacker);
             }
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
