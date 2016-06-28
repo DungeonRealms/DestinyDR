@@ -45,7 +45,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         instance = this;
         getLogger().info("DungeonRealmsProxy onEnable() ... STARTING UP");
         getLogger().info("DungeonRealms Starting [MONGODB] Connection...");
-        mongoClientURI = new MongoClientURI("mongodb://104.236.116.27:27017/dungeonrealms");
+        mongoClientURI = new MongoClientURI("mongodb://dungeonuser:mwH47e552qxWPwxL@ds025224-a0.mlab.com:25224,ds025224-a1.mlab.com:25224/dungeonrealms?replicaSet=rs-ds025224");
         mongoClient = new MongoClient(mongoClientURI);
         database = mongoClient.getDatabase("dungeonrealms");
 
