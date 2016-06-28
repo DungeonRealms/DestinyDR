@@ -2,7 +2,6 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.FriendHandler;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -15,7 +14,6 @@ import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.PacketPlayOutWorldEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -45,24 +43,35 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void onWorld(PlayerChangedWorldEvent event) {
-        World to = event.getPlayer().getWorld();
+        Player player = event.getPlayer();
+        if (EntityAPI.hasPetOut(player.getUniqueId())) {
+            net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(player.getUniqueId());
+            pet.dead = true;
+            EntityAPI.removePlayerPetList(player.getUniqueId());
+        }
+        if (EntityAPI.hasMountOut(player.getUniqueId())) {
+            net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(player.getUniqueId());
+            mount.dead = true;
+            EntityAPI.removePlayerMountList(player.getUniqueId());
+        }
+        World to = player.getWorld();
 
         if (Realms.getInstance().getRealm(to) != null) {
             RealmToken realm = Realms.getInstance().getRealm(to);
-            realm.getPlayersInRealm().add(event.getPlayer().getUniqueId());
+            realm.getPlayersInRealm().add(player.getUniqueId());
 
-            if (!event.getPlayer().getPlayer().getUniqueId().equals(realm.getOwner()))
-                event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + Bukkit.getPlayer(realm.getOwner()).getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
+            if (!player.getUniqueId().equals(realm.getOwner()))
+                player.sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + Bukkit.getPlayer(realm.getOwner()).getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
             else {
-                event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have returned to " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
+                player.sendMessage(ChatColor.LIGHT_PURPLE + "You have returned to " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
             }
 
 
             if (!Realms.getInstance().getRealmTitle(realm.getOwner()).equals(""))
-                event.getPlayer().sendMessage(ChatColor.GRAY + Realms.getInstance().getRealmTitle(realm.getOwner()));
+                player.sendMessage(ChatColor.GRAY + Realms.getInstance().getRealmTitle(realm.getOwner()));
 
         } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
-            Realms.getInstance().getRealm(event.getFrom()).getPlayersInRealm().remove(event.getPlayer().getUniqueId());
+            Realms.getInstance().getRealm(event.getFrom()).getPlayersInRealm().remove(player.getUniqueId());
         }
 
     }
