@@ -29,10 +29,8 @@ public class Database {
 
     public void startInitialization() {
         Utils.log.info("DungeonRealms Starting [MONGODB] Connection...");
-        mongoClientURI = new MongoClientURI("mongodb://104.236.116.27:27017/dungeonrealms");
-        //mongoClientURI = new MongoClientURI("mongodb://dungeonrealms:ZCP>rSf%a,6cB46Y@ds025224-a0.mlab.com:25224,ds025224-a1.mlab.com:25224/dungeonrealms?replicaSet=rs-ds025224");
+        mongoClientURI = new MongoClientURI("mongodb://dungeonuser:mwH47e552qxWPwxL@ds025224-a0.mlab.com:25224,ds025224-a1.mlab.com:25224/dungeonrealms?replicaSet=rs-ds025224");
         mongoClient = new MongoClient(mongoClientURI);
-        //mongoClient = MongoClients.create("mongodb://104.236.116.27:27017/dungeonrealms");
         database = mongoClient.getDatabase("dungeonrealms");
         collection = database.getCollection("player_data");
         guilds = database.getCollection("guilds");

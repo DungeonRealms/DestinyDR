@@ -307,7 +307,7 @@ public class DuelOffer {
             ItemStack boots = pl.getInventory().getBoots();
 
             if (helmet != null && helmet.getType() != Material.AIR) {
-                if ((API.getItemTier(helmet).getTierId() > max_armor_tier)) {
+                if ((RepairAPI.getArmorOrWeaponTier(helmet) > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Helmet");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), helmet);
                     pl.getInventory().setHelmet(new ItemStack(Material.AIR));
@@ -315,7 +315,7 @@ public class DuelOffer {
             }
 
             if (chest != null && chest.getType() != Material.AIR) {
-                if ((API.getItemTier(chest).getTierId() > max_armor_tier)) {
+                if ((RepairAPI.getArmorOrWeaponTier(chest) > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Chestplate");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), chest);
                     pl.getInventory().setChestplate(new ItemStack(Material.AIR));
@@ -323,7 +323,7 @@ public class DuelOffer {
             }
 
             if (legs != null && legs.getType() != Material.AIR) {
-                if ((API.getItemTier(legs).getTierId() > max_armor_tier)) {
+                if ((RepairAPI.getArmorOrWeaponTier(legs) > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Leggings");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), legs);
                     pl.getInventory().setLeggings(new ItemStack(Material.AIR));
@@ -331,7 +331,7 @@ public class DuelOffer {
             }
 
             if (boots != null && boots.getType() != Material.AIR) {
-                if ((API.getItemTier(boots).getTierId() > max_armor_tier)) {
+                if ((RepairAPI.getArmorOrWeaponTier(boots) > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Boots");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), boots);
                     pl.getInventory().setBoots(new ItemStack(Material.AIR));
@@ -339,8 +339,9 @@ public class DuelOffer {
             }
             if (RepairAPI.isItemArmorOrWeapon(pl.getEquipment().getItemInMainHand()))
                 if (pl.getEquipment().getItemInMainHand() != null && pl.getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    if (API.getItemTier(pl.getEquipment().getItemInMainHand()) != null)
-                        if (API.getItemTier(pl.getEquipment().getItemInMainHand()).getTierId() > tierWeapon.getTierId()) {
+                    int tier = RepairAPI.getArmorOrWeaponTier(pl.getEquipment().getItemInMainHand());
+                    if (RepairAPI.getArmorOrWeaponTier(pl.getEquipment().getItemInMainHand()) != 0)
+                        if (tier > tierWeapon.getTierId()) {
                             pl.sendMessage(ChatColor.RED + "Unequiped Illegal Weapon");
                             ItemStack stack = pl.getEquipment().getItemInMainHand();
                             pl.getInventory().setItem(pl.getInventory().firstEmpty(), stack);
@@ -364,7 +365,7 @@ public class DuelOffer {
             boots = pl.getInventory().getBoots();
 
             if (helmet != null && helmet.getType() != Material.AIR) {
-                if ((API.getItemTier(helmet).getTierId() > max_armor_tier)) {
+                if ((RepairAPI.getArmorOrWeaponTier(helmet) > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Helmet");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), helmet);
                     pl.getInventory().setHelmet(new ItemStack(Material.AIR));
@@ -372,7 +373,7 @@ public class DuelOffer {
             }
 
             if (chest != null && chest.getType() != Material.AIR) {
-                if ((API.getItemTier(chest).getTierId() > max_armor_tier)) {
+                if ((RepairAPI.getArmorOrWeaponTier(chest) > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Chestplate");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), chest);
                     pl.getInventory().setChestplate(new ItemStack(Material.AIR));
@@ -380,7 +381,7 @@ public class DuelOffer {
             }
 
             if (legs != null && legs.getType() != Material.AIR) {
-                if ((API.getItemTier(legs).getTierId() > max_armor_tier)) {
+                if ((RepairAPI.getArmorOrWeaponTier(legs) > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Leggings");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), legs);
                     pl.getInventory().setLeggings(new ItemStack(Material.AIR));
@@ -388,7 +389,7 @@ public class DuelOffer {
             }
 
             if (boots != null && boots.getType() != Material.AIR) {
-                if ((API.getItemTier(boots).getTierId() > max_armor_tier)) {
+                if ((RepairAPI.getArmorOrWeaponTier(boots) > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Boots");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), boots);
                     pl.getInventory().setBoots(new ItemStack(Material.AIR));
@@ -396,8 +397,8 @@ public class DuelOffer {
             }
             if (RepairAPI.isItemArmorOrWeapon(pl.getEquipment().getItemInMainHand()))
                 if (pl.getEquipment().getItemInMainHand() != null && pl.getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    if (API.getItemTier(pl.getEquipment().getItemInMainHand()) != null)
-                        if (API.getItemTier(pl.getEquipment().getItemInMainHand()).getTierId() > tierWeapon.getTierId()) {
+                    if (RepairAPI.getArmorOrWeaponTier(pl.getEquipment().getItemInMainHand()) != 0)
+                        if (RepairAPI.getArmorOrWeaponTier(pl.getEquipment().getItemInMainHand()) > tierWeapon.getTierId()) {
                             pl.sendMessage(ChatColor.RED + "Unequiped Illegal Weapon");
                             ItemStack stack = pl.getEquipment().getItemInMainHand();
                             pl.getInventory().setItem(pl.getInventory().firstEmpty(), stack);
