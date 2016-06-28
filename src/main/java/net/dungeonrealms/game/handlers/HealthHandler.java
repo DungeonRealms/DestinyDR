@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -16,6 +17,8 @@ import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import net.dungeonrealms.game.world.items.*;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.party.Affair;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
@@ -57,6 +60,7 @@ public class HealthHandler implements GenericMechanic {
     public void startInitialization() {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
+                if (API.getGamePlayer(pl) == null || !API.getGamePlayer(pl).isAttributesLoaded()) continue;
                 setPlayerOverheadHP(pl, getPlayerHPLive(pl));
             }
         }, 0L, 5L);
@@ -78,7 +82,7 @@ public class HealthHandler implements GenericMechanic {
      */
     public void handleLoginEvents(Player player) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player));
+            setPlayerMaxHPLive(player, API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, player) + 50);
             int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
             if (Rank.isGM(player)) {
                 setPlayerHPLive(player, 10000);
@@ -217,20 +221,6 @@ public class HealthHandler implements GenericMechanic {
     }
 
     /**
-     * Returns the players max HP
-     * Called on login (calculates it from items
-     * in their inventory)
-     * Pretty expensive check.
-     *
-     * @param player
-     * @return int
-     * @since 1.0
-     */
-    public int getPlayerMaxHPOnLogin(Player player) {
-        return API.getGamePlayer(player).getPlayerMaxHP();
-    }
-
-    /**
      * Returns the entities max HP
      * Called on login (calculates it from items
      * in their inventory)
@@ -294,6 +284,9 @@ public class HealthHandler implements GenericMechanic {
      */
     private void regenerateHealth() {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            if (API.getGamePlayer(player) == null || !API.getGamePlayer(player).isAttributesLoaded()) {
+                continue;
+            }
             if (getPlayerHPLive(player) <= 0 && player.getHealth() <= 0) {
                 continue;
             }
@@ -517,7 +510,6 @@ public class HealthHandler implements GenericMechanic {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
                 leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]");
             }
-            player.playEffect(EntityEffect.HURT);
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
         }
 
@@ -526,6 +518,8 @@ public class HealthHandler implements GenericMechanic {
                     + (int) totalArmor + "%A -> -" + (int) armourReducedDamage + ChatColor.BOLD + "DMG" + ChatColor.GRAY
                     + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
+
+        player.playEffect(EntityEffect.HURT);
 
         if (newHP <= 0) {
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
@@ -783,20 +777,12 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public int calculateMaxHPFromItems(LivingEntity entity) {
-        double totalHP = 50;
-        for (ItemStack itemStack : entity.getEquipment().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            totalHP += getHealthValueOfArmor(itemStack);
-        }
+        int totalHP = 50; // base hp
 
-        for (ItemStack itemStack : entity.getEquipment().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            totalHP = getVitalityValueOfArmor(itemStack, totalHP);
-        }
+        if (entity.hasMetadata("type"))
+            totalHP += ((DRMonster) ((CraftLivingEntity) entity).getHandle()).getAttributes().get("healthPoints")[1];
+        else if (API.isPlayer(entity))
+            totalHP += API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, (Player) entity);
 
         if (entity.hasMetadata("dungeon")) {
             totalHP *= 2;
@@ -811,108 +797,7 @@ public class HealthHandler implements GenericMechanic {
         }
 
 
-        return (int) totalHP;
-    }
-
-    /**
-     * Calculates the HP value
-     * of an itemstack
-     *
-     * @param itemStack
-     * @return int
-     * @since 1.0
-     */
-    public int getHealthValueOfArmor(ItemStack itemStack) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
-        int healthValue = 0;
-        if (nmsItem == null || nmsItem.getTag() == null) {
-            return 0;
-        }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return 0;
-        }
-        if (nmsItem.getTag().getInt("healthPoints") > 0) {
-            healthValue += nmsItem.getTag().getInt("healthPoints");
-        }
-        return healthValue;
-    }
-
-    public int getVitalityValueOfArmor(ItemStack itemStack, double hpTotal) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
-        if (nmsItem == null || nmsItem.getTag() == null) {
-            return (int) hpTotal;
-        }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return (int) hpTotal;
-        }
-        if (nmsItem.getTag().getInt("vitality") > 0) {
-            hpTotal += hpTotal * ((nmsItem.getTag().getInt("vitality") * 0.034D) / 100.0D);
-        }
-        return (int) hpTotal;
-    }
-
-    /**
-     * Calculates the players HPRegen
-     * from their armor and weapon
-     *
-     * @param player
-     * @return int
-     * @since 1.0
-     */
-    public int calculateHealthRegenFromItems(Player player) {
-        double totalHPRegen = 5;
-        for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            totalHPRegen += getHealthRegenValueOfArmor(itemStack);
-        }
-
-        for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            totalHPRegen = getHealthRegenVitalityFromArmor(itemStack, totalHPRegen);
-        }
-
-        return (int) totalHPRegen;
-    }
-
-    /**
-     * Calculates the HPRegen value
-     * of an itemstack
-     *
-     * @param itemStack
-     * @return int
-     * @since 1.0
-     */
-    public int getHealthRegenValueOfArmor(ItemStack itemStack) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
-        int healthRegen = 0;
-        if (nmsItem == null || nmsItem.getTag() == null) {
-            return 0;
-        }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return 0;
-        }
-        if (nmsItem.getTag().getInt("healthRegen") > 0) {
-            healthRegen += nmsItem.getTag().getInt("healthRegen");
-        }
-        return healthRegen;
-    }
-
-    public int getHealthRegenVitalityFromArmor(ItemStack itemStack, double totalRegen) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
-        if (nmsItem == null || nmsItem.getTag() == null) {
-            return (int) totalRegen;
-        }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return (int) totalRegen;
-        }
-        if (nmsItem.getTag().getInt("vitality") > 0) {
-            totalRegen += totalRegen * ((nmsItem.getTag().getInt("vitality") * 0.3D) / 100.0D);
-        }
-        return (int) totalRegen;
+        return totalHP;
     }
 
     /**
@@ -938,19 +823,9 @@ public class HealthHandler implements GenericMechanic {
         if (player.hasMetadata("regenHP")) {
             return player.getMetadata("regenHP").get(0).asInt();
         } else {
-            return calculateHealthRegenFromItems(player);
+            int hpRegen = API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_REGEN, player) + 5;
+            player.setMetadata("regenHP", new FixedMetadataValue(DungeonRealms.getInstance(), hpRegen));
+            return hpRegen;
         }
-    }
-
-    public void recalculateHPAfterCombat(Player player) {
-        if (!COMBAT_ARMORSWITCH.contains(player)) {
-            return;
-        }
-        setPlayerMaxHPLive(player, calculateMaxHPFromItems(player));
-        if (getPlayerHPLive(player) > getPlayerMaxHPLive(player)) {
-            setPlayerHPLive(player, getPlayerMaxHPLive(player));
-        }
-        setPlayerHPRegenLive(player, calculateHealthRegenFromItems(player));
-        COMBAT_ARMORSWITCH.remove(player);
     }
 }

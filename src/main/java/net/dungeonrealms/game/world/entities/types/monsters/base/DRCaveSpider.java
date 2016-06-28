@@ -47,7 +47,6 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
         setStats();
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
-        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     public DRCaveSpider(World world) {

@@ -2,7 +2,9 @@ package net.dungeonrealms.game.commands;
 
 import java.util.List;
 
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -46,7 +48,7 @@ public class CommandCheck extends BasicCommand {
 
 		NBTTagCompound tag = CraftItemStack.asNMSCopy(inHand).getTag();
 
-		if(args.length == 1){
+		if (args.length == 1) {
 			if(args[0].equalsIgnoreCase("nbt")){
 				List<String> modifiers = API.getModifiers(inHand);
 
@@ -83,8 +85,19 @@ public class CommandCheck extends BasicCommand {
 				}
 			}
 		}
+		else if (args.length == 2) { // check player attributes
+			Player attributePlayer = Bukkit.getPlayer(args[1]);
+			if (args[0].equalsIgnoreCase("attributes") && attributePlayer != null) {
+				GamePlayer gp = API.getGamePlayer(attributePlayer);
+				gp.getAttributes().entrySet().stream().forEach(entry -> {
+					player.sendMessage(entry.getKey() + ": " + entry.getValue()[0] + " - " + entry.getValue()[1]);
+				});
+				return true;
+			}
+		}
 		else {
 			player.sendMessage(ChatColor.RED + "EpochIdentifier: " + tag.getString("u"));
+			return true;
 		}
 		return false;
 	}

@@ -57,7 +57,6 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
-        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     protected DRZombie(World world) {
@@ -104,78 +103,6 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
     
 	@Override
 	public void onMonsterAttack(Player p) {
-		if(this.getBukkitEntity().hasMetadata("special")){
-				switch(this.getBukkitEntity().getMetadata("special").get(0).asString()){
-				case "poison":
-	            	switch (this.tier) {
-	            	case 1:
-	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
-	            		break;
-	            	case 2:
-	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
-	            		break;
-	            	case 3:
-	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
-	            		break;
-	            	case 4:
-	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
-	            		break;
-	            	case 5:
-	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
-	            		break;
-	            	default :
-            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
-	            	}
-            	case "ice" :
-            	      try {
-                          ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOWBALL_POOF, p.getLocation(),
-                                  new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                      } catch (Exception ex) {
-                          ex.printStackTrace();
-                      }
-                      switch (tier) {
-                          case 1:
-                              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
-                              break;
-                          case 2:
-                              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
-                              break;
-                          case 3:
-                              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
-                              break;
-                          case 4:
-                        	  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-                              break;
-                          case 5:
-                              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
-                              break;
-                      }
-            	case "fire":
-            	      try {
-                          ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, p.getLocation(),
-                                  new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                      } catch (Exception ex) {
-                          ex.printStackTrace();
-                      }
-                      switch (tier) {
-                          case 1:
-                              p.setFireTicks(15);
-                              break;
-                          case 2:
-                              p.setFireTicks(25);
-                              break;
-                          case 3:
-                              p.setFireTicks(30);
-                              break;
-                          case 4:
-                              p.setFireTicks(35);
-                              break;
-                          case 5:
-                              p.setFireTicks(40);
-                              break;
-                      }
-				}
-			}
 	}
 	
 	@Override

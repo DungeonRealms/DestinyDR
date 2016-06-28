@@ -57,7 +57,6 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 		this.b_ = 4;
 		this.noDamageTicks = 0;
 		this.maxNoDamageTicks = 0;
-		attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
 	}
 
 	public DRMagma(World world) {

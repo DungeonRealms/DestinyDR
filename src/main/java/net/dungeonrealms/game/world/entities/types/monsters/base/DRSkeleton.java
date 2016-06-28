@@ -51,7 +51,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
-        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
     
     protected DRSkeleton(World world) {

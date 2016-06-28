@@ -80,8 +80,8 @@ public class RestrictionListener implements Listener {
         }
         if (hadIllegalArmor) {
             p.updateInventory();
-            HealthHandler.getInstance().setPlayerMaxHPLive(p, API.getGamePlayer(p).getPlayerMaxHP());
-            HealthHandler.getInstance().setPlayerHPRegenLive(p, HealthHandler.getInstance().calculateHealthRegenFromItems(p));
+            HealthHandler.getInstance().setPlayerMaxHPLive(p, API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, p) + 50);
+            HealthHandler.getInstance().setPlayerHPRegenLive(p, API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_REGEN, p) + 5);
             if (HealthHandler.getInstance().getPlayerHPLive(p) > HealthHandler.getInstance().getPlayerMaxHPLive(p)) {
                 HealthHandler.getInstance().setPlayerHPLive(p, HealthHandler.getInstance().getPlayerMaxHPLive(p));
             }

@@ -109,7 +109,6 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         ghast.setArmor(new ItemGenerator().setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.UNIQUE).getArmorSet(),
                 new ItemGenerator().setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.UNIQUE)
                         .setType(ItemType.getRandomWeapon()).generateItem().getItem());
-
     }
 
     private ItemStack getWeapon() {
