@@ -84,11 +84,11 @@ public class ECashMenus {
     }
 
     public static void openEcashMisc(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 18, "E-Cash Miscellaneous");
+        Inventory inventory = Bukkit.createInventory(null, 9, "E-Cash Miscellaneous");
         inventory.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inventory.addItem(new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
-                ChatColor.RED + "Refund ALL Stat Points!",
-                ChatColor.AQUA + "550 E-Cash"}).setNBTString("retrainingBook", "true").setNBTInt("eCash", 550).build());
+                ChatColor.GRAY + "Refund ALL Stat Points!",
+                ChatColor.WHITE + "550" + ChatColor.GREEN + " E-Cash"}).setNBTString("retrainingBook", "true").setNBTInt("eCash", 550).build());
 
         player.openInventory(inventory);
     }

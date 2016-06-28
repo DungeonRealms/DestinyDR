@@ -132,16 +132,16 @@ public class NPCMenus {
     public static void openECashPurchaseMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 18, "E-Cash Vendor");
 
-        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.MONSTER_EGG), ChatColor.GOLD + "Pets", new String[]{
+        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.MONSTER_EGG), ChatColor.GOLD + "Pets", new String[]{
                 ChatColor.GRAY + "View the available E-Cash Pets."
         }).build());
-        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.GLOWSTONE_DUST), ChatColor.GOLD + "Effects", new String[]{
+        inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.GLOWSTONE_DUST), ChatColor.GOLD + "Effects", new String[]{
                 ChatColor.GRAY + "View the available E-Cash Effects."
         }).build());
-        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.SKULL_ITEM), ChatColor.GOLD + "Skins", new String[]{
+        inv.setItem(5, new ItemBuilder().setItem(new ItemStack(Material.SKULL_ITEM), ChatColor.GOLD + "Skins", new String[]{
                 ChatColor.GRAY + "View the available E-Cash Skins."
         }).build());
-        inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK), ChatColor.GOLD + "Miscellaneous", new String[]{
+        inv.setItem(7, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK), ChatColor.GOLD + "Miscellaneous", new String[]{
                 ChatColor.GRAY + "View the available E-Cash Miscellaneous Items."
         }).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Our Store", new String[]{
