@@ -40,6 +40,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -488,7 +489,8 @@ public class InventoryListener implements Listener {
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
         net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
-        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb")) return;
+        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
+            return;
         ItemStack slotItem = event.getCurrentItem();
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
@@ -528,7 +530,8 @@ public class InventoryListener implements Listener {
             return;
         ItemStack slotItem = event.getCurrentItem();
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
-        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem) && !Mining.isDRPickaxe(slotItem)) return;
+        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem) && !Mining.isDRPickaxe(slotItem))
+            return;
         event.setCancelled(true);
         GamePlayer gamePlayer = API.getGamePlayer((Player) event.getWhoClicked());
         if (gamePlayer == null) return;
@@ -1331,7 +1334,7 @@ public class InventoryListener implements Listener {
         if (clicked != event.getWhoClicked().getInventory()) {
             ItemStack onCursor = event.getCursor();
             if (onCursor != null) {
-                if (onCursor.getType() == Material.SADDLE || onCursor.getType() == Material.EYE_OF_ENDER || onCursor.getType() == Material.NAME_TAG) {
+                if (onCursor.getType() == Material.SADDLE || onCursor.getType() == Material.EYE_OF_ENDER || onCursor.getType() == Material.NAME_TAG  || onCursor.getType() == Material.LEASH) {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(onCursor);
                     NBTTagCompound tag = nmsStack.getTag();
                     if (tag == null) return;
@@ -1347,7 +1350,7 @@ public class InventoryListener implements Listener {
         if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
         ItemStack dragged = event.getOldCursor();
         if (dragged != null) {
-            if (dragged.getType() == Material.SADDLE || dragged.getType() == Material.EYE_OF_ENDER || dragged.getType() == Material.NAME_TAG) {
+            if (dragged.getType() == Material.SADDLE || dragged.getType() == Material.EYE_OF_ENDER || dragged.getType() == Material.NAME_TAG || dragged.getType() == Material.LEASH) {
                 net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(dragged);
                 NBTTagCompound tag = nmsStack.getTag();
                 if (tag == null) return;
@@ -1439,13 +1442,21 @@ public class InventoryListener implements Listener {
                             contents[event.getSlot()] = newMule;
                             pl.getInventory().setContents(contents);
                             pl.updateInventory();
-//                            event.getClickedInventory().setItem(event.getRawSlot(), newMule);
-//                            pl.updateInventory();
                             pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.4F);
                         }
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void craftingInventoryClose(InventoryCloseEvent event) {
+        //TODO: Check if this works.
+        Player player = (Player) event.getPlayer();
+        if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+            player.getOpenInventory().getTopInventory().setItem(1, null);
+            player.getOpenInventory().getTopInventory().setItem(2, null);
         }
     }
 }

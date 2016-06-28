@@ -325,6 +325,7 @@ public class DungeonManager implements GenericMechanic {
                 if (Bukkit.getPlayer(player.getUniqueId()) != null) {
                     if (API.getGamePlayer(player) != null) {
                         if (API.getGamePlayer(player).isInDungeon()) {
+                            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
                             player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
                             player.teleport(Teleportation.Cyrennica);
                             for (ItemStack stack : player.getInventory().getContents()) {
@@ -510,6 +511,8 @@ public class DungeonManager implements GenericMechanic {
                             default:
                                 break;
                         }
+                        //No dungeons for next 30mins
+                        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
                         player.teleport(Teleportation.Cyrennica);
                         triedTeleportingOut = true;
                         for (ItemStack stack : player.getInventory().getContents()) {

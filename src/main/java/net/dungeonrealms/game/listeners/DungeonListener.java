@@ -307,7 +307,7 @@ public class DungeonListener implements Listener {
                             }
                         }
                         boolean hasTeleported = false;
-                        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 600);
+                        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 100);
                         for (Player player1 : partyMembers) {
                             if (player.getName().equals(player1.getName())) {
                                 continue;
@@ -349,6 +349,7 @@ public class DungeonListener implements Listener {
             Map<Player, Boolean> partyList = new HashMap<>();
             for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
+                    DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player1.getName(), 100);
                     partyList.put(player1, true);
                 } else {
                     partyList.put(player1, false);
@@ -366,7 +367,7 @@ public class DungeonListener implements Listener {
                 dungeonType = null;
             }
             if (dungeonType == null) return;
-            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 600);
+            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 100);
             DungeonManager.getInstance().createNewInstance(dungeonType, partyList, dungeonName);
             player.sendMessage(ChatColor.GRAY + "Loading Instance: '" + ChatColor.UNDERLINE + dungeonType.name().replaceAll("_", " ") + ChatColor.GRAY
                     + "' -- Please wait...");
