@@ -37,7 +37,7 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
         this.name = monsterType.name;
         this.entityType = entityType;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
+        //this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));

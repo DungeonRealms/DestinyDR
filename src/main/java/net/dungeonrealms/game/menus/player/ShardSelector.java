@@ -114,7 +114,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + " " + ChatColor.GREEN + "[SECURE]");
+            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID);
             button.setLore(lore);
 
 //            button.setSlot(slot);
