@@ -257,6 +257,10 @@ public class RealmInstance implements Realms {
             player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Description: " + ChatColor.GRAY + getRealmTitle(player.getUniqueId()));
     }
 
+    @Override
+    public void openRealmMaterialStore(Player player) {
+        RealmMaterialFactory.getInstance().openMaterialStore(player, 0);
+    }
 
     @Override
     public void loadRealmWorld(UUID uuid) {
