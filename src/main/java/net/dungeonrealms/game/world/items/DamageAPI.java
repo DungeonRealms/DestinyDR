@@ -25,17 +25,14 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Kieran on 9/21/2015.
  */
 public class DamageAPI {
 
-    public static List<Entity> polearmAOEProcessing = new ArrayList<>();
+    public static Set<Entity> polearmAOEProcessing = new HashSet<>();
 
     /**
      * Calculates the weapon damage based on the nbt tag of an item, the attacker and receiver
@@ -563,7 +560,7 @@ public class DamageAPI {
             }
             if (attacker instanceof Player) {
                 if (((Player) attacker).getGameMode() == GameMode.SURVIVAL) {
-                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, attacker, damageFromThorns, 0, 0);
+                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns, 0, 0);
                 }
             }
             else {
