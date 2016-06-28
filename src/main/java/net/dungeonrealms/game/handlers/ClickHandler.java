@@ -31,6 +31,7 @@ import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -819,51 +820,68 @@ public class ClickHandler {
 
                 break;
             case "Item Vendor":
-            case "Food Vendor":
-                if (event.isShiftClick()) {
-                    event.setCancelled(true);
-                    return;
-                }
-                if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-                    event.setCancelled(true);
-                    return;
-                }
-                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                    event.setCancelled(true);
-                    return;
-                }
-                if (event.getRawSlot() >= 18) {
-                    event.setCancelled(true);
-                    return;
-                }
                 event.setCancelled(true);
                 ItemStack stack = event.getCurrentItem();
                 if (stack == null || stack.getType() == Material.AIR) return;
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
                 if (!nms.getTag().hasKey("worth")) {
-                    event.setCancelled(true);
                     return;
                 }
                 int price = nms.getTag().getInt("worth");
-                if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
-                    ItemStack copy = stack.clone();
-                    ArrayList<String> lore = new ArrayList<>();
-                    ItemMeta meta = copy.getItemMeta();
-                    if (meta.hasLore()) {
-                        lore = (ArrayList<String>) meta.getLore();
-                    }
-                    for (int i = 0; i < lore.size(); i++) {
-                        String current = lore.get(i);
-                        if (current.contains("Price")) {
-                            lore.remove(i);
-                            break;
+                if (player.getInventory().firstEmpty() != -1) {
+                    if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
+                        ItemStack copy = stack.clone();
+                        ArrayList<String> lore = new ArrayList<>();
+                        ItemMeta meta = copy.getItemMeta();
+                        if (meta.hasLore()) {
+                            lore = (ArrayList<String>) meta.getLore();
                         }
+                        for (int i = 0; i < lore.size(); i++) {
+                            String current = lore.get(i);
+                            if (current.contains("Price")) {
+                                lore.remove(i);
+                                break;
+                            }
+                        }
+                        meta.setLore(lore);
+                        copy.setItemMeta(meta);
+                        player.getInventory().addItem(copy);
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
                     }
-                    meta.setLore(lore);
-                    copy.setItemMeta(meta);
-                    player.getInventory().addItem(copy);
                 } else {
-                    player.sendMessage(ChatColor.RED + "You do not have " + ChatColor.GREEN + price + "g");
+                    player.sendMessage(ChatColor.RED + "You do not have any inventory space to complete this transaction");
+                }
+                break;
+            case "Food Vendor":
+                event.setCancelled(true);
+                stack = event.getCurrentItem();
+                if (stack == null || stack.getType() == Material.AIR) return;
+                nms = CraftItemStack.asNMSCopy(stack);
+                if (!nms.getTag().hasKey("worth")) {
+                    return;
+                }
+                if (!nms.getTag().hasKey("itemRarity")) {
+                    return;
+                }
+                if (!nms.getTag().hasKey("itemTier")) {
+                    return;
+                }
+                int tier = nms.getTag().getInt("itemTier");
+                Item.ItemRarity rarity = Item.ItemRarity.getById(nms.getTag().getInt("itemRarity"));
+                if (rarity == null) {
+                    return;
+                }
+                price = nms.getTag().getInt("worth");
+                if (player.getInventory().firstEmpty() != -1) {
+                    if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
+                        ItemStack toGive = ItemManager.createHealingFood(tier, rarity);
+                        player.getInventory().addItem(toGive);
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "You do not have any inventory space to complete this transaction");
                 }
                 break;
             case "Mount Skin Selection":
@@ -1145,7 +1163,7 @@ public class ClickHandler {
                 Chat.listenForMessage(player, customAmount -> {
                     if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
                         try {
-                            if (finalVariableName == "level") {
+                            if (finalVariableName.equals("level")) {
                                 Support.modifyLevel(player, playerName, uuid, Integer.parseInt(customAmount.getMessage()), customLevelType);
                             } else {
                                 Support.modifyExp(player, playerName, uuid, Integer.parseInt(customAmount.getMessage()), customLevelType);
