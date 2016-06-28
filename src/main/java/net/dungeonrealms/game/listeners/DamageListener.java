@@ -471,7 +471,10 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInMainHand()).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
+                        boolean attackerIsMob = attacker.hasMetadata("type");
                         for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                            // mobs should only be able to damage players, not other mobs
+                            if (attackerIsMob && !(entity instanceof Player)) continue;
                             if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
                                 if ((event.getDamage() - armourReducedDamage) > 0) {
                                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
@@ -479,8 +482,9 @@ public class DamageListener implements Listener {
                                         HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                                     }
                                 }
-                            } else if (API.isPlayer(entity)) {
-                                entity.playEffect(EntityEffect.HURT);
+                            }
+                            else if (entity instanceof Player) {
+                                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                             }
                         }
                         DamageAPI.polearmAOEProcessing.remove(attacker);
@@ -609,7 +613,6 @@ public class DamageListener implements Listener {
             //The defender dodged the attack
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             event.setDamage(0);
-            return;
         }
         else if (armourReducedDamage == -2) {
             if (attacker instanceof Player) {
