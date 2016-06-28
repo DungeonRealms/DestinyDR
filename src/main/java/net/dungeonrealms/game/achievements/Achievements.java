@@ -219,7 +219,11 @@ public class Achievements {
                 "You've unlocked 200 or more achievements.",
         }, 20000, "achievement.character_master", false),
 
-        PLAY_WITH_DEV( "Play with Developer", new String[]{
+        LEAP_OF_FAITH("Leap of Faith", new String[]{
+                "You've taken a leap of faith.",
+        }, 1000, "achievement.leap_of_faith", false),
+
+        PLAY_WITH_DEV("Play with Developer", new String[]{
                 "You're playing with a Developer!",
         }, 450, "achievement.social_play_with_dev", false),
 
