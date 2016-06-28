@@ -3,7 +3,6 @@ package net.dungeonrealms.game.listeners;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
@@ -42,7 +41,6 @@ import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_9_R2.*;
-import net.minecraft.server.v1_9_R2.Achievement;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.Material;
@@ -963,16 +961,25 @@ public class DamageListener implements Listener {
             event.setUseItemInHand(Event.Result.DENY);
             return;
         }
-        if (API.isInSafeRegion(player.getLocation())) {
-            //TODO: Duel checks.
-            event.setCancelled(true);
-            event.setUseItemInHand(Event.Result.DENY);
-            return;
-        }
         if (player.hasMetadata("last_Staff_Use")) {
             event.setCancelled(true);
             if (System.currentTimeMillis() - player.getMetadata("last_Staff_Use").get(0).asLong() < 450) {
                 event.setUseItemInHand(Event.Result.DENY);
+                return;
+            }
+        }
+        if (API.isInSafeRegion(player.getLocation())) {
+            if (!DuelingMechanics.isDueling(player.getUniqueId())) {
+                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1F, 1.25F);
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                event.setCancelled(true);
+                event.setUseItemInHand(Event.Result.DENY);
+                //prevent spam of particles
+                player.setMetadata("last_Staff_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 return;
             }
         }
@@ -1258,17 +1265,27 @@ public class DamageListener implements Listener {
             event.setUseItemInHand(Event.Result.DENY);
             return;
         }
-        if (API.isInSafeRegion(player.getLocation())) {
-            //TODO: Duel checks.
-            event.setCancelled(true);
-            event.setUseItemInHand(Event.Result.DENY);
-            return;
-        }
         ItemStack hand = player.getEquipment().getItemInMainHand();
         if (player.hasMetadata("last_Bow_Use")) {
             event.setCancelled(true);
             if (System.currentTimeMillis() - player.getMetadata("last_Bow_Use").get(0).asLong() < 650) {
                 event.setUseItemInHand(Event.Result.DENY);
+                return;
+            }
+        }
+
+        if (API.isInSafeRegion(player.getLocation())) {
+            if (!DuelingMechanics.isDueling(player.getUniqueId())) {
+                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1f, 1.25F);
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                event.setCancelled(true);
+                event.setUseItemInHand(Event.Result.DENY);
+                //Prevent spam of particles.
+                player.setMetadata("last_Bow_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 return;
             }
         }
