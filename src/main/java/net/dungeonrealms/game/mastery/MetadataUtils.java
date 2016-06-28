@@ -1,5 +1,8 @@
 package net.dungeonrealms.game.mastery;
 
+import net.dungeonrealms.API;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -8,6 +11,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
+import java.util.Map;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -43,6 +48,7 @@ public class MetadataUtils {
                 entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "hostile"));
                 entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), entityTier));
                 entity.getBukkitEntity().setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
+                API.calculateAllAttributes((LivingEntity)entity.getBukkitEntity(), ((DRMonster) entity).getAttributes());
                 break;
             }
         }

@@ -49,6 +49,7 @@ public class RangedZombie extends DRZombie implements IRangedEntity {
         this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         livingEntity.getEquipment().setItemInMainHand(weapon);
+
     }
 
     @Override

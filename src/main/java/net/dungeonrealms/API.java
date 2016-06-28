@@ -683,9 +683,6 @@ public class API {
         // Fatigue
         EnergyHandler.getInstance().handleLoginEvents(player);
 
-        // Health
-        HealthHandler.getInstance().handleLoginEvents(player);
-
         // Alignment
         KarmaHandler.getInstance().handleLoginEvents(player);
 
@@ -1109,58 +1106,258 @@ public class API {
         GamePlayer gp = API.getGamePlayer(p);
         assert gp != null;
 
-        for (ArmorAttributeType type : ArmorAttributeType.values()) {
-            attributes.put(type.getNBTName(), new Integer[]{0, 0});
-        }
-        for (WeaponAttributeType type : WeaponAttributeType.values()) {
-            attributes.put(type.getNBTName(), new Integer[]{0, 0});
-        }
-
         // calculate from armor and weapon, then update the gp attributes property
-        attributes.putAll(calculateArmorAttributes(p.getInventory().getArmorContents(), false));
-        attributes.putAll(calculateWeaponAttributes(p.getInventory().getItemInMainHand(), false));
+        calculateArmorAttributes(attributes, p.getInventory().getArmorContents(), true);
+        calculateWeaponAttributes(attributes, p.getInventory().getItemInMainHand(), true);
+
+        gp.setCurrentWeapon(p.getInventory().getItemInMainHand());
+
+        // add stat bonuses from the stat menu
+        changeAttributeVal(attributes, ArmorAttributeType.STRENGTH, gp.getStats().strPoints);
+        changeAttributeVal(attributes, ArmorAttributeType.DEXTERITY, gp.getStats().dexPoints);
+        changeAttributeVal(attributes, ArmorAttributeType.INTELLECT, gp.getStats().intPoints);
+        changeAttributeVal(attributes, ArmorAttributeType.VITALITY, gp.getStats().vitPoints);
+
+        // apply stat bonuses (str, dex, int, and vit)
+        applyStatBonuses(attributes, gp);
+
+        // set the player's attribute field
         gp.setAttributes(attributes);
 
         // so energy regen doesn't start before attributes have been loaded
         gp.setAttributesLoaded(true);
 
+        HealthHandler.getInstance().handleLoginEvents(p);
+
         return attributes;
     }
 
-    public static Map<String, Integer[]> calculateAllAttributes(LivingEntity ent) {
-        Map<String, Integer[]> attributes = new HashMap<>();
+    public static void calculateAllAttributes(LivingEntity ent, Map<String, Integer[]> attributes) {
+        ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
 
-        for (ArmorAttributeType type : ArmorAttributeType.values()) {
-            attributes.put(type.getNBTName(), new Integer[]{0, 0});
+        // check if we have a skull
+        if (armorSet[3].getType() == Material.SKULL_ITEM) {
+            ItemTier tier = (new net.dungeonrealms.game.world.items.Attribute(ent.getEquipment().getItemInMainHand())).getItemTier();
+            // if we have a skull we need to generate a helmet so mob stats are calculated correctly
+            armorSet[3] = new ItemGenerator().setTier(tier).setRarity(API.getItemRarity(false)).generateItem().getItem();
         }
-        for (WeaponAttributeType type : WeaponAttributeType.values()) {
-            attributes.put(type.getNBTName(), new Integer[]{0, 0});
-        }
 
-        // calculate from armor and weapon, then update the gp attributes property
-        attributes.putAll(calculateArmorAttributes(ent.getEquipment().getArmorContents(), false));
-        attributes.putAll(calculateWeaponAttributes(ent.getEquipment().getItemInMainHand(), false));
-
-        return attributes;
+        calculateArmorAttributes(attributes, armorSet, true);
+        calculateWeaponAttributes(attributes, ent.getEquipment().getItemInMainHand(), true);
+        applyStatBonuses(attributes);
     }
 
     /**
-     * Returns a HashMap of the attributes in armor. Does not update the
-     * gameplayer attributes property. Called in the calculateAllAttributes
-     * method.
+     * Calculates the difference in attributes when a player switches weapons. To save processing
+     * power, only called when the player attempts to attack a mob with a new weapon.
      *
+     * NOTE: if attributes like str are added to weapons, this method will have to be called
+     * whenever a player switches weapons.
+     *
+     * @param p
+     * @param newWeapon
+     */
+    public static void handlePlayerWeaponSwitch(Player p, ItemStack newWeapon, ItemStack oldWeapon) {
+        GamePlayer gp = API.getGamePlayer(p);
+        assert gp != null;
+
+        if (!API.isWeapon(newWeapon) && !API.isWeapon(oldWeapon)) return;
+
+        if (newWeapon == null || newWeapon.getType() == Material.AIR) {
+            List<String> oldModifiers = API.getModifiers(oldWeapon);
+            net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldWeapon).getTag();
+            // iterate through to get decreases from stats not in the new armor
+            oldModifiers.stream().forEach(modifier -> {
+                WeaponAttributeType type = WeaponAttributeType.getByNBTName(modifier);
+                // calculate new values
+                Integer[] newTotalVal = type.isRange()
+                        ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
+                        gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
+                        : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
+                gp.setAttributeVal(type, newTotalVal);
+            });
+        }
+        else {
+            List<String> newModifiers = API.getModifiers(newWeapon);
+            net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newWeapon).getTag();
+
+            if (oldWeapon != null && oldWeapon.getType() != Material.AIR) {
+                List<String> oldModifiers = API.getModifiers(oldWeapon);
+                net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldWeapon).getTag();
+
+                // tbh, the milliseconds saved by writing this method and handleArmorDifferences probably wasn't
+                // worth the effort...
+
+                // get differences
+                if (newModifiers != null) {
+                    newModifiers.stream().forEach(modifier -> {
+                        // get the attribute type to determine if we need a percentage or not and to get the
+                        // correct display name
+                        WeaponAttributeType type = WeaponAttributeType.getByNBTName(modifier);
+
+                        if (type.isRange()) {
+                            gp.changeAttributeVal(type, new Integer[]{newTag.getInt(modifier + "Min") - ((oldTag != null) ?
+                                    oldTag.getInt(modifier + "Min") : 0), newTag.getInt(modifier + "Max") - ((oldTag != null) ?
+                                    oldTag.getInt(modifier + "Max") : 0)});
+                        } else {
+                            gp.changeAttributeVal(type, new Integer[]{0, newTag.getInt(modifier) - ((oldTag != null) ? oldTag
+                                    .getInt(modifier) : 0)});
+                        }
+                    });
+                }
+
+                if (oldModifiers != null) {
+                    // iterate through to get decreases from stats not in the new armor
+                    oldModifiers.removeAll(newModifiers);
+                    oldModifiers.stream().forEach(modifier -> {
+                        WeaponAttributeType type = WeaponAttributeType.getByNBTName(modifier);
+                        Integer[] newTotalVal = type.isRange()
+                                ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
+                                gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
+                                : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
+                        gp.setAttributeVal(type, newTotalVal);
+                    });
+                }
+            }
+            else {
+                newModifiers.stream().forEach(modifier -> {
+                    // get the attribute type to determine if we need a percentage or not and to get the
+                    // correct display name
+                    WeaponAttributeType type = WeaponAttributeType.getByNBTName(modifier);
+                    // calculate new values
+                    Integer[] newTotalVal = type.isRange()
+                            ? new Integer[]{gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
+                            gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max")}
+                            : new Integer[]{0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier)};
+                    gp.setAttributeVal(type, newTotalVal);
+                });
+            }
+        }
+
+        gp.setCurrentWeapon(newWeapon);
+    }
+
+    /**
+     * Given an attributes Map, applies the appropriate bonuses to various
+     * non-damage related attributes from the strength, vitality, dexterity,
+     * and intellect values in the Map.
+     *
+     * @param attributes
+     */
+    public static void applyStatBonuses(Map<String, Integer[]> attributes) {
+        // STRENGTH BONUSES
+        float strength = (float) attributes.getOrDefault("strength", new Integer[]{0, 0})[1];
+        changeAttributeValPercentage(attributes, ArmorAttributeType.ARMOR, strength * 0.03f);
+        changeAttributeValPercentage(attributes, ArmorAttributeType.BLOCK, strength * 0.017f);
+
+        // DEXTERITY BONUSES
+        float dexterity = (float) attributes.getOrDefault("dexterity", new Integer[]{0, 0})[1];
+        changeAttributeValPercentage(attributes, ArmorAttributeType.DAMAGE, dexterity * 0.03f);
+        changeAttributeValPercentage(attributes, ArmorAttributeType.DODGE, dexterity * 0.017f);
+        changeAttributeValPercentage(attributes, WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
+
+        // INTELLECT BONUSES
+        float intellect = (float) attributes.getOrDefault("intellect", new Integer[]{0, 0})[1];
+        changeAttributeValPercentage(attributes, ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
+        changeAttributeValPercentage(attributes, WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
+
+        // VITALITY BONUSES
+        float vitality = (float) attributes.getOrDefault("vitality", new Integer[]{0, 0})[1];
+        changeAttributeValPercentage(attributes, ArmorAttributeType.HEALTH_POINTS, vitality * 0.034f);
+        changeAttributeVal(attributes, ArmorAttributeType.HEALTH_REGEN, vitality * 0.03f);
+    }
+
+    public static void applyStatBonuses(Map<String, Integer[]> attributes, GamePlayer gp) {
+        Map<AttributeType, Float> attributeBonusesFromStats = gp.getAttributeBonusesFromStats();
+        // STRENGTH BONUSES
+        float strength = (float) attributes.getOrDefault("strength", new Integer[]{0, 0})[1];
+        changeAttributeValPercentage(attributes, ArmorAttributeType.ARMOR, strength * 0.03f);
+        attributeBonusesFromStats.put(ArmorAttributeType.ARMOR, strength * 0.03f);
+        changeAttributeValPercentage(attributes, ArmorAttributeType.BLOCK, strength * 0.017f);
+        attributeBonusesFromStats.put(ArmorAttributeType.BLOCK, strength * 0.017f);
+
+        // DEXTERITY BONUSES
+        float dexterity = (float) attributes.getOrDefault("dexterity", new Integer[]{0, 0})[1];
+        changeAttributeValPercentage(attributes, ArmorAttributeType.DAMAGE, dexterity * 0.03f);
+        attributeBonusesFromStats.put(ArmorAttributeType.DAMAGE, dexterity * 0.03f);
+        changeAttributeValPercentage(attributes, ArmorAttributeType.DODGE, dexterity * 0.017f);
+        attributeBonusesFromStats.put(ArmorAttributeType.DODGE, dexterity * 0.017f);
+        changeAttributeValPercentage(attributes, WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
+        attributeBonusesFromStats.put(WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
+
+        // INTELLECT BONUSES
+        float intellect = (float) attributes.getOrDefault("intellect", new Integer[]{0, 0})[1];
+        changeAttributeValPercentage(attributes, ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
+        attributeBonusesFromStats.put(ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
+        changeAttributeValPercentage(attributes, WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
+        attributeBonusesFromStats.put(WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
+
+        // VITALITY BONUSES
+        float vitality = (float) attributes.getOrDefault("vitality", new Integer[]{0, 0})[1];
+        changeAttributeValPercentage(attributes, ArmorAttributeType.HEALTH_POINTS, vitality * 0.034f);
+        attributeBonusesFromStats.put(ArmorAttributeType.ENERGY_REGEN,  vitality * 0.034f);
+        changeAttributeVal(attributes, ArmorAttributeType.HEALTH_REGEN, vitality * 0.03f);
+        attributeBonusesFromStats.put(ArmorAttributeType.ENERGY_REGEN,  vitality * 0.03f);
+    }
+
+    public static void recalculateStatBonuses(Map<String, Integer[]> attributes, Map<AttributeType, Float> attributeBonusesFromStats, GamePlayer gp) {
+        attributeBonusesFromStats.entrySet().stream().forEach(entry -> {
+            if (entry.getKey().equals(ArmorAttributeType.HEALTH_REGEN)) {
+                changeAttributeVal(attributes, ArmorAttributeType.HEALTH_REGEN, -entry.getValue());
+            }
+            gp.changeAttributeValPercentage(entry.getKey(), -entry.getValue());
+        });
+        applyStatBonuses(attributes, gp);
+    }
+
+    /**
+     * Changes the value of an attribute by the given difference. This difference
+     * may be positive or negative.
+     *
+     * @param type
+     * @param difference
+     *
+     * @return the new value of the attribute
+     */
+    private static Integer[] changeAttributeVal(Map<String, Integer[]> attributes, AttributeType type, float difference) {
+        Integer[] oldVal = attributes.getOrDefault(type.getNBTName(), new Integer[]{0, 0});
+        Integer[] newTotalVal = new Integer[] { Math.round(oldVal[0] + difference), Math.round(oldVal[1] + difference) };
+        attributes.put(type.getNBTName(), newTotalVal);
+        return newTotalVal;
+    }
+
+    /**
+     * Changes the value of an attribute by a percent difference. This difference
+     * may be positive or negative.
+     *
+     * @param type
+     * @param percentDifference
+     * @return the new value of the attribute
+     */
+    private static Integer[] changeAttributeValPercentage(Map<String, Integer[]> attributes, AttributeType type, float percentDifference) {
+        int newLow = (int) Math.round(attributes.get(type.getNBTName())[0] * ((percentDifference + 100.) / 100.));
+        int newHigh = (int) Math.round(attributes.get(type.getNBTName())[1] * ((percentDifference + 100.) / 100.));
+        if (newLow < 0) newLow = 0;
+        if (newHigh < 0) newHigh = 0;
+        attributes.put(type.getNBTName(), new Integer[] { newLow, newHigh });
+        return new Integer[]{newLow, newHigh};
+    }
+
+    /**
+     * Puts the attributes on an armorset in the given attributes map. Does not
+     * necessarily update the gameplayer attributes field. Called in the
+     * calculateAllAttributes method.
+     *
+     * @param attributes
      * @param armorSet
      * @param includeAbsentAttributes if true add all attributes not present
      *                                to map with values 0, 0
-     * @return
      */
-    public static Map<String, Integer[]> calculateArmorAttributes(ItemStack[] armorSet, boolean includeAbsentAttributes) {
-        Map<String, Integer[]> armorAttributes = new HashMap<>();
-
+    public static void calculateArmorAttributes(Map<String, Integer[]> attributes, ItemStack[] armorSet, boolean includeAbsentAttributes) {
         // populate the map with default values if necessary
         if (includeAbsentAttributes) {
             for (ArmorAttributeType type : ArmorAttributeType.values()) {
-                armorAttributes.put(type.getNBTName(), new Integer[]{0, 0});
+                attributes.putIfAbsent(type.getNBTName(), new Integer[]{0, 0});
             }
         }
         // iterate through armorset
@@ -1176,59 +1373,56 @@ public class API {
                 assert type != null;
 
                 if (type.isRange()) {
-                    armorAttributes.put(type.getNBTName(), new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
+                    attributes.put(type.getNBTName(), new Integer[]{attributes.getOrDefault(modifier, new
+                            Integer[]{0, 0})[0] + tag.getInt(modifier + "Min"), attributes.getOrDefault(modifier, new
+                            Integer[]{0, 0})[1] + tag.getInt(modifier + "Max")});
                 }
                 else {
-                    armorAttributes.put(type.getNBTName(), new Integer[] { 0, tag.getInt(modifier) });
+                    attributes.put(type.getNBTName(), new Integer[] { 0, attributes.get(modifier)[1] + tag.getInt(modifier) });
                 }
             });
         }
-
-        return armorAttributes;
     }
 
     /**
-     * Returns a HashMap of the attributes in player's weapon if he is holding one.
-     * Does not update the gameplayer attributes property. Called in the
-     * calculateAllAttributes method and when calculating damage in DamageAPI.
+     * Puts the attributes on a given weapon in the given attributes map. Does
+     * not necessarily update the gameplayer attributes field. Called in the
+     * calculateAllAttributes method.
      *
+     * @param attributes
      * @param weapon
      * @param includeAbsentAttributes if true add all attributes not present
      *                                to map with values 0, 0
-     * @return
      */
-    public static Map<String, Integer[]> calculateWeaponAttributes(ItemStack weapon, boolean includeAbsentAttributes) {
-        Map<String, Integer[]> weaponAttributes = new HashMap<>();
+    public static void calculateWeaponAttributes(Map<String, Integer[]> attributes, ItemStack weapon, boolean includeAbsentAttributes) {
+        // populate the map with default values
+        if (includeAbsentAttributes) {
+            for (WeaponAttributeType type : WeaponAttributeType.values()) {
+                attributes.putIfAbsent(type.getNBTName(), new Integer[]{0, 0});
+            }
+        }
 
         if (API.isWeapon(weapon)) {
             List<String> modifiers = API.getModifiers(weapon);
             NBTTagCompound tag = CraftItemStack.asNMSCopy(weapon).getTag();
             assert tag != null;
 
-            // populate the map with default values
-            if (includeAbsentAttributes) {
-                for (WeaponAttributeType type : WeaponAttributeType.values()) {
-                    weaponAttributes.put(type.getNBTName(), new Integer[]{0, 0});
-                }
-            }
-
             modifiers.stream().forEach(modifier -> {
                 WeaponAttributeType type = WeaponAttributeType.getByNBTName(modifier);
                 assert type != null;
 
                 if (type.isRange()) {
-                    weaponAttributes.put(type.getNBTName(), new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
+                    attributes.put(type.getNBTName(), new Integer[]{attributes.getOrDefault(modifier, new
+                            Integer[]{0, 0})[0] + tag.getInt(modifier + "Min"), attributes.getOrDefault(modifier, new
+                            Integer[]{0, 0})[1] + tag.getInt(modifier + "Max")
+                });
                 }
                 else {
-                    weaponAttributes.put(type.getNBTName(), new Integer[] { 0, tag.getInt(modifier) });
+                    attributes.put(type.getNBTName(), new Integer[]{0, attributes.getOrDefault(modifier, new
+                            Integer[]{0, 0})[1] + tag.getInt(modifier)});
                 }
             });
         }
-        else {
-            return null;
-        }
-
-        return weaponAttributes;
     }
 
     /**
@@ -1243,6 +1437,7 @@ public class API {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         if (!nmsStack.hasTag()) return null;
         NBTTagCompound tag = nmsStack.getTag();
+        if (tag == null) return null;
         if (tag.hasKey("modifiers")) {
             NBTTagList list = tag.getList("modifiers", 8);
             for (int i = 0; i < list.size(); i++) {

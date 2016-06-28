@@ -56,7 +56,6 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
         livingEntity.getEquipment().setHelmet(enumMonster.getSkullItem(enumMonster));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
-        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     protected abstract void setStats();

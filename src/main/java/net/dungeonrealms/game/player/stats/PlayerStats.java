@@ -1,9 +1,12 @@
 package net.dungeonrealms.game.player.stats;
 
+import net.dungeonrealms.API;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -357,6 +360,9 @@ public class PlayerStats {
         this.strPoints = 0;
         this.vitPoints = 0;
         updateDatabase(false);
+        // recalculate player attributes
+        GamePlayer gp = API.getGamePlayer(Bukkit.getPlayer(playerUUID));
+        API.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
     }
 
     /**
