@@ -191,6 +191,14 @@ public class DamageListener implements Listener {
                 if (!event.getEntity().hasMetadata("type")) return;
             }
         }
+        Entity damager = event.getDamager();
+        if (API.isInSafeRegion(damager.getLocation())) {
+            if (API.isPlayer(damager) && !DuelingMechanics.isDueling(damager.getUniqueId())) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
+        }
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (API.isPlayer(event.getDamager())) {
