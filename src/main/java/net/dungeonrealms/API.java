@@ -448,6 +448,7 @@ public class API {
         if (GAMEPLAYERS.size() > 0) {
             GamePlayer gp = API.getGamePlayer(player);
             if (gp != null) {
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), false);
                 gp.getPlayerStatistics().updatePlayerStatistics();
                 gp.getStats().updateDatabase(false);
                 GAMEPLAYERS.remove(player.getName());
@@ -806,6 +807,7 @@ public class API {
                         if (API.GAMEPLAYERS.size() > 0) {
                             GamePlayer gp = API.getGamePlayer(player);
                             if (gp != null) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), false);
                                 gp.getPlayerStatistics().updatePlayerStatistics();
                                 gp.getStats().updateDatabase(false);
                             }

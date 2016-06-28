@@ -57,6 +57,10 @@ public class GamePlayer {
     @Getter
     private long lastArmorEquip;
 
+    @Getter
+    @Setter
+    private int playerEXP;
+
     public GamePlayer(Player player) {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());
@@ -64,6 +68,7 @@ public class GamePlayer {
         API.GAMEPLAYERS.put(player.getName(), this);
         this.attributeBonusesFromStats = new HashMap<>();
         this.lastArmorEquip = System.currentTimeMillis();
+        this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
     }
 
     /**
@@ -129,7 +134,7 @@ public class GamePlayer {
      * @since 1.0
      */
     public int getExperience() {
-        return (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, T.getUniqueId());
+        return playerEXP;
     }
 
     /**
@@ -255,7 +260,7 @@ public class GamePlayer {
         if (futureExperience >= xpNeeded) {
             updateLevel(level + 1, true, false);
         } else {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.EXPERIENCE, experienceToAdd + subBonus + subPlusBonus, true);
+            setPlayerEXP(futureExperience);
             if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
             }
@@ -270,6 +275,7 @@ public class GamePlayer {
      * @param levelSet - if the level change is set artificially
      */
     public void updateLevel(int newLevel, boolean levelUp, boolean levelSet) {
+        setPlayerEXP(0);
         DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, false);
         DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
 
