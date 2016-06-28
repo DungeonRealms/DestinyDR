@@ -1468,7 +1468,6 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void craftingInventoryClose(InventoryCloseEvent event) {
-        //TODO: Check if this works.
         Player player = (Player) event.getPlayer();
         if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
             player.getOpenInventory().getTopInventory().setItem(1, null);

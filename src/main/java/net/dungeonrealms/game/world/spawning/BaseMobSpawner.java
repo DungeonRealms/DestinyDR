@@ -307,7 +307,7 @@ public class BaseMobSpawner {
             for (Map.Entry<Entity, Integer> entry : RESPAWN_TIMES.entrySet()) {
                 int respawnTime = entry.getValue();
                 Entity entity = entry.getKey();
-                if (respawnTime - respawnDelay > 0) {
+                if (respawnTime > 0) {
                     respawnTime--;
                     RESPAWN_TIMES.put(entity, respawnTime);
                 } else {
