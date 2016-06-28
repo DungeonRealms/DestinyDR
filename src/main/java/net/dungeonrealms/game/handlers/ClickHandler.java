@@ -672,7 +672,7 @@ public class ClickHandler {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
                 }
                 break;
-            case "Player Trail Selection":
+            case "Player Effect Selection":
                 event.setCancelled(true);
                 if (event.getCurrentItem().getType() == Material.BARRIER) {
                     PlayerMenus.openPlayerProfileMenu(player);

@@ -262,14 +262,14 @@ public class PlayerMenus {
         List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
 
         if (playerTrails == null || playerTrails.size() <= 0) {
-            Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Player Trails!");
+            Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Player Effects!");
             player.openInventory(noTrails);
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 27, "Player Trail Selection");
+        Inventory inv = Bukkit.createInventory(null, 27, "Player Effect Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-        inv.setItem(26, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GREEN + "Turn off Trail", new String[]{}));
+        inv.setItem(26, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GREEN + "Turn off Effect", new String[]{}));
 
         for (String trailType : playerTrails) {
             ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
