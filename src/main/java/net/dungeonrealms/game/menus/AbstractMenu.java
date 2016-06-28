@@ -41,7 +41,7 @@ public abstract class AbstractMenu extends GUI {
         return (num > 54) ? 54 : (num % 9 == 0) ? num : ((num / 9) + 1) * 9;
     }
 
-    protected void fillSpace(int slot1, int slot2) {
+    public void fillSpace(int slot1, int slot2) {
         for (int i = 0; i < this.size; i++) {
             if ((i >= slot1) && (i <= slot2)) {
                 set(i, getSpaceFillerItem());
@@ -49,7 +49,7 @@ public abstract class AbstractMenu extends GUI {
         }
     }
 
-    protected void fillSpace(GUIItem item, int slot1, int slot2) {
+    public void fillSpace(GUIItem item, int slot1, int slot2) {
         for (int i = 0; i < this.size; i++) {
             if ((i >= slot1) && (i <= slot2)) {
                 set(i, item);
@@ -57,7 +57,7 @@ public abstract class AbstractMenu extends GUI {
         }
     }
 
-    protected void fillSpace(Iterator<GUIItem> iterator, int slot1, int slot2) {
+    public void fillSpace(Iterator<GUIItem> iterator, int slot1, int slot2) {
         for (int i = 0; i < this.size; i++) {
             if ((i >= slot1) && (i <= slot2) && (iterator.hasNext())) {
                 set(i, iterator.next());
@@ -65,15 +65,15 @@ public abstract class AbstractMenu extends GUI {
         }
     }
 
-    protected void fillEmptySpaces(GUIItem item) {
+    public void fillEmptySpaces(GUIItem item) {
         for (int i = 0; i < size; i++)
             if (!containsKey(i)) set(i, item);
     }
 
     public abstract void open(Player player) throws Exception;
 
-    protected GUIItem getSpaceFillerItem() {
-        GUIItem g = new GUIDisplayer(Material.STAINED_GLASS_PANE, (byte) 15);
+    public GUIItem getSpaceFillerItem() {
+        GUIItem g = new GUIDisplayer(Material.THIN_GLASS);
         g.setDisplayName(" ");
 
         return g;

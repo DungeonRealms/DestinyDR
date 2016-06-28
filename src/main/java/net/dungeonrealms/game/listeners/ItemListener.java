@@ -15,8 +15,8 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -148,7 +148,8 @@ public class ItemListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUsePortalRune(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK
+                || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) return;
         Player p = event.getPlayer();
         if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.NETHER_STAR)
             return;
@@ -179,10 +180,18 @@ public class ItemListener implements Listener {
                 }
 
                 Realms.getInstance().setRealmSpawn(event.getPlayer().getUniqueId(), newLocation);
+
+                event.setCancelled(true);
                 return;
             }
 
             Realms.getInstance().loadRealm(p, () -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
+            event.setCancelled(true);
+
+        } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            // OPENS STORE //
+            Realms.getInstance().openRealmMaterialStore(p);
+            event.setCancelled(true);
         }
     }
 
