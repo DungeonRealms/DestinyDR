@@ -917,14 +917,13 @@ public class MainListener implements Listener {
     public void playerAttemptTrade(PlayerDropItemEvent event) {
         if (event.isCancelled())
             return;
-        ItemStack stack = event.getItemDrop().getItemStack();
         Player pl = event.getPlayer();
-        pl.sendMessage(ChatColor.YELLOW + "Attemping Trade.");
 
         Player trader = TradeManager.getTarget(pl);
         if (trader == null) {
             return;
         }
+        pl.sendMessage(ChatColor.YELLOW + "Attemping Trade.");
 
         if (!TradeManager.canTrade(trader.getUniqueId())) {
             return;
@@ -932,13 +931,9 @@ public class MainListener implements Listener {
         event.setCancelled(true);
         TradeManager.startTrade(pl, trader);
         Trade trade = TradeManager.getTrade(pl.getUniqueId());
-        trade.inv.addItem(event.getItemDrop().getItemStack().clone());
-
-        event.getPlayer().getEquipment().getItemInMainHand().setType(Material.AIR);
-        event.getPlayer().getEquipment().setItemInMainHand(null);
-
-
-
+        ItemStack item = pl.getInventory().getItemInMainHand();
+        trade.inv.addItem(item.clone());
+        event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)

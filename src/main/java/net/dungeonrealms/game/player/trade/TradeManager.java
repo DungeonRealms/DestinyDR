@@ -44,7 +44,7 @@ public class TradeManager {
 
     public static Player getTarget(Player trader) {
         ArrayList<Entity> list = new ArrayList<>();
-        trader.getNearbyEntities(4.0D, 4.0D, 4.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC") && canTrade(e.getUniqueId())).forEach(list::add);
+        trader.getNearbyEntities(1.0D, 1.0D, 1.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC") && canTrade(e.getUniqueId())).forEach(list::add);
         if (list.size() == 0)
             return null;
         return (Player) list.get(0);
