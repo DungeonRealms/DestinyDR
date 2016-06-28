@@ -18,6 +18,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
@@ -132,6 +133,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         livingEntity.setNoDamageTicks(0);
         livingEntity.removePotionEffect(PotionEffectType.INVISIBILITY);
         finalForm = true;
+        DamageAPI.setDamageBonus(livingEntity, 50);
         for (Player pl : livingEntity.getWorld().getPlayers()) {
             pl.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
                     + "You... cannot... kill me IN MY OWN DOMAIN, FOOLISH MORTALS!");
@@ -156,8 +158,6 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
         }
-        //TODO: Enable double damage from attacks somehow (insert into list or apply metadata).
-        //TODO: Enable double armor (takes half damage from attacks) [same as above].
     }
 
     @Override
@@ -217,10 +217,12 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
             this.getWorld().addEntity(ghast, SpawnReason.CUSTOM);
             ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
+            DamageAPI.setArmorBonus(ghast.getBukkitEntity(), 50);
             hasFiredGhast = true;
             en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
             en.setMaximumNoDamageTicks(Integer.MAX_VALUE);
             en.setNoDamageTicks(Integer.MAX_VALUE);
+            DamageAPI.setArmorBonus(en, 50);
         }
 
         if (hasFiredGhast) {
