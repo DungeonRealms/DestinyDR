@@ -481,6 +481,9 @@ public class InventoryListener implements Listener {
                     return;
                 }
             }
+            Player clicker = (Player) event.getWhoClicked();
+            trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+            trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
             trade.changeReady();
         }
     }
@@ -521,6 +524,14 @@ public class InventoryListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getWhoClicked().getInventory().addItem(item));
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCraftingInventoryClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+            player.getOpenInventory().getTopInventory().setItem(1, null);
+            player.getOpenInventory().getTopInventory().setItem(2, null);
+        }
+    }
 
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
