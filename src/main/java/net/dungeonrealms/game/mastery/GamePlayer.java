@@ -22,8 +22,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -42,15 +44,26 @@ public class GamePlayer {
     @Setter
     @Getter
     private Map<String, Integer[]> attributes;
+    @Getter
+    @Setter
+    private Map<AttributeType, Float> attributeBonusesFromStats;
     @Setter
     @Getter
     private boolean attributesLoaded;
+    @Setter
+    @Getter
+    private ItemStack currentWeapon; // used so we only reload weapon stats when we need to.
+    @Setter
+    @Getter
+    private long lastArmorEquip;
 
     public GamePlayer(Player player) {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());
         this.playerStatistics = new PlayerStatistics(player.getUniqueId());
         API.GAMEPLAYERS.put(player.getName(), this);
+        this.attributeBonusesFromStats = new HashMap<>();
+        this.lastArmorEquip = System.currentTimeMillis();
     }
 
     /**
@@ -172,8 +185,7 @@ public class GamePlayer {
      * @since 1.0
      */
     public int getPlayerMaxHP() {
-        int temp = HealthHandler.getInstance().calculateMaxHPFromItems(T);
-        return temp + ((int) (temp * getStats().getVitHP()));
+        return HealthHandler.getInstance().calculateMaxHPFromItems(T);
     }
 
     /**
@@ -409,6 +421,7 @@ public class GamePlayer {
         int newHigh = (int) (attributes.get(type.getNBTName())[1] * ((percentDifference + 100.) / 100.));
         if (newLow < 0) newLow = 0;
         if (newHigh < 0) newHigh = 0;
-        return attributes.put(type.getNBTName(), new Integer[] { newLow, newHigh });
+        attributes.put(type.getNBTName(), new Integer[] { newLow, newHigh });
+        return new Integer[] { newLow, newHigh };
     }
 }

@@ -257,7 +257,7 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getEquipment().getItemInMainHand()));
-            finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
+            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity(), tag);
 
             if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
                 if (API.getGamePlayer((Player) event.getEntity()) != null && API.getGamePlayer((Player) event.getDamager()) != null) {
@@ -339,7 +339,7 @@ public class DamageListener implements Listener {
             NBTTagCompound tag = nmsItem.getTag();
             //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
-            finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
+            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity(), tag);
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
             } else {
@@ -461,10 +461,9 @@ public class DamageListener implements Listener {
         EntityEquipment defenderEquipment = defender.getEquipment();
         LivingEntity attacker = null;
         if (defenderEquipment.getArmorContents() == null) return;
-        ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
         if (event.getDamager() instanceof LivingEntity) {
             attacker = (LivingEntity) event.getDamager();
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage());
             armourReducedDamage = result[0];
             totalArmor = result[1];
             if (attacker.getEquipment().getItemInMainHand() != null && attacker.getEquipment().getItemInMainHand().getType() != Material.AIR) {
@@ -472,7 +471,10 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInMainHand()).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
+                        boolean attackerIsMob = attacker.hasMetadata("type");
                         for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                            // mobs should only be able to damage players, not other mobs
+                            if (attackerIsMob && !(entity instanceof Player)) continue;
                             if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
                                 if ((event.getDamage() - armourReducedDamage) > 0) {
                                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
@@ -480,7 +482,9 @@ public class DamageListener implements Listener {
                                         HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                                     }
                                 }
-                            } else {
+                            }
+                            else if (entity instanceof Player) {
+                                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                             }
                         }
                         DamageAPI.polearmAOEProcessing.remove(attacker);
@@ -529,7 +533,7 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage());
             armourReducedDamage = result[0];
             totalArmor = result[1];
         } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
@@ -574,9 +578,14 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage());
             armourReducedDamage = result[0];
             totalArmor = result[1];
+        }
+        if (event.getDamage() - armourReducedDamage <= 0) {
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
         }
         if (armourReducedDamage == -1) {
             if (attacker instanceof Player) {
@@ -599,21 +608,13 @@ public class DamageListener implements Listener {
                 } else {
                     attackerName = "Enemy";
                 }
-                ((Player) defender).playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2F);
                 defender.sendMessage(org.bukkit.ChatColor.GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *DODGE* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.GREEN + ")");
             }
             //The defender dodged the attack
+            defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             event.setDamage(0);
-            LivingEntity leDefender = (LivingEntity) event.getEntity();
-            if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
-                leDefender.removePotionEffect(PotionEffectType.SLOW);
-            }
-            if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
-                leDefender.removePotionEffect(PotionEffectType.POISON);
-            }
-            return;
         }
-        if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -2) {
+        else if (armourReducedDamage == -2) {
             if (attacker instanceof Player) {
                 String defenderName;
                 if (defender instanceof Player) {
@@ -634,38 +635,34 @@ public class DamageListener implements Listener {
                 } else {
                     attackerName = "Enemy";
                 }
-                ((Player) defender).playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
                 defender.sendMessage(org.bukkit.ChatColor.DARK_GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *BLOCK* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.DARK_GREEN + ")");
             }
+            defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             event.setDamage(0);
-            LivingEntity leDefender = (LivingEntity) event.getEntity();
-            if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
-                leDefender.removePotionEffect(PotionEffectType.SLOW);
-            }
-            if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
-                leDefender.removePotionEffect(PotionEffectType.POISON);
-            }
-        } else {
+        }
+        else {
             if (API.isPlayer(defender)) {
                 if (((Player) defender).isBlocking() && ((Player) defender).getEquipment().getItemInMainHand() != null && ((Player) defender).getEquipment().getItemInMainHand().getType() != Material.AIR) {
                     if (new Random().nextInt(100) <= 80) {
                         double blockDamage = event.getDamage() / 2;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage), armourReducedDamage, totalArmor);
                         event.setDamage(0);
-                    } else {
+                    }
+                    else {
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                         event.setDamage(0);
                     }
-                } else {
+                }
+                else {
                     HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                     event.setDamage(0);
                 }
-            } else if (defender instanceof CraftLivingEntity) {
-                if (defender.hasMetadata("type") && defender.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            }
+            else if (defender.hasMetadata("type") && defender.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                     HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), attacker, (event.getDamage() - armourReducedDamage));
                     event.setDamage(0);
-                }
-            } else {
+            }
+            else {
                 event.setDamage(event.getDamage() - armourReducedDamage);
             }
         }

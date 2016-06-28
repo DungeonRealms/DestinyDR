@@ -46,7 +46,6 @@ public abstract class DRGolem extends EntityIronGolem implements DRMonster {
         livingEntity.getEquipment().setHelmet(monsterType.getSkullItem(monsterType));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
-        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     protected DRGolem(World world) {

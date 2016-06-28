@@ -31,6 +31,7 @@ public class MeleeEnderman extends DREnderman {
         this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         livingEntity.getEquipment().setItemInMainHand(weapon);
+
     }
 
     private ItemStack getTierWeapon(int tier) {

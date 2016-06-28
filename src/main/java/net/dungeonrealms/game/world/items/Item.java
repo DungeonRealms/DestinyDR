@@ -216,24 +216,6 @@ public class Item {
             return null;
         }
 
-        public ChatColor getChatColorOfTier(ItemTier itemTier) {
-            switch (itemTier) {
-                case TIER_1:
-                    return ChatColor.WHITE;
-                case TIER_2:
-                    return ChatColor.GREEN;
-                case TIER_3:
-                    return ChatColor.AQUA;
-                case TIER_4:
-                    return ChatColor.LIGHT_PURPLE;
-                case TIER_5:
-                    return ChatColor.YELLOW;
-                default:
-                    return ChatColor.WHITE;
-            }
-        }
-
-
     }
 
     public enum ItemRarity {

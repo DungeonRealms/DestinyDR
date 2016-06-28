@@ -49,7 +49,6 @@ public class DRWitch extends EntityWitch implements DRMonster {
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
-        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     public void setArmor(int tier) {

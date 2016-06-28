@@ -46,7 +46,6 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
 		this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
 		this.boss = infernalAbyss;
-		attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
 		//TODO: Enable double armor (takes half damage from attacks) [same as above].
 	}
 

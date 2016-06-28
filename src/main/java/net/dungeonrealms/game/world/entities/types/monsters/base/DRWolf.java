@@ -44,7 +44,6 @@ public class DRWolf extends EntityWolf implements DRMonster {
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
-        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     public void setArmor(int tier) {

@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -349,8 +350,8 @@ public class DuelOffer {
                 }
 
             HealthHandler.getInstance().setPlayerMaxHPLive(pl, HealthHandler.getInstance().calculateMaxHPFromItems(pl));
-            HealthHandler.getInstance().setPlayerHPRegenLive(pl,
-                    HealthHandler.getInstance().calculateHealthRegenFromItems(pl));
+            HealthHandler.getInstance().setPlayerHPRegenLive(pl, API.getStaticAttributeVal(Item.ArmorAttributeType
+                    .HEALTH_REGEN, pl) + 5);
             if (HealthHandler.getInstance().getPlayerHPLive(pl) > HealthHandler.getInstance().getPlayerMaxHPLive(pl)) {
                 HealthHandler.getInstance().setPlayerHPLive(pl, HealthHandler.getInstance().getPlayerMaxHPLive(pl));
             }
@@ -406,8 +407,8 @@ public class DuelOffer {
                 }
 
             HealthHandler.getInstance().setPlayerMaxHPLive(pl, HealthHandler.getInstance().calculateMaxHPFromItems(pl));
-            HealthHandler.getInstance().setPlayerHPRegenLive(pl,
-                    HealthHandler.getInstance().calculateHealthRegenFromItems(pl));
+            HealthHandler.getInstance().setPlayerHPRegenLive(pl, API.getStaticAttributeVal(Item.ArmorAttributeType
+                    .HEALTH_REGEN, pl) + 5);
             if (HealthHandler.getInstance().getPlayerHPLive(pl) > HealthHandler.getInstance().getPlayerMaxHPLive(pl)) {
                 HealthHandler.getInstance().setPlayerHPLive(pl, HealthHandler.getInstance().getPlayerMaxHPLive(pl));
             }
