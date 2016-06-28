@@ -930,12 +930,14 @@ public class MainListener implements Listener {
             return;
         }
         event.setCancelled(true);
-        event.getPlayer().getEquipment().getItemInMainHand().setType(Material.AIR);
-        event.getPlayer().getEquipment().setItemInMainHand(null);
-
         TradeManager.startTrade(pl, trader);
         Trade trade = TradeManager.getTrade(pl.getUniqueId());
         trade.inv.addItem(event.getItemDrop().getItemStack().clone());
+
+        event.getPlayer().getEquipment().getItemInMainHand().setType(Material.AIR);
+        event.getPlayer().getEquipment().setItemInMainHand(null);
+
+
 
     }
 
