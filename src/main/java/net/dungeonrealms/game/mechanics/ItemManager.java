@@ -15,7 +15,6 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
-import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
@@ -615,34 +614,14 @@ public class ItemManager {
         return null;
     }
 
-    public static ItemStack createItem(EnumItem enumItem) {
-        ItemStack stack = null;
-        net.minecraft.server.v1_9_R2.ItemStack nms = null;
-        switch (enumItem) {
-            case StorageExpansion:
-                stack = createItem(Material.ENDER_CHEST, ChatColor.GREEN + "Storage Expansion", new String[]{ChatColor.GRAY + "Increase storage space by 1 row.", ChatColor.RED.toString() + ChatColor.BOLD + "Max of 6"});
-                nms = CraftItemStack.asNMSCopy(stack);
-                nms.getTag().setString("type", "upgrade");
-                break;
-            case RepairHammer:
-                stack = createItem(Material.ANVIL, ChatColor.GREEN + "Repair Hammer", new String[]{ChatColor.GRAY + "Fully repair a single item."});
-                nms = CraftItemStack.asNMSCopy(stack);
-                nms.getTag().setString("type", "repair");
-                break;
-            case RetrainingBook:
-                stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book", new String[]{ChatColor.GRAY + "Right click to reset your stat", ChatColor.GRAY + "allocated points to free points.", ChatColor.DARK_GRAY + "One time use."});
-                nms = CraftItemStack.asNMSCopy(stack);
-                nms.getTag().setString("retrainingBook", "_Atlassie");
-                break;
-            case MedalOfGathering:
-                stack = createItem(Material.YELLOW_FLOWER, ChatColor.GREEN + "Medal of Gathering", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." + ChatColor.RED + ChatColor.BOLD + "Max of 6"});
-                nms = CraftItemStack.asNMSCopy(stack);
-                nms.getTag().setString("type", "gathering");
-                break;
-            case CharacterJournal:
-
-                break;
-        }
+    public static ItemStack createRetrainingBook() {
+        ItemStack stack;
+        net.minecraft.server.v1_9_R2.ItemStack nms;
+        NBTTagCompound tag = new NBTTagCompound();
+        stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book", new String[]{ChatColor.GRAY + "Right click to reset your stat", ChatColor.GRAY + "allocated points to free points.", ChatColor.DARK_GRAY + "One time use."});
+        nms = CraftItemStack.asNMSCopy(stack);
+        tag.setString("retrainingBook", "true");
+        nms.setTag(tag);
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
@@ -830,9 +809,11 @@ public class ItemManager {
         bm.setPages(pages);
         stack.setItemMeta(bm);
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("type", "important");
-        nms.getTag().setString("journal", "true");
-        nms.getTag().setString("subtype", "nondrop");
+        NBTTagCompound tag = nms.getTag() == null ? new NBTTagCompound() : nms.getTag();
+        tag.setString("type", "important");
+        tag.setString("journal", "true");
+        tag.setString("subtype", "nondrop");
+        nms.setTag(tag);
         return CraftItemStack.asBukkitCopy(nms);
     }
 

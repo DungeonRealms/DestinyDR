@@ -17,7 +17,6 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
-import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
@@ -170,16 +169,7 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(ItemManager.createFishingPole(rodTier));
                     break;
                 case "resetbook":
-                    player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
-                    break;
-                case "storageexpansion":
-                    player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
-                    break;
-                case "repairhammer":
-                    player.getInventory().addItem(ItemManager.createItem(EnumItem.RepairHammer));
-                    break;
-                case "medalofgathering":
-                    player.getInventory().addItem(ItemManager.createItem(EnumItem.MedalOfGathering));
+                    player.getInventory().addItem(ItemManager.createRetrainingBook());
                     break;
                 case "journal":
                     player.getInventory().addItem(ItemManager.createCharacterJournal(player));

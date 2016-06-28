@@ -20,6 +20,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -32,6 +34,7 @@ public class BaseMobSpawner {
     private EntityArmorStand armorstand;
     private int tier;
     private List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
+    private Map<Entity, Integer> RESPAWN_TIMES = new ConcurrentHashMap<>();
     private int spawnAmount;
     private int id;
     private int timerID = -1;
@@ -95,24 +98,26 @@ public class BaseMobSpawner {
                 if (monster.isAlive()) {
                     if (API.isInSafeRegion(monster.getBukkitEntity().getLocation())) {
                         monster.setPosition(loc.getX(), loc.getY(), loc.getZ());
+                        continue;
                     }
                     double num = monster.getBukkitEntity().getLocation().distanceSquared(loc);
-                    if (num > 900) {
+                    if (num > 700) {
                         monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                     }
-
                 } else {
+                    RESPAWN_TIMES.put(monster, respawnDelay);
                     SPAWNED_MONSTERS.remove(monster);
                 }
             }
         }
         if (SPAWNED_MONSTERS.size() < spawnAmount) {
             if (!firstSpawn) {
-                if (!canMobsSpawn()) {
-                    counter = counter + 2;
+                if (!canMobSpawn()) {
                     //Mobs haven't passed their respawn timer yet.
                     return;
                 }
+            } else {
+                RESPAWN_TIMES.clear();
             }
             Location location = getRandomLocation(loc, ((loc.getX() - mininmumXZ) - maximumXZ), ((loc.getX() + mininmumXZ) + maximumXZ),
                     ((loc.getZ() - mininmumXZ) - maximumXZ), ((loc.getZ() + mininmumXZ) + maximumXZ));
@@ -228,7 +233,7 @@ public class BaseMobSpawner {
                         newEntity.setLocation(firstSpawn.getX(), firstSpawn.getY(), firstSpawn.getZ(), 1, 1);
                         SPAWNED_MONSTERS.add(newEntity);
                     }
-                }, 40L);
+                }, 5L);
             } else {
                 entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                 world.addEntity(entity, SpawnReason.CUSTOM);
@@ -284,7 +289,7 @@ public class BaseMobSpawner {
                             Bukkit.getScheduler().cancelTask(timerID);
                         } else
                             spawnIn();
-                    }, 0L, 40L);
+                    }, 0L, 20L);
                 }
             } else {
                 if (timerID != -1) {
@@ -297,19 +302,27 @@ public class BaseMobSpawner {
     }
 
     //Checks whether mobs can spawn based on their delay set in config.
-    private boolean canMobsSpawn() {
-        if (counter < respawnDelay) {
-            return false;
-        }
-        counter = 0;
-        return true;
-    }
-
-    private boolean isFriendlyMob(EnumMonster monsterType) {
-        if (monsterType == EnumMonster.Pig || monsterType == EnumMonster.Cow || monsterType == EnumMonster.Bat) {
+    private boolean canMobSpawn() {
+        if (!RESPAWN_TIMES.isEmpty()) {
+            for (Map.Entry<Entity, Integer> entry : RESPAWN_TIMES.entrySet()) {
+                int respawnTime = entry.getValue();
+                Entity entity = entry.getKey();
+                if (respawnTime > 0) {
+                    respawnTime--;
+                    RESPAWN_TIMES.put(entity, respawnTime);
+                } else {
+                    RESPAWN_TIMES.remove(entity);
+                    return true;
+                }
+            }
+        } else {
             return true;
         }
         return false;
+    }
+
+    private boolean isFriendlyMob(EnumMonster monsterType) {
+        return monsterType == EnumMonster.Pig || monsterType == EnumMonster.Cow || monsterType == EnumMonster.Bat;
     }
 
     private Location getRandomLocation(Location location, double xMin, double xMax, double zMin, double zMax) {

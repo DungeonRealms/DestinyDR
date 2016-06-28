@@ -48,10 +48,10 @@ public class ECashMenus {
         inventory.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inventory.addItem(new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 2, ChatColor.GREEN + "Zombie Horse Skin", new String[]{
                 ChatColor.RED + "Requires a mount to purchase",
-                ChatColor.WHITE + "749" + ChatColor.GREEN + " E-Cash"}).setNBTString("skinType", EnumMountSkins.ZOMBIE_HORSE.getRawName()).setNBTInt("eCash", 1250).build());
+                ChatColor.WHITE + "1250" + ChatColor.GREEN + " E-Cash"}).setNBTString("skinType", EnumMountSkins.ZOMBIE_HORSE.getRawName()).setNBTInt("eCash", 1250).build());
         inventory.addItem(new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 0, ChatColor.GRAY + "Skeleton Horse Skin", new String[]{
                 ChatColor.RED + "Requires a mount to purchase",
-                ChatColor.WHITE + "749" + ChatColor.GREEN + " E-Cash"}).setNBTString("skinType", EnumMountSkins.SKELETON_HORSE.getRawName()).setNBTInt("eCash", 1250).build());
+                ChatColor.WHITE + "1250" + ChatColor.GREEN + " E-Cash"}).setNBTString("skinType", EnumMountSkins.SKELETON_HORSE.getRawName()).setNBTInt("eCash", 1250).build());
 
         player.openInventory(inventory);
     }
@@ -79,6 +79,16 @@ public class ECashMenus {
                     ChatColor.WHITE + String.valueOf(price) + ChatColor.GREEN + " E-Cash",
             }));
         }
+
+        player.openInventory(inventory);
+    }
+
+    public static void openEcashMisc(Player player) {
+        Inventory inventory = Bukkit.createInventory(null, 18, "E-Cash Miscellaneous");
+        inventory.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+        inventory.addItem(new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
+                ChatColor.RED + "Refund ALL Stat Points!",
+                ChatColor.AQUA + "550 E-Cash"}).setNBTString("retrainingBook", "true").setNBTInt("eCash", 550).build());
 
         player.openInventory(inventory);
     }

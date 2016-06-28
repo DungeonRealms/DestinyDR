@@ -31,7 +31,6 @@ import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
-import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -159,6 +158,9 @@ public class ClickHandler {
                     case 2:
                         ECashMenus.openMountSkins(player);
                         break;
+                    case 3:
+                        ECashMenus.openEcashMisc(player);
+                        break;
                     default:
                         break;
                 }
@@ -171,17 +173,6 @@ public class ClickHandler {
                         final JSONMessage normal4 = new JSONMessage(ChatColor.GOLD + "To Purchase E-Cash from our Shop, Click ", ChatColor.GOLD);
                         normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://shop.dungeonrealms.net");
                         normal4.sendToPlayer(player);
-                    }
-                    if (nmsStack.getTag().hasKey("retrainingBook")) {
-                        if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                            player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
-                            player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book.");
-                            player.closeInventory();
-                            return;
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                            return;
-                        }
                     }
                 }
                 break;
@@ -1571,6 +1562,31 @@ public class ClickHandler {
                     player.closeInventory();
                 } else {
                     player.sendMessage(ChatColor.RED + "You cannot afford this mount skin, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                }
+                break;
+            case "E-Cash Miscellaneous":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+                if (slot == 0) {
+                    NPCMenus.openECashPurchaseMenu(player);
+                    return;
+                }
+                nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (nmsStack.getTag().hasKey("retrainingBook")) {
+                    eCashCost = nmsStack.getTag().getInt("eCash");
+                    if (player.getInventory().firstEmpty() != -1) {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                            player.sendMessage(ChatColor.GREEN + "You have purchased a retraining book.");
+                            player.getInventory().addItem(ItemManager.createRetrainingBook());
+                            player.closeInventory();
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
+                    }
                 }
                 break;
         }

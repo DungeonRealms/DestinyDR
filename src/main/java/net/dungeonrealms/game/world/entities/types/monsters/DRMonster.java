@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entities.types.monsters;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -21,11 +22,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -174,6 +171,93 @@ public interface DRMonster {
                     RepairAPI.setCustomItemDurability(weapon, RandomHelper.getRandomNumberBetween(200, 1000));
                     world.getWorld().dropItem(loc.add(0, 1, 0), weapon);
                 }
+            }
+        }
+        int scrollDrop = random.nextInt(100);
+        int scrollDropChance;
+        switch (tier) {
+            case 1:
+            case 2:
+            case 3:
+                scrollDropChance = 2;
+                break;
+            case 4:
+            case 5:
+                scrollDropChance = 1;
+                break;
+            default:
+                scrollDropChance = 1;
+                break;
+        }
+        if (scrollDropChance >= scrollDrop) {
+            ItemStack teleport = null;
+            switch (tier) {
+                case 1:
+                    if (random.nextInt(2) == 0) {
+                        teleport = ItemManager.createTeleportBook("cyrennica");
+                    } else {
+                        teleport = ItemManager.createTeleportBook("harrison_field");
+                    }
+                    break;
+                case 2:
+                    int type = random.nextInt(5);
+                    switch (type) {
+                        case 0:
+                            teleport = ItemManager.createTeleportBook("cyrennica");
+                            break;
+                        case 1:
+                            teleport = ItemManager.createTeleportBook("harrison_field");
+                            break;
+                        case 2:
+                            teleport = ItemManager.createTeleportBook("dark_oak");
+                            break;
+                        case 3:
+                            teleport = ItemManager.createTeleportBook("trollsbane");
+                            break;
+                        case 4:
+                            teleport = ItemManager.createTeleportBook("tripoli");
+                            break;
+                    }
+                    break;
+                case 3:
+                    type = random.nextInt(5);
+                    switch (type) {
+                        case 0:
+                            teleport = ItemManager.createTeleportBook("cyrennica");
+                            break;
+                        case 1:
+                            teleport = ItemManager.createTeleportBook("dark_oak");
+                            break;
+                        case 2:
+                            teleport = ItemManager.createTeleportBook("trollsbane");
+                            break;
+                        case 3:
+                            teleport = ItemManager.createTeleportBook("gloomy_hollows");
+                            break;
+                        case 4:
+                            teleport = ItemManager.createTeleportBook("crestguard");
+                            break;
+                    }
+                    break;
+                case 4:
+                    if (random.nextInt(2) == 0) {
+                        teleport = ItemManager.createTeleportBook("deadpeaks");
+                    } else {
+                        teleport = ItemManager.createTeleportBook("gloomy_hollows");
+                    }
+                    break;
+                case 5:
+                    if (random.nextInt(2) == 0) {
+                        teleport = ItemManager.createTeleportBook("deadpeaks");
+                    } else {
+                        teleport = ItemManager.createTeleportBook("gloomy_hollows");
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if (teleport != null) {
+                ent.getWorld().dropItem(ent.getLocation().add(0, 1, 0), teleport);
             }
         }
         /*if (weapon.getType() == Material.BOW) {
