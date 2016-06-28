@@ -1,25 +1,16 @@
 package net.dungeonrealms.game.player.trade;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Stream;
-
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.BlockIterator;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Chase on Nov 16, 2015
@@ -44,7 +35,7 @@ public class TradeManager {
 
     public static Player getTarget(Player trader) {
         ArrayList<Entity> list = new ArrayList<>();
-        trader.getNearbyEntities(1.0D, 1.0D, 1.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC") && canTrade(e.getUniqueId())).forEach(list::add);
+        trader.getNearbyEntities(2.0D, 2.0D, 2.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC") && canTrade(e.getUniqueId())).forEach(list::add);
         if (list.size() == 0)
             return null;
         return (Player) list.get(0);
@@ -57,12 +48,17 @@ public class TradeManager {
         }
         if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, uniqueId)) {
             p.sendMessage(ChatColor.RED + "Trade attempted, but your trades are disabled.");
-            p.sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/toggles " + ChatColor.RED + " to enable trades.");
+            p.sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/toggletrade " + ChatColor.RED + " to enable trades.");
             return false;
         }
 
+        if (CombatLog.isInCombat(p)) {
+            return false;
+        }
+
+        //TODO: Check if the player has an inventory open.
+
         if (getTrade(uniqueId) != null) {
-            p.sendMessage(ChatColor.RED + "You're already in a trade, and were attempted to trade again.");
             return false;
         }
         return true;

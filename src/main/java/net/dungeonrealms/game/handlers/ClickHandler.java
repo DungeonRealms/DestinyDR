@@ -149,16 +149,16 @@ public class ClickHandler {
                 event.setCancelled(true);
                 if (slot > 25) return;
                 switch (slot) {
-                    case 0:
+                    case 1:
                         ECashMenus.openEcashPets(player);
                         break;
-                    case 1:
+                    case 3:
                         ECashMenus.openEcashEffects(player);
                         break;
-                    case 2:
+                    case 5:
                         ECashMenus.openMountSkins(player);
                         break;
-                    case 3:
+                    case 7:
                         ECashMenus.openEcashMisc(player);
                         break;
                     default:

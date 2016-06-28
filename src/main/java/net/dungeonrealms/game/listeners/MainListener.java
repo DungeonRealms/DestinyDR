@@ -65,7 +65,6 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -915,23 +914,36 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerAttemptTrade(PlayerDropItemEvent event) {
-        if (event.isCancelled())
-            return;
+        if (event.isCancelled()) return;
+        if (!API.isItemDroppable(event.getItemDrop().getItemStack())) return;
+        if (!API.isItemTradeable(event.getItemDrop().getItemStack())) return;
+        if (API.isItemSoulbound(event.getItemDrop().getItemStack())) return;
         Player pl = event.getPlayer();
 
         Player trader = TradeManager.getTarget(pl);
         if (trader == null) {
             return;
         }
-        pl.sendMessage(ChatColor.YELLOW + "Attemping Trade.");
-
         if (!TradeManager.canTrade(trader.getUniqueId())) {
+            event.setCancelled(true);
+            pl.sendMessage(ChatColor.YELLOW + trader.getName() + " is currently busy.");
+            return;
+        }
+        if (CombatLog.isInCombat(pl)) {
+            pl.sendMessage(ChatColor.YELLOW + "You cannot trade while in combat.");
+            pl.sendMessage(ChatColor.GRAY + "Wait " + ChatColor.BOLD + "a few seconds" + ChatColor.GRAY + " and try again.");
+            event.setCancelled(true);
             return;
         }
         event.setCancelled(true);
         TradeManager.startTrade(pl, trader);
         Trade trade = TradeManager.getTrade(pl.getUniqueId());
+        if (trade == null) {
+            return;
+        }
         ItemStack item = pl.getInventory().getItemInMainHand();
+        trader.playSound(trader.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
+        pl.playSound(pl.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
         trade.inv.addItem(item.clone());
         event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
     }
