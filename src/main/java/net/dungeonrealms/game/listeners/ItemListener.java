@@ -72,14 +72,7 @@ public class ItemListener implements Listener {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();
             assert tag != null;
-            // send the untradeable message if not profile or hearthstone since they will be dropped
-            // every time the inventory is closed
             event.getItemDrop().remove();
-            if (item.getItemMeta().hasDisplayName()) {
-                if (item.getItemMeta().getDisplayName().contains("Character Profile") || item.getItemMeta().getDisplayName().contains("Hearthstone")) {
-                    return;
-                }
-            }
             p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "un-tradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
         } else if (API.isItemSoulbound(item)) {
@@ -131,8 +124,7 @@ public class ItemListener implements Listener {
                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "This item cannot be used to Teleport!");
             }
         } else {
-            player.sendMessage(
-                    ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
+            player.sendMessage(ChatColor.RED + "You are in combat! " + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
         }
     }
 
