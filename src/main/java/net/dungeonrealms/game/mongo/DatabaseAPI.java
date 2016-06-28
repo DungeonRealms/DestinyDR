@@ -83,6 +83,8 @@ public class DatabaseAPI {
                 return ((Document) doc.get("info")).get("lastLogin", Long.class);
             case LAST_LOGOUT:
                 return ((Document) doc.get("info")).get("lastLogout", Long.class);
+            case FREE_ECASH:
+                return ((Document) doc.get("info")).get("freeEcash", Long.class);
             case LAST_SHARD_TRANSFER:
                 return ((Document) doc.get("info")).get("lastShardTransfer", Long.class);
             case IS_PLAYING:
@@ -337,6 +339,7 @@ public class DatabaseAPI {
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0L)
                                 .append("lastLogout", 0L)
+                                .append("freeEcash", 0L)
                                 .append("lastShardTransfer", 0L)
                                 .append("netLevel", 1)
                                 .append("experience", 0)

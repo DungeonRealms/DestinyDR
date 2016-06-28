@@ -10,6 +10,7 @@ public enum EnumData {
     FIRST_LOGIN("info.firstLogin"),
     LAST_LOGIN("info.lastLogin"),
     LAST_LOGOUT("info.lastLogout"),
+    FREE_ECASH("info.freeEcash"),
     LAST_SHARD_TRANSFER("info.lastShardTransfer"),
     LEVEL("info.netLevel"),
     IS_PLAYING("info.isPlaying"),
