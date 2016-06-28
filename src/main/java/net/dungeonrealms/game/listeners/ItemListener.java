@@ -275,7 +275,7 @@ public class ItemListener implements Listener {
                     if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
                         Player player = event.getPlayer();
                         int invlvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
-                        if (invlvl == 6) {
+                        if (invlvl >= 6) {
                             player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");
                             return;
                         }

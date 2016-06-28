@@ -53,7 +53,10 @@ public class BankListener implements Listener {
             Player p = e.getPlayer();
 
             int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
-
+            if (storage_lvl >= 6) {
+                p.sendMessage(ChatColor.RED + "You've reached the current Storage lvl cap!");
+                return;
+            }
             int upgrade_cost = BankMechanics.getPrice(storage_lvl + 1);
 
             p.sendMessage("");
@@ -338,7 +341,10 @@ public class BankListener implements Listener {
                             Player p = (Player) e.getWhoClicked();
 
                             int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
-
+                            if (storage_lvl >= 6) {
+                                p.sendMessage(ChatColor.RED + "You've reached the current Storage lvl cap!");
+                                return;
+                            }
                             int upgrade_cost = BankMechanics.getPrice(storage_lvl + 1);
 
                             p.sendMessage("");
