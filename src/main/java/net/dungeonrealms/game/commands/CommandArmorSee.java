@@ -46,7 +46,8 @@ public class CommandArmorSee extends BasicCommand {
 				inv = Bukkit.createInventory(null, 9, "ARMOR OF " + ent_name);
 				Player victim = Bukkit.getPlayer(ent_name);
 				for (ItemStack is : victim.getInventory().getArmorContents()) {
-					inv.addItem(CraftItemStack.asCraftCopy(is));
+					if (is != null && is.getType() != Material.AIR)
+						inv.addItem(CraftItemStack.asCraftCopy(is));
 				}
 			} else {
 				p.sendMessage(ChatColor.RED + "The player " + ent_name + "'s armor data is not loaded, and therefore cannot be displayed.");
@@ -66,7 +67,8 @@ public class CommandArmorSee extends BasicCommand {
 			ent_name = ent.getCustomName();
 			inv = Bukkit.createInventory(null, 9, "EQUIPMENT OF " + ent.getCustomName());
 			for (ItemStack is : ent.getEquipment().getArmorContents()) {
-				inv.addItem(CraftItemStack.asCraftCopy(is));
+				if (is != null && is.getType() != Material.AIR)
+					inv.addItem(CraftItemStack.asCraftCopy(is));
 			}
 			inv.addItem(CraftItemStack.asCraftCopy(ent.getEquipment().getItemInMainHand()));
 		}

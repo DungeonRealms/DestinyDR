@@ -196,6 +196,7 @@ public class DamageListener implements Listener {
             if (API.isPlayer(damager) && !DuelingMechanics.isDueling(damager.getUniqueId())) {
                 event.setCancelled(true);
                 event.setDamage(0);
+                ((Player) damager).updateInventory();
                 return;
             }
         }

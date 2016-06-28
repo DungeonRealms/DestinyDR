@@ -12,6 +12,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
@@ -244,24 +245,6 @@ public class BlockListener implements Listener {
             return;
         if (!API.isWeapon(event.getPlayer().getEquipment().getItemInMainHand()) && !Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand()))
             return;
-        if (API.isWeapon(event.getPlayer().getEquipment().getItemInMainHand())) {
-            int tier = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()).getTag().getInt("itemTier");
-            int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
-            switch (tier) {
-                case 5:
-                    if (playerLvl < 10) {
-                        event.setCancelled(true);
-                        int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
-                        if (slot < 9)
-                            event.getPlayer().getInventory().setHeldItemSlot(slot);
-                        else
-                            event.getPlayer().getInventory().setHeldItemSlot(0);
-                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                    }
-                    break;
-            }
-            return;
-        }
         if (!Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand())) return;
         ItemStack stackInHand = event.getPlayer().getEquipment().getItemInMainHand();
         Block block = event.getPlayer().getTargetBlock((HashSet<Byte>) null, 100);

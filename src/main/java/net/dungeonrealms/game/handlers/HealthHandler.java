@@ -629,6 +629,8 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
 
+        entity.playEffect(EntityEffect.HURT);
+
         if (attacker != null) {
             if (API.isPlayer(attacker)) {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {

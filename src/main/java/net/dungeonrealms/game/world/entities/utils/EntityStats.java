@@ -181,22 +181,6 @@ public class EntityStats {
     
     public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
-        if (!entity.getBukkitEntity().hasMetadata("dungeon")) {
-            switch (tier) {
-                case 1:
-                    if (maxHp >= 65) {
-                        maxHp = 20 + (random.nextInt(25) - 10);
-                    }
-                    break;
-                case 2:
-                    if (maxHp > 350) {
-                        maxHp -= 100;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), maxHp);
     }

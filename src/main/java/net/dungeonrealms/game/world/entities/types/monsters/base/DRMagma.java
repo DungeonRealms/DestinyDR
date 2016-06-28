@@ -41,7 +41,7 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 	public DRMagma(World name, EnumMonster enumMonster, int tier) {
 		super(name);
 		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
-		this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
+		//this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		monsterType = EnumMonster.MagmaCube;
 		setArmor(tier);
 		String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
