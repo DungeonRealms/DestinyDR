@@ -9,8 +9,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Kieran Quigley (Proxying) on 19-Jun-16.
@@ -27,7 +27,7 @@ public class ProtectionHandler implements GenericMechanic, Listener {
     }
 
     @Getter
-    private List<String> protected_Players = new ArrayList<>();
+    private Set<String> protected_Players = new HashSet<>();
 
     @Override
     public EnumPriority startPriority() {
@@ -46,19 +46,19 @@ public class ProtectionHandler implements GenericMechanic, Listener {
     public void handleLogin(Player player) {
         long firstJoin = (long) DatabaseAPI.getInstance().getData(EnumData.FIRST_LOGIN, player.getUniqueId());
         if ((System.currentTimeMillis() - firstJoin) <= (24 * 3600000)) {
-            //Still under 24 hour newbie protection.
-            long hours = (System.currentTimeMillis() - firstJoin) / 3600000;
-            int remainingHours = 24 - (int) hours;
-            player.sendMessage("");
-            player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + remainingHours + "h " + ChatColor.RED + "left in your 'Newbie Protection'. After this time expires, you will lose items as you normally would when PK'd.");
-            //TODO: Way to check if they have PVP'd.
-            //TODO: Something inside damage check to see if they are inside this (below) list. If so, cancel their death damage.
-            protected_Players.add(player.getName());
+            if ((int) DatabaseAPI.getInstance().getData(EnumData.PLAYER_KILLS, player.getUniqueId()) == 0) {
+                //Still under 24 hour newbie protection.
+                long hours = (System.currentTimeMillis() - firstJoin) / 3600000;
+                int remainingHours = 24 - (int) hours;
+                player.sendMessage("");
+                player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + remainingHours + "h " + ChatColor.RED + "left in your 'Newbie Protection'. After this time expires, you will lose items as you normally would when PK'd.");
+                //TODO: Something inside damage check to see if they are inside this (below) list. If so, cancel their death damage.
+                protected_Players.add(player.getName());
+            }
         }
     }
 
     public void removePlayerProtection(Player player) {
         protected_Players.remove(player.getName());
-        //TODO: Database update to show they have removed their protection early.
     }
 }

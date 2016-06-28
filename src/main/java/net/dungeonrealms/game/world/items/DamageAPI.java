@@ -11,7 +11,6 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -53,7 +52,27 @@ public class DamageAPI {
         // get the attacker's attributes
         Map<String, Integer[]> attackerAttributes;
         if (API.isPlayer(attacker)) {
-            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
+            if (receiver.hasMetadata("tier")) {
+                //Player attacking monster, check if its a lower tier.
+                int mobTier = receiver.getMetadata("tier").get(0).asInt();
+                int wepTier = RepairAPI.getArmorOrWeaponTier(weapon);
+                if (wepTier > mobTier) {
+                    int tierDif = RepairAPI.getArmorOrWeaponTier(weapon) - receiver.getMetadata("tier").get(0).asInt();
+                    if (tierDif == 2) {
+                        RepairAPI.subtractCustomDurability((Player) attacker, weapon, 4);
+                    } else if (tierDif == 3) {
+                        RepairAPI.subtractCustomDurability((Player) attacker, weapon, 6);
+                    } else if (tierDif == 4) {
+                        RepairAPI.subtractCustomDurability((Player) attacker, weapon, 8);
+                    } else {
+                        RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
+                    }
+                } else {
+                    RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
+                }
+            } else {
+                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
+            }
             GamePlayer gp = API.getGamePlayer((Player) attacker);
 
             // a player switches weapons, so we need to recalculate weapon attributes

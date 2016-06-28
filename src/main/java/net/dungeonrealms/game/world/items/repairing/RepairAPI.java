@@ -34,7 +34,7 @@ public class RepairAPI {
                 avg_armor = nms.getTag().getInt("armorMin");
             else
                 avg_armor = nms.getTag().getInt("dmgMin");
-            double percent_durability_left = (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
+            double percent_durability_left = (getCustomDurability(i) / 1500) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
             if (percent_durability_left > 99) {
                 percent_durability_left = 99;
             }
@@ -75,7 +75,7 @@ public class RepairAPI {
                 return -1;
             int item_tier = nms.getTag().getInt("itemTier");
             NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
-            double percent_durability_left = (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
+            double percent_durability_left = (getCustomDurability(i) / 1500) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
             if (percent_durability_left > 99) {
                 percent_durability_left = 99;
             }
@@ -110,7 +110,7 @@ public class RepairAPI {
         if (Mining.isDRPickaxe(i)) {
             int item_tier = Mining.getPickTier(i);
             double dmg_cost = Math.pow(Mining.getLvl(i), 2) / 100D; // This is the cost PER PERCENT
-            double percent_durability_left = (getCustomDurability(i) / 1550) * 100;
+            double percent_durability_left = (getCustomDurability(i) / 1500) * 100;
             if (percent_durability_left > 99) {
                 percent_durability_left = 99;
             }
@@ -146,7 +146,7 @@ public class RepairAPI {
         if (Fishing.isDRFishingPole(i)) {
             int item_tier = Fishing.getRodTier(i);
             double dmg_cost = 2; // This is the cost PER PERCENT
-            double percent_durability_left = (getCustomDurability(i) / 1550) * 100;
+            double percent_durability_left = (getCustomDurability(i) / 1500) * 100;
             double global_multiplier = 0.4;
             double multiplier = 1.0; // 100%
             double missing_percent = 100 - percent_durability_left;
@@ -207,7 +207,7 @@ public class RepairAPI {
             return Math.round(percentDurability * (1500 / 15));
         }
         if (tag.getString("type").equalsIgnoreCase("armor")) {
-            return Math.round(percentDurability * (1550 / 15));
+            return Math.round(percentDurability * (1500 / 15));
         }
         return 0;
     }

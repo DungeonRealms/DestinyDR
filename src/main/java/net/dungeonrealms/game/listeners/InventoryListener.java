@@ -1131,7 +1131,7 @@ public class InventoryListener implements Listener {
             if (slotItem.getType() == Material.BOW) {
                 particleID = 5;
             }
-            int repairPercent = (int) ((newPercent / 1500) * 100);
+            int repairPercent = (int) ((newPercent / 1500.D) * 100);
 
             for (int i = 0; i < 6; i++) {
                 player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
@@ -1189,7 +1189,7 @@ public class InventoryListener implements Listener {
             if (slotItem.getType() == Material.BOW) {
                 particleID = 5;
             }
-            int repairPercent = (int) ((newPercent / 1500) * 100);
+            int repairPercent = (int) ((newPercent / 1500.D) * 100);
             for (int i = 0; i < 6; i++) {
                 player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
                 player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
