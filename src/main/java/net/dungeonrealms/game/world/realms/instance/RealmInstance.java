@@ -51,8 +51,8 @@ public class RealmInstance implements Realms {
 
     // FTP INFO //
     private final String FTP_HOST_NAME = "167.114.65.102";
-    private final String FTP_USER_NAME = "dr.53";
-    private final String FTP_PASSWORD = "devpass123";
+    private final String FTP_USER_NAME = "newdr.53";
+    private final String FTP_PASSWORD = "SBobNQyc6fy3j8Rj";
     private final int FTP_PORT = 21;
 
 
