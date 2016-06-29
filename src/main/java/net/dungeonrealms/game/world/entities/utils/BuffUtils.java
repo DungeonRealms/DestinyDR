@@ -37,9 +37,15 @@ public class BuffUtils {
         World world = ((CraftWorld) player.getWorld()).getHandle();
         EnderCrystal enderCrystal = new EnderCrystal(world, EnumEntityType.BUFF);
         Block b = Bukkit.getWorlds().get(0).getHighestBlockAt((int) player.getLocation().getX(), (int) player.getLocation().getZ());
-        enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
-        world.addEntity(enderCrystal, CreatureSpawnEvent.SpawnReason.CUSTOM);
-        enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
+        if (b.getLocation().distanceSquared(player.getLocation()) < 25) {
+            enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
+            world.addEntity(enderCrystal, CreatureSpawnEvent.SpawnReason.CUSTOM);
+            enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
+        } else {
+            enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+            world.addEntity(enderCrystal, CreatureSpawnEvent.SpawnReason.CUSTOM);
+            enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+        }
         player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1f, 63f);
         MetadataUtils.registerBuffMetadata(enderCrystal, getRandomPotionEffect(), 10, 600);
         return enderCrystal;
