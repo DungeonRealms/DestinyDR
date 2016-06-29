@@ -167,8 +167,10 @@ public class PlayerStatistics {
         }
         if (timePlayed > 0) {
             //stored in seconds, lets convert it to minutes for easier mongo storage.
-            int timeInMins = timePlayed / 60;
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.TIME_PLAYED, timeInMins, false);
+            int timeInMins = Math.round(timePlayed / 60);
+            if (timeInMins > 0) {
+                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.TIME_PLAYED, timeInMins, false);
+            }
             timePlayed = 0;
         }
         if (successfulEnchants > 0) {
