@@ -345,7 +345,7 @@ public class DuelOffer {
                             pl.sendMessage(ChatColor.RED + "Unequiped Illegal Weapon");
                             ItemStack stack = pl.getEquipment().getItemInMainHand();
                             pl.getInventory().setItem(pl.getInventory().firstEmpty(), stack);
-                            pl.setItemInHand(new ItemStack(Material.AIR));
+                            pl.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 
                         }
                 }
@@ -402,7 +402,7 @@ public class DuelOffer {
                             pl.sendMessage(ChatColor.RED + "Unequiped Illegal Weapon");
                             ItemStack stack = pl.getEquipment().getItemInMainHand();
                             pl.getInventory().setItem(pl.getInventory().firstEmpty(), stack);
-                            pl.setItemInHand(new ItemStack(Material.AIR));
+                            pl.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 
                         }
                 }

@@ -354,6 +354,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Sendsa message to local chat."));
 
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "Will help remove you if you're stuck in a block."));
+            cm.registerCommand(new CommandSuicide("suicide", "/<command>", "Kills your player.", Collections.singletonList("drsuicide")));
 
             cm.registerCommand(new CommandRealm("realm", "/<command> [args]", "Realm command"));
             cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
@@ -367,6 +368,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "Opens the player trails menu.", Arrays.asList("trails", "effect", "effects")));
             cm.registerCommand(new CommandAchievements("achievements", "/<command> [args]", "Opens the player achievements menu.", Collections.singletonList("achievement")));
             cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "Opens the player profile menu."));
+            cm.registerCommand(new CommandEcash("ecash", "/<command> [args]", "Opens the E-Cash vendor menu."));
 
             cm.registerCommand(new CommandTestRank("testrank", "/<command> [args]", "This is a test command."));
             cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a test command.", Collections.singletonList("testinghall")));

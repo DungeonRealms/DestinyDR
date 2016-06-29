@@ -36,7 +36,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Created by Chase on Oct 18, 2015
@@ -112,7 +111,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
     @Override
     public void onBossDeath() {
         try {
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, this.getBukkitEntity().getLocation().add(0, 2, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.2F, 200);
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, this.getBukkitEntity().getLocation().add(0, 2, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.2F, 200);
         } catch (Exception err) {
             err.printStackTrace();
         }
@@ -134,11 +133,11 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         if (canSpawnMobs(livingEntity)) {
             canSpawn = false;
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, loc, new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 100);
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, loc, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
             } catch (Exception err) {
                 err.printStackTrace();
             }
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 4; i++) {
                 Entity entity = SpawningMechanics.getMob(world, 1, EnumMonster.MayelPirate);
                 int level = Utils.getRandomFromTier(2, "high");
                 String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
@@ -150,7 +149,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
                 entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                 entity.setCustomName(newLevelName + API.getTierColor(1).toString() + ChatColor.BOLD + "Mayels Crew");
                 entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(1).toString() + ChatColor.BOLD + "Mayels Crew"));
-                Location location = new Location(world.getWorld(), getBukkitEntity().getLocation().getX() + new Random().nextInt(3), getBukkitEntity().getLocation().getY(), getBukkitEntity().getLocation().getZ() + new Random().nextInt(3));
+                Location location = new Location(world.getWorld(), getBukkitEntity().getLocation().getX() + random.nextInt(3), getBukkitEntity().getLocation().getY(), getBukkitEntity().getLocation().getZ() + random.nextInt(3));
                 entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                 ((EntityInsentient) entity).persistent = true;
                 ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
@@ -196,7 +195,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         weapon.setItemMeta(im);
         possible_drops.add(weapon);
 
-        ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(new Random().nextInt(possible_drops.size())));
+        ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(random.nextInt(possible_drops.size())));
         livingEntity.getWorld().dropItem(livingEntity.getLocation(), reward);
         List<String> hoveredChat = new ArrayList<>();
         ItemMeta meta = reward.getItemMeta();
@@ -208,7 +207,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
         livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
 
-        int gemDrop = new Random().nextInt(250 - 100) + 100;
+        int gemDrop = random.nextInt(250 - 100) + 100;
         int perPlayerDrop = Math.round(gemDrop / livingEntity.getWorld().getPlayers().size());
         ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

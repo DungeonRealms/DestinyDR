@@ -35,7 +35,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     protected DRSkeleton(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         super(world);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
+        //this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         monsterType = monster;
         this.name = monster.name;
         this.mobHead = monster.mobHead;

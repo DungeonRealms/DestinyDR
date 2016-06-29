@@ -496,6 +496,7 @@ public class DungeonManager implements GenericMechanic {
          */
         public void teleportPlayersOut(boolean secondTry) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                if (Bukkit.getWorld(worldName) == null) return;
                 Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(player -> {
                     if (API.getGamePlayer(player) != null && API.getGamePlayer(player).isInDungeon()) {
                         switch (getType()) {

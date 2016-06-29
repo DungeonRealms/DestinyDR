@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -11,9 +12,12 @@ import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -27,7 +31,8 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     EnumMonster monster;
     int tier;
-    ItemStack weapon = getTierWeapon(tier);
+    @Getter
+    ItemStack weapon;
     @Getter
     protected Map<String, Integer[]> attributes = new HashMap<>();
 
@@ -38,6 +43,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
     public DRWitch(World world, EnumMonster mon, int tier) {
         super(world);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
+        weapon = getTierWeapon(tier);
         setArmor(tier);
         monster = mon;
         String customName = mon.getPrefix() + " " + mon.name + " " + mon.getSuffix() + " ";
@@ -76,9 +82,8 @@ public class DRWitch extends EntityWitch implements DRMonster {
             livingEntity.getEquipment().setChestplate(armor2);
             this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor2));
         }
-        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         livingEntity.getEquipment().setItemInMainHand(weapon);
-        //this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
         livingEntity.getEquipment().setHelmet(SkullTextures.DEVIL.getSkull());
     }
@@ -106,9 +111,13 @@ public class DRWitch extends EntityWitch implements DRMonster {
         return null;
     }
 
-    @Override
-    public void a(EntityLiving entity, float f) {
-    }
+//    @Override
+//    public void a(EntityLiving entity, float f) {
+//        Projectile projectile = ((CraftLivingEntity) this.getBukkitEntity()).launchProjectile(ThrownPotion.class);
+//        MetadataUtils.registerProjectileMetadata(this.getAttributes(), CraftItemStack.asNMSCopy(weapon).getTag(),
+//                projectile);
+//
+//    }
 
     @Override
     public void enderTeleportTo(double d0, double d1, double d2) {

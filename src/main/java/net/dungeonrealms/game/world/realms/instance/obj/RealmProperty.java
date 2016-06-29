@@ -19,6 +19,10 @@ public class RealmProperty<T> {
     @Getter
     private long expiry;
 
+    @Setter
+    @Getter
+    private boolean acknowledgeExpiration = true;
+
 
     public RealmProperty(String name) {
         this.name = name;

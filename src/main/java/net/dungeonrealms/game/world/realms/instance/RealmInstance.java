@@ -6,6 +6,12 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
+import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -19,7 +25,6 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.lingala.zip4j.core.ZipFile;
@@ -51,8 +56,8 @@ public class RealmInstance implements Realms {
 
     // FTP INFO //
     private final String FTP_HOST_NAME = "167.114.65.102";
-    private final String FTP_USER_NAME = "dr.53";
-    private final String FTP_PASSWORD = "devpass123";
+    private final String FTP_USER_NAME = "newdr.53";
+    private final String FTP_PASSWORD = "SBobNQyc6fy3j8Rj";
     private final int FTP_PORT = 21;
 
 
@@ -117,7 +122,7 @@ public class RealmInstance implements Realms {
         }
 
         // CREATE REALM TOKEN //
-        RealmToken realm = new RealmToken(player.getUniqueId());
+        RealmToken realm = new RealmToken(player.getUniqueId(), player.getName());
         realm.setStatus(RealmStatus.DOWNLOADING);
 
         CACHED_REALMS.put(player.getUniqueId(), realm);
@@ -250,7 +255,8 @@ public class RealmInstance implements Realms {
         Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* Realm Portal OPENED *");
 
         player.getWorld().playEffect(portalLocation, Effect.ENDER_SIGNAL, 10);
-        player.playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
+        player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 1.25F);
+
 
         if (getRealmTitle(player.getUniqueId()).equals(""))
             player.sendMessage(ChatColor.GRAY + "Type /realm <TITLE> to set the description of your realm, it will be displayed to all visitors.");
@@ -276,6 +282,9 @@ public class RealmInstance implements Realms {
         world.setStorm(false);
 
         Utils.log.info("[REALM] [SYNC] World loaded for " + uuid.toString());
+        Utils.log.info("[REALM] [SYNC] Setting world region " + uuid.toString());
+
+        setRealmRegion(world, true);
     }
 
     @Override
@@ -518,7 +527,7 @@ public class RealmInstance implements Realms {
         portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
         portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
 
-        portalLocation.getWorld().playSound(portalLocation, Sound.BLOCK_GLASS_BREAK, 1, 1);
+        portalLocation.getWorld().playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
 
         if (realm.getHologram() != null)
             realm.getHologram().delete();
@@ -532,6 +541,10 @@ public class RealmInstance implements Realms {
             if (p != null)
                 p.teleport(portalLocation);
         }
+
+        // MAKE SURE WE GET ALL THE PLAYER OUT OF THE REALM //
+        getRealmWorld(uuid).getPlayers().stream().filter(p -> p != null).forEach(p -> p.teleport(portalLocation));
+        realm.getPlayersInRealm().clear();
     }
 
 
@@ -565,6 +578,32 @@ public class RealmInstance implements Realms {
         if (CACHED_REALMS.containsKey(uuid))
             CACHED_REALMS.remove(uuid);
     }
+
+    public void setRealmRegion(World world, boolean isChaotic) {
+        RegionManager regionManager = API.getWorldGuard().getRegionManager(world);
+        if (regionManager != null) {
+            ProtectedRegion global = regionManager.getRegion("__global__");
+            boolean add = false;
+
+            if (global == null) {
+                global = new GlobalProtectedRegion("__global__");
+                add = true;
+            }
+
+            if (isChaotic) global.setFlag(DefaultFlag.PVP, StateFlag.State.ALLOW);
+            else global.setFlag(DefaultFlag.PVP, StateFlag.State.DENY);
+
+            if (add)
+                regionManager.addRegion(global);
+
+            try {
+                regionManager.save();
+            } catch (StorageException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @Override
     public void setRealmSpawn(UUID uuid, Location newLocation) {
@@ -634,6 +673,8 @@ public class RealmInstance implements Realms {
         String name = Bukkit.getPlayer(uuid).getName();
 
         if (realmHologram == null) return;
+
+        realmHologram.clearLines();
 
         realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
         realmHologram.insertTextLine(1, realm.getPropertyBoolean("peaceful") ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
