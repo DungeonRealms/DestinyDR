@@ -202,7 +202,6 @@ public class WeaponModifiers {
 	    }
 
 	}
-	
 
 	public class StrDexVitInt extends ItemModifier {
 
@@ -358,7 +357,7 @@ public class WeaponModifiers {
         @Override
         public String getPrefix(ItemMeta meta){
             if (chosenStat == null || chosenStat.equals("")) chooseStat();
-            return r + chosenStat + " DMG: ";
+            return r + chosenStat + " DMG: +";
         }
         
         @Override

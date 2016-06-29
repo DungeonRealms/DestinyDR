@@ -1,16 +1,17 @@
 package net.dungeonrealms.game.mastery;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffectType;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import net.dungeonrealms.game.world.items.Item;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Map;
 
@@ -77,24 +78,29 @@ public class MetadataUtils {
      * @param projectile
      * @since 1.0
      */
-    public static void registerProjectileMetadata(NBTTagCompound tag, Projectile projectile, int weaponTier) {
-        projectile.setMetadata("damageMin", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getDouble("damageMin")));
-        projectile.setMetadata("damageMax", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getDouble("damageMax")));
-        projectile.setMetadata("vsPlayers", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vsPlayers")));
-        projectile.setMetadata("vsMonsters", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vsMonsters")));
-        projectile.setMetadata("pureDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("pureDamage")));
-        projectile.setMetadata("armorPenetration", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("armorPenetration")));
-        projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
-        projectile.setMetadata("fireDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("fireDamage")));
-        projectile.setMetadata("iceDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("iceDamage")));
-        projectile.setMetadata("poisonDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("poisonDamage")));
-        projectile.setMetadata("criticalHit", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("criticalHit")));
-        projectile.setMetadata("lifesteal", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("lifesteal")));
-        projectile.setMetadata("intellect", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("intellect")));
-        projectile.setMetadata("strength", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("strength")));
-        projectile.setMetadata("vitality", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vitality")));
-        projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
-        projectile.setMetadata("dexterity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("dexterity")));
-        projectile.setMetadata("itemTier", new FixedMetadataValue(DungeonRealms.getInstance(), weaponTier));
+    public static void registerProjectileMetadata(Map<String, Integer[]> attributes, NBTTagCompound tag, Projectile projectile) {
+        // transfer only the weapon attributes. The armor attributes will be grabbed in the calculateProjectileDamage
+        // method.
+        if (projectile instanceof ThrownPotion) {
+
+        }
+        for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
+            String modifier = type.getNBTName();
+            if (type.isRange()) {
+                projectile.setMetadata(modifier + "Min", new FixedMetadataValue(DungeonRealms.getInstance(),
+                        attributes.get(modifier)[0]));
+
+                projectile.setMetadata(modifier + "Max", new FixedMetadataValue(DungeonRealms.getInstance(),
+                        attributes.get(modifier)[1]));
+            } else {
+                projectile.setMetadata(modifier, new FixedMetadataValue(DungeonRealms.getInstance(), attributes
+                        .get(modifier)[1]));
+            }
+        }
+        // transfer the itemTier, itemType, and itemRarity
+        projectile.setMetadata("itemTier", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("itemTier")));
+        projectile.setMetadata("itemType", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("itemType")));
+        projectile.setMetadata("itemRarity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("itemRarity")));
+
     }
 }

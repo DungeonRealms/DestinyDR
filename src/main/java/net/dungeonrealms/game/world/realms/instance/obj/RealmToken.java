@@ -17,6 +17,9 @@ public class RealmToken {
     private final UUID owner;
 
     @Getter
+    private final String name;
+
+    @Getter
     @Setter
     private RealmStatus status;
 
@@ -43,11 +46,13 @@ public class RealmToken {
     private Map<String, RealmProperty> realmProperties = new HashMap<>();
 
 
-    public RealmToken(UUID owner) {
+    public RealmToken(UUID owner, String name) {
         this.owner = owner;
+        this.name = name;
 
+        // MUST BE ADDED IN THIS ORDER //
         addProperty(new RealmProperty<>("peaceful", false));
-        addProperty(new RealmProperty<>("flying", false));
+        addProperty(new RealmProperty<>("flight", false));
     }
 
 
@@ -56,7 +61,7 @@ public class RealmToken {
     }
 
     public boolean getPropertyBoolean(String name) {
-        return (boolean) realmProperties.get(name).getValue();
+        return (boolean) realmProperties.get(name).getValue() && !realmProperties.get(name).hasExpired();
     }
 
     public RealmProperty<?> getProperty(String name) {

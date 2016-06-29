@@ -222,16 +222,24 @@ public class NPCMenus {
     public static void openItemVendorMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 18, "Item Vendor");
 
+        ItemStack orbOfPeace = ShopMechanics.addPrice(ItemManager.createOrbofPeace(), 500);
+        ItemStack orbOfFlight = ShopMechanics.addPrice(ItemManager.createOrbofFlight(), 500);
+
         if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
             String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
             ItemStack item = ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName));
             ItemStack guildBanner = ShopMechanics.addPrice(item, 1000);
-            inv.setItem(0, guildBanner);
-        }
 
-        if (inv.getContents().length == 0) {
-            player.sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
-            return;
+            inv.setItem(0, guildBanner);
+            inv.setItem(1, orbOfFlight);
+            inv.setItem(2, orbOfPeace);
+
+
+        } else {
+
+            inv.setItem(0, orbOfFlight);
+            inv.setItem(1, orbOfPeace);
+
         }
 
         player.openInventory(inv);

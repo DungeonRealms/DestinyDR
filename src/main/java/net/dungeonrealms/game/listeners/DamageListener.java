@@ -25,7 +25,9 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitch;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -181,7 +183,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
+        if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -235,14 +237,8 @@ public class DamageListener implements Listener {
                 }
             }
             Player attacker = (Player) event.getDamager();
-            if (attacker.getEquipment().getItemInMainHand() == null) return;
-            //Check if the item has NBT, all our custom weapons will have NBT.
-            net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInMainHand()));
-            if (nmsItem == null || nmsItem.getTag() == null) return;
-            //Get the NBT of the item the player is holding.
-            NBTTagCompound tag = nmsItem.getTag();
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-            if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
+            if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) return;
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker) <= 0) {
                 event.setCancelled(true);
                 event.setDamage(0);
@@ -268,7 +264,7 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getEquipment().getItemInMainHand()));
-            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity(), tag);
+            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity());
 
             if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
                 if (API.getGamePlayer((Player) event.getEntity()) != null && API.getGamePlayer((Player) event.getDamager()) != null) {
@@ -287,19 +283,19 @@ public class DamageListener implements Listener {
                     }
                 }
             }
-        } else if (event.getDamager().getType() == EntityType.ARROW) {
+        } else if (event.getDamager().getType() == EntityType.ARROW) { // bow
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
-            finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+            finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
                 CombatLog.updateCombat(((Player) attackingArrow.getShooter()));
             } else {
                 CombatLog.addToCombat(((Player) attackingArrow.getShooter()));
             }
-        } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
-            Snowball staffProjectile = (Snowball) event.getDamager();
+        } else if (DamageAPI.isStaffProjectile(event.getDamager())) { // staff
+            Projectile staffProjectile = (Projectile) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
-            finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+            finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
             if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
                 CombatLog.updateCombat(((Player) staffProjectile.getShooter()));
             } else {
@@ -326,7 +322,7 @@ public class DamageListener implements Listener {
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (API.isPlayer(event.getDamager()))
             return;
-        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
+        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
@@ -341,16 +337,9 @@ public class DamageListener implements Listener {
             EntityEquipment attackerEquipment = attacker.getEquipment();
             if (attackerEquipment.getItemInMainHand() == null) return;
             attackerEquipment.getItemInMainHand().setDurability(((short) -1));
-            //Check if the item has NBT, all our custom weapons will have NBT.
-            net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attackerEquipment.getItemInMainHand()));
-            if (nmsItem == null || nmsItem.getTag() == null) {
-                return;
-            }
-            //Get the NBT of the item the mob is holding.
-            NBTTagCompound tag = nmsItem.getTag();
             //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
-            if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
-            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity(), tag);
+            if (!API.isWeapon(attackerEquipment.getItemInMainHand())) return;
+            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity());
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
             } else {
@@ -366,15 +355,15 @@ public class DamageListener implements Listener {
                     event.setDamage(0);
                     return;
                 }
-                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
             }
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
             } else {
                 CombatLog.addToCombat(player);
             }
-        } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
-            Snowball staffProjectile = (Snowball) event.getDamager();
+        } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
+            Projectile staffProjectile = (Projectile) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof CraftLivingEntity)) return;
             if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("type")) {
                 if (!(staffProjectile.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
@@ -383,7 +372,7 @@ public class DamageListener implements Listener {
                     event.setDamage(0);
                     return;
                 }
-                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
             }
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
@@ -430,7 +419,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onArmorReduceBaseDamage(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
+        EntityType damagerType = event.getDamager().getType();
+        if ((!(event.getDamager() instanceof LivingEntity)) && ((damagerType != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -474,7 +464,7 @@ public class DamageListener implements Listener {
         if (defenderEquipment.getArmorContents() == null) return;
         if (event.getDamager() instanceof LivingEntity) {
             attacker = (LivingEntity) event.getDamager();
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage(), null);
             armourReducedDamage = result[0];
             totalArmor = result[1];
             ItemStack attackerWeapon = attacker.getEquipment().getItemInMainHand();
@@ -486,22 +476,36 @@ public class DamageListener implements Listener {
                     if (attackerIsMob && (!(API.isPlayer(entity) || API.isInSafeRegion(entity.getLocation())))) continue;
                     // let's not damage ourself
                     if (entity.equals(attacker)) continue;
+                    if ((event.getDamage() - armourReducedDamage) <= 0) continue;
                     if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
-                        if ((event.getDamage() - armourReducedDamage) > 0) {
-                            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                                entity.playEffect(EntityEffect.HURT);
-                                HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
-                            }
+                        if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                            entity.playEffect(EntityEffect.HURT);
+                            HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                         }
                     }
                     else if (API.isPlayer(entity)) {
-                        if (attackerIsMob || !API.isNonPvPRegion(entity.getLocation()))
+                        if (attackerIsMob) {
                             HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
+                        }
+                        else if (!API.isNonPvPRegion(entity.getLocation())) {
+                            if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
+                                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
+                                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+                                    }
+                                    continue;
+                                }
+                                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
+                                    continue;
+                                }
+                            }
+                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
+                        }
                     }
                 }
                 DamageAPI.polearmAOEProcessing.remove(attacker);
             }
-        } else if (event.getDamager().getType() == EntityType.ARROW) {
+        } else if (damagerType == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) attackingArrow.getShooter();
@@ -543,11 +547,11 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage(), attackingArrow);
             armourReducedDamage = result[0];
             totalArmor = result[1];
-        } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
-            Snowball staffProjectile = (Snowball) event.getDamager();
+        } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
+            Projectile staffProjectile = (Projectile) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) staffProjectile.getShooter();
             if (defender instanceof Player) {
@@ -588,7 +592,7 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage(), staffProjectile);
             armourReducedDamage = result[0];
             totalArmor = result[1];
         }
@@ -877,6 +881,7 @@ public class DamageListener implements Listener {
                             }
                         }
                     }
+                    if (API.isItemUntradeable(itemStack) || API.isItemPermanentlyUntradeable(itemStack) || API.isItemSoulbound(itemStack)) continue;
 //                    if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
 //                        //event.getDrops().remove(itemStack);
 //                        continue;
@@ -938,6 +943,48 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         PlayerManager.checkInventory(event.getPlayer().getUniqueId());
+    }
+
+    /**
+     * Listen for blazes, ghasts, and witches firing their projectile so we
+     * can correctly add the metadata to the projectile.
+     *
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onCustomProjectileEntityLaunchProjectile(ProjectileLaunchEvent event) {
+        if (!(event.getEntity().getShooter() instanceof LivingEntity)) return;
+        EntityType entityType = ((LivingEntity) event.getEntity().getShooter()).getType();
+        if (entityType != EntityType.BLAZE && entityType != EntityType.GHAST && entityType != EntityType.WITCH) return;
+
+        LivingEntity leShooter = (LivingEntity) event.getEntity().getShooter();
+        if (!(leShooter.hasMetadata("type"))) return;
+        if (!(API.isWeapon(leShooter.getEquipment().getItemInMainHand())) && entityType != EntityType.WITCH) return;
+
+        if (entityType != EntityType.WITCH)
+            MetadataUtils.registerProjectileMetadata(((DRMonster) ((CraftLivingEntity) leShooter).getHandle()).getAttributes
+                    (), CraftItemStack.asNMSCopy(leShooter.getEquipment().getItemInMainHand()).getTag(), event.getEntity());
+        else {
+            DRWitch witch = (DRWitch) ((CraftLivingEntity) leShooter).getHandle();
+            MetadataUtils.registerProjectileMetadata(witch.getAttributes(), CraftItemStack.asNMSCopy(witch.getWeapon
+                    ()).getTag(), event.getEntity());
+        }
+    }
+
+    @EventHandler
+    public void onWitchSplashPotion(PotionSplashEvent event) {
+        if (!(event.getPotion().getShooter() instanceof LivingEntity)) return;
+        LivingEntity leShooter = (LivingEntity) event.getPotion().getShooter();
+        if (!(leShooter.getType() == EntityType.WITCH)) return;
+
+        for (LivingEntity le : event.getAffectedEntities()) {
+            if (API.isInSafeRegion(le.getLocation())) continue;
+            if (!API.isPlayer(le)) continue;
+            double damage = DamageAPI.calculateProjectileDamage(leShooter, le, event.getPotion());
+            double[] armorResult = DamageAPI.calculateArmorReduction(leShooter, le, damage, event.getPotion());
+
+            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) le, leShooter, damage - armorResult[0], armorResult[0], armorResult[1]);
+        }
     }
 
     /**
