@@ -202,7 +202,6 @@ public class WeaponModifiers {
 	    }
 
 	}
-	
 
 	public class StrDexVitInt extends ItemModifier {
 

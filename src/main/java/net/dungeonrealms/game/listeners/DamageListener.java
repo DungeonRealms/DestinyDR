@@ -880,6 +880,7 @@ public class DamageListener implements Listener {
                             }
                         }
                     }
+                    if (API.isItemUntradeable(itemStack) || API.isItemPermanentlyUntradeable(itemStack) || API.isItemSoulbound(itemStack)) continue;
 //                    if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
 //                        //event.getDrops().remove(itemStack);
 //                        continue;
