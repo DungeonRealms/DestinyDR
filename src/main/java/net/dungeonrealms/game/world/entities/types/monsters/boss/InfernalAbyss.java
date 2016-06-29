@@ -46,7 +46,6 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -164,7 +163,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
     public void onBossDeath() {
         getNearbyBlocks(this.getBukkitEntity().getLocation(), 10).stream().filter(b -> b.getType() == Material.FIRE).forEach(b -> b.setType(Material.AIR));
         try {
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, this.getBukkitEntity().getLocation().add(0, 2, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.2F, 200);
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, this.getBukkitEntity().getLocation().add(0, 2, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.2F, 200);
         } catch (Exception err) {
             err.printStackTrace();
         }
@@ -217,6 +216,12 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
             this.getWorld().addEntity(ghast, SpawnReason.CUSTOM);
             ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
+            for (Player pl : this.getBukkitEntity().getWorld().getPlayers()) {
+                pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE + "The inferno will devour you!");
+                pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has armored up! " + ChatColor.UNDERLINE + "+50% ARMOR!");
+                pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_WARN, 2F, 0.35F);
+                pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
+            }
             DamageAPI.setArmorBonus(ghast.getBukkitEntity(), 50);
             hasFiredGhast = true;
             en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
@@ -327,7 +332,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 2F, 2F);
         }
-        if (new Random().nextInt(100) < 80) { // 80% chance!
+        if (random.nextInt(100) < 80) { // 80% chance!
             List<ItemStack> possible_drops = new ArrayList<>();
             for (ItemStack is : livingEntity.getEquipment().getArmorContents()) {
                 if (is == null || is.getType() == Material.AIR || is.getTypeId() == 144 || is.getTypeId() == 397) {
@@ -358,7 +363,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             weapon.setItemMeta(im);
             possible_drops.add(weapon);
 
-            ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(new Random().nextInt(possible_drops.size())));
+            ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(random.nextInt(possible_drops.size())));
             livingEntity.getWorld().dropItem(livingEntity.getLocation(), reward);
 
             List<String> hoveredChat = new ArrayList<>();
@@ -371,7 +376,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
         }
-        int gemDrop = new Random().nextInt(2000) + 10000;
+        int gemDrop = random.nextInt(2000) + 10000;
         int perPlayerDrop = Math.round(gemDrop / livingEntity.getWorld().getPlayers().size());
         ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

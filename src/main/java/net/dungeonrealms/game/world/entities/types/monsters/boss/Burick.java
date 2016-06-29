@@ -16,6 +16,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.Entity;
@@ -40,7 +41,6 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -104,7 +104,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
     public void onBossDeath() {
         getNearbyBlocks(this.getBukkitEntity().getLocation(), 10).stream().filter(b -> b.getType() == Material.FIRE).forEach(b -> b.setType(Material.AIR));
         try {
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, this.getBukkitEntity().getLocation().add(0, 2, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.2F, 200);
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, this.getBukkitEntity().getLocation().add(0, 2, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.2F, 200);
         } catch (Exception err) {
             err.printStackTrace();
         }
@@ -155,7 +155,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             if (canAddsRespawn) {
                 spawnWave();
                 try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, loc, new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 100);
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, loc, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
                 } catch (Exception err) {
                     err.printStackTrace();
                 }
@@ -191,6 +191,8 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     }
                 } else if (!thirdHeal) {
                     thirdHeal = true;
+                    DamageAPI.setDamageBonus(en, 50);
+                    DamageAPI.setArmorBonus(en, 50);
                     for (Player pl : en.getWorld().getPlayers()) {
                         pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "As long as you breathe, I still have purpose, and you cannot kill a creature with purpose!");
                         pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1F, 0.5F);
@@ -208,8 +210,8 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
     private Location toSpawn = new Location(this.getBukkitEntity().getWorld(), -364, 61, -1);
 
     private void spawnWave() {
-        int waveType = new Random().nextInt(3);
-        Location location = new Location(world.getWorld(), toSpawn.getX() + new Random().nextInt(3), toSpawn.getY(), toSpawn.getZ() + new Random().nextInt(3));
+        int waveType = random.nextInt(3);
+        Location location = new Location(world.getWorld(), toSpawn.getX() + random.nextInt(3), toSpawn.getY(), toSpawn.getZ() + random.nextInt(3));
         switch (waveType) {
             case 0:
                 for (int i = 0; i < 4; i++) {
@@ -279,7 +281,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
 
     private void doBossDrops() {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        if (new Random().nextInt(100) < 80) { // 80% chance!
+        if (random.nextInt(100) < 80) { // 80% chance!
             List<ItemStack> possible_drops = new ArrayList<>();
             for (ItemStack is : livingEntity.getEquipment().getArmorContents()) {
                 if (is == null || is.getType() == Material.AIR || is.getTypeId() == 144 || is.getTypeId() == 397) {
@@ -310,7 +312,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             weapon.setItemMeta(im);
             possible_drops.add(weapon);
 
-            ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(new Random().nextInt(possible_drops.size())));
+            ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(random.nextInt(possible_drops.size())));
             livingEntity.getWorld().dropItem(livingEntity.getLocation(), reward);
 
             List<String> hoveredChat = new ArrayList<>();
@@ -323,7 +325,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
         }
-        int gemDrop = new Random().nextInt(2500 - 1000) + 1000;
+        int gemDrop = random.nextInt(2500 - 1000) + 1000;
         int perPlayerDrop = Math.round(gemDrop / livingEntity.getWorld().getPlayers().size());
         ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
