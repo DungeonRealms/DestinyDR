@@ -6,6 +6,12 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
+import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -276,6 +282,9 @@ public class RealmInstance implements Realms {
         world.setStorm(false);
 
         Utils.log.info("[REALM] [SYNC] World loaded for " + uuid.toString());
+        Utils.log.info("[REALM] [SYNC] Setting world region " + uuid.toString());
+
+        setRealmRegion(world, true);
     }
 
     @Override
@@ -569,6 +578,32 @@ public class RealmInstance implements Realms {
         if (CACHED_REALMS.containsKey(uuid))
             CACHED_REALMS.remove(uuid);
     }
+
+    public void setRealmRegion(World world, boolean isChaotic) {
+        RegionManager regionManager = API.getWorldGuard().getRegionManager(world);
+        if (regionManager != null) {
+            ProtectedRegion global = regionManager.getRegion("__global__");
+            boolean add = false;
+
+            if (global == null) {
+                global = new GlobalProtectedRegion("__global__ ");
+                add = true;
+            }
+
+            if (isChaotic) global.setFlag(DefaultFlag.PVP, StateFlag.State.ALLOW);
+            else global.setFlag(DefaultFlag.PVP, StateFlag.State.DENY);
+
+            if (add)
+                regionManager.addRegion(global);
+
+            try {
+                regionManager.save();
+            } catch (StorageException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @Override
     public void setRealmSpawn(UUID uuid, Location newLocation) {

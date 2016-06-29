@@ -263,13 +263,17 @@ public class API {
         return UUIDHelper.uuidToName(uuid.toString());
     }
 
+
+
+
+
     /**
      * Gets the WorldGuard plugin.
      *
      * @return
      * @since 1.0
      */
-    private static WorldGuardPlugin getWorldGuard() {
+    public static WorldGuardPlugin getWorldGuard() {
         Plugin plugin = DungeonRealms.getInstance().getServer().getPluginManager().getPlugin("WorldGuard");
         if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
             try {
@@ -706,7 +710,7 @@ public class API {
             int ecashReward = Utils.randInt(10, 15);
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), true);
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
-            player.sendMessage(new String[] {
+            player.sendMessage(new String[]{
                     ChatColor.GOLD + "You have gained " + ChatColor.BOLD + ecashReward + "EC" + ChatColor.GOLD + " for logging into DungeonRealms today!",
                     ChatColor.GRAY + "Use /ecash to spend your EC, you can obtain more e-cash by logging in daily or by visiting " + ChatColor.GOLD + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
             });
@@ -1167,7 +1171,7 @@ public class API {
     /**
      * Calculates the difference in attributes when a player switches weapons. To save processing
      * power, only called when the player attempts to attack a mob with a new weapon.
-     *
+     * <p>
      * NOTE: if attributes like str are added to weapons, this method will have to be called
      * whenever a player switches weapons.
      *
@@ -1193,8 +1197,7 @@ public class API {
                         : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
                 gp.setAttributeVal(type, newTotalVal);
             });
-        }
-        else {
+        } else {
             List<String> newModifiers = API.getModifiers(newWeapon);
             net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newWeapon).getTag();
 
@@ -1235,8 +1238,7 @@ public class API {
                         gp.setAttributeVal(type, newTotalVal);
                     });
                 }
-            }
-            else {
+            } else {
                 newModifiers.stream().forEach(modifier -> {
                     // get the attribute type to determine if we need a percentage or not and to get the
                     // correct display name
@@ -1312,9 +1314,9 @@ public class API {
         // VITALITY BONUSES
         float vitality = (float) attributes.getOrDefault("vitality", new Integer[]{0, 0})[1];
         changeAttributeValPercentage(attributes, ArmorAttributeType.HEALTH_POINTS, vitality * 0.034f);
-        attributeBonusesFromStats.put(ArmorAttributeType.ENERGY_REGEN,  vitality * 0.034f);
+        attributeBonusesFromStats.put(ArmorAttributeType.ENERGY_REGEN, vitality * 0.034f);
         changeAttributeVal(attributes, ArmorAttributeType.HEALTH_REGEN, vitality * 0.03f);
-        attributeBonusesFromStats.put(ArmorAttributeType.ENERGY_REGEN,  vitality * 0.03f);
+        attributeBonusesFromStats.put(ArmorAttributeType.ENERGY_REGEN, vitality * 0.03f);
     }
 
     public static void recalculateStatBonuses(Map<String, Integer[]> attributes, Map<AttributeType, Float> attributeBonusesFromStats, GamePlayer gp) {
@@ -1333,12 +1335,11 @@ public class API {
      *
      * @param type
      * @param difference
-     *
      * @return the new value of the attribute
      */
     private static Integer[] changeAttributeVal(Map<String, Integer[]> attributes, AttributeType type, float difference) {
         Integer[] oldVal = attributes.getOrDefault(type.getNBTName(), new Integer[]{0, 0});
-        Integer[] newTotalVal = new Integer[] { Math.round(oldVal[0] + difference), Math.round(oldVal[1] + difference) };
+        Integer[] newTotalVal = new Integer[]{Math.round(oldVal[0] + difference), Math.round(oldVal[1] + difference)};
         attributes.put(type.getNBTName(), newTotalVal);
         return newTotalVal;
     }
@@ -1356,7 +1357,7 @@ public class API {
         int newHigh = (int) Math.round(attributes.get(type.getNBTName())[1] * ((percentDifference + 100.) / 100.));
         if (newLow < 0) newLow = 0;
         if (newHigh < 0) newHigh = 0;
-        attributes.put(type.getNBTName(), new Integer[] { newLow, newHigh });
+        attributes.put(type.getNBTName(), new Integer[]{newLow, newHigh});
         return new Integer[]{newLow, newHigh};
     }
 
@@ -1393,9 +1394,8 @@ public class API {
                     attributes.put(type.getNBTName(), new Integer[]{attributes.getOrDefault(modifier, new
                             Integer[]{0, 0})[0] + tag.getInt(modifier + "Min"), attributes.getOrDefault(modifier, new
                             Integer[]{0, 0})[1] + tag.getInt(modifier + "Max")});
-                }
-                else {
-                    attributes.put(type.getNBTName(), new Integer[] { 0, attributes.get(modifier)[1] + tag.getInt(modifier) });
+                } else {
+                    attributes.put(type.getNBTName(), new Integer[]{0, attributes.get(modifier)[1] + tag.getInt(modifier)});
                 }
             });
         }
@@ -1432,9 +1432,8 @@ public class API {
                     attributes.put(type.getNBTName(), new Integer[]{attributes.getOrDefault(modifier, new
                             Integer[]{0, 0})[0] + tag.getInt(modifier + "Min"), attributes.getOrDefault(modifier, new
                             Integer[]{0, 0})[1] + tag.getInt(modifier + "Max")
-                });
-                }
-                else {
+                    });
+                } else {
                     attributes.put(type.getNBTName(), new Integer[]{0, attributes.getOrDefault(modifier, new
                             Integer[]{0, 0})[1] + tag.getInt(modifier)});
                 }

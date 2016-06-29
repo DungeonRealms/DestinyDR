@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -74,7 +75,7 @@ public class RealmListener implements Listener {
             if (!player.getUniqueId().equals(realm.getOwner())) {
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + realm.getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
                 if (realm.getPropertyBoolean("flight")) {
-                    player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
+                    player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "flight ENABLED");
                     player.setAllowFlight(true);
                 }
             } else {
@@ -118,8 +119,8 @@ public class RealmListener implements Listener {
 
 
         for (RealmToken realm : Realms.getInstance().getCachedRealms().values()) {
-            if (!realm.getPropertyBoolean("peaceful") && realm.getPropertyBoolean("flying")) {
-                RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flying");
+            if (!realm.getPropertyBoolean("peaceful") && realm.getPropertyBoolean("flight")) {
+                RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
                 property.setExpiry(System.currentTimeMillis() - 1000L);
             }
 
@@ -129,23 +130,26 @@ public class RealmListener implements Listener {
                 switch (p.getName()) {
                     case "peaceful":
                         Player owner = Bukkit.getPlayer(realm.getOwner());
-                        Realms.getInstance().getRealmWorld(realm.getOwner()).setPVP(true);
+                        World world = Realms.getInstance().getRealmWorld(realm.getOwner());
+
+                        // SET WORLD GUARD FLAG
+                        Realms.getInstance().setRealmRegion(world, true);
 
                         if (owner != null)
                             owner.sendMessage(ChatColor.RED + "Your realm is now once again a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " zone.");
 
-                        if (realm.getPropertyBoolean("flying")) {
+                        if (realm.getPropertyBoolean("flight")) {
 
                             if (owner != null)
                                 owner.sendMessage(ChatColor.GRAY + "Due to this, your " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.GRAY
                                         + " will also expired.");
 
-                            RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flying");
+                            RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
                             property.setExpiry(System.currentTimeMillis() - 1000L);
                         }
-                        break;
 
-                    case "flying":
+                        break;
+                    case "flight":
                         if (Bukkit.getPlayer(realm.getOwner()) != null)
                             Bukkit.getPlayer(realm.getOwner()).sendMessage(ChatColor.RED + "Your " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED + " effect has expired.");
 
@@ -169,17 +173,48 @@ public class RealmListener implements Listener {
             Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
 
             if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())))
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.ENCHANTMENT_TABLE, loc.add(0.5D, 1.5D, 0.5D), 0, 0, 0, 0.02F, 75);
+                createDoubleHelix(loc);
 
             if (realm.getPropertyBoolean("peaceful")) {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.add(0.5D, 1.5D, 0.5D), 0, 0, 0, 0.02F, 20);
-                loc.subtract(.5D, 2D, .5D);
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
+                //loc.subtract(.5D, 2D, .5D);
             }
 
-            if (realm.getPropertyBoolean("flying")) {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.add(0.5D, 1.5D, 0.5D), 0, 0, 0, 0.02F, 20);
-                loc.subtract(.5D, 1.5D, .5D);
+            if (realm.getPropertyBoolean("flight")) {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
+                //loc.subtract(.5D, 1.5D, .5D);
             }
+        }
+    }
+
+    private void createDoubleHelix(Location loc) {
+        double radius = 1;
+
+        for (double y = 0; y < 2; y += 0.007) {
+            radius = y / 3;
+            double x = radius * Math.cos(3 * y);
+            double z = radius * Math.sin(3 * y);
+
+            double y2 = 3 - y;
+
+            final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+        }
+
+
+        for (double y = 0; y < 2; y += 0.007) {
+            radius = y / 3;
+            double x = -(radius * Math.cos(3 * y));
+            double z = -(radius * Math.sin(3 * y));
+
+            double y2 = 5 - y;
+
+            final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
         }
     }
 
@@ -261,7 +296,8 @@ public class RealmListener implements Listener {
             property.setValue(true);
             property.setAcknowledgeExpiration(true);
 
-            Realms.getInstance().getRealmWorld(p.getUniqueId()).setPVP(false);
+            // SET WORLD GUARD FLAG
+            Realms.getInstance().setRealmRegion(Realms.getInstance().getRealmWorld(p.getUniqueId()), false);
             Realms.getInstance().updateRealmHologram(p.getUniqueId());
         }
 
@@ -388,14 +424,24 @@ public class RealmListener implements Listener {
             target.sendMessage(ChatColor.GRAY + "You can now place/destroy blocks in their realm until the end of their game session.");
 
             realm.getBuilders().add(target.getUniqueId());
+
+            if (target.getWorld().getName().equals(p.getUniqueId().toString()) && realm.getPropertyBoolean("flight")) {
+                target.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
+                target.setAllowFlight(true);
+            }
+
         } else {
             p.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "REMOVED " + ChatColor.RED + "" + ChatColor.BOLD + target.getName()
                     + ChatColor.RED + " from your realm builder list.");
             p.sendMessage(ChatColor.GRAY + target.getName() + " can no longer place/destroy blocks in your realm.");
             target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REMOVED " + ChatColor.RED + "from " + p.getName() + "'s builder list.");
-            target.sendMessage(ChatColor.GRAY + "You can no longer place/destroy blocks in their realm.");
+            target.sendMessage(ChatColor.GRAY + "You can no longer place/destroy blocks/fly in their realm.");
 
             realm.getBuilders().remove(target.getUniqueId());
+
+            if (target.getWorld().getName().equals(p.getUniqueId().toString()) && realm.getPropertyBoolean("flight"))
+                target.setAllowFlight(false);
+
         }
     }
 

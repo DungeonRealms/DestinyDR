@@ -83,6 +83,15 @@ public interface Realms extends GenericMechanic {
 
 
     /**
+     * Sets up realm world guard region
+     *
+     * @param world     Realm world
+     * @param isChaotic Is chaotic?
+     */
+    void setRealmRegion(World world, boolean isChaotic);
+
+
+    /**
      * Loads the realm world
      *
      * @param uuid Owner of realm
