@@ -750,16 +750,13 @@ public class DamageAPI {
         RepairAPI.subtractCustomDurability(player, itemStack, 1);
         GamePlayer gp = API.getGamePlayer(player);
         Projectile projectile;
-        if (!gp.getCurrentWeapon().equals(itemStack))
-            API.handlePlayerWeaponSwitch(player, itemStack, gp.getCurrentWeapon());
-
-        if (gp.getAttributes().containsKey("fireDamage")) {
+        if (tag.hasKey("fireDamage")) {
             projectile = player.launchProjectile(TippedArrow.class);
             ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1, 1), true);
-        } else if (gp.getAttributes().containsKey("iceDamage")) {
+        } else if (tag.hasKey("iceDamage")) {
             projectile = player.launchProjectile(TippedArrow.class);
             ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1, 1), true);
-        } else if (gp.getAttributes().containsKey("poisonDamage")) {
+        } else if (tag.hasKey("poisonDamage")) {
             projectile = player.launchProjectile(TippedArrow.class);
             ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.JUMP, 1, 1), true);
         } else {
@@ -775,6 +772,8 @@ public class DamageAPI {
         EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
         eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
         // a player switches weapons, so we need to recalculate weapon attributes
+        if (!gp.getCurrentWeapon().equals(itemStack))
+            API.handlePlayerWeaponSwitch(player, itemStack, gp.getCurrentWeapon());
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
     }
 

@@ -29,6 +29,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitch;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
+import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.Attribute;
@@ -38,7 +39,6 @@ import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
-import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
@@ -72,6 +72,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -106,19 +107,12 @@ public class DamageListener implements Listener {
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
             event.blockList().clear();
-            int radius = event.getEntity().getMetadata("radius").get(0).asInt();
-            int duration = event.getEntity().getMetadata("duration").get(0).asInt();
-            PotionEffectType effectType = PotionEffectType.getByName(event.getEntity().getMetadata("effectType").get(0).asString());
-            for (Entity e : event.getEntity().getNearbyEntities(radius, radius, radius)) {
-                if (!(API.isPlayer(e))) continue;
-                ((Player) e).addPotionEffect(new PotionEffect(effectType, duration, 2));
-                if (effectType.equals(PotionEffectType.HEAL)) {
-                    HealthHandler.getInstance().healPlayerByAmount((Player) e, HealthHandler.getInstance().getPlayerMaxHPLive((Player) e) / 2);
-                    ((Player) e).removePotionEffect(PotionEffectType.HEAL);
-                }
-                e.sendMessage(ChatColor.BLUE + "An Invocation of " + ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + effectType.getName().replace("_", " ") + ChatColor.BLUE + " has begun!");
+            List<Player> toBuff = new ArrayList<>();
+            for (Entity entity : event.getEntity().getNearbyEntities(8D, 8D, 8D)) {
+                if (!API.isPlayer(entity))  continue;
+                toBuff.add((Player) entity);
             }
-            BuffManager.getInstance().CURRENT_BUFFS.stream().filter(enderCrystal -> enderCrystal.getBukkitEntity().getLocation().equals(event.getEntity().getLocation())).forEach(BuffManager.getInstance().CURRENT_BUFFS::remove);
+            BuffUtils.handleBuffEffects(event.getEntity(), toBuff);
         }
     }
 
