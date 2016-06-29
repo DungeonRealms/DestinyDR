@@ -8,6 +8,7 @@ import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -188,12 +189,28 @@ public class DamageListener implements Listener {
             }
         }
         Entity damager = event.getDamager();
-        if (API.isInSafeRegion(damager.getLocation())) {
-            if (API.isPlayer(damager) && !DuelingMechanics.isDueling(damager.getUniqueId())) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                ((Player) damager).updateInventory();
-                return;
+        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
+                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
+        if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
+            if (!DuelingMechanics.isDueling(damager.getUniqueId())) {
+                if (API.isInSafeRegion(damager.getLocation())) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    ((Player) damager).updateInventory();
+                    return;
+                } else if (ProtectionHandler.getInstance().hasNewbieProtection((Player) event.getEntity())) {
+                    leDamageSource.sendMessage(ChatColor.RED + "The player you are attempting to attack has " +
+                            "newbie " +
+                            "protection! You cannot attack them.");
+                    event.getEntity().sendMessage(ChatColor.GREEN + "Your " + ChatColor.UNDERLINE + "NEWBIE " +
+                            "PROTECTION" + ChatColor.GREEN + " has prevented " + leDamageSource.getCustomName() +
+                            ChatColor.GREEN + " from attacking you!");
+                    event.getEntity();
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    ((Player) damager).updateInventory();
+                    return;
+                }
             }
         }
         //Make sure the player is HOLDING something!
@@ -216,23 +233,23 @@ public class DamageListener implements Listener {
             }
 
             if (API.isPlayer(event.getEntity())) {
-                if (event.getEntity() instanceof Player) {
-                    if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
+                if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
 
-                    if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
+                if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
                 }
             }
+
             Player attacker = (Player) event.getDamager();
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
             if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) return;
+
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker) <= 0) {
                 event.setCancelled(true);
                 event.setDamage(0);
@@ -258,6 +275,39 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getEquipment().getItemInMainHand()));
+
+            ItemType weaponType = new Attribute(attacker.getInventory().getItemInMainHand()).getItemType();
+            Item.ItemTier tier = new Attribute(attacker.getInventory().getItemInMainHand()).getItemTier();
+
+            switch (weaponType) {
+                case BOW:
+                    switch (tier) {
+                        case TIER_1:
+                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.2);
+                            break;
+                        case TIER_2:
+                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.5);
+                            break;
+                        case TIER_3:
+                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.8);
+                            break;
+                        case TIER_4:
+                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 2.0);
+                            break;
+                        case TIER_5:
+                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 2.2);
+                            break;
+                        default:
+                            break;
+                    }
+                case STAFF:
+                    event.setDamage(0);
+                    event.setCancelled(true);
+                    return;
+                default:
+                    break;
+            }
+
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity());
 
             if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
@@ -585,6 +635,13 @@ public class DamageListener implements Listener {
                     event.setDamage(0);
                     return;
                 }
+            }
+            // staff hit particle
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, defender.getLocation(), new Random().nextFloat(), new Random().nextFloat(),
+                        new Random().nextFloat(), 0.5F, 20);
+            } catch (Exception e1) {
+                e1.printStackTrace();
             }
             double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage(), staffProjectile);
             armourReducedDamage = result[0];
@@ -1012,7 +1069,7 @@ public class DamageListener implements Listener {
         }
         if (player.hasMetadata("last_Staff_Use")) {
             event.setCancelled(true);
-            if (System.currentTimeMillis() - player.getMetadata("last_Staff_Use").get(0).asLong() < 450) {
+            if (System.currentTimeMillis() - player.getMetadata("last_Staff_Use").get(0).asLong() < 100) {
                 event.setUseItemInHand(Event.Result.DENY);
                 return;
             }
@@ -1060,11 +1117,13 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onStaffProjectileExplode(ExplosionPrimeEvent event) {
-        if (!(event.getEntity() instanceof WitherSkull)) {
+        if (!(event.getEntity() instanceof WitherSkull) && !(event.getEntity() instanceof Fireball) && !(event
+                .getEntity() instanceof LargeFireball)) {
             return;
         }
         event.setCancelled(false);
         event.setRadius(0);
+        event.setFire(false);
     }
 
     /**
@@ -1218,10 +1277,9 @@ public class DamageListener implements Listener {
             return;
         }
         if (event.getEntity().hasMetadata("last_environment_damage")) {
-            if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 800) {
+            if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() <= 800) {
                 event.setCancelled(true);
                 event.setDamage(0);
-                event.getEntity().setFireTicks(0);
                 return;
             }
         }

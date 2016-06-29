@@ -396,9 +396,7 @@ public class DungeonRealms extends JavaPlugin {
                 DungeonRealms.getInstance().setFinishedSetup(false);
                 ShopMechanics.deleteAllShops(true);
                 API.logoutAllPlayers(true);
-                for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
-                    combatLogger.handleTimeOut();
-                }
+                CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
                 AsyncUtils.pool.shutdown();
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     DungeonRealms.getInstance().mm.stopInvocation();
@@ -420,9 +418,7 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
-        for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
-            combatLogger.handleTimeOut();
-        }
+        CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         API.logoutAllPlayers(true);
         ShopMechanics.deleteAllShops(true);
         AsyncUtils.pool.shutdown();

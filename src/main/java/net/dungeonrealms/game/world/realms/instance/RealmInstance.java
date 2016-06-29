@@ -328,6 +328,9 @@ public class RealmInstance implements Realms {
                 .filter(uuid -> Bukkit.getPlayer(uuid) != null)
                 .forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
 
+        Realms.getInstance().getRealmWorld(player.getUniqueId())
+                .getPlayers().forEach(p -> p.teleport(realm.getPortalLocation()));
+
         closeRealmPortal(player.getUniqueId(), true);
         realm.setStatus(RealmStatus.REMOVING);
 
@@ -590,8 +593,13 @@ public class RealmInstance implements Realms {
                 add = true;
             }
 
-            if (isChaotic) global.setFlag(DefaultFlag.PVP, StateFlag.State.ALLOW);
-            else global.setFlag(DefaultFlag.PVP, StateFlag.State.DENY);
+            if (isChaotic) {
+                global.setFlag(DefaultFlag.MOB_DAMAGE, StateFlag.State.ALLOW);
+                global.setFlag(DefaultFlag.PVP, StateFlag.State.ALLOW);
+            } else {
+                global.setFlag(DefaultFlag.MOB_DAMAGE, StateFlag.State.DENY);
+                global.setFlag(DefaultFlag.PVP, StateFlag.State.DENY);
+            }
 
             if (add)
                 regionManager.addRegion(global);

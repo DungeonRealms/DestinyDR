@@ -48,6 +48,7 @@ class RealmMaterialFactory {
         List<RealmMaterialItem> items = new ArrayList<>();
 
         items.add(new RealmMaterialItem(new ItemStack(Material.DIRT, 1)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.WORKBENCH, 3)));
         items.add(new RealmMaterialItem(new ItemStack(Material.SAND, 3)));
         items.add(new RealmMaterialItem(new ItemStack(Material.STONE, 3)));
         items.add(new RealmMaterialItem(new ItemStack(Material.LOG, 5, (short) 0)));

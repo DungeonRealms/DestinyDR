@@ -290,9 +290,9 @@ public class API {
      * @since 1.0
      */
     public static boolean isInSafeRegion(Location location) {
-        if (!location.getWorld().equals(Bukkit.getWorlds().get(0))) {
-            return false;
-        }
+//        if (!location.getWorld().equals(Bukkit.getWorlds().get(0))) {
+//            return false;
+//        }
         ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld())
                 .getApplicableRegions(location);
         return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP)
