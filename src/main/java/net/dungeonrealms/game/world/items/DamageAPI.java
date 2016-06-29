@@ -516,7 +516,10 @@ public class DamageAPI {
         }
 
         if (API.isPlayer(attacker)) {
-            attackerAttributes = API.getGamePlayer((Player) attacker).getAttributes();
+            if (projectile == null)
+                attackerAttributes = API.getGamePlayer((Player) attacker).getAttributes();
+            else
+                attackerAttributes = new HashMap<>(API.getGamePlayer((Player) attacker).getAttributes());
         }
         else if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
             attackerAttributes = ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes();
@@ -663,8 +666,8 @@ public class DamageAPI {
 
         // ARMOR BONUS
         if (defender.hasMetadata("armorBonus")) {
-            totalArmor += defender.getMetadata("armorBonus").get(0).asFloat() * totalArmor;
-            totalArmorReduction += defender.getMetadata("armorBonus").get(0).asFloat() * totalArmorReduction;
+            totalArmor += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmor;
+            totalArmorReduction += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmorReduction;
         }
         return new double[]{Math.round(totalArmorReduction), totalArmor};
     }
