@@ -763,12 +763,12 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public int calculateMaxHPFromItems(LivingEntity entity) {
-        int totalHP = 50; // base hp
+        int totalHP = 0; // base hp
 
         if (entity.hasMetadata("type"))
             totalHP += ((DRMonster) ((CraftLivingEntity) entity).getHandle()).getAttributes().get("healthPoints")[1];
         else if (API.isPlayer(entity))
-            totalHP += API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, (Player) entity);
+            totalHP += 50 + API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, (Player) entity);
 
         if (entity.hasMetadata("dungeon")) {
             totalHP *= 2;
