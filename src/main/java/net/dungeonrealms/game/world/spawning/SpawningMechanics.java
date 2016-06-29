@@ -83,9 +83,9 @@ public class SpawningMechanics implements GenericMechanic {
             int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
             if (spawnDelay < 20) {
                 if (!isElite) {
-                    spawnDelay = 20;
+                    spawnDelay = 30;
                 } else {
-                    spawnDelay = 60;
+                    spawnDelay = 300;
                 }
             }
             String locationRange[] = line.substring(line.indexOf("#") + 1, line.lastIndexOf("$")).split("-");
@@ -100,8 +100,6 @@ public class SpawningMechanics implements GenericMechanic {
                 }
                 ALLSPAWNERS.add(spawner);
             } else {
-                //TODO: Dangerous code!!! REMOVE BEFORE RELEASE!!!
-                spawnDelay = 60;
                 EliteMobSpawner spawner;
                 if (spawnRange.equalsIgnoreCase("+")) {
                     spawner = new EliteMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, ELITESPAWNERS.size(), "high", spawnDelay, minXZ, maxXZ);
