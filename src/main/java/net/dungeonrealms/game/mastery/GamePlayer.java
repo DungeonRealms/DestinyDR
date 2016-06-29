@@ -374,7 +374,7 @@ public class GamePlayer {
     }
 
     public boolean hasNewbieProtection() {
-        return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
+        return ProtectionHandler.getInstance().hasNewbieProtection(T);
     }
 
     public void setAttributeVal(AttributeType type, Integer[] val) {
