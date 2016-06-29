@@ -27,6 +27,7 @@ import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitch;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -945,22 +946,45 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * Listen for blazes firing their projectile so we
+     * Listen for blazes, ghasts, and witches firing their projectile so we
      * can correctly add the metadata to the projectile.
      *
      * @param event
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onBlazeLaunchProjectile(ProjectileLaunchEvent event) {
+    public void onCustomProjectileEntityLaunchProjectile(ProjectileLaunchEvent event) {
         if (!(event.getEntity().getShooter() instanceof LivingEntity)) return;
-        if (((LivingEntity) event.getEntity().getShooter()).getType() != EntityType.BLAZE) return;
+        EntityType entityType = ((LivingEntity) event.getEntity().getShooter()).getType();
+        if (entityType != EntityType.BLAZE && entityType != EntityType.GHAST && entityType != EntityType.WITCH) return;
 
-        LivingEntity blaze = (LivingEntity) event.getEntity().getShooter();
-        if (!(blaze.hasMetadata("type"))) return;
-        if (!(API.isWeapon(blaze.getEquipment().getItemInMainHand()))) return;
+        LivingEntity leShooter = (LivingEntity) event.getEntity().getShooter();
+        if (!(leShooter.hasMetadata("type"))) return;
+        if (!(API.isWeapon(leShooter.getEquipment().getItemInMainHand())) && entityType != EntityType.WITCH) return;
 
-        MetadataUtils.registerProjectileMetadata(((DRMonster) ((CraftLivingEntity) blaze).getHandle()).getAttributes
-                (), CraftItemStack.asNMSCopy(blaze.getEquipment().getItemInMainHand()).getTag(), event.getEntity());
+        if (entityType != EntityType.WITCH)
+            MetadataUtils.registerProjectileMetadata(((DRMonster) ((CraftLivingEntity) leShooter).getHandle()).getAttributes
+                    (), CraftItemStack.asNMSCopy(leShooter.getEquipment().getItemInMainHand()).getTag(), event.getEntity());
+        else {
+            DRWitch witch = (DRWitch) ((CraftLivingEntity) leShooter).getHandle();
+            MetadataUtils.registerProjectileMetadata(witch.getAttributes(), CraftItemStack.asNMSCopy(witch.getWeapon
+                    ()).getTag(), event.getEntity());
+        }
+    }
+
+    @EventHandler
+    public void onWitchSplashPotion(PotionSplashEvent event) {
+        if (!(event.getPotion().getShooter() instanceof LivingEntity)) return;
+        LivingEntity leShooter = (LivingEntity) event.getPotion().getShooter();
+        if (!(leShooter.getType() == EntityType.WITCH)) return;
+
+        for (LivingEntity le : event.getAffectedEntities()) {
+            if (API.isInSafeRegion(le.getLocation())) continue;
+            if (!API.isPlayer(le)) continue;
+            double damage = DamageAPI.calculateProjectileDamage(leShooter, le, event.getPotion());
+            double[] armorResult = DamageAPI.calculateArmorReduction(leShooter, le, damage, event.getPotion());
+
+            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) le, leShooter, damage - armorResult[0], armorResult[0], armorResult[1]);
+        }
     }
 
     /**

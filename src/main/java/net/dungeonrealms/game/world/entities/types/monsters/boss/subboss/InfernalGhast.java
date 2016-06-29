@@ -6,7 +6,10 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.base.DRGhast;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -27,7 +30,7 @@ import java.util.Map;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class InfernalGhast extends EntityGhast implements Boss {
+public class InfernalGhast extends DRGhast implements Boss {
 
 	private InfernalAbyss boss;
 	@Getter

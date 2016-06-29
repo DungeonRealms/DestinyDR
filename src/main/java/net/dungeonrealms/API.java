@@ -644,6 +644,7 @@ public class API {
         }
         if (Rank.isGM(player)) {
             HealthHandler.getInstance().setPlayerHPLive(player, 10000);
+            gp.setInvulnerable(true);
             player.sendMessage(new String[]{
                     "",
                     ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",
@@ -1158,7 +1159,7 @@ public class API {
 
         // check if we have a skull
         if (armorSet[3].getType() == Material.SKULL_ITEM) {
-            ItemTier tier = (new net.dungeonrealms.game.world.items.Attribute(ent.getEquipment().getItemInMainHand())).getItemTier();
+            ItemTier tier = ItemTier.getByTier(ent.getMetadata("tier").get(0).asInt());
             // if we have a skull we need to generate a helmet so mob stats are calculated correctly
             armorSet[3] = new ItemGenerator().setTier(tier).setRarity(API.getItemRarity(ent.hasMetadata("elite"))).generateItem().getItem();
         }

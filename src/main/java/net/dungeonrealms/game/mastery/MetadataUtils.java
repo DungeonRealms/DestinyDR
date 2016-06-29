@@ -9,6 +9,7 @@ import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
@@ -80,14 +81,20 @@ public class MetadataUtils {
     public static void registerProjectileMetadata(Map<String, Integer[]> attributes, NBTTagCompound tag, Projectile projectile) {
         // transfer only the weapon attributes. The armor attributes will be grabbed in the calculateProjectileDamage
         // method.
+        if (projectile instanceof ThrownPotion) {
+
+        }
         for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
             String modifier = type.getNBTName();
             if (type.isRange()) {
-                projectile.setMetadata(modifier + "Min", new FixedMetadataValue(DungeonRealms.getInstance(), attributes.get(modifier)[0]));
-                projectile.setMetadata(modifier + "Max", new FixedMetadataValue(DungeonRealms.getInstance(), attributes.get(modifier)[1]));
-            }
-            else {
-                projectile.setMetadata(modifier, new FixedMetadataValue(DungeonRealms.getInstance(), attributes.get(modifier)[1]));
+                projectile.setMetadata(modifier + "Min", new FixedMetadataValue(DungeonRealms.getInstance(),
+                        attributes.get(modifier)[0]));
+
+                projectile.setMetadata(modifier + "Max", new FixedMetadataValue(DungeonRealms.getInstance(),
+                        attributes.get(modifier)[1]));
+            } else {
+                projectile.setMetadata(modifier, new FixedMetadataValue(DungeonRealms.getInstance(), attributes
+                        .get(modifier)[1]));
             }
         }
         // transfer the itemTier, itemType, and itemRarity

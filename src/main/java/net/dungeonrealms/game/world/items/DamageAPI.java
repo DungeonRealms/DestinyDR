@@ -11,6 +11,7 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -300,6 +301,7 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double calculateProjectileDamage(LivingEntity attacker, LivingEntity receiver, Projectile projectile) {
+        Utils.log.info("line " + new Exception().getStackTrace()[1].getLineNumber());
         Map<String, Integer[]> attributes;
         // grab the attacker's armor attributes
         if (attacker instanceof Player && API.isPlayer(attacker)) {
@@ -592,12 +594,12 @@ public class DamageAPI {
         // THORNS
         if (defenderAttributes.get("thorns")[1] != 0) {
             int damageFromThorns = (int) Math.round(totalDamage * (((float) defenderAttributes.get("thorns")[1]) / 100f));
-            if (damageFromThorns < 0) damageFromThorns = 1; // always at least one damage from thorns
+            if (damageFromThorns <= 0) damageFromThorns = 1; // always at least one damage from thorns
             if (damageFromThorns > 0) {
                 attacker.getLocation().getWorld().playEffect(attacker.getLocation(), Effect.STEP_SOUND, 18);
             }
             if (attacker instanceof Player) {
-                if (((Player) attacker).getGameMode() == GameMode.SURVIVAL) {
+                if (((Player) attacker).getGameMode() == GameMode.SURVIVAL && !API.getGamePlayer((Player) attacker).isInvulnerable()) {
                     HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns, 0, 0);
                 }
             }
@@ -612,23 +614,23 @@ public class DamageAPI {
         int iceDamage = attackerAttributes.get("iceDamage")[1];
         int poisonDamage = attackerAttributes.get("poisonDamage")[1];
 
-        if (fireDamage != 0) {
-            float fireResistance = (float) defenderAttributes.get("fireResistance")[1];
-            if (fireResistance != 0) {
-                // apparently in old dr res is just handled via adding it to armor so we'll keep that
-                totalArmor += fireResistance;
-            }
-        }
-        else if (iceDamage != 0) {
-            float iceResistance = (float) defenderAttributes.get("iceResistance")[1];
-            if (iceResistance != 0) {
-                totalArmor += iceResistance;
-            }
-        }
-        else if (poisonDamage != 0) {
-            float poisonResistance = (float) defenderAttributes.get("poisonResistance")[1];
-            if (poisonResistance != 0) {
-                totalArmor += poisonResistance;
+        if (API.isPlayer(attacker)) {
+            if (fireDamage != 0) {
+                float fireResistance = (float) defenderAttributes.get("fireResistance")[1];
+                if (fireResistance != 0) {
+                    // apparently in old dr res is just handled via adding it to armor so we'll keep that
+                    totalArmor += fireResistance;
+                }
+            } else if (iceDamage != 0) {
+                float iceResistance = (float) defenderAttributes.get("iceResistance")[1];
+                if (iceResistance != 0) {
+                    totalArmor += iceResistance;
+                }
+            } else if (poisonDamage != 0) {
+                float poisonResistance = (float) defenderAttributes.get("poisonResistance")[1];
+                if (poisonResistance != 0) {
+                    totalArmor += poisonResistance;
+                }
             }
         }
 

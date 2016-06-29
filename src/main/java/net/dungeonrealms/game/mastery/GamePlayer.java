@@ -61,6 +61,10 @@ public class GamePlayer {
     @Setter
     private int playerEXP;
 
+    @Getter
+    @Setter
+    private boolean isInvulnerable;
+
     public GamePlayer(Player player) {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());
