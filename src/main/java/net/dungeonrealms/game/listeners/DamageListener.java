@@ -287,9 +287,9 @@ public class DamageListener implements Listener {
                             break;
                         case TIER_2:
                             DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.5);
-                            break
+                            break;
                         case TIER_3:
-                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.58);
+                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.8);
                             break;
                         case TIER_4:
                             DamageAPI.knockbackEntity(attacker, event.getEntity(), 2.0);
@@ -303,7 +303,7 @@ public class DamageListener implements Listener {
                 case STAFF:
                     event.setDamage(0);
                     event.setCancelled(true);
-                    break;
+                    return;
                 default:
                     break;
             }
@@ -1069,7 +1069,7 @@ public class DamageListener implements Listener {
         }
         if (player.hasMetadata("last_Staff_Use")) {
             event.setCancelled(true);
-            if (System.currentTimeMillis() - player.getMetadata("last_Staff_Use").get(0).asLong() < 450) {
+            if (System.currentTimeMillis() - player.getMetadata("last_Staff_Use").get(0).asLong() < 100) {
                 event.setUseItemInHand(Event.Result.DENY);
                 return;
             }
@@ -1277,10 +1277,9 @@ public class DamageListener implements Listener {
             return;
         }
         if (event.getEntity().hasMetadata("last_environment_damage")) {
-            if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 800) {
+            if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() <= 800) {
                 event.setCancelled(true);
                 event.setDamage(0);
-                event.getEntity().setFireTicks(0);
                 return;
             }
         }
