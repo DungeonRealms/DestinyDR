@@ -519,73 +519,7 @@ public class HealthHandler implements GenericMechanic {
         player.playEffect(EntityEffect.HURT);
 
         if (newHP <= 0) {
-            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
-            if (player.hasMetadata("last_death_time")) {
-                if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
-                    String killerName = "";
-                    if (leAttacker instanceof Player) {
-                        killerName = GameChat.getPreMessage((Player) leAttacker).replaceAll(":", "").trim();
-                        if (ChatColor.stripColor(killerName).startsWith("<G>")) {
-                            killerName = killerName.split(">")[1];
-                        }
-
-                        if (Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFECTED)) {
-                            Player killer = (Player) leAttacker;
-                            Achievements.getInstance().giveAchievement(killer.getUniqueId(), Achievements.EnumAchievements.INFECTED);
-                        }
-                    } else {
-                        if (leAttacker != null) {
-                            if (leAttacker.hasMetadata("customname")) {
-                                killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
-                            }
-                        } else {
-                            killerName = "The World";
-                        }
-                    }
-                    String deadPlayerName = GameChat.getPreMessage(player).replaceAll(":", "").trim();
-                    if (ChatColor.stripColor(deadPlayerName).startsWith("<G>")) {
-                        deadPlayerName = deadPlayerName.split(">")[1];
-                    }
-                    final String finalDeadPlayerName = deadPlayerName;
-                    final String finalKillerName = killerName;
-                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
-                    final LivingEntity finalLeAttacker = leAttacker;
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                        player.damage(player.getMaxHealth());
-                        if (finalLeAttacker != null) {
-                            KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
-                        }
-                        CombatLog.removeFromCombat(player);
-                    }, 20L);
-                    return;
-                }
-            } else {
-                String killerName = "";
-                if (leAttacker instanceof Player) {
-                    killerName = leAttacker.getName();
-                } else {
-                    if (leAttacker != null) {
-                        if (leAttacker.hasMetadata("customname")) {
-                            killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
-                        }
-                    } else {
-                        killerName = "The World";
-                    }
-                }
-                final String finalKillerName = killerName;
-                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
-                final LivingEntity finalLeAttacker = leAttacker;
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                    player.damage(25);
-                    if (finalLeAttacker != null) {
-                        KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
-                    }
-                    CombatLog.removeFromCombat(player);
-                }, 20L);
-                return;
-            }
+            if (handlePlayerDeath(player, leAttacker)) return;
         }
 
         setPlayerHPLive(player, (int) newHP);
@@ -605,6 +539,77 @@ public class HealthHandler implements GenericMechanic {
                 Entities.MONSTERS_LEASHED.add(leAttacker);
             }
         }
+    }
+
+    public boolean handlePlayerDeath(Player player, LivingEntity leAttacker) {
+        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
+        if (player.hasMetadata("last_death_time")) {
+            if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
+                String killerName = "";
+                if (leAttacker instanceof Player) {
+                    killerName = GameChat.getPreMessage((Player) leAttacker).replaceAll(":", "").trim();
+                    if (ChatColor.stripColor(killerName).startsWith("<G>")) {
+                        killerName = killerName.split(">")[1];
+                    }
+
+                    if (Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFECTED)) {
+                        Player killer = (Player) leAttacker;
+                        Achievements.getInstance().giveAchievement(killer.getUniqueId(), Achievements.EnumAchievements.INFECTED);
+                    }
+                } else {
+                    if (leAttacker != null) {
+                        if (leAttacker.hasMetadata("customname")) {
+                            killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
+                        }
+                    } else {
+                        killerName = "The World";
+                    }
+                }
+                String deadPlayerName = GameChat.getPreMessage(player).replaceAll(":", "").trim();
+                if (ChatColor.stripColor(deadPlayerName).startsWith("<G>")) {
+                    deadPlayerName = deadPlayerName.split(">")[1];
+                }
+                final String finalDeadPlayerName = deadPlayerName;
+                final String finalKillerName = killerName;
+                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
+                final LivingEntity finalLeAttacker = leAttacker;
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                    player.damage(player.getMaxHealth());
+                    if (finalLeAttacker != null) {
+                        KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
+                    }
+                    CombatLog.removeFromCombat(player);
+                }, 5L);
+                return true;
+            }
+        } else {
+            String killerName = "";
+            if (leAttacker instanceof Player) {
+                killerName = leAttacker.getName();
+            } else {
+                if (leAttacker != null) {
+                    if (leAttacker.hasMetadata("customname")) {
+                        killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
+                    }
+                } else {
+                    killerName = "The World";
+                }
+            }
+            final String finalKillerName = killerName;
+            API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
+            final LivingEntity finalLeAttacker = leAttacker;
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                player.damage(25);
+                if (finalLeAttacker != null) {
+                    KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
+                }
+                CombatLog.removeFromCombat(player);
+            }, 20L);
+            return true;
+        }
+        return false;
     }
 
     /**

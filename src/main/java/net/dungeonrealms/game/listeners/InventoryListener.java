@@ -210,7 +210,9 @@ public class InventoryListener implements Listener {
             if (API.getGamePlayer(player) == null) {
                 return;
             }
-            if (System.currentTimeMillis() - API.getGamePlayer(player).getLastArmorEquip() < 1000) {
+            if (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals
+                    (ArmorEquipEvent.EquipMethod.BROKE) && System.currentTimeMillis() - API.getGamePlayer(player)
+                    .getLastArmorEquip() < 1000) {
                 player.sendMessage(ChatColor.RED + "You cannot switch armor that quickly!");
                 event.setCancelled(true);
                 player.updateInventory();

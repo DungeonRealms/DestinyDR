@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listeners;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+import com.oracle.jrockit.jfr.EventDefinition;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
