@@ -397,6 +397,12 @@ public class BankListener implements Listener {
                         if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGemPouch(e.getCurrentItem())) {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (storage.hasSpace()) {
+                                if (!API.isItemTradeable(e.getCurrentItem()) || API.isItemSoulbound(e.getCurrentItem()) || !API.isItemDroppable(e.getCurrentItem())) {
+                                    player.sendMessage(ChatColor.RED + "You can't store this item!");
+                                    e.setCancelled(true);
+                                    return;
+                                }
+
                                 storage.inv.addItem(e.getCurrentItem());
                                 e.setCurrentItem(null);
                                 player.sendMessage(ChatColor.GREEN + "Item added to storage!");
