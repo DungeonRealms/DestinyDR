@@ -225,6 +225,7 @@ public class RealmListener implements Listener {
         if (p.getEquipment().getItemInMainHand() == null)
             return;
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
+        if (nmsStack == null) return;
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (!tag.hasKey("orb")) return;
