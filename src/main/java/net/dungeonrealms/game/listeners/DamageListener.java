@@ -25,6 +25,7 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -940,6 +941,25 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         PlayerManager.checkInventory(event.getPlayer().getUniqueId());
+    }
+
+    /**
+     * Listen for blazes firing their projectile so we
+     * can correctly add the metadata to the projectile.
+     *
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onBlazeLaunchProjectile(ProjectileLaunchEvent event) {
+        if (!(event.getEntity().getShooter() instanceof LivingEntity)) return;
+        if (((LivingEntity) event.getEntity().getShooter()).getType() != EntityType.BLAZE) return;
+
+        LivingEntity blaze = (LivingEntity) event.getEntity().getShooter();
+        if (!(blaze.hasMetadata("type"))) return;
+        if (!(API.isWeapon(blaze.getEquipment().getItemInMainHand()))) return;
+
+        MetadataUtils.registerProjectileMetadata(((DRMonster) ((CraftLivingEntity) blaze).getHandle()).getAttributes
+                (), CraftItemStack.asNMSCopy(blaze.getEquipment().getItemInMainHand()).getTag(), event.getEntity());
     }
 
     /**
