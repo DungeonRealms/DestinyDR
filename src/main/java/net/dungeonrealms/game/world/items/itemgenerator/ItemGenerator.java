@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.items.itemgenerator;
 
 import com.google.common.collect.Lists;
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.Item;
@@ -89,16 +90,19 @@ public class ItemGenerator {
         return this;
     }
 
-    public void setSoulbound(boolean soulbound) {
-        isSoulbound = soulbound;
+    public ItemGenerator setSoulbound(boolean soulbound) {
+        this.isSoulbound = soulbound;
+        return this;
     }
 
-    public void setUntradeable(boolean untradeable) {
-        isUntradeable = untradeable;
+    public ItemGenerator setUntradeable(boolean untradeable) {
+        this.isUntradeable = untradeable;
+        return this;
     }
 
-    public void setPermanentlyUntradeable(boolean permanentlyUntradeable) {
-        isPermanentlyUntradeable = permanentlyUntradeable;
+    public ItemGenerator setPermanentlyUntradeable(boolean permanentlyUntradeable) {
+        this.isPermanentlyUntradeable = permanentlyUntradeable;
+        return this;
     }
     
     /**
@@ -114,6 +118,14 @@ public class ItemGenerator {
 	    ItemTier tier = this.tier;
         ItemType type = this.type;
         ItemRarity rarity = this.rarity;
+
+        if (isReroll && origItem != null && (RepairAPI.isItemArmorOrWeapon(origItem))) {
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(origItem);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tier = ItemTier.getByTier(tag.getInt("itemTier"));
+            type = ItemType.getById(tag.getInt("itemType"));
+            rarity = ItemRarity.getById(tag.getInt("itemRarity"));
+        }
         
         Random r = new Random();
 
@@ -121,11 +133,18 @@ public class ItemGenerator {
         if(tier == null) tier = ItemTier.values()[r.nextInt(ItemTier.values().length - 1)];
         if(type == null) type = ItemType.values()[r.nextInt(ItemType.values().length - 1)];
         if(rarity == null) rarity = ItemRarity.values()[r.nextInt(ItemRarity.values().length - 1)];
-        
-        ItemStack item = new ItemStack(type.getTier(tier));
+
+        ItemStack item = isReroll && origItem != null && (RepairAPI.isItemArmorOrWeapon(origItem)) ? origItem : new ItemStack(type.getTier(tier));
         ItemMeta meta = item.getItemMeta().clone();
-        
-		meta.setLore(new ArrayList<>());
+
+        if (!isReroll) {
+            meta.setLore(new ArrayList<>());
+        } else {
+            if (ItemType.isWeapon(origItem))
+                meta.setLore(meta.getLore().subList(0, 1)); // strips everything except for dmg
+            else if (ItemType.isArmor(origItem))
+                meta.setLore(meta.getLore().subList(0, 3)); // strips everything except for dps/armor, hp, and energy/hp regen
+        }
 		
 		final HashMap<ModifierCondition, ItemModifier> conditions = new HashMap<>();
 		
@@ -133,6 +152,7 @@ public class ItemGenerator {
 		
 		for(ItemModifier modifier : modifierObjects){
 			if(modifier.canApply(type)){
+                if (isReroll && !modifier.isIncludeOnReroll()) continue;
 				ModifierCondition mc = modifier.tryModifier(meta, tier, rarity, type, mobTier);
 				if(mc != null){
 					conditions.put(mc, modifier);
@@ -191,7 +211,25 @@ public class ItemGenerator {
 		String modName = "";
         String name = tier.getTierColor().toString();
         String[] bonuses = new String[24];
+        Arrays.fill(bonuses, "");
         LinkedHashMap<String, Integer> NBTModifiers = new LinkedHashMap<>();
+
+        // name armor with energy or hp/s being rerolled correctly
+        if (isReroll && origItem != null && origItem.hasItemMeta() && origItem.getItemMeta().hasLore() && ItemType.isArmor(origItem)) {
+
+            for (String line : origItem.getItemMeta().getLore()) {
+
+                if (!line.contains(":")) continue;
+
+                if (ChatColor.stripColor(line.substring(0, line.indexOf(":"))).equals("ENERGY REGEN")) {
+                    bonuses[11] = "ENERGY REGEN";
+                } else if (ChatColor.stripColor(line.substring(0, line.indexOf(":"))).equals("HP REGEN")) {
+                    bonuses[2] = "HP REGEN";
+                }
+
+            }
+
+        }
         
         // NBT tag write and name the item
 		for (ModifierCondition mc : order) {
@@ -397,9 +435,28 @@ public class ItemGenerator {
             lore.add(ChatColor.GRAY + "Permanently Untradeable");
         }
 
+        // add custom EC lore
+        if (isReroll && origItem != null && origItem.hasItemMeta() && origItem.getItemMeta().hasLore()) {
+            for (String line : origItem.getItemMeta().getLore()) {
+                if (line.contains(ChatColor.GOLD.toString()) && line.contains(ChatColor.ITALIC.toString())) {
+                    lore.add(line);
+                }
+            }
+        }
+
+        if (isReroll && EnchantmentAPI.isItemProtected(origItem)) lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "PROTECTED");
+
 		// set the lore!
         meta.setLore(lore);
+
+        if (isReroll) {
+            int oldEnchantCount = EnchantmentAPI.getEnchantLvl(origItem);
+            if (oldEnchantCount > 0) {
+                name = ChatColor.RED + "[+" + oldEnchantCount + "] " + ChatColor.RESET + name;
+            }
+        }
         meta.setDisplayName(name);
+        //TODO: Check if it has the E-Cash custom name when it's implemented.
 		item.setItemMeta(meta);
 
         RepairAPI.setCustomItemDurability(item, 1500);
@@ -415,6 +472,9 @@ public class ItemGenerator {
         tag.set("untradeable", new NBTTagInt(isUntradeable ? 1 : 0));
         tag.set("puntradeable", new NBTTagInt(isPermanentlyUntradeable ? 1 : 0));
         tag.set("itemTier", new NBTTagInt(tier.getTierId()));
+        if (isReroll && EnchantmentAPI.getEnchantLvl(origItem) > 0) {
+            tag.set("enchant", new NBTTagInt(EnchantmentAPI.getEnchantLvl(origItem)));
+        }
         
         if (type.getId() <= 4) {
             tag.set("type",  new NBTTagString("weapon"));
@@ -459,7 +519,7 @@ public class ItemGenerator {
      * @since 1.0
      */
     public ItemGenerator reroll() {
-        origItem = item.clone();
+        origItem = origItem.clone();
         
         // NMS stack for reading NBT tags
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(origItem);
