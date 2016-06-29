@@ -237,12 +237,10 @@ public class ItemGenerator {
 		    meta = im.applyModifier(mc, meta);
 		    
 		    // write NBT tags
-            if (mc.getRange().getModifierType() == ModifierType.TRIPLE
-                    || mc.getRange().getModifierType() == ModifierType.RANGE) {
+            if (mc.getRange().getModifierType() == ModifierType.TRIPLE || mc.getRange().getModifierType() == ModifierType.RANGE) {
                 NBTModifiers.put(im.getNBTName() + "Min", mc.getRange().getValLow());
                 NBTModifiers.put(im.getNBTName() + "Max", mc.getRange().getValHigh());
-		    }
-		    else {
+		    } else {
 		        NBTModifiers.put(im.getNBTName(), mc.getRange().getValLow());
 		    }
 		    
@@ -489,6 +487,26 @@ public class ItemGenerator {
         tag.set("AttributeModifiers", new NBTTagList());
         
         NBTTagList modifiersList = new NBTTagList();
+        if (isReroll) {
+            List<String> modifiers = API.getModifiers(origItem);
+            if (ItemType.isWeapon(origItem)) {
+                for (String string : modifiers) {
+                    if (string.contains("damage")) {
+                        modifiersList.add(new NBTTagString(string));
+                    }
+                }
+            } else if (ItemType.isArmor(origItem)) {
+                for (String string : modifiers) {
+                    if (string.contains("armor")) {
+                        modifiersList.add(new NBTTagString(string));
+                    } else if (string.contains("healthPoints")) {
+                        modifiersList.add(new NBTTagString(string));
+                    } else if (string.contains("energyRegen")) {
+                        modifiersList.add(new NBTTagString(string));
+                    }
+                }
+            }
+        }
         
         for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
             tag.set(entry.getKey(), new NBTTagInt(entry.getValue()));
