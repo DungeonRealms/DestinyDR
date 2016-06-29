@@ -11,21 +11,20 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_9_R2.EntityArrow;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
 
@@ -377,6 +376,7 @@ public class DamageAPI {
         // STAT BONUS DAMAGE
         switch (projectile.getType()) {
             case ARROW:
+            case TIPPED_ARROW:
                 damage += (damage / 100.) * attributes.get("dexterity")[1] * 0.015D;
                 break;
             case SNOWBALL:
@@ -748,10 +748,26 @@ public class DamageAPI {
 
     public static void fireBowProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
         RepairAPI.subtractCustomDurability(player, itemStack, 1);
-        Projectile projectile = player.launchProjectile(Arrow.class);
-        //TODO: Tipped arrows for Fire/Ice/Poison dmg.
-        //Projectile projectile1 = player.launchProjectile(TippedArrow.class);
-        //((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.JUMP, 1, 1), true);
+        GamePlayer gp = API.getGamePlayer(player);
+        Projectile projectile;
+        if (!gp.getCurrentWeapon().equals(itemStack))
+            API.handlePlayerWeaponSwitch(player, itemStack, gp.getCurrentWeapon());
+
+        if (gp.getAttributes().containsKey("fireDamage")) {
+            projectile = player.launchProjectile(TippedArrow.class);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1, 1), true);
+        } else if (gp.getAttributes().containsKey("iceDamage")) {
+            projectile = player.launchProjectile(TippedArrow.class);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1, 1), true);
+        } else if (gp.getAttributes().containsKey("poisonDamage")) {
+            projectile = player.launchProjectile(TippedArrow.class);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.JUMP, 1, 1), true);
+        } else {
+            projectile = player.launchProjectile(Arrow.class);
+        }
+        if (projectile == null) {
+            return;
+        }
         projectile.setBounce(false);
         projectile.setVelocity(projectile.getVelocity().multiply(1.1));
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
@@ -759,9 +775,6 @@ public class DamageAPI {
         EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
         eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
         // a player switches weapons, so we need to recalculate weapon attributes
-        GamePlayer gp = API.getGamePlayer(player);
-        if (!gp.getCurrentWeapon().equals(itemStack))
-            API.handlePlayerWeaponSwitch(player, itemStack, gp.getCurrentWeapon());
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
     }
 
@@ -838,6 +851,11 @@ public class DamageAPI {
         EntityType type = entity.getType();
         return type == EntityType.SNOWBALL || type == EntityType.SMALL_FIREBALL || type == EntityType.ENDER_PEARL ||
                 type == EntityType.FIREBALL || type == EntityType.WITHER_SKULL;
+    }
+
+    public static boolean isBowProjectile(Entity entity) {
+        EntityType type = entity.getType();
+        return type == EntityType.ARROW || type == EntityType.TIPPED_ARROW;
     }
 
     /**

@@ -183,7 +183,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -283,8 +283,8 @@ public class DamageListener implements Listener {
                     }
                 }
             }
-        } else if (event.getDamager().getType() == EntityType.ARROW) { // bow
-            Arrow attackingArrow = (Arrow) event.getDamager();
+        } else if (DamageAPI.isBowProjectile(event.getDamager())) { // bow
+            Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
@@ -322,7 +322,7 @@ public class DamageListener implements Listener {
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (API.isPlayer(event.getDamager()))
             return;
-        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
@@ -345,8 +345,8 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(player);
             }
-        } else if (event.getDamager().getType() == EntityType.ARROW) {
-            Arrow attackingArrow = (Arrow) event.getDamager();
+        } else if (DamageAPI.isBowProjectile(event.getDamager())) {
+            Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof CraftLivingEntity)) return;
             if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
                 if (!(attackingArrow.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
@@ -420,7 +420,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onArmorReduceBaseDamage(EntityDamageByEntityEvent event) {
         EntityType damagerType = event.getDamager().getType();
-        if ((!(event.getDamager() instanceof LivingEntity)) && ((damagerType != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -505,8 +505,8 @@ public class DamageListener implements Listener {
                 }
                 DamageAPI.polearmAOEProcessing.remove(attacker);
             }
-        } else if (damagerType == EntityType.ARROW) {
-            Arrow attackingArrow = (Arrow) event.getDamager();
+        } else if (DamageAPI.isBowProjectile(event.getDamager())) {
+            Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) attackingArrow.getShooter();
             if (defender instanceof Player) {
@@ -1399,11 +1399,16 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof LargeFireball) {
             LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
             if (shooter instanceof Ghast) {
-                /*for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
+                for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
                     if (ent instanceof Player) {
-                        //TODO: Damage.
+                        if (API.isInSafeRegion(ent.getLocation())) continue;
+                        if (!API.isPlayer(ent)) continue;
+                        double damage = DamageAPI.calculateProjectileDamage(shooter, (LivingEntity) ent, event.getEntity());
+                        double[] armorResult = DamageAPI.calculateArmorReduction(shooter, (LivingEntity) ent, damage, event.getEntity());
+
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) ent, shooter, damage - armorResult[0], armorResult[0], armorResult[1]);
                     }
-                }*/
+                }
 
                 if (new Random().nextInt(10) == 0) {
                     // 10% chance of adds on explosion.

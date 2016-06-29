@@ -457,26 +457,8 @@ public class HealthHandler implements GenericMechanic {
         if (damager != null) {
             if (damager instanceof CraftLivingEntity) {
                 leAttacker = (LivingEntity) damager;
-            } else {
-                switch (damager.getType()) {
-                    case ARROW:
-                        if (((Arrow) damager).getShooter() instanceof LivingEntity) {
-                            leAttacker = (LivingEntity) ((Arrow) damager).getShooter();
-                        }
-                        break;
-                    case SNOWBALL:
-                        if (((Snowball) damager).getShooter() instanceof LivingEntity) {
-                            leAttacker = (LivingEntity) ((Snowball) damager).getShooter();
-                        }
-                        break;
-                    case WITHER_SKULL:
-                        if (((WitherSkull) damager).getShooter() instanceof LivingEntity) {
-                            leAttacker = (LivingEntity) ((WitherSkull) damager).getShooter();
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            } else if (damager instanceof Projectile) {
+                leAttacker = (LivingEntity) ((Projectile) damager).getShooter();
             }
         }
 

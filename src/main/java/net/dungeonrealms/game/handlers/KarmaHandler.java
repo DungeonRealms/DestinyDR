@@ -309,6 +309,7 @@ public class KarmaHandler implements GenericMechanic {
         LivingEntity leKiller = null;
         switch (killer.getType()) {
             case ARROW:
+            case TIPPED_ARROW:
             case SNOWBALL:
             case SMALL_FIREBALL:
             case ENDER_PEARL:
