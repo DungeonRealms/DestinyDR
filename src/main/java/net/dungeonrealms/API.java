@@ -1156,7 +1156,7 @@ public class API {
         if (armorSet[3].getType() == Material.SKULL_ITEM) {
             ItemTier tier = (new net.dungeonrealms.game.world.items.Attribute(ent.getEquipment().getItemInMainHand())).getItemTier();
             // if we have a skull we need to generate a helmet so mob stats are calculated correctly
-            armorSet[3] = new ItemGenerator().setTier(tier).setRarity(API.getItemRarity(false)).generateItem().getItem();
+            armorSet[3] = new ItemGenerator().setTier(tier).setRarity(API.getItemRarity(ent.hasMetadata("elite"))).generateItem().getItem();
         }
 
         calculateArmorAttributes(attributes, armorSet, true);
