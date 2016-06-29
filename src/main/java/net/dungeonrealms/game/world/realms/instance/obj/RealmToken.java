@@ -52,7 +52,7 @@ public class RealmToken {
 
         // MUST BE ADDED IN THIS ORDER //
         addProperty(new RealmProperty<>("peaceful", false));
-        addProperty(new RealmProperty<>("flying", false));
+        addProperty(new RealmProperty<>("flight", false));
     }
 
 

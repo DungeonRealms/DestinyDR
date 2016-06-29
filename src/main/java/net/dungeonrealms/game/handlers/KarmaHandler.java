@@ -309,19 +309,14 @@ public class KarmaHandler implements GenericMechanic {
         LivingEntity leKiller = null;
         switch (killer.getType()) {
             case ARROW:
-                Arrow attackingArrow = (Arrow) killer;
-                if (!(attackingArrow.getShooter() instanceof LivingEntity)) break;
-                leKiller = (LivingEntity) attackingArrow.getShooter();
-                break;
             case SNOWBALL:
-                Snowball snowball = (Snowball) killer;
-                if (!(snowball.getShooter() instanceof LivingEntity)) break;
-                leKiller = (LivingEntity) snowball.getShooter();
-                break;
+            case SMALL_FIREBALL:
+            case ENDER_PEARL:
+            case FIREBALL:
             case WITHER_SKULL:
-                WitherSkull witherSkull = (WitherSkull) killer;
-                if (!(witherSkull.getShooter() instanceof LivingEntity)) break;
-                leKiller = (LivingEntity) witherSkull.getShooter();
+                Projectile projectile = (Projectile) killer;
+                if (!(projectile.getShooter() instanceof LivingEntity)) break;
+                leKiller = (LivingEntity) projectile.getShooter();
                 break;
             case PLAYER:
                 leKiller = (LivingEntity) killer;
