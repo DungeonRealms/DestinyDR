@@ -260,10 +260,10 @@ public class API {
         }
         return UUIDHelper.uuidToName(uuid.toString());
     }
-
-
-
-
+    
+    public static boolean isInWorld(Player player, World world) {
+        return world != null && player.getLocation().equals(world);
+    }
 
     /**
      * Gets the WorldGuard plugin.
