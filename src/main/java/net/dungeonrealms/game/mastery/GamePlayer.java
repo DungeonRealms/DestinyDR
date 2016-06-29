@@ -61,6 +61,10 @@ public class GamePlayer {
     @Setter
     private int playerEXP;
 
+    @Getter
+    @Setter
+    private boolean isInvulnerable;
+
     public GamePlayer(Player player) {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());
@@ -370,7 +374,7 @@ public class GamePlayer {
     }
 
     public boolean hasNewbieProtection() {
-        return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
+        return ProtectionHandler.getInstance().hasNewbieProtection(T);
     }
 
     public void setAttributeVal(AttributeType type, Integer[] val) {

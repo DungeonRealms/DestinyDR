@@ -1,22 +1,20 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss.subboss;
 
 import lombok.Getter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.base.DRGhast;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.minecraft.server.v1_9_R2.EntityGhast;
+import net.dungeonrealms.game.world.items.DamageAPI;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -27,7 +25,7 @@ import java.util.Map;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class InfernalGhast extends EntityGhast implements Boss {
+public class InfernalGhast extends DRGhast implements Boss {
 
 	private InfernalAbyss boss;
 	@Getter
@@ -54,12 +52,8 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		this.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
 		maxHP = hp;
 		HealthHandler.getInstance().setMonsterHPLive((LivingEntity) this.getBukkitEntity(), hp);
-		for (Player pl : this.getBukkitEntity().getWorld().getPlayers()) {
-			pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE + "The inferno will devour you!");
-			pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has armored up! " + ChatColor.UNDERLINE + "+50% ARMOR!");
-			pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_WARN, 2F, 0.35F);
-			pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
-		}
+		this.getBukkitEntity().setPassenger(boss.getBukkitEntity());
+		DamageAPI.setArmorBonus(getBukkitEntity(), 50);
 		this.getBukkitEntity().setPassenger(boss.getBukkitEntity());
 	}
 

@@ -397,6 +397,12 @@ public class BankListener implements Listener {
                         if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGemPouch(e.getCurrentItem())) {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (storage.hasSpace()) {
+                                if (!API.isItemTradeable(e.getCurrentItem()) || API.isItemSoulbound(e.getCurrentItem()) || !API.isItemDroppable(e.getCurrentItem())) {
+                                    player.sendMessage(ChatColor.RED + "You can't store this item!");
+                                    e.setCancelled(true);
+                                    return;
+                                }
+
                                 storage.inv.addItem(e.getCurrentItem());
                                 e.setCurrentItem(null);
                                 player.sendMessage(ChatColor.GREEN + "Item added to storage!");
@@ -490,7 +496,32 @@ public class BankListener implements Listener {
                     }
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                 }
+        } else if (e.getInventory().getTitle().equalsIgnoreCase("Storage Chest")) {
+            Player p = (Player) e.getWhoClicked();
+            int slot = e.getRawSlot();
+            ItemStack item = null;
+            if (e.isShiftClick()) {
+                if (slot > e.getInventory().getSize()) {
+                    item = e.getCurrentItem();
+                } else {
+                    return;
+                }
+            } else {
+                if (slot > e.getInventory().getSize()) {
+                    return;
+                } else {
+                    item = e.getCursor();
+                }
+            }
+
+            if (!API.isItemTradeable(item) || API.isItemSoulbound(item) || !API.isItemDroppable(item)) {
+                p.sendMessage(ChatColor.RED + "You can't store this item!");
+                e.setCancelled(true);
+            }
+
+
         }
+
     }
 
 

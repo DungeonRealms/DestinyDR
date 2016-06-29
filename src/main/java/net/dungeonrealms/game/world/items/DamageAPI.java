@@ -12,19 +12,19 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_9_R2.EntityArrow;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.*;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
 
@@ -300,6 +300,7 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double calculateProjectileDamage(LivingEntity attacker, LivingEntity receiver, Projectile projectile) {
+        Utils.log.info("line " + new Exception().getStackTrace()[1].getLineNumber());
         Map<String, Integer[]> attributes;
         // grab the attacker's armor attributes
         if (attacker instanceof Player && API.isPlayer(attacker)) {
@@ -375,6 +376,7 @@ public class DamageAPI {
         // STAT BONUS DAMAGE
         switch (projectile.getType()) {
             case ARROW:
+            case TIPPED_ARROW:
                 damage += (damage / 100.) * attributes.get("dexterity")[1] * 0.015D;
                 break;
             case SNOWBALL:
@@ -514,7 +516,10 @@ public class DamageAPI {
         }
 
         if (API.isPlayer(attacker)) {
-            attackerAttributes = API.getGamePlayer((Player) attacker).getAttributes();
+            if (projectile == null)
+                attackerAttributes = API.getGamePlayer((Player) attacker).getAttributes();
+            else
+                attackerAttributes = new HashMap<>(API.getGamePlayer((Player) attacker).getAttributes());
         }
         else if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
             attackerAttributes = ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes();
@@ -592,12 +597,12 @@ public class DamageAPI {
         // THORNS
         if (defenderAttributes.get("thorns")[1] != 0) {
             int damageFromThorns = (int) Math.round(totalDamage * (((float) defenderAttributes.get("thorns")[1]) / 100f));
-            if (damageFromThorns < 0) damageFromThorns = 1; // always at least one damage from thorns
+            if (damageFromThorns <= 0) damageFromThorns = 1; // always at least one damage from thorns
             if (damageFromThorns > 0) {
                 attacker.getLocation().getWorld().playEffect(attacker.getLocation(), Effect.STEP_SOUND, 18);
             }
             if (attacker instanceof Player) {
-                if (((Player) attacker).getGameMode() == GameMode.SURVIVAL) {
+                if (((Player) attacker).getGameMode() == GameMode.SURVIVAL && !API.getGamePlayer((Player) attacker).isInvulnerable()) {
                     HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns, 0, 0);
                 }
             }
@@ -612,23 +617,23 @@ public class DamageAPI {
         int iceDamage = attackerAttributes.get("iceDamage")[1];
         int poisonDamage = attackerAttributes.get("poisonDamage")[1];
 
-        if (fireDamage != 0) {
-            float fireResistance = (float) defenderAttributes.get("fireResistance")[1];
-            if (fireResistance != 0) {
-                // apparently in old dr res is just handled via adding it to armor so we'll keep that
-                totalArmor += fireResistance;
-            }
-        }
-        else if (iceDamage != 0) {
-            float iceResistance = (float) defenderAttributes.get("iceResistance")[1];
-            if (iceResistance != 0) {
-                totalArmor += iceResistance;
-            }
-        }
-        else if (poisonDamage != 0) {
-            float poisonResistance = (float) defenderAttributes.get("poisonResistance")[1];
-            if (poisonResistance != 0) {
-                totalArmor += poisonResistance;
+        if (API.isPlayer(attacker)) {
+            if (fireDamage != 0) {
+                float fireResistance = (float) defenderAttributes.get("fireResistance")[1];
+                if (fireResistance != 0) {
+                    // apparently in old dr res is just handled via adding it to armor so we'll keep that
+                    totalArmor += fireResistance;
+                }
+            } else if (iceDamage != 0) {
+                float iceResistance = (float) defenderAttributes.get("iceResistance")[1];
+                if (iceResistance != 0) {
+                    totalArmor += iceResistance;
+                }
+            } else if (poisonDamage != 0) {
+                float poisonResistance = (float) defenderAttributes.get("poisonResistance")[1];
+                if (poisonResistance != 0) {
+                    totalArmor += poisonResistance;
+                }
             }
         }
 
@@ -661,8 +666,8 @@ public class DamageAPI {
 
         // ARMOR BONUS
         if (defender.hasMetadata("armorBonus")) {
-            totalArmor += defender.getMetadata("armorBonus").get(0).asFloat() * totalArmor;
-            totalArmorReduction += defender.getMetadata("armorBonus").get(0).asFloat() * totalArmorReduction;
+            totalArmor += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmor;
+            totalArmorReduction += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmorReduction;
         }
         return new double[]{Math.round(totalArmorReduction), totalArmor};
     }
@@ -746,10 +751,23 @@ public class DamageAPI {
 
     public static void fireBowProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
         RepairAPI.subtractCustomDurability(player, itemStack, 1);
-        Projectile projectile = player.launchProjectile(Arrow.class);
-        //TODO: Tipped arrows for Fire/Ice/Poison dmg.
-        //Projectile projectile1 = player.launchProjectile(TippedArrow.class);
-        //((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.JUMP, 1, 1), true);
+        GamePlayer gp = API.getGamePlayer(player);
+        Projectile projectile;
+        if (tag.hasKey("fireDamage")) {
+            projectile = player.launchProjectile(TippedArrow.class);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1, 1), true);
+        } else if (tag.hasKey("iceDamage")) {
+            projectile = player.launchProjectile(TippedArrow.class);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1, 1), true);
+        } else if (tag.hasKey("poisonDamage")) {
+            projectile = player.launchProjectile(TippedArrow.class);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.JUMP, 1, 1), true);
+        } else {
+            projectile = player.launchProjectile(Arrow.class);
+        }
+        if (projectile == null) {
+            return;
+        }
         projectile.setBounce(false);
         projectile.setVelocity(projectile.getVelocity().multiply(1.1));
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
@@ -757,7 +775,6 @@ public class DamageAPI {
         EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
         eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
         // a player switches weapons, so we need to recalculate weapon attributes
-        GamePlayer gp = API.getGamePlayer(player);
         if (!gp.getCurrentWeapon().equals(itemStack))
             API.handlePlayerWeaponSwitch(player, itemStack, gp.getCurrentWeapon());
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
@@ -836,6 +853,11 @@ public class DamageAPI {
         EntityType type = entity.getType();
         return type == EntityType.SNOWBALL || type == EntityType.SMALL_FIREBALL || type == EntityType.ENDER_PEARL ||
                 type == EntityType.FIREBALL || type == EntityType.WITHER_SKULL;
+    }
+
+    public static boolean isBowProjectile(Entity entity) {
+        EntityType type = entity.getType();
+        return type == EntityType.ARROW || type == EntityType.TIPPED_ARROW;
     }
 
     /**

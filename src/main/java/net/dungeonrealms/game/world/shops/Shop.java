@@ -324,4 +324,11 @@ public class Shop {
     }
 
 
+    public boolean hasRoom() {
+        for (ItemStack item : inventory.getContents()) {
+            if (item == null || item.getType() == Material.AIR)
+                return true;
+        }
+        return false;
+    }
 }

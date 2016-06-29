@@ -316,7 +316,12 @@ public class BaseMobSpawner {
                 }
             }
         } else {
-            return true;
+            if (counter >= respawnDelay) {
+                return true;
+            } else {
+                counter++;
+                return false;
+            }
         }
         return false;
     }

@@ -92,7 +92,6 @@ public class DungeonMobCreator {
                     continue;
                 }
                 int level = Utils.getRandomFromTier(tier + 1, spawnRange);
-                MetadataUtils.registerEntityMetadata(entity, enumEntityType, tier, level);
                 entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                 if (!isElite) {
                     EntityStats.createDungeonMob(entity, level, tier);
@@ -115,6 +114,7 @@ public class DungeonMobCreator {
                         entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier).toString() + ChatColor.BOLD + enumMonster.name.trim()));
                     }
                 }
+                MetadataUtils.registerEntityMetadata(entity, enumEntityType, tier, level);
                 entity.setLocation(toSpawnLocation.getX(), toSpawnLocation.getY(), toSpawnLocation.getZ(), 1, 1);
                 ((LivingEntity)entity.getBukkitEntity()).setRemoveWhenFarAway(false);
                 ((EntityInsentient) entity).persistent = true;

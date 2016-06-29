@@ -9,6 +9,7 @@ import net.dungeonrealms.game.handlers.ClickHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -45,6 +46,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -504,15 +506,30 @@ public class InventoryListener implements Listener {
         ItemStack slotItem = event.getCurrentItem();
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
-        GamePlayer gp = API.getGamePlayer((Player) event.getWhoClicked());
-        if (gp != null) {
-            if (gp.getLevel() < 30) {
+        Player player = (Player) event.getWhoClicked();
+        if (API.isItemSoulbound(slotItem)) {
+            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " Orb a Soulbound item.");
+            event.setCancelled(true);
+            return;
+        }
+        GamePlayer gp = API.getGamePlayer(player);
+        if (gp == null) {
+            return;
+        }
+        if (gp.getLevel() < 30) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
+            return;
+        }
+        if (player.hasMetadata("last_orb_use")) {
+            if ((System.currentTimeMillis() - player.getMetadata("last_orb_use").get(0).asLong()) < (500)) {
                 event.setCancelled(true);
-                event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
+                player.updateInventory();
                 return;
             }
-            gp.getPlayerStatistics().setOrbsUsed(gp.getPlayerStatistics().getOrbsUsed() + 1);
         }
+        player.setMetadata("last_orb_use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        gp.getPlayerStatistics().setOrbsUsed(gp.getPlayerStatistics().getOrbsUsed() + 1);
         event.setCancelled(true);
         if (cursorItem.getAmount() == 1) {
             event.setCursor(new ItemStack(Material.AIR));
@@ -521,9 +538,58 @@ public class InventoryListener implements Listener {
             newStack.setAmount(newStack.getAmount() - 1);
             event.setCursor(newStack);
         }
-        ItemStack item = new ItemGenerator().setItem(slotItem).reroll().getItem();
-        event.setCurrentItem(new ItemStack(Material.AIR));
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getWhoClicked().getInventory().addItem(item));
+
+        ItemStack oldItem = CraftItemStack.asCraftCopy(slotItem);
+
+        ItemStack item = new ItemGenerator().setReroll(true).setSoulbound(API.isItemSoulbound(slotItem)).setUntradeable(API.isItemUntradeable(slotItem))
+                .setPermanentlyUntradeable(API.isItemPermanentlyUntradeable(slotItem)).setOrigItem(slotItem).generateItem().getItem();
+        event.setCurrentItem(item);
+
+        ItemStack newItem = event.getCurrentItem();
+
+        if (oldItem.hasItemMeta() && oldItem.getItemMeta().hasDisplayName()) {
+            // Copy name if name is custom
+            String name = oldItem.getItemMeta().getDisplayName();
+            if (name.contains(ChatColor.ITALIC.toString()) && name.contains("EC")) { // Custom
+                // E-CASH
+                // name.
+                ItemMeta im = newItem.getItemMeta();
+                im.setDisplayName(name); // Set it to the old name.
+                newItem.setItemMeta(im);
+            }
+        }
+
+        player.updateInventory();
+
+        if (oldItem.getItemMeta().getLore().size() < newItem.getItemMeta().getLore().size()) {
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, player.getLocation().add(0, 2.5, 0), new Random().nextFloat(), new Random().nextFloat(),
+                        new Random().nextFloat(), 0.75F, 100);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            Firework fw = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+            FireworkMeta fwm = fw.getFireworkMeta();
+            FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.YELLOW).withFade(Color.YELLOW).with(FireworkEffect.Type.BURST).trail(true).build();
+            fwm.addEffect(effect);
+            fwm.setPower(0);
+            fw.setFireworkMeta(fwm);
+        } else {
+            // FAIL. Same or worse.
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2.0F, 1.25F);
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LAVA, player.getLocation().add(0, 2.5, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(),
+                        1F, 75);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
+
+        if (EnchantmentAPI.getEnchantLvl(newItem) >= 4) {
+            // Glowing effect.
+            EnchantmentAPI.addGlow(newItem);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -1352,7 +1418,7 @@ public class InventoryListener implements Listener {
         if (clicked != event.getWhoClicked().getInventory()) {
             ItemStack onCursor = event.getCursor();
             if (onCursor != null) {
-                if (onCursor.getType() == Material.SADDLE || onCursor.getType() == Material.EYE_OF_ENDER || onCursor.getType() == Material.NAME_TAG  || onCursor.getType() == Material.LEASH) {
+                if (onCursor.getType() == Material.SADDLE || onCursor.getType() == Material.EYE_OF_ENDER || onCursor.getType() == Material.NAME_TAG || onCursor.getType() == Material.LEASH) {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(onCursor);
                     NBTTagCompound tag = nmsStack.getTag();
                     if (tag == null) return;

@@ -89,7 +89,6 @@ public class CommandMonSpawn extends BasicCommand {
                 return true;
             }
             int level = Utils.getRandomFromTier(tier, "high");
-            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
             if (elite) {
                 entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, bcs.getBlock().getWorld().getName().contains("DUNGEON"));
@@ -99,6 +98,7 @@ public class CommandMonSpawn extends BasicCommand {
             } else {
                 EntityStats.setMonsterRandomStats(entity, level, tier);
             }
+            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
             nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

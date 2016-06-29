@@ -27,7 +27,9 @@ import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitch;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
+import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.Attribute;
@@ -37,7 +39,6 @@ import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
-import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
@@ -71,6 +72,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -105,19 +107,12 @@ public class DamageListener implements Listener {
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
             event.blockList().clear();
-            int radius = event.getEntity().getMetadata("radius").get(0).asInt();
-            int duration = event.getEntity().getMetadata("duration").get(0).asInt();
-            PotionEffectType effectType = PotionEffectType.getByName(event.getEntity().getMetadata("effectType").get(0).asString());
-            for (Entity e : event.getEntity().getNearbyEntities(radius, radius, radius)) {
-                if (!(API.isPlayer(e))) continue;
-                ((Player) e).addPotionEffect(new PotionEffect(effectType, duration, 2));
-                if (effectType.equals(PotionEffectType.HEAL)) {
-                    HealthHandler.getInstance().healPlayerByAmount((Player) e, HealthHandler.getInstance().getPlayerMaxHPLive((Player) e) / 2);
-                    ((Player) e).removePotionEffect(PotionEffectType.HEAL);
-                }
-                e.sendMessage(ChatColor.BLUE + "An Invocation of " + ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + effectType.getName().replace("_", " ") + ChatColor.BLUE + " has begun!");
+            List<Player> toBuff = new ArrayList<>();
+            for (Entity entity : event.getEntity().getNearbyEntities(8D, 8D, 8D)) {
+                if (!API.isPlayer(entity))  continue;
+                toBuff.add((Player) entity);
             }
-            BuffManager.getInstance().CURRENT_BUFFS.stream().filter(enderCrystal -> enderCrystal.getBukkitEntity().getLocation().equals(event.getEntity().getLocation())).forEach(BuffManager.getInstance().CURRENT_BUFFS::remove);
+            BuffUtils.handleBuffEffects(event.getEntity(), toBuff);
         }
     }
 
@@ -182,7 +177,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -282,8 +277,8 @@ public class DamageListener implements Listener {
                     }
                 }
             }
-        } else if (event.getDamager().getType() == EntityType.ARROW) { // bow
-            Arrow attackingArrow = (Arrow) event.getDamager();
+        } else if (DamageAPI.isBowProjectile(event.getDamager())) { // bow
+            Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
@@ -321,7 +316,7 @@ public class DamageListener implements Listener {
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (API.isPlayer(event.getDamager()))
             return;
-        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
@@ -344,8 +339,8 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(player);
             }
-        } else if (event.getDamager().getType() == EntityType.ARROW) {
-            Arrow attackingArrow = (Arrow) event.getDamager();
+        } else if (DamageAPI.isBowProjectile(event.getDamager())) {
+            Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof CraftLivingEntity)) return;
             if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
                 if (!(attackingArrow.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
@@ -419,7 +414,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onArmorReduceBaseDamage(EntityDamageByEntityEvent event) {
         EntityType damagerType = event.getDamager().getType();
-        if ((!(event.getDamager() instanceof LivingEntity)) && ((damagerType != EntityType.ARROW) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -504,8 +499,8 @@ public class DamageListener implements Listener {
                 }
                 DamageAPI.polearmAOEProcessing.remove(attacker);
             }
-        } else if (damagerType == EntityType.ARROW) {
-            Arrow attackingArrow = (Arrow) event.getDamager();
+        } else if (DamageAPI.isBowProjectile(event.getDamager())) {
+            Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) attackingArrow.getShooter();
             if (defender instanceof Player) {
@@ -945,22 +940,45 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * Listen for blazes firing their projectile so we
+     * Listen for blazes, ghasts, and witches firing their projectile so we
      * can correctly add the metadata to the projectile.
      *
      * @param event
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onBlazeLaunchProjectile(ProjectileLaunchEvent event) {
+    public void onCustomProjectileEntityLaunchProjectile(ProjectileLaunchEvent event) {
         if (!(event.getEntity().getShooter() instanceof LivingEntity)) return;
-        if (((LivingEntity) event.getEntity().getShooter()).getType() != EntityType.BLAZE) return;
+        EntityType entityType = ((LivingEntity) event.getEntity().getShooter()).getType();
+        if (entityType != EntityType.BLAZE && entityType != EntityType.GHAST && entityType != EntityType.WITCH) return;
 
-        LivingEntity blaze = (LivingEntity) event.getEntity().getShooter();
-        if (!(blaze.hasMetadata("type"))) return;
-        if (!(API.isWeapon(blaze.getEquipment().getItemInMainHand()))) return;
+        LivingEntity leShooter = (LivingEntity) event.getEntity().getShooter();
+        if (!(leShooter.hasMetadata("type"))) return;
+        if (!(API.isWeapon(leShooter.getEquipment().getItemInMainHand())) && entityType != EntityType.WITCH) return;
 
-        MetadataUtils.registerProjectileMetadata(((DRMonster) ((CraftLivingEntity) blaze).getHandle()).getAttributes
-                (), CraftItemStack.asNMSCopy(blaze.getEquipment().getItemInMainHand()).getTag(), event.getEntity());
+        if (entityType != EntityType.WITCH)
+            MetadataUtils.registerProjectileMetadata(((DRMonster) ((CraftLivingEntity) leShooter).getHandle()).getAttributes
+                    (), CraftItemStack.asNMSCopy(leShooter.getEquipment().getItemInMainHand()).getTag(), event.getEntity());
+        else {
+            DRWitch witch = (DRWitch) ((CraftLivingEntity) leShooter).getHandle();
+            MetadataUtils.registerProjectileMetadata(witch.getAttributes(), CraftItemStack.asNMSCopy(witch.getWeapon
+                    ()).getTag(), event.getEntity());
+        }
+    }
+
+    @EventHandler
+    public void onWitchSplashPotion(PotionSplashEvent event) {
+        if (!(event.getPotion().getShooter() instanceof LivingEntity)) return;
+        LivingEntity leShooter = (LivingEntity) event.getPotion().getShooter();
+        if (!(leShooter.getType() == EntityType.WITCH)) return;
+
+        for (LivingEntity le : event.getAffectedEntities()) {
+            if (API.isInSafeRegion(le.getLocation())) continue;
+            if (!API.isPlayer(le)) continue;
+            double damage = DamageAPI.calculateProjectileDamage(leShooter, le, event.getPotion());
+            double[] armorResult = DamageAPI.calculateArmorReduction(leShooter, le, damage, event.getPotion());
+
+            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) le, leShooter, damage - armorResult[0], armorResult[0], armorResult[1]);
+        }
     }
 
     /**
@@ -1375,11 +1393,16 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof LargeFireball) {
             LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
             if (shooter instanceof Ghast) {
-                /*for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
+                for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
                     if (ent instanceof Player) {
-                        //TODO: Damage.
+                        if (API.isInSafeRegion(ent.getLocation())) continue;
+                        if (!API.isPlayer(ent)) continue;
+                        double damage = DamageAPI.calculateProjectileDamage(shooter, (LivingEntity) ent, event.getEntity());
+                        double[] armorResult = DamageAPI.calculateArmorReduction(shooter, (LivingEntity) ent, damage, event.getEntity());
+
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) ent, shooter, damage - armorResult[0], armorResult[0], armorResult[1]);
                     }
-                }*/
+                }
 
                 if (new Random().nextInt(10) == 0) {
                     // 10% chance of adds on explosion.

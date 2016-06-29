@@ -142,11 +142,11 @@ public class API {
 
     public static ItemStack[] getTierArmor(int tier) {
         int chance = RandomHelper.getRandomNumberBetween(1, 1000);
-        if (chance <= 20) {
+        if (chance <= 10) {
             return new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
-        } else if (chance <= 100) {
+        } else if (chance <= 30) {
             return new ItemGenerator().setRarity(ItemRarity.RARE).setTier(ItemTier.getByTier(tier)).getArmorSet();
-        } else if (chance <= 400) {
+        } else if (chance <= 150) {
             return new ItemGenerator().setRarity(ItemRarity.UNCOMMON).setTier(ItemTier.getByTier(tier)).getArmorSet();
         } else {
             return new ItemGenerator().setRarity(ItemRarity.COMMON).setTier(ItemTier.getByTier(tier)).getArmorSet();
@@ -154,15 +154,13 @@ public class API {
     }
 
     public static ItemRarity getItemRarity(boolean isElite) {
-        int chance = RandomHelper.getRandomNumberBetween(1, 500);
-        if (isElite) {
-            chance *= 0.9;
-        }
+        int chance = RandomHelper.getRandomNumberBetween(1, 1000);
+        if (isElite) chance *= 0.9;
         if (chance <= 10) {
             return ItemRarity.UNIQUE;
-        } else if (chance > 10 && chance <= 50) {
+        } else if (chance <= 30) {
             return ItemRarity.RARE;
-        } else if (chance > 50 && chance <= 200) {
+        } else if (chance <= 150) {
             return ItemRarity.UNCOMMON;
         } else {
             return ItemRarity.COMMON;
@@ -644,6 +642,7 @@ public class API {
         }
         if (Rank.isGM(player)) {
             HealthHandler.getInstance().setPlayerHPLive(player, 10000);
+            gp.setInvulnerable(true);
             player.sendMessage(new String[]{
                     "",
                     ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",
@@ -1158,7 +1157,7 @@ public class API {
 
         // check if we have a skull
         if (armorSet[3].getType() == Material.SKULL_ITEM) {
-            ItemTier tier = (new net.dungeonrealms.game.world.items.Attribute(ent.getEquipment().getItemInMainHand())).getItemTier();
+            ItemTier tier = ItemTier.getByTier(ent.getMetadata("tier").get(0).asInt());
             // if we have a skull we need to generate a helmet so mob stats are calculated correctly
             armorSet[3] = new ItemGenerator().setTier(tier).setRarity(API.getItemRarity(ent.hasMetadata("elite"))).generateItem().getItem();
         }
