@@ -586,7 +586,7 @@ public class RealmInstance implements Realms {
             boolean add = false;
 
             if (global == null) {
-                global = new GlobalProtectedRegion("__global__ ");
+                global = new GlobalProtectedRegion("__global__");
                 add = true;
             }
 
