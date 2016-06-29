@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -55,6 +56,9 @@ public class ProtectionHandler implements GenericMechanic, Listener {
     public void removePlayerProtection(Player player) {
         if (player.hasMetadata("newbie_protection")) {
             player.removeMetadata("newbie_protection", DungeonRealms.getInstance());
+            player.sendMessage("");
+            player.sendMessage(ChatColor.RED + "You have forfeited your 'Newbie protection' by killing another Player.");
+            player.playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 1F, 1F);
         }
     }
 

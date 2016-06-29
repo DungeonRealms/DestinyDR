@@ -336,6 +336,9 @@ public class KarmaHandler implements GenericMechanic {
             String alignmentPlayer = getPlayerRawAlignment(player);
             GamePlayer killerGP = API.getGamePlayer(killerPlayer);
             if (killerGP != null) {
+                if (killerGP.hasNewbieProtection()) {
+                    ProtectionHandler.getInstance().removePlayerProtection(killerPlayer);
+                }
                 killerGP.getPlayerStatistics().setPlayerKills(killerGP.getPlayerStatistics().getPlayerKills() + 1);
                 if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
                     killerGP.getPlayerStatistics().setLawfulKills(killerGP.getPlayerStatistics().getLawfulKills() + 1);
