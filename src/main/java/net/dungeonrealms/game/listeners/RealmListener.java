@@ -107,9 +107,7 @@ public class RealmListener implements Listener {
     @EventHandler
     public void onBlock(BlockPhysicsEvent event) {
         if (event.getBlock().getWorld().equals(Bukkit.getWorlds().get(0))) return;
-        RealmToken realm = Realms.getInstance().getRealm(event.getBlock().getLocation());
-
-        if (realm != null)
+        if (event.getBlock().getType().equals(Material.PORTAL))
             event.setCancelled(true);
     }
 
@@ -234,6 +232,9 @@ public class RealmListener implements Listener {
         if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
+        event.setCancelled(true);
+        event.setUseItemInHand(Event.Result.DENY);
+
         if (!p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString())) {
             // Trying to use in a realm that isn't theirs.
             if (tag.getString("orb").equalsIgnoreCase("flight"))
@@ -244,8 +245,6 @@ public class RealmListener implements Listener {
         }
         RealmToken realm = Realms.getInstance().getRealm(p.getUniqueId());
 
-        event.setCancelled(true);
-        event.setUseItemInHand(Event.Result.DENY);
 
         if (tag.getString("orb").equalsIgnoreCase("flight")) {
 
