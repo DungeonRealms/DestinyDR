@@ -12,6 +12,7 @@ import net.dungeonrealms.game.ui.item.GUIButton;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -228,7 +229,6 @@ class RealmMaterialFactory {
         }
     }
 
-
     private static void calculatePrices(RealmMaterialItem item) {
         ItemStack is = item.getItemStack();
 
@@ -256,15 +256,10 @@ class RealmMaterialFactory {
         is.setAmount(1);
         ecash_price = price_each / 20;
         price_each = price_each / 2;
-        if (ecash_price > 1) {
-            ecash_price = Math.round(ecash_price);
-        }
-        if (ecash_price < 1) {
-            ecash_price = 1;
-        }
-        if (price_each < 1) {
-            price_each = 1;
-        }
+
+        if (ecash_price > 1) ecash_price = Math.round(ecash_price);
+        if (ecash_price < 1) ecash_price = 1;
+        if (price_each < 1) price_each = 1;
 
         item.setPrice((int) price_each);
         item.setECashPrice(ecash_price);
@@ -349,6 +344,8 @@ class RealmMaterialFactory {
             InventoryClickEvent e = event.getClickEvent();
             Player player = event.getWhoClicked();
 
+            player.getLocation().getWorld().playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+
             if (e.isLeftClick())
                 handleTransaction(player, getItemStack(), false, price);
             else handleTransaction(player, getItemStack(), true, eCashPrice);
@@ -356,7 +353,7 @@ class RealmMaterialFactory {
     }
 
 
-    private static void handleTransaction(Player player, ItemStack item, boolean isEcash, double pricePerItem) {
+    private void handleTransaction(Player player, ItemStack item, boolean isEcash, double pricePerItem) {
         player.closeInventory();
 
         if (isEcash) {

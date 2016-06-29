@@ -6,7 +6,6 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.handlers.TutorialIslandHandler;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -146,7 +145,7 @@ public class ItemListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerUsePortalRune(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK
                 || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) return;
@@ -167,8 +166,7 @@ public class ItemListener implements Listener {
             if (Realms.getInstance().isRealmLoaded(event.getPlayer().getUniqueId()) && Realms.getInstance().getRealmWorld(p.getUniqueId()).equals(p.getLocation().getWorld())) {
                 Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
 
-
-                if (TutorialIslandHandler.getInstance().onTutorialIsland(event.getPlayer().getUniqueId())) {
+                if (API.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial_island")) {
                     p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
                             + " open a portal to your realm until you have completed Tutorial Island.");
                     return;
@@ -189,6 +187,11 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
 
         } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if (!Realms.getInstance().getRealmWorld(p.getUniqueId()).equals(p.getLocation().getWorld())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You must be in your realm to open the realm material store.");
+                return;
+            }
+
             // OPENS STORE //
             Realms.getInstance().openRealmMaterialStore(p);
             event.setCancelled(true);

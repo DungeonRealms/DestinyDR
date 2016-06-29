@@ -74,6 +74,25 @@ public class ItemManager {
         return CraftItemStack.asBukkitCopy(nms);
     }
 
+    public static ItemStack createOrbofFlight() {
+        ItemStack orbOfFlight = createItem(Material.FIREWORK_CHARGE, ChatColor.AQUA.toString() + "Orb of Flight",
+                Arrays.asList((ChatColor.GRAY.toString() + "Enables " + ChatColor.UNDERLINE + "FLYING" + ChatColor.GRAY + " in realm for the owner "),
+                        (ChatColor.GRAY.toString() + "and all builders for 30 minute(s)."),
+                        (ChatColor.RED.toString() + ChatColor.BOLD.toString() + "REQ:" + ChatColor.RED.toString() + " Active Orb of Peace")).toArray(new String[3]));
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(orbOfFlight);
+        nms.getTag().setString("orb", "flight");
+        return CraftItemStack.asBukkitCopy(nms);
+    }
+
+    public static ItemStack createOrbofPeace() {
+        ItemStack orbOfPeace = createItem(Material.ENDER_PEARL, ChatColor.LIGHT_PURPLE.toString() + "Orb of Peace",
+                new String[]{(ChatColor.GRAY.toString() + "Set realm to " + ChatColor.UNDERLINE + "SAFE ZONE" + ChatColor.GRAY + " for 1 hour(s).")});
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(orbOfPeace);
+        nms.getTag().setString("orb", "peace");
+        return CraftItemStack.asBukkitCopy(nms);
+    }
+
     public static ItemStack createWeaponEnchant(int tier) {
         String material = getWeaponMatString(tier);
         ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant " + material + " Weapon", new String[]{ChatColor.RED + "+5% DMG", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Weapon will VANISH if enchant above +3 FAILS."});

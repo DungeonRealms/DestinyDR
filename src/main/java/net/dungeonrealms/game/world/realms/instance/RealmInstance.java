@@ -19,7 +19,6 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.lingala.zip4j.core.ZipFile;
@@ -117,7 +116,7 @@ public class RealmInstance implements Realms {
         }
 
         // CREATE REALM TOKEN //
-        RealmToken realm = new RealmToken(player.getUniqueId());
+        RealmToken realm = new RealmToken(player.getUniqueId(), player.getName());
         realm.setStatus(RealmStatus.DOWNLOADING);
 
         CACHED_REALMS.put(player.getUniqueId(), realm);
@@ -250,7 +249,8 @@ public class RealmInstance implements Realms {
         Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* Realm Portal OPENED *");
 
         player.getWorld().playEffect(portalLocation, Effect.ENDER_SIGNAL, 10);
-        player.playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
+        player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 1.25F);
+
 
         if (getRealmTitle(player.getUniqueId()).equals(""))
             player.sendMessage(ChatColor.GRAY + "Type /realm <TITLE> to set the description of your realm, it will be displayed to all visitors.");
@@ -518,7 +518,7 @@ public class RealmInstance implements Realms {
         portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
         portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
 
-        portalLocation.getWorld().playSound(portalLocation, Sound.BLOCK_GLASS_BREAK, 1, 1);
+        portalLocation.getWorld().playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
 
         if (realm.getHologram() != null)
             realm.getHologram().delete();
@@ -532,6 +532,10 @@ public class RealmInstance implements Realms {
             if (p != null)
                 p.teleport(portalLocation);
         }
+
+        // MAKE SURE WE GET ALL THE PLAYER OUT OF THE REALM //
+        getRealmWorld(uuid).getPlayers().stream().filter(p -> p != null).forEach(p -> p.teleport(portalLocation));
+        realm.getPlayersInRealm().clear();
     }
 
 
@@ -634,6 +638,8 @@ public class RealmInstance implements Realms {
         String name = Bukkit.getPlayer(uuid).getName();
 
         if (realmHologram == null) return;
+
+        realmHologram.clearLines();
 
         realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
         realmHologram.insertTextLine(1, realm.getPropertyBoolean("peaceful") ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
