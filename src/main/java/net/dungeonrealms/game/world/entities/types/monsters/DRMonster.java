@@ -46,6 +46,10 @@ public interface DRMonster {
             //Boss will handle this.
             return;
         }
+        if (ent.hasMetadata("combatlog")) {
+            //combat log npcs have special drop mechanics
+            return;
+        }
         Random random = new Random();
         GamePlayer gp = API.getGamePlayer(killer);
         boolean toggleDebug = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId());

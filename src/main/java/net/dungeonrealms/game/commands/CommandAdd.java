@@ -47,8 +47,8 @@ import java.util.Random;
  */
 public class CommandAdd extends BasicCommand {
 
-    public CommandAdd(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandAdd(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     @Override
