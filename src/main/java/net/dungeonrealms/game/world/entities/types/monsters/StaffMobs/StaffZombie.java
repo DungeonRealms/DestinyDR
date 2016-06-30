@@ -48,10 +48,11 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
     public void setStats() {
 
     }
-	@Override
-	public EnumMonster getEnum() {
-		return this.monsterType;
-	}
+
+    @Override
+    public EnumMonster getEnum() {
+        return this.monsterType;
+    }
 
     @Override
     public void a(EntityLiving entity, float f) {
@@ -68,7 +69,7 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
             b.setAccessible(true);
             ((LinkedHashSet) a.get(this.goalSelector)).clear();
             ((LinkedHashSet) b.get(this.goalSelector)).clear();
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }
