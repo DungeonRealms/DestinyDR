@@ -76,6 +76,7 @@ public class GamePlayer {
         this.attributeBonusesFromStats = new HashMap<>();
         this.lastArmorEquip = System.currentTimeMillis();
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
+        this.isTargettable() = true;
     }
 
     /**
