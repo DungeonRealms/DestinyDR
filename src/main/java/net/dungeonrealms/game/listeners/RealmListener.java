@@ -408,10 +408,14 @@ public class RealmListener implements Listener {
 
         if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.NETHER_STAR)
             return;
+
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
+
+        event.setCancelled(true);
+        event.setDamage(0);
 
         if (!p.isSneaking()) return;
 
@@ -420,22 +424,17 @@ public class RealmListener implements Listener {
             return;
         }
 
-        event.setCancelled(true);
-
-        event.setDamage(0);
-
         RealmToken realm = Realms.getInstance().getRealm(p.getUniqueId());
-
 
         if (!(FriendHandler.getInstance().areFriends(p, target.getUniqueId()))) {
             p.sendMessage(ChatColor.RED + "Cannot add a non-buddy to realm build list.");
-            p.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.BOLD + "/add " + target.getName() + ChatColor.GRAY
-                    + "' to add them to your buddy list.");
+            p.sendMessage(ChatColor.GRAY + "Goto your friends list in the character profile to add '" + ChatColor.BOLD + target.getName() + ChatColor.GRAY
+                    + "' as friend.");
             return;
         }
 
         if (!realm.getBuilders().contains(target.getUniqueId())) {
-            p.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "ADDED " + ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
+            p.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "ADDED " + ChatColor.RESET + ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
                     + ChatColor.GREEN + " to your realm builder list.");
             p.sendMessage(ChatColor.GRAY + target.getName()
                     + " can now place/destroy blocks in your realm until you logout of your current game session.");
@@ -450,7 +449,7 @@ public class RealmListener implements Listener {
             }
 
         } else {
-            p.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "REMOVED " + ChatColor.RED + "" + ChatColor.BOLD + target.getName()
+            p.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "REMOVED " + ChatColor.RESET + ChatColor.RED + "" + ChatColor.BOLD + target.getName()
                     + ChatColor.RED + " from your realm builder list.");
             p.sendMessage(ChatColor.GRAY + target.getName() + " can no longer place/destroy blocks in your realm.");
             target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REMOVED " + ChatColor.RED + "from " + p.getName() + "'s builder list.");
