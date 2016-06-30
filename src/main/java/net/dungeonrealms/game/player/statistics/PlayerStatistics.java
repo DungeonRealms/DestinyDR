@@ -166,7 +166,11 @@ public class PlayerStatistics {
             orbsUsed = 0;
         }
         if (timePlayed > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.TIME_PLAYED, timePlayed, false);
+            //stored in seconds, lets convert it to minutes for easier mongo storage.
+            int timeInMins = Math.round(timePlayed / 60);
+            if (timeInMins > 0) {
+                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.TIME_PLAYED, timeInMins, false);
+            }
             timePlayed = 0;
         }
         if (successfulEnchants > 0) {
@@ -189,5 +193,9 @@ public class PlayerStatistics {
             DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.GEMS_SPENT, gemsSpent, false);
             gemsSpent = 0;
         }
+    }
+
+    public int getTotalMobKills() {
+        return t1MobsKilled + t2MobsKilled + t3MobsKilled + t4MobsKilled + t5MobsKilled;
     }
 }

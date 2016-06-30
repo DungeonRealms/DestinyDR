@@ -1,16 +1,15 @@
 package net.dungeonrealms.game.handlers;
 
-import lombok.Getter;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Kieran Quigley (Proxying) on 19-Jun-16.
@@ -25,9 +24,6 @@ public class ProtectionHandler implements GenericMechanic, Listener {
         }
         return instance;
     }
-
-    @Getter
-    private Set<String> protected_Players = new HashSet<>();
 
     @Override
     public EnumPriority startPriority() {
@@ -52,13 +48,21 @@ public class ProtectionHandler implements GenericMechanic, Listener {
                 int remainingHours = 24 - (int) hours;
                 player.sendMessage("");
                 player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + remainingHours + "h " + ChatColor.RED + "left in your 'Newbie Protection'. After this time expires, you will lose items as you normally would when PK'd.");
-                //TODO: Something inside damage check to see if they are inside this (below) list. If so, cancel their death damage.
-                protected_Players.add(player.getName());
+                player.setMetadata("newbie_protection", new FixedMetadataValue(DungeonRealms.getInstance(), true));
             }
         }
     }
 
     public void removePlayerProtection(Player player) {
-        protected_Players.remove(player.getName());
+        if (player.hasMetadata("newbie_protection")) {
+            player.removeMetadata("newbie_protection", DungeonRealms.getInstance());
+            player.sendMessage("");
+            player.sendMessage(ChatColor.RED + "You have forfeited your 'Newbie protection' by killing another Player.");
+            player.playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 1F, 1F);
+        }
+    }
+
+    public boolean hasNewbieProtection(Player player) {
+        return player.hasMetadata("newbie_protection");
     }
 }

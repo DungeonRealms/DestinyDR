@@ -17,6 +17,7 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
+import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
@@ -46,8 +47,8 @@ import java.util.Random;
  */
 public class CommandAdd extends BasicCommand {
 
-    public CommandAdd(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandAdd(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     @Override
@@ -216,6 +217,9 @@ public class CommandAdd extends BasicCommand {
                     break;
                 case "orb":
                     player.getInventory().addItem(ItemManager.createOrbofAlteration());
+                    break;
+                case "buff":
+                    BuffUtils.spawnBuff(player.getUniqueId());
                     break;
                 case "armorenchant":
                     tier = Integer.parseInt(args[1]);

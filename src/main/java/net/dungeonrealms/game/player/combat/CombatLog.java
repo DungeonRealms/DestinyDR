@@ -12,12 +12,11 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeZombie;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -59,7 +58,7 @@ public class CombatLog implements GenericMechanic {
     }
 
     public static void addToCombat(Player player) {
-        if (!isInCombat(player)) {
+        if (!isInCombat(player) && !API.getGamePlayer(player).isInvulnerable()) {
             COMBAT.put(player, 10);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 BountifulAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
@@ -136,7 +135,10 @@ public class CombatLog implements GenericMechanic {
                 armorToSave.add(stack);
             }
         }
-        Zombie combatNPC = (Zombie) world.spawnEntity(loc, EntityType.ZOMBIE);
+        MeleeZombie combatNMSNPC = new MeleeZombie(((CraftWorld)world).getHandle());
+        combatNMSNPC.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+        ((CraftWorld) world).getHandle().addEntity(combatNMSNPC);
+        Zombie combatNPC = (Zombie)combatNMSNPC.getBukkitEntity();
         NBTUtils.nullifyAI(combatNPC);
         combatNPC.getEquipment().setArmorContents(player.getEquipment().getArmorContents());
         combatNPC.getEquipment().setItemInMainHand(player.getEquipment().getItemInMainHand());

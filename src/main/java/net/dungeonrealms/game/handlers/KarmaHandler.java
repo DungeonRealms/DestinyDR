@@ -2,6 +2,7 @@ package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -328,7 +329,23 @@ public class KarmaHandler implements GenericMechanic {
         Player killerPlayer;
         if (API.isPlayer(leKiller)) {
             killerPlayer = (Player) leKiller;
+            GamePlayer deathGP = API.getGamePlayer(player);
+            if (deathGP != null) {
+                deathGP.getPlayerStatistics().setDeaths(deathGP.getPlayerStatistics().getDeaths() + 1);
+            }
             String alignmentPlayer = getPlayerRawAlignment(player);
+            GamePlayer killerGP = API.getGamePlayer(killerPlayer);
+            if (killerGP != null) {
+                if (killerGP.hasNewbieProtection()) {
+                    ProtectionHandler.getInstance().removePlayerProtection(killerPlayer);
+                }
+                killerGP.getPlayerStatistics().setPlayerKills(killerGP.getPlayerStatistics().getPlayerKills() + 1);
+                if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
+                    killerGP.getPlayerStatistics().setLawfulKills(killerGP.getPlayerStatistics().getLawfulKills() + 1);
+                } else {
+                    killerGP.getPlayerStatistics().setUnlawfulKills(killerGP.getPlayerStatistics().getUnlawfulKills() + 1);
+                }
+            }
             String alignmentKiller = getPlayerRawAlignment(killerPlayer);
             if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
                 setPlayerAlignment(killerPlayer, EnumPlayerAlignments.CHAOTIC.name, false);

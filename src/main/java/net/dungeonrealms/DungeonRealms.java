@@ -342,7 +342,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "This will teleport a Game Master to their spawn point."));
-            cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "This will spawn a Dungeon Realms item."));
+            cm.registerCommand(new CommandAdd("add", "/<command> [args]", "This will spawn a Dungeon Realms item.", Collections.singletonList("ad")));
             cm.registerCommand(new CommandList("list", "/<command> [args]", "Displays a list of online players."));
             cm.registerCommand(new CommandSetRank("setrank", "/<command> [args]", "Sets the rank of a player."));
             cm.registerCommand(new CommandArmorSee("armorsee", "/<command> [args]", "Shows the armor of a player or entity."));
@@ -396,9 +396,7 @@ public class DungeonRealms extends JavaPlugin {
                 DungeonRealms.getInstance().setFinishedSetup(false);
                 ShopMechanics.deleteAllShops(true);
                 API.logoutAllPlayers(true);
-                for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
-                    combatLogger.handleTimeOut();
-                }
+                CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
                 AsyncUtils.pool.shutdown();
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     DungeonRealms.getInstance().mm.stopInvocation();
@@ -412,14 +410,15 @@ public class DungeonRealms extends JavaPlugin {
         }, 288000L);
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / START_TIME) + "/s");
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> this.hasFinishedSetup = true, 240L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1))), 0L, 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1)));
+            API.GAMEPLAYERS.values().stream().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
+        }, 0L, 20L);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, API::backupDatabase, 18000L, 18000L);
     }
 
     public void onDisable() {
-        for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
-            combatLogger.handleTimeOut();
-        }
+        CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         API.logoutAllPlayers(true);
         ShopMechanics.deleteAllShops(true);
         AsyncUtils.pool.shutdown();

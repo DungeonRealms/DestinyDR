@@ -237,12 +237,10 @@ public class ItemGenerator {
 		    meta = im.applyModifier(mc, meta);
 		    
 		    // write NBT tags
-            if (mc.getRange().getModifierType() == ModifierType.TRIPLE
-                    || mc.getRange().getModifierType() == ModifierType.RANGE) {
+            if (mc.getRange().getModifierType() == ModifierType.TRIPLE || mc.getRange().getModifierType() == ModifierType.RANGE) {
                 NBTModifiers.put(im.getNBTName() + "Min", mc.getRange().getValLow());
                 NBTModifiers.put(im.getNBTName() + "Max", mc.getRange().getValHigh());
-		    }
-		    else {
+		    } else {
 		        NBTModifiers.put(im.getNBTName(), mc.getRange().getValLow());
 		    }
 		    
@@ -489,6 +487,24 @@ public class ItemGenerator {
         tag.set("AttributeModifiers", new NBTTagList());
         
         NBTTagList modifiersList = new NBTTagList();
+        if (isReroll) {
+            List<String> modifiers = API.getModifiers(origItem);
+            if (ItemType.isWeapon(origItem)) {
+                //Stats kept from weapon (Only Damage)
+                for (String string : modifiers) {
+                    if (string.contains("damage")) {
+                        modifiersList.add(new NBTTagString(string));
+                    }
+                }
+            } else if (ItemType.isArmor(origItem)) {
+                //Stats kept from armor (Armor/DPS/HP/EnergyRegen/HPRegen)
+                for (String string : modifiers) {
+                    if (string.contains("armor") || string.contains("dps") || string.contains("healthPoints") || string.contains("energyRegen") || string.contains("healthRegen")) {
+                        modifiersList.add(new NBTTagString(string));
+                    }
+                }
+            }
+        }
         
         for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
             tag.set(entry.getKey(), new NBTTagInt(entry.getValue()));
@@ -511,28 +527,6 @@ public class ItemGenerator {
 		
 		return this;
 	}
-    
-    /**
-     * Rerolls all of an item's attributes excluding health, damage, energy regen, 
-     * and HP/s. Requires item to not be null.
-     * @return - the instance of the current ItemGenerator
-     * @since 1.0
-     */
-    public ItemGenerator reroll() {
-        origItem = origItem.clone();
-        
-        // NMS stack for reading NBT tags
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(origItem);
-        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        
-        ItemTier tier = ItemTier.getByTier(tag.getInt("itemTier"));
-        ItemType type = ItemType.getById(tag.getInt("itemType"));
-        ItemRarity rarity = ItemRarity.getById(tag.getInt("itemRarity"));
-        
-        
-        
-        return this;
-    }
 	
 	public ItemStack getItem(){
 		return item;

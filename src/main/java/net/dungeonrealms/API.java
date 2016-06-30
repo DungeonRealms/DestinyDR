@@ -123,13 +123,28 @@ public class API {
         return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
     }
 
+    public static int getTierFromLevel(int level) {
+        if (level < 10) {
+            return 1;
+        } else if (level < 20) {
+            return 2;
+        } else if (level < 30) {
+            return 3;
+        } else if (level < 40) {
+            return 4;
+        } else {
+            return 5;
+        }
+    }
+
     /**
      * @param player
      * @param kill
      * @return Integer
      */
     public static int getMonsterExp(Player player, org.bukkit.entity.Entity kill) {
-        int level = API.getGamePlayer(player).getStats().getLevel();
+        GamePlayer gp = API.getGamePlayer(player);
+        int level = gp.getLevel();
         int mob_level = kill.getMetadata("level").get(0).asInt();
         int xp = 0;
         if (mob_level > level + 20) {  // limit mob xp calculation to 10 levels above player level
@@ -142,11 +157,11 @@ public class API {
 
     public static ItemStack[] getTierArmor(int tier) {
         int chance = RandomHelper.getRandomNumberBetween(1, 1000);
-        if (chance <= 20) {
+        if (chance <= 10) {
             return new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
-        } else if (chance <= 100) {
+        } else if (chance <= 30) {
             return new ItemGenerator().setRarity(ItemRarity.RARE).setTier(ItemTier.getByTier(tier)).getArmorSet();
-        } else if (chance <= 400) {
+        } else if (chance <= 150) {
             return new ItemGenerator().setRarity(ItemRarity.UNCOMMON).setTier(ItemTier.getByTier(tier)).getArmorSet();
         } else {
             return new ItemGenerator().setRarity(ItemRarity.COMMON).setTier(ItemTier.getByTier(tier)).getArmorSet();
@@ -154,15 +169,13 @@ public class API {
     }
 
     public static ItemRarity getItemRarity(boolean isElite) {
-        int chance = RandomHelper.getRandomNumberBetween(1, 500);
-        if (isElite) {
-            chance *= 0.9;
-        }
+        int chance = RandomHelper.getRandomNumberBetween(1, 1000);
+        if (isElite) chance *= 0.9;
         if (chance <= 10) {
             return ItemRarity.UNIQUE;
-        } else if (chance > 10 && chance <= 50) {
+        } else if (chance <= 30) {
             return ItemRarity.RARE;
-        } else if (chance > 50 && chance <= 200) {
+        } else if (chance <= 150) {
             return ItemRarity.UNCOMMON;
         } else {
             return ItemRarity.COMMON;
@@ -263,9 +276,9 @@ public class API {
         return UUIDHelper.uuidToName(uuid.toString());
     }
 
-
-
-
+    public static boolean isInWorld(Player player, World world) {
+        return world != null && player.getLocation().getWorld().equals(world);
+    }
 
     /**
      * Gets the WorldGuard plugin.
@@ -292,9 +305,9 @@ public class API {
      * @since 1.0
      */
     public static boolean isInSafeRegion(Location location) {
-        if (!location.getWorld().equals(Bukkit.getWorlds().get(0))) {
-            return false;
-        }
+//        if (!location.getWorld().equals(Bukkit.getWorlds().get(0))) {
+//            return false;
+//        }
         ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld())
                 .getApplicableRegions(location);
         return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP)

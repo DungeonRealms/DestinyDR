@@ -14,6 +14,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item;
@@ -721,6 +722,55 @@ public class HealthHandler implements GenericMechanic {
                             }
                         } else {
                             API.getGamePlayer((Player) attacker).addExperience(exp, false);
+                        }
+                        PlayerStatistics playerStatistics = API.getGamePlayer((Player) attacker)
+                                .getPlayerStatistics();
+                        switch (entity.getMetadata("tier").get(0).asInt()) {
+                            case 1:
+                                playerStatistics.setT1MobsKilled(playerStatistics.getT1MobsKilled() + 1);
+                                break;
+                            case 2:
+                                playerStatistics.setT2MobsKilled(playerStatistics.getT2MobsKilled() + 1);
+                                break;
+                            case 3:
+                                playerStatistics.setT3MobsKilled(playerStatistics.getT3MobsKilled() + 1);
+                                break;
+                            case 4:
+                                playerStatistics.setT4MobsKilled(playerStatistics.getT4MobsKilled() + 1);
+                                break;
+                            case 5:
+                                playerStatistics.setT5MobsKilled(playerStatistics.getT5MobsKilled() + 1);
+                                break;
+                            default:
+                                break;
+                        }
+                        switch (playerStatistics.getTotalMobKills()) {
+                            case 100:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_I);
+                                break;
+                            case 300:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_II);
+                                break;
+                            case 500:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_III);
+                                break;
+                            case 1000:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_IV);
+                                break;
+                            case 1500:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_V);
+                                break;
+                            case 2000:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_VI);
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }

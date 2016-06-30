@@ -525,7 +525,7 @@ public class PlayerMenus {
     }
 
     public static void openCharacterAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Character Achievements");
+        Inventory inv = Bukkit.createInventory(null, 45, "Character Achievements");
         UUID uuid = player.getUniqueId();
         List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
 

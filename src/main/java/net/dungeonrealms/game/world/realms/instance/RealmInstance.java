@@ -36,9 +36,11 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Recipe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -99,6 +101,16 @@ public class RealmInstance implements Realms {
 
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
         Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
+
+        // CRAFTING RESTRICTIONS //
+        removeRecipe(Material.CHEST);
+        removeRecipe(Material.FURNACE);
+        removeRecipe(Material.ENDER_CHEST);
+        removeRecipe(Material.HOPPER);
+        removeRecipe(Material.ANVIL);
+        removeRecipe(Material.DROPPER);
+        removeRecipe(Material.DISPENSER);
+        removeRecipe(Material.TRAPPED_CHEST);
     }
 
 
@@ -327,6 +339,9 @@ public class RealmInstance implements Realms {
         getRealm(player.getUniqueId()).getPlayersInRealm().stream()
                 .filter(uuid -> Bukkit.getPlayer(uuid) != null)
                 .forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
+
+        Realms.getInstance().getRealmWorld(player.getUniqueId())
+                .getPlayers().forEach(p -> p.teleport(realm.getPortalLocation()));
 
         closeRealmPortal(player.getUniqueId(), true);
         realm.setStatus(RealmStatus.REMOVING);
@@ -590,8 +605,13 @@ public class RealmInstance implements Realms {
                 add = true;
             }
 
-            if (isChaotic) global.setFlag(DefaultFlag.PVP, StateFlag.State.ALLOW);
-            else global.setFlag(DefaultFlag.PVP, StateFlag.State.DENY);
+            if (isChaotic) {
+                global.setFlag(DefaultFlag.MOB_DAMAGE, StateFlag.State.ALLOW);
+                global.setFlag(DefaultFlag.PVP, StateFlag.State.ALLOW);
+            } else {
+                global.setFlag(DefaultFlag.MOB_DAMAGE, StateFlag.State.DENY);
+                global.setFlag(DefaultFlag.PVP, StateFlag.State.DENY);
+            }
 
             if (add)
                 regionManager.addRegion(global);
@@ -742,6 +762,15 @@ public class RealmInstance implements Realms {
             zipFile.addFolder(targetFile, parameters);
         } else {
             System.out.println("ERROR ERROR, HOLY SHIT");
+        }
+    }
+
+    private void removeRecipe(Material m) {
+        Iterator<Recipe> it = Bukkit.getServer().recipeIterator();
+        Recipe recipe;
+        while (it.hasNext()) {
+            recipe = it.next();
+            if (recipe != null && recipe.getResult().getType() == m) it.remove();
         }
     }
 

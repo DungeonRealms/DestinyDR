@@ -81,9 +81,6 @@ public class MetadataUtils {
     public static void registerProjectileMetadata(Map<String, Integer[]> attributes, NBTTagCompound tag, Projectile projectile) {
         // transfer only the weapon attributes. The armor attributes will be grabbed in the calculateProjectileDamage
         // method.
-        if (projectile instanceof ThrownPotion) {
-
-        }
         for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
             String modifier = type.getNBTName();
             if (type.isRange()) {

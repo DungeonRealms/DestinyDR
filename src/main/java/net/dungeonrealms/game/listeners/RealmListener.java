@@ -10,12 +10,14 @@ import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.updater.UpdateEvent;
 import net.dungeonrealms.game.updater.UpdateType;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
@@ -35,6 +37,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -90,6 +94,18 @@ public class RealmListener implements Listener {
             if (!Realms.getInstance().getRealmTitle(realm.getOwner()).equals(""))
                 player.sendMessage(ChatColor.GRAY + Realms.getInstance().getRealmTitle(realm.getOwner()));
 
+            player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "INVINCIBILITY (15s)");
+            player.sendMessage(ChatColor.GRAY + "You will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GRAY.toString()
+                    + " be flagged as 'combat logged' while invincible.");
+
+            API.getGamePlayer(player).setInvulnerable(true);
+
+            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                player.setFireTicks(0);
+                player.setFallDistance(0.0F);
+                API.getGamePlayer(player).setInvulnerable(false);
+            }, 15 * 20L);
+
         } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
             RealmToken realm = Realms.getInstance().getRealm(event.getFrom());
 
@@ -107,9 +123,7 @@ public class RealmListener implements Listener {
     @EventHandler
     public void onBlock(BlockPhysicsEvent event) {
         if (event.getBlock().getWorld().equals(Bukkit.getWorlds().get(0))) return;
-        RealmToken realm = Realms.getInstance().getRealm(event.getBlock().getLocation());
-
-        if (realm != null)
+        if (event.getBlock().getType().equals(Material.PORTAL))
             event.setCancelled(true);
     }
 
@@ -225,6 +239,7 @@ public class RealmListener implements Listener {
         if (p.getEquipment().getItemInMainHand() == null)
             return;
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
+        if (nmsStack == null) return;
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (!tag.hasKey("orb")) return;
@@ -232,6 +247,9 @@ public class RealmListener implements Listener {
 
         if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
+
+        event.setCancelled(true);
+        event.setUseItemInHand(Event.Result.DENY);
 
         if (!p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString())) {
             // Trying to use in a realm that isn't theirs.
@@ -243,8 +261,6 @@ public class RealmListener implements Listener {
         }
         RealmToken realm = Realms.getInstance().getRealm(p.getUniqueId());
 
-        event.setCancelled(true);
-        event.setUseItemInHand(Event.Result.DENY);
 
         if (tag.getString("orb").equalsIgnoreCase("flight")) {
 
@@ -653,6 +669,69 @@ public class RealmListener implements Listener {
             }
         }
         return count;
+    }
+
+    @SuppressWarnings("deprecation")
+    @EventHandler
+    public void onInventoryClickEvent(InventoryClickEvent event) {
+        Player p = (Player) event.getWhoClicked();
+
+        if (!event.getInventory().getName().equalsIgnoreCase("container.chest") && !event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
+                && !(event.getInventory().getName().equalsIgnoreCase("container.minecart"))
+                && !(event.getInventory().getName().equalsIgnoreCase("container.dispenser")) && !(event.getInventory().getName().equalsIgnoreCase("container.hopper"))
+                && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
+            return;
+        }
+
+        if (p.getWorld().equals(Bukkit.getWorlds().get(0)) || p.isOp()) return;
+
+        if (!event.getInventory().getName().equalsIgnoreCase("container.hopper") && event.getAction() == InventoryAction.PICKUP_ALL) {
+            // Trying to grab all items from a chest in a realm.
+            String realm_name = p.getWorld().getName();
+            if (!(realm_name.equalsIgnoreCase(p.getUniqueId().toString()) || (Realms.getInstance().getRealm(p.getLocation()).getBuilders().contains(p.getUniqueId())))) {
+                event.setCancelled(true);
+                event.setResult(Event.Result.DENY);
+                return;
+            }
+        }
+
+        if (p.isOp()) {
+            return;
+        }
+
+        int slot_num = event.getRawSlot();
+        if (slot_num < event.getInventory().getSize()) {
+            // An item inside the chest is being clicked.
+            if (event.isShiftClick() || (event.getCursor() == null && event.getCurrentItem() != null)) {
+                return; // Don't care if they're moving stuff OUT of inventory.
+            }
+
+            if (event.getCursor() != null) {
+                // They're placing an item into the chest.
+                ItemStack cursor = event.getCursor();
+                if (Item.ItemType.isArmor(cursor) || Item.ItemType.isWeapon(cursor) || cursor.getType() == Material.EMERALD
+                        || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor)) {
+                    event.setCancelled(true);
+                    event.setCursor(cursor);
+                    p.updateInventory();
+                    p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " deposit weapons, armor, or gems in realm blocks.");
+                    p.sendMessage(ChatColor.GRAY + "Deposit those items in your BANK CHEST.");
+                }
+            }
+        } else if (slot_num >= event.getInventory().getSize()) {
+            // Clicking in own inventory.
+            if (event.isShiftClick()) {
+                ItemStack in_slot = event.getCurrentItem();
+                if (Item.ItemType.isArmor(in_slot) || Item.ItemType.isWeapon(in_slot) || in_slot.getType() == Material.EMERALD
+                        || in_slot.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(in_slot)) {
+                    event.setCancelled(true);
+                    event.setCurrentItem(in_slot);
+                    p.updateInventory();
+                    p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " deposit weapons, armor, or gems in realm blocks.");
+                    p.sendMessage(ChatColor.GRAY + "Deposit those items in your BANK CHEST.");
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

@@ -12,6 +12,7 @@ import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
@@ -62,7 +63,6 @@ public class GamePlayer {
     private int playerEXP;
 
     @Getter
-    @Setter
     private boolean isInvulnerable;
 
     public GamePlayer(Player player) {
@@ -374,7 +374,7 @@ public class GamePlayer {
     }
 
     public boolean hasNewbieProtection() {
-        return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
+        return ProtectionHandler.getInstance().hasNewbieProtection(T);
     }
 
     public void setAttributeVal(AttributeType type, Integer[] val) {
@@ -433,5 +433,10 @@ public class GamePlayer {
         if (newHigh < 0) newHigh = 0;
         attributes.put(type.getNBTName(), new Integer[] { newLow, newHigh });
         return new Integer[] { newLow, newHigh };
+    }
+
+    public void setInvulnerable(boolean flag) {
+        if (CombatLog.isInCombat(T)) CombatLog.removeFromCombat(T);
+        isInvulnerable = flag;
     }
 }
