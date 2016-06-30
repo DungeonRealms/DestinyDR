@@ -725,7 +725,7 @@ public class HealthHandler implements GenericMechanic {
                         }
                         PlayerStatistics playerStatistics = API.getGamePlayer((Player) attacker)
                                 .getPlayerStatistics();
-                        switch (entity.getMetadata("tier").get(0).asInt() + 1) {
+                        switch (entity.getMetadata("tier").get(0).asInt()) {
                             case 1:
                                 playerStatistics.setT1MobsKilled(playerStatistics.getT1MobsKilled() + 1);
                                 break;

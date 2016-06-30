@@ -146,26 +146,6 @@ public class API {
         GamePlayer gp = API.getGamePlayer(player);
         int level = gp.getLevel();
         int mob_level = kill.getMetadata("level").get(0).asInt();
-        int mobTier = API.getTierFromLevel(mob_level);
-        switch (mobTier) {
-            case 1:
-                gp.getPlayerStatistics().setT1MobsKilled(gp.getPlayerStatistics().getT1MobsKilled() + 1);
-                break;
-            case 2:
-                gp.getPlayerStatistics().setT2MobsKilled(gp.getPlayerStatistics().getT2MobsKilled() + 1);
-                break;
-            case 3:
-                gp.getPlayerStatistics().setT3MobsKilled(gp.getPlayerStatistics().getT3MobsKilled() + 1);
-                break;
-            case 4:
-                gp.getPlayerStatistics().setT4MobsKilled(gp.getPlayerStatistics().getT4MobsKilled() + 1);
-                break;
-            case 5:
-                gp.getPlayerStatistics().setT5MobsKilled(gp.getPlayerStatistics().getT5MobsKilled() + 1);
-                break;
-            default:
-                break;
-        }
         int xp = 0;
         if (mob_level > level + 20) {  // limit mob xp calculation to 10 levels above player level
             xp = calculateXP(player, kill, level + 20);
