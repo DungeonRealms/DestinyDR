@@ -173,8 +173,6 @@ public class WeaponModifiers {
 
 			setOrderPriority(0);
 
-			//TODO: Possibly slightly increase/decrease these based on Bow energy usage compared to staff.
-
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 5)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 6, 7, 10)));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 11, 12, 15)));
