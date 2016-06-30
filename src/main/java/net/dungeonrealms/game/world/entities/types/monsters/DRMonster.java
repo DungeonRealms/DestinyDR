@@ -194,28 +194,28 @@ public interface DRMonster {
             switch (tier) {
                 case 1:
                     if (random.nextInt(2) == 0) {
-                        teleport = ItemManager.createTeleportBook("cyrennica");
+                        teleport = ItemManager.createTeleportBook("Cyrennica");
                     } else {
-                        teleport = ItemManager.createTeleportBook("harrison_field");
+                        teleport = ItemManager.createTeleportBook("Harrison_Field");
                     }
                     break;
                 case 2:
                     int type = random.nextInt(5);
                     switch (type) {
                         case 0:
-                            teleport = ItemManager.createTeleportBook("cyrennica");
+                            teleport = ItemManager.createTeleportBook("Cyrennica");
                             break;
                         case 1:
-                            teleport = ItemManager.createTeleportBook("harrison_field");
+                            teleport = ItemManager.createTeleportBook("Harrison_Field");
                             break;
                         case 2:
-                            teleport = ItemManager.createTeleportBook("dark_oak");
+                            teleport = ItemManager.createTeleportBook("Dark_Oak");
                             break;
                         case 3:
-                            teleport = ItemManager.createTeleportBook("trollsbane");
+                            teleport = ItemManager.createTeleportBook("Trollsbane");
                             break;
                         case 4:
-                            teleport = ItemManager.createTeleportBook("tripoli");
+                            teleport = ItemManager.createTeleportBook("Tripoli");
                             break;
                     }
                     break;
@@ -223,34 +223,34 @@ public interface DRMonster {
                     type = random.nextInt(5);
                     switch (type) {
                         case 0:
-                            teleport = ItemManager.createTeleportBook("cyrennica");
+                            teleport = ItemManager.createTeleportBook("Cyrennica");
                             break;
                         case 1:
-                            teleport = ItemManager.createTeleportBook("dark_oak");
+                            teleport = ItemManager.createTeleportBook("Dark_Oak");
                             break;
                         case 2:
-                            teleport = ItemManager.createTeleportBook("trollsbane");
+                            teleport = ItemManager.createTeleportBook("Yrollsbane");
                             break;
                         case 3:
-                            teleport = ItemManager.createTeleportBook("gloomy_hollows");
+                            teleport = ItemManager.createTeleportBook("Gloomy_Hollows");
                             break;
                         case 4:
-                            teleport = ItemManager.createTeleportBook("crestguard");
+                            teleport = ItemManager.createTeleportBook("Crestguard");
                             break;
                     }
                     break;
                 case 4:
                     if (random.nextInt(2) == 0) {
-                        teleport = ItemManager.createTeleportBook("deadpeaks");
+                        teleport = ItemManager.createTeleportBook("Deadpeaks");
                     } else {
-                        teleport = ItemManager.createTeleportBook("gloomy_hollows");
+                        teleport = ItemManager.createTeleportBook("Gloomy_Hollows");
                     }
                     break;
                 case 5:
                     if (random.nextInt(2) == 0) {
-                        teleport = ItemManager.createTeleportBook("deadpeaks");
+                        teleport = ItemManager.createTeleportBook("Deadpeaks");
                     } else {
-                        teleport = ItemManager.createTeleportBook("gloomy_hollows");
+                        teleport = ItemManager.createTeleportBook("Gloomy_Hollows");
                     }
                     break;
                 default:
