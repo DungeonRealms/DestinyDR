@@ -218,7 +218,6 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     Entity entity = SpawningMechanics.getMob(world, 1, EnumMonster.Monk);
                     int level = Utils.getRandomFromTier(3, "high");
                     String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                    MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, level);
                     EntityStats.createDungeonMob(entity, level, 3);
                     if (entity == null) {
                         return; //WTF?? UH OH BOYS WE GOT ISSUES
@@ -239,7 +238,6 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.Acolyte);
                     int level = Utils.getRandomFromTier(3, "high");
                     String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                    MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, level);
                     EntityStats.createDungeonMob(entity, level, 3);
                     if (entity == null) {
                         return; //WTF?? UH OH BOYS WE GOT ISSUES
@@ -260,7 +258,6 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.Skeleton);
                     int level = Utils.getRandomFromTier(2, "high");
                     String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                    MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 2, level);
                     EntityStats.createDungeonMob(entity, level, 2);
                     if (entity == null) {
                         return; //WTF?? UH OH BOYS WE GOT ISSUES

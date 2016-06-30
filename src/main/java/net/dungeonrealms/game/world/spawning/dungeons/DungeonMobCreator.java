@@ -105,7 +105,8 @@ public class DungeonMobCreator {
                     }
                 } else {
                     entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, true);
+                    entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
+                    EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, level, true);
                     if (hasCustomName) {
                         entity.setCustomName(API.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim());
                         entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim()));
@@ -114,7 +115,6 @@ public class DungeonMobCreator {
                         entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier).toString() + ChatColor.BOLD + enumMonster.name.trim()));
                     }
                 }
-                MetadataUtils.registerEntityMetadata(entity, enumEntityType, tier, level);
                 entity.setLocation(toSpawnLocation.getX(), toSpawnLocation.getY(), toSpawnLocation.getZ(), 1, 1);
                 ((LivingEntity)entity.getBukkitEntity()).setRemoveWhenFarAway(false);
                 ((EntityInsentient) entity).persistent = true;

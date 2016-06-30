@@ -140,7 +140,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
             net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.MagmaCube);
             int level = Utils.getRandomFromTier(3, "low");
             String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, level);
             EntityStats.createDungeonMob(entity, level, 3);
             if (entity == null) {
                 return; //WTF?? UH OH BOYS WE GOT ISSUES
@@ -244,7 +243,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.Silverfish);
                         int level = Utils.getRandomFromTier(3, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, level);
                         EntityStats.createDungeonMob(entity, level, 3);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
@@ -261,7 +259,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(3, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, level);
                         EntityStats.createDungeonMob(entity, level, 3);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
@@ -280,7 +277,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 4, EnumMonster.Silverfish);
                         int level = Utils.getRandomFromTier(4, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, level);
                         EntityStats.createDungeonMob(entity, level, 4);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
@@ -297,7 +293,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 4, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(4, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, level);
                         EntityStats.createDungeonMob(entity, level, 4);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
