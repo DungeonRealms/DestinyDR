@@ -15,6 +15,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
@@ -197,6 +199,21 @@ public class RestrictionListener implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {
+        if (!API.isPlayer(event.getTarget())) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onInvulnerablePlayerDamage(EntityDamageEvent event) {
+        if (!API.isPlayer(event.getEntity())) return;
+        if (!API.getGamePlayer((Player) event.getEntity()).isInvulnerable()) return;
+
+        event.setDamage(0);
+        event.setCancelled(true);
     }
 
     //TODO: Prevent players entering realms

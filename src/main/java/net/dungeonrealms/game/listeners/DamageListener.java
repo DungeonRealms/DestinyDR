@@ -1118,7 +1118,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onStaffProjectileExplode(ExplosionPrimeEvent event) {
         if (!(event.getEntity() instanceof WitherSkull) && !(event.getEntity() instanceof Fireball) && !(event
-                .getEntity() instanceof LargeFireball)) {
+                .getEntity() instanceof LargeFireball) && !(event.getEntity() instanceof SmallFireball)) {
             return;
         }
         event.setCancelled(false);
