@@ -864,7 +864,7 @@ public class MainListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void playerAttemptTrade(PlayerDropItemEvent event) {
         if (event.isCancelled()) return;
         if (!API.isItemDroppable(event.getItemDrop().getItemStack())) return;
@@ -875,9 +875,18 @@ public class MainListener implements Listener {
         Player pl = event.getPlayer();
 
         Player trader = TradeManager.getTarget(pl);
-        if (trader == null) {
+        if (trader == null)
+            return;
+
+        if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, trader.getUniqueId())) {
+            pl.sendMessage(ChatColor.RED + trader.getName() + " has Trades disabled.");
+            trader.sendMessage(ChatColor.RED + "Trade attempted, but your trades are disabled.");
+            trader.sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/toggletrade " + ChatColor.RED + " to enable trades.");
+            event.setCancelled(true);
             return;
         }
+
+
         if (!TradeManager.canTrade(trader.getUniqueId())) {
             event.setCancelled(true);
             pl.sendMessage(ChatColor.YELLOW + trader.getName() + " is currently busy.");
@@ -895,8 +904,14 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        ItemStack item = event.getItemDrop().getItemStack().clone();
+        final ItemStack item = event.getItemDrop().getItemStack();
+        event.getItemDrop().remove();
         event.setCancelled(true);
+
+        if (pl.getItemOnCursor() != null) {
+            pl.setItemOnCursor(new ItemStack(Material.AIR));
+        }
+
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 20 * 5);
         TradeManager.startTrade(pl, trader);
         Trade trade = TradeManager.getTrade(pl.getUniqueId());

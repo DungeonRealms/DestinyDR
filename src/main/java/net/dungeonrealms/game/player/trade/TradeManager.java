@@ -46,11 +46,6 @@ public class TradeManager {
         if (p == null) {
             return false;
         }
-        if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, uniqueId)) {
-            p.sendMessage(ChatColor.RED + "Trade attempted, but your trades are disabled.");
-            p.sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/toggletrade " + ChatColor.RED + " to enable trades.");
-            return false;
-        }
 
         if (CombatLog.isInCombat(p)) {
             return false;

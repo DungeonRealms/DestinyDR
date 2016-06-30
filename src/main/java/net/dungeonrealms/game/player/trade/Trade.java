@@ -64,10 +64,8 @@ public class Trade {
         inv.setItem(13, separator);
         inv.setItem(22, separator);
         inv.setItem(31, separator);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            p1.openInventory(inv);
-            p2.openInventory(inv);
-        }, 20);
+        p1.openInventory(inv);
+        p2.openInventory(inv);
     }
 
     // 0, 8 Confirm
