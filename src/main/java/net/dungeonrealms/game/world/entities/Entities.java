@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.entities;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -185,17 +184,7 @@ public class Entities implements GenericMechanic {
                         MONSTERS_LEASHED.remove(entity);
                         MONSTER_LAST_ATTACK.remove(entity);
                         tryToReturnMobToBase(((CraftEntity) entity).getHandle());
-                        int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(),
-                                () -> {
-                                    if (HealthHandler.getInstance().getMonsterHPLive(entity) < HealthHandler
-                                            .getInstance().getMonsterMaxHPLive(entity)
-                                            && !MONSTERS_LEASHED.contains(entity)
-                                            && !MONSTER_LAST_ATTACK.containsKey(entity)) {
-                                        HealthHandler.getInstance().healMonsterByAmount(entity, (HealthHandler.getInstance().getMonsterMaxHPLive(entity) / 10));
-                                    }
-                                }, 0L, 20L);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            Bukkit.getScheduler().cancelTask(taskID);
                             ((EntityInsentient) ((CraftEntity) entity).getHandle()).setGoalTarget(null, EntityTargetEvent.TargetReason.CUSTOM, true);
                         }, 220L);
                         continue;
