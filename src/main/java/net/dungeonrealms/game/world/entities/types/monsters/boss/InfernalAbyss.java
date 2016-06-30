@@ -15,7 +15,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeWitherSkeleton;
+import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffWitherSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
@@ -50,7 +50,7 @@ import java.util.Map;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
+public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
 
     public InfernalGhast ghast;
 
@@ -75,11 +75,6 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
             p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "I have nothing to say to you foolish mortals, except for this: Burn.");
         }
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            if (!this.getBukkitEntity().isDead()) {
-                this.getBukkitEntity().getLocation().add(0, 1, 0).getBlock().setType(Material.FIRE);
-            }
-        }, 0, 15L);
         ghast = new InfernalGhast(this);
         this.setSize(0.7F, 2.4F);
         this.fireProof = true;

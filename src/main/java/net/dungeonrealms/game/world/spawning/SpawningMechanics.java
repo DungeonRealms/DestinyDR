@@ -13,7 +13,6 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.*;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.BasicEntityBlaze;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffSkeleton;
-import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
@@ -259,7 +258,7 @@ public class SpawningMechanics implements GenericMechanic {
                 }
                 break;
             case FireImp:
-                entity = new StaffZombie(world, monsEnum, tier);
+                entity = new StaffSkeleton(world, monsEnum, tier);
                 break;
             case Troll1:
             case Troll:
@@ -269,7 +268,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new MeleeZombie(world, EnumMonster.Goblin, tier);
                 break;
             case Mage:
-                entity = new StaffZombie(world, EnumMonster.Mage, tier);
+                entity = new StaffSkeleton(world, EnumMonster.Mage, tier);
                 break;
             case Spider1:
                 entity = new LargeSpider(world, tier, EnumMonster.Spider1);
@@ -283,7 +282,7 @@ public class SpawningMechanics implements GenericMechanic {
             case Naga:
                 switch (new Random().nextInt(3)) {
                     case 0:
-                        entity = new StaffZombie(world, EnumMonster.Naga, tier);
+                        entity = new StaffSkeleton(world, EnumMonster.Naga, tier);
                         break;
                     case 1:
                         entity = new MeleeZombie(world, EnumMonster.Naga, tier);
@@ -338,7 +337,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new DRPigman(world, EnumMonster.Daemon, tier);
                 break;
             case Daemon2:
-                entity = new StaffZombie(world, EnumMonster.Daemon2, tier);
+                entity = new StaffSkeleton(world, EnumMonster.Daemon2, tier);
                 break;
             case Silverfish:
                 entity = new DRSilverfish(world, EnumMonster.Silverfish, tier);

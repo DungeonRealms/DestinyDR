@@ -37,6 +37,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -61,7 +62,7 @@ public class DungeonManager implements GenericMechanic {
     @Getter
     private ConcurrentHashMap<String, Integer> dungeon_Wither_Effect = new ConcurrentHashMap<>();
     @Getter
-    private CopyOnWriteArrayList<Entity> fireUnderEntity = new CopyOnWriteArrayList<>();
+    private Set<Entity> fireUnderEntity = new CopyOnWriteArraySet<>();
 
     public DungeonObject getDungeon(World world) {
         for (DungeonObject dungeon : Dungeons) {
