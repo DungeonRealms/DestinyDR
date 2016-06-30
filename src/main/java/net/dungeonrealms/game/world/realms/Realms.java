@@ -153,6 +153,13 @@ public interface Realms extends GenericMechanic {
      */
     void resetRealm(Player player) throws IOException;
 
+    /**
+     * Upgrades realm dimensions
+     *
+     * @param player Owner of realm
+     */
+    void upgradeRealm(Player player);
+
 
     /**
      * Unloads realm world
@@ -234,9 +241,16 @@ public interface Realms extends GenericMechanic {
      * Realm tier
      *
      * @param uuid Owner of realm
-     * @return Realm size teir
+     * @return Realm size tier
      */
     int getRealmTier(UUID uuid);
+
+    /**
+     * Realm upgrade cost
+     *
+     * @param tier Realm tier
+     */
+    int getRealmUpgradeCost(int tier);
 
 
     /**

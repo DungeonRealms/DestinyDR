@@ -48,6 +48,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -191,20 +192,18 @@ public class RealmListener implements Listener {
             if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())))
                 createDoubleHelix(loc);
 
-            if (realm.getPropertyBoolean("peaceful")) {
+            //loc.subtract(.5D, 2D, .5D);
+            if (realm.getPropertyBoolean("peaceful"))
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
-                //loc.subtract(.5D, 2D, .5D);
-            }
 
-            if (realm.getPropertyBoolean("flight")) {
+            //loc.subtract(.5D, 1.5D, .5D);
+            if (realm.getPropertyBoolean("flight"))
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
-                //loc.subtract(.5D, 1.5D, .5D);
-            }
         }
     }
 
     private void createDoubleHelix(Location loc) {
-        double radius = 1;
+        double radius;
 
         for (double y = 0; y < 2; y += 0.007) {
             radius = y / 3;
@@ -214,11 +213,11 @@ public class RealmListener implements Listener {
             double y2 = 3 - y;
 
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
+            Random random = new Random();
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, (random.nextFloat()) - 0.4F, (random.nextFloat()) - 0.5F, (random.nextFloat()) - 0.5F, -1, 6));
         }
-
 
         for (double y = 0; y < 2; y += 0.007) {
             radius = y / 3;
@@ -228,9 +227,10 @@ public class RealmListener implements Listener {
             double y2 = 5 - y;
 
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
+            Random random = new Random();
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, (random.nextFloat()) - 0.4F, (random.nextFloat()) - 0.5F, (random.nextFloat()) - 0.5F, -1, 6));
         }
     }
 
@@ -408,10 +408,14 @@ public class RealmListener implements Listener {
 
         if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.NETHER_STAR)
             return;
+
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
+
+        event.setCancelled(true);
+        event.setDamage(0);
 
         if (!p.isSneaking()) return;
 
@@ -420,21 +424,17 @@ public class RealmListener implements Listener {
             return;
         }
 
-        event.setCancelled(true);
-        event.setDamage(0);
-
         RealmToken realm = Realms.getInstance().getRealm(p.getUniqueId());
-
 
         if (!(FriendHandler.getInstance().areFriends(p, target.getUniqueId()))) {
             p.sendMessage(ChatColor.RED + "Cannot add a non-buddy to realm build list.");
-            p.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.BOLD + "/add " + target.getName() + ChatColor.GRAY
-                    + "' to add them to your buddy list.");
+            p.sendMessage(ChatColor.GRAY + "Goto your friends list in the character profile to add '" + ChatColor.BOLD + target.getName() + ChatColor.GRAY
+                    + "' as friend.");
             return;
         }
 
         if (!realm.getBuilders().contains(target.getUniqueId())) {
-            p.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "ADDED " + ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
+            p.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "ADDED " + ChatColor.RESET + ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
                     + ChatColor.GREEN + " to your realm builder list.");
             p.sendMessage(ChatColor.GRAY + target.getName()
                     + " can now place/destroy blocks in your realm until you logout of your current game session.");
@@ -449,7 +449,7 @@ public class RealmListener implements Listener {
             }
 
         } else {
-            p.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "REMOVED " + ChatColor.RED + "" + ChatColor.BOLD + target.getName()
+            p.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "REMOVED " + ChatColor.RESET + ChatColor.RED + "" + ChatColor.BOLD + target.getName()
                     + ChatColor.RED + " from your realm builder list.");
             p.sendMessage(ChatColor.GRAY + target.getName() + " can no longer place/destroy blocks in your realm.");
             target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REMOVED " + ChatColor.RED + "from " + p.getName() + "'s builder list.");
@@ -485,12 +485,13 @@ public class RealmListener implements Listener {
             p.sendMessage(ChatColor.RED + "You aren't authorized to build in " + Bukkit.getPlayer(realm.getOwner()).getName() + "'s realm.");
             p.sendMessage(ChatColor.GRAY + Bukkit.getPlayer(realm.getOwner()).getName() + " will have to " + ChatColor.UNDERLINE + "Sneak Left Click" + ChatColor.GRAY +
                     " you with their Realm Portal Rune to add you to their builder list.");
+            e.setCancelled(true);
             return;
         }
 
         Block b = e.getClickedBlock();
-
         e.setCancelled(true);
+
         Material m = b.getType();
         if (m == Material.AIR || m == Material.PORTAL) {
             return;

@@ -251,7 +251,7 @@ public class RealmInstance implements Realms {
         for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
             if (p.getName().equals(player.getName())) continue;
             if (!p.getWorld().equals(player.getWorld())) continue;
-            if (p.getLocation().distance(player.getLocation()) <= 3) {
+            if (p.getLocation().distance(player.getLocation()) <= 2) {
                 player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
                 return;
             }
@@ -328,6 +328,11 @@ public class RealmInstance implements Realms {
                     getRealm(player.getUniqueId()).setStatus(RealmStatus.CLOSED);
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
                 }));
+    }
+
+    @Override
+    public void upgradeRealm(Player player) {
+
     }
 
     @Override
@@ -440,9 +445,7 @@ public class RealmInstance implements Realms {
 
         if (runAsync) {
             // SUBMIT THREAD INTO ASYNC POOL //
-            AsyncUtils.pool.submit(() -> {
-                uploadRealm(uuid, doAfter);
-            });
+            AsyncUtils.pool.submit(() -> uploadRealm(uuid, doAfter));
         } else {
             // EXECUTE ON MAIN THREAD //
             uploadRealm(uuid, doAfter);
@@ -690,7 +693,7 @@ public class RealmInstance implements Realms {
     }
 
     public int getRealmTier(UUID uuid) {
-        return 1;
+        return (int) DatabaseAPI.getInstance().getData(EnumData.REALM_TIER, uuid);
     }
 
     @Override
@@ -720,7 +723,7 @@ public class RealmInstance implements Realms {
     public int getRealmDimensions(int tier) {
         switch (tier) {
             case 1:
-                return 17;
+                return 16;
             case 2:
                 return 22;
             case 3:
@@ -736,6 +739,28 @@ public class RealmInstance implements Realms {
             default:
                 return -1;
         }
+    }
+
+    public int getRealmUpgradeCost(int tier) {
+        if (tier == 2) {
+            return 800;
+        }
+        if (tier == 3) {
+            return 1600;
+        }
+        if (tier == 4) {
+            return 8000;
+        }
+        if (tier == 5) {
+            return 15000;
+        }
+        if (tier == 6) {
+            return 35000;
+        }
+        if (tier == 7) {
+            return 70000;
+        }
+        return 0;
     }
 
     public boolean isRealmCached(UUID uuid) {

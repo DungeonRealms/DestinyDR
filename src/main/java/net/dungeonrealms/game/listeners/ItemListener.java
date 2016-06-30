@@ -145,7 +145,7 @@ public class ItemListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUsePortalRune(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK
                 || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) return;
@@ -186,6 +186,10 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
 
         } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+
+            if (event.getPlayer().isSneaking())
+                return;
+
             if (!API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You must be in your realm to open the realm material store.");
                 return;

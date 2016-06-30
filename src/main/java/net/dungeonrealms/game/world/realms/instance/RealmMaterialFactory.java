@@ -31,7 +31,6 @@ class RealmMaterialFactory {
     // THIS IS HOW MANY PAGES WE NEED FOR NOW //
     private static final int MAX_PAGES = 3;
 
-
     // THE INSTANCE //
     private static RealmMaterialFactory instance = null;
 
