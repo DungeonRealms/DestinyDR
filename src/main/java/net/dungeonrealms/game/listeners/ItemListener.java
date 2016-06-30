@@ -163,7 +163,7 @@ public class ItemListener implements Listener {
             Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
 
-            if (Realms.getInstance().isRealmLoaded(event.getPlayer().getUniqueId()) && Realms.getInstance().getRealmWorld(p.getUniqueId()).equals(p.getLocation().getWorld())) {
+            if (API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
 
                 if (API.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial_island")) {
@@ -178,7 +178,6 @@ public class ItemListener implements Listener {
                 }
 
                 Realms.getInstance().setRealmSpawn(event.getPlayer().getUniqueId(), newLocation);
-
                 event.setCancelled(true);
                 return;
             }
@@ -187,7 +186,7 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
 
         } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (!Realms.getInstance().getRealmWorld(p.getUniqueId()).equals(p.getLocation().getWorld())) {
+            if (!API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You must be in your realm to open the realm material store.");
                 return;
             }
