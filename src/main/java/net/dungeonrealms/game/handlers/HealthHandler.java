@@ -84,16 +84,13 @@ public class HealthHandler implements GenericMechanic {
             int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
             if (Rank.isGM(player)) {
                 setPlayerHPLive(player, 10000);
-                healPlayerByAmount(player, 20);
             } else if (hp > 0) {
                 if (hp > getPlayerMaxHPLive(player)) {
                     hp = getPlayerMaxHPLive(player);
                 }
                 setPlayerHPLive(player, hp);
-                healPlayerByAmount(player, 5);
             } else {
                 setPlayerHPLive(player, 10);
-                healPlayerByAmount(player, 5);
             }
             setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
             player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -366,7 +363,7 @@ public class HealthHandler implements GenericMechanic {
                 if (newHealth >= maxHP) {
                     newHealth = maxHP;
                 }
-                player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+                player.sendMessage(ChatColor.GREEN + "        +" + amount + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + (int) newHealth + "/" + (int) maxHP + "HP]");
             }
             return;
         } else if (player.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
@@ -391,7 +388,7 @@ public class HealthHandler implements GenericMechanic {
             if (newHealth >= maxHP) {
                 newHealth = maxHP;
             }
-            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            player.sendMessage(ChatColor.GREEN + "        +" + amount + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [" + (int) newHealth + "/" + (int) maxHP + "HP]");
         }
     }
 
