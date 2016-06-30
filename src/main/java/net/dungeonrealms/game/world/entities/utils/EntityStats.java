@@ -2,7 +2,10 @@ package net.dungeonrealms.game.world.entities.utils;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.items.Item;
@@ -11,6 +14,7 @@ import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -93,7 +97,7 @@ public class EntityStats {
         return new Stats(def, hp, atk, spd);
     }
 
-    public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier, EnumMonster monster, boolean isDungeon) {
+    public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier, EnumMonster monster, int lvl, boolean isDungeon) {
         //TODO confirm working for elites of all types
         if (namedElite == EnumNamedElite.NONE) {
             ItemType weaponType;
@@ -163,6 +167,11 @@ public class EntityStats {
             }
             ItemStack[] armor = new ItemGenerator().setRarity(rarity).setTier(ItemTier.getByTier(tier)).getArmorSet();
             ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(API.getItemRarity(true)).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+            for (ItemStack i : armor) {
+                if (i == null || i.getType() == Material.AIR) continue;
+                EnchantmentAPI.addGlow(i);
+            }
+            EnchantmentAPI.addGlow(weapon);
             entity.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
             entity.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
             entity.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
@@ -175,12 +184,14 @@ public class EntityStats {
             livingEntity.getEquipment().setChestplate(armor[2]);
             livingEntity.getEquipment().setHelmet(armor[3]);
         }
+        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, lvl);
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
     }
     
     public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
+        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, lvl);
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), maxHp);
     }
@@ -191,10 +202,15 @@ public class EntityStats {
         ItemStack weapon = livingEntity.getEquipment().getItemInMainHand();
         ItemType type = ItemType.getTypeFromMaterial(weapon.getType());
         weapon = new ItemGenerator().setType(type).setRarity(Item.ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+        entity.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+        entity.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
+        entity.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
+        entity.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
         livingEntity.getEquipment().setItemInMainHand(weapon);
         livingEntity.getEquipment().setBoots(armor[0]);
         livingEntity.getEquipment().setLeggings(armor[1]);
         livingEntity.getEquipment().setChestplate(armor[2]);
+        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn(livingEntity);
         livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
         HealthHandler.getInstance().setMonsterHPLive(livingEntity, maxHp);

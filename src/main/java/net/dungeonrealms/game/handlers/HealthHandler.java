@@ -581,7 +581,7 @@ public class HealthHandler implements GenericMechanic {
             final LivingEntity finalLeAttacker = leAttacker;
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                player.damage(25);
+                player.damage(player.getMaxHealth());
                 if (finalLeAttacker != null) {
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                 }

@@ -2,9 +2,12 @@ package net.dungeonrealms.game.world.spawning;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -192,9 +195,8 @@ public class EliteMobSpawner {
                 return;
             }
             int level = Utils.getRandomFromTier(tier, levelRange);
-            EntityStats.setMonsterElite(entity, eliteType, tier, monsterType, false);
+            EntityStats.setMonsterElite(entity, eliteType, tier, monsterType, level, false);
             giveCustomEquipment(eliteType, entity);
-            MetadataUtils.registerEntityMetadata(entity, type, tier, level);
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
@@ -280,8 +282,9 @@ public class EliteMobSpawner {
                 armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
                 armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
                 armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helms");
+                break;
             default:
-                return;
+                break;
         }
         LivingEntity livingEntity = (LivingEntity) toGive.getBukkitEntity();
         if (eliteType != EnumNamedElite.NONE) {
@@ -296,7 +299,8 @@ public class EliteMobSpawner {
             livingEntity.getEquipment().setBoots(null);
             livingEntity.getEquipment().setItemInMainHand(null);
             for (int i = 0; i <= 4; i++) {
-                if (armorWeapon[i] != null) {
+                if (armorWeapon[i] != null && armorWeapon[i].getType() != Material.AIR) {
+                    EnchantmentAPI.addGlow(armorWeapon[i]);
                     switch (i) {
                         case 0:
                             livingEntity.getEquipment().setItemInMainHand(armorWeapon[i]);
@@ -321,6 +325,9 @@ public class EliteMobSpawner {
                     }
                 }
             }
+            API.calculateAllAttributes(livingEntity, ((DRMonster) entity).getAttributes());
+            entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
+            HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
         }
     }
 

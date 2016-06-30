@@ -127,12 +127,10 @@ public class ItemGenerator {
             rarity = ItemRarity.getById(tag.getInt("itemRarity"));
         }
         
-        Random r = new Random();
-
         // if no values given, generate a random item
-        if(tier == null) tier = ItemTier.values()[r.nextInt(ItemTier.values().length - 1)];
-        if(type == null) type = ItemType.values()[r.nextInt(ItemType.values().length - 1)];
-        if(rarity == null) rarity = ItemRarity.values()[r.nextInt(ItemRarity.values().length - 1)];
+        if(tier == null) tier = ItemTier.values()[new Random().nextInt(ItemTier.values().length - 1)];
+        if(type == null) type = ItemType.values()[new Random().nextInt(ItemType.values().length - 1)];
+        if(rarity == null) rarity = ItemRarity.values()[new Random().nextInt(ItemRarity.values().length - 1)];
 
         ItemStack item = isReroll && origItem != null && (RepairAPI.isItemArmorOrWeapon(origItem)) ? origItem : new ItemStack(type.getTier(tier));
         ItemMeta meta = item.getItemMeta().clone();
@@ -189,7 +187,7 @@ public class ItemGenerator {
 	            
 	            int belowChance = (mc.getChance() < 0) ? im.getChance() : mc.getChance();
 
-	            if (r.nextInt(100) < belowChance) {
+	            if (new Random().nextInt(100) < belowChance) {
 	                order.add(mc);
 	            }
 	            else {
@@ -768,10 +766,10 @@ public class ItemGenerator {
 	 * @return - An ItemStack array of the armor set.
 	 */
 	public ItemStack[] getArmorSet() {
-        return new ItemStack[] { this.setType(ItemType.BOOTS).setRarity(API.getItemRarity(false)).generateItem().getItem(),
-                this.setType(ItemType.LEGGINGS).setRarity(API.getItemRarity(false)).generateItem().getItem(),
-                this.setType(ItemType.CHESTPLATE).setRarity(API.getItemRarity(false)).generateItem().getItem(),
-                this.setType(ItemType.HELMET).setRarity(API.getItemRarity(false)).generateItem().getItem() };
+        return new ItemStack[] { this.setType(ItemType.BOOTS).setRarity(rarity == null ? API.getItemRarity(false) : rarity).generateItem().getItem(),
+                this.setType(ItemType.LEGGINGS).setRarity(rarity == null ? API.getItemRarity(false) : rarity).generateItem().getItem(),
+                this.setType(ItemType.CHESTPLATE).setRarity(rarity == null ? API.getItemRarity(false) : rarity).generateItem().getItem(),
+                this.setType(ItemType.HELMET).setRarity(rarity == null ? API.getItemRarity(false) : rarity).generateItem().getItem() };
 	}
 	
 	public static void loadModifiers(){

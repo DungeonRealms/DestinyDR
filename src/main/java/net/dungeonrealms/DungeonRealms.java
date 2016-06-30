@@ -425,7 +425,6 @@ public class DungeonRealms extends JavaPlugin {
         ps.onDisable();
         hs.onDisable();
         tcc.onDisable();
-        saveConfig();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 40L);

@@ -524,6 +524,7 @@ public class API {
      */
     public static void logoutAllPlayers(boolean customStop) {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
             if (CombatLog.isInCombat(player)) {
                 CombatLog.removeFromCombat(player);
             }

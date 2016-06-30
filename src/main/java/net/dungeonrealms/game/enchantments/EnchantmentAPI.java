@@ -29,6 +29,10 @@ public class EnchantmentAPI {
 		stack.addUnsafeEnchantment(getGlowEnchant(), 1);
 	}
 
+	public static void removeGlow(ItemStack stack) {
+		stack.removeEnchantment(getGlowEnchant());
+	}
+
 	public static ItemStack removeItemProtection(ItemStack itemStack) {
 		if (!isItemProtected(itemStack))
 			return itemStack;

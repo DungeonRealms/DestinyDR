@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entities.types.monsters;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
@@ -151,8 +152,11 @@ public interface DRMonster {
                     killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                 }
             }
-            RepairAPI.setCustomItemDurability(toDrop.get(0), RandomHelper.getRandomNumberBetween(200, 1000));
-            world.getWorld().dropItem(loc.add(0, 1, 0), toDrop.get(0));
+            ItemStack drop = toDrop.get(random.nextInt(toDrop.size()));
+            RepairAPI.setCustomItemDurability(drop, RandomHelper.getRandomNumberBetween(200, 1500));
+            if (drop != null && drop.getType() != Material.AIR)
+                EnchantmentAPI.removeGlow(drop);
+            world.getWorld().dropItem(loc.add(0, 1, 0), drop);
         }
         int scrollDrop = random.nextInt(100);
         int scrollDropChance;
