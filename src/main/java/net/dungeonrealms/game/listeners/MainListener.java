@@ -486,6 +486,7 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             if (API.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {
+                event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Type 'y' when ye ready to leave!");
                 Chat.listenForMessage(event.getPlayer(), e -> {
                     if (e.getMessage().equalsIgnoreCase("y")) {
                         event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");

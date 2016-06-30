@@ -64,6 +64,9 @@ public class GamePlayer {
 
     @Getter
     private boolean isInvulnerable;
+    @Getter
+    @Setter
+    private boolean isTargettable;
 
     public GamePlayer(Player player) {
         T = player;
@@ -73,6 +76,7 @@ public class GamePlayer {
         this.attributeBonusesFromStats = new HashMap<>();
         this.lastArmorEquip = System.currentTimeMillis();
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
+        this.isTargettable = true;
     }
 
     /**

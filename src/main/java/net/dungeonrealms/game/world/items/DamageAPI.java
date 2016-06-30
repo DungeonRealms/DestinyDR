@@ -301,7 +301,6 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double calculateProjectileDamage(LivingEntity attacker, LivingEntity receiver, Projectile projectile) {
-        Utils.log.info("line " + new Exception().getStackTrace()[1].getLineNumber());
         Map<String, Integer[]> attributes;
         // grab the attacker's armor attributes
         if (attacker instanceof Player && API.isPlayer(attacker)) {
