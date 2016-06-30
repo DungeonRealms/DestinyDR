@@ -145,7 +145,8 @@ public class API {
     public static int getMonsterExp(Player player, org.bukkit.entity.Entity kill) {
         GamePlayer gp = API.getGamePlayer(player);
         int level = gp.getLevel();
-        int mobTier = API.getTierFromLevel(level);
+        int mob_level = kill.getMetadata("level").get(0).asInt();
+        int mobTier = API.getTierFromLevel(mob_level);
         switch (mobTier) {
             case 1:
                 gp.getPlayerStatistics().setT1MobsKilled(gp.getPlayerStatistics().getT1MobsKilled() + 1);
@@ -165,7 +166,6 @@ public class API {
             default:
                 break;
         }
-        int mob_level = kill.getMetadata("level").get(0).asInt();
         int xp = 0;
         if (mob_level > level + 20) {  // limit mob xp calculation to 10 levels above player level
             xp = calculateXP(player, kill, level + 20);
