@@ -71,11 +71,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -110,7 +112,7 @@ public class DamageListener implements Listener {
             event.blockList().clear();
             List<Player> toBuff = new ArrayList<>();
             for (Entity entity : event.getEntity().getNearbyEntities(8D, 8D, 8D)) {
-                if (!API.isPlayer(entity))  continue;
+                if (!API.isPlayer(entity)) continue;
                 toBuff.add((Player) entity);
             }
             BuffUtils.handleBuffEffects(event.getEntity(), toBuff);
@@ -308,7 +310,7 @@ public class DamageListener implements Listener {
                     break;
             }
 
-            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity());
+            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
 
             if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
                 if (API.getGamePlayer((Player) event.getEntity()) != null && API.getGamePlayer((Player) event.getDamager()) != null) {
@@ -347,13 +349,176 @@ public class DamageListener implements Listener {
             }
         }
         event.setDamage(finalDamage);
-        if (event.getEntity().hasMetadata("boss")) {
+
+        LivingEntity entity = (LivingEntity) event.getEntity();
+        int tier = entity.getMetadata("tier").get(0).asInt();
+        Random rand = new Random();
+        int powerChance = 0;
+        ItemStack item = entity.getEquipment().getItemInMainHand();
+        if (entity.hasMetadata("elite")) {
+            switch (tier) {
+                case 1:
+                    powerChance = 5;
+                    break;
+                case 2:
+                    powerChance = 7;
+                    break;
+                case 3:
+                    powerChance = 10;
+                    break;
+                case 4:
+                    powerChance = 13;
+                    break;
+                case 5:
+                    powerChance = 20;
+                    break;
+
+            }
+            if (rand.nextInt(100) <= 75) {
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
+
+                scheduleWhirlwind(entity);
+
+            }
+        } else if (event.getEntity().hasMetadata("boss")) {
             if (event.getEntity() instanceof CraftLivingEntity) {
                 Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
                 b.onBossHit(event);
             }
+        } else {
+            switch (tier) {
+                case 1:
+                    powerChance = 5;
+                    break;
+                case 2:
+                    powerChance = 7;
+                    break;
+                case 3:
+                    powerChance = 10;
+                    break;
+                case 4:
+                    powerChance = 13;
+                    break;
+                case 5:
+                    powerChance = 20;
+                    break;
+
+            }
+
+
+            if (rand.nextInt(100) <= 75) {
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
+
+                scheduleWhirlwind(entity);
+
+            }
+
+//            if (rand.nextInt(100) <= powerChance) {
+//                if (item.getType().name().contains("HOE")) {
+//                    scheduleTripleShot(entity);
+//                } else if (item.getType().name().contains("SWORD")) {
+//                    schedulePowerStrike(entity);
+//                }
+//
+//            }
+            entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1F, 2.0F);
+
         }
     }
+
+    private void scheduleWhirlwind(final LivingEntity entity) {
+        //dmg * 4;
+        chargingMonsters.add(entity.getUniqueId());
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new BukkitRunnable() {
+
+            int step = 0;
+
+            double yaw = entity.getLocation().getYaw() * -1;
+
+            Location loc = entity.getLocation();
+
+            @Override
+            public void run() {
+
+                if (entity.isDead() || entity.getHealth() <= 0) {
+                    this.cancel();
+                    chargingMonsters.remove(entity.getUniqueId());
+                    return;
+                }
+                entity.getLocation().setYaw((float) yaw);
+                String name = entity.getCustomName();
+                EntityCreature ec = (EntityCreature) ((CraftEntity) entity).getHandle();
+                ec.setGoalTarget(null);
+                entity.setCustomName(ChatColor.LIGHT_PURPLE + ChatColor.stripColor(name));
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, entity.getLocation().add(0, 1, 0), new Random().nextFloat(),
+                        new Random().nextFloat(), new Random().nextFloat(), 0.3F, 40);
+
+                step++;
+                if (step == 5) {
+                    entity.getLocation().setYaw((float) yaw * -1);
+
+                    API.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(p -> {
+                        org.bukkit.util.Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
+                        double e_y = entity.getLocation().getY();
+                        double p_y = p.getLocation().getY();
+                        Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
+                        if ((p_y - 1) <= e_y || m == Material.AIR) {
+                            p.setVelocity(unitVector.multiply(3));
+                        }
+                        double dmg = DamageAPI.calculateWeaponDamage(entity, p) * 4;
+                        double[] result = DamageAPI.calculateArmorReduction(entity, p, dmg, null);
+                        int armourReducedDamage = (int) result[0];
+                        int totalArmor = (int) result[1];
+                        HealthHandler.getInstance().handlePlayerBeingDamaged(p, entity, (dmg - armourReducedDamage), armourReducedDamage, totalArmor);
+                        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.3f, 1);
+                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, p.getLocation().add(0, 1, 0), new Random().nextFloat(),
+                                new Random().nextFloat(), new Random().nextFloat(), 0.3F, 40);
+
+                    });
+
+
+                    this.cancel();
+                    chargingMonsters.remove(entity.getUniqueId());
+                }
+
+            }
+        }, 0, 20);
+    }
+
+    private void schedulePowerStrike(final LivingEntity entity) {
+    }
+
+    public static CopyOnWriteArrayList<UUID> chargingMonsters = new CopyOnWriteArrayList<>();
+
+    private void scheduleTripleShot(final LivingEntity entity) {
+        chargingMonsters.add(entity.getUniqueId());
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new BukkitRunnable() {
+
+            int step = 0;
+
+            @Override
+            public void run() {
+
+                if (entity.isDead() || entity.getHealth() <= 0) {
+                    this.cancel();
+                    return;
+                }
+
+                String name = entity.getCustomName();
+
+                entity.setCustomName(ChatColor.LIGHT_PURPLE + ChatColor.stripColor(name));
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
+
+                step++;
+                if (step == 5) {
+                    this.cancel();
+                }
+
+            }
+        }, 0, 20);
+
+    }
+
 
     /**
      * Listen for the monsters hitting a player
@@ -383,7 +548,7 @@ public class DamageListener implements Listener {
             attackerEquipment.getItemInMainHand().setDurability(((short) -1));
             //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
             if (!API.isWeapon(attackerEquipment.getItemInMainHand())) return;
-            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity)event.getEntity());
+            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
             } else {
@@ -517,7 +682,8 @@ public class DamageListener implements Listener {
                 boolean attackerIsMob = attacker.hasMetadata("type");
                 for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                     // mobs should only be able to damage players, not other mobs
-                    if (attackerIsMob && (!(API.isPlayer(entity) || API.isInSafeRegion(entity.getLocation())))) continue;
+                    if (attackerIsMob && (!(API.isPlayer(entity) || API.isInSafeRegion(entity.getLocation()))))
+                        continue;
                     // let's not damage ourself
                     if (entity.equals(attacker)) continue;
                     if ((event.getDamage() - armourReducedDamage) <= 0) continue;
@@ -526,12 +692,10 @@ public class DamageListener implements Listener {
                             entity.playEffect(EntityEffect.HURT);
                             HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                         }
-                    }
-                    else if (API.isPlayer(entity)) {
+                    } else if (API.isPlayer(entity)) {
                         if (attackerIsMob) {
                             HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
-                        }
-                        else if (!API.isNonPvPRegion(entity.getLocation())) {
+                        } else if (!API.isNonPvPRegion(entity.getLocation())) {
                             if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
                                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
                                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
@@ -678,8 +842,7 @@ public class DamageListener implements Listener {
             //The defender dodged the attack
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             event.setDamage(0);
-        }
-        else if (armourReducedDamage == -2) {
+        } else if (armourReducedDamage == -2) {
             if (attacker instanceof Player) {
                 String defenderName;
                 if (defender instanceof Player) {
@@ -704,30 +867,25 @@ public class DamageListener implements Listener {
             }
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             event.setDamage(0);
-        }
-        else {
+        } else {
             if (API.isPlayer(defender)) {
                 if (((Player) defender).isBlocking() && ((Player) defender).getEquipment().getItemInMainHand() != null && ((Player) defender).getEquipment().getItemInMainHand().getType() != Material.AIR) {
                     if (new Random().nextInt(100) <= 80) {
                         double blockDamage = event.getDamage() / 2;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage), armourReducedDamage, totalArmor);
                         event.setDamage(0);
-                    }
-                    else {
+                    } else {
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                         event.setDamage(0);
                     }
-                }
-                else {
+                } else {
                     HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                     event.setDamage(0);
                 }
-            }
-            else if (defender.hasMetadata("type") && defender.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), attacker, (event.getDamage() - armourReducedDamage));
-                    event.setDamage(0);
-            }
-            else {
+            } else if (defender.hasMetadata("type") && defender.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), attacker, (event.getDamage() - armourReducedDamage));
+                event.setDamage(0);
+            } else {
                 event.setDamage(event.getDamage() - armourReducedDamage);
             }
         }
@@ -932,7 +1090,8 @@ public class DamageListener implements Listener {
                             }
                         }
                     }
-                    if (API.isItemUntradeable(itemStack) || API.isItemPermanentlyUntradeable(itemStack) || API.isItemSoulbound(itemStack)) continue;
+                    if (API.isItemUntradeable(itemStack) || API.isItemPermanentlyUntradeable(itemStack) || API.isItemSoulbound(itemStack))
+                        continue;
 //                    if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
 //                        //event.getDrops().remove(itemStack);
 //                        continue;
@@ -1006,7 +1165,8 @@ public class DamageListener implements Listener {
     public void onCustomProjectileEntityLaunchProjectile(ProjectileLaunchEvent event) {
         if (!(event.getEntity().getShooter() instanceof LivingEntity)) return;
         EntityType entityType = ((LivingEntity) event.getEntity().getShooter()).getType();
-        if (entityType != EntityType.BLAZE && entityType != EntityType.GHAST && entityType != EntityType.WITCH) return;
+        if (entityType != EntityType.BLAZE && entityType != EntityType.GHAST && entityType != EntityType.WITCH)
+            return;
 
         LivingEntity leShooter = (LivingEntity) event.getEntity().getShooter();
         if (!(leShooter.hasMetadata("type"))) return;
@@ -1256,9 +1416,11 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityHurtByNonCombat(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile"))) return;
+        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")))
+            return;
         if (event.getDamage() <= 0) return;
-        if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM) return;
+        if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM)
+            return;
 
         double dmg = event.getDamage();
         event.setDamage(0);
@@ -1267,8 +1429,7 @@ public class DamageListener implements Listener {
         int maxHP = 0;
         if (API.isPlayer(event.getEntity())) {
             maxHP = API.getGamePlayer((Player) event.getEntity()).getPlayerMaxHP();
-        }
-        else {
+        } else {
             maxHP = HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity());
         }
         if (API.isInSafeRegion(event.getEntity().getLocation())) {
@@ -1309,8 +1470,7 @@ public class DamageListener implements Listener {
             case FIRE_TICK:
                 if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
                     dmg = maxHP * 0.01;
-                }
-                else {
+                } else {
                     dmg = 0;
                 }
                 break;
@@ -1318,8 +1478,7 @@ public class DamageListener implements Listener {
             case FIRE:
                 if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
                     dmg = maxHP * 0.03;
-                }
-                else {
+                } else {
                     dmg = 0;
                 }
                 break;
@@ -1342,8 +1501,7 @@ public class DamageListener implements Listener {
         if (dmg > 0) {
             if (event.getEntity() instanceof Player) {
                 HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0);
-            }
-            else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, dmg);
             }
         }

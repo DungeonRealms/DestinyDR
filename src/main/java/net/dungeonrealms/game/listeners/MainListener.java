@@ -1044,13 +1044,20 @@ public class MainListener implements Listener {
                 event.setCancelled(true);
             } else {
                 LivingEntity entity = (LivingEntity) event.getEntity();
-                if (!entity.hasMetadata("elite"))
-                    return;
                 if (entity.hasMetadata("charging")) {
                     event.setCancelled(true);
                     return;
                 } else if (entity.hasMetadata("powermove")) {
                     Player p = (Player) event.getTarget();
+
+                    switch (entity.getMetadata("powermove").get(0).asString()) {
+                        case "tripleshot":
+                            break;
+                        case "powerstrike":
+                            break;
+                        case "whirlwind":
+                            break;
+                    }
 
 
                     entity.removeMetadata("powermove", DungeonRealms.getInstance());
