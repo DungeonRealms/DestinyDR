@@ -642,13 +642,7 @@ public class HealthHandler implements GenericMechanic {
                     entity1.die();
                     EntityDeathEvent event = new EntityDeathEvent(entity, new ArrayList<>());
                     Bukkit.getPluginManager().callEvent(event);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        if (!entity.isDead() || entity.getHealth() >= 0 || entity1.isAlive()) {
-                            entity.setHealth(0);
-                            entity.remove();
-                            entity1.die();
-                        }
-                    }, 25L);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), entity::remove, 40L);
                 }
             }, 1L);
             if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {

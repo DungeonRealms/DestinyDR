@@ -140,12 +140,20 @@ public class Entities implements GenericMechanic {
                     Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
                     continue;
                 }
+                if (entity.isDead()) {
+                    MONSTERS_LEASHED.remove(entity);
+                    if (MONSTER_LAST_ATTACK.containsKey(entity)) {
+                        MONSTER_LAST_ATTACK.remove(entity);
+                    }
+                    entity.remove();
+                    continue;
+                }
                 if (entity.hasMetadata("dungeon") || entity.hasMetadata("boss")) {
                     MONSTERS_LEASHED.remove(entity);
                     if (MONSTER_LAST_ATTACK.containsKey(entity)) {
                         MONSTER_LAST_ATTACK.remove(entity);
                     }
-                    return;
+                    continue;
                 }
                 if (MONSTER_LAST_ATTACK.containsKey(entity)) {
                     if (MONSTER_LAST_ATTACK.get(entity) == 11) {
@@ -188,8 +196,7 @@ public class Entities implements GenericMechanic {
                                 }, 0L, 20L);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                             Bukkit.getScheduler().cancelTask(taskID);
-                            ((EntityInsentient) ((CraftEntity) entity).getHandle()).setGoalTarget(null,
-                                    EntityTargetEvent.TargetReason.CUSTOM, true);
+                            ((EntityInsentient) ((CraftEntity) entity).getHandle()).setGoalTarget(null, EntityTargetEvent.TargetReason.CUSTOM, true);
                         }, 220L);
                         continue;
                     }

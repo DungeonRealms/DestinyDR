@@ -316,6 +316,8 @@ public class ItemListener implements Listener {
                 if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                     player.getInventory().setItemInOffHand(null);
                     player.updateInventory();
+                    player.getInventory().setItemInOffHand(findPlayerNextPotion(player));
+                    player.updateInventory();
                     HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
                 } else {
                     player.sendMessage(ChatColor.RED + "You are already at full HP!");
@@ -333,6 +335,8 @@ public class ItemListener implements Listener {
                 event.setUseInteractedBlock(Event.Result.DENY);
                 if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                     player.getInventory().setItemInMainHand(null);
+                    player.updateInventory();
+                    player.getInventory().setItemInMainHand(findPlayerNextPotion(player));
                     player.updateInventory();
                     HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
                 } else {
@@ -361,6 +365,8 @@ public class ItemListener implements Listener {
                     if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                         player.getInventory().setItemInMainHand(null);
                         player.updateInventory();
+                        player.getInventory().setItemInMainHand(findPlayerNextPotion(player));
+                        player.updateInventory();
                         HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
                     } else {
                         player.sendMessage(ChatColor.RED + "You are already at full HP!");
@@ -377,6 +383,8 @@ public class ItemListener implements Listener {
                     if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                         player.getInventory().setItemInOffHand(null);
                         player.updateInventory();
+                        player.getInventory().setItemInOffHand(findPlayerNextPotion(player));
+                        player.updateInventory();
                         HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsOffhand.getTag().getInt("healAmount"));
                     } else {
                         player.sendMessage(ChatColor.RED + "You are already at full HP!");
@@ -384,6 +392,30 @@ public class ItemListener implements Listener {
                 }
             }
         }
+    }
+
+    public ItemStack findPlayerNextPotion(Player player) {
+        ItemStack nextPot = null;
+        net.minecraft.server.v1_9_R2.ItemStack nmsPot;
+        int slotCount = -1;
+        for (ItemStack stack : player.getInventory().getContents()) {
+            slotCount++;
+            if (stack == null || stack.getType() == Material.AIR) {
+                continue;
+            }
+            if (stack.getType() != Material.POTION) {
+                continue;
+            }
+            nmsPot = CraftItemStack.asNMSCopy(stack);
+            if (nmsPot.hasTag() && nmsPot.getTag() != null && nmsPot.getTag().hasKey("type")) {
+                if (nmsPot.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                    nextPot = stack;
+                    player.getInventory().setItem(slotCount, new ItemStack(Material.AIR));
+                    break;
+                }
+            }
+        }
+        return nextPot;
     }
 
     private boolean performPreFoodChecks(Player player) {
