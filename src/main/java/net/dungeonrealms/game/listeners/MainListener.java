@@ -871,6 +871,8 @@ public class MainListener implements Listener {
         if (!API.isItemDroppable(event.getItemDrop().getItemStack())) return;
         if (!API.isItemTradeable(event.getItemDrop().getItemStack())) return;
         if (API.isItemSoulbound(event.getItemDrop().getItemStack())) return;
+
+
         Player pl = event.getPlayer();
 
         Player trader = TradeManager.getTarget(pl);
@@ -888,17 +890,22 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
+
+
+        if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+            return;
+        }
+        ItemStack item = event.getItemDrop().getItemStack().clone();
         event.setCancelled(true);
+        Cooldown.addCooldown(event.getPlayer().getUniqueId(), 20 * 5);
         TradeManager.startTrade(pl, trader);
         Trade trade = TradeManager.getTrade(pl.getUniqueId());
         if (trade == null) {
             return;
         }
-        ItemStack item = pl.getInventory().getItemInMainHand();
         trader.playSound(trader.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
         pl.playSound(pl.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
-        trade.inv.addItem(item.clone());
-        event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -1021,6 +1028,20 @@ public class MainListener implements Listener {
             } else if (Rank.isGM((Player) event.getTarget())) {
                 //TODO: Check for /allowfight @alan.
                 event.setCancelled(true);
+            } else {
+                LivingEntity entity = (LivingEntity) event.getEntity();
+                if (!entity.hasMetadata("elite"))
+                    return;
+                if (entity.hasMetadata("charging")) {
+                    event.setCancelled(true);
+                    return;
+                } else if (entity.hasMetadata("powermove")) {
+                    Player p = (Player) event.getTarget();
+
+
+                    entity.removeMetadata("powermove", DungeonRealms.getInstance());
+                    return;
+                }
             }
         }
     }

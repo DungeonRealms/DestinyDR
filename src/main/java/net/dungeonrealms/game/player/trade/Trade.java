@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.trade;
 
 import java.util.UUID;
 
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -43,6 +44,10 @@ public class Trade {
      */
     private void openInventory() {
         inv = Bukkit.createInventory(null, 36, "Trade Window");
+        if (!p1.isOnline() || p1 == null || !p2.isOnline() || p2 == null) {
+            TradeManager.trades.remove(this);
+            return;
+        }
         Bukkit.getPlayer(p1.getUniqueId()).closeInventory();
         Bukkit.getPlayer(p2.getUniqueId()).closeInventory();
         ItemStack separator = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, " ", null, (short) 0);
