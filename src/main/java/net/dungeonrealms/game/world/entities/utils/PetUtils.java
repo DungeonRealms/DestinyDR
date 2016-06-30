@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entities.utils;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.player.rank.Rank;
@@ -374,9 +375,10 @@ public class PetUtils implements GenericMechanic{
                 petIndependenceCreeper.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petIndependenceCreeper.setPowered(true);
                 player.playSound(player.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 1F);
-                makePet(petIndependenceCreeper, player.getUniqueId(), 1.2D, EnumPets.CREEPER_OF_INDEPENDENCE);
+                makePet(petIndependenceCreeper, player.getUniqueId(), 1.25D, EnumPets.CREEPER_OF_INDEPENDENCE);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petIndependenceCreeper);
                 player.closeInventory();
+                DonationEffects.getInstance().fireWorkCreepers.add(petIndependenceCreeper);
                 break;
         }
     }

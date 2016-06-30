@@ -12,15 +12,18 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.world.entities.types.pets.Creeper;
 import net.minecraft.server.v1_9_R2.Entity;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by Kieran on 10/1/2015.
@@ -43,6 +46,8 @@ public class DonationEffects implements GenericMechanic {
     public HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
     public HashMap<Entity, ParticleAPI.ParticleEffect> ENTITY_PARTICLE_EFFECTS = new HashMap<>();
     public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
+    @Getter
+    public Set<Creeper> fireWorkCreepers = new CopyOnWriteArraySet<>();
     public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
     @Getter
     @Setter
@@ -59,11 +64,27 @@ public class DonationEffects implements GenericMechanic {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 4L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::handleCreeperFireworks, 40L, 100L);
     }
 
     @Override
     public void stopInvocation() {
 
+    }
+
+    private void handleCreeperFireworks() {
+        if (fireWorkCreepers.isEmpty()) return;
+        FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.BLUE).withFade(Color.RED).with(FireworkEffect.Type.STAR).trail(true).build();
+        for (Creeper creeper : fireWorkCreepers) {
+            if (!creeper.isAlive()) {
+                fireWorkCreepers.remove(creeper);
+            }
+            Firework fw = (Firework) creeper.getBukkitEntity().getWorld().spawnEntity(creeper.getBukkitEntity().getLocation(), EntityType.FIREWORK);
+            FireworkMeta fwm = fw.getFireworkMeta();
+            fwm.addEffect(effect);
+            fwm.setPower(random.nextInt(5));
+            fw.setFireworkMeta(fwm);
+        }
     }
 
     private void spawnPlayerParticleEffects() {
