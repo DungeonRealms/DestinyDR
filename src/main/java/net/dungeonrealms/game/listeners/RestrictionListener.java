@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import org.bukkit.*;
@@ -204,7 +205,9 @@ public class RestrictionListener implements Listener {
     @EventHandler
     public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {
         if (!API.isPlayer(event.getTarget())) return;
-        if (API.getGamePlayer((Player) event.getTarget()).isTargettable()) return;
+        GamePlayer gamePlayer = API.getGamePlayer((Player) event.getTarget());
+        if (gamePlayer == null) return;
+        if (gamePlayer.isTargettable()) return;
         event.setCancelled(true);
     }
 

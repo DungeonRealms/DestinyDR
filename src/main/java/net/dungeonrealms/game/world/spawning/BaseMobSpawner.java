@@ -97,7 +97,7 @@ public class BaseMobSpawner {
             for (Entity monster : SPAWNED_MONSTERS) {
                 if (monster.isAlive()) {
                     if (API.isInSafeRegion(monster.getBukkitEntity().getLocation())) {
-                        monster.setPosition(loc.getX(), loc.getY(), loc.getZ());
+                        monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                         continue;
                     }
                     double num = monster.getBukkitEntity().getLocation().distanceSquared(loc);
