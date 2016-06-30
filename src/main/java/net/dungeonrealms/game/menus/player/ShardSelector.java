@@ -49,7 +49,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             BungeeServerInfo info = e.getValue();
 
             // Do not show YT / CS shards unless they've got the appropriate permission to see them.
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player))) {
                 continue;
             }
 

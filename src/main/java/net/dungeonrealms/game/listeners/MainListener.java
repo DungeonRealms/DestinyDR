@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listeners;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
-import com.oracle.jrockit.jfr.EventDefinition;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -25,7 +24,6 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.player.inventory.GUI;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
@@ -585,6 +583,7 @@ public class MainListener implements Listener {
                         if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
                             pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE FISH CATCH" + ChatColor.YELLOW + " (2x)");
                         }
+                        gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
                     }
 
                     int doi_triple_drop = new Random().nextInt(100) + 1;
@@ -607,8 +606,8 @@ public class MainListener implements Listener {
                         if ((boolean) DatabaseAPI.getInstance().getData(PlayerManager.PlayerToggles.DEBUG.getDbField(), pl.getUniqueId())) {
                             pl.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE FISH CATCH" + ChatColor.YELLOW + " (3x)");
                         }
+                        gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 2);
                     }
-
                     int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());
                     if (junk_chance >= (new Random().nextInt(100) + 1)) {
                         int junk_type = new Random().nextInt(100) + 1; // 0, 1, 2
