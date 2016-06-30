@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -143,8 +144,9 @@ public interface Realms extends GenericMechanic {
      *
      * @param uuid        Owner of realm
      * @param kickPlayers Kick all players?
+     * @param kickMessage Kick message
      */
-    void closeRealmPortal(UUID uuid, boolean kickPlayers);
+    void closeRealmPortal(UUID uuid, boolean kickPlayers, String kickMessage);
 
     /**
      * Reset realm for player
@@ -279,6 +281,12 @@ public interface Realms extends GenericMechanic {
      * @return Players realms.
      */
     Map<UUID, RealmToken> getCachedRealms();
+
+
+    /**
+     * @return Processing blocks
+     */
+    Map<UUID, List<Location>> getProcessingBlocks();
 
     /**
      * @param uuid Owner of realm

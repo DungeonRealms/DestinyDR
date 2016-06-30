@@ -111,7 +111,7 @@ public class BungeeServerTracker {
                     }
                 }
             }
-        }.runTaskAsynchronously(DungeonRealms.getInstance()), 1, refreshMilli * 150);
+        }.runTaskAsynchronously(DungeonRealms.getInstance()), 1, refreshMilli * 50);
     }
 
 

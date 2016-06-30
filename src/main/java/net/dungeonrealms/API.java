@@ -54,6 +54,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.primesoft.asyncworldedit.api.IAsyncWorldEdit;
 
@@ -115,6 +116,18 @@ public class API {
         return "";
     }
 
+    public static int getItemSlot(PlayerInventory inv, String type) {
+        for (int i = 0; i < inv.getContents().length; i++) {
+            ItemStack item = inv.getContents()[i];
+            if (item == null || item.getType() == null || item.getType() == Material.AIR) continue;
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+            NBTTagCompound tag = nmsStack.getTag();
+            if (tag == null) continue;
+            if (!tag.hasKey(type)) continue;
+            if (tag.getString(type).equalsIgnoreCase("true")) return i;
+        }
+        return -1;
+    }
     public static ItemTier getItemTier(ItemStack stack) {
         if (stack.getType() == Material.AIR || stack == null)
             return null;
