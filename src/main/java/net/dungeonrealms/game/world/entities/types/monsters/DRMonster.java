@@ -229,7 +229,7 @@ public interface DRMonster {
                             teleport = ItemManager.createTeleportBook("Dark_Oak");
                             break;
                         case 2:
-                            teleport = ItemManager.createTeleportBook("Yrollsbane");
+                            teleport = ItemManager.createTeleportBook("Trollsbane");
                             break;
                         case 3:
                             teleport = ItemManager.createTeleportBook("Gloomy_Hollows");
