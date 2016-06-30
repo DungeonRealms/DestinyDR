@@ -151,8 +151,9 @@ public interface DRMonster {
                     killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                 }
             }
-            RepairAPI.setCustomItemDurability(toDrop.get(0), RandomHelper.getRandomNumberBetween(200, 1000));
-            world.getWorld().dropItem(loc.add(0, 1, 0), toDrop.get(0));
+            ItemStack drop = toDrop.get(random.nextInt(toDrop.size()));
+            RepairAPI.setCustomItemDurability(drop, RandomHelper.getRandomNumberBetween(200, 1000));
+            world.getWorld().dropItem(loc.add(0, 1, 0), drop);
         }
         int scrollDrop = random.nextInt(100);
         int scrollDropChance;
