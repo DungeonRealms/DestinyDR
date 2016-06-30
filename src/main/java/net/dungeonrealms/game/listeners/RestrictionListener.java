@@ -204,6 +204,7 @@ public class RestrictionListener implements Listener {
     @EventHandler
     public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {
         if (!API.isPlayer(event.getTarget())) return;
+        if (!API.getGamePlayer((Player) event.getEntity()).isTargettable()) return;
         event.setCancelled(true);
     }
 

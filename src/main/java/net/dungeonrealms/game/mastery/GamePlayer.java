@@ -64,6 +64,9 @@ public class GamePlayer {
 
     @Getter
     private boolean isInvulnerable;
+    @Getter
+    @Setter
+    private boolean isTargettable;
 
     public GamePlayer(Player player) {
         T = player;
