@@ -262,8 +262,8 @@ public class DatabaseAPI {
             case ECASH_SPENT:
             case GEMS_EARNED:
             case GEMS_SPENT:
-                String data_key = data.getKey().split(".")[1];
-                return ((Document) doc.get("stats")).get(data_key, Integer.class);
+                //String data_key = data.getKey().split(".")[1];
+                return ((Document) doc.get("stats")).get(data.getKey(), Integer.class);
             default:
         }
         return null;
