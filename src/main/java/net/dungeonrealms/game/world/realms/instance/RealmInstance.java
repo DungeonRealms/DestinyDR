@@ -14,6 +14,7 @@ import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.listeners.RealmListener;
 import net.dungeonrealms.game.mastery.AsyncUtils;
@@ -382,8 +383,21 @@ public class RealmInstance implements Realms {
                     + ChatColor.BOLD + new_bottom_y + "x" + new_bottom_y + ChatColor.LIGHT_PURPLE
                     + ", you have been kicked out of the realm while the upgrade takes place.");
 
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Your realm will be closed while we are upgrading it..");
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "Upgrading realm to <" + "Tier " + nextTier + ">");
         player.sendMessage(ChatColor.GRAY + "We will notify you once it is ready.");
+
+        // HANDLE ACHIEVEMENTS
+        if (nextTier >= 2) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_1);
+            if (nextTier >= 4) {
+                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_2);
+                if (nextTier >= 6) {
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_3);
+                    if (nextTier == 7)
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_4);
+                }
+            }
+        }
 
         // SET REALM STATUS //
         RealmToken realm = getRealm(player.getUniqueId());

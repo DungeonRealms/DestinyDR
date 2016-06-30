@@ -157,7 +157,7 @@ public class ItemListener implements Listener {
         if (tag == null) return;
         if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR ) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
 
             if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
             Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
@@ -182,7 +182,7 @@ public class ItemListener implements Listener {
                         + (tier + 1));
                 p.sendMessage(ChatColor.DARK_GRAY + "Upgrade Cost: " + ChatColor.LIGHT_PURPLE + "" + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
                 p.sendMessage("");
-                p.sendMessage(ChatColor.GRAY + "Enter '" + ChatColor.DARK_AQUA + ChatColor.BOLD.toString() + "CONFIRM" + ChatColor.GRAY + "' to confirm your guild creation.");
+                p.sendMessage(ChatColor.GRAY + "Enter '" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "CONFIRM" + ChatColor.GRAY + "' to confirm realm upgrade.");
                 p.sendMessage("");
                 p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Realm upgrades are " + ChatColor.BOLD + ChatColor.RED + "NOT"
                         + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this upgrade request.");

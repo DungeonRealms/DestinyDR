@@ -415,16 +415,27 @@ public class RealmListener implements Listener {
 
         if (realm == null) return;
 
-        if (p.getGameMode() == GameMode.CREATIVE) {
-            return;
-        }
+        if (p.getGameMode() == GameMode.CREATIVE) return;
         String world = e.getBlock().getWorld().getName();
         if (e.getBlock().getType() == Material.PORTAL) {
             e.setCancelled(true);
             return;
         }
 
-        if (!p.isOp() && (e.getBlock().getType() == Material.TRAPPED_CHEST || e.getBlock().getType() == Material.GOLD_BLOCK)) {
+        int realm_tier = REALMS.getRealmTier(realm.getOwner());
+        int max_size = REALMS.getRealmDimensions(realm_tier) + 16;
+
+        int max_y = 128;
+        Block b = e.getBlock();
+        if (!(Rank.isGM(p)))
+            if (Math.round(b.getX() - 0.5) > max_size || Math.round(b.getX() - 0.5) < 16 || Math.round(b.getZ() - 0.5) > max_size
+                    || Math.round(b.getZ() - 0.5) < 16 || (b.getY() > (max_y + (max_size) + 1)) || (b.getY() < (max_y - (max_size) - 1))) {
+                e.setCancelled(true);
+                p.updateInventory();
+                return;
+            }
+
+        if (!Rank.isGM(p) && (e.getBlock().getType() == Material.TRAPPED_CHEST || e.getBlock().getType() == Material.GOLD_BLOCK)) {
             if (e.getBlock().getType() == Material.TRAPPED_CHEST) {
                 p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " place this "
                         + e.getBlock().getType().name().toUpperCase() + " as it is an illegal item.");
