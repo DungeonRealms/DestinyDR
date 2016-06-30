@@ -123,7 +123,6 @@ public class DungeonManager implements GenericMechanic {
                     int level = Utils.getRandomFromTier(3, "low");
                     String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
                     EntityStats.createDungeonMob(toSpawn, level, 3);
-                    MetadataUtils.registerEntityMetadata(toSpawn, EnumEntityType.HOSTILE_MOB, 3, level);
                     if (toSpawn == null) {
                         return; //WTF?? UH OH BOYS WE GOT ISSUES
                     }
