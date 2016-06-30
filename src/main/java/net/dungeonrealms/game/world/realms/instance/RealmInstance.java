@@ -40,6 +40,7 @@ import org.bukkit.inventory.Recipe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
@@ -96,8 +97,16 @@ public class RealmInstance implements Realms {
         } catch (IOException e) {
             e.printStackTrace();
             Utils.log.info("Failed to create realm directories!");
-
         }
+
+        Arrays.asList(rootFolder.listFiles()).stream()
+                .filter(file -> API.isUUID(file.getName())).forEach(f -> {
+            try {
+                FileUtils.forceDelete(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
         Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
@@ -227,20 +236,17 @@ public class RealmInstance implements Realms {
             return;
         }
 
-        if (isPortalNearby(location.clone().add(0, 1, 0), 6) || API.isMaterialNearby(location.clone().getBlock(), 6, Material.PORTAL)) {
-            player.sendMessage(ChatColor.RED + "You cannot place a portal so close to another! (Min 6 Blocks)");
+        if (isPortalNearby(location.clone().add(0, 1, 0), 3) || API.isMaterialNearby(location.clone().getBlock(), 3, Material.PORTAL)) {
+            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " open a realm portal so close to another.");
+            player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "REQ:" + ChatColor.GRAY + " >3 blocks away.");
             return;
         }
 
 
         for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
-            if (p.getName().equals(player.getName())) {
-                continue;
-            }
-            if (!p.getWorld().equals(player.getWorld())) {
-                continue;
-            }
-            if (p.getLocation().distanceSquared(player.getLocation()) <= 2) {
+            if (p.getName().equals(player.getName())) continue;
+            if (!p.getWorld().equals(player.getWorld())) continue;
+            if (p.getLocation().distance(player.getLocation()) <= 3) {
                 player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
                 return;
             }

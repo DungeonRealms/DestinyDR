@@ -166,12 +166,6 @@ public class ItemListener implements Listener {
             if (API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
 
-                if (API.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial_island")) {
-                    p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
-                            + " open a portal to your realm until you have completed Tutorial Island.");
-                    return;
-                }
-
                 if (API.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
                     return;
@@ -179,6 +173,12 @@ public class ItemListener implements Listener {
 
                 Realms.getInstance().setRealmSpawn(event.getPlayer().getUniqueId(), newLocation);
                 event.setCancelled(true);
+                return;
+            }
+
+            if (API.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial_island")) {
+                p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
+                        + " open a portal to your realm until you have completed Tutorial Island.");
                 return;
             }
 

@@ -55,6 +55,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.primesoft.asyncworldedit.api.IAsyncWorldEdit;
 
 import java.io.File;
 import java.io.IOException;
@@ -263,6 +264,16 @@ public class API {
         return UUIDHelper.getOfflineUUID(name);
     }
 
+
+    public static boolean isUUID(String uuidString) {
+        try {
+            UUID.fromString(uuidString);
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Gets players name from UUID. ASYNC.
      *
@@ -278,6 +289,24 @@ public class API {
 
     public static boolean isInWorld(Player player, World world) {
         return world != null && player.getLocation().getWorld().equals(world);
+    }
+
+    /**
+     * Gets the WorldGuard plugin.
+     *
+     * @return
+     * @since 1.0
+     */
+    public static IAsyncWorldEdit getAsyncWorldEdit() {
+        Plugin plugin = DungeonRealms.getInstance().getServer().getPluginManager().getPlugin("AsyncWorldEdit");
+        if (plugin == null || !(plugin instanceof IAsyncWorldEdit)) {
+            try {
+                throw new UnknownObjectException("getAsyncWorldEdit() of API.class is RETURNING NULL!");
+            } catch (UnknownObjectException e) {
+                e.printStackTrace();
+            }
+        }
+        return (IAsyncWorldEdit) plugin;
     }
 
     /**

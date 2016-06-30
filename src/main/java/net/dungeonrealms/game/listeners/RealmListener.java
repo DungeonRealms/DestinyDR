@@ -98,12 +98,14 @@ public class RealmListener implements Listener {
             player.sendMessage(ChatColor.GRAY + "You will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GRAY.toString()
                     + " be flagged as 'combat logged' while invincible.");
 
-            API.getGamePlayer(player).setInvulnerable(true);
+            if (API.getGamePlayer(player) != null)
+                API.getGamePlayer(player).setInvulnerable(true);
 
             Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.setFireTicks(0);
                 player.setFallDistance(0.0F);
-                API.getGamePlayer(player).setInvulnerable(false);
+                if (API.getGamePlayer(player) != null)
+                    API.getGamePlayer(player).setInvulnerable(false);
             }, 15 * 20L);
 
         } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
@@ -214,7 +216,7 @@ public class RealmListener implements Listener {
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
         }
 
 
@@ -228,7 +230,7 @@ public class RealmListener implements Listener {
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
         }
     }
 
@@ -245,11 +247,11 @@ public class RealmListener implements Listener {
         if (!tag.hasKey("orb")) return;
         if (!tag.getString("orb").equalsIgnoreCase("flight") && !tag.getString("orb").equalsIgnoreCase("peace")) return;
 
-        if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
-        Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
-
         event.setCancelled(true);
         event.setUseItemInHand(Event.Result.DENY);
+
+        if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
+        Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
         if (!p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString())) {
             // Trying to use in a realm that isn't theirs.

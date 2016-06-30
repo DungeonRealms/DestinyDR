@@ -69,7 +69,7 @@ public class BungeeServerTracker {
         return trackedServers;
     }
 
-    public static void startTask(int refreshSeconds) {
+    public static void startTask(int refreshMilli) {
         if (taskID != -1) Bukkit.getScheduler().cancelTask(taskID);
 
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> new BukkitRunnable() {
@@ -111,7 +111,7 @@ public class BungeeServerTracker {
                     }
                 }
             }
-        }.runTaskAsynchronously(DungeonRealms.getInstance()), 1, refreshSeconds * 20);
+        }.runTaskAsynchronously(DungeonRealms.getInstance()), 1, refreshMilli * 150);
     }
 
 
