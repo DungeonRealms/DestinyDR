@@ -780,30 +780,30 @@ public class ItemManager {
                 .ArmorAttributeType.STRENGTH) + " Strength"
                 + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Warrior'" + "\n"
 //                + ChatColor.BLACK.toString() + "+" + df.format("STR * 0.03") + "% Armor" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get("armor").toString()) + "% ARMOR" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get("block").toString()) + "% BLOCK" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.015) + "% AXE DMG" + "\n" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.023) + "% Polearm DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("armor")) + "% ARMOR" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("block")) + "% BLOCK" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.015f) + "% AXE DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.023f) + "% Polearm DMG" + "\n" + "\n"
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item
                 .ArmorAttributeType.DEXTERITY) + " Dexterity" + "\n"
                 + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Archer'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get("dps")) + "% DPS" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get("dodge")) + "% DODGE" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get("armorPenetration")) + "% ARMOR PEN" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.DEXTERITY) * 0.015) + "% BOW DMG";
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("dps")) + "% DPS" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("dodge")) + "% DODGE" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("armorPenetration")) + "% ARMOR PEN" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.DEXTERITY) * 0.015f) + "% BOW DMG";
 
         page4_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item
                 .ArmorAttributeType.VITALITY) + " Vitality"
                 + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Defender'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.034) + "% Health" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get("healthRegen")) + "   HP/s" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.01) + "% Sword DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.034f) + "% Health" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("healthRegen")) + "   HP/s" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.01f) + "% Sword DMG" + "\n" + "\n"
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item
                 .ArmorAttributeType.INTELLECT) + " Intellect" + "\n"
                 + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Mage'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get("energyRegen")) + "% Energy" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get("criticalHit")) + "% Critical Hit" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.INTELLECT) * 0.02) + "% Staff DMG";
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("energyRegen")) + "% Energy" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("criticalHit")) + "% Critical Hit" + "\n"
+                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.INTELLECT) * 0.02f) + "% Staff DMG";
 
         String page5_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "@<PLAYER> <MSG>" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line

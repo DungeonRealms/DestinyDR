@@ -822,7 +822,23 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (entity.hasMetadata("elite")) {
-            totalHP *= 4;
+            switch (entity.getMetadata("tier").get(0).asInt()) {
+                case 1:
+                    totalHP *= 1.8;
+                    break;
+                case 2:
+                    totalHP *= 2.5;
+                    break;
+                case 3:
+                    totalHP *= 3.;
+                    break;
+                case 4:
+                    totalHP *= 5.;
+                    break;
+                case 5:
+                    totalHP *= 7.;
+                    break;
+            }
         }
 
         if (entity.hasMetadata("boss")) {

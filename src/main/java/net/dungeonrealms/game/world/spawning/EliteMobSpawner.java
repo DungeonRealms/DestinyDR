@@ -192,8 +192,8 @@ public class EliteMobSpawner {
                 return;
             }
             int level = Utils.getRandomFromTier(tier, levelRange);
-            giveCustomEquipment(eliteType, entity);
             EntityStats.setMonsterElite(entity, eliteType, tier, monsterType, false);
+            giveCustomEquipment(eliteType, entity);
             MetadataUtils.registerEntityMetadata(entity, type, tier, level);
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -281,7 +281,7 @@ public class EliteMobSpawner {
                 armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
                 armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helms");
             default:
-                break;
+                return;
         }
         LivingEntity livingEntity = (LivingEntity) toGive.getBukkitEntity();
         if (eliteType != EnumNamedElite.NONE) {
