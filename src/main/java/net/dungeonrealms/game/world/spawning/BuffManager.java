@@ -10,9 +10,12 @@ import net.dungeonrealms.game.world.entities.types.EnderCrystal;
 import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -61,10 +64,8 @@ public class BuffManager implements GenericMechanic {
                     continue;
                 }
             }
-            if (API.getNearbyPlayers(player.getLocation(), 15).size() > 2) {
-                if (new Random().nextInt(21) < 10) {
-                    continue;
-                }
+            if (getNearbyBuffs(player, 10).size() > 1) {
+                continue;
             }
             if (new Random().nextInt(21) < 4) {
                 if (!CURRENT_BUFFS.isEmpty()) {
@@ -84,5 +85,17 @@ public class BuffManager implements GenericMechanic {
                 }
             }
         }
+    }
+
+    private static Set<Entity> getNearbyBuffs(Player player, int radius) {
+        Set<Entity> buffsNearby = new HashSet<>();
+        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (entity.hasMetadata("type")) {
+                if (entity.getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
+                    buffsNearby.add(entity);
+                }
+            }
+        }
+        return buffsNearby;
     }
 }
