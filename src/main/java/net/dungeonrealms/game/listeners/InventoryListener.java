@@ -352,7 +352,6 @@ public class InventoryListener implements Listener {
             }
         }
         API.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
-        PlayerManager.updateCharacterJournal(p);
     }
 
 
