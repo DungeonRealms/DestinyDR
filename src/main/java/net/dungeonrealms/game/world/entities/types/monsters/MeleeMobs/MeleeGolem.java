@@ -7,7 +7,9 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRGolem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_9_R2.EntityHuman;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -33,6 +35,8 @@ public class MeleeGolem extends DRGolem {
         this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         livingEntity.getEquipment().setItemInMainHand(weapon);
+        this.setPlayerCreated(false);
+        this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
 
     private ItemStack getTierWeapon(int tier) {

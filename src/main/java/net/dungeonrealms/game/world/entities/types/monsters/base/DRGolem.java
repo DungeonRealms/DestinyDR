@@ -46,6 +46,8 @@ public abstract class DRGolem extends EntityIronGolem implements DRMonster {
         livingEntity.getEquipment().setHelmet(monsterType.getSkullItem(monsterType));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
+        this.setPlayerCreated(false);
+        this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
 
     protected DRGolem(World world) {
