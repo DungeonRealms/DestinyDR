@@ -5,7 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
@@ -37,10 +41,10 @@ public class RealmToken {
     private Hologram hologram;
 
     @Getter
-    private Set<UUID> playersInRealm = new HashSet<>();
+    private Set<UUID> playersInRealm = new CopyOnWriteArraySet<>();
 
     @Getter
-    private Set<UUID> builders = new HashSet<>();
+    private Set<UUID> builders = new CopyOnWriteArraySet<>();
 
     @Getter
     private Map<String, RealmProperty> realmProperties = new HashMap<>();
