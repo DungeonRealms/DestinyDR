@@ -341,6 +341,9 @@ public class CommandAdd extends BasicCommand {
                     // Add all pets to the player.
                     List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, currentProfile.getUniqueId());
                     for (EnumPets pets : EnumPets.values()) {
+                        if (pets == EnumPets.BABY_HORSE) {
+                            continue;
+                        }
                         if (!playerPets.isEmpty()) {
                             if (playerPets.contains(pets.getRawName().toUpperCase())) {
                                 continue;

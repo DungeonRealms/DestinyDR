@@ -36,10 +36,6 @@ public class PlayerManager {
             player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
     }
 
-    public static void updateCharacterJournal(Player player) {
-        player.getInventory().setItem(8, ItemManager.createCharacterJournal(player));
-    }
-
     public static boolean isSlotFree(PlayerInventory inv, int slot) {
         ItemStack item = inv.getItem(slot);
         return (item == null || item.getType() == null || item.getType() == Material.AIR);

@@ -375,7 +375,29 @@ public class ItemManager {
             healAmount = (((healAmount + 5) / 10) * 10);
         }
         if (!isSplashPotion) {
-            ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 5);
+            Potion potion = new Potion(PotionType.WATER, 1);
+            potion.setSplash(false);
+            ItemStack rawStack = potion.toItemStack(1);
+            switch (tier) {
+                case 1:
+                    new Potion(PotionType.REGEN).apply(rawStack);
+                    break;
+                case 2:
+                    new Potion(PotionType.INSTANT_HEAL).apply(rawStack);
+                    break;
+                case 3:
+                    new Potion(PotionType.STRENGTH).apply(rawStack);
+                    break;
+                case 4:
+                    new Potion(PotionType.INSTANT_DAMAGE).apply(rawStack);
+                    break;
+                case 5:
+                    new Potion(PotionType.FIRE_RESISTANCE).apply(rawStack);
+                    break;
+                default:
+                    break;
+
+            }
             PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
             potionMeta.setDisplayName(name);
             potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixir that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP."));
@@ -389,9 +411,29 @@ public class ItemManager {
             return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         } else {
             healAmount *= 0.65;
-            Potion potion = new Potion(PotionType.INSTANT_HEAL, 1);
+            Potion potion = new Potion(PotionType.WATER, 1);
             potion.setSplash(true);
             ItemStack rawStack = potion.toItemStack(1);
+            switch (tier) {
+                case 1:
+                    new Potion(PotionType.REGEN).apply(rawStack);
+                    break;
+                case 2:
+                    new Potion(PotionType.INSTANT_HEAL).apply(rawStack);
+                    break;
+                case 3:
+                    new Potion(PotionType.STRENGTH).apply(rawStack);
+                    break;
+                case 4:
+                    new Potion(PotionType.INSTANT_DAMAGE).apply(rawStack);
+                    break;
+                case 5:
+                    new Potion(PotionType.FIRE_RESISTANCE).apply(rawStack);
+                    break;
+                default:
+                    break;
+
+            }
             PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
             potionMeta.setDisplayName(name);
             potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixir that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP in a " + ChatColor.RED + ChatColor.BOLD + "4x4" + ChatColor.GRAY + " Area."));
@@ -775,35 +817,29 @@ public class ItemManager {
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "          XP" + "\n" + ChatColor.BLACK + "       " + (int) gp.getExperience() + "/"
                 + gp.getEXPNeeded(gp.getLevel());
-
-        page3_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item
-                .ArmorAttributeType.STRENGTH) + " Strength"
+        page3_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) + " Strength"
                 + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Warrior'" + "\n"
 //                + ChatColor.BLACK.toString() + "+" + df.format("STR * 0.03") + "% Armor" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("armor")) + "% ARMOR" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("block")) + "% BLOCK" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.015f) + "% AXE DMG" + "\n" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.023f) + "% Polearm DMG" + "\n" + "\n"
-                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item
-                .ArmorAttributeType.DEXTERITY) + " Dexterity" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("armor"))) + "% ARMOR" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("block"))) + "% BLOCK" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.015) + "% AXE DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.023) + "% Polearm DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.DEXTERITY) + " Dexterity" + "\n"
                 + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Archer'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("dps")) + "% DPS" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("dodge")) + "% DODGE" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("armorPenetration")) + "% ARMOR PEN" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.DEXTERITY) * 0.015f) + "% BOW DMG";
-
-        page4_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item
-                .ArmorAttributeType.VITALITY) + " Vitality"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("dps"))) + "% DPS" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("dodge"))) + "% DODGE" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.WeaponAttributeType.getByNBTName("armorPenetration"))) + "% ARMOR PEN" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.DEXTERITY) * 0.015) + "% BOW DMG";
+        page4_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) + " Vitality"
                 + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Defender'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.034f) + "% Health" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("healthRegen")) + "   HP/s" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.01f) + "% Sword DMG" + "\n" + "\n"
-                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item
-                .ArmorAttributeType.INTELLECT) + " Intellect" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.034) + "% Health" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.getByNBTName("healthRegen"))) + "   HP/s" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.01) + "% Sword DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.INTELLECT) + " Intellect" + "\n"
                 + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Mage'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("energyRegen")) + "% Energy" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getAttributeBonusesFromStats().get("criticalHit")) + "% Critical Hit" + "\n"
-                + ChatColor.BLACK.toString() + "+" + String.format("%.2f", gp.getStaticAttributeVal(Item.ArmorAttributeType.INTELLECT) * 0.02f) + "% Staff DMG";
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("energyRegen"))) + "% Energy" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.WeaponAttributeType.getByNBTName("criticalHit"))) + "% Critical Hit" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.INTELLECT) * 0.02) + "% Staff DMG";
 
         String page5_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "@<PLAYER> <MSG>" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line

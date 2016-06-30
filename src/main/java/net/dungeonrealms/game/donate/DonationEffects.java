@@ -78,6 +78,7 @@ public class DonationEffects implements GenericMechanic {
         for (Creeper creeper : fireWorkCreepers) {
             if (!creeper.isAlive()) {
                 fireWorkCreepers.remove(creeper);
+                continue;
             }
             Firework fw = (Firework) creeper.getBukkitEntity().getWorld().spawnEntity(creeper.getBukkitEntity().getLocation(), EntityType.FIREWORK);
             FireworkMeta fwm = fw.getFireworkMeta();
@@ -92,7 +93,7 @@ public class DonationEffects implements GenericMechanic {
         for (Player player : PLAYER_PARTICLE_EFFECTS.keySet()) {
             if (!player.isOnline()) {
                 PLAYER_PARTICLE_EFFECTS.remove(player);
-                return;
+                continue;
             }
             float moveSpeed = 0.02F;
             ParticleAPI.ParticleEffect particleEffect = PLAYER_PARTICLE_EFFECTS.get(player);
@@ -129,7 +130,7 @@ public class DonationEffects implements GenericMechanic {
         for (Entity entity : ENTITY_PARTICLE_EFFECTS.keySet()) {
             if (!entity.isAlive()) {
                 ENTITY_PARTICLE_EFFECTS.remove(entity);
-                return;
+                continue;
             }
             float moveSpeed = 0.02F;
             ParticleAPI.ParticleEffect particleEffect = ENTITY_PARTICLE_EFFECTS.get(entity);
