@@ -32,7 +32,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     public static com.mongodb.client.MongoDatabase database = null;
     public static com.mongodb.client.MongoCollection<Document> guilds = null;
     private static DungeonRealmsProxy instance;
-    private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "us4", "sub1", "yt1"};
+    private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "sub1"}; // @note: don't include us0
 
     //private Map<String, Long> restartingServers = new HashMap<>();
 
@@ -69,7 +69,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         for (String shardName : DR_SHARDS)
             // We want to only put them on a US as they may fail the criteria for another shard.
             // They are free to join another shard once connected.
-            if (shardName.startsWith("us"))
+            if (shardName.startsWith("us") && !shardName.equalsIgnoreCase("us0"))
                 server.add(getProxy().getServerInfo(shardName));
 
         //Arrays.
