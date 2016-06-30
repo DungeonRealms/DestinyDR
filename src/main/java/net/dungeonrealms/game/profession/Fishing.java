@@ -2,13 +2,13 @@ package net.dungeonrealms.game.profession;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.world.items.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -757,20 +757,26 @@ public class Fishing implements GenericMechanic {
                 case 20:
                     tier = 2;
                     addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_I);
                     break;
                 case 40:
                     tier = 3;
                     addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_II);
                     break;
                 case 60:
                     tier = 4;
                     addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_III);
                     break;
                 case 80:
                     tier = 5;
                     addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_IV);
                     break;
                 case 100:
+                    addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_V);
                     rod.getItemMeta().setDisplayName(ChatColor.YELLOW.toString() + "Grand Master Fishingrod");
                     p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Fishingrod has reached " + ChatColor.UNDERLINE + "LVL 100"
                             + ChatColor.YELLOW + " this means you can no longe repair it. You now have TWO options.");
@@ -779,6 +785,8 @@ public class Fishing implements GenericMechanic {
                             " Fishingrod until it runs out of durability, it will transform into a LVL 1 Fishingrod "
                             + ", but it will retain all its custom stats.");
                     p.sendMessage("");
+                    break;
+                default:
                     break;
             }
             nms = CraftItemStack.asNMSCopy(rod);

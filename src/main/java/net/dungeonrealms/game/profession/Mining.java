@@ -2,6 +2,7 @@ package net.dungeonrealms.game.profession;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -335,18 +336,34 @@ public class Mining implements GenericMechanic {
                 case 20:
                     tier = 2;
                     addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.PICKAXE_LEVEL_I);
                     break;
                 case 40:
                     tier = 3;
                     addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.PICKAXE_LEVEL_II);
                     break;
                 case 60:
                     tier = 4;
                     addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.PICKAXE_LEVEL_III);
                     break;
                 case 80:
                     tier = 5;
                     addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.PICKAXE_LEVEL_IV);
+                    break;
+                case 100:
+                    addEnchant = true;
+                    Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.PICKAXE_LEVEL_V);
+                    pick.getItemMeta().setDisplayName(ChatColor.YELLOW.toString() + "Grand Master Pickaxe");
+                    p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Pickaxe has reached " + ChatColor.UNDERLINE + "LVL 100"
+                            + ChatColor.YELLOW + " this means you can no longe repair it. You now have TWO options.");
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Pickaxe at the merchant for a 'Buff Token' that will hold all the custom stats of your Pickaxe and may be applied to a new Pickaxe.");
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(2) " + ChatColor.YELLOW + "If you continue to use this" +
+                            " Pickaxe until it runs out of durability, it will transform into a LVL 1 Pickaxe "
+                            + ", but it will retain all its custom stats.");
+                    p.sendMessage("");
                     break;
                 default:
                     break;
