@@ -469,7 +469,49 @@ public class Achievements {
 
         MONSTER_HUNTER_VI("Monster Hunter VI", new String[]{
                 "Defeated 2000 monsters."
-        }, 10000, "achievement.combat_monster_hunter_vi", false);
+        }, 10000, "achievement.combat_monster_hunter_vi", false),
+        
+        MAN_HUNTER_I("Man Hunter I", new String[]{
+                "Defeated 1 player."
+        }, 250, "achievement.combat_man_hunter_i", false),
+
+        MAN_HUNTER_II("Man Hunter II", new String[]{
+                "Defeated 3 players."
+        }, 500, "achievement.combat_man_hunter_ii", false),
+
+        MAN_HUNTER_III("Man Hunter III", new String[]{
+                "Defeated 5 players."
+        }, 1000, "achievement.combat_man_hunter_iii", false),
+
+        MAN_HUNTER_IV("Man Hunter IV", new String[]{
+                "Defeated 10 players."
+        }, 3000, "achievement.combat_man_hunter_iv", false),
+
+        MAN_HUNTER_V("Man Hunter V", new String[]{
+                "Defeated 15 players."
+        }, 6000, "achievement.combat_man_hunter_v", false),
+
+        MAN_HUNTER_VI("Man Hunter VI", new String[]{
+                "Defeated 20 players."
+        }, 10000, "achievement.combat_man_hunter_vi", false),
+
+        ENFORCER_OF_JUSTICE_I("Enforcer of Justice I", new String[]{
+            "Defeated 1 chaotic player."
+        }, 300, "achievement.combat_enforcer_of_justice_i", false),
+
+        ENFORCER_OF_JUSTICE_iI("Enforcer of Justice II", new String[]{
+            "Defeated 3 chaotic players."
+        }, 2500, "achievement.combat_enforcer_of_justice_ii", false),
+
+        ENFORCER_OF_JUSTICE_Iii("Enforcer of Justice III", new String[]{
+            "Defeated 5 chaotic players."
+        }, 5000, "achievement.combat_enforcer_of_justice_iii", false),
+
+        HERO("Hero", new String[]{
+                "Heroically killed an outlaw."
+        }, 250, "achievement.combat_hero_i", false),
+
+        ;
 
         private String name;
         private String[] message;

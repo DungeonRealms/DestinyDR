@@ -1326,6 +1326,9 @@ public class DamageListener implements Listener {
             case POISON:
                 dmg = maxHP * 0.01;
                 break;
+            case CONTACT:
+                dmg = maxHP * 0.03;
+                break;
             case SUFFOCATION:
                 dmg = 0;
                 break;

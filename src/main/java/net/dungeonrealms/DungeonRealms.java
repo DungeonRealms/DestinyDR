@@ -342,7 +342,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "This will teleport a Game Master to their spawn point."));
-            cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "This will spawn a Dungeon Realms item."));
+            cm.registerCommand(new CommandAdd("add", "/<command> [args]", "This will spawn a Dungeon Realms item.", Collections.singletonList("ad")));
             cm.registerCommand(new CommandList("list", "/<command> [args]", "Displays a list of online players."));
             cm.registerCommand(new CommandSetRank("setrank", "/<command> [args]", "Sets the rank of a player."));
             cm.registerCommand(new CommandArmorSee("armorsee", "/<command> [args]", "Shows the armor of a player or entity."));

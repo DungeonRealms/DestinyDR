@@ -725,7 +725,7 @@ public class HealthHandler implements GenericMechanic {
                         }
                         PlayerStatistics playerStatistics = API.getGamePlayer((Player) attacker)
                                 .getPlayerStatistics();
-                        switch (entity.getMetadata("tier").get(0).asInt() + 1) {
+                        switch (entity.getMetadata("tier").get(0).asInt()) {
                             case 1:
                                 playerStatistics.setT1MobsKilled(playerStatistics.getT1MobsKilled() + 1);
                                 break;
@@ -740,6 +740,34 @@ public class HealthHandler implements GenericMechanic {
                                 break;
                             case 5:
                                 playerStatistics.setT5MobsKilled(playerStatistics.getT5MobsKilled() + 1);
+                                break;
+                            default:
+                                break;
+                        }
+                        switch (playerStatistics.getTotalMobKills()) {
+                            case 100:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_I);
+                                break;
+                            case 300:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_II);
+                                break;
+                            case 500:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_III);
+                                break;
+                            case 1000:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_IV);
+                                break;
+                            case 1500:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_V);
+                                break;
+                            case 2000:
+                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
+                                        .EnumAchievements.MONSTER_HUNTER_VI);
                                 break;
                             default:
                                 break;

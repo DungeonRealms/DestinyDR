@@ -194,4 +194,8 @@ public class PlayerStatistics {
             gemsSpent = 0;
         }
     }
+
+    public int getTotalMobKills() {
+        return t1MobsKilled + t2MobsKilled + t3MobsKilled + t4MobsKilled + t5MobsKilled;
+    }
 }
