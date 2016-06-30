@@ -196,6 +196,16 @@ public class PlayerStatistics {
     }
 
     public int getTotalMobKills() {
-        return t1MobsKilled + t2MobsKilled + t3MobsKilled + t4MobsKilled + t5MobsKilled;
+        return (int) DatabaseAPI.getInstance().getData(EnumData.T1_MOB_KILLS , playerUUID) + (int) DatabaseAPI.getInstance().getData(EnumData.T2_MOB_KILLS , playerUUID)
+                + (int) DatabaseAPI.getInstance().getData(EnumData.T3_MOB_KILLS , playerUUID) + (int) DatabaseAPI.getInstance().getData(EnumData.T4_MOB_KILLS , playerUUID)
+                + (int) DatabaseAPI.getInstance().getData(EnumData.T5_MOB_KILLS , playerUUID);
+    }
+
+    public int getTotalOreMined() {
+        return (int) DatabaseAPI.getInstance().getData(EnumData.ORE_MINED , playerUUID);
+    }
+
+    public int getTotalFishCaught() {
+        return (int) DatabaseAPI.getInstance().getData(EnumData.FISH_CAUGHT , playerUUID);
     }
 }

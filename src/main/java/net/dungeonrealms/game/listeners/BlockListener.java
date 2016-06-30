@@ -12,7 +12,6 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
@@ -166,6 +165,7 @@ public class BlockListener implements Listener {
                 int doubleDrop = rand.nextInt(100) + 1;
                 if (Mining.getDoubleDropChance(stackInHand) >= doubleDrop) {
                     p.getInventory().addItem(Mining.getBlock(type));
+                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                         p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE ORE DROP" + ChatColor.YELLOW + " (2x)");
                 }
@@ -174,6 +174,7 @@ public class BlockListener implements Listener {
                 if (Mining.getTripleDropChance(stackInHand) >= tripleDrop) {
                     p.getInventory().addItem(Mining.getBlock(type));
                     p.getInventory().addItem(Mining.getBlock(type));
+                    gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 2);
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                         p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE ORE DROP" + ChatColor.YELLOW + " (3x)");
                 }
