@@ -594,12 +594,16 @@ public class ItemManager {
      * @param player
      */
     public static void giveStarter(Player player) {
-        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
-        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
-        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
+                .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
+                .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
+                .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
 
 
-        player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
+                ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
 
         if (Utils.randInt(0, 1) == 1) {
             player.getInventory().addItem(ItemGenerator.getNamedItem("training_sword"));
