@@ -5,16 +5,12 @@
 /src/rebel.xml
 /src/rebel-remote.xml
 resources/META_INF/MANIFEST.MF
-/tools/pushBungee.bat
-/tools/pushDev.bat
-/tools/pushDev2.bat
-/tools/pushDev3.bat
 *.iml
 .classpath
 .project
 /target
 .settings
-tools/WinSCP.*
+tools/*
 tools/pushBuildToServer/pushDev.bat
 tools/pushBuildToServer/WinSCP.com
 tools/pushBuildToServer/WinSCP.map

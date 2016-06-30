@@ -48,6 +48,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -191,20 +192,18 @@ public class RealmListener implements Listener {
             if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())))
                 createDoubleHelix(loc);
 
-            if (realm.getPropertyBoolean("peaceful")) {
+            //loc.subtract(.5D, 2D, .5D);
+            if (realm.getPropertyBoolean("peaceful"))
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
-                //loc.subtract(.5D, 2D, .5D);
-            }
 
-            if (realm.getPropertyBoolean("flight")) {
+            //loc.subtract(.5D, 1.5D, .5D);
+            if (realm.getPropertyBoolean("flight"))
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
-                //loc.subtract(.5D, 1.5D, .5D);
-            }
         }
     }
 
     private void createDoubleHelix(Location loc) {
-        double radius = 1;
+        double radius;
 
         for (double y = 0; y < 2; y += 0.007) {
             radius = y / 3;
@@ -214,11 +213,11 @@ public class RealmListener implements Listener {
             double y2 = 3 - y;
 
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
+            Random random = new Random();
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, (random.nextFloat()) - 0.4F, (random.nextFloat()) - 0.5F, (random.nextFloat()) - 0.5F, -1, 6));
         }
-
 
         for (double y = 0; y < 2; y += 0.007) {
             radius = y / 3;
@@ -228,9 +227,10 @@ public class RealmListener implements Listener {
             double y2 = 5 - y;
 
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
+            Random random = new Random();
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, (random.nextFloat()) - 0.4F, (random.nextFloat()) - 0.5F, (random.nextFloat()) - 0.5F, -1, 6));
         }
     }
 
@@ -421,6 +421,7 @@ public class RealmListener implements Listener {
         }
 
         event.setCancelled(true);
+
         event.setDamage(0);
 
         RealmToken realm = Realms.getInstance().getRealm(p.getUniqueId());
@@ -485,12 +486,13 @@ public class RealmListener implements Listener {
             p.sendMessage(ChatColor.RED + "You aren't authorized to build in " + Bukkit.getPlayer(realm.getOwner()).getName() + "'s realm.");
             p.sendMessage(ChatColor.GRAY + Bukkit.getPlayer(realm.getOwner()).getName() + " will have to " + ChatColor.UNDERLINE + "Sneak Left Click" + ChatColor.GRAY +
                     " you with their Realm Portal Rune to add you to their builder list.");
+            e.setCancelled(true);
             return;
         }
 
         Block b = e.getClickedBlock();
-
         e.setCancelled(true);
+
         Material m = b.getType();
         if (m == Material.AIR || m == Material.PORTAL) {
             return;

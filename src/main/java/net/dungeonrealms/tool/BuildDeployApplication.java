@@ -18,6 +18,9 @@ public class BuildDeployApplication {
                 case "-updateBungee":
                     executeCommand("cd " + TOOL_PATH + " && pushBungee.bat");
                     break;
+                case "-updateLiveServer1":
+                    executeCommand("cd " + TOOL_PATH + " && pushLive1.bat " + args[1].substring(1));
+                    break;
                 case "-updateDevServer":
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat " + args[1].substring(1));
                     break;
