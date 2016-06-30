@@ -196,11 +196,11 @@ public class DamageListener implements Listener {
             ((Player) leDamageSource).playSound(leDamageSource.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
 
         if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
-            if (!DuelingMechanics.isDueling(damager.getUniqueId())) {
-                if (API.isInSafeRegion(damager.getLocation())) {
+            if (!DuelingMechanics.isDueling(leDamageSource.getUniqueId())) {
+                if (API.isInSafeRegion(event.getEntity().getLocation())) {
                     event.setCancelled(true);
                     event.setDamage(0);
-                    ((Player) damager).updateInventory();
+                    ((Player) leDamageSource).updateInventory();
                     return;
                 } else if (ProtectionHandler.getInstance().hasNewbieProtection((Player) event.getEntity())) {
                     leDamageSource.sendMessage(ChatColor.RED + "The player you are attempting to attack has " +
@@ -956,7 +956,13 @@ public class DamageListener implements Listener {
             HealthHandler.getInstance().setPlayerMaxHPLive(player, 50);
             HealthHandler.getInstance().setPlayerHPLive(player, 50);
             PlayerManager.checkInventory(player.getUniqueId());
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString("subtype", "starter").build());
+            GamePlayer gp = API.getGamePlayer(player);
+            if (gp != null) {
+                gp.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
+                gp.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0,0}));
+            }
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
+                    ("subtype", "starter").addLore(org.bukkit.ChatColor.GRAY + "Untradeable").build());
             if (finalSavedArmorContents) {
 
 //            	for(ItemStack itemStack : savedItems){
