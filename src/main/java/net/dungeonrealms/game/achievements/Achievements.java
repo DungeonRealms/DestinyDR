@@ -103,6 +103,15 @@ public class Achievements {
             default:
                 break;
         }
+        if (achievement == EnumAchievements.FISHINGROD_LEVEL_V) {
+            if (hasAchievement(player.getUniqueId(), EnumAchievements.PICKAXE_LEVEL_V)) {
+                giveAchievement(player.getUniqueId(), EnumAchievements.SKILL_MASTER);
+            }
+        } else if (achievement == EnumAchievements.PICKAXE_LEVEL_V) {
+            if (hasAchievement(player.getUniqueId(), EnumAchievements.FISHINGROD_LEVEL_V)) {
+                giveAchievement(player.getUniqueId(), EnumAchievements.SKILL_MASTER);
+            }
+        }
     }
 
     public enum EnumAchievements {
@@ -470,7 +479,7 @@ public class Achievements {
         MONSTER_HUNTER_VI("Monster Hunter VI", new String[]{
                 "Defeated 2000 monsters."
         }, 10000, "achievement.combat_monster_hunter_vi", false),
-        
+
         MAN_HUNTER_I("Man Hunter I", new String[]{
                 "Defeated 1 player."
         }, 250, "achievement.combat_man_hunter_i", false),
@@ -511,7 +520,49 @@ public class Achievements {
                 "Heroically killed an outlaw."
         }, 250, "achievement.combat_hero_i", false),
 
-        ;
+        PICKAXE_LEVEL_I("PICKAXE_LEVEL_I", new String[]{
+            "Obtained a level 20 Pickaxe."
+        }, 500, "achievement.character_pickaxe_level_i", false),
+
+        PICKAXE_LEVEL_II("PICKAXE_LEVEL_II", new String[]{
+                "Obtained a level 40 Pickaxe."
+        }, 1000, "achievement.character_pickaxe_level_ii", false),
+
+        PICKAXE_LEVEL_III("PICKAXE_LEVEL_III", new String[]{
+                "Obtained a level 60 Pickaxe."
+        }, 2000, "achievement.character_pickaxe_level_iii", false),
+
+        PICKAXE_LEVEL_IV("PICKAXE_LEVEL_IV", new String[]{
+                "Obtained a level 80 Pickaxe."
+        }, 3500, "achievement.character_pickaxe_level_iv", false),
+
+        PICKAXE_LEVEL_V("PICKAXE_LEVEL_V", new String[]{
+                "Obtained a level 100 Pickaxe."
+        }, 5000, "achievement.character_pickaxe_level_v", false),
+
+        FISHINGROD_LEVEL_I("FISHINGROD_LEVEL_I", new String[]{
+                "Obtained a level 20 Fishing Rod."
+        }, 500, "achievement.character_fishingrod_level_i", false),
+
+        FISHINGROD_LEVEL_II("FISHINGROD_LEVEL_II", new String[]{
+                "Obtained a level 40 Fishing Rod."
+        }, 1000, "achievement.character_fishingrod_level_ii", false),
+
+        FISHINGROD_LEVEL_III("FISHINGROD_LEVEL_III", new String[]{
+                "Obtained a level 60 Fishing Rod."
+        }, 2000, "achievement.character_fishingrod_level_iii", false),
+
+        FISHINGROD_LEVEL_IV("FISHINGROD_LEVEL_IV", new String[]{
+                "Obtained a level 80 Fishing Rod."
+        }, 3500, "achievement.character_fishingrod_level_iv", false),
+
+        FISHINGROD_LEVEL_V("FISHINGROD_LEVEL_V", new String[]{
+                "Obtained a level 100 Fishing Rod."
+        }, 5000, "achievement.character_fishingrod_level_v", false),
+
+        SKILL_MASTER("SKILL_MASTER", new String[]{
+            "Obtained both a level 100 Fishing Rod and Pickaxe."
+        }, 25000, "achievement.character_skill_master", false);
 
         private String name;
         private String[] message;

@@ -123,13 +123,28 @@ public class API {
         return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
     }
 
+    public static int getTierFromLevel(int level) {
+        if (level < 10) {
+            return 1;
+        } else if (level < 20) {
+            return 2;
+        } else if (level < 30) {
+            return 3;
+        } else if (level < 40) {
+            return 4;
+        } else {
+            return 5;
+        }
+    }
+
     /**
      * @param player
      * @param kill
      * @return Integer
      */
     public static int getMonsterExp(Player player, org.bukkit.entity.Entity kill) {
-        int level = API.getGamePlayer(player).getStats().getLevel();
+        GamePlayer gp = API.getGamePlayer(player);
+        int level = gp.getLevel();
         int mob_level = kill.getMetadata("level").get(0).asInt();
         int xp = 0;
         if (mob_level > level + 20) {  // limit mob xp calculation to 10 levels above player level
@@ -260,9 +275,9 @@ public class API {
         }
         return UUIDHelper.uuidToName(uuid.toString());
     }
-    
+
     public static boolean isInWorld(Player player, World world) {
-        return world != null && player.getLocation().equals(world);
+        return world != null && player.getLocation().getWorld().equals(world);
     }
 
     /**
