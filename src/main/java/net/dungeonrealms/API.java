@@ -123,13 +123,48 @@ public class API {
         return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
     }
 
+    public static int getTierFromLevel(int level) {
+        if (level < 10) {
+            return 1;
+        } else if (level < 20) {
+            return 2;
+        } else if (level < 30) {
+            return 3;
+        } else if (level < 40) {
+            return 4;
+        } else {
+            return 5;
+        }
+    }
+
     /**
      * @param player
      * @param kill
      * @return Integer
      */
     public static int getMonsterExp(Player player, org.bukkit.entity.Entity kill) {
-        int level = API.getGamePlayer(player).getStats().getLevel();
+        GamePlayer gp = API.getGamePlayer(player);
+        int level = gp.getLevel();
+        int mobTier = API.getTierFromLevel(level);
+        switch (mobTier) {
+            case 1:
+                gp.getPlayerStatistics().setT1MobsKilled(gp.getPlayerStatistics().getT1MobsKilled() + 1);
+                break;
+            case 2:
+                gp.getPlayerStatistics().setT2MobsKilled(gp.getPlayerStatistics().getT2MobsKilled() + 1);
+                break;
+            case 3:
+                gp.getPlayerStatistics().setT3MobsKilled(gp.getPlayerStatistics().getT3MobsKilled() + 1);
+                break;
+            case 4:
+                gp.getPlayerStatistics().setT4MobsKilled(gp.getPlayerStatistics().getT4MobsKilled() + 1);
+                break;
+            case 5:
+                gp.getPlayerStatistics().setT5MobsKilled(gp.getPlayerStatistics().getT5MobsKilled() + 1);
+                break;
+            default:
+                break;
+        }
         int mob_level = kill.getMetadata("level").get(0).asInt();
         int xp = 0;
         if (mob_level > level + 20) {  // limit mob xp calculation to 10 levels above player level
