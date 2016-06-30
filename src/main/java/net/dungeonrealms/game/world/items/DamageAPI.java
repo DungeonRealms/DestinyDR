@@ -106,6 +106,7 @@ public class DamageAPI {
             }
         }
 
+        damage += Utils.randInt(attackerAttributes.get("dps")[0], attackerAttributes.get("dps")[1]);
         damage += attackerAttributes.get("pureDamage")[1];
         int critHit = attackerAttributes.get("criticalHit")[1];
 
@@ -300,7 +301,6 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double calculateProjectileDamage(LivingEntity attacker, LivingEntity receiver, Projectile projectile) {
-        Utils.log.info("line " + new Exception().getStackTrace()[1].getLineNumber());
         Map<String, Integer[]> attributes;
         // grab the attacker's armor attributes
         if (attacker instanceof Player && API.isPlayer(attacker)) {
@@ -343,6 +343,9 @@ public class DamageAPI {
 
         // we add 1 because it's tierID which is 0-4 instead of 1-5
         int weaponTier = projectile.getMetadata("itemTier").get(0).asInt() + 1;
+
+        // DPS
+        damage += Utils.randInt(attributes.get("dps")[0], attributes.get("dps")[1]);
 
         // BLIND AND SLOW
         if (projectile.getMetadata("blind").get(0).asInt() > 0) {

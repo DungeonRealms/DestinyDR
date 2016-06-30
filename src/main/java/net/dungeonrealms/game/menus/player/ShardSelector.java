@@ -49,11 +49,10 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             BungeeServerInfo info = e.getValue();
 
             // Do not show YT / CS shards unless they've got the appropriate permission to see them.
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player))) {
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)))
                 continue;
-            }
 
-            GUIButton button = new GUIButton(Material.END_CRYSTAL) {
+            GUIButton button = new GUIButton(shardID.equalsIgnoreCase("US-0") ? Material.DIAMOND : Material.END_CRYSTAL) {
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
                     Player player = event.getWhoClicked();
@@ -114,7 +113,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID);
+            button.setDisplayName((!shardID.equalsIgnoreCase("US-0") ? ChatColor.YELLOW : ChatColor.AQUA) + "" + ChatColor.BOLD + shardID);
             button.setLore(lore);
 
 //            button.setSlot(slot);

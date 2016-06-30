@@ -55,6 +55,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.primesoft.asyncworldedit.api.IAsyncWorldEdit;
 
 import java.io.File;
 import java.io.IOException;
@@ -263,6 +264,16 @@ public class API {
         return UUIDHelper.getOfflineUUID(name);
     }
 
+
+    public static boolean isUUID(String uuidString) {
+        try {
+            UUID.fromString(uuidString);
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Gets players name from UUID. ASYNC.
      *
@@ -278,6 +289,24 @@ public class API {
 
     public static boolean isInWorld(Player player, World world) {
         return world != null && player.getLocation().getWorld().equals(world);
+    }
+
+    /**
+     * Gets the WorldGuard plugin.
+     *
+     * @return
+     * @since 1.0
+     */
+    public static IAsyncWorldEdit getAsyncWorldEdit() {
+        Plugin plugin = DungeonRealms.getInstance().getServer().getPluginManager().getPlugin("AsyncWorldEdit");
+        if (plugin == null || !(plugin instanceof IAsyncWorldEdit)) {
+            try {
+                throw new UnknownObjectException("getAsyncWorldEdit() of API.class is RETURNING NULL!");
+            } catch (UnknownObjectException e) {
+                e.printStackTrace();
+            }
+        }
+        return (IAsyncWorldEdit) plugin;
     }
 
     /**
@@ -588,7 +617,7 @@ public class API {
             /**
              PLAYER IS NEW
              */
-            player.teleport(new Location(Bukkit.getWorlds().get(0), 824, 49, -103, 132.9f, 2.2f));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), 990, 32, -147, 72.9f, -3.3f));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });

@@ -18,3 +18,6 @@ tools/WinSCP.*
 tools/pushBuildToServer/pushDev.bat
 tools/pushBuildToServer/WinSCP.com
 tools/pushBuildToServer/WinSCP.map
+tools/pushBuildToServer/pushUS1.bat
+tools/pushBuildToServer/pushUS2.bat
+tools/pushBuildToServer/pushUS3.bat

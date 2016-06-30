@@ -193,6 +193,10 @@ public class DamageListener implements Listener {
         Entity damager = event.getDamager();
         LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
                 : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
+
+        if (API.isPlayer(leDamageSource) && event.getEntity().getLocation().distance(leDamageSource.getLocation()) >= 10D)
+            ((Player) leDamageSource).playSound(leDamageSource.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+
         if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
             if (!DuelingMechanics.isDueling(damager.getUniqueId())) {
                 if (API.isInSafeRegion(damager.getLocation())) {

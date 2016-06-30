@@ -204,6 +204,13 @@
             <scope>system</scope>
         </dependency>
         <dependency>
+            <groupId>com.sbprime</groupId>
+            <artifactId>AsyncWorldEdit</artifactId>
+            <version>1.0</version>
+            <systemPath>${project.basedir}/lib/AsyncWorldEdit.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.8</version>

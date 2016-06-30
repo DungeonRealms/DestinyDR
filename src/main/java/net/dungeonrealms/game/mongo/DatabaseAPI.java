@@ -262,7 +262,10 @@ public class DatabaseAPI {
             case ECASH_SPENT:
             case GEMS_EARNED:
             case GEMS_SPENT:
-                String data_key = data.getKey().split(".")[1];
+                String data_key = data.getKey();
+                if (data_key.contains(".")) {
+                    data_key = data.getKey().substring(data.getKey().lastIndexOf(".") + 1, data.getKey().length());
+                }
                 return ((Document) doc.get("stats")).get(data_key, Integer.class);
             default:
         }
