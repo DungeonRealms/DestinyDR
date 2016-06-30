@@ -260,9 +260,9 @@ public class API {
         }
         return UUIDHelper.uuidToName(uuid.toString());
     }
-    
+
     public static boolean isInWorld(Player player, World world) {
-        return world != null && player.getLocation().equals(world);
+        return world != null && player.getLocation().getWorld().equals(world);
     }
 
     /**
