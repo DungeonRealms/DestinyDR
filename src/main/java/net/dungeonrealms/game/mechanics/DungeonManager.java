@@ -135,7 +135,7 @@ public class DungeonManager implements GenericMechanic {
                     entity.setLocation(toSpawnLoc.getX(), toSpawnLoc.getY(), toSpawnLoc.getZ(), 1, 1);
                 }
             }
-        }, 200L, 5L);
+        }, 0L, 5L);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
             if (dungeonObject.getTime() > 10) {
