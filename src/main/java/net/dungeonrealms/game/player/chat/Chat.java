@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -88,12 +89,15 @@ public class Chat {
             }
             fixedMessage = fixedMessage.replace("@" + playerName, "");
             String tempFixedMessage = fixedMessage.replace("@" + playerName, "");
-            Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {
-                theTargetPlayer.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "FROM: " + ChatColor.AQUA + event.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
-                event.getPlayer().sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO: " + ChatColor.AQUA + theTargetPlayer.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
-                theTargetPlayer.playSound(theTargetPlayer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-            });
+            event.getPlayer().sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO: " + ChatColor.AQUA + playerName + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
+            if (Bukkit.getPlayer(playerName) != null) {
+                Bukkit.getOnlinePlayers().stream().filter(player1 -> player1.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {
+                    theTargetPlayer.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "FROM: " + ChatColor.AQUA + event.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
+                    theTargetPlayer.playSound(theTargetPlayer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                });
+            } else {
+                NetworkAPI.getInstance().sendPlayerMessage(playerName, net.md_5.bungee.api.ChatColor.GRAY.toString() + net.md_5.bungee.api.ChatColor.BOLD + "FROM: " + net.md_5.bungee.api.ChatColor.AQUA + "[" + DungeonRealms.getInstance().shardid + "] " + event.getPlayer().getName() + net.md_5.bungee.api.ChatColor.GRAY + ": " + net.md_5.bungee.api.ChatColor.WHITE + tempFixedMessage);
+            }
             event.setCancelled(true);
             return;
         }

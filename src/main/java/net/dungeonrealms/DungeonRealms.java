@@ -325,6 +325,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new DungeonJoin("djoin", "/<command>", "Dungeon Join command"));
         cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
         cm.registerCommand(new DebuffCrystal("debuffcrystal", "/<command>", "Spawns a debuff crystal"));
+        cm.registerCommand(new CommandMessage("message", "/<command>", "Messages a player", Arrays.asList("msg", "tell")));
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));
