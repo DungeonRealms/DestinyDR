@@ -830,6 +830,14 @@ public class RealmInstance implements Realms {
     }
 
     @Override
+    public boolean realmsAreUpgrading() {
+        for (RealmToken realm : CACHED_REALMS.values())
+            if (realm.getStatus() == RealmStatus.UPGRADING)
+                return true;
+        return false;
+    }
+
+    @Override
     public boolean isRealmPortalOpen(UUID uuid) {
         return isRealmLoaded(uuid) && getRealm(uuid).getStatus() == RealmStatus.OPENED;
     }

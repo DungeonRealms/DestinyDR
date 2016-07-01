@@ -9,8 +9,10 @@ import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,6 +35,12 @@ public class CommandStop extends BasicCommand {
                 return false;
             }
         }
+
+        if (Realms.getInstance().realmsAreUpgrading()) {
+            s.sendMessage(ChatColor.RED + "Realms are still being upgraded!");
+            return true;
+        }
+
         DungeonRealms.getInstance().getLogger().info("DRStop called.");
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();

@@ -270,6 +270,11 @@ public interface Realms extends GenericMechanic {
     boolean isRealmLoaded(UUID uuid);
 
     /**
+     * Checks if any realm is being upgraded
+     */
+    boolean realmsAreUpgrading();
+
+    /**
      * Checks if the player's realm is loaded.
      *
      * @param uuid Owner of realm
