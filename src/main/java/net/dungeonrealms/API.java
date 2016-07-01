@@ -814,6 +814,13 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.version", false);
         }
 
+        if (Rank.isPMOD(player)) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.notify", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.notify", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.info", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
+        }
+
         if (Rank.isGM(player)) {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
@@ -822,17 +829,13 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
 
+            //Don't think these will work as they default to Operators in MC.
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
-        }
-
-        if (Rank.isPMOD(player)) {
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.notify", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.notify", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.info", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
         }
 
         GamePlayer gp = new GamePlayer(player);
