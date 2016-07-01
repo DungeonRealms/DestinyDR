@@ -3,7 +3,6 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -18,12 +17,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Created by Xwaffle on 8/29/2015.
@@ -42,7 +38,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
     protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         this(world);
         this.tier  = tier;
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
         this.monsterType = monster;
         this.name = monster.name;
         this.mobHead = monster.mobHead;

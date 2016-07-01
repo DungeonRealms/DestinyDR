@@ -3,13 +3,15 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.EntityGhast;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -38,7 +40,7 @@ public class DRGhast extends EntityGhast implements DRMonster {
 
     public DRGhast(World world, EnumMonster mon, int tier) {
         super(world);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
         setArmor(tier);
         monster = mon;
         String customName = mon.getPrefix() + " " + mon.name + " " + mon.getSuffix() + " ";

@@ -32,7 +32,7 @@ public class DRSilverfish extends EntitySilverfish implements DRMonster {
 	public DRSilverfish(World world, EnumMonster type, int tier) {
 		super(world);
 		this.enumMonster = type;
-		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
+		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
         //this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		setArmor(tier);
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";

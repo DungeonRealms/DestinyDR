@@ -3,7 +3,6 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -12,12 +11,9 @@ import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -42,7 +38,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     public DRWitch(World world, EnumMonster mon, int tier) {
         super(world);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
         weapon = getTierWeapon(tier);
         setArmor(tier);
         monster = mon;

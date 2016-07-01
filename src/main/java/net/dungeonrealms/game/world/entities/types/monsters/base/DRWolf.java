@@ -32,7 +32,7 @@ public class DRWolf extends EntityWolf implements DRMonster {
         super(world);
         this.enumMonster = type;
         a(0.6F, 0.8F);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
         //this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         this.getAttributeInstance(GenericAttributes.maxHealth).setValue(20);
         setArmor(tier);

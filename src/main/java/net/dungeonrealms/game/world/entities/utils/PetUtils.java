@@ -203,6 +203,10 @@ public class PetUtils implements GenericMechanic{
      */
     public static void spawnPet(UUID uuid, String petType, String name) {
         Player player = Bukkit.getPlayer(uuid);
+        if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            player.sendMessage(ChatColor.RED + "Your pet cannot be summoned in this world.");
+            return;
+        }
         World world = ((CraftWorld) player.getWorld()).getHandle();
         if (!API.isStringPet(petType)) {
             player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [PetType]");
