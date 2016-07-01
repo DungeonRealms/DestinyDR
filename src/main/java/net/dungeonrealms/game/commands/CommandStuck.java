@@ -43,7 +43,7 @@ public class CommandStuck extends BasicCommand {
             return true;
         }
 
-        player.sendMessage(ChatColor.GREEN + "You seem to be fine, maybe your issue is mental?");
+        player.sendMessage(ChatColor.GREEN + "You seem to be fine.");
 
         return true;
     }
