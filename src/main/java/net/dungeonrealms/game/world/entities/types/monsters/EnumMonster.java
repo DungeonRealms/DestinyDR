@@ -51,7 +51,8 @@ public enum EnumMonster {
     Enderman("enderman", "Apparition", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 15),
     Pig("pig", "Pig", "", new String[]{""}, new String[]{""}),
     Bat("bat", "Bat", "", new String[]{""}, new String[]{""}),
-    Cow("cow", "Cow", "", new String[]{""}, new String[]{""});
+    Cow("cow", "Cow", "", new String[]{""}, new String[]{""}),
+    Ocelot("ocelot", "Ocelot", "", new String[]{""}, new String[]{""});
 
 	public String idName;
     public String name;
