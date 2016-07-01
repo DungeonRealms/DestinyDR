@@ -108,8 +108,16 @@ public class ItemListener implements Listener {
                 return;
             }
             if (TeleportAPI.isTeleportBook(itemStack)) {
+
+                if (player.getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) {
+                    player.sendMessage("You can only use teleport books in the main world.");
+                    return;
+                }
+
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
                 if (TeleportAPI.canTeleportToLocation(player, nmsItem.getTag())) {
+
+
                     Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
                     if (player.getEquipment().getItemInMainHand().getAmount() == 1) {
                         player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
