@@ -98,6 +98,7 @@ public class CommandMonSpawn extends BasicCommand {
             } else {
                 EntityStats.setMonsterRandomStats(entity, level, tier);
             }
+            SpawningMechanics.rollElement(entity, enumMonster);
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
             nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

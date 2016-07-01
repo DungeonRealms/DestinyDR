@@ -165,8 +165,8 @@ public class BaseMobSpawner {
             }
             if (!isFriendlyMob(monsterType)) {
                 int level = Utils.getRandomFromTier(tier, lvlRange);
-                MetadataUtils.registerEntityMetadata(entity, type, tier, level);
                 EntityStats.setMonsterRandomStats(entity, level, tier);
+                SpawningMechanics.rollElement(entity, monsterType);
                 String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
                 String mobName;
                 try {
@@ -211,8 +211,8 @@ public class BaseMobSpawner {
                         }
                         if (!isFriendlyMob(monsterType)) {
                             int newLevel = Utils.getRandomFromTier(tier, lvlRange);
-                            MetadataUtils.registerEntityMetadata(newEntity, type, tier, newLevel);
                             EntityStats.setMonsterRandomStats(newEntity, newLevel, tier);
+                            SpawningMechanics.rollElement(newEntity, monsterType);
                             String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";
                             String newMobName = "";
                             try {

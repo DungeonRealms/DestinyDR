@@ -1572,8 +1572,8 @@ public class DamageListener implements Listener {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(2, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 2, level);
                         EntityStats.setMonsterRandomStats(entity, level, 2);
+                        SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
@@ -1597,8 +1597,8 @@ public class DamageListener implements Listener {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, tier, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(tier, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
                         EntityStats.setMonsterRandomStats(entity, level, tier);
+                        SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }

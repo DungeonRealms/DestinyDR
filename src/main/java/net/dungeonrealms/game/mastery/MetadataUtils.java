@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.entity.LivingEntity;

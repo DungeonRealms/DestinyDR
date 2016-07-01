@@ -193,6 +193,28 @@ public class DamageAPI {
             damage += (damage * (attacker.getMetadata("damageBonus").get(0).asDouble() / 100.));
         }
 
+        if (attacker.hasMetadata("elite")) {
+            switch (attacker.getMetadata("tier").get(0).asInt()) {
+                case 1:
+                    damage *= 2.5;
+                    break;
+                case 2:
+                    damage *= 2.5;
+                    break;
+                case 3:
+                    damage *= 3;
+                    break;
+                case 4:
+                    damage *= 5;
+                    break;
+                case 5:
+                    damage *= 7;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         if (isHitCrit) {
             if (attacker instanceof Player) {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {

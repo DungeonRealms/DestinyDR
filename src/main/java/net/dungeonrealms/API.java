@@ -9,6 +9,7 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.mastery.*;
@@ -30,6 +31,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.rank.Subscription;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
@@ -55,6 +57,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.primesoft.asyncworldedit.api.IAsyncWorldEdit;
 
@@ -320,6 +323,34 @@ public class API {
             }
         }
         return (IAsyncWorldEdit) plugin;
+    }
+
+    public static void setMobElement(net.minecraft.server.v1_9_R2.Entity ent, String element) {
+        ent.getBukkitEntity().setMetadata("element", new FixedMetadataValue(DungeonRealms.getInstance(), element));
+        String name = ent.getCustomName();
+        switch (element) {
+            case "pure":
+                break;
+            case "fire":
+                break;
+            case "ice":
+                break;
+            case "poison":
+                break;
+            default:
+                break;
+        }
+        if (API.isWeapon(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand())) {
+            EnchantmentAPI.addGlow(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand());
+        }
+    }
+
+    public static boolean isMobElemental(LivingEntity ent) {
+        return ent.hasMetadata("element");
+    }
+
+    public static String getMobElement(LivingEntity ent) {
+        return ent.getMetadata("element").get(0).asString();
     }
 
     /**
@@ -1603,7 +1634,6 @@ public class API {
     public void spawnMonsterAt(Location location, net.minecraft.server.v1_9_R2.Entity entity, int tier, String lvlRange) {
         net.minecraft.server.v1_9_R2.World world = ((CraftWorld) location.getWorld()).getHandle();
         int level = Utils.getRandomFromTier(tier, "low");
-        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
         EntityStats.setMonsterRandomStats(entity, level, tier);
         String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
         int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
