@@ -190,7 +190,9 @@ public class ScoreboardHandler implements GenericMechanic {
     public void setCurrentPlayerLevels(Scoreboard scoreboard) {
         for (Player player1 : Bukkit.getOnlinePlayers()) {
             GamePlayer gamePlayer = API.getGamePlayer(player1);
-
+            if (gamePlayer == null) {
+                continue;
+            }
             int level = gamePlayer.getStats().getLevel();
 
             Team team = getPlayerTeam(scoreboard, player1);
