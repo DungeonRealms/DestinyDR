@@ -74,9 +74,9 @@ public class DamageAPI {
                 GamePlayer gp = API.getGamePlayer((Player) attacker);
 
                 // a player switches weapons, so we need to recalculate weapon attributes
-                if (!gp.getCurrentWeapon().equals(weapon)) {
+                if (!gp.getCurrentWeapon().equals(API.getItemUID(weapon))) {
                     API.calculateAllAttributes((Player) attacker);
-                    gp.setCurrentWeapon(weapon);
+                    gp.setCurrentWeapon(API.getItemUID(weapon));
                 }
 
                 attackerAttributes = gp.getAttributes();
@@ -109,7 +109,8 @@ public class DamageAPI {
             }
 
             // DPS AND PURE DAMAGE
-            damage += Utils.randInt(attackerAttributes.get("dps")[0], attackerAttributes.get("dps")[1]);
+            damage += damage * (((double) Utils.randInt(attackerAttributes.get("dps")[0], attackerAttributes.get("dps")[1])) / 100.);
+
             damage += attackerAttributes.get("pureDamage")[1];
             int critHit = attackerAttributes.get("criticalHit")[1];
 
@@ -883,9 +884,9 @@ public class DamageAPI {
         projectile.setShooter(player);
         // a player switches weapons, so we need to recalculate weapon attributes
         GamePlayer gp = API.getGamePlayer(player);
-        if (!gp.getCurrentWeapon().equals(itemStack)) {
+        if (!gp.getCurrentWeapon().equals(API.getItemUID(itemStack))) {
             API.calculateAllAttributes(player);
-            gp.setCurrentWeapon(itemStack);
+            gp.setCurrentWeapon(API.getItemUID(itemStack));
         }
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
     }
@@ -916,9 +917,9 @@ public class DamageAPI {
         EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
         eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
         // a player switches weapons, so we need to recalculate weapon attributes
-        if (!gp.getCurrentWeapon().equals(itemStack)) {
+        if (!gp.getCurrentWeapon().equals(API.getItemUID(itemStack))) {
             API.calculateAllAttributes(player);
-            gp.setCurrentWeapon(itemStack);
+            gp.setCurrentWeapon(API.getItemUID(itemStack));
         }
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
     }
