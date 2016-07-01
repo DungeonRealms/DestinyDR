@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entities;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.listeners.DamageListener;
 import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -265,8 +266,9 @@ public class Entities implements GenericMechanic {
             cc = ChatColor.RED;
         }
 
-        //TODO: Special Attack Light Purple
-
+        if(PowerMove.chargingMonsters.contains(ent.getUniqueId())){
+            cc = ChatColor.LIGHT_PURPLE;
+        }
         String return_string = cc + ChatColor.BOLD.toString() + "║" + ChatColor.RESET.toString() + cc.toString() + "";
         if (elite || boss) {
             return_string += ChatColor.BOLD.toString();
@@ -290,6 +292,8 @@ public class Entities implements GenericMechanic {
         }
 
         return_string = return_string + cc + ChatColor.BOLD.toString() + "║";
+
+
         if (!elite && !boss) {
             return return_string + ChatColor.LIGHT_PURPLE + " [" + ent.getMetadata("level").get(0).asInt() + "]";
         } else {

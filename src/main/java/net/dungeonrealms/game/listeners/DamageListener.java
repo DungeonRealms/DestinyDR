@@ -26,6 +26,8 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.PowerMove;
+import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitch;
@@ -381,7 +383,7 @@ public class DamageListener implements Listener {
             if (rand.nextInt(100) <= 75) {
                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
 
-                scheduleWhirlwind(entity);
+                PowerMove.doPowerMove("whirlwind", entity, null);
 
             }
         } else if (event.getEntity().hasMetadata("boss")) {
@@ -410,119 +412,26 @@ public class DamageListener implements Listener {
             }
 
 
-            if (rand.nextInt(100) <= 75) {
+            if (rand.nextInt(100) <= 50) {
+                PowerMove.doPowerMove("powermove", entity, null);
+            } else {
                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-
-                scheduleWhirlwind(entity);
+                PowerMove.doPowerMove("whirlwind", entity, null);
 
             }
 
-//            if (rand.nextInt(100) <= powerChance) {
-//                if (item.getType().name().contains("HOE")) {
-//                    scheduleTripleShot(entity);
-//                } else if (item.getType().name().contains("SWORD")) {
-//                    schedulePowerStrike(entity);
-//                }
-//
-//            }
+            if (rand.nextInt(100) <= powerChance) {
+                if (item.getType().name().contains("HOE")) {
+                    PowerMove.doPowerMove("tripleshot", entity, null);
+                } else if (item.getType().name().contains("SWORD")) {
+                    PowerMove.doPowerMove("powermove", entity, null);
+                }
+
+            }
             entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1F, 2.0F);
 
         }
     }
-
-    private void scheduleWhirlwind(final LivingEntity entity) {
-        //dmg * 4;
-        chargingMonsters.add(entity.getUniqueId());
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new BukkitRunnable() {
-
-            int step = 0;
-
-            double yaw = entity.getLocation().getYaw() * -1;
-
-            Location loc = entity.getLocation();
-
-            @Override
-            public void run() {
-
-                if (entity.isDead() || entity.getHealth() <= 0) {
-                    this.cancel();
-                    chargingMonsters.remove(entity.getUniqueId());
-                    return;
-                }
-                entity.getLocation().setYaw((float) yaw);
-                String name = entity.getCustomName();
-                EntityCreature ec = (EntityCreature) ((CraftEntity) entity).getHandle();
-                ec.setGoalTarget(null);
-                entity.setCustomName(ChatColor.LIGHT_PURPLE + ChatColor.stripColor(name));
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, entity.getLocation().add(0, 1, 0), new Random().nextFloat(),
-                        new Random().nextFloat(), new Random().nextFloat(), 0.3F, 40);
-
-                step++;
-                if (step == 5) {
-                    entity.getLocation().setYaw((float) yaw * -1);
-
-                    API.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(p -> {
-                        org.bukkit.util.Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
-                        double e_y = entity.getLocation().getY();
-                        double p_y = p.getLocation().getY();
-                        Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
-                        if ((p_y - 1) <= e_y || m == Material.AIR) {
-                            p.setVelocity(unitVector.multiply(3));
-                        }
-                        double dmg = DamageAPI.calculateWeaponDamage(entity, p) * 4;
-                        double[] result = DamageAPI.calculateArmorReduction(entity, p, dmg, null);
-                        int armourReducedDamage = (int) result[0];
-                        int totalArmor = (int) result[1];
-                        HealthHandler.getInstance().handlePlayerBeingDamaged(p, entity, (dmg - armourReducedDamage), armourReducedDamage, totalArmor);
-                        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.3f, 1);
-                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, p.getLocation().add(0, 1, 0), new Random().nextFloat(),
-                                new Random().nextFloat(), new Random().nextFloat(), 0.3F, 40);
-
-                    });
-
-
-                    this.cancel();
-                    chargingMonsters.remove(entity.getUniqueId());
-                }
-
-            }
-        }, 0, 20);
-    }
-
-    private void schedulePowerStrike(final LivingEntity entity) {
-    }
-
-    public static CopyOnWriteArrayList<UUID> chargingMonsters = new CopyOnWriteArrayList<>();
-
-    private void scheduleTripleShot(final LivingEntity entity) {
-        chargingMonsters.add(entity.getUniqueId());
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new BukkitRunnable() {
-
-            int step = 0;
-
-            @Override
-            public void run() {
-
-                if (entity.isDead() || entity.getHealth() <= 0) {
-                    this.cancel();
-                    return;
-                }
-
-                String name = entity.getCustomName();
-
-                entity.setCustomName(ChatColor.LIGHT_PURPLE + ChatColor.stripColor(name));
-                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-
-                step++;
-                if (step == 5) {
-                    this.cancel();
-                }
-
-            }
-        }, 0, 20);
-
-    }
-
 
     /**
      * Listen for the monsters hitting a player
@@ -593,6 +502,18 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(player);
             }
         }
+
+
+        if (PowerStrike.powerStrike.contains(event.getDamager().getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "You've been hit with Power Strike!");
+            finalDamage *= 3;
+            PowerStrike.powerStrike.remove(event.getDamager().getUniqueId());
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, player.getLocation().add(0, 1, 0), new Random().nextFloat(),
+                    new Random().nextFloat(), new Random().nextFloat(), 0.3F, 40);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 60));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 2));
+        }
+
         event.setDamage(finalDamage);
     }
 

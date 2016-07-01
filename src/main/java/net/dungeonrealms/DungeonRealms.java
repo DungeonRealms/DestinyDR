@@ -38,6 +38,7 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.updater.UpdateTask;
 import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.loot.LootManager;
@@ -165,7 +166,7 @@ public class DungeonRealms extends JavaPlugin {
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
         ItemGenerator.loadModifiers();
-
+        PowerMove.registerPowerMoves();
         //new Spar().startInitialization();
 
         ItemGenerator.loadModifiers();
