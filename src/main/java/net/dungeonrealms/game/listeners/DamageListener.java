@@ -74,11 +74,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-<<<<<<< HEAD
-import org.bukkit.projectiles.ProjectileSource;
-=======
 import org.bukkit.util.Vector;
->>>>>>> origin/master
 
 import java.util.ArrayList;
 import java.util.List;
@@ -845,7 +841,7 @@ public class DamageListener implements Listener {
 //            if (API.isPlayer(defender)) {
 //                defender.sendMessage(org.bukkit.ChatColor.GOLD + "" + org.bukkit.ChatColor.BOLD + "              " +
 //                        "          *REFLECT* (" + attackerName + org.bukkit.ChatColor.GOLD + ")");
-            }
+//            }
             defender.getWorld().playSound(defender.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
         } else {
             if (API.isPlayer(defender)) {
