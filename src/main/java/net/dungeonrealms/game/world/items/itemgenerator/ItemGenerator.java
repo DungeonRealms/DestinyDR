@@ -696,6 +696,8 @@ public class ItemGenerator {
             RepairAPI.setCustomItemDurability(is, 1500);
         }
 
+        RepairAPI.setCustomItemDurability(is, 1500);
+
         // check soulbound, untradeable, or permanently untradeable
         boolean isSoulbound = false, isUntradeable = false, isPermanentlyUntradeable = false;
         for (String line : Lists.reverse(item_lore)) {
