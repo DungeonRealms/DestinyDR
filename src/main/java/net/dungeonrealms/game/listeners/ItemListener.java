@@ -72,7 +72,7 @@ public class ItemListener implements Listener {
             NBTTagCompound tag = nmsItem.getTag();
             assert tag != null;
             event.getItemDrop().remove();
-            p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "un-tradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
+            p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
         } else if (API.isItemSoulbound(item)) {
             event.setCancelled(true);
@@ -109,7 +109,7 @@ public class ItemListener implements Listener {
             }
             if (TeleportAPI.isTeleportBook(itemStack)) {
 
-                if (player.getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) {
+                if (!player.getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) {
                     player.sendMessage("You can only use teleport books in the main world.");
                     return;
                 }

@@ -26,7 +26,6 @@ import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -74,14 +73,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -205,7 +201,8 @@ public class DamageListener implements Listener {
             event.setDamage(0);
             event.setCancelled(true);
             if (API.isPlayer(leDamageSource))
-                ((Player)leDamageSource).updateInventory();;
+                ((Player) leDamageSource).updateInventory();
+            ;
             return;
         }
 
@@ -523,7 +520,7 @@ public class DamageListener implements Listener {
         } else if (DamageAPI.isBowProjectile(event.getDamager())) {
             Projectile attackingArrow = (Projectile) event.getDamager();
             theEntity = (Entity) attackingArrow.getShooter();
-        }else if (DamageAPI.isStaffProjectile(event.getDamager())) {
+        } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
             Projectile attackingSkull = (Projectile) event.getDamager();
             theEntity = (Entity) attackingSkull.getShooter();
         }
@@ -643,12 +640,12 @@ public class DamageListener implements Listener {
                         if (attackerIsMob) {
                             HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                         } else if (!API.isNonPvPRegion(entity.getLocation())) {
-                            if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
+                            if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), entity.getUniqueId())) {
                                 if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
                                     attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                                     continue;
                                 }
-                                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
+                                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) entity)) {
                                     continue;
                                 }
                             }
