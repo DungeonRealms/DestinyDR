@@ -9,7 +9,6 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.rank.Rank;
-import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import org.bukkit.Bukkit;
@@ -326,15 +325,15 @@ public class EnergyHandler implements GenericMechanic {
             case BOW:
                 switch (RepairAPI.getArmorOrWeaponTier(itemStack)) {
                     case 1:
-                        return 0.08F;
+                        return 0.085F;
                     case 2:
-                        return 0.10F;
+                        return 0.105F;
                     case 3:
-                        return 0.11F;
+                        return 0.115F;
                     case 4:
-                        return 0.13F;
+                        return 0.135F;
                     case 5:
-                        return 0.15F;
+                        return 0.155F;
                 }
         }
         return 0.10F;
