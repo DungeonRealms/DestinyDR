@@ -176,8 +176,9 @@ public class Teleportation implements GenericMechanic {
         }
 
         Location startingLocation = player.getLocation();
+        final boolean[] hasCancelled = {false};
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
+            if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId()) && !hasCancelled[0]) {
                 if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
                     player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING " + ChatColor.RESET + "... " + taskTimer[0] + "s");
                     try {
@@ -202,7 +203,7 @@ public class Teleportation implements GenericMechanic {
                     }
                     taskTimer[0]--;
                 } else {
-                    TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
+                    hasCancelled[0] = true;
                     if (teleportType == EnumTeleportType.TELEPORT_BOOK) {
                         player.removePotionEffect(PotionEffectType.BLINDNESS);
                         player.removePotionEffect(PotionEffectType.CONFUSION);
@@ -214,6 +215,9 @@ public class Teleportation implements GenericMechanic {
                 }
             }
         }, 0, 20L);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 220L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getScheduler().cancelTask(taskID);
+            TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
+        }, (taskTimer[0] * 20L) + 10L);
     }
 }
