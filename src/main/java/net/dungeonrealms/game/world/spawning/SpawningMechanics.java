@@ -379,6 +379,9 @@ public class SpawningMechanics implements GenericMechanic {
             case Enderman:
                 entity = new MeleeEnderman(world, tier);
                 break;
+            case Ocelot:
+                entity = new EntityOcelot(world);
+                break;
             default:
                 Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
                 return null;
