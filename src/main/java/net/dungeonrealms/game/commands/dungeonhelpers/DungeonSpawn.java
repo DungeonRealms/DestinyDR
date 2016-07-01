@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.LargeSpide
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffSkeleton;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
@@ -105,6 +106,7 @@ public class DungeonSpawn extends BasicCommand {
     private void registerEntityStats(Entity entity, EnumMonster monsterType, int tier, String customName) {
         int newLevel = Utils.getRandomFromTier(tier + 1, "high");
         EntityStats.createDungeonMob(entity, newLevel, tier);
+        SpawningMechanics.rollElement(entity, monsterType);
         String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";
         if (customName.equals("")) {
             customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";

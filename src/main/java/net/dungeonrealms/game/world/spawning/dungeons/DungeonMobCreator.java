@@ -95,6 +95,7 @@ public class DungeonMobCreator {
                 entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                 if (!isElite) {
                     EntityStats.createDungeonMob(entity, level, tier);
+                    SpawningMechanics.rollElement(entity, enumMonster);
                     String levelName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
                     if (hasCustomName) {
                         entity.setCustomName(levelName + API.getTierColor(tier) + customName.trim());
@@ -107,6 +108,7 @@ public class DungeonMobCreator {
                     entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                     entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
                     EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, level, true);
+                    SpawningMechanics.rollElement(entity, enumMonster);
                     if (hasCustomName) {
                         entity.setCustomName(API.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim());
                         entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim()));
