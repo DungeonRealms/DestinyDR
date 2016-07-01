@@ -366,6 +366,8 @@ public class DamageListener implements Listener {
 
 
         LivingEntity entity = (LivingEntity) event.getEntity();
+        if (entity.getMetadata("tier").size() == 0)
+            return;
         if (PowerMove.chargedMonsters.contains(entity.getUniqueId()) || PowerMove.chargingMonsters.contains(entity.getUniqueId()))
             return;
 
