@@ -1,12 +1,5 @@
 package net.dungeonrealms.game.world.items.repairing;
 
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Repairable;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
@@ -15,6 +8,12 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
 
 /**
  * Created by Kieran on 9/26/2015.
@@ -201,7 +200,7 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0) return 0;
-        double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / itemStack.getType().getMaxDurability());
+        double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / Math.min(1, itemStack.getType().getMaxDurability()));
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
             //Get the full durability, not sure why its lowballing.
             return Math.round(percentDurability * (1500 / 15));
