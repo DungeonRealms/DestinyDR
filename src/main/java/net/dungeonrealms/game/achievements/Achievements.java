@@ -452,9 +452,10 @@ public class Achievements {
                 "Defeated The Infernal Abyss."
         }, 75000, "achievement.combat_infernal_abyss", false),
 
+        //Isn't implemented. Part of the incomplete "OneWolfe" dunegon.
         DEPTHS_OF_ACERON("Depths of Aceron", new String[]{
                 "Defeated Aceron."
-        }, 75000, "achievement.combat_depths_of_aceron", false),
+        }, 75000, "achievement.combat_depths_of_aceron", true),
 
         MONSTER_HUNTER_I("Monster Hunter I", new String[]{
                 "Defeated 100 monsters."

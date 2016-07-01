@@ -350,7 +350,7 @@ public class PlayerMenus {
     }
 
     public static void openExplorationAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Exploration Achievements");
+        Inventory inv = Bukkit.createInventory(null, 36, "Exploration Achievements");
         UUID uuid = player.getUniqueId();
         List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
 
@@ -385,7 +385,7 @@ public class PlayerMenus {
     }
 
     public static void openSocialAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Social Achievements");
+        Inventory inv = Bukkit.createInventory(null, 36, "Social Achievements");
         UUID uuid = player.getUniqueId();
         List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
 
@@ -420,7 +420,7 @@ public class PlayerMenus {
     }
 
     public static void openCurrencyAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Currency Achievements");
+        Inventory inv = Bukkit.createInventory(null, 36, "Currency Achievements");
         UUID uuid = player.getUniqueId();
         List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
 
@@ -455,7 +455,7 @@ public class PlayerMenus {
     }
 
     public static void openCombatAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Combat Achievements");
+        Inventory inv = Bukkit.createInventory(null, 36, "Combat Achievements");
         UUID uuid = player.getUniqueId();
         List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
 
