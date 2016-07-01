@@ -138,7 +138,7 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void RealmBlockProcessor(UpdateEvent e) {
-        if (!e.getType().equals(UpdateType.FAST)) return;
+        if (!e.getType().equals(UpdateType.SLOW)) return;
 
         for (Map.Entry<UUID, List<Location>> entry : REALMS.getProcessingBlocks().entrySet()) {
             String w_name = entry.getKey().toString();
@@ -411,15 +411,17 @@ public class RealmListener implements Listener {
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPortalDestory(PlayerInteractEvent event) {
         if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
         if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         RealmToken realm = REALMS.getRealm(event.getClickedBlock().getLocation());
 
-        if (realm != null && (realm.getOwner().equals(event.getPlayer().getUniqueId()) || Rank.isGM(event.getPlayer())))
+        if (realm != null && (realm.getOwner().equals(event.getPlayer().getUniqueId()) || Rank.isGM(event.getPlayer()))) {
             REALMS.closeRealmPortal(realm.getOwner(), true, "");
+            event.setCancelled(true);
+        }
     }
 
     @SuppressWarnings("deprecation")
