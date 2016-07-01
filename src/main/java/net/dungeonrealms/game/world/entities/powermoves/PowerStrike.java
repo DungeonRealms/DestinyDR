@@ -40,21 +40,24 @@ public class PowerStrike extends PowerMove {
             @Override
             public void run() {
                 if (first) {
+                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
                     first = false;
-                    entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 4, 60));
-                    API.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(player -> player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + entity.getName() + ChatColor.YELLOW + " is charging " + ChatColor.RED + ChatColor.BOLD + "Power Strike"));
-
                 }
 
                 if (entity.isDead() || entity.getHealth() <= 0) {
+                    chargedMonsters.remove(entity.getUniqueId());
+                    chargingMonsters.remove(entity.getUniqueId());
+                    powerStrike.remove(entity.getUniqueId());
                     this.cancel();
                     return;
                 }
+                entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1F, 4.0F);
 
-                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
                 step++;
                 if (step == 5) {
                     powerStrike.add(entity.getUniqueId());
+                    chargedMonsters.add(entity.getUniqueId());
+                    chargingMonsters.remove(entity.getUniqueId());
                     this.cancel();
                 }
 

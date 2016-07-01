@@ -32,10 +32,10 @@ public class WhirlWind extends PowerMove {
         chargingMonsters.add(entity.getUniqueId());
         new BukkitRunnable() {
 
-            int step = 0;
+            public int step = 0;
 
-            double yaw = entity.getLocation().getYaw();
-            Location loc = entity.getLocation();
+            public double yaw = 0;
+            public final Location loc = entity.getLocation();
 
             public boolean first = true;
 
@@ -44,12 +44,7 @@ public class WhirlWind extends PowerMove {
 
                 if (first) {
                     first = false;
-                    EntityCreature ec = (EntityCreature) ((CraftEntity) entity).getHandle();
-                    ec.setGoalTarget(null);
-                    ec.yaw = (float) yaw;
-                    entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 4, 60));
-                    API.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(player -> player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + entity.getName() + ChatColor.YELLOW + " is charging a whirlwind attack"));
-
+                    entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 5, 60));
                 }
 
                 if (entity.isDead() || entity.getHealth() <= 0) {
@@ -64,8 +59,13 @@ public class WhirlWind extends PowerMove {
                     yaw = 0;
                 }
 
+                loc.setYaw((float) yaw);
+                entity.teleport(loc);
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1, 4);
+
+                entity.getWorld().playEffect(loc, Effect.EXPLOSION_LARGE, 1, 40);
                 step++;
-                if (step == 5 * 20) {
+                if (step == 5) {
                     API.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(p -> {
                         org.bukkit.util.Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
                         double e_y = entity.getLocation().getY();
@@ -80,18 +80,18 @@ public class WhirlWind extends PowerMove {
                         int totalArmor = (int) result[1];
                         // * 4 for whirlwind
                         HealthHandler.getInstance().handlePlayerBeingDamaged(p, entity, (dmg - armourReducedDamage) * 4, armourReducedDamage, totalArmor);
-                        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.3f, 1);
-                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, p.getLocation().add(0, 1, 0), new Random().nextFloat(),
-                                new Random().nextFloat(), new Random().nextFloat(), 0.3F, 40);
+
 
                     });
+
+                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 0.5F);
+                    entity.getWorld().playEffect(loc, Effect.EXPLOSION_HUGE, 1, 40);
                     entity.removePotionEffect(PotionEffectType.SLOW);
                     this.cancel();
                     chargingMonsters.remove(entity.getUniqueId());
                 }
-
             }
-        }.runTaskTimer(DungeonRealms.getInstance(), 0, 1);
+        }.runTaskTimer(DungeonRealms.getInstance(), 0, 20);
 
     }
 }

@@ -73,6 +73,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -357,11 +358,14 @@ public class DamageListener implements Listener {
         }
         event.setDamage(finalDamage);
 
+
         LivingEntity entity = (LivingEntity) event.getEntity();
+        if (PowerMove.chargedMonsters.contains(entity.getUniqueId()) || PowerMove.chargingMonsters.contains(entity.getUniqueId()))
+            return;
+
         int tier = entity.getMetadata("tier").get(0).asInt();
         Random rand = new Random();
         int powerChance = 0;
-        ItemStack item = entity.getEquipment().getItemInMainHand();
         if (entity.hasMetadata("elite")) {
             switch (tier) {
                 case 1:
@@ -412,25 +416,9 @@ public class DamageListener implements Listener {
 
             }
 
-
             if (rand.nextInt(100) <= 50) {
-                PowerMove.doPowerMove("powermove", entity, null);
-            } else {
-                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("whirlwind", entity, null);
-
+                PowerMove.doPowerMove("powerstrike", entity, null);
             }
-
-            if (rand.nextInt(100) <= powerChance) {
-                if (item.getType().name().contains("HOE")) {
-                    PowerMove.doPowerMove("tripleshot", entity, null);
-                } else if (item.getType().name().contains("SWORD")) {
-                    PowerMove.doPowerMove("powermove", entity, null);
-                }
-
-            }
-            entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1F, 2.0F);
-
         }
     }
 
@@ -505,14 +493,27 @@ public class DamageListener implements Listener {
         }
 
 
-        if (PowerStrike.powerStrike.contains(event.getDamager().getUniqueId())) {
+        Entity theEntity = null;
+        if (event.getDamager() instanceof LivingEntity) {
+
+            theEntity = event.getDamager();
+
+        } else if (DamageAPI.isBowProjectile(event.getDamager())) {
+            Projectile attackingArrow = (Projectile) event.getDamager();
+            theEntity = (Entity) attackingArrow.getShooter();
+        }else if (DamageAPI.isStaffProjectile(event.getDamager())) {
+            Projectile attackingSkull = (Projectile) event.getDamager();
+            theEntity = (Entity) attackingSkull.getShooter();
+        }
+
+        if (PowerStrike.powerStrike.contains(theEntity.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You've been hit with Power Strike!");
             finalDamage *= 3;
-            PowerStrike.powerStrike.remove(event.getDamager().getUniqueId());
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, player.getLocation().add(0, 1, 0), new Random().nextFloat(),
-                    new Random().nextFloat(), new Random().nextFloat(), 0.3F, 40);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 60));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 2));
+            PowerStrike.chargedMonsters.remove(theEntity.getUniqueId());
+            PowerStrike.powerStrike.remove(theEntity.getUniqueId());
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
+            player.getWorld().playEffect(player.getLocation(), Effect.CLOUD, 1, 40);
+
         }
 
         event.setDamage(finalDamage);
