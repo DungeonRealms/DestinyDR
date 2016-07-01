@@ -129,6 +129,7 @@ public class API {
         }
         return -1;
     }
+
     public static ItemTier getItemTier(ItemStack stack) {
         if (stack.getType() == Material.AIR || stack == null)
             return null;
@@ -1209,6 +1210,15 @@ public class API {
         return new int[]{0, 0};
     }
 
+    public static String getItemUID(ItemStack i) {
+        if (!(API.isWeapon(i))) return "";
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(i);
+        NBTTagCompound tag = nmsStack.getTag();
+        if (tag == null) return "";
+        if (tag.hasKey("u")) return tag.getString("u");
+        return "";
+    }
+
     /**
      * Calculates the value for all attributes and loads it into memory. Calculates
      * both armor and weapon attributes. Called on player login.
@@ -1227,7 +1237,7 @@ public class API {
         calculateArmorAttributes(attributes, p.getInventory().getArmorContents(), true);
         calculateWeaponAttributes(attributes, p.getInventory().getItemInMainHand(), true);
 
-        gp.setCurrentWeapon(p.getInventory().getItemInMainHand());
+        gp.setCurrentWeapon(getItemUID(p.getEquipment().getItemInMainHand()));
 
         // add stat bonuses from the stat menu
         changeAttributeVal(attributes, ArmorAttributeType.STRENGTH, gp.getStats().strPoints);
@@ -1350,7 +1360,7 @@ public class API {
             }
         }
 
-        gp.setCurrentWeapon(newWeapon);
+        gp.setCurrentWeapon(API.getItemUID(newWeapon));
     }
 
     /**

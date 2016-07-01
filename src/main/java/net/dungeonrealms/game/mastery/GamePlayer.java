@@ -53,7 +53,7 @@ public class GamePlayer {
     private boolean attributesLoaded;
     @Setter
     @Getter
-    private ItemStack currentWeapon; // used so we only reload weapon stats when we need to.
+    private String currentWeapon; // used so we only reload weapon stats when we need to.
     @Setter
     @Getter
     private long lastArmorEquip;

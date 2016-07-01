@@ -475,7 +475,7 @@ public class RealmListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onAddBuilder(EntityDamageByEntityEvent event) {
         if (!API.isPlayer(event.getDamager()) || !API.isPlayer(event.getEntity())) return;
 
@@ -484,6 +484,7 @@ public class RealmListener implements Listener {
 
         if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.NETHER_STAR)
             return;
+
 
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
