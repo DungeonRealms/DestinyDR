@@ -789,7 +789,7 @@ public class ItemGenerator {
 		wm.new LifeSteal();
 		wm.new Pure();
 		wm.new Slow();
-		//wm.new StrDexVitInt();
+		wm.new StrDexVitInt();
 		wm.new SwordDamage();
 		wm.new Versus();
 		
