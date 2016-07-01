@@ -138,7 +138,7 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void RealmBlockProcessor(UpdateEvent e) {
-        if (!e.getType().equals(UpdateType.SLOW)) return;
+        if (!e.getType().equals(UpdateType.FAST)) return;
 
         for (Map.Entry<UUID, List<Location>> entry : REALMS.getProcessingBlocks().entrySet()) {
             String w_name = entry.getKey().toString();
@@ -191,11 +191,11 @@ public class RealmListener implements Listener {
                     REALMS.getProcessingBlocks().remove(entry.getKey());
                     realm.setUpgradeProgress(0);
                 } else {
-                    int total_area = REALMS.getRealmDimensions(REALMS.getRealmTier(UUID.fromString(w.getName())) + 1);
-                    total_area = total_area * total_area * total_area;
-                    int complete_area = total_area - loc_list.size();
+                    double total_area = REALMS.getRealmDimensions(REALMS.getRealmTier(UUID.fromString(w.getName())) + 1);
+                    total_area = Math.pow(total_area, 3);
+                    double complete_area = total_area - loc_list.size();
 
-                    double percent = (((double) complete_area / (double) total_area) * 100.0D);
+                    double percent = ((complete_area / total_area) * 100.0D);
                     realm.setUpgradeProgress(percent);
                     REALMS.getProcessingBlocks().put(entry.getKey(), loc_list);
                 }

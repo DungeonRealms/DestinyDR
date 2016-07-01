@@ -139,7 +139,8 @@ public class RealmInstance implements Realms {
     @Override
     public void loadRealm(Player player, Runnable doAfter) {
         if (isRealmCached(player.getUniqueId())) {
-            doAfter.run();
+            if (doAfter != null)
+                doAfter.run();
             return;
         }
 
