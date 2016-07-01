@@ -201,7 +201,8 @@ public class WeaponModifiers {
 
 	}
 
-	public class StrDexVitInt extends ItemModifier {
+	/* disabled as of patch 1.9 by Mayley's request
+	/*public class StrDexVitInt extends ItemModifier {
 
 		public StrDexVitInt() {
 			super(weapons, -1, null, null, null);
@@ -234,7 +235,7 @@ public class WeaponModifiers {
             }
             return chosenStat;
         }
-	}
+	}*/
 
 	
 	public class Critical extends ItemModifier {
