@@ -25,6 +25,8 @@ public interface Realms extends GenericMechanic {
         return RealmInstance.getInstance();
     }
 
+    // BUFFER SIZE OF BLOCK PROCESSOR //
+    int BLOCK_PROCESSOR_BUFFER_SIZE = 1024;
 
     /**
      * @return EnumPriority.BISHOP

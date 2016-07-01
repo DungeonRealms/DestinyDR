@@ -147,7 +147,7 @@ public class RealmListener implements Listener {
                 int x = 0;
 
                 for (Location loc : loc_list) {
-                    if (x >= 512) {
+                    if (x >= Realms.BLOCK_PROCESSOR_BUFFER_SIZE) {
                         break;
                     }
                     if (loc.getBlock().getY() > 127) {
