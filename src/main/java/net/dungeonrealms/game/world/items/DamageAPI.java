@@ -74,8 +74,10 @@ public class DamageAPI {
                 GamePlayer gp = API.getGamePlayer((Player) attacker);
 
                 // a player switches weapons, so we need to recalculate weapon attributes
-                if (!gp.getCurrentWeapon().equals(weapon))
-                    API.handlePlayerWeaponSwitch((Player) attacker, weapon, gp.getCurrentWeapon());
+                if (!gp.getCurrentWeapon().equals(weapon)) {
+                    API.calculateAllAttributes((Player) attacker);
+                    gp.setCurrentWeapon(weapon);
+                }
 
                 attackerAttributes = gp.getAttributes();
             } else if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
@@ -881,8 +883,10 @@ public class DamageAPI {
         projectile.setShooter(player);
         // a player switches weapons, so we need to recalculate weapon attributes
         GamePlayer gp = API.getGamePlayer(player);
-        if (!gp.getCurrentWeapon().equals(itemStack))
-            API.handlePlayerWeaponSwitch(player, itemStack, gp.getCurrentWeapon());
+        if (!gp.getCurrentWeapon().equals(itemStack)) {
+            API.calculateAllAttributes(player);
+            gp.setCurrentWeapon(itemStack);
+        }
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
     }
 
@@ -912,8 +916,10 @@ public class DamageAPI {
         EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
         eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
         // a player switches weapons, so we need to recalculate weapon attributes
-        if (!gp.getCurrentWeapon().equals(itemStack))
-            API.handlePlayerWeaponSwitch(player, itemStack, gp.getCurrentWeapon());
+        if (!gp.getCurrentWeapon().equals(itemStack)) {
+            API.calculateAllAttributes(player);
+            gp.setCurrentWeapon(itemStack);
+        }
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
     }
 
