@@ -103,7 +103,6 @@ public class WhirlWind extends PowerMove {
                     yaw = 0;
                 }
                 loc.setYaw(yaw);
-//                Bukkit.broadcastMessage("Set YAW " + yaw);
 //                EntityLiving el = (EntityLiving) ((CraftEntity) entity).getHandle();
 //                el.yaw = yaw;
                 EntityCreature ec = (EntityCreature) ((CraftEntity) entity).getHandle();
@@ -112,7 +111,6 @@ public class WhirlWind extends PowerMove {
                 entity.teleport(loc);
                 step++;
                 if (step == (5 * 20)) {
-                    Bukkit.broadcastMessage("Canceled " + "WhirlWind");
                     this.cancel();
                     chargingMonsters.remove(entity.getUniqueId());
                 }

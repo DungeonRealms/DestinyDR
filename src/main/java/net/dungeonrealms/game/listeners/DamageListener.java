@@ -385,9 +385,8 @@ public class DamageListener implements Listener {
                     break;
 
             }
-            if (rand.nextInt(100) <= 75) {
+            if (rand.nextInt(100) <= powerChance) {
                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-
                 PowerMove.doPowerMove("whirlwind", entity, null);
 
             }
@@ -416,7 +415,7 @@ public class DamageListener implements Listener {
 
             }
 
-            if (rand.nextInt(100) <= 50) {
+            if (rand.nextInt(100) <= powerChance) {
                 PowerMove.doPowerMove("powerstrike", entity, null);
             }
         }
@@ -507,15 +506,13 @@ public class DamageListener implements Listener {
         }
 
         if (PowerStrike.powerStrike.contains(theEntity.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You've been hit with Power Strike!");
             finalDamage *= 3;
             PowerStrike.chargedMonsters.remove(theEntity.getUniqueId());
             PowerStrike.powerStrike.remove(theEntity.getUniqueId());
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
-            player.getWorld().playEffect(player.getLocation(), Effect.CLOUD, 1, 40);
+            player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3, 3);
 
         }
-
         event.setDamage(finalDamage);
     }
 
