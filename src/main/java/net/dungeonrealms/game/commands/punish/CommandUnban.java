@@ -9,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -17,15 +18,15 @@ import java.util.UUID;
 
 public class CommandUnban extends BasicCommand {
 
-    public CommandUnban(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandUnban(String command, String usage, String description, String... aliases) {
+        super(command, usage, description, Arrays.asList(aliases));
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if ((sender instanceof Player) && !Rank.isPMOD((Player) sender)) return true;
 
-        if (args.length < 2) {
+        if (args.length == 0) {
             sender.sendMessage(usage);
             return true;
         }

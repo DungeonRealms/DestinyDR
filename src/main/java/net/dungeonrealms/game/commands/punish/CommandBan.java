@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -19,8 +20,8 @@ import java.util.UUID;
 
 public class CommandBan extends BasicCommand {
 
-    public CommandBan(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandBan(String command, String usage, String description, String... aliases) {
+        super(command, usage, description, Arrays.asList(aliases));
     }
 
     @Override

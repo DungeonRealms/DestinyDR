@@ -364,8 +364,8 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
             cm.registerCommand(new CommandRealmFix("realmfix", "/<command> [args]", "Realm fix command"));
 
-            cm.registerCommand(new CommandBan("ban", "/<command> [args]", "Ban command"));
-            cm.registerCommand(new CommandUnban("unban", "/<command> [args]", "Unban command"));
+            cm.registerCommand(new CommandBan("ban", "/<command> [args]", "Ban command", "drban"));
+            cm.registerCommand(new CommandUnban("unban", "/<command> [args]", "Unban command", "drunban", "drpardon"));
 
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));
