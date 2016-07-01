@@ -261,7 +261,10 @@ public class Entities implements GenericMechanic {
             cc = ChatColor.RED;
         }
 
-        //TODO: Special Attack Light Purple
+
+        if(PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId())){
+            cc = ChatColor.LIGHT_PURPLE;
+        }
 
         String return_string = cc + ChatColor.BOLD.toString() + "║" + ChatColor.RESET.toString() + cc.toString() + "";
         if (elite || boss) {

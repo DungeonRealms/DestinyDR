@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.spawning;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -383,6 +384,15 @@ public class SpawningMechanics implements GenericMechanic {
                 return null;
         }
         return entity;
+    }
+
+    public static void rollElement(Entity ent, EnumMonster enumMonster) {
+        if (enumMonster.elementalChance > 0) {
+            if (new Random().nextInt(100) < enumMonster.elementalChance) {
+                String element = enumMonster.getRandomElement();
+                API.setMobElement(ent, element);
+            }
+        }
     }
 
     @Override

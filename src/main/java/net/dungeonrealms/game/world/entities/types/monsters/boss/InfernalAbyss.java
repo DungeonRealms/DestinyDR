@@ -141,6 +141,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
             int level = Utils.getRandomFromTier(3, "low");
             String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
             EntityStats.createDungeonMob(entity, level, 3);
+            SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
             if (entity == null) {
                 return; //WTF?? UH OH BOYS WE GOT ISSUES
             }
@@ -244,6 +245,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         int level = Utils.getRandomFromTier(3, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
                         EntityStats.createDungeonMob(entity, level, 3);
+                        SpawningMechanics.rollElement(entity, EnumMonster.Silverfish);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
@@ -260,6 +262,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         int level = Utils.getRandomFromTier(3, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
                         EntityStats.createDungeonMob(entity, level, 3);
+                        SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
@@ -278,6 +281,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         int level = Utils.getRandomFromTier(4, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
                         EntityStats.createDungeonMob(entity, level, 4);
+                        SpawningMechanics.rollElement(entity, EnumMonster.Silverfish);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
@@ -294,6 +298,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         int level = Utils.getRandomFromTier(4, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
                         EntityStats.createDungeonMob(entity, level, 4);
+                        SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }

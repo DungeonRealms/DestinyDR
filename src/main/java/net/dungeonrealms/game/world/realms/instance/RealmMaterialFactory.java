@@ -70,8 +70,8 @@ class RealmMaterialFactory {
         items.add(new RealmMaterialItem(new ItemStack(Material.WOOL, 6, (short) 4)));
         items.add(new RealmMaterialItem(new ItemStack(Material.WOOL, 6, (short) 5)));
 
-        items.add(new RealmMaterialItem(new ItemStack(Material.WATER_BUCKET, 5)));
-        items.add(new RealmMaterialItem(new ItemStack(Material.LAVA_BUCKET, 15)));
+        //items.add(new RealmMaterialItem(new ItemStack(Material.WATER_BUCKET, 5)));
+        //items.add(new RealmMaterialItem(new ItemStack(Material.LAVA_BUCKET, 15)));
 
         items.add(new RealmMaterialItem(new ItemStack(Material.ICE, 3)));
         items.add(new RealmMaterialItem(new ItemStack(Material.OBSIDIAN, 55)));

@@ -108,8 +108,16 @@ public class ItemListener implements Listener {
                 return;
             }
             if (TeleportAPI.isTeleportBook(itemStack)) {
+
+                if (player.getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) {
+                    player.sendMessage("You can only use teleport books in the main world.");
+                    return;
+                }
+
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
                 if (TeleportAPI.canTeleportToLocation(player, nmsItem.getTag())) {
+
+
                     Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
                     if (player.getEquipment().getItemInMainHand().getAmount() == 1) {
                         player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
@@ -157,11 +165,56 @@ public class ItemListener implements Listener {
         if (tag == null) return;
         if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
 
             if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
             Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
+            if (p.isSneaking()) {
+                if (!API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
+                    p.sendMessage(ChatColor.RED + "You must be inside your realm to modify its size.");
+                    return;
+                }
+
+                int tier = Realms.getInstance().getRealmTier(p.getUniqueId());
+
+                if (tier >= 7) {
+                    p.sendMessage(ChatColor.RED + "You have upgraded your realm to it's final tier");
+                    return;
+                }
+
+                p.sendMessage("");
+                p.sendMessage(ChatColor.DARK_GRAY + "           *** " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Realm Upgrade Confirmation"
+                        + ChatColor.DARK_GRAY + " ***");
+                p.sendMessage(ChatColor.DARK_GRAY + "FROM Tier " + ChatColor.LIGHT_PURPLE + tier + ChatColor.DARK_GRAY + " TO " + ChatColor.LIGHT_PURPLE
+                        + (tier + 1));
+                p.sendMessage(ChatColor.DARK_GRAY + "Upgrade Cost: " + ChatColor.LIGHT_PURPLE + "" + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
+                p.sendMessage("");
+                p.sendMessage(ChatColor.GRAY + "Enter '" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "CONFIRM" + ChatColor.GRAY + "' to confirm realm upgrade.");
+                p.sendMessage("");
+                p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Realm upgrades are " + ChatColor.BOLD + ChatColor.RED + "NOT"
+                        + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this upgrade request.");
+                p.sendMessage("");
+
+
+                Chat.listenForMessage(p, confirmation -> {
+                    if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
+                        p.sendMessage(ChatColor.RED + "Realm upgrade cancel");
+                        return;
+                    }
+
+                    if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
+                        if (!(BankMechanics.getInstance().takeGemsFromInventory(Realms.getInstance().getRealmUpgradeCost(tier + 1), p))) {
+                            p.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to purchase this upgrade. Upgrade cancelled.");
+                            p.sendMessage(ChatColor.RED + "COST: " + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
+                            return;
+                        }
+
+                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> Realms.getInstance().upgradeRealm(p));
+                    }
+                }, null);
+                return;
+            }
 
             if (API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);

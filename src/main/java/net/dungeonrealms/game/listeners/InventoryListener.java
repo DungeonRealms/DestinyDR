@@ -429,12 +429,21 @@ public class InventoryListener implements Listener {
             if (trade == null) {
                 return;
             }
+
+            if (event.getCurrentItem() == null)
+                return;
+
+            if (!API.isItemTradeable(event.getCurrentItem()) || API.isItemSoulbound(event.getCurrentItem()) || !API.isItemDroppable(event.getCurrentItem())) {
+                event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
+                event.setCancelled(true);
+                return;
+            }
+
+
             int slot = event.getRawSlot();
             if (slot >= 36)
                 return;
 
-            if (event.getCurrentItem() == null)
-                return;
             if (event.getCurrentItem().getType() == Material.STAINED_GLASS_PANE) {
                 event.setCancelled(true);
                 return;

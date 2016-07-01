@@ -14,10 +14,12 @@ import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.listeners.RealmListener;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -35,20 +37,21 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Recipe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
- * Class written by APOLLOSOFTWARE.IO on 6/21/2016
+ * [REALMS] BY APOLLOSOFTWARE.IO 2016
+ * This class is where most of the backend
+ * realm mechanics are handled.
  */
 
 public class RealmInstance implements Realms {
@@ -67,6 +70,7 @@ public class RealmInstance implements Realms {
     // CACHED REALM DATA
     private Map<UUID, RealmToken> CACHED_REALMS = new ConcurrentHashMap<>();
 
+    private Map<UUID, List<Location>> PROCESSING_BLOCKS = new ConcurrentHashMap<>();
 
     // IMPORTANT FOLDERS //
     private File pluginFolder = null;
@@ -86,8 +90,9 @@ public class RealmInstance implements Realms {
 
     @Override
     public void startInitialization() {
-        Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
+        Utils.log.info("DungeonRealms Registering RealmsInstance() ... STARTING ...");
 
+        // INITIALIZE WORK FOLDERS
         pluginFolder = DungeonRealms.getInstance().getDataFolder();
         rootFolder = new File(System.getProperty("user.dir"));
 
@@ -99,6 +104,7 @@ public class RealmInstance implements Realms {
             Utils.log.info("Failed to create realm directories!");
         }
 
+        // REMOVE ANY WORLD FILES THAT ARE STILL THE ROOT FOLDER FOR SOME REASON //
         Arrays.asList(rootFolder.listFiles()).stream()
                 .filter(file -> API.isUUID(file.getName())).forEach(f -> {
             try {
@@ -108,7 +114,7 @@ public class RealmInstance implements Realms {
             }
         });
 
-        Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
+        Utils.log.info("DungeonRealms Finished Registering RealmsInstance() ... FINISHED!");
         Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
 
         // CRAFTING RESTRICTIONS //
@@ -132,13 +138,20 @@ public class RealmInstance implements Realms {
 
     @Override
     public void loadRealm(Player player, Runnable doAfter) {
+        if (isRealmCached(player.getUniqueId())) {
+            if (doAfter != null)
+                doAfter.run();
+            return;
+        }
+
         if (((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPLOAD, player.getUniqueId()))) {
             player.sendMessage(ChatColor.RED + "Your realm is still being uploaded from another shard.");
             return;
         }
 
-        if (isRealmCached(player.getUniqueId())) {
-            doAfter.run();
+
+        if (((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPGRADE, player.getUniqueId()))) {
+            player.sendMessage(ChatColor.RED + "Your realm is still being upgraded from another shard.");
             return;
         }
 
@@ -210,6 +223,12 @@ public class RealmInstance implements Realms {
 
         RealmToken realm = getRealm(player.getUniqueId());
 
+        if (realm.getStatus() == RealmStatus.UPGRADING) {
+            DecimalFormat format = new DecimalFormat("#.##");
+            player.sendMessage(ChatColor.RED + "This realm is currently UPGRADING. " + ChatColor.BOLD + format.format(realm.getUpgradeProgress()) + "% Complete.");
+            return;
+        }
+
         if (realm.getStatus() != RealmStatus.OPENED && realm.getStatus() != RealmStatus.CLOSED) {
             player.sendMessage(getRealmStatusMessage(realm.getStatus()));
             return;
@@ -258,7 +277,7 @@ public class RealmInstance implements Realms {
         }
 
         if (isRealmPortalOpen(realm.getOwner()))
-            closeRealmPortal(player.getUniqueId(), false);
+            closeRealmPortal(player.getUniqueId(), false, null);
 
         final Location portalLocation = location.clone().add(0, 1, 0);
         realm.setPortalLocation(portalLocation);
@@ -314,7 +333,7 @@ public class RealmInstance implements Realms {
     public void resetRealm(Player player) throws IOException {
         // CLOSE REALM PORTAL AND KICK PLAYERS
         if (isRealmPortalOpen(player.getUniqueId()))
-            closeRealmPortal(player.getUniqueId(), true);
+            closeRealmPortal(player.getUniqueId(), true, ChatColor.RED + player.getName() + " is resetting this realm...");
 
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_LAST_RESET, System.currentTimeMillis(), true);
         getRealm(player.getUniqueId()).setStatus(RealmStatus.RESETTING);
@@ -327,12 +346,100 @@ public class RealmInstance implements Realms {
                     setRealmTitle(player.getUniqueId(), "");
                     getRealm(player.getUniqueId()).setStatus(RealmStatus.CLOSED);
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
                 }));
     }
 
     @Override
     public void upgradeRealm(Player player) {
+        int currentTier = getRealmTier(player.getUniqueId());
+        int nextTier = currentTier + 1;
 
+        // CALCULATE NEW DIMENSIONS //
+        int old_bottom_y = 16;
+        int new_bottom_y = 16;
+
+        if (currentTier == 0) {
+            old_bottom_y = 16;
+            new_bottom_y = 22;
+        }
+        if (currentTier == 1) {
+            old_bottom_y = 16;
+            new_bottom_y = 22;
+        }
+        if (currentTier == 2) {
+            old_bottom_y = 22;
+            new_bottom_y = 32;
+        }
+        if (currentTier == 3) {
+            old_bottom_y = 32;
+            new_bottom_y = 45;
+        }
+        if (currentTier == 4) {
+            old_bottom_y = 45;
+            new_bottom_y = 64;
+        }
+        if (currentTier == 5) {
+            old_bottom_y = 64;
+            new_bottom_y = 82;
+        }
+        if (currentTier == 6) {
+            old_bottom_y = 82;
+            new_bottom_y = 128;
+        }
+        if (currentTier == 7) {
+            old_bottom_y = 128;
+            new_bottom_y = 256;
+        }
+
+        // CLOSE REALM PORTAL //
+        if (isRealmPortalOpen(player.getUniqueId()))
+            closeRealmPortal(player.getUniqueId(), true, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + player.getName() + ChatColor.LIGHT_PURPLE + "'s realm is currently UPGRADING to "
+                    + ChatColor.BOLD + new_bottom_y + "x" + new_bottom_y + ChatColor.LIGHT_PURPLE
+                    + ", you have been kicked out of the realm while the upgrade takes place.");
+
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "Upgrading realm to " + ChatColor.BOLD + new_bottom_y + "x" + new_bottom_y);
+        player.sendMessage(ChatColor.GRAY + "We will notify you once it is ready.");
+
+        // HANDLE ACHIEVEMENTS
+        if (nextTier >= 2) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_1);
+            if (nextTier >= 4) {
+                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_2);
+                if (nextTier >= 6) {
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_3);
+                    if (nextTier == 7)
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_4);
+                }
+            }
+        }
+
+        // SET REALM STATUS //
+        RealmToken realm = getRealm(player.getUniqueId());
+        realm.setStatus(RealmStatus.UPGRADING);
+
+        World world = realm.getWorld();
+
+        // ADDED TO BLOCK PROCESSES //
+        if (nextTier == 2) generateRealmBlocks(world, 22, 22, 22, old_bottom_y);
+        if (nextTier == 3) generateRealmBlocks(world, 32, 32, 32, old_bottom_y);
+        if (nextTier == 4) generateRealmBlocks(world, 45, 45, 45, old_bottom_y);
+        if (nextTier == 5) generateRealmBlocks(world, 64, 64, 64, old_bottom_y);
+        if (nextTier == 6) generateRealmBlocks(world, 82, 82, 82, old_bottom_y);
+        if (nextTier == 7) generateRealmBlocks(world, 128, 128, 128, old_bottom_y);
+
+
+        // UPDATE REALM TIER DATA
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, nextTier, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_UPGRADE, true, true);
+
+        // UPGRADE REALM PORTAL RUNE //
+        int slot = API.getItemSlot(player.getInventory(), "realmPortalRune");
+
+        if (slot != -1)
+            player.getInventory().setItem(slot, ItemManager.createRealmPortalRune(player.getUniqueId()));
+
+        player.updateInventory();
     }
 
     @Override
@@ -343,23 +450,18 @@ public class RealmInstance implements Realms {
 
     @Override
     public void doLogout(Player player) {
-
-        if (Realms.getInstance().getRealm(player.getWorld()) != null) {
-            Realms.getInstance().getRealm(player.getWorld()).getPlayersInRealm().remove(player.getUniqueId());
-        }
-
         if (!isRealmCached(player.getUniqueId())) return;
 
         RealmToken realm = Realms.getInstance().getRealm(player.getUniqueId());
 
-        getRealm(player.getUniqueId()).getPlayersInRealm().stream()
-                .filter(uuid -> Bukkit.getPlayer(uuid) != null)
-                .forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "The owner of this realm has LOGGED OUT."));
+        if (realm.getStatus() == RealmStatus.UPGRADING) return;
 
         Realms.getInstance().getRealmWorld(player.getUniqueId())
                 .getPlayers().forEach(p -> p.teleport(realm.getPortalLocation()));
 
-        closeRealmPortal(player.getUniqueId(), true);
+        if (isRealmPortalOpen(player.getUniqueId()))
+            closeRealmPortal(player.getUniqueId(), true, ChatColor.RED + "The owner of this realm has LOGGED OUT.");
+
         realm.setStatus(RealmStatus.REMOVING);
 
         // MUST BE SYNC //
@@ -544,7 +646,7 @@ public class RealmInstance implements Realms {
     }
 
     @Override
-    public void closeRealmPortal(UUID uuid, boolean kickPlayers) {
+    public void closeRealmPortal(UUID uuid, boolean kickPlayers, String kickMessage) {
         if (!isRealmLoaded(uuid)) return;
 
         RealmToken realm = getRealm(uuid);
@@ -564,16 +666,12 @@ public class RealmInstance implements Realms {
         realm.setPortalLocation(null);
         realm.setStatus(RealmStatus.CLOSED);
 
-        for (UUID u : realm.getPlayersInRealm()) {
-            Player p = Bukkit.getPlayer(u);
+        realm.getWorld().getPlayers().stream().filter(p -> p != null).forEach(p -> {
+            if (kickMessage != null && p.getUniqueId() != uuid)
+                p.sendMessage(kickMessage);
 
-            if (p != null)
-                p.teleport(portalLocation);
-        }
-
-        // MAKE SURE WE GET ALL THE PLAYER OUT OF THE REALM //
-        getRealmWorld(uuid).getPlayers().stream().filter(p -> p != null).forEach(p -> p.teleport(portalLocation));
-        realm.getPlayersInRealm().clear();
+            p.teleport(portalLocation);
+        });
     }
 
 
@@ -591,7 +689,7 @@ public class RealmInstance implements Realms {
     @Override
     public void removeRealm(UUID uuid, boolean runAsync) {
         if (isRealmPortalOpen(uuid))
-            closeRealmPortal(uuid, true);
+            closeRealmPortal(uuid, true, null);
 
         getRealm(uuid).setStatus(RealmStatus.REMOVING);
 
@@ -643,14 +741,20 @@ public class RealmInstance implements Realms {
     public void setRealmSpawn(UUID uuid, Location newLocation) {
         if (!isRealmLoaded(uuid)) return;
 
+        RealmToken realm = getRealm(uuid);
+
+        realm.setSettingSpawn(true);
+
         newLocation.getBlock().setType(Material.PORTAL);
         newLocation.clone().subtract(0, 1, 0).getBlock().setType(Material.PORTAL);
 
         Location oldLocation = getRealmWorld(uuid).getSpawnLocation();
-        oldLocation.getBlock().setType(Material.AIR);
+        oldLocation.clone().add(0, 1, 0).getBlock().setType(Material.AIR);
         oldLocation.clone().subtract(0, 1, 0).getBlock().setType(Material.AIR);
 
         getRealmWorld(uuid).setSpawnLocation(newLocation.getBlockX(), newLocation.getBlockY(), newLocation.getBlockZ());
+
+        realm.setSettingSpawn(false);
     }
 
     @Override
@@ -674,6 +778,10 @@ public class RealmInstance implements Realms {
 
             case REMOVING:
                 message = message + "removed";
+                break;
+
+            case UPGRADING:
+                message = message + "upgraded";
                 break;
 
             case RESETTING:
@@ -717,6 +825,67 @@ public class RealmInstance implements Realms {
     @Override
     public World getRealmWorld(UUID uuid) {
         return Bukkit.getWorld(uuid.toString());
+    }
+
+
+    public boolean isRealmCached(UUID uuid) {
+        return CACHED_REALMS.containsKey(uuid);
+    }
+
+    public boolean isRealmLoaded(UUID uuid) {
+        return isRealmCached(uuid) && getRealm(uuid).isLoaded() && getRealmWorld(uuid) != null;
+    }
+
+    @Override
+    public boolean realmsAreUpgrading() {
+        for (RealmToken realm : CACHED_REALMS.values())
+            if (realm.getStatus() == RealmStatus.UPGRADING)
+                return true;
+        return false;
+    }
+
+    @Override
+    public boolean isRealmPortalOpen(UUID uuid) {
+        return isRealmLoaded(uuid) && getRealm(uuid).getStatus() == RealmStatus.OPENED;
+    }
+
+    @Override
+    public Map<UUID, RealmToken> getCachedRealms() {
+        return CACHED_REALMS;
+    }
+
+    @Override
+    public Map<UUID, List<Location>> getProcessingBlocks() {
+        return PROCESSING_BLOCKS;
+    }
+
+
+    private void zip(String targetFolderPath, String destinationFilePath) throws ZipException {
+        ZipParameters parameters = new ZipParameters();
+        parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+        parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+        parameters.setIncludeRootFolder(false);
+
+
+        ZipFile zipFile = new ZipFile(destinationFilePath);
+
+        File targetFile = new File(targetFolderPath);
+        if (targetFile.isFile()) {
+            zipFile.addFile(targetFile, parameters);
+        } else if (targetFile.isDirectory()) {
+            zipFile.addFolder(targetFile, parameters);
+        } else {
+            System.out.println("ERROR ERROR, HOLY SHIT");
+        }
+    }
+
+    private void removeRecipe(Material m) {
+        Iterator<Recipe> it = Bukkit.getServer().recipeIterator();
+        Recipe recipe;
+        while (it.hasNext()) {
+            recipe = it.next();
+            if (recipe != null && recipe.getResult().getType() == m) it.remove();
+        }
     }
 
     @Override
@@ -763,82 +932,36 @@ public class RealmInstance implements Realms {
         return 0;
     }
 
-    public boolean isRealmCached(UUID uuid) {
-        return CACHED_REALMS.containsKey(uuid);
+    public void generateRealmBlocks(final World w, final int o_limx, final int o_limy, final int o_limz, final int o_oldy) {
+        List<Location> update_locs = new ArrayList<>();
+
+        int limx = o_limx + 16;
+        int limz = o_limz + 16; // To account for not using chunk 0.
+
+        int x, y, z;
+        int limy = (128 - o_limy);
+        int oldy = (128 - o_oldy) - 1; // Subtract an extra 1 for bedrock border area.
+
+        // BEDROCK
+        for (x = 16; x < limx; x++)
+            for (z = 16; z < limz; z++) update_locs.add(new Location(w, x, limy + 1, z));
+
+        // DIRT
+        for (x = 16; x < limx; x++)
+            for (y = 127; y > (limy + 1); y--)
+                for (z = 16; z < limz; z++) {
+                    Block b = w.getBlockAt(new Location(w, x, y, z));
+                    if (b.getType() != Material.AIR && b.getType() != Material.BEDROCK) continue;
+                    if (b.getType() == Material.BEDROCK || y - 1 <= oldy || x >= o_oldy || z >= o_oldy)
+                        update_locs.add(new Location(w, x, y, z));
+                }
+
+        y = 128;
+
+        // GRASS
+        for (x = 16; x < limx; x++)
+            for (z = 16; z < limz; z++) update_locs.add(new Location(w, x, 128, z));
+
+        PROCESSING_BLOCKS.put(UUID.fromString(w.getName()), update_locs);
     }
-
-    public boolean isRealmLoaded(UUID uuid) {
-        return isRealmCached(uuid) && getRealm(uuid).isLoaded() && getRealmWorld(uuid) != null;
-    }
-
-    @Override
-    public boolean isRealmPortalOpen(UUID uuid) {
-        return isRealmLoaded(uuid) && getRealm(uuid).getStatus() == RealmStatus.OPENED;
-    }
-
-    @Override
-    public Map<UUID, RealmToken> getCachedRealms() {
-        return CACHED_REALMS;
-    }
-
-
-    private void zip(String targetFolderPath, String destinationFilePath) throws ZipException {
-        ZipParameters parameters = new ZipParameters();
-        parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-        parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-        parameters.setIncludeRootFolder(false);
-
-
-        ZipFile zipFile = new ZipFile(destinationFilePath);
-
-        File targetFile = new File(targetFolderPath);
-        if (targetFile.isFile()) {
-            zipFile.addFile(targetFile, parameters);
-        } else if (targetFile.isDirectory()) {
-            zipFile.addFolder(targetFile, parameters);
-        } else {
-            System.out.println("ERROR ERROR, HOLY SHIT");
-        }
-    }
-
-    private void removeRecipe(Material m) {
-        Iterator<Recipe> it = Bukkit.getServer().recipeIterator();
-        Recipe recipe;
-        while (it.hasNext()) {
-            recipe = it.next();
-            if (recipe != null && recipe.getResult().getType() == m) it.remove();
-        }
-    }
-
-//    public void generateRealmBase(UUID uuid) {
-//        WorldCreator worldCreator = new WorldCreator(uuid.toString());
-//        worldCreator.type(WorldType.FLAT);
-//        worldCreator.generateStructures(false);
-//        worldCreator.generator(new RealmGenerator());
-//        World world = Bukkit.createWorld(worldCreator);
-//        world.setKeepSpawnInMemory(false);
-//        world.setSpawnLocation(24, 130, 24);
-//        world.getBlockAt(0, 64, 0).setType(Material.AIR);
-//
-////        int x, y = 128, z;
-////        Vector vector = new Vector(16, 128, 16);
-////
-////        for (x = vector.getBlockX(); x < 32; x++)
-////            for (z = vector.getBlockZ(); z < 32; z++)
-////                world.getBlockAt(new Location(world, x, y, z)).setType(Material.GRASS);
-////        for (x = vector.getBlockX(); x < 32; x++)
-////            for (y = 127; y >= 112; y--)
-////                for (z = vector.getBlockZ(); z < 32; z++)
-////                    world.getBlockAt(new Location(world, x, y, z)).setType(Material.DIRT);
-////        for (x = vector.getBlockX(); x < 32; x++)
-////            for (z = vector.getBlockZ(); z < 32; z++)
-////                world.getBlockAt(new Location(world, x, y, z)).setType(Material.BEDROCK);
-//
-//        Location portalLocation = world.getSpawnLocation().clone();
-//        portalLocation.getBlock().setType(Material.PORTAL);
-//        portalLocation.subtract(0, 1, 0).getBlock().setType(Material.PORTAL);
-//        portalLocation.add(0, 1, 0);
-//
-//        Utils.log.info("[REALMS] Base Realm generated for player " + uuid.toString());
-//    }
 }
