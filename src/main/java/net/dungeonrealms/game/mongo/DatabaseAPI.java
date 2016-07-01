@@ -163,6 +163,17 @@ public class DatabaseAPI {
             case FREERESETS:
                 return ((Document) doc.get("attributes")).get("freeresets", Integer.class);
             /*
+              PUNISH
+             */
+            case BANNED_TIME:
+                return ((Document) doc.get("punishments")).get("banned", Long.class);
+            case MUTE_TIME:
+                return ((Document) doc.get("punishments")).get("muted", Long.class);
+            case BANNED_REASON:
+                return ((Document) doc.get("punishments")).get("banReason", String.class);
+            case MUTE_REASON:
+                return ((Document) doc.get("punishments")).get("muteReason", String.class);
+            /*
               REALMS
              */
             case REALM_TITLE:
@@ -410,6 +421,11 @@ public class DatabaseAPI {
                         .append("rank",
                                 new Document("expiration_date", 0)
                                         .append("rank", "DEFAULT"))
+                        .append("punishments",
+                                new Document("muted", 0L)
+                                        .append("banned", 0L)
+                                        .append("muteReason", "")
+                                        .append("banReason", ""))
                         .append("inventory",
                                 new Document("collection_bin", "")
                                         .append("mule", "empty")

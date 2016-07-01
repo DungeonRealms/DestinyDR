@@ -30,6 +30,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Item;
@@ -192,12 +193,21 @@ public class MainListener implements Listener {
      * @param event the event.
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
         if (!DungeonRealms.getInstance().hasFinishedSetup() && !DungeonRealms.getInstance().getDevelopers().contains(event.getName())) {
             event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
             return;
         }
+
+        if (PunishUtils.isBanned(event.getUniqueId())) {
+            String name = DatabaseAPI.getInstance().getOfflineName(event.getUniqueId());
+            String banMessage = PunishUtils.getBannedMessage(event.getUniqueId());
+            PunishUtils.kick(name, PunishUtils.getBannedMessage(event.getUniqueId()));
+            event.disallow(Result.KICK_BANNED, banMessage);
+            return;
+        }
+
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
 

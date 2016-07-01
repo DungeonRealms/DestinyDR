@@ -12,6 +12,8 @@ import net.dungeonrealms.game.commands.newcommands.GlobalBroadcastCommand;
 import net.dungeonrealms.game.commands.newcommands.KickAllCommand;
 import net.dungeonrealms.game.commands.newcommands.RealmTestCommand;
 import net.dungeonrealms.game.commands.newcommands.StarterCommand;
+import net.dungeonrealms.game.commands.punish.CommandBan;
+import net.dungeonrealms.game.commands.punish.CommandUnban;
 import net.dungeonrealms.game.commands.support.CommandSupport;
 import net.dungeonrealms.game.commands.testcommands.CommandTestRank;
 import net.dungeonrealms.game.commands.testcommands.CommandTestingHall;
@@ -360,6 +362,9 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandRealm("realm", "/<command> [args]", "Realm command"));
             cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
             cm.registerCommand(new CommandRealmFix("realmfix", "/<command> [args]", "Realm fix command"));
+
+            cm.registerCommand(new CommandBan("ban", "/<command> [args]", "Ban command"));
+            cm.registerCommand(new CommandUnban("unban", "/<command> [args]", "Unban command"));
 
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));

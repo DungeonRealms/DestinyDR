@@ -53,6 +53,10 @@ public enum EnumData {
     FRIEND_REQUSTS("notices.friendRequest"),
     MAILBOX("notices.mailbox"),
 
+    BANNED_TIME("punishments.banned"),
+    MUTE_TIME("punishments.muted"),
+    BANNED_REASON("punishments.bannedReason"),
+    MUTE_REASON("punishments.muteReason"),
 
     REALM_UPLOAD("realm.uploading"),
     REALM_UPGRADE("realm.uploading"),
