@@ -124,7 +124,7 @@ public class Achievements {
                 "Explorer: Tutorial Island",
         }, 100, "achievement.explorer_tutorial_island", false),
 
-        VILLAGE_SAFE("Harridons Fields", new String[]{
+        HARRISONS_FIELD("Harrisons Fields", new String[]{
                 "Explorer: Harrisons Fields",
         }, 500, "achievement.explorer_harrisons_fields", false),
 
@@ -132,11 +132,11 @@ public class Achievements {
                 "Explorer: Plains of Cyrene",
         }, 500, "achievement.explorer_plains_of_cyrene", false),
 
-        DARK_OAK_WILD2("Darkoak", new String[]{
+        DARKOAK("Darkoak", new String[]{
                 "Explorer: Darkoak",
         }, 500, "achievement.explorer_darkoak", false),
 
-        INFRONT_OF_TAVERN("Jagged Rocks", new String[]{
+        JAGGED_ROCKS("Jagged Rocks", new String[]{
                 "Explorer: Jagged Rocks",
         }, 500, "achievement.explorer_jagged_rocks", false),
 
@@ -144,31 +144,31 @@ public class Achievements {
                 "Explorer: Skullneck",
         }, 1000, "achievement.explorer_skull_neck", false),
 
-        TROLL_CITY1("Trollingor", new String[]{
+        TROLLINGOR("Trollingor", new String[]{
                 "Explorer: Trollingor",
         }, 2500, "achievement.explorer_trollingor", false),
 
-        CRYSTALPEAKT("Crystalpeak Tower", new String[]{
+        CRYSTALPEAK_TOWER("Crystalpeak Tower", new String[]{
                 "Explorer: Crystalpeak Tower",
         }, 5000, "achievement.explorer_crystalpeak_tower", false),
 
-        TRANSITIONAL_13("Helmchen", new String[]{
+        HELMCHEN("Helmchen", new String[]{
                 "Explorer: Helmchen",
         }, 1000, "achievement.explorer_helmchen", false),
 
-        ALSAHRA("Al Sahra", new String[]{
+        AL_SAHRA("Al Sahra", new String[]{
                 "Explorer: Al Sahra",
         }, 1000, "achievement.explorer_al_sahra", false),
 
-        SAVANNAH_SAFEZONE("Tripoli", new String[]{
+        TRIPOLI("Tripoli", new String[]{
                 "Explorer: Tripoli",
         }, 1000, "achievement.explorer_tripoli", false),
 
-        SWAMP_VILLAGE2("Dreadwood", new String[]{
+        DREADWOOD("Dreadwood", new String[]{
                 "Explorer: Dreadwood",
         }, 500, "achievement.explorer_dreadwood", false),
 
-        SWAMP1("Gloomy Hallows", new String[]{
+        GLOOMY_HOLLOWS("Gloomy Hallows", new String[]{
                 "Explorer: Gloomy Hallows",
         }, 1000, "achievement.explorer_gloomy_hallows", false),
 
@@ -176,7 +176,7 @@ public class Achievements {
                 "Explorer: Crest Guard",
         }, 2500, "achievement.explorer_crest_guard", false),
 
-        CS_TRIP_6("The Frozen North", new String[]{
+        FROZEN_NORTH("The Frozen North", new String[]{
                 "Explorer: The Frozen North",
         }, 5000, "achievement.explorer_the_frozen_north", false),
 
@@ -284,53 +284,53 @@ public class Achievements {
                 "You've opened your first loot chest."
         }, 250, "achievement.explorer_open_loot_chest", false),
 
-        REALM_EXPANSION_1("Expanding I", new String[]{
+        REALM_EXPANSION_I("Expanding I", new String[]{
                 "You've begun work on your realm."
-        }, 500, "achievement.realm_expansion1", false),
+        }, 500, "achievement.realm_expansion_i", false),
 
-        REALM_EXPANSION_2("Expanding II", new String[]{
+        REALM_EXPANSION_II("Expanding II", new String[]{
                 "You've taken the initiative to expand your realm."
-        }, 1000, "achievement.realm_expansion2", false),
+        }, 1000, "achievement.realm_expansion_ii", false),
 
-        REALM_EXPANSION_3("Expanding III", new String[]{
+        REALM_EXPANSION_III("Expanding III", new String[]{
                 "Your realm is looking very nice."
-        }, 2500, "achievement.realm_expansion3", false),
+        }, 2500, "achievement.realm_expansion_iii", false),
 
-        REALM_EXPANSION_4("Expanding IV", new String[]{
+        REALM_EXPANSION_IV("Expanding IV", new String[]{
                 "Your realm is truly a sight to behold."
-        }, 5000, "achievement.realm_expansion4", false),
+        }, 5000, "achievement.realm_expansion_iv", false),
 
-        ACQUIRE_CURRENCY_1("Acquire Currency I", new String[]{
+        ACQUIRE_CURRENCY_I("Acquire Currency I", new String[]{
                 "You have gems to spend."
-        }, 250, "achievement.currency_acquire1", false),
+        }, 250, "achievement.currency_acquire_i", false),
 
-        ACQUIRE_CURRENCY_2("Acquire Currency II", new String[]{
+        ACQUIRE_CURRENCY_II("Acquire Currency II", new String[]{
                 "More money each day."
-        }, 500, "achievement.currency_acquire2", false),
+        }, 500, "achievement.currency_acquire_ii", false),
 
-        ACQUIRE_CURRENCY_3("Acquire Currency III", new String[]{
+        ACQUIRE_CURRENCY_III("Acquire Currency III", new String[]{
                 "A large pile of gems."
-        }, 1000, "achievement.currency_acquire3", false),
+        }, 1000, "achievement.currency_acquire_iii", false),
 
-        ACQUIRE_CURRENCY_4("Acquire Currency IV", new String[]{
+        ACQUIRE_CURRENCY_IV("Acquire Currency IV", new String[]{
                 "Gem hoarder..."
-        }, 1500, "achievement.currency_acquire4", false),
+        }, 1500, "achievement.currency_acquire_iv", false),
 
-        ACQUIRE_CURRENCY_5("Acquire Currency V", new String[]{
+        ACQUIRE_CURRENCY_V("Acquire Currency V", new String[]{
                 "Wow, that's a lot of gems"
-        }, 2500, "achievement.currency_acquire5", false),
+        }, 2500, "achievement.currency_acquire_v", false),
 
-        ACQUIRE_CURRENCY_6("Acquire Currency VI", new String[]{
+        ACQUIRE_CURRENCY_VI("Acquire Currency VI", new String[]{
                 "I'm not sure you need all of these."
-        }, 5000, "achievement.currency_acquire6", false),
+        }, 5000, "achievement.currency_acquire_vi", false),
 
-        ACQUIRE_CURRENCY_7("Acquire Currency VII", new String[]{
+        ACQUIRE_CURRENCY_VII("Acquire Currency VII", new String[]{
                 "You should start your own bank."
-        }, 7500, "achievement.currency_acquire7", false),
+        }, 7500, "achievement.currency_acquire_vii", false),
 
-        ACQUIRE_CURRENCY_8("Acquire Currency VIII", new String[]{
+        ACQUIRE_CURRENCY_VIII("Acquire Currency VIII", new String[]{
                 "You're now one of the elites in Andalucia"
-        }, 10000, "achievement.currency_acquire8", false),
+        }, 10000, "achievement.currency_acquire_vii", false),
 
         OLD_TIMER("Old Timer", new String[]{
                 "You helped shape Dungeon Realms during the Beta."
@@ -416,9 +416,9 @@ public class Achievements {
                 "Create your own shop."
         }, 250, "achievement.currency_shop_created", false),
 
-        SHOP_UPGRADE_1("Shop Upgrade I", new String[]{
+        SHOP_UPGRADE_I("Shop Upgrade I", new String[]{
                 "Upgrade your shop."
-        }, 250, "achievement.currency_shop_upgrade1", false),
+        }, 250, "achievement.currency_shop_upgrade_i", false),
 
         SHOP_MERCHANT("Merchant", new String[]{
                 "Sell an item from your shop."

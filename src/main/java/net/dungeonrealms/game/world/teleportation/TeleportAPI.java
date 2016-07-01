@@ -305,15 +305,15 @@ public class TeleportAPI {
             case "cyrennica":
                 return true;
             case "harrison_field":
-                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.VILLAGE_SAFE);
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.HARRISONS_FIELD);
             case "dark_oak":
-                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.DARK_OAK_WILD2);
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.DARKOAK);
             case "trollsbane":
-                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFRONT_OF_TAVERN);
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.JAGGED_ROCKS);
             case "tripoli":
-                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.SAVANNAH_SAFEZONE);
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.TRIPOLI);
             case "gloomy_hollows":
-                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.SWAMP1);
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.GLOOMY_HOLLOWS);
             case "crestguard":
                 return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREST_GUARD);
             case "deadpeaks":

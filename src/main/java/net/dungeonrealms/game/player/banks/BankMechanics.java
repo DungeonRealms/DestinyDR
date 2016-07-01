@@ -374,21 +374,21 @@ public class BankMechanics implements GenericMechanic {
 
     public void checkBankAchievements(UUID uuid, int bankGemAmount) {
         if (bankGemAmount >= 100) {
-            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_1);
+            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_I);
             if (bankGemAmount >= 1000) {
-                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_2);
+                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_II);
                 if (bankGemAmount >= 5000) {
-                    Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_3);
+                    Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_III);
                     if (bankGemAmount >= 10000) {
-                        Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_4);
+                        Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_IV);
                         if (bankGemAmount >= 50000) {
-                            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_5);
+                            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_V);
                             if (bankGemAmount >= 100000) {
-                                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_6);
+                                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_VI);
                                 if (bankGemAmount >= 500000) {
-                                    Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_7);
+                                    Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_VII);
                                     if (bankGemAmount >= 1000000) {
-                                        Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_8);
+                                        Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_VIII);
                                     }
                                 }
                             }

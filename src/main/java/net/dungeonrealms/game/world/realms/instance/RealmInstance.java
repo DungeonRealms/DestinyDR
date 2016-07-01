@@ -403,13 +403,13 @@ public class RealmInstance implements Realms {
 
         // HANDLE ACHIEVEMENTS
         if (nextTier >= 2) {
-            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_1);
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_I);
             if (nextTier >= 4) {
-                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_2);
+                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_II);
                 if (nextTier >= 6) {
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_3);
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_III);
                     if (nextTier == 7)
-                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_4);
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.REALM_EXPANSION_IV);
                 }
             }
         }
