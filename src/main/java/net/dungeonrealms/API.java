@@ -834,8 +834,6 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
         }
 
         GamePlayer gp = new GamePlayer(player);
