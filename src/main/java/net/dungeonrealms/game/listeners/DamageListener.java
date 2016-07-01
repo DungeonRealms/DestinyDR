@@ -74,7 +74,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+<<<<<<< HEAD
 import org.bukkit.projectiles.ProjectileSource;
+=======
+import org.bukkit.util.Vector;
+>>>>>>> origin/master
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,13 +189,17 @@ public class DamageListener implements Listener {
         if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
+
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+
         if (event.getEntity() instanceof LivingEntity) {
             if (!(event.getEntity() instanceof Player)) {
                 if (!event.getEntity().hasMetadata("type")) return;
             }
         }
+
         Entity damager = event.getDamager();
         LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
                 : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
@@ -230,6 +238,7 @@ public class DamageListener implements Listener {
                 }
             }
         }
+
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (API.isPlayer(event.getDamager())) {
@@ -277,10 +286,15 @@ public class DamageListener implements Listener {
                 return;
             }
 
-            if (Cooldown.hasCooldown(attacker.getUniqueId()))
+            if (Cooldown.hasCooldown(attacker.getUniqueId())) {
+                event.setCancelled(true);
+                event.setDamage(0);
                 return;
+            }
 
-            Cooldown.addCooldown(attacker.getUniqueId(), 1000L);
+
+            Cooldown.addCooldown(attacker.getUniqueId(), 350L);
+            event.getEntity().setVelocity(event.getEntity().getVelocity().divide(new Vector(2, 2, 2)));
 
 //            if (attacker.hasMetadata("last_Attack")) {
 //                if (System.currentTimeMillis() - attacker.getMetadata("last_Attack").get(0).asLong() < 70) {
@@ -653,7 +667,9 @@ public class DamageListener implements Listener {
                         } else if (!API.isNonPvPRegion(entity.getLocation())) {
                             if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), entity.getUniqueId())) {
                                 if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                                    attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+                                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
+                                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+                                    }
                                     continue;
                                 }
                                 if (Affair.getInstance().areInSameParty((Player) attacker, (Player) entity)) {
@@ -687,7 +703,13 @@ public class DamageListener implements Listener {
             if (attacker instanceof Player && defender instanceof Player) {
                 if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
                     if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
+<<<<<<< HEAD
                         attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+=======
+                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
+                            attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+                        }
+>>>>>>> origin/master
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
@@ -730,7 +752,13 @@ public class DamageListener implements Listener {
             if (attacker instanceof Player && defender instanceof Player) {
                 if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
                     if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
+<<<<<<< HEAD
                         attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+=======
+                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
+                            attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+                        }
+>>>>>>> origin/master
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
