@@ -37,6 +37,10 @@ public class RealmToken {
     @Setter
     private boolean isLoaded = false;
 
+    @Setter
+    @Getter
+    private boolean settingSpawn = false;
+
     @Getter
     @Setter
     private double upgradeProgress;

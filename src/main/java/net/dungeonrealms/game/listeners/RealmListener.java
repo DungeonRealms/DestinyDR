@@ -129,7 +129,10 @@ public class RealmListener implements Listener {
     @EventHandler
     public void onBlock(BlockPhysicsEvent event) {
         if (event.getBlock().getWorld().equals(Bukkit.getWorlds().get(0))) return;
-        if (event.getBlock().getType().equals(Material.PORTAL))
+
+        RealmToken realm = REALMS.getRealm(event.getBlock().getLocation().getWorld());
+
+        if (realm != null && !realm.isSettingSpawn() && event.getBlock().getType().equals(Material.PORTAL))
             event.setCancelled(true);
     }
 
