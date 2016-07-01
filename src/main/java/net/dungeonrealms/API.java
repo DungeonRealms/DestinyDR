@@ -610,8 +610,6 @@ public class API {
             }
         }
 
-        GamePlayer gp = new GamePlayer(player);
-
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.
 
@@ -643,9 +641,6 @@ public class API {
         }
         player.getEquipment().setArmorContents(armorContents);
         player.getEquipment().setItemInOffHand(offHand);
-
-        // calculate attributes
-        API.calculateAllAttributes(player);
 
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
@@ -734,14 +729,6 @@ public class API {
                     ChatColor.GRAY + "Report all bugs at: " + ChatColor.BOLD + ChatColor.UNDERLINE + "http://bug.dungeonrealms.net/"
             });
         }
-        if (Rank.isGM(player)) {
-            HealthHandler.getInstance().setPlayerHPLive(player, 10000);
-            gp.setInvulnerable(true);
-            player.sendMessage(new String[]{
-                    "",
-                    ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",
-            });
-        }
 
         player.sendMessage("");
 
@@ -811,26 +798,14 @@ public class API {
         }
 
         //
-        if (gp.getPlayer() != null) {
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                if (gp.getStats().freePoints > 0) {
-                    final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
-                            "To allocate click ", ChatColor.WHITE);
-                    normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
-                    normal.addText(ChatColor.GREEN + "*");
-                    normal.sendToPlayer(gp.getPlayer());
-                }
-            }, 100);
-        }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), false);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
         Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-        instance.setBaseValue(2.0D);
+        instance.setBaseValue(4.0D);
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
         // Permissions
         if (!player.isOp() && !Rank.isDev(player)) {
@@ -858,6 +833,34 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.info", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
         }
+
+        GamePlayer gp = new GamePlayer(player);
+
+        // calculate attributes
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> API.calculateAllAttributes(player),5L);
+
+        if (gp.getPlayer() != null) {
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                if (gp.getStats().freePoints > 0) {
+                    final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
+                            "To allocate click ", ChatColor.WHITE);
+                    normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
+                    normal.addText(ChatColor.GREEN + "*");
+                    normal.sendToPlayer(gp.getPlayer());
+                }
+            }, 100);
+        }
+
+        if (Rank.isGM(player)) {
+            HealthHandler.getInstance().setPlayerHPLive(player, 10000);
+            gp.setInvulnerable(true);
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",
+            });
+        }
+
+        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
     }
 
     static void backupDatabase() {
