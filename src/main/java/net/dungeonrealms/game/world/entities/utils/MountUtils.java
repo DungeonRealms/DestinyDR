@@ -15,6 +15,7 @@ import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
@@ -72,6 +73,10 @@ public class MountUtils {
 
     public static void spawnMount(UUID uuid, String mountType, String mountSkin) {
         Player player = Bukkit.getPlayer(uuid);
+        if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            player.sendMessage(ChatColor.RED + "Your mount cannot be summoned in this world.");
+            return;
+        }
         World world = ((CraftWorld) player.getWorld()).getHandle();
         if (!API.isStringMount(mountType)) {
             player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [MountType]");
