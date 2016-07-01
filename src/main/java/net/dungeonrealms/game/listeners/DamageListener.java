@@ -801,16 +801,30 @@ public class DamageListener implements Listener {
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             event.setDamage(0);
         } else if (armourReducedDamage == -3) {
-            if (API.isPlayer(attacker)) {
-                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT REFLECT* ("
-                        + defenderName + org.bukkit.ChatColor.RED + ")");
-                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, event.getDamage(), 0, 0);
-            } else {
-                HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage());
-            }
-            if (API.isPlayer(defender)) {
-                defender.sendMessage(org.bukkit.ChatColor.GOLD + "" + org.bukkit.ChatColor.BOLD + "              " +
-                        "          *REFLECT* (" + attackerName + org.bukkit.ChatColor.GOLD + ")");
+            //todo: debug reflect
+//            if (API.isPlayer(attacker)) {
+//                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT REFLECT* ("
+//                        + defenderName + org.bukkit.ChatColor.RED + ")");
+//                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, event.getDamage(), 0, 0);
+//            } else {
+//                if (attacker instanceof Projectile) {
+//                    ProjectileSource shooter = ((Projectile) attacker).getShooter();
+//                    if (!(shooter instanceof LivingEntity)) return;
+//                    LivingEntity leShooter = (LivingEntity) shooter;
+//                    if (API.isPlayer(leShooter)) {
+//                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player)leShooter, defender, event.getDamage(), 0, 0);
+//                    }
+//                    else {
+//                        HealthHandler.getInstance().handleMonsterBeingDamaged(leShooter, defender, event.getDamage());
+//                    }
+//                }
+//                else {
+//                    HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage());
+//                }
+//            }
+//            if (API.isPlayer(defender)) {
+//                defender.sendMessage(org.bukkit.ChatColor.GOLD + "" + org.bukkit.ChatColor.BOLD + "              " +
+//                        "          *REFLECT* (" + attackerName + org.bukkit.ChatColor.GOLD + ")");
             }
             defender.getWorld().playSound(defender.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
         } else {
