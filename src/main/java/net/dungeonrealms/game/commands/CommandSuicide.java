@@ -35,7 +35,10 @@ public class CommandSuicide extends BasicCommand {
 			if (event.getMessage().equalsIgnoreCase("y")) {
 				HealthHandler.getInstance().handlePlayerDeath(p, null);
 			}
-		}, player -> player.sendMessage(ChatColor.YELLOW + "suicide - " + ChatColor.BOLD + "CANCELLED"));
+			else {
+				p.sendMessage(ChatColor.YELLOW + "Suicide - " + ChatColor.BOLD + "CANCELLED");
+			}
+		}, null);
 		return true;
 	}
 	
