@@ -159,6 +159,17 @@ public class DamageAPI {
                 damage += attackerAttributes.get("poisonDamage")[1];
             }
         }
+        else if (API.isMobElemental(attacker)) {
+            if (API.getMobElement(attacker).equals("fire")) {
+                applyFireDebuff(receiver, weaponTier);
+            }
+            else if (API.getMobElement(attacker).equals("ice")) {
+                applyIceDebuff(receiver, weaponTier);
+            }
+            else if (API.getMobElement(attacker).equals("poison")) {
+                applyPoisonDebuff(receiver, weaponTier);
+            }
+        }
 
         if (new Random().nextInt(100) < critHit) {
             try {
@@ -394,6 +405,17 @@ public class DamageAPI {
             else if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
                 applyPoisonDebuff(receiver, weaponTier);
                 damage += projectile.getMetadata("poisonDamage").get(0).asInt();
+            }
+        }
+        else if (API.isMobElemental(attacker)) {
+            if (API.getMobElement(attacker).equals("fire")) {
+                applyFireDebuff(receiver, weaponTier);
+            }
+            else if (API.getMobElement(attacker).equals("ice")) {
+                applyIceDebuff(receiver, weaponTier);
+            }
+            else if (API.getMobElement(attacker).equals("poison")) {
+                applyPoisonDebuff(receiver, weaponTier);
             }
         }
 
@@ -642,34 +664,59 @@ public class DamageAPI {
         }
 
         // ELEMENTAL DAMAGE
-        int pureDamage = attackerAttributes.get("pureDamage")[1];
-        int fireDamage = attackerAttributes.get("fireDamage")[1];
-        int iceDamage = attackerAttributes.get("iceDamage")[1];
-        int poisonDamage = attackerAttributes.get("poisonDamage")[1];
+        int pureDamage = API.isPlayer(attacker) ? attackerAttributes.get("pureDamage")[1] : 0;
+        int fireDamage = API.isPlayer(attacker) ? attackerAttributes.get("fireDamage")[1] : 0;
+        int iceDamage = API.isPlayer(attacker) ? attackerAttributes.get("iceDamage")[1] : 0;
+        int poisonDamage = API.isPlayer(attacker) ? attackerAttributes.get("poisonDamage")[1] : 0;
+        int elementalDamage = 0;
+        int armorFromResistance = 0;
 
         if (API.isPlayer(attacker)) {
             if (fireDamage != 0) {
                 float fireResistance = (float) defenderAttributes.get("fireResistance")[1];
+                elementalDamage = fireDamage;
                 if (fireResistance != 0) {
-                    // apparently in old dr res is just handled via adding it to armor so we'll keep that
-                    totalArmor += fireResistance;
+                    armorFromResistance += fireResistance;
                 }
             } else if (iceDamage != 0) {
                 float iceResistance = (float) defenderAttributes.get("iceResistance")[1];
+                elementalDamage = iceDamage;
                 if (iceResistance != 0) {
-                    totalArmor += iceResistance;
+                    armorFromResistance += iceResistance;
                 }
             } else if (poisonDamage != 0) {
                 float poisonResistance = (float) defenderAttributes.get("poisonResistance")[1];
+                elementalDamage = poisonDamage;
                 if (poisonResistance != 0) {
-                    totalArmor += poisonResistance;
+                    armorFromResistance += poisonResistance;
                 }
             }
         }
+        else if (API.isMobElemental(attacker)) {
+            if (API.getMobElement(attacker).equals("fire")) {
+                totalArmor *= 0.2;
+                totalArmor += defenderAttributes.get("fireResistance")[1];
+            }
+            else if (API.getMobElement(attacker).equals("ice")) {
+                totalArmor *= 0.2;
+                totalArmor += defenderAttributes.get("iceResistance")[1];
+            }
+            else if (API.getMobElement(attacker).equals("poison")) {
+                totalArmor *= 0.2;
+                totalArmor += defenderAttributes.get("poisonResistance")[1];
+            }
+            else if (API.getMobElement(attacker).equals("pure")) {
+                totalArmor *= 0;
+            }
+        }
 
-        // ignore all pure damage; ignore 80% of elemental damage
-        damageAfterArmor = (damageAfterArmor - pureDamage - ((0.8) * (fireDamage + iceDamage + poisonDamage))) * ((
-                (float) (100 - totalArmor)) / 100.);
+        damageAfterArmor = (damageAfterArmor - pureDamage - elementalDamage) * ((double) (100 - totalArmor)) / 100d;
+        // pure damage ignores all armor
+        damageAfterArmor += pureDamage;
+        // elemental damage ignores 80% but add on resistance
+        if (elementalDamage != 0) {
+            damageAfterArmor += ((0.8) * elementalDamage) * ((double) (100 - armorFromResistance)) / 100d;
+        }
         totalArmorReduction = totalDamage - damageAfterArmor;
 
         // POTION EFFECTS

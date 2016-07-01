@@ -328,18 +328,25 @@ public class API {
     public static void setMobElement(net.minecraft.server.v1_9_R2.Entity ent, String element) {
         ent.getBukkitEntity().setMetadata("element", new FixedMetadataValue(DungeonRealms.getInstance(), element));
         String name = ent.getCustomName();
+        String[] splitName = name.split(" ", 2);
         switch (element) {
             case "pure":
+                name = ChatColor.GOLD + "Holy " + name;
                 break;
             case "fire":
+                name = ChatColor.RED + (splitName.length == 1 ? "Fire " + splitName[0] : splitName[0] + " Fire " + splitName[1]);
                 break;
             case "ice":
+                name = ChatColor.BLUE + (splitName.length == 1 ? "Ice " + splitName[0] : splitName[0] + " Ice " + splitName[1]);
                 break;
             case "poison":
+                name = ChatColor.DARK_GREEN + (splitName.length == 1 ? "Poison " + splitName[0] : splitName[0] + " Poison " + splitName[1]);
                 break;
             default:
                 break;
         }
+        ent.setCustomName(name.trim());
+        ent.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), name.trim()));
         if (API.isWeapon(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand())) {
             EnchantmentAPI.addGlow(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand());
         }
