@@ -18,11 +18,8 @@ public class BuildDeployApplication {
                 case "-updateBungee":
                     executeCommand("cd " + TOOL_PATH + " && pushBungee.bat");
                     break;
-                case "-updateLiveServer1":
-                    executeCommand("cd " + TOOL_PATH + " && pushLive1.bat " + args[1].substring(1));
-                    break;
-                case "-updateDevServer":
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat " + args[1].substring(1));
+                case "-updateServer":
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat " + args[1].substring(1) + " " + args[2].substring(1));
                     break;
 //                case "-updateDevServer2":
 //                    executeCommand("cd " + TOOL_PATH + " && pushDev2.bat " + args[1].substring(1));
@@ -52,12 +49,9 @@ public class BuildDeployApplication {
 //                    break;
                 case "-updateAll":
                     executeCommand("cd " + TOOL_PATH + " && pushBungee.bat");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us0");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat sub1");
-                    //executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us3");
-                    //executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us4");
-//                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat yt1");
-//                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat sub1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us0 158.69.122.139");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us1 131.153.25.2");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us2 131.153.25.218");
                     break;
             }
         } else {

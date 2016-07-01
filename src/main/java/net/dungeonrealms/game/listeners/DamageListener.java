@@ -17,6 +17,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
+import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -274,14 +275,21 @@ public class DamageListener implements Listener {
                 }
                 return;
             }
-            if (attacker.hasMetadata("last_Attack")) {
-                if (System.currentTimeMillis() - attacker.getMetadata("last_Attack").get(0).asLong() < 70) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
-            attacker.setMetadata("last_Attack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+
+            if (Cooldown.hasCooldown(attacker.getUniqueId()))
+                return;
+
+            Cooldown.addCooldown(attacker.getUniqueId(), 1000L);
+
+//            if (attacker.hasMetadata("last_Attack")) {
+//                if (System.currentTimeMillis() - attacker.getMetadata("last_Attack").get(0).asLong() < 70) {
+//                    event.setCancelled(true);
+//                    event.setDamage(0);
+//                    return;
+//                }
+//            }
+//            attacker.setMetadata("last_Attack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+
             if (CombatLog.isInCombat(attacker)) {
                 CombatLog.updateCombat(attacker);
             } else {

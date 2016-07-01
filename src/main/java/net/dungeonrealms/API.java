@@ -129,6 +129,7 @@ public class API {
         }
         return -1;
     }
+
     public static ItemTier getItemTier(ItemStack stack) {
         if (stack.getType() == Material.AIR || stack == null)
             return null;
