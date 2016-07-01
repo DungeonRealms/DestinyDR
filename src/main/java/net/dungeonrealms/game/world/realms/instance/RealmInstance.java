@@ -740,14 +740,20 @@ public class RealmInstance implements Realms {
     public void setRealmSpawn(UUID uuid, Location newLocation) {
         if (!isRealmLoaded(uuid)) return;
 
+        RealmToken realm = getRealm(uuid);
+
+        realm.setSettingSpawn(true);
+
         newLocation.getBlock().setType(Material.PORTAL);
         newLocation.clone().subtract(0, 1, 0).getBlock().setType(Material.PORTAL);
 
         Location oldLocation = getRealmWorld(uuid).getSpawnLocation();
-        oldLocation.getBlock().setType(Material.AIR);
+        oldLocation.clone().add(0, 1, 0).getBlock().setType(Material.AIR);
         oldLocation.clone().subtract(0, 1, 0).getBlock().setType(Material.AIR);
 
         getRealmWorld(uuid).setSpawnLocation(newLocation.getBlockX(), newLocation.getBlockY(), newLocation.getBlockZ());
+
+        realm.setSettingSpawn(false);
     }
 
     @Override
