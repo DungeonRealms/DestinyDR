@@ -737,27 +737,27 @@ public class DamageListener implements Listener {
             event.setDamage(0);
             return;
         }
+        String defenderName;
+        if (defender instanceof Player) {
+            defenderName = defender.getName();
+        } else if (defender.hasMetadata("customname")) {
+            defenderName = defender.getMetadata("customname").get(0).asString().trim();
+        } else {
+            defenderName = "Enemy";
+        }
+        String attackerName;
+        if (attacker instanceof Player) {
+            attackerName = attacker.getName();
+        } else if (attacker.hasMetadata("customname")) {
+            attackerName = attacker.getMetadata("customname").get(0).asString().trim();
+        } else {
+            attackerName = "Enemy";
+        }
         if (armourReducedDamage == -1) {
             if (attacker instanceof Player) {
-                String defenderName;
-                if (defender instanceof Player) {
-                    defenderName = defender.getName();
-                } else if (defender.hasMetadata("customname")) {
-                    defenderName = defender.getMetadata("customname").get(0).asString().trim();
-                } else {
-                    defenderName = "Enemy";
-                }
                 attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
             }
             if (defender instanceof Player) {
-                String attackerName;
-                if (attacker instanceof Player) {
-                    attackerName = attacker.getName();
-                } else if (attacker.hasMetadata("customname")) {
-                    attackerName = attacker.getMetadata("customname").get(0).asString().trim();
-                } else {
-                    attackerName = "Enemy";
-                }
                 defender.sendMessage(org.bukkit.ChatColor.GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *DODGE* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.GREEN + ")");
             }
             //The defender dodged the attack
@@ -765,25 +765,9 @@ public class DamageListener implements Listener {
             event.setDamage(0);
         } else if (armourReducedDamage == -2) {
             if (attacker instanceof Player) {
-                String defenderName;
-                if (defender instanceof Player) {
-                    defenderName = defender.getName();
-                } else if (defender.hasMetadata("customname")) {
-                    defenderName = defender.getMetadata("customname").get(0).asString().trim();
-                } else {
-                    defenderName = "Enemy";
-                }
                 attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
             }
             if (defender instanceof Player) {
-                String attackerName;
-                if (attacker instanceof Player) {
-                    attackerName = attacker.getName();
-                } else if (attacker.hasMetadata("customname")) {
-                    attackerName = attacker.getMetadata("customname").get(0).asString().trim();
-                } else {
-                    attackerName = "Enemy";
-                }
                 defender.sendMessage(org.bukkit.ChatColor.DARK_GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *BLOCK* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.DARK_GREEN + ")");
             }
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
@@ -793,15 +777,16 @@ public class DamageListener implements Listener {
                     event.getDamager() instanceof Projectile ? (Projectile) event.getDamager() : null);
             if (API.isPlayer(attacker)) {
                 attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT REFLECT* ("
-                        + defender.getCustomName() + org.bukkit.ChatColor.RED + ")");
+                        + defenderName + org.bukkit.ChatColor.RED + ")");
                 HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, event.getDamage() - reflectResult[0], reflectResult[0], reflectResult[1]);
             } else {
                 HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage() - reflectResult[0]);
             }
             if (API.isPlayer(defender)) {
                 defender.sendMessage(org.bukkit.ChatColor.GOLD + "" + org.bukkit.ChatColor.BOLD + "              " +
-                        "          *REFLECT* (" + attacker.getCustomName() + org.bukkit.ChatColor.GOLD + ")");
+                        "          *REFLECT* (" + attackerName + org.bukkit.ChatColor.GOLD + ")");
             }
+            defender.getWorld().playSound(defender.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
         } else {
             if (API.isPlayer(defender)) {
                 if (((Player) defender).isBlocking() && ((Player) defender).getEquipment().getItemInMainHand() != null && ((Player) defender).getEquipment().getItemInMainHand().getType() != Material.AIR) {
