@@ -200,11 +200,11 @@ public class DamageListener implements Listener {
             ((Player) leDamageSource).playSound(leDamageSource.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
 
         if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
-            if (!DuelingMechanics.isDueling(damager.getUniqueId())) {
-                if (API.isInSafeRegion(damager.getLocation())) {
+            if (!DuelingMechanics.isDueling(leDamageSource.getUniqueId())) {
+                if (API.isInSafeRegion(event.getEntity().getLocation())) {
                     event.setCancelled(true);
                     event.setDamage(0);
-                    ((Player) damager).updateInventory();
+                    ((Player) leDamageSource).updateInventory();
                     return;
                 } else if (ProtectionHandler.getInstance().hasNewbieProtection((Player) event.getEntity())) {
                     leDamageSource.sendMessage(ChatColor.RED + "The player you are attempting to attack has " +
@@ -255,8 +255,6 @@ public class DamageListener implements Listener {
             }
 
             Player attacker = (Player) event.getDamager();
-            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-            if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) return;
 
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker) <= 0) {
                 event.setCancelled(true);
@@ -283,6 +281,9 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getEquipment().getItemInMainHand()));
+
+            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
+            if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) return;
 
             ItemType weaponType = new Attribute(attacker.getInventory().getItemInMainHand()).getItemType();
             Item.ItemTier tier = new Attribute(attacker.getInventory().getItemInMainHand()).getItemTier();
@@ -574,11 +575,11 @@ public class DamageListener implements Listener {
                 }
             }
         }
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+        if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
             if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, event.getDamager().getUniqueId()).toString())) {
+                if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, event.getDamager().getUniqueId()).toString())) {
                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
-                        event.getDamager().sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+                        event.getDamager().sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                     }
                     event.setCancelled(true);
                     event.setDamage(0);
@@ -622,10 +623,8 @@ public class DamageListener implements Listener {
                             HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                         } else if (!API.isNonPvPRegion(entity.getLocation())) {
                             if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
-                                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
-                                    }
+                                if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
+                                    attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                                     continue;
                                 }
                                 if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
@@ -659,9 +658,7 @@ public class DamageListener implements Listener {
             if (attacker instanceof Player && defender instanceof Player) {
                 if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                            attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
-                        }
+                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
@@ -704,9 +701,7 @@ public class DamageListener implements Listener {
             if (attacker instanceof Player && defender instanceof Player) {
                 if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                            attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
-                        }
+                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
@@ -792,6 +787,20 @@ public class DamageListener implements Listener {
             }
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             event.setDamage(0);
+        } else if (armourReducedDamage == -3) {
+            double[] reflectResult = DamageAPI.calculateArmorReduction(defender, attacker, event.getDamage(),
+                    event.getDamager() instanceof Projectile ? (Projectile) event.getDamager() : null);
+            if (API.isPlayer(attacker)) {
+                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT REFLECT* ("
+                        + defender.getCustomName() + org.bukkit.ChatColor.RED + ")");
+                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, event.getDamage() - reflectResult[0], reflectResult[0], reflectResult[1]);
+            } else {
+                HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage() - reflectResult[0]);
+            }
+            if (API.isPlayer(defender)) {
+                defender.sendMessage(org.bukkit.ChatColor.GOLD + "" + org.bukkit.ChatColor.BOLD + "              " +
+                        "          *REFLECT* (" + attacker.getCustomName() + org.bukkit.ChatColor.GOLD + ")");
+            }
         } else {
             if (API.isPlayer(defender)) {
                 if (((Player) defender).isBlocking() && ((Player) defender).getEquipment().getItemInMainHand() != null && ((Player) defender).getEquipment().getItemInMainHand().getType() != Material.AIR) {
@@ -1048,7 +1057,13 @@ public class DamageListener implements Listener {
             HealthHandler.getInstance().setPlayerMaxHPLive(player, 50);
             HealthHandler.getInstance().setPlayerHPLive(player, 50);
             PlayerManager.checkInventory(player.getUniqueId());
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString("subtype", "starter").build());
+            GamePlayer gp = API.getGamePlayer(player);
+            if (gp != null) {
+                gp.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
+                gp.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
+            }
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
+                    ("subtype", "starter").addLore(org.bukkit.ChatColor.GRAY + "Untradeable").build());
             if (finalSavedArmorContents) {
 
 //            	for(ItemStack itemStack : savedItems){
@@ -1062,7 +1077,7 @@ public class DamageListener implements Listener {
 
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
-                        if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
+                        if (RepairAPI.getCustomDurability(itemStack) - 400 > 1D) {
                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
                             player.getInventory().addItem(itemStack);
                         } else {

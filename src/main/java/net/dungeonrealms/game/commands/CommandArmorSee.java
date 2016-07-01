@@ -5,9 +5,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -15,8 +13,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Set;
 
 public class CommandArmorSee extends BasicCommand {
 
@@ -61,7 +57,10 @@ public class CommandArmorSee extends BasicCommand {
 			LivingEntity ent = null;
 			for (Entity e : p.getNearbyEntities(20, 20, 20)) {
 				if (!(e instanceof LivingEntity)) continue;
-				if (p.hasLineOfSight(e)) ent = (LivingEntity) e;
+				if (p.hasLineOfSight(e)) {
+					ent = (LivingEntity) e;
+					break;
+				}
 			}
 			if (ent == null) return true; // nothing found
 			ent_name = ent.getCustomName();

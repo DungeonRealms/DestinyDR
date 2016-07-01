@@ -2,9 +2,11 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -47,13 +49,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
  */
 public class RealmListener implements Listener {
+
+    private Realms REALMS = Realms.getInstance();
 
     @EventHandler
     public void onWorld(PlayerChangedWorldEvent event) {
@@ -72,9 +78,8 @@ public class RealmListener implements Listener {
 
         World to = player.getWorld();
 
-        if (Realms.getInstance().getRealm(to) != null) {
-            RealmToken realm = Realms.getInstance().getRealm(to);
-            realm.getPlayersInRealm().add(player.getUniqueId());
+        if (REALMS.getRealm(to) != null) {
+            RealmToken realm = REALMS.getRealm(to);
 
             if (!player.getUniqueId().equals(realm.getOwner())) {
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + realm.getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
@@ -91,8 +96,8 @@ public class RealmListener implements Listener {
                 player.setAllowFlight(true);
             }
 
-            if (!Realms.getInstance().getRealmTitle(realm.getOwner()).equals(""))
-                player.sendMessage(ChatColor.GRAY + Realms.getInstance().getRealmTitle(realm.getOwner()));
+            if (!REALMS.getRealmTitle(realm.getOwner()).equals(""))
+                player.sendMessage(ChatColor.GRAY + REALMS.getRealmTitle(realm.getOwner()));
 
             player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "INVINCIBILITY (15s)");
             player.sendMessage(ChatColor.GRAY + "You will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GRAY.toString()
@@ -108,11 +113,10 @@ public class RealmListener implements Listener {
                     API.getGamePlayer(player).setInvulnerable(false);
             }, 15 * 20L);
 
-        } else if (Realms.getInstance().getRealm(event.getFrom()) != null) {
-            RealmToken realm = Realms.getInstance().getRealm(event.getFrom());
+        } else if (REALMS.getRealm(event.getFrom()) != null) {
+            RealmToken realm = REALMS.getRealm(event.getFrom());
 
             player.setAllowFlight(false);
-            Realms.getInstance().getRealm(event.getFrom()).getPlayersInRealm().remove(player.getUniqueId());
 
             if (player.getUniqueId().equals(realm.getOwner()))
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have left " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
@@ -130,11 +134,80 @@ public class RealmListener implements Listener {
     }
 
     @EventHandler
-    public void handlePortalEffects(UpdateEvent e) {
+    public void RealmBlockProcessor(UpdateEvent e) {
+        if (!e.getType().equals(UpdateType.SLOW)) return;
+
+        for (Map.Entry<UUID, List<Location>> entry : REALMS.getProcessingBlocks().entrySet()) {
+            String w_name = entry.getKey().toString();
+            try {
+                World w = Bukkit.getWorld(w_name);
+                int limy = (128 - REALMS.getRealmDimensions(REALMS.getRealmTier(entry.getKey())));
+                CopyOnWriteArrayList<Location> loc_list = new CopyOnWriteArrayList<>(entry.getValue());
+                RealmToken realm = REALMS.getRealm(entry.getKey());
+                int x = 0;
+
+                for (Location loc : loc_list) {
+                    if (x >= 512) {
+                        break;
+                    }
+                    if (loc.getBlock().getY() > 127) {
+                        if (loc.getBlock().getType() == Material.AIR) {
+                            loc.getBlock().setType(Material.GRASS);
+                        }
+                    } else if (loc.getBlock().getY() <= limy + 1) {
+                        if (loc.getBlock().getType() == Material.AIR) {
+                            loc.getBlock().setType(Material.BEDROCK);
+                        }
+
+                    } else {
+                        if (loc.getBlock().getType() == Material.AIR) {
+                            loc.getBlock().setType(Material.DIRT);
+                        }
+                    }
+
+                    loc_list.remove(loc);
+                    x++;
+                }
+
+                if (loc_list.isEmpty()) {
+                    Player p = Bukkit.getPlayer(entry.getKey());
+
+                    if (p != null) {
+                        p.sendMessage("");
+                        Utils.sendCenteredMessage(p, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "REALM UPGRADE COMPLETE.");
+                        p.sendMessage("");
+
+                        p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                        realm.setStatus(RealmStatus.CLOSED);
+
+                    } else REALMS.removeRealm(entry.getKey(), true);
+
+                    DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true);
+                    API.updatePlayerData(entry.getKey());
+
+                    REALMS.getProcessingBlocks().remove(entry.getKey());
+                    realm.setUpgradeProgress(0);
+                } else {
+                    int total_area = REALMS.getRealmDimensions(REALMS.getRealmTier(UUID.fromString(w.getName())) + 1);
+                    total_area = total_area * total_area * total_area;
+                    int complete_area = total_area - loc_list.size();
+
+                    double percent = (((double) complete_area / (double) total_area) * 100.0D);
+                    realm.setUpgradeProgress(percent);
+                    REALMS.getProcessingBlocks().put(entry.getKey(), loc_list);
+                }
+
+            } catch (NullPointerException ignored) {
+                REALMS.getProcessingBlocks().remove(entry.getKey());
+            }
+        }
+    }
+
+    @EventHandler
+    public void updateRealmEvent(UpdateEvent e) {
         if (!e.getType().equals(UpdateType.SEC)) return;
 
-
-        for (RealmToken realm : Realms.getInstance().getCachedRealms().values()) {
+        for (RealmToken realm : REALMS.getCachedRealms().values()) {
             if (!realm.getPropertyBoolean("peaceful") && realm.getPropertyBoolean("flight")) {
                 RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
                 property.setExpiry(System.currentTimeMillis() - 1000L);
@@ -146,10 +219,10 @@ public class RealmListener implements Listener {
                 switch (p.getName()) {
                     case "peaceful":
                         Player owner = Bukkit.getPlayer(realm.getOwner());
-                        World world = Realms.getInstance().getRealmWorld(realm.getOwner());
+                        World world = REALMS.getRealmWorld(realm.getOwner());
 
                         // SET WORLD GUARD FLAG
-                        Realms.getInstance().setRealmRegion(world, true);
+                        REALMS.setRealmRegion(world, true);
 
                         if (owner != null)
                             owner.sendMessage(ChatColor.RED + "Your realm is now once again a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " zone.");
@@ -169,18 +242,11 @@ public class RealmListener implements Listener {
                         if (Bukkit.getPlayer(realm.getOwner()) != null)
                             Bukkit.getPlayer(realm.getOwner()).sendMessage(ChatColor.RED + "Your " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED + " effect has expired.");
 
-                        for (UUID u : realm.getPlayersInRealm()) {
-                            Player pl = Bukkit.getPlayer(u);
-
-                            if (pl == null)
-                                continue;
-
-                            pl.setAllowFlight(false);
-                        }
+                        for (Player pl : realm.getWorld().getPlayers()) pl.setAllowFlight(false);
                         break;
                 }
 
-                Realms.getInstance().updateRealmHologram(realm.getOwner());
+                REALMS.updateRealmHologram(realm.getOwner());
                 p.setAcknowledgeExpiration(false);
             }
 
@@ -188,23 +254,23 @@ public class RealmListener implements Listener {
 
             Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
 
-            if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())))
+            if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
                 createDoubleHelix(loc);
+            else if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
+                DonationEffects.getInstance().spawnPlayerParticleEffects(loc);
 
-            if (realm.getPropertyBoolean("peaceful")) {
+            //loc.subtract(.5D, 2D, .5D);
+            if (realm.getPropertyBoolean("peaceful"))
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
-                //loc.subtract(.5D, 2D, .5D);
-            }
 
-            if (realm.getPropertyBoolean("flight")) {
+            //loc.subtract(.5D, 1.5D, .5D);
+            if (realm.getPropertyBoolean("flight"))
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
-                //loc.subtract(.5D, 1.5D, .5D);
-            }
         }
     }
 
     private void createDoubleHelix(Location loc) {
-        double radius = 1;
+        double radius;
 
         for (double y = 0; y < 2; y += 0.007) {
             radius = y / 3;
@@ -216,9 +282,8 @@ public class RealmListener implements Listener {
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
         }
-
 
         for (double y = 0; y < 2; y += 0.007) {
             radius = y / 3;
@@ -230,7 +295,7 @@ public class RealmListener implements Listener {
             final Location loc2 = new Location(loc.getWorld(), loc.getX() + x + 0.5, loc.getY() + y2, loc.getZ() + z + 0.5);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
+                    () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, loc2, 0, 0, 0, 0, 1), (long) ((y + 1) * 20));
         }
     }
 
@@ -261,7 +326,7 @@ public class RealmListener implements Listener {
                 p.sendMessage(ChatColor.RED + "You may only use an " + ChatColor.UNDERLINE + "Orb of Peace" + ChatColor.RED + " in your OWN realm.");
             return;
         }
-        RealmToken realm = Realms.getInstance().getRealm(p.getUniqueId());
+        RealmToken realm = REALMS.getRealm(p.getUniqueId());
 
 
         if (tag.getString("orb").equalsIgnoreCase("flight")) {
@@ -278,15 +343,11 @@ public class RealmListener implements Listener {
             p.sendMessage(ChatColor.GRAY + "Only YOU and anyone you add to your build list will be able to fly in your realm.");
             p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
 
-            for (UUID u : realm.getPlayersInRealm()) {
-
-                Player pl = Bukkit.getPlayer(u);
-
-                if (pl == null || (!realm.getBuilders().contains(u) && !realm.getOwner().equals(u))) continue;
-
-                if (!realm.getOwner().equals(u))
+            for (Player pl : realm.getWorld().getPlayers()) {
+                if (pl == null || (!realm.getBuilders().contains(pl.getUniqueId()) && !realm.getOwner().equals(pl.getUniqueId())))
+                    continue;
+                if (!realm.getOwner().equals(pl.getUniqueId()))
                     pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
-
                 pl.setAllowFlight(true);
             }
 
@@ -315,8 +376,8 @@ public class RealmListener implements Listener {
             property.setAcknowledgeExpiration(true);
 
             // SET WORLD GUARD FLAG
-            Realms.getInstance().setRealmRegion(Realms.getInstance().getRealmWorld(p.getUniqueId()), false);
-            Realms.getInstance().updateRealmHologram(p.getUniqueId());
+            REALMS.setRealmRegion(REALMS.getRealmWorld(p.getUniqueId()), false);
+            REALMS.updateRealmHologram(p.getUniqueId());
         }
 
         int amount = p.getItemInHand().getAmount();
@@ -338,12 +399,11 @@ public class RealmListener implements Listener {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         if (event.getTo().getY() <= 0) {
-            RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getLocation().getWorld());
+            RealmToken realm = REALMS.getRealm(event.getPlayer().getLocation().getWorld());
 
             if (realm == null) return;
 
             event.getPlayer().teleport(realm.getPortalLocation().clone().add(0, 1, 0));
-            realm.getPlayersInRealm().remove(event.getPlayer().getUniqueId());
         }
     }
 
@@ -353,10 +413,10 @@ public class RealmListener implements Listener {
         if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
         if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
-        RealmToken realm = Realms.getInstance().getRealm(event.getClickedBlock().getLocation());
+        RealmToken realm = REALMS.getRealm(event.getClickedBlock().getLocation());
 
-        if (realm != null && realm.getOwner().equals(event.getPlayer().getUniqueId()))
-            Realms.getInstance().closeRealmPortal(realm.getOwner(), true);
+        if (realm != null && (realm.getOwner().equals(event.getPlayer().getUniqueId()) || Rank.isGM(event.getPlayer())))
+            REALMS.closeRealmPortal(realm.getOwner(), true, "");
     }
 
     @SuppressWarnings("deprecation")
@@ -366,20 +426,31 @@ public class RealmListener implements Listener {
 
         if (p.getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
-        RealmToken realm = Realms.getInstance().getRealm(p.getLocation().getWorld());
+        RealmToken realm = REALMS.getRealm(p.getLocation().getWorld());
 
         if (realm == null) return;
 
-        if (p.getGameMode() == GameMode.CREATIVE) {
-            return;
-        }
+        if (p.getGameMode() == GameMode.CREATIVE) return;
         String world = e.getBlock().getWorld().getName();
         if (e.getBlock().getType() == Material.PORTAL) {
             e.setCancelled(true);
             return;
         }
 
-        if (!p.isOp() && (e.getBlock().getType() == Material.TRAPPED_CHEST || e.getBlock().getType() == Material.GOLD_BLOCK)) {
+        int realm_tier = REALMS.getRealmTier(realm.getOwner());
+        int max_size = REALMS.getRealmDimensions(realm_tier) + 16;
+
+        int max_y = 128;
+        Block b = e.getBlock();
+        if (!(Rank.isGM(p)))
+            if (Math.round(b.getX() - 0.5) > max_size || Math.round(b.getX() - 0.5) < 16 || Math.round(b.getZ() - 0.5) > max_size
+                    || Math.round(b.getZ() - 0.5) < 16 || (b.getY() > (max_y + (max_size) + 1)) || (b.getY() < (max_y - (max_size) - 1))) {
+                e.setCancelled(true);
+                p.updateInventory();
+                return;
+            }
+
+        if (!Rank.isGM(p) && (e.getBlock().getType() == Material.TRAPPED_CHEST || e.getBlock().getType() == Material.GOLD_BLOCK)) {
             if (e.getBlock().getType() == Material.TRAPPED_CHEST) {
                 p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " place this "
                         + e.getBlock().getType().name().toUpperCase() + " as it is an illegal item.");
@@ -408,33 +479,33 @@ public class RealmListener implements Listener {
 
         if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.NETHER_STAR)
             return;
+
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
 
+        event.setCancelled(true);
+        event.setDamage(0);
+
         if (!p.isSneaking()) return;
 
-        if (!Realms.getInstance().isRealmCached(p.getUniqueId())) {
+        if (!REALMS.isRealmCached(p.getUniqueId())) {
             p.sendMessage(ChatColor.GREEN + "You must open your realm portal to add builders.");
             return;
         }
 
-        event.setCancelled(true);
-        event.setDamage(0);
-
-        RealmToken realm = Realms.getInstance().getRealm(p.getUniqueId());
-
+        RealmToken realm = REALMS.getRealm(p.getUniqueId());
 
         if (!(FriendHandler.getInstance().areFriends(p, target.getUniqueId()))) {
             p.sendMessage(ChatColor.RED + "Cannot add a non-buddy to realm build list.");
-            p.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.BOLD + "/add " + target.getName() + ChatColor.GRAY
-                    + "' to add them to your buddy list.");
+            p.sendMessage(ChatColor.GRAY + "Goto your friends list in the character profile to add '" + ChatColor.BOLD + target.getName() + ChatColor.GRAY
+                    + "' as friend.");
             return;
         }
 
         if (!realm.getBuilders().contains(target.getUniqueId())) {
-            p.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "ADDED " + ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
+            p.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "ADDED " + ChatColor.RESET + ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
                     + ChatColor.GREEN + " to your realm builder list.");
             p.sendMessage(ChatColor.GRAY + target.getName()
                     + " can now place/destroy blocks in your realm until you logout of your current game session.");
@@ -449,7 +520,7 @@ public class RealmListener implements Listener {
             }
 
         } else {
-            p.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "REMOVED " + ChatColor.RED + "" + ChatColor.BOLD + target.getName()
+            p.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "REMOVED " + ChatColor.RESET + ChatColor.RED + "" + ChatColor.BOLD + target.getName()
                     + ChatColor.RED + " from your realm builder list.");
             p.sendMessage(ChatColor.GRAY + target.getName() + " can no longer place/destroy blocks in your realm.");
             target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REMOVED " + ChatColor.RED + "from " + p.getName() + "'s builder list.");
@@ -476,7 +547,7 @@ public class RealmListener implements Listener {
         if (p.getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
 
-        RealmToken realm = Realms.getInstance().getRealm(p.getWorld());
+        RealmToken realm = REALMS.getRealm(p.getWorld());
 
         if (realm == null) return;
 
@@ -485,12 +556,13 @@ public class RealmListener implements Listener {
             p.sendMessage(ChatColor.RED + "You aren't authorized to build in " + Bukkit.getPlayer(realm.getOwner()).getName() + "'s realm.");
             p.sendMessage(ChatColor.GRAY + Bukkit.getPlayer(realm.getOwner()).getName() + " will have to " + ChatColor.UNDERLINE + "Sneak Left Click" + ChatColor.GRAY +
                     " you with their Realm Portal Rune to add you to their builder list.");
+            e.setCancelled(true);
             return;
         }
 
         Block b = e.getClickedBlock();
-
         e.setCancelled(true);
+
         Material m = b.getType();
         if (m == Material.AIR || m == Material.PORTAL) {
             return;
@@ -690,7 +762,7 @@ public class RealmListener implements Listener {
         if (!event.getInventory().getName().equalsIgnoreCase("container.hopper") && event.getAction() == InventoryAction.PICKUP_ALL) {
             // Trying to grab all items from a chest in a realm.
             String realm_name = p.getWorld().getName();
-            if (!(realm_name.equalsIgnoreCase(p.getUniqueId().toString()) || (Realms.getInstance().getRealm(p.getLocation()).getBuilders().contains(p.getUniqueId())))) {
+            if (!(realm_name.equalsIgnoreCase(p.getUniqueId().toString()) || (REALMS.getRealm(p.getLocation()).getBuilders().contains(p.getUniqueId())))) {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
                 return;
@@ -751,24 +823,24 @@ public class RealmListener implements Listener {
             }
 
             if (!CombatLog.isInCombat(event.getPlayer())) {
-                RealmToken realm = Realms.getInstance().getRealm(event.getFrom());
+                RealmToken realm = REALMS.getRealm(event.getFrom());
 
                 if (realm == null) return;
 
-                if (!Realms.getInstance().isRealmLoaded(realm.getOwner()))
+                if (!REALMS.isRealmLoaded(realm.getOwner()))
                     return;
 
                 if (realm.getStatus() != RealmStatus.OPENED) return;
 
                 // SAVES THEIR LOCATION
                 DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, API.locationToString(event.getFrom()), true);
-                event.setTo(Realms.getInstance().getRealmWorld(realm.getOwner()).getSpawnLocation().clone().add(0, 2, 0));
+                event.setTo(REALMS.getRealmWorld(realm.getOwner()).getSpawnLocation().clone().add(0, 2, 0));
 
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in combat!");
             }
-        } else if (Realms.getInstance().getRealm(event.getPlayer().getLocation().getWorld()) != null) {
+        } else if (REALMS.getRealm(event.getPlayer().getLocation().getWorld()) != null) {
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
                 Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
@@ -780,7 +852,7 @@ public class RealmListener implements Listener {
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
 
-            RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getLocation().getWorld());
+            RealmToken realm = REALMS.getRealm(event.getPlayer().getLocation().getWorld());
             event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
         }
     }

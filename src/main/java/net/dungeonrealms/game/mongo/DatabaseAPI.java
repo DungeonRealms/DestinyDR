@@ -165,13 +165,16 @@ public class DatabaseAPI {
             /*
               REALMS
              */
-
             case REALM_TITLE:
                 return ((Document) doc.get("realm")).get("title", String.class);
             case REALM_UPLOAD:
                 return ((Document) doc.get("realm")).get("uploading", Boolean.class);
+            case REALM_UPGRADE:
+                return ((Document) doc.get("realm")).get("upgrading", Boolean.class);
             case REALM_LAST_RESET:
                 return ((Document) doc.get("realm")).get("lastReset", Long.class);
+            case REALM_TIER:
+                return ((Document) doc.get("realm")).get("tier", Integer.class);
             /*
             Player Storage
              */
@@ -375,7 +378,9 @@ public class DatabaseAPI {
                         .append("realm",
                                 new Document("uploading", false)
                                         .append("title", "")
-                                        .append("lastReset", 0L))
+                                        .append("lastReset", 0L)
+                                        .append("upgrading", false)
+                                        .append("tier", 1))
                         .append("collectibles",
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())

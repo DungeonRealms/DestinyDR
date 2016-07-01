@@ -10,6 +10,7 @@ import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -351,7 +352,6 @@ public class InventoryListener implements Listener {
             }
         }
         API.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
-
     }
 
 

@@ -145,7 +145,7 @@ public class ItemListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUsePortalRune(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK
                 || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) return;
@@ -157,11 +157,56 @@ public class ItemListener implements Listener {
         if (tag == null) return;
         if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
 
             if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
             Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
+            if (p.isSneaking()) {
+                if (!API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
+                    p.sendMessage(ChatColor.RED + "You must be inside your realm to modify its size.");
+                    return;
+                }
+
+                int tier = Realms.getInstance().getRealmTier(p.getUniqueId());
+
+                if (tier >= 7) {
+                    p.sendMessage(ChatColor.RED + "You have upgraded your realm to it's final tier");
+                    return;
+                }
+
+                p.sendMessage("");
+                p.sendMessage(ChatColor.DARK_GRAY + "           *** " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Realm Upgrade Confirmation"
+                        + ChatColor.DARK_GRAY + " ***");
+                p.sendMessage(ChatColor.DARK_GRAY + "FROM Tier " + ChatColor.LIGHT_PURPLE + tier + ChatColor.DARK_GRAY + " TO " + ChatColor.LIGHT_PURPLE
+                        + (tier + 1));
+                p.sendMessage(ChatColor.DARK_GRAY + "Upgrade Cost: " + ChatColor.LIGHT_PURPLE + "" + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
+                p.sendMessage("");
+                p.sendMessage(ChatColor.GRAY + "Enter '" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "CONFIRM" + ChatColor.GRAY + "' to confirm realm upgrade.");
+                p.sendMessage("");
+                p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Realm upgrades are " + ChatColor.BOLD + ChatColor.RED + "NOT"
+                        + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this upgrade request.");
+                p.sendMessage("");
+
+
+                Chat.listenForMessage(p, confirmation -> {
+                    if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
+                        p.sendMessage(ChatColor.RED + "Realm upgrade cancel");
+                        return;
+                    }
+
+                    if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
+                        if (!(BankMechanics.getInstance().takeGemsFromInventory(Realms.getInstance().getRealmUpgradeCost(tier + 1), p))) {
+                            p.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to purchase this upgrade. Upgrade cancelled.");
+                            p.sendMessage(ChatColor.RED + "COST: " + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
+                            return;
+                        }
+
+                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> Realms.getInstance().upgradeRealm(p));
+                    }
+                }, null);
+                return;
+            }
 
             if (API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
@@ -186,6 +231,10 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
 
         } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+
+            if (event.getPlayer().isSneaking())
+                return;
+
             if (!API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You must be in your realm to open the realm material store.");
                 return;
@@ -316,6 +365,8 @@ public class ItemListener implements Listener {
                 if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                     player.getInventory().setItemInOffHand(null);
                     player.updateInventory();
+                    player.getInventory().setItemInOffHand(findPlayerNextPotion(player));
+                    player.updateInventory();
                     HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
                 } else {
                     player.sendMessage(ChatColor.RED + "You are already at full HP!");
@@ -333,6 +384,8 @@ public class ItemListener implements Listener {
                 event.setUseInteractedBlock(Event.Result.DENY);
                 if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                     player.getInventory().setItemInMainHand(null);
+                    player.updateInventory();
+                    player.getInventory().setItemInMainHand(findPlayerNextPotion(player));
                     player.updateInventory();
                     HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
                 } else {
@@ -361,6 +414,8 @@ public class ItemListener implements Listener {
                     if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                         player.getInventory().setItemInMainHand(null);
                         player.updateInventory();
+                        player.getInventory().setItemInMainHand(findPlayerNextPotion(player));
+                        player.updateInventory();
                         HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
                     } else {
                         player.sendMessage(ChatColor.RED + "You are already at full HP!");
@@ -377,6 +432,8 @@ public class ItemListener implements Listener {
                     if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                         player.getInventory().setItemInOffHand(null);
                         player.updateInventory();
+                        player.getInventory().setItemInOffHand(findPlayerNextPotion(player));
+                        player.updateInventory();
                         HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsOffhand.getTag().getInt("healAmount"));
                     } else {
                         player.sendMessage(ChatColor.RED + "You are already at full HP!");
@@ -384,6 +441,30 @@ public class ItemListener implements Listener {
                 }
             }
         }
+    }
+
+    public ItemStack findPlayerNextPotion(Player player) {
+        ItemStack nextPot = null;
+        net.minecraft.server.v1_9_R2.ItemStack nmsPot;
+        int slotCount = -1;
+        for (ItemStack stack : player.getInventory().getContents()) {
+            slotCount++;
+            if (stack == null || stack.getType() == Material.AIR) {
+                continue;
+            }
+            if (stack.getType() != Material.POTION) {
+                continue;
+            }
+            nmsPot = CraftItemStack.asNMSCopy(stack);
+            if (nmsPot.hasTag() && nmsPot.getTag() != null && nmsPot.getTag().hasKey("type")) {
+                if (nmsPot.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                    nextPot = stack;
+                    player.getInventory().setItem(slotCount, new ItemStack(Material.AIR));
+                    break;
+                }
+            }
+        }
+        return nextPot;
     }
 
     private boolean performPreFoodChecks(Player player) {

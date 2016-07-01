@@ -581,7 +581,7 @@ public class HealthHandler implements GenericMechanic {
             final LivingEntity finalLeAttacker = leAttacker;
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                player.damage(25);
+                player.damage(player.getMaxHealth());
                 if (finalLeAttacker != null) {
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                 }
@@ -643,12 +643,9 @@ public class HealthHandler implements GenericMechanic {
                     EntityDeathEvent event = new EntityDeathEvent(entity, new ArrayList<>());
                     Bukkit.getPluginManager().callEvent(event);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        if (!entity.isDead() || entity.getHealth() >= 0 || entity1.isAlive()) {
-                            entity.setHealth(0);
-                            entity.remove();
-                            entity1.die();
-                        }
-                    }, 25L);
+                        entity.remove();
+                        entity1.die();
+                    }, 30L);
                 }
             }, 1L);
             if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {
@@ -823,7 +820,23 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (entity.hasMetadata("elite")) {
-            totalHP *= 4;
+            switch (entity.getMetadata("tier").get(0).asInt()) {
+                case 1:
+                    totalHP *= 1.8;
+                    break;
+                case 2:
+                    totalHP *= 2.5;
+                    break;
+                case 3:
+                    totalHP *= 3.;
+                    break;
+                case 4:
+                    totalHP *= 5.;
+                    break;
+                case 5:
+                    totalHP *= 7.;
+                    break;
+            }
         }
 
         if (entity.hasMetadata("boss")) {

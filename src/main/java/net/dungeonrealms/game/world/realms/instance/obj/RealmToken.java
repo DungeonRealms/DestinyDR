@@ -3,7 +3,9 @@ package net.dungeonrealms.game.world.realms.instance.obj;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,13 +37,14 @@ public class RealmToken {
     @Setter
     private boolean isLoaded = false;
 
+    @Getter
+    @Setter
+    private double upgradeProgress;
 
     @Getter
     @Setter
     private Hologram hologram;
 
-    @Getter
-    private Set<UUID> playersInRealm = new CopyOnWriteArraySet<>();
 
     @Getter
     private Set<UUID> builders = new CopyOnWriteArraySet<>();
@@ -59,6 +62,10 @@ public class RealmToken {
         addProperty(new RealmProperty<>("flight", false));
     }
 
+
+    public World getWorld() {
+        return Bukkit.getWorld(owner.toString());
+    }
 
     public void addProperty(RealmProperty<?> property) {
         realmProperties.put(property.getName(), property);

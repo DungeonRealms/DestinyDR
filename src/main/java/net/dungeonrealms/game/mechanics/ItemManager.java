@@ -375,7 +375,29 @@ public class ItemManager {
             healAmount = (((healAmount + 5) / 10) * 10);
         }
         if (!isSplashPotion) {
-            ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 5);
+            Potion potion = new Potion(PotionType.WATER, 1);
+            potion.setSplash(false);
+            ItemStack rawStack = potion.toItemStack(1);
+            switch (tier) {
+                case 1:
+                    new Potion(PotionType.REGEN).apply(rawStack);
+                    break;
+                case 2:
+                    new Potion(PotionType.INSTANT_HEAL).apply(rawStack);
+                    break;
+                case 3:
+                    new Potion(PotionType.STRENGTH).apply(rawStack);
+                    break;
+                case 4:
+                    new Potion(PotionType.INSTANT_DAMAGE).apply(rawStack);
+                    break;
+                case 5:
+                    new Potion(PotionType.FIRE_RESISTANCE).apply(rawStack);
+                    break;
+                default:
+                    break;
+
+            }
             PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
             potionMeta.setDisplayName(name);
             potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixir that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP."));
@@ -389,9 +411,29 @@ public class ItemManager {
             return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         } else {
             healAmount *= 0.65;
-            Potion potion = new Potion(PotionType.INSTANT_HEAL, 1);
+            Potion potion = new Potion(PotionType.WATER, 1);
             potion.setSplash(true);
             ItemStack rawStack = potion.toItemStack(1);
+            switch (tier) {
+                case 1:
+                    new Potion(PotionType.REGEN).apply(rawStack);
+                    break;
+                case 2:
+                    new Potion(PotionType.INSTANT_HEAL).apply(rawStack);
+                    break;
+                case 3:
+                    new Potion(PotionType.STRENGTH).apply(rawStack);
+                    break;
+                case 4:
+                    new Potion(PotionType.INSTANT_DAMAGE).apply(rawStack);
+                    break;
+                case 5:
+                    new Potion(PotionType.FIRE_RESISTANCE).apply(rawStack);
+                    break;
+                default:
+                    break;
+
+            }
             PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
             potionMeta.setDisplayName(name);
             potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixir that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP in a " + ChatColor.RED + ChatColor.BOLD + "4x4" + ChatColor.GRAY + " Area."));
@@ -552,12 +594,16 @@ public class ItemManager {
      * @param player
      */
     public static void giveStarter(Player player) {
-        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
-        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
-        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
+                .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
+                .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
+                .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
 
 
-        player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
+                ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
 
         if (Utils.randInt(0, 1) == 1) {
             player.getInventory().addItem(ItemGenerator.getNamedItem("training_sword"));

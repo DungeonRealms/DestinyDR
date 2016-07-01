@@ -55,8 +55,10 @@ public enum EnumData {
 
 
     REALM_UPLOAD("realm.uploading"),
+    REALM_UPGRADE("realm.uploading"),
     REALM_TITLE("realm.title"),
     REALM_LAST_RESET("realm.lastReset"),
+    REALM_TIER("realm.tier"),
 
     MOUNTS("collectibles.mounts"),
     PETS("collectibles.pets"),
