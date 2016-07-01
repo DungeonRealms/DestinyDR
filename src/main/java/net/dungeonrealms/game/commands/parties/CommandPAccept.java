@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.commands;
+package net.dungeonrealms.game.commands.parties;
 
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;

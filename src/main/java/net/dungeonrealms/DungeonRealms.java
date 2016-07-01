@@ -12,6 +12,7 @@ import net.dungeonrealms.game.commands.newcommands.GlobalBroadcastCommand;
 import net.dungeonrealms.game.commands.newcommands.KickAllCommand;
 import net.dungeonrealms.game.commands.newcommands.RealmTestCommand;
 import net.dungeonrealms.game.commands.newcommands.StarterCommand;
+import net.dungeonrealms.game.commands.parties.*;
 import net.dungeonrealms.game.commands.punish.CommandBan;
 import net.dungeonrealms.game.commands.punish.CommandUnban;
 import net.dungeonrealms.game.commands.support.CommandSupport;
@@ -297,6 +298,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party.", Collections.singletonList("pquit")));
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat.", Collections.singletonList("p")));
         cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
+        cm.registerCommand(new CommandPDecline("pdecline", "/<command> [args]", "Decline a party invitation."));
 
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "Safely logout of Dungeon Realms."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));
