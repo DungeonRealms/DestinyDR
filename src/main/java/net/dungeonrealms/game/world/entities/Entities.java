@@ -262,7 +262,7 @@ public class Entities implements GenericMechanic {
         }
 
 
-        if(PowerMove.chargingMonsters.contains(ent.getUniqueId())){
+        if(PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId())){
             cc = ChatColor.LIGHT_PURPLE;
         }
 

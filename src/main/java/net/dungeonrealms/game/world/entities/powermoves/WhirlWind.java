@@ -7,6 +7,7 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityCreature;
+import net.minecraft.server.v1_9_R2.EntityLiving;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
@@ -33,10 +34,6 @@ public class WhirlWind extends PowerMove {
         new BukkitRunnable() {
 
             public int step = 0;
-
-            public double yaw = 0;
-            public final Location loc = entity.getLocation();
-
             public boolean first = true;
 
             @Override
@@ -54,16 +51,9 @@ public class WhirlWind extends PowerMove {
                 }
 
 
-                yaw += 20;
-                if (yaw > 360) {
-                    yaw = 0;
-                }
-
-                loc.setYaw((float) yaw);
-                entity.teleport(loc);
                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1, 4);
 
-                entity.getWorld().playEffect(loc, Effect.EXPLOSION_LARGE, 1, 40);
+                entity.getWorld().playEffect(entity.getLocation(), Effect.EXPLOSION_LARGE, 1, 40);
                 step++;
                 if (step == 5) {
                     API.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(p -> {
@@ -85,13 +75,48 @@ public class WhirlWind extends PowerMove {
                     });
 
                     entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 0.5F);
-                    entity.getWorld().playEffect(loc, Effect.EXPLOSION_HUGE, 1, 40);
+                    entity.getWorld().playEffect(entity.getLocation(), Effect.EXPLOSION_HUGE, 1, 40);
                     entity.removePotionEffect(PotionEffectType.SLOW);
                     this.cancel();
                     chargingMonsters.remove(entity.getUniqueId());
                 }
             }
         }.runTaskTimer(DungeonRealms.getInstance(), 0, 20);
+        new BukkitRunnable() {
 
+            public int step = 0;
+
+            public float yaw = 0;
+
+            @Override
+            public void run() {
+                if (entity.isDead() || entity.getHealth() <= 0) {
+                    this.cancel();
+                    chargingMonsters.remove(entity.getUniqueId());
+                    return;
+                }
+
+                Location loc = entity.getLocation();
+                yaw += 20;
+
+                if (yaw > 360) {
+                    yaw = 0;
+                }
+                loc.setYaw(yaw);
+//                Bukkit.broadcastMessage("Set YAW " + yaw);
+//                EntityLiving el = (EntityLiving) ((CraftEntity) entity).getHandle();
+//                el.yaw = yaw;
+                EntityCreature ec = (EntityCreature) ((CraftEntity) entity).getHandle();
+                ec.setGoalTarget(null);
+//                ec.yaw = yaw;
+                entity.teleport(loc);
+                step++;
+                if (step == (5 * 20)) {
+                    Bukkit.broadcastMessage("Canceled " + "WhirlWind");
+                    this.cancel();
+                    chargingMonsters.remove(entity.getUniqueId());
+                }
+            }
+        }.runTaskTimer(DungeonRealms.getInstance(), 0, 1);
     }
 }

@@ -440,6 +440,12 @@ public class InventoryListener implements Listener {
                 return;
             }
 
+            if (!API.isItemTradeable(event.getCurrentItem()) || API.isItemSoulbound(event.getCurrentItem()) || !API.isItemDroppable(event.getCurrentItem())) {
+                event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
+                event.setCancelled(true);
+                return;
+            }
+
             if (trade.isLeftSlot(slot)) {
                 if (!trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
                     event.setCancelled(true);
