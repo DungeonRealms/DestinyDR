@@ -4,6 +4,7 @@ import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -199,6 +200,14 @@ public class DamageListener implements Listener {
 
         if (API.isPlayer(leDamageSource) && event.getEntity().getLocation().distance(leDamageSource.getLocation()) >= 10D)
             ((Player) leDamageSource).playSound(leDamageSource.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+
+        if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
+            event.setDamage(0);
+            event.setCancelled(true);
+            if (API.isPlayer(leDamageSource))
+                ((Player)leDamageSource).updateInventory();;
+            return;
+        }
 
         if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
             if (!DuelingMechanics.isDueling(leDamageSource.getUniqueId())) {
@@ -417,6 +426,20 @@ public class DamageListener implements Listener {
 
             if (rand.nextInt(100) <= powerChance) {
                 PowerMove.doPowerMove("powerstrike", entity, null);
+            }
+        }
+    }
+
+    /**
+     * Makes mobs untarget a player after they have entered a safezone.
+     *
+     * @param event
+     */
+    public void onPlayerEnterSafezone(PlayerEnterRegionEvent event) {
+        if (API.isInSafeRegion(event.getPlayer().getLocation())) {
+            for (Entity ent : event.getPlayer().getNearbyEntities(10, 10, 10)) {
+                if (!(ent instanceof Creature)) continue;
+                ((Creature) ent).setTarget(null);
             }
         }
     }
@@ -770,14 +793,12 @@ public class DamageListener implements Listener {
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             event.setDamage(0);
         } else if (armourReducedDamage == -3) {
-            double[] reflectResult = DamageAPI.calculateArmorReduction(defender, attacker, event.getDamage(),
-                    event.getDamager() instanceof Projectile ? (Projectile) event.getDamager() : null);
             if (API.isPlayer(attacker)) {
                 attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT REFLECT* ("
                         + defenderName + org.bukkit.ChatColor.RED + ")");
-                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, event.getDamage() - reflectResult[0], reflectResult[0], reflectResult[1]);
+                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, event.getDamage(), 0, 0);
             } else {
-                HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage() - reflectResult[0]);
+                HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage());
             }
             if (API.isPlayer(defender)) {
                 defender.sendMessage(org.bukkit.ChatColor.GOLD + "" + org.bukkit.ChatColor.BOLD + "              " +
