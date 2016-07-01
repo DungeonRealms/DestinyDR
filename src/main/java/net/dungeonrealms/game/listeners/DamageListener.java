@@ -489,7 +489,7 @@ public class DamageListener implements Listener {
                 }
             }
         }
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+        if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
             if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
                 if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, event.getDamager().getUniqueId()).toString())) {
                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
@@ -703,13 +703,12 @@ public class DamageListener implements Listener {
             event.setDamage(0);
         } else if (armourReducedDamage == -3) {
             double[] reflectResult = DamageAPI.calculateArmorReduction(defender, attacker, event.getDamage(),
-                    event.getDamager() instanceof Projectile ? (Projectile)event.getDamager() : null);
+                    event.getDamager() instanceof Projectile ? (Projectile) event.getDamager() : null);
             if (API.isPlayer(attacker)) {
                 attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT REFLECT* ("
                         + defender.getCustomName() + org.bukkit.ChatColor.RED + ")");
-                HealthHandler.getInstance().handlePlayerBeingDamaged((Player)attacker, defender, event.getDamage() - reflectResult[0], reflectResult[0], reflectResult[1]);
-            }
-            else {
+                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, event.getDamage() - reflectResult[0], reflectResult[0], reflectResult[1]);
+            } else {
                 HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage() - reflectResult[0]);
             }
             if (API.isPlayer(defender)) {
@@ -975,7 +974,7 @@ public class DamageListener implements Listener {
             GamePlayer gp = API.getGamePlayer(player);
             if (gp != null) {
                 gp.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
-                gp.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0,0}));
+                gp.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
             }
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
                     ("subtype", "starter").addLore(org.bukkit.ChatColor.GRAY + "Untradeable").build());
