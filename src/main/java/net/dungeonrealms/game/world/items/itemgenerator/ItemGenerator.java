@@ -789,6 +789,7 @@ public class ItemGenerator {
 		wm.new LifeSteal();
 		wm.new Pure();
 		wm.new Slow();
+        //	/* disabled as of patch 1.9 by Mayley's request
 		//wm.new StrDexVitInt();
 		wm.new SwordDamage();
 		wm.new Versus();
