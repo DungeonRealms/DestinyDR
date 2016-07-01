@@ -73,7 +73,7 @@ public class MountUtils {
 
     public static void spawnMount(UUID uuid, String mountType, String mountSkin) {
         Player player = Bukkit.getPlayer(uuid);
-        if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
             player.sendMessage(ChatColor.RED + "Your mount cannot be summoned in this world.");
             return;
         }
