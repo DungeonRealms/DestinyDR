@@ -251,8 +251,6 @@ public class DamageListener implements Listener {
             }
 
             Player attacker = (Player) event.getDamager();
-            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-            if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) return;
 
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker) <= 0) {
                 event.setCancelled(true);
@@ -279,6 +277,9 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getEquipment().getItemInMainHand()));
+
+            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
+            if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) return;
 
             ItemType weaponType = new Attribute(attacker.getInventory().getItemInMainHand()).getItemType();
             Item.ItemTier tier = new Attribute(attacker.getInventory().getItemInMainHand()).getItemTier();
@@ -700,6 +701,21 @@ public class DamageListener implements Listener {
             }
             defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             event.setDamage(0);
+        } else if (armourReducedDamage == -3) {
+            double[] reflectResult = DamageAPI.calculateArmorReduction(defender, attacker, event.getDamage(),
+                    event.getDamager() instanceof Projectile ? (Projectile)event.getDamager() : null);
+            if (API.isPlayer(attacker)) {
+                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT REFLECT* ("
+                        + defender.getCustomName() + org.bukkit.ChatColor.RED + ")");
+                HealthHandler.getInstance().handlePlayerBeingDamaged((Player)attacker, defender, event.getDamage() - reflectResult[0], reflectResult[0], reflectResult[1]);
+            }
+            else {
+                HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage() - reflectResult[0]);
+            }
+            if (API.isPlayer(defender)) {
+                defender.sendMessage(org.bukkit.ChatColor.GOLD + "" + org.bukkit.ChatColor.BOLD + "              " +
+                        "          *REFLECT* (" + attacker.getCustomName() + org.bukkit.ChatColor.GOLD + ")");
+            }
         } else {
             if (API.isPlayer(defender)) {
                 if (((Player) defender).isBlocking() && ((Player) defender).getEquipment().getItemInMainHand() != null && ((Player) defender).getEquipment().getItemInMainHand().getType() != Material.AIR) {

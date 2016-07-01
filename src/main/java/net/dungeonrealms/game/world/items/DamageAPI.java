@@ -12,14 +12,13 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.EntityArrow;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
-import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -586,6 +585,12 @@ public class DamageAPI {
                 ex.printStackTrace();
             }
             totalArmorReduction = -2;
+            return new double[]{Math.round(totalArmorReduction), totalArmor};
+        }
+        // REFLECT
+        int reflectChance = defenderAttributes.get("reflection")[1];
+        if (new Random().nextInt(100) < reflectChance) {
+            totalArmorReduction = -3;
             return new double[]{Math.round(totalArmorReduction), totalArmor};
         }
         // BASE ARMOR
