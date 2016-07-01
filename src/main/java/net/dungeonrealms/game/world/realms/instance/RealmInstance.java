@@ -43,6 +43,7 @@ import org.bukkit.inventory.Recipe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -137,13 +138,19 @@ public class RealmInstance implements Realms {
 
     @Override
     public void loadRealm(Player player, Runnable doAfter) {
+        if (isRealmCached(player.getUniqueId())) {
+            doAfter.run();
+            return;
+        }
+
         if (((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPLOAD, player.getUniqueId()))) {
             player.sendMessage(ChatColor.RED + "Your realm is still being uploaded from another shard.");
             return;
         }
 
-        if (isRealmCached(player.getUniqueId())) {
-            doAfter.run();
+
+        if (((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPGRADE, player.getUniqueId()))) {
+            player.sendMessage(ChatColor.RED + "Your realm is still being upgraded from another shard.");
             return;
         }
 
@@ -214,6 +221,12 @@ public class RealmInstance implements Realms {
         if (!isRealmCached(player.getUniqueId())) return;
 
         RealmToken realm = getRealm(player.getUniqueId());
+
+        if (realm.getStatus() == RealmStatus.UPGRADING) {
+            DecimalFormat format = new DecimalFormat("#.##");
+            player.sendMessage(ChatColor.RED + "This realm is currently UPGRADING. " + ChatColor.BOLD + format.format(realm.getUpgradeProgress()) + "% Complete.");
+            return;
+        }
 
         if (realm.getStatus() != RealmStatus.OPENED && realm.getStatus() != RealmStatus.CLOSED) {
             player.sendMessage(getRealmStatusMessage(realm.getStatus()));
@@ -332,6 +345,7 @@ public class RealmInstance implements Realms {
                     setRealmTitle(player.getUniqueId(), "");
                     getRealm(player.getUniqueId()).setStatus(RealmStatus.CLOSED);
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
                 }));
     }
 
@@ -383,7 +397,7 @@ public class RealmInstance implements Realms {
                     + ChatColor.BOLD + new_bottom_y + "x" + new_bottom_y + ChatColor.LIGHT_PURPLE
                     + ", you have been kicked out of the realm while the upgrade takes place.");
 
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "Upgrading realm to <" + "Tier " + nextTier + ">");
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "Upgrading realm to " + ChatColor.BOLD + new_bottom_y + "x" + new_bottom_y);
         player.sendMessage(ChatColor.GRAY + "We will notify you once it is ready.");
 
         // HANDLE ACHIEVEMENTS
@@ -416,6 +430,7 @@ public class RealmInstance implements Realms {
 
         // UPDATE REALM TIER DATA
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, nextTier, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_UPGRADE, true, true);
 
         // UPGRADE REALM PORTAL RUNE //
         int slot = API.getItemSlot(player.getInventory(), "realmPortalRune");

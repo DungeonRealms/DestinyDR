@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -172,17 +173,29 @@ public class RealmListener implements Listener {
                     Player p = Bukkit.getPlayer(entry.getKey());
 
                     if (p != null) {
+                        p.sendMessage("");
+                        Utils.sendCenteredMessage(p, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "REALM UPGRADE COMPLETE.");
+                        p.sendMessage("");
 
-                        p.sendMessage("");
-                        Utils.sendCenteredMessage(p, ChatColor.BOLD + "REALM UPGRADE COMPLETE.");
-                        p.sendMessage("");
                         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                         realm.setStatus(RealmStatus.CLOSED);
 
                     } else REALMS.removeRealm(entry.getKey(), true);
 
+                    DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true);
+                    API.updatePlayerData(entry.getKey());
+
                     REALMS.getProcessingBlocks().remove(entry.getKey());
-                } else REALMS.getProcessingBlocks().put(entry.getKey(), loc_list);
+                    realm.setUpgradeProgress(0);
+                } else {
+                    int total_area = REALMS.getRealmDimensions(REALMS.getRealmTier(UUID.fromString(w.getName())) + 1);
+                    total_area = total_area * total_area * total_area;
+                    int complete_area = total_area - loc_list.size();
+
+                    double percent = (((double) complete_area / (double) total_area) * 100.0D);
+                    realm.setUpgradeProgress(percent);
+                    REALMS.getProcessingBlocks().put(entry.getKey(), loc_list);
+                }
 
             } catch (NullPointerException ignored) {
                 REALMS.getProcessingBlocks().remove(entry.getKey());
@@ -191,7 +204,7 @@ public class RealmListener implements Listener {
     }
 
     @EventHandler
-    public void handlePortalEffects(UpdateEvent e) {
+    public void updateRealmEvent(UpdateEvent e) {
         if (!e.getType().equals(UpdateType.SEC)) return;
 
         for (RealmToken realm : REALMS.getCachedRealms().values()) {
@@ -241,8 +254,10 @@ public class RealmListener implements Listener {
 
             Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
 
-            if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())))
+            if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
                 createDoubleHelix(loc);
+            else if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
+                DonationEffects.getInstance().spawnPlayerParticleEffects(loc);
 
             //loc.subtract(.5D, 2D, .5D);
             if (realm.getPropertyBoolean("peaceful"))

@@ -60,7 +60,7 @@ public class DonationEffects implements GenericMechanic {
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 4L);
@@ -85,6 +85,27 @@ public class DonationEffects implements GenericMechanic {
             fwm.addEffect(effect);
             fwm.setPower(random.nextInt(5));
             fw.setFireworkMeta(fwm);
+        }
+    }
+
+    public void spawnPlayerParticleEffects(Location location) {
+        if (PLAYER_PARTICLE_EFFECTS.isEmpty()) return;
+        for (Player player : PLAYER_PARTICLE_EFFECTS.keySet()) {
+            if (!player.isOnline()) {
+                PLAYER_PARTICLE_EFFECTS.remove(player);
+                continue;
+            }
+            float moveSpeed = 0.02F;
+            ParticleAPI.ParticleEffect particleEffect = PLAYER_PARTICLE_EFFECTS.get(player);
+            if (particleEffect == ParticleAPI.ParticleEffect.RED_DUST || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
+                moveSpeed = -1F;
+            }
+            try {
+                ParticleAPI.sendParticleToLocation(particleEffect, location.clone().add(0, 0.22, 0), (random.nextFloat()) - 0.4F, (random.nextFloat()) - 0.5F, (random.nextFloat()) - 0.5F, moveSpeed, 6);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Utils.log.warning("[Donations] Could not spawn donation particle " + particleEffect.name() + " for player " + player.getName());
+            }
         }
     }
 

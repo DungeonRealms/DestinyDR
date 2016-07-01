@@ -39,6 +39,10 @@ public class RealmToken {
 
     @Getter
     @Setter
+    private double upgradeProgress;
+
+    @Getter
+    @Setter
     private Hologram hologram;
 
 
