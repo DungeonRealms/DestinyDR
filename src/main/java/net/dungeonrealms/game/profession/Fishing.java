@@ -64,6 +64,10 @@ public class Fishing implements GenericMechanic {
         return -1;
     }
 
+    public static int getLvl(ItemStack i) {
+        return CraftItemStack.asNMSCopy(i).getTag().getInt("level");
+    }
+
     public static int getFishTier(ItemStack fish) {
         return CraftItemStack.asNMSCopy(fish).getTag().getInt("itemTier");
     }

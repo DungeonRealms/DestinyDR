@@ -670,15 +670,14 @@ public class MainListener implements Listener {
                             if (junk.getType() == Material.POTION) {
                                 // Not stackable.
                                 int amount = junk.getAmount();
-                                ItemStack single_junk = junk;
-                                single_junk.setAmount(1);
+                                junk.setAmount(1);
                                 while (amount > 0) {
                                     amount--;
                                     if (pl.getInventory().firstEmpty() != -1) {
-                                        pl.getInventory().setItem(pl.getInventory().firstEmpty(), single_junk);
+                                        pl.getInventory().setItem(pl.getInventory().firstEmpty(), junk);
                                     } else {
                                         // Full inventory!
-                                        pl.getWorld().dropItem(pl.getLocation(), single_junk);
+                                        pl.getWorld().dropItem(pl.getLocation(), junk);
                                     }
                                 }
                             } else {
@@ -719,7 +718,7 @@ public class MainListener implements Listener {
                         }
                     }
                 }
-            }, 10l);
+            }, 10L);
         }
     }
 
@@ -911,7 +910,6 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        final ItemStack item = event.getItemDrop().getItemStack();
         event.getItemDrop().remove();
         event.setCancelled(true);
 
@@ -1046,22 +1044,16 @@ public class MainListener implements Listener {
         if (event.getTarget() != null) {
             if (!(event.getTarget() instanceof Player)) {
                 event.setCancelled(true);
-            } else if (Rank.isGM((Player) event.getTarget())) {
-                //TODO: Check for /allowfight @alan.
+            } else if (API.isInSafeRegion(event.getTarget().getLocation())) {
                 event.setCancelled(true);
             } else {
                 LivingEntity entity = (LivingEntity) event.getEntity();
-                if (!entity.hasMetadata("elite"))
-                    return;
+                if (!entity.hasMetadata("elite")) return;
                 if (entity.hasMetadata("charging")) {
                     event.setCancelled(true);
-                    return;
                 } else if (entity.hasMetadata("powermove")) {
                     Player p = (Player) event.getTarget();
-
-
                     entity.removeMetadata("powermove", DungeonRealms.getInstance());
-                    return;
                 }
             }
         }
