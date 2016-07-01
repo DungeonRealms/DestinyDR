@@ -1238,10 +1238,11 @@ public class API {
         // set the player's attribute field
         gp.setAttributes(attributes);
 
+        if (!gp.isAttributesLoaded())
+            HealthHandler.getInstance().handleLoginEvents(p);
+
         // so energy regen doesn't start before attributes have been loaded
         gp.setAttributesLoaded(true);
-
-        HealthHandler.getInstance().handleLoginEvents(p);
 
         return attributes;
     }

@@ -559,6 +559,7 @@ public class HealthHandler implements GenericMechanic {
                     if (finalLeAttacker != null) {
                         KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                     }
+                    API.calculateAllAttributes(player);
                     CombatLog.removeFromCombat(player);
                 }, 5L);
                 return true;
@@ -585,6 +586,7 @@ public class HealthHandler implements GenericMechanic {
                 if (finalLeAttacker != null) {
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                 }
+                API.calculateAllAttributes(player);
                 CombatLog.removeFromCombat(player);
             }, 20L);
             return true;
