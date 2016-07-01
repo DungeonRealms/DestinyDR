@@ -4,7 +4,6 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -20,6 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -114,12 +114,16 @@ public class EliteMobSpawner {
     private void spawnIn() {
         if (!SPAWNED_MONSTERS.isEmpty()) {
             for (Entity monster : SPAWNED_MONSTERS) {
+                LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
                 if (monster.isAlive()) {
-                    if (API.isInSafeRegion(monster.getBukkitEntity().getLocation())) {
+                    if (API.isInSafeRegion(livingEntity.getLocation())) {
+                        ((Creature) livingEntity).setTarget(null);
                         monster.setPosition(location.getX(), location.getY(), location.getZ());
+                        return;
                     }
-                    double num = monster.getBukkitEntity().getLocation().distanceSquared(location);
+                    double num = livingEntity.getLocation().distanceSquared(location);
                     if (num > 900) {
+                        ((Creature) livingEntity).setTarget(null);
                         monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
                     }
                 } else {

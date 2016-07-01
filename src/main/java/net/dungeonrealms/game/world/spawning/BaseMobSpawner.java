@@ -15,6 +15,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -95,13 +97,16 @@ public class BaseMobSpawner {
         if (!SPAWNED_MONSTERS.isEmpty()) {
             for (Entity monster : SPAWNED_MONSTERS) {
                 if (monster.isAlive()) {
-                    if (API.isInSafeRegion(monster.getBukkitEntity().getLocation())) {
+                    LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
+                    if (API.isInSafeRegion(livingEntity.getLocation())) {
+                        ((Creature) livingEntity).setTarget(null);
                         monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                         continue;
                     }
-                    double num = monster.getBukkitEntity().getLocation().distanceSquared(loc);
+                    double num = livingEntity.getLocation().distanceSquared(loc);
                     if (num > 700) {
                         monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
+                        ((Creature) livingEntity).setTarget(null);
                     }
                 } else {
                     RESPAWN_TIMES.put(monster, respawnDelay);
