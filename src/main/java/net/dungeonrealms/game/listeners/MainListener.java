@@ -206,15 +206,6 @@ public class MainListener implements Listener {
             return;
         }
 
-        if (PunishUtils.isBanned(event.getUniqueId())) {
-            String name = DatabaseAPI.getInstance().getOfflineName(event.getUniqueId());
-            String banMessage = PunishUtils.getBannedMessage(event.getUniqueId());
-            PunishUtils.kick(name, banMessage);
-            event.disallow(Result.KICK_OTHER, banMessage);
-            return;
-        }
-
-
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
 

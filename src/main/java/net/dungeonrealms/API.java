@@ -29,6 +29,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.rank.Subscription;
+import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -593,6 +594,14 @@ public class API {
             return;
         } else {
             if (player != null) {
+
+                if (PunishUtils.isBanned(uuid)) {
+                    String name = DatabaseAPI.getInstance().getOfflineName(uuid);
+                    String banMessage = PunishUtils.getBannedMessage(uuid);
+                    PunishUtils.kick(name, banMessage);
+                    player.kickPlayer(ChatColor.RED + banMessage);
+                }
+
                 player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
                 if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {

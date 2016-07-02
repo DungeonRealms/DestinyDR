@@ -52,6 +52,7 @@ public class BuildDeployApplication {
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat us0 158.69.122.139");
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat us1 131.153.25.2");
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat us2 131.153.25.218");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us3 131.153.25.114");
                     break;
             }
         } else {
