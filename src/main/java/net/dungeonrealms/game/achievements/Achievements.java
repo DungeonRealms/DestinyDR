@@ -72,7 +72,7 @@ public class Achievements {
             e.printStackTrace();
         }
         if (achievement.getReward() > 0) {
-            API.getGamePlayer(player).addExperience(achievement.getReward(), false);
+            API.getGamePlayer(player).addExperience(achievement.getReward(), false, true);
         }
         switch (((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid)).size()) {
             case 10:

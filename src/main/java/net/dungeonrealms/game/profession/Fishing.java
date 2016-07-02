@@ -9,6 +9,8 @@ import net.dungeonrealms.game.mechanics.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -544,6 +546,10 @@ public class Fishing implements GenericMechanic {
         int currentXP = nms.getTag().getInt("XP");
         int maxXP = nms.getTag().getInt("maxXP");
         int tier = nms.getTag().getInt("itemTier");
+        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
+            p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + exp + ChatColor.BOLD + " EXP"
+                    + ChatColor.YELLOW + ChatColor.GRAY + " [" + currentXP + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded(getLvl(stack)) + " EXP]");
+        }
         currentXP += exp;
         if (currentXP > maxXP) {
             lvlUp(tier, p);

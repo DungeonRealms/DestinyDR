@@ -23,7 +23,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
@@ -253,7 +252,7 @@ public class GamePlayer {
      * @apiNote Will automagically level the player up if the experience is enough.
      * @since 1.0
      */
-    public void addExperience(int experienceToAdd, boolean isParty) {
+    public void addExperience(int experienceToAdd, boolean isParty, boolean displayMessage) {
         int level = getLevel();
         if (level >= 100) return;
         int experience = getExperience();
@@ -269,8 +268,10 @@ public class GamePlayer {
             updateLevel(level + 1, true, false);
         } else {
             setPlayerEXP(futureExperience);
-            if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
+            if (displayMessage) {
+                if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                }
             }
         }
     }

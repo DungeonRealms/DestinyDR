@@ -101,7 +101,7 @@ public class MainListener implements Listener {
                     if (API.getGamePlayer(player) == null) {
                         return;
                     }
-                    gamePlayer.addExperience(expToGive, false);
+                    gamePlayer.addExperience(expToGive, false, true);
                     final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
                     normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
                     for (Player player1 : Bukkit.getOnlinePlayers()) {
@@ -127,7 +127,7 @@ public class MainListener implements Listener {
                     if (API.getGamePlayer(player) == null) {
                         return;
                     }
-                    gamePlayer.addExperience(expToGive, false);
+                    gamePlayer.addExperience(expToGive, false, true);
                     final JSONMessage normal3 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
                     normal3.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
                     for (Player player1 : Bukkit.getOnlinePlayers()) {
@@ -140,7 +140,7 @@ public class MainListener implements Listener {
                     if (API.getGamePlayer(player) == null) {
                         return;
                     }
-                    gamePlayer.addExperience(expToGive, false);
+                    gamePlayer.addExperience(expToGive, false, true);
                     final JSONMessage normal4 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
                     normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
                     for (Player player1 : Bukkit.getOnlinePlayers()) {
@@ -589,7 +589,7 @@ public class MainListener implements Listener {
                     Fishing.gainExp(pl.getEquipment().getItemInMainHand(), pl, exp);
                     GamePlayer gamePlayer = API.getGamePlayer(pl);
                     if (gamePlayer == null) return;
-                    gamePlayer.addExperience(exp / 8, false);
+                    gamePlayer.addExperience(exp / 8, false, false);
                     gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {

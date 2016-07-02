@@ -271,7 +271,7 @@ public class CommandAdd extends BasicCommand {
                     int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
                     int expToGive = expToLevel / 20;
                     expToGive += 100;
-                    gamePlayer.addExperience(expToGive, false);
+                    gamePlayer.addExperience(expToGive, false, true);
                     final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
                     normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
                     for (Player player1 : Bukkit.getOnlinePlayers()) {

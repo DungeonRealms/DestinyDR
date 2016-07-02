@@ -343,7 +343,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             } else {
                 player.getInventory().addItem(banknote);
             }
-            API.getGamePlayer(player).addExperience(25000, false);
+            API.getGamePlayer(player).addExperience(25000, false, true);
         }
         final String adventurers = partyMembers;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

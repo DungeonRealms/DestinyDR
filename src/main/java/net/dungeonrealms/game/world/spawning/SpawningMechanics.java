@@ -58,7 +58,7 @@ public class SpawningMechanics implements GenericMechanic {
     }
 
     private static void loadBaseSpawners() {
-    	Utils.log.info("LOADING ALL DUNGEON REALMS MONSTERS...");
+        Utils.log.info("LOADING ALL DUNGEON REALMS MONSTERS...");
         SPAWNER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
         for (String line : SPAWNER_CONFIG) {
             if (line == null || line.equalsIgnoreCase("null")) {
@@ -81,11 +81,49 @@ public class SpawningMechanics implements GenericMechanic {
             String monster = line.split("=")[1].split(":")[0];
             String spawnRange = String.valueOf(line.charAt(line.lastIndexOf("@") - 1));
             int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
-            if (spawnDelay < 20) {
+            if (spawnDelay < 25) {
                 if (!isElite) {
-                    spawnDelay = 30;
+                    switch (tier) {
+                        case 1:
+                            spawnDelay = 35;
+                            break;
+                        case 2:
+                            spawnDelay = 75;
+                            break;
+                        case 3:
+                            spawnDelay = 105;
+                            break;
+                        case 4:
+                            spawnDelay = 145;
+                            break;
+                        case 5:
+                            spawnDelay = 200;
+                            break;
+                        default:
+                            spawnDelay = 70;
+                            break;
+                    }
                 } else {
-                    spawnDelay = 300;
+                    switch (tier) {
+                        case 1:
+                            spawnDelay = 300;
+                            break;
+                        case 2:
+                            spawnDelay = 500;
+                            break;
+                        case 3:
+                            spawnDelay = 750;
+                            break;
+                        case 4:
+                            spawnDelay = 1000;
+                            break;
+                        case 5:
+                            spawnDelay = 1500;
+                            break;
+                        default:
+                            spawnDelay = 500;
+                            break;
+                    }
                 }
             }
             String locationRange[] = line.substring(line.indexOf("#") + 1, line.lastIndexOf("$")).split("-");
@@ -132,8 +170,27 @@ public class SpawningMechanics implements GenericMechanic {
         String spawnRange = String.valueOf(line.charAt(line.lastIndexOf("@") - 1));
         BaseMobSpawner spawner;
         int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
-        if (spawnDelay < 20) {
-            spawnDelay = 20;
+        if (spawnDelay < 25) {
+            switch (tier) {
+                case 1:
+                    spawnDelay = 35;
+                    break;
+                case 2:
+                    spawnDelay = 75;
+                    break;
+                case 3:
+                    spawnDelay = 105;
+                    break;
+                case 4:
+                    spawnDelay = 145;
+                    break;
+                case 5:
+                    spawnDelay = 200;
+                    break;
+                default:
+                    spawnDelay = 70;
+                    break;
+            }
         }
         String locationRange[] = line.substring(line.indexOf("#") + 1, line.indexOf("$")).split("-");
         int minXZ = Integer.parseInt(locationRange[0]);
@@ -146,7 +203,7 @@ public class SpawningMechanics implements GenericMechanic {
         ALLSPAWNERS.add(spawner);
         spawner.init();
     }
-    
+
     public static void remove(BaseMobSpawner mobSpawner) {
         ALLSPAWNERS.remove(mobSpawner);
     }
@@ -188,6 +245,7 @@ public class SpawningMechanics implements GenericMechanic {
         }
         return entity;
     }
+
     /**
      * @param monsEnum
      * @return
@@ -371,14 +429,14 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new DRSilverfish(world, EnumMonster.GreaterAbyssalDemon, tier);
                 break;
             case Monk:
-            	entity = new MeleeZombie(world, EnumMonster.Monk, tier);
-            	break;
+                entity = new MeleeZombie(world, EnumMonster.Monk, tier);
+                break;
             case Lizardman:
-            	entity = new MeleeZombie(world, EnumMonster.Lizardman, tier);
-            	break;
+                entity = new MeleeZombie(world, EnumMonster.Lizardman, tier);
+                break;
             case Zombie:
-            	entity = new MeleeZombie(world, EnumMonster.Zombie, tier);
-            	break;
+                entity = new MeleeZombie(world, EnumMonster.Zombie, tier);
+                break;
             case Wolf:
                 entity = new DRWolf(world, EnumMonster.Wolf, tier);
                 break;
@@ -433,11 +491,11 @@ public class SpawningMechanics implements GenericMechanic {
     public void stopInvocation() {
         killAll();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
-           ((CraftWorld)entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
+            ((CraftWorld) entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
             entity.remove();
         });
         Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity -> {
-            ((CraftWorld)entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
+            ((CraftWorld) entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
             entity.remove();
         });
     }

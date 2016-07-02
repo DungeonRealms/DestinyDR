@@ -709,16 +709,16 @@ public class HealthHandler implements GenericMechanic {
                                     }
                                     exp /= nearbyPartyMembers.size();
                                     for (Player player : nearbyPartyMembers) {
-                                        API.getGamePlayer(player).addExperience(exp, true);
+                                        API.getGamePlayer(player).addExperience(exp, true, true);
                                     }
                                 } else {
-                                    API.getGamePlayer((Player) attacker).addExperience(exp, false);
+                                    API.getGamePlayer((Player) attacker).addExperience(exp, false, true);
                                 }
                             } else {
-                                API.getGamePlayer((Player) attacker).addExperience(exp, false);
+                                API.getGamePlayer((Player) attacker).addExperience(exp, false, true);
                             }
                         } else {
-                            API.getGamePlayer((Player) attacker).addExperience(exp, false);
+                            API.getGamePlayer((Player) attacker).addExperience(exp, false, true);
                         }
                         PlayerStatistics playerStatistics = API.getGamePlayer((Player) attacker)
                                 .getPlayerStatistics();

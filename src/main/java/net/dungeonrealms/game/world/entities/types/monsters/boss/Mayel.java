@@ -225,7 +225,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
             } else {
                 player.getInventory().addItem(banknote);
             }
-            API.getGamePlayer(player).addExperience(5000, false);
+            API.getGamePlayer(player).addExperience(5000, false, true);
         }
         final String adventurers = partyMembers;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
