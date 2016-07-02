@@ -87,7 +87,8 @@ public class DatabaseAPI {
                 return ((Document) doc.get("info")).get("lastShardTransfer", Long.class);
             case IS_PLAYING:
                 return ((Document) doc.get("info")).get("isPlaying", Boolean.class);
-
+            case IS_SWITCHING_SHARDS:
+                return ((Document) doc.get("info")).get("isSwitchingShards", Boolean.class);
             case LEVEL:
                 return ((Document) doc.get("info")).get("netLevel", Integer.class);
             case EXPERIENCE:
@@ -362,6 +363,7 @@ public class DatabaseAPI {
                                 .append("lastLogin", 0L)
                                 .append("lastLogout", 0L)
                                 .append("freeEcash", 0L)
+                                .append("isSwitchingShards", false)
                                 .append("lastShardTransfer", 0L)
                                 .append("netLevel", 1)
                                 .append("experience", 0)

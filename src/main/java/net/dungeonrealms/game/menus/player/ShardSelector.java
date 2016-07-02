@@ -23,10 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/18/2016
@@ -42,11 +39,20 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
 
         this.playerHostName = player.getAddress().getHostName();
 
+        List<BungeeServerInfo> servers = new ArrayList<>(getFilteredServers().values());
+
+        Collections.sort(servers, (o1, o2) -> {
+
+            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
+            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
+
+            return o1num - o2num;
+        });
+
         // DISPLAY AVAILABLE SHARDS //
-        for (Entry<String, BungeeServerInfo> e : getFilteredServers().entrySet()) {
-            String bungeeName = e.getKey();
+        for (BungeeServerInfo info : servers) {
+            String bungeeName = info.getServerName();
             String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
-            BungeeServerInfo info = e.getValue();
 
             // Do not show YT / CS shards unless they've got the appropriate permission to see them.
             if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)))
@@ -62,7 +68,6 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
                         player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
                         return;
                     }
-
                     if (Cooldown.hasCooldown(player.getUniqueId()))
                         return;
 
@@ -86,6 +91,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
                     player.sendMessage("                     " + ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...");
                     player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
 
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, true, true);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
                     API.handleLogout(player.getUniqueId());
                     DungeonRealms.getInstance().getLoggingOut().add(player.getName());

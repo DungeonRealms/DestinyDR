@@ -14,6 +14,7 @@ public enum EnumData {
     LAST_SHARD_TRANSFER("info.lastShardTransfer"),
     LEVEL("info.netLevel"),
     IS_PLAYING("info.isPlaying"),
+    IS_SWITCHING_SHARDS("info.isSwitchingShards"),
     EXPERIENCE("info.experience"),
     GEMS("info.gems"),
     HEARTHSTONE("info.hearthstone"),
