@@ -68,6 +68,9 @@ public class CommandMute extends BasicCommand {
             return true;
         }
 
+        if (isNull)
+            duration = Integer.getInteger(args[1]);
+
         if (duration < 0) {
             sender.sendMessage(ChatColor.RED + args[1] + " is not a valid number.");
             return true;
@@ -79,14 +82,14 @@ public class CommandMute extends BasicCommand {
 
             PunishUtils.mute(p_uuid, duration, reason.toString());
 
-            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + Utils.timeString((int) (duration / 60)) + " for " + reason.toString());
-            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + Utils.timeString((int) (duration / 60)) + " for " + reason.toString());
+            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)) + " for " + reason.toString());
+            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)) + " for " + reason.toString());
 
         } else {
             PunishUtils.mute(p_uuid, duration, "");
 
-            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + Utils.timeString((int) (duration / 60)));
-            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + Utils.timeString((int) (duration / 60)));
+            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)));
+            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)));
         }
 
         return false;

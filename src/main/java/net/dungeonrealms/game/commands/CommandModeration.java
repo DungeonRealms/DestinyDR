@@ -1,21 +1,17 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import net.dungeonrealms.game.player.rank.Rank;
 
 /**
  * Created by Chase on Nov 11, 2015
@@ -31,6 +27,11 @@ public class CommandModeration extends BasicCommand {
         Player sender = (Player) s;
 
         if (!Rank.isGM(sender)) return false;
+
+        if (args.length == 0) {
+            s.sendMessage(usage);
+            return true;
+        }
 
         switch (args[0]) {
             case "tp":
@@ -55,7 +56,7 @@ public class CommandModeration extends BasicCommand {
                 if (player != null) {
                     Inventory inv = Bukkit.createInventory(null, 9, player.getName() + " Armor");
                     for (int i = 0; i < 4; i++) {
-                    	ItemStack stack = player.getInventory().getArmorContents()[i];
+                        ItemStack stack = player.getInventory().getArmorContents()[i];
                         inv.addItem(stack);
                     }
                     inv.setItem(8, player.getEquipment().getItemInMainHand());
@@ -67,12 +68,12 @@ public class CommandModeration extends BasicCommand {
                 // @todo: remove this later on.
                 break;
             case "banksee":
-            	playerName = args[1];
-            	if(Bukkit.getPlayer(playerName) != null){
-            		Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
-            		sender.openInventory(storage.inv);
-            	}
-            	break;
+                playerName = args[1];
+                if (Bukkit.getPlayer(playerName) != null) {
+                    Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
+                    sender.openInventory(storage.inv);
+                }
+                break;
         }
         return false;
     }
