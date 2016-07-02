@@ -137,6 +137,9 @@ public class ShopListener implements Listener {
                 if (event.getRawSlot() >= event.getInventory().getSize()) {
                     ItemStack stackClicked = event.getCurrentItem().clone();
                     event.setCurrentItem(null);
+                    if (BankMechanics.shopPricing.containsKey(clicker.getName())) {
+                        clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                    }
                     BankMechanics.shopPricing.put(clicker.getName(), stackClicked);
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
                     clicker.closeInventory();
@@ -168,6 +171,7 @@ public class ShopListener implements Listener {
                             BankMechanics.shopPricing.remove(clicker.getName());
                             return;
                         } else {
+                            if (BankMechanics.shopPricing.get(clicker.getName()) == null) return;
                             net.minecraft.server.v1_9_R2.ItemStack newNMS = CraftItemStack.asNMSCopy(stackClicked.clone());
                             NBTTagCompound tagCompound = newNMS.getTag() == null ? new NBTTagCompound() : newNMS.getTag();
                             tagCompound.setInt("Price", number);
@@ -200,9 +204,11 @@ public class ShopListener implements Listener {
                                 clicker.sendMessage("There is no room for this item in your Shop");
                             }
                         }
-                    }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
-
-
+                    }, player -> {
+                        player.getInventory().addItem(BankMechanics.shopPricing.get(player.getName()));
+                        BankMechanics.shopPricing.remove(player.getName());
+                        player.sendMessage(ChatColor.RED + "Action cancelled.");
+                    });
                 } else {
                     ItemStack stackClicked = event.getCurrentItem();
                     ItemMeta meta = stackClicked.getItemMeta();
@@ -280,6 +286,7 @@ public class ShopListener implements Listener {
                                 BankMechanics.shopPricing.remove(clicker.getName());
                                 return;
                             } else {
+                                if (BankMechanics.shopPricing.get(clicker.getName()) == null) return;
                                 net.minecraft.server.v1_9_R2.ItemStack newNMS = CraftItemStack.asNMSCopy(BankMechanics.shopPricing.get(clicker.getName()).clone());
                                 NBTTagCompound tag = newNMS.hasTag() ? nms.getTag() : new NBTTagCompound();
                                 tag.setInt("Price", number);
