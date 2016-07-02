@@ -29,7 +29,7 @@ public class CommandArmorSee extends BasicCommand {
 		else {
 			return true;
 		}
-		
+
 		if(p != null) {
 			if(!(Rank.isGM(p))) { return true; }
 		}
@@ -76,8 +76,8 @@ public class CommandArmorSee extends BasicCommand {
 			p.openInventory(inv);
 			p.sendMessage(ChatColor.GREEN + "Displaying the current armor contents of " + ent_name);
 		}
-		
+
 		return true;
 	}
-	
+
 }

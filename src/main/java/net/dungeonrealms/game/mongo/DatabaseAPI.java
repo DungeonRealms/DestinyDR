@@ -318,6 +318,13 @@ public class DatabaseAPI {
         });*/
     }
 
+    public Object getValue(UUID uuid, EnumData data) {
+        Document doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        if (doc == null) return null;
+        String[] key = data.getKey().split("\\.");
+        return ((Document) doc.get(key[0])).get(key[1]);
+    }
+
     public String getUUIDFromName(String playerName) {
         Document doc = Database.collection.find(Filters.eq("info.username", playerName.toLowerCase())).first();
         if (doc == null) {

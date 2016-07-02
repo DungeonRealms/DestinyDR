@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.game.punish.PunishUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -31,7 +32,14 @@ public class CommandMessage extends BasicCommand {
         if (args.length < 2) {
             return false;
         }
+
         Player player = (Player) sender;
+
+        if (PunishUtils.isMuted(player.getUniqueId())) {
+            player.sendMessage(PunishUtils.getMutedMessage(player.getUniqueId()));
+            return true;
+        }
+
         String playerName = args[0];
         String message = String.join(" ", Arrays.asList(args));
         message = message.replace(playerName, "");

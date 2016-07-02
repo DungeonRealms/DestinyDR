@@ -35,27 +35,56 @@ public class PunishUtils {
         else
             kick(playerName, ChatColor.RED + "You have been permanently banned from DungeonRealms." + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net");
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, System.currentTimeMillis() + (duration * 1000), false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, System.currentTimeMillis() + (duration * 1000), true);
 
         if (!reason.equals(""))
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, reason, false);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, reason, true);
+    }
+
+
+    /**
+     * Method to mute players
+     *
+     * @param uuid     UUID
+     * @param duration Set as -1 for permanent ban
+     * @param reason   Leave empty for no reason
+     */
+    public static void mute(UUID uuid, long duration, String reason) {
+        if (uuid == null) return;
+        if (isMuted(uuid)) return;
+
+        // MUTE PLAYER //
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, System.currentTimeMillis() + (duration * 1000), true);
+        API.updatePlayerData(uuid);
+
+        if (!reason.equals(""))
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_REASON, reason, true);
     }
 
     public static String getBannedMessage(UUID uuid) {
         if (!isBanned(uuid)) return null;
 
-        long banTime = (long) DatabaseAPI.getInstance().getData(EnumData.BANNED_TIME, uuid);
-        String reason = (String) DatabaseAPI.getInstance().getData(EnumData.BANNED_REASON, uuid);
+        long banTime = (long) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME);
+        String reason = (String) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_REASON);
 
         String message;
 
         if (banTime != -1)
-            message = ChatColor.RED + "You will be unbanned in " + Utils.timeString((int) ((System.currentTimeMillis() - banTime) / 60000)) + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net";
+            message = ChatColor.RED + "You will be unbanned in " + Utils.timeString((int) ((banTime - System.currentTimeMillis()) / 60000)) + (reason != null ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net";
         else
             message = ChatColor.RED + "You have been permanently banned from DungeonRealms." + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net";
 
         return message;
 
+    }
+
+    public static String getMutedMessage(UUID uuid) {
+        if (!isMuted(uuid)) return null;
+
+        long muteTime = (long) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_TIME);
+        String reason = (String) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_REASON);
+
+        return ChatColor.RED + "You will be unmuted until " + Utils.timeString((int) ((muteTime - System.currentTimeMillis()) / 60000)) + (reason != null ? " for " + reason : "");
     }
 
     /**
@@ -67,8 +96,21 @@ public class PunishUtils {
         if (uuid == null) return;
         if (!isBanned(uuid)) return;
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, 0L, false);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, "", false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, 0L, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, "", true);
+    }
+
+    /**
+     * Method to unmute players
+     *
+     * @param uuid Target
+     */
+    public static void unmute(UUID uuid) {
+        if (uuid == null) return;
+        if (!isMuted(uuid)) return;
+
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, 0L, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_REASON, "", true);
     }
 
     /**
@@ -91,8 +133,14 @@ public class PunishUtils {
 
 
     public static boolean isBanned(UUID uuid) {
-        long banTime = ((Long) DatabaseAPI.getInstance().getData(EnumData.BANNED_TIME, uuid));
+        long banTime = ((Long) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME));
         return (banTime == -1) || (banTime != 0 && System.currentTimeMillis() < banTime);
+    }
+
+
+    public static boolean isMuted(UUID uuid) {
+        long muteTime = ((Long) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_TIME));
+        return (muteTime == -1) || (muteTime != 0 && System.currentTimeMillis() < muteTime);
     }
 
 
