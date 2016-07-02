@@ -558,6 +558,8 @@ public class API {
     /**
      * Safely logs out all players when the server restarts
      *
+     * @param customStop
+     * @param sendToLoadBalancer set to false if all servers are restarting (will kick players much faster)
      * @since 1.0
      */
     public static void logoutAllPlayers(boolean customStop) {
@@ -573,7 +575,6 @@ public class API {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
                     DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-                }, 10);
             }
         }
     }
