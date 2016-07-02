@@ -19,7 +19,6 @@ import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -475,44 +474,6 @@ public class BlockListener implements Listener {
             e.getPlayer().sendMessage(ChatColor.RED + "It is " + org.bukkit.ChatColor.BOLD + "NOT" + org.bukkit.ChatColor.RESET + org.bukkit.ChatColor.RED + " safe to open that right now");
             e.getPlayer().sendMessage(ChatColor.GRAY + "Eliminate the monsters in the area first.");
             e.setCancelled(true);
-        }
-    }
-
-    /**
-     * Handling setting up shops.
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockDamaged(PlayerInteractEvent event) {
-        if (event.getItem() == null) return;
-        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-            if (event.getClickedBlock() == null || event.getClickedBlock().getType() == Material.AIR) return;
-            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItem());
-            if (nmsItem == null) return;
-            NBTTagCompound tag = nmsItem.getTag();
-            if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
-            event.setCancelled(true);
-            if (event.getPlayer().isSneaking()) {
-                ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
-                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                if (nms.getTag().hasKey("usage") && nms.getTag().getString("usage").equalsIgnoreCase("profile")) {
-                    if (event.getPlayer().isOp()) {
-//                        RealmInstance.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
-                    } else {
-                        event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "COMING SOON..");
-                    }
-                }
-            } else {
-//                if (event.getClickedBlock().getType() == Material.PORTAL) {
-//                    if (RealmInstance.getInstance().getPlayerRealm(event.getPlayer()).isRealmPortalOpen()) {
-//                        if (RealmInstance.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()).getRealmOwner().equals(event.getPlayer())) {
-//                            RealmInstance.getInstance().removeRealm(RealmInstance.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()), false);
-//                        }
-//                    }
-//                }
-            }
         }
     }
 

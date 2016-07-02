@@ -605,17 +605,22 @@ public class API {
 
             long lastLogin = ((Long) DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid));
 
-            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid))
-                    && (lastLogin != 0 && (System.currentTimeMillis() - lastLogin) < 5000)) {
-                String kickMessage = ChatColor.RED + "You must wait 5 seconds before logging into a shard!";
+            //TODO: Remove this when the Database Wipes.
+            try {
+                if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid))
+                        && (lastLogin != 0 && (System.currentTimeMillis() - lastLogin) < 5000)) {
+                    String kickMessage = ChatColor.RED + "You must wait 5 seconds before logging into a shard!";
 
-                NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), kickMessage);
-                player.kickPlayer(ChatColor.RED + kickMessage);
-                return;
+                    NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), kickMessage);
+                    player.kickPlayer(ChatColor.RED + kickMessage);
+                    return;
+                }
+
+                if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid)))
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, false, true);
+            } catch (NullPointerException ignored) {
+
             }
-
-            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid)))
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, false, true);
 
             player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
