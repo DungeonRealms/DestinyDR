@@ -186,7 +186,6 @@ public class DamageListener implements Listener {
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
-
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -196,13 +195,14 @@ public class DamageListener implements Listener {
             }
         }
 
+        Entity damager = event.getDamager();
         LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
                 : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
 
         if (API.isPlayer(leDamageSource) && event.getEntity().getLocation().distance(leDamageSource.getLocation()) >= 10D)
             ((Player) leDamageSource).playSound(leDamageSource.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
 
-        if (API.isInSafeRegion(leDamageSource.getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
+        if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
             event.setDamage(0);
             event.setCancelled(true);
             if (API.isPlayer(leDamageSource)) {
@@ -228,7 +228,7 @@ public class DamageListener implements Listener {
                     event.getEntity();
                     event.setCancelled(true);
                     event.setDamage(0);
-                    ((Player) leDamageSource).updateInventory();
+                    ((Player) damager).updateInventory();
                     return;
                 }
             }
@@ -268,7 +268,7 @@ public class DamageListener implements Listener {
                     }
             }
 
-            Player attacker = (Player) leDamageSource;
+            Player attacker = (Player) event.getDamager();
 
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker) <= 0) {
                 event.setCancelled(true);
@@ -283,7 +283,7 @@ public class DamageListener implements Listener {
             }
 
 
-            if (event.getEntity() instanceof Player && leDamageSource instanceof Player) {
+            if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
                 if (Cooldown.hasCooldown(attacker.getUniqueId())) {
                     event.setCancelled(true);
                     event.setDamage(0);
@@ -341,16 +341,16 @@ public class DamageListener implements Listener {
 
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
 
-            if (API.isPlayer(leDamageSource) && API.isPlayer(event.getEntity())) {
-                if (API.getGamePlayer((Player) event.getEntity()) != null && API.getGamePlayer((Player) leDamageSource) != null) {
+            if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
+                if (API.getGamePlayer((Player) event.getEntity()) != null && API.getGamePlayer((Player) event.getDamager()) != null) {
                     if (API.getGamePlayer((Player) event.getEntity()).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                        if (API.getGamePlayer((Player) leDamageSource).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leDamageSource.getUniqueId()).toString())) {
+                        if (API.getGamePlayer((Player) event.getDamager()).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, event.getDamager().getUniqueId()).toString())) {
                                 if (finalDamage >= HealthHandler.getInstance().getPlayerHPLive((Player) event.getEntity())) {
                                     event.setCancelled(true);
                                     event.setDamage(0);
-                                    leDamageSource.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + event.getEntity().getName() + "!");
-                                    event.getEntity().sendMessage(ChatColor.YELLOW + leDamageSource.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                                    event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + event.getEntity().getName() + "!");
+                                    event.getEntity().sendMessage(ChatColor.YELLOW + event.getDamager().getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
                                     return;
                                 }
                             }
@@ -358,8 +358,8 @@ public class DamageListener implements Listener {
                     }
                 }
             }
-        } else if (DamageAPI.isBowProjectile(leDamageSource)) { // bow
-            Projectile attackingArrow = (Projectile) leDamageSource;
+        } else if (DamageAPI.isBowProjectile(event.getDamager())) { // bow
+            Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
@@ -367,8 +367,8 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(((Player) attackingArrow.getShooter()));
             }
-        } else if (DamageAPI.isStaffProjectile(leDamageSource)) { // staff
-            Projectile staffProjectile = (Projectile) leDamageSource;
+        } else if (DamageAPI.isStaffProjectile(event.getDamager())) { // staff
+            Projectile staffProjectile = (Projectile) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
             if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
@@ -442,6 +442,7 @@ public class DamageListener implements Listener {
             }
         }
     }
+
 
     /**
      * Makes mobs untarget a player after they have entered a safezone.
