@@ -679,11 +679,11 @@ public class DamageAPI {
                 return new double[]{Math.round(totalArmorReduction), totalArmor};
             }
             // REFLECT
-            int reflectChance = defenderAttributes.get("reflection")[1];
-            if (new Random().nextInt(100) < reflectChance) {
-                totalArmorReduction = -3;
-                return new double[]{Math.round(totalArmorReduction), totalArmor};
-            }
+//            int reflectChance = defenderAttributes.get("reflection")[1];
+//            if (new Random().nextInt(100) < reflectChance) {
+//                totalArmorReduction = -3;
+//                return new double[]{Math.round(totalArmorReduction), totalArmor};
+//            }
             // BASE ARMOR
             totalArmor = Utils.randInt(defenderAttributes.get("armor")[0], defenderAttributes.get("armor")[1]);
 
