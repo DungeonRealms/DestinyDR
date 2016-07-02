@@ -13,6 +13,7 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -168,7 +169,9 @@ public class ShopListener implements Listener {
                             return;
                         } else {
                             net.minecraft.server.v1_9_R2.ItemStack newNMS = CraftItemStack.asNMSCopy(stackClicked.clone());
-                            newNMS.getTag().setInt("Price", number);
+                            NBTTagCompound tagCompound = newNMS.getTag() == null ? new NBTTagCompound() : newNMS.getTag();
+                            tagCompound.setInt("Price", number);
+                            newNMS.setTag(tagCompound);
                             if (shop.inventory.firstEmpty() >= 0) {
                                 int slot = shop.inventory.firstEmpty();
 
