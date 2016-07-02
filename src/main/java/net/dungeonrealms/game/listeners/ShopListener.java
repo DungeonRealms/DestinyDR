@@ -226,7 +226,7 @@ public class ShopListener implements Listener {
                 clicker.sendMessage(ChatColor.RED.toString() + "Move item in slot first.");
                 event.setCancelled(true);
             } else {
-                if(event.getRawSlot() >= event.getInventory().getSize())
+                if (event.getRawSlot() >= event.getInventory().getSize())
                     return;
                 if (event.isLeftClick()) {
                     if (stackInSlot == null || stackInSlot.getType() == Material.AIR) {
@@ -311,7 +311,11 @@ public class ShopListener implements Listener {
                                     clicker.sendMessage("There is no room for this item in your Shop");
                                 }
                             }
-                        }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
+                        }, player -> {
+                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                            BankMechanics.shopPricing.remove(clicker.getName());
+                            player.sendMessage(ChatColor.RED + "Action cancelled.");
+                        });
                         clicker.closeInventory();
                         return;
                     }
