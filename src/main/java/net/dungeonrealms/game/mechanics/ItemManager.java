@@ -826,7 +826,7 @@ public class ItemManager {
 //                + ChatColor.BLACK.toString() + "+" + df.format("STR * 0.03") + "% Armor" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("armor"))) + "% ARMOR" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("block"))) + "% BLOCK" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.015) + "% AXE DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.015) + "% AXE DMG" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.023) + "% Polearm DMG" + "\n" + "\n"
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.DEXTERITY) + " Dexterity" + "\n"
                 + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Archer'" + "\n"
