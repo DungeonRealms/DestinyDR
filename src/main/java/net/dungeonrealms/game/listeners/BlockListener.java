@@ -439,6 +439,7 @@ public class BlockListener implements Listener {
         Block block = e.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
+        if (API.isUUID(block.getWorld().getName())) return;
         LootSpawner loot = LootManager.getSpawner(e.getClickedBlock().getLocation());
         if (loot == null) {
             e.setCancelled(true);
