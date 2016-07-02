@@ -1055,21 +1055,6 @@ public class MainListener implements Listener {
                 event.setCancelled(true);
             } else if (API.isInSafeRegion(event.getTarget().getLocation())) {
                 event.setCancelled(true);
-            } else {
-                LivingEntity entity = (LivingEntity) event.getEntity();
-                if (entity.hasMetadata("charging")) {
-                    event.setCancelled(true);
-                } else if (entity.hasMetadata("powermove")) {
-                    switch (entity.getMetadata("powermove").get(0).asString()) {
-                        case "tripleshot":
-                            break;
-                        case "powerstrike":
-                            break;
-                        case "whirlwind":
-                            break;
-                    }
-                    entity.removeMetadata("powermove", DungeonRealms.getInstance());
-                }
             }
         }
     }
