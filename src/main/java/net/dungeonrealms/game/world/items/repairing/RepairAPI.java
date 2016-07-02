@@ -200,7 +200,7 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0) return 0;
-        double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / Math.min(1, itemStack.getType().getMaxDurability()));
+        double percentDurability = (Math.min(1, (itemStack.getType().getMaxDurability() - itemStack.getDurability())) / Math.min(1, itemStack.getType().getMaxDurability()));
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
             //Get the full durability, not sure why its lowballing.
             return Math.round(percentDurability * (1500 / 15));
@@ -404,7 +404,6 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return false;
         if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
-            Utils.log.info(getCustomDurability(itemStack) + " " + "< 1500");
             if (getCustomDurability(itemStack) < 1500)
                 return true;
         }

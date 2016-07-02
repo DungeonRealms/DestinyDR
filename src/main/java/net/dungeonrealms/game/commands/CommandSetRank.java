@@ -28,14 +28,33 @@ public class CommandSetRank extends BasicCommand{
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (!(sender instanceof ConsoleCommandSender) && !(Rank.isDev((Player) sender))) return false;
+        if (!(sender instanceof ConsoleCommandSender) && !(Rank.isGM((Player) sender))) return false;
 
         String[] ranks = new String[] { "DEV", "GM", "PMOD", "SUPPORT", "YOUTUBE", "BUILDER", "SUB++", "SUB+", "SUB", "DEFAULT" };
+
+        // If the user isn't a dev and they're at this point, it means they're a GM.
+        // We can't allow for SUB ranks because they need more technical execution & that's for a support agent.
+        // We can, however, allow them to set new PMODs / remove them.
+        boolean isGM = false;
+        if (!(sender instanceof ConsoleCommandSender) && !(Rank.isDev((Player) sender))) {
+            ranks = new String[] { "PMOD", "BUILDER", "DEFAULT" };
+            isGM = true;
+        }
 
         if (args.length >= 2 && Arrays.asList(ranks).contains(args[1].toUpperCase())) {
             try {
                 UUID uuid = Bukkit.getPlayer(args[0]) != null ? Bukkit.getPlayer(args[0]).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
                 String rank = args[1].toUpperCase();
+
+                // Check for any ranks that cannot be revoked by a GM.
+                // DEV | GM | SUPPORT | YOUTUBE
+                if (isGM) {
+                    String currentRank = Rank.getInstance().getRank(uuid).toUpperCase();
+                    if (currentRank.equals("DEV") || currentRank.equals("GM") || currentRank.equals("SUPPORT") || currentRank.equals("YOUTUBE")) {
+                        sender.sendMessage(ChatColor.RED + "You can't change the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.RED + " as they're a " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank + ChatColor.RED + ".");
+                        return false;
+                    }
+                }
 
                 // Only update the server rank if the user is currently logged in.
                 if (Bukkit.getPlayer(args[0]) != null) {

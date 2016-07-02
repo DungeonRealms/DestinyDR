@@ -154,9 +154,10 @@ public interface DRMonster {
             }
             ItemStack drop = toDrop.get(random.nextInt(toDrop.size()));
             RepairAPI.setCustomItemDurability(drop, RandomHelper.getRandomNumberBetween(200, 1500));
-            if (drop != null && drop.getType() != Material.AIR)
+            if (drop != null && drop.getType() != Material.AIR) {
                 EnchantmentAPI.removeGlow(drop);
-            world.getWorld().dropItem(loc.add(0, 1, 0), drop);
+                world.getWorld().dropItem(loc.add(0, 1, 0), drop);
+            }
         }
         int scrollDrop = random.nextInt(100);
         int scrollDropChance;

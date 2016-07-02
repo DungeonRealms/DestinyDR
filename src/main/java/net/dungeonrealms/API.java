@@ -558,6 +558,7 @@ public class API {
     /**
      * Safely logs out all players when the server restarts
      *
+     * @param customStop
      * @since 1.0
      */
     public static void logoutAllPlayers(boolean customStop) {
@@ -573,7 +574,7 @@ public class API {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
                     DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-                }, 10);
+                }, 1L);
             }
         }
     }
@@ -592,34 +593,48 @@ public class API {
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
             return;
-        } else {
-            if (player != null) {
+        } else if (player != null) {
 
-                if (PunishUtils.isBanned(uuid)) {
-                    String name = DatabaseAPI.getInstance().getOfflineName(uuid);
-                    String banMessage = PunishUtils.getBannedMessage(uuid);
-                    PunishUtils.kick(name, banMessage);
-                    player.kickPlayer(ChatColor.RED + banMessage);
-                    return;
-                }
-
-                player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
-
-                if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {
-                    player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
-                    return;
-                } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
-                    player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
-                            ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
-                    return;
-                } else if ((DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) || (DungeonRealms.getInstance().isSupportShard && !Rank.isSupport(player))) {
-                    player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
-                    return;
-                }
-            } else {
+            if (PunishUtils.isBanned(uuid)) {
+                String name = DatabaseAPI.getInstance().getOfflineName(uuid);
+                String banMessage = PunishUtils.getBannedMessage(uuid);
+                PunishUtils.kick(name, banMessage);
+                player.kickPlayer(ChatColor.RED + banMessage);
                 return;
             }
+
+            long lastLogin = ((Long) DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid));
+
+            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid))
+                    && (lastLogin != 0 && (System.currentTimeMillis() - lastLogin) < 5000)) {
+                String kickMessage = ChatColor.RED + "You must wait 5 seconds before logging into a shard!";
+
+                NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), kickMessage);
+                player.kickPlayer(ChatColor.RED + kickMessage);
+                return;
+            }
+
+            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid)))
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, false, true);
+
+            player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
+
+            if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {
+                player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
+                return;
+            } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
+                player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
+                        ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
+                return;
+            } else if ((DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) || (DungeonRealms.getInstance().isSupportShard && !Rank.isSupport(player))) {
+                player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
+                return;
+            }
+        } else {
+            return;
         }
+
+        GamePlayer gp = new GamePlayer(player);
 
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.
@@ -679,8 +694,6 @@ public class API {
             });
 
         }
-
-        PlayerManager.checkInventory(uuid);
 
         // Essentials
         //Subscription.getInstance().handleJoin(player);
@@ -846,10 +859,11 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
         }
 
-        GamePlayer gp = new GamePlayer(player);
-
         // calculate attributes
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> API.calculateAllAttributes(player), 5L);
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+            API.calculateAllAttributes(player);
+            PlayerManager.checkInventory(uuid);
+        }, 5L);
 
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {

@@ -11,8 +11,10 @@ import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerPinger;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.response.BungeePingResponse;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -40,6 +42,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         return instance;
     }
 
+    private final String MOTD = "&6Dungeon Realms &8- &7&bNew code in 1.9!                          &7Open Beta Weekend         &8-&f&nwww.dungeonrealms.net &8-";
+
     @Override
     public void onEnable() {
         instance = this;
@@ -58,10 +62,16 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         this.getProxy().getPluginManager().registerListener(this, this);
     }
 
-//    public String getRank(UUID uuid) {
-//
-//        database.getCollection("player_data").
-//    }
+    @EventHandler
+    public void onPing(ProxyPingEvent event) {
+        ServerPing ping = event.getResponse();
+
+        int players = ping.getPlayers().getOnline();
+        ServerPing.PlayerInfo[] sample = ping.getPlayers().getSample();
+
+        ping.setDescription(ChatColor.translateAlternateColorCodes('&', MOTD));
+        ping.setPlayers(new ServerPing.Players(500, players, sample));
+    }
 
     public List<ServerInfo> getOptimalShards() {
         List<ServerInfo> server = new ArrayList<>();
