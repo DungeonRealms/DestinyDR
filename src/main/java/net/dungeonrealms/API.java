@@ -1602,6 +1602,7 @@ public class API {
     }
 
     public static boolean isWeapon(ItemStack stack) {
+        if (stack == null || stack.getType() == Material.AIR) return false;
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         if (nms == null || nms.getTag() == null) return false;
         return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon");

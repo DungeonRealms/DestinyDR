@@ -18,7 +18,6 @@ import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -26,6 +25,8 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
@@ -36,6 +37,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
@@ -950,6 +952,182 @@ public class DamageListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void handlePlayerDeath(PlayerDeathEvent event) {
+        event.setDeathMessage("");
+        Player p = event.getEntity();
+        final Location deathLocation = p.getEyeLocation();
+        p.setExp(0F);
+        p.setLevel(0);
+        for (ItemStack itemStack : new ArrayList<>(event.getDrops())) {
+            if (API.isItemSoulbound(itemStack) || !API.isItemDroppable(itemStack) || API.isItemUntradeable(itemStack)) {
+                event.getDrops().remove(itemStack);
+            }
+        }
+        List<ItemStack> gearToSave = new ArrayList<>();
+        KarmaHandler.EnumPlayerAlignments alignment = KarmaHandler.EnumPlayerAlignments.getByName(KarmaHandler.getInstance().getPlayerRawAlignment(p));
+
+        if (alignment == null) return;
+
+        boolean neutral_boots = false, neutral_legs = false, neutral_chest = false, neutral_helmet = false, neutral_weapon = false;
+        if (alignment == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
+            // 50% of weapon dropping, 25% for every piece of equipped armor.
+            if (new Random().nextInt(100) <= 50) {
+                neutral_weapon = true;
+            }
+
+            if (new Random().nextInt(100) <= 25) {
+                int index = new Random().nextInt(4);
+                if (index == 0) {
+                    neutral_boots = true;
+                } else if (index == 1) {
+                    neutral_legs = true;
+                } else if (index == 2) {
+                    neutral_chest = true;
+                } else if (index == 3) {
+                    neutral_helmet = true;
+                }
+            }
+        }
+        if (alignment != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+            double durability_to_take = (1500 * 0.30D); // 30%
+            double w_durability_to_take = (1500 * 0.30D);
+
+            if (!neutral_boots && p.getInventory().getBoots() != null && p.getInventory().getBoots().getType() != Material.AIR) {
+                ItemStack boots = p.getInventory().getBoots();
+                event.getDrops().remove(boots);
+                p.getInventory().setBoots(new ItemStack(Material.AIR));
+                if ((RepairAPI.getCustomDurability(boots) - durability_to_take) > 0.1D) {
+                    RepairAPI.subtractCustomDurability(p, boots, durability_to_take);
+                    gearToSave.add(boots);
+                }
+            }
+            if (!neutral_legs && p.getInventory().getLeggings() != null && p.getInventory().getLeggings().getType() != Material.AIR) {
+                ItemStack leggings = p.getInventory().getLeggings();
+                event.getDrops().remove(leggings);
+                p.getInventory().setLeggings(new ItemStack(Material.AIR));
+                if ((RepairAPI.getCustomDurability(leggings) - durability_to_take) > 0.1D) {
+                    RepairAPI.subtractCustomDurability(p, leggings, durability_to_take);
+                    gearToSave.add(leggings);
+                }
+            }
+            if (!neutral_chest && p.getInventory().getChestplate() != null && p.getInventory().getChestplate().getType() != Material.AIR) {
+                ItemStack chestplate = p.getInventory().getChestplate();
+                event.getDrops().remove(chestplate);
+                p.getInventory().setChestplate(new ItemStack(Material.AIR));
+                if ((RepairAPI.getCustomDurability(chestplate) - durability_to_take) > 0.1D) {
+                    RepairAPI.subtractCustomDurability(p, chestplate, durability_to_take);
+                    gearToSave.add(chestplate);
+                }
+            }
+            if (!neutral_helmet && p.getInventory().getHelmet() != null && p.getInventory().getHelmet().getType() != Material.AIR) {
+                ItemStack helmet = p.getInventory().getHelmet();
+                event.getDrops().remove(helmet);
+                p.getInventory().setHelmet(new ItemStack(Material.AIR));
+                if ((RepairAPI.getCustomDurability(helmet) - durability_to_take) > 0.1D) {
+                    RepairAPI.subtractCustomDurability(p, helmet, durability_to_take);
+                    gearToSave.add(helmet);
+                }
+            }
+
+            List<ItemStack> drop_copy = new ArrayList<>(event.getDrops());
+
+            for (ItemStack is : drop_copy) {
+                if (Mining.isDRPickaxe(is) || Fishing.isDRFishingPole(is)) {
+                    event.getDrops().remove(is);
+                    if ((RepairAPI.getCustomDurability(is) - w_durability_to_take) > 0.1D) {
+                        RepairAPI.subtractCustomDurability(p, is, w_durability_to_take);
+                        gearToSave.add(is);
+                    }
+                }
+            }
+
+            ItemStack weapon_slot = p.getInventory().getItem(0);
+            if (!neutral_weapon && API.isWeapon(weapon_slot)) {
+                event.getDrops().remove(weapon_slot);
+                if ((RepairAPI.getCustomDurability(weapon_slot) - w_durability_to_take) > 0.1D) {
+                    RepairAPI.subtractCustomDurability(p, weapon_slot, w_durability_to_take);
+                    gearToSave.add(weapon_slot);
+                }
+            }
+        }
+
+        if (MountUtils.inventories.containsKey(p.getUniqueId())) {
+            boolean hasMuleOut = false;
+            if (EntityAPI.hasMountOut(p.getUniqueId())) {
+                net.minecraft.server.v1_9_R2.Entity entity = EntityAPI.getPlayerMount(p.getUniqueId());
+                if (entity.getBukkitEntity() instanceof Horse) {
+                    Horse horse = (Horse) entity.getBukkitEntity();
+                    if (horse.getVariant() == Variant.MULE) {
+                        hasMuleOut = true;
+                    }
+                }
+            }
+
+            if (hasMuleOut) {
+                for (ItemStack stack : MountUtils.inventories.get(p.getUniqueId()).getContents()) {
+                    event.getDrops().add(stack);
+                }
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    if  (Bukkit.getPlayer(p.getUniqueId()) != null) {
+                        MountUtils.inventories.remove(p.getUniqueId());
+                    }
+                });
+            }
+        }
+
+        for (ItemStack stack : event.getDrops()) {
+            if (API.isItemPermanentlyUntradeable(stack)) {
+                gearToSave.add(stack);
+            }
+        }
+
+        for (ItemStack stack : gearToSave) {
+            if (event.getDrops().contains(stack)) {
+                event.getDrops().remove(stack);
+            }
+        }
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            for (ItemStack stack : new ArrayList<>(event.getDrops())) {
+                p.getWorld().dropItem(deathLocation, stack);
+                event.getDrops().remove(stack);
+            }
+        }, 1L);
+
+        Location respawnLocation = Teleportation.Cyrennica;
+        if (alignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+            respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size()));
+        }
+        for (PotionEffect potionEffect : p.getActivePotionEffects()) {
+            p.removePotionEffect(potionEffect.getType());
+        }
+        p.setCanPickupItems(false);
+        p.setHealth(20);
+        p.setCanPickupItems(false);
+        p.setGameMode(GameMode.SPECTATOR);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 40, 1));
+        p.teleport(respawnLocation);
+        p.setFireTicks(0);
+        p.setFallDistance(0);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            p.setCanPickupItems(true);
+            p.setGameMode(GameMode.SURVIVAL);
+            GamePlayer gamePlayer = API.getGamePlayer(p);
+            if (gamePlayer != null) {
+                gamePlayer.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
+                gamePlayer.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
+            }
+
+            for (ItemStack stack : gearToSave) {
+                p.getInventory().addItem(stack);
+            }
+
+            ItemManager.giveStarter(p);
+        }, 20L);
+    }
+
     /**
      * Listen for Players dying
      * NOT TO BE USED FOR NON-PLAYERS
@@ -960,7 +1138,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    /*@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDeath(PlayerDeathEvent event) {
         event.setDeathMessage("");
         Player player = event.getEntity();
@@ -1097,8 +1275,6 @@ public class DamageListener implements Listener {
                 gp.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
                 gp.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
             }
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
-                    ("subtype", "starter").addLore(org.bukkit.ChatColor.GRAY + "Untradeable").build());
             if (finalSavedArmorContents) {
 
 //            	for(ItemStack itemStack : savedItems){
@@ -1122,7 +1298,7 @@ public class DamageListener implements Listener {
             }
             ItemManager.giveStarter(player);
         }, 20L);
-    }
+    }*/
 
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)

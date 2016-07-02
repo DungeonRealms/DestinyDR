@@ -945,7 +945,7 @@ public class MainListener implements Listener {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity entity : event.getChunk().getEntities()) {
-                    if (!(entity instanceof Item) && !(entity instanceof Player)) {
+                    if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {
                         if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
                             entity.remove();
                         }
