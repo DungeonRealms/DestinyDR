@@ -184,8 +184,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
-            return;
+        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager())))) return;
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -236,11 +235,11 @@ public class DamageListener implements Listener {
 
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
-        if (API.isPlayer(leDamageSource)) {
-            if (API.isNonPvPRegion(leDamageSource.getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
-                if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
-                    if (DuelingMechanics.isDueling(event.getEntity().getUniqueId()) && DuelingMechanics.isDueling(leDamageSource.getUniqueId())) {
-                        if (!DuelingMechanics.isDuelPartner(leDamageSource.getUniqueId(), event.getEntity().getUniqueId())) {
+        if (API.isPlayer(event.getDamager())) {
+            if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
+                if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
+                    if (DuelingMechanics.isDueling(event.getEntity().getUniqueId()) && DuelingMechanics.isDueling(event.getDamager().getUniqueId())) {
+                        if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
                             event.setCancelled(true);
                             event.setDamage(0);
                             return;
@@ -254,18 +253,19 @@ public class DamageListener implements Listener {
             }
 
             if (API.isPlayer(event.getEntity())) {
-                if (Affair.getInstance().areInSameParty((Player) leDamageSource, (Player) event.getEntity())) {
+                if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
                     event.setCancelled(true);
                     event.setDamage(0);
                     return;
                 }
 
-                if (!GuildDatabaseAPI.get().isGuildNull(leDamageSource.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(event.getEntity().getUniqueId()))
-                    if (GuildDatabaseAPI.get().getGuildOf(leDamageSource.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
+                if (!GuildDatabaseAPI.get().isGuildNull(event.getDamager().getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(event.getEntity().getUniqueId())) {
+                    if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
                     }
+                }
             }
 
             Player attacker = (Player) event.getDamager();
