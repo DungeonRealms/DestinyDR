@@ -5,7 +5,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
@@ -100,7 +99,7 @@ public class EliteMobSpawner {
                             Bukkit.getScheduler().cancelTask(timerID);
                         } else
                             spawnIn();
-                    }, 0L, 200L);
+                    }, 0L, 20L);
                 }
             } else {
                 if (timerID != -1) {
@@ -108,7 +107,7 @@ public class EliteMobSpawner {
                     timerID = -1;
                 }
             }
-        }, 0L, 100L);
+        }, 0L, 40L);
     }
 
     private void spawnIn() {
@@ -117,13 +116,17 @@ public class EliteMobSpawner {
                 LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
                 if (monster.isAlive()) {
                     if (API.isInSafeRegion(livingEntity.getLocation())) {
-                        ((Creature) livingEntity).setTarget(null);
+                        if (livingEntity instanceof Creature) {
+                            ((Creature) livingEntity).setTarget(null);
+                        }
                         monster.setPosition(location.getX(), location.getY(), location.getZ());
                         return;
                     }
                     double num = livingEntity.getLocation().distanceSquared(location);
                     if (num > 900) {
-                        ((Creature) livingEntity).setTarget(null);
+                        if (livingEntity instanceof Creature) {
+                            ((Creature) livingEntity).setTarget(null);
+                        }
                         monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
                     }
                 } else {
@@ -133,7 +136,6 @@ public class EliteMobSpawner {
         }
         if (SPAWNED_MONSTERS.isEmpty()) {
             if (!canMobsSpawn()) {
-                counter = counter + 10;
                 //Mobs haven't passed their respawn timer yet.
                 return;
             }
@@ -154,7 +156,6 @@ public class EliteMobSpawner {
                 return;
             }
             World world = armorstand.getWorld();
-            EnumEntityType type = EnumEntityType.HOSTILE_MOB;
             if (monsterType == null) {
                 String mob = spawnType;
                 if (hasCustomName) {
@@ -359,6 +360,7 @@ public class EliteMobSpawner {
     //Checks whether mobs can spawn based on their delay set in config.
     private boolean canMobsSpawn() {
         if (counter < respawnDelay) {
+            counter++;
             return false;
         }
         counter = 0;
