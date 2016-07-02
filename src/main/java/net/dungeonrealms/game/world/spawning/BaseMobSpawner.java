@@ -3,7 +3,6 @@ package net.dungeonrealms.game.world.spawning;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.minecraft.server.v1_9_R2.Entity;
@@ -144,7 +143,6 @@ public class BaseMobSpawner {
                 return;
             }
             World world = armorstand.getWorld();
-            EnumEntityType type = EnumEntityType.HOSTILE_MOB;
             if (monsterType == null) {
                 String mob = spawnType;
                 if (hasCustomName) {
@@ -195,11 +193,7 @@ public class BaseMobSpawner {
             if (firstSpawn) {
                 firstSpawn = false;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    int amountToSpawn = spawnAmount;
-                    if (amountToSpawn > 3) {
-                        amountToSpawn = 3;
-                    }
-                    for (int i = 0; i < amountToSpawn; i++) {
+                    for (int i = 0; i < 2; i++) {
                         Entity newEntity = SpawningMechanics.getMob(world, tier, monsterType);
                         Location firstSpawn = getRandomLocation(loc, ((loc.getX() - mininmumXZ) - maximumXZ), ((loc.getX() + mininmumXZ) + maximumXZ), ((loc.getZ() - mininmumXZ) - maximumXZ), ((loc.getZ() + mininmumXZ) + maximumXZ));
                         if (firstSpawn.getBlock().getType() != Material.AIR) {
