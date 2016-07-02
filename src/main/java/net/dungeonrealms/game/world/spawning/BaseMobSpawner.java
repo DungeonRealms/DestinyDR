@@ -99,14 +99,18 @@ public class BaseMobSpawner {
                 if (monster.isAlive()) {
                     LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
                     if (API.isInSafeRegion(livingEntity.getLocation())) {
-                        ((Creature) livingEntity).setTarget(null);
+                        if (livingEntity instanceof Creature) {
+                            ((Creature) livingEntity).setTarget(null);
+                        }
                         monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                         continue;
                     }
                     double num = livingEntity.getLocation().distanceSquared(loc);
                     if (num > 700) {
                         monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
-                        ((Creature) livingEntity).setTarget(null);
+                        if (livingEntity instanceof Creature) {
+                            ((Creature) livingEntity).setTarget(null);
+                        }
                     }
                 } else {
                     RESPAWN_TIMES.put(monster, respawnDelay);

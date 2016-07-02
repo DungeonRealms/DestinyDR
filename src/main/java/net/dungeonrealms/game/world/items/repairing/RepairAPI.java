@@ -179,8 +179,8 @@ public class RepairAPI {
             repair_cost = repair_cost * global_multiplier;
         }
 
-        if (repair_cost < 1) {
-            repair_cost = 1;
+        if (repair_cost < 10) {
+            repair_cost = 10;
         }
 
         return (int) Math.round(repair_cost);
