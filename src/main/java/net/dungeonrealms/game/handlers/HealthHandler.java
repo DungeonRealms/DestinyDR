@@ -524,7 +524,7 @@ public class HealthHandler implements GenericMechanic {
     public boolean handlePlayerDeath(Player player, LivingEntity leAttacker) {
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
         if (player.hasMetadata("last_death_time")) {
-            if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
+            if (System.currentTimeMillis() - player.getMetadata("last_death_time").get(0).asLong() > 100) {
                 String killerName = "";
                 if (leAttacker instanceof Player) {
                     killerName = GameChat.getPreMessage((Player) leAttacker).replaceAll(":", "").trim();
@@ -561,7 +561,7 @@ public class HealthHandler implements GenericMechanic {
                     }
                     API.calculateAllAttributes(player);
                     CombatLog.removeFromCombat(player);
-                }, 5L);
+                }, 1L);
                 return true;
             }
         } else {
