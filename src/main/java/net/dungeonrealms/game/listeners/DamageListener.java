@@ -182,14 +182,10 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
-            return;
+        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager())))) return;
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
-
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-
         if (event.getEntity() instanceof LivingEntity) {
             if (!(event.getEntity() instanceof Player)) {
                 if (!event.getEntity().hasMetadata("type")) return;
@@ -206,9 +202,9 @@ public class DamageListener implements Listener {
         if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
             event.setDamage(0);
             event.setCancelled(true);
-            if (API.isPlayer(leDamageSource))
+            if (API.isPlayer(leDamageSource)) {
                 ((Player) leDamageSource).updateInventory();
-            ;
+            }
             return;
         }
 
@@ -261,10 +257,12 @@ public class DamageListener implements Listener {
                     return;
                 }
 
-                if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
+                if (!GuildDatabaseAPI.get().isGuildNull(event.getDamager().getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(event.getEntity().getUniqueId())) {
+                    if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
                 }
             }
 
@@ -282,6 +280,7 @@ public class DamageListener implements Listener {
                 return;
             }
 
+
             if (Cooldown.hasCooldown(attacker.getUniqueId())) {
                 event.setCancelled(true);
                 event.setDamage(0);
@@ -292,15 +291,6 @@ public class DamageListener implements Listener {
             Cooldown.addCooldown(attacker.getUniqueId(), 350L);
             event.getEntity().setVelocity(event.getEntity().getVelocity().divide(new Vector(2, 2, 2)));
 
-//            if (attacker.hasMetadata("last_Attack")) {
-//                if (System.currentTimeMillis() - attacker.getMetadata("last_Attack").get(0).asLong() < 70) {
-//                    event.setCancelled(true);
-//                    event.setDamage(0);
-//                    return;
-//                }
-//            }
-//            attacker.setMetadata("last_Attack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-
             if (CombatLog.isInCombat(attacker)) {
                 CombatLog.updateCombat(attacker);
             } else {
@@ -308,8 +298,12 @@ public class DamageListener implements Listener {
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getEquipment().getItemInMainHand()));
 
+
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-            if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) return;
+            if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) {
+                event.setDamage(1);
+                return;
+            }
 
             ItemType weaponType = new Attribute(attacker.getInventory().getItemInMainHand()).getItemType();
             Item.ItemTier tier = new Attribute(attacker.getInventory().getItemInMainHand()).getItemTier();
@@ -385,8 +379,7 @@ public class DamageListener implements Listener {
 
 
         LivingEntity entity = (LivingEntity) event.getEntity();
-        if (entity.getMetadata("tier").size() == 0)
-            return;
+        if (!entity.hasMetadata("tier")) return;
         if (PowerMove.chargedMonsters.contains(entity.getUniqueId()) || PowerMove.chargingMonsters.contains(entity.getUniqueId()))
             return;
 
