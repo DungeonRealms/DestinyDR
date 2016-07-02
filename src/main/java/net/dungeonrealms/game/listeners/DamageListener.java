@@ -259,8 +259,8 @@ public class DamageListener implements Listener {
                     return;
                 }
 
-                if (!GuildDatabaseAPI.get().isGuildNull(leDamageSource.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(event.getEntity().getUniqueId())) {
-                    if (GuildDatabaseAPI.get().getGuildOf(leDamageSource.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
+                if (!GuildDatabaseAPI.get().isGuildNull(event.getDamager().getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(event.getEntity().getUniqueId())) {
+                    if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
@@ -442,6 +442,7 @@ public class DamageListener implements Listener {
             }
         }
     }
+
 
     /**
      * Makes mobs untarget a player after they have entered a safezone.
@@ -823,7 +824,7 @@ public class DamageListener implements Listener {
 //                    if (!(shooter instanceof LivingEntity)) return;
 //                    LivingEntity leShooter = (LivingEntity) shooter;
 //                    if (API.isPlayer(leShooter)) {
-//                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player)leShooter, defender, event.getDamage(), 0, 0);
+//                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player)leShooter, defender, event.getDamage(), 0, 0, DamageCause.REFLECT);
 //                    }
 //                    else {
 //                        HealthHandler.getInstance().handleMonsterBeingDamaged(leShooter, defender, event.getDamage());
@@ -1089,11 +1090,18 @@ public class DamageListener implements Listener {
             }
         }
 
-        for (ItemStack stack : new ArrayList<>(event.getDrops())) {
-            p.getWorld().dropItemNaturally(deathLocation, stack);
-            event.getDrops().remove(stack);
+        List<ItemStack> toDrop = new ArrayList<>();
+        for (ItemStack stack : event.getDrops()) {
+            if (stack.getType() != Material.SKULL_ITEM) {
+                toDrop.add(stack);
+            }
         }
         event.getDrops().clear();
+
+        for (ItemStack stack : toDrop) {
+            event.getEntity().getWorld().dropItemNaturally(deathLocation, stack);
+        }
+        toDrop.clear();
 
         Location respawnLocation = Teleportation.Cyrennica;
         if (alignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
@@ -1105,12 +1113,14 @@ public class DamageListener implements Listener {
         p.setCanPickupItems(false);
         p.setHealth(20);
         p.setCanPickupItems(false);
+        event.getDrops().clear();
         p.setGameMode(GameMode.SPECTATOR);
         p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 40, 1));
         p.teleport(respawnLocation);
         p.setFireTicks(0);
         p.setFallDistance(0);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            event.getDrops().clear();
             p.setCanPickupItems(true);
             p.setGameMode(GameMode.SURVIVAL);
             GamePlayer gamePlayer = API.getGamePlayer(p);
@@ -1468,18 +1478,15 @@ public class DamageListener implements Listener {
                 dmg = maxHP * 0.03;
                 break;
             case SUFFOCATION:
-                dmg = 0;
-                break;
-            case VOID:
-                dmg = 0;
-                break;
+                return;
+            case VOID: // should only be when exiting realm
+                return;
             default:
-                dmg = 0;
-                break;
+                return;
         }
         if (dmg > 0) {
             if (event.getEntity() instanceof Player) {
-                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0);
+                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0, event.getCause());
             } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, dmg);
             }
