@@ -183,7 +183,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
         if (PunishUtils.isMuted(event.getPlayer().getUniqueId())) {
-            event.setMessage(PunishUtils.getMutedMessage(event.getPlayer().getUniqueId()));
+            event.getPlayer().sendMessage(PunishUtils.getMutedMessage(event.getPlayer().getUniqueId()));
             event.setCancelled(true);
             return;
         }

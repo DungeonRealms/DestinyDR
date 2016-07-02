@@ -174,7 +174,8 @@ public class RealmInstance implements Realms {
                     realm.setLoaded(true);
                     realm.setStatus(RealmStatus.CLOSED);
 
-                    doAfter.run();
+                    if (doAfter != null)
+                        doAfter.run();
                 });
             });
         });
@@ -207,7 +208,8 @@ public class RealmInstance implements Realms {
             AsyncRealmLoadCallback(player, false, loadTemplate(player.getUniqueId()), callback -> {
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                             loadRealmWorld(player.getUniqueId());
-                            doAfter.run();
+                            if (doAfter != null)
+                                doAfter.run();
                         }
                 );
             });
