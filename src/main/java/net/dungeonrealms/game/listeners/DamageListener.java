@@ -186,11 +186,7 @@ public class DamageListener implements Listener {
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
-        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
-                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
 
-        if ((!(API.isPlayer(leDamageSource))) && (!DamageAPI.isBowProjectile(leDamageSource) && (!DamageAPI.isStaffProjectile(leDamageSource))))
-            return;
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -200,6 +196,8 @@ public class DamageListener implements Listener {
             }
         }
 
+        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
+                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
 
         if (API.isPlayer(leDamageSource) && event.getEntity().getLocation().distance(leDamageSource.getLocation()) >= 10D)
             ((Player) leDamageSource).playSound(leDamageSource.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
