@@ -502,6 +502,10 @@ public class MainListener implements Listener {
                         event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85,
                                 362));
                         ItemManager.giveStarter(event.getPlayer());
+                        event.getPlayer().getInventory().addItem(ItemGenerator.getNamedItem("traininghelm"));
+                        event.getPlayer().getInventory().addItem(ItemGenerator.getNamedItem("trainingchest"));
+                        event.getPlayer().getInventory().addItem(ItemGenerator.getNamedItem("traininglegs"));
+                        event.getPlayer().getInventory().addItem(ItemGenerator.getNamedItem("trainingboots"));
                     }
                 }, pl -> pl.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
             }

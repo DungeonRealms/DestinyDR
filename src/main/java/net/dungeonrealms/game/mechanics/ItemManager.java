@@ -604,10 +604,6 @@ public class ItemManager {
 
         player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
                 ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
-        player.getInventory().addItem(ItemGenerator.getNamedItem("traininghelm"));
-        player.getInventory().addItem(ItemGenerator.getNamedItem("trainingchest"));
-        player.getInventory().addItem(ItemGenerator.getNamedItem("traininglegs"));
-        player.getInventory().addItem(ItemGenerator.getNamedItem("trainingboots"));
 
         if (Utils.randInt(0, 1) == 1) {
             player.getInventory().addItem(ItemGenerator.getNamedItem("training_sword"));
