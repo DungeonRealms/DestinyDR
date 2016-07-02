@@ -184,15 +184,9 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-<<<<<<< Temporary merge branch 1
         if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
-=======
-        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
-                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
-
-        if ((!(API.isPlayer(leDamageSource))) && (!DamageAPI.isBowProjectile(leDamageSource) && (!DamageAPI.isStaffProjectile(leDamageSource))))
->>>>>>> Temporary merge branch 2
             return;
+
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -202,6 +196,8 @@ public class DamageListener implements Listener {
             }
         }
 
+        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
+                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
 
         if (API.isPlayer(leDamageSource) && event.getEntity().getLocation().distance(leDamageSource.getLocation()) >= 10D)
             ((Player) leDamageSource).playSound(leDamageSource.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
@@ -1109,12 +1105,14 @@ public class DamageListener implements Listener {
         p.setCanPickupItems(false);
         p.setHealth(20);
         p.setCanPickupItems(false);
+        event.getDrops().clear();
         p.setGameMode(GameMode.SPECTATOR);
         p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 40, 1));
         p.teleport(respawnLocation);
         p.setFireTicks(0);
         p.setFallDistance(0);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            event.getDrops().clear();
             p.setCanPickupItems(true);
             p.setGameMode(GameMode.SURVIVAL);
             GamePlayer gamePlayer = API.getGamePlayer(p);
@@ -1132,182 +1130,7 @@ public class DamageListener implements Listener {
             ItemManager.giveStarter(p);
         }, 20L);
     }
-<<<<<<< Temporary merge branch 1
-    
-=======
 
-    /**
-     * Listen for Players dying
-     * NOT TO BE USED FOR NON-PLAYERS
-     * Drops items, not their head/hearthstone
-     * Saves their first slot
-     * Respawns them at Cyrennica
-     *
-     * @param event
-     * @since 1.0
-     */
-    /*@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        event.setDeathMessage("");
-        Player player = event.getEntity();
-        Location deathLocation = event.getEntity().getLocation();
-        ItemStack armorToSave[] = new ItemStack[5];
-//        ArrayList<ItemStack> savedItems = new ArrayList<ItemStack>();
-        Location respawnLocation = Teleportation.Cyrennica;
-        boolean savedArmorContents = false;
-        if (EntityAPI.hasPetOut(player.getUniqueId())) {
-            net.minecraft.server.v1_9_R2.Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
-            if (!pet.getBukkitEntity().isDead()) { //Safety check
-                pet.getBukkitEntity().remove();
-            }
-            EntityAPI.removePlayerPetList(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For its own safety, your pet has returned to its home.");
-        }
-        if (EntityAPI.hasMountOut(player.getUniqueId())) {
-            net.minecraft.server.v1_9_R2.Entity mount = EntityAPI.getPlayerMount(player.getUniqueId());
-            if (mount.isAlive()) {
-                mount.getBukkitEntity().remove();
-            }
-            EntityAPI.getPlayerMount(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For its own safety, your mount has returned to the stable.");
-        }
-
-//        for(ItemStack stack : event.getEntity().getInventory()){
-//        	if(stack == null || stack.getType() == Material.AIR) continue;
-//        	if(Mining.isDRPickaxe(stack) || Fishing.isDRFishingPole(stack)){
-//        		if (RepairAPI.getCustomDurability(stack) - 400 > 0.1D) {
-//                    RepairAPI.subtractCustomDurability(player, stack, 400);
-//                    savedItems.add(stack);
-//                }
-//        	}
-//        }
-
-
-        if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
-            if (player.getInventory().getItem(0) != null && player.getInventory().getItem(0).getType() != Material.AIR) {
-                armorToSave[4] = player.getInventory().getItem(0);
-            }
-            armorToSave[0] = player.getEquipment().getBoots();
-            armorToSave[1] = player.getEquipment().getLeggings();
-            armorToSave[2] = player.getEquipment().getChestplate();
-            armorToSave[3] = player.getEquipment().getHelmet();
-
-            for (ItemStack itemStack : armorToSave) {
-                if (itemStack != null && itemStack.getType() != Material.AIR) {
-                    if (!savedArmorContents) {
-                        savedArmorContents = true;
-                    }
-                }
-            }
-        } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.NEUTRAL.name())) {
-            if (new Random().nextInt(99) <= 75) {
-                if (player.getInventory().getItem(0) != null && player.getInventory().getItem(0).getType() != Material.AIR) {
-                    armorToSave[4] = player.getInventory().getItem(0);
-                }
-            }
-            if (new Random().nextInt(99) <= 75) {
-                armorToSave[0] = player.getEquipment().getBoots();
-            }
-            if (new Random().nextInt(99) <= 75) {
-                armorToSave[1] = player.getEquipment().getLeggings();
-            }
-            if (new Random().nextInt(99) <= 75) {
-                armorToSave[2] = player.getEquipment().getChestplate();
-            }
-            if (new Random().nextInt(99) <= 75) {
-                armorToSave[3] = player.getEquipment().getHelmet();
-            }
-            for (ItemStack itemStack : armorToSave) {
-                if (itemStack != null && itemStack.getType() != Material.AIR) {
-                    if (!savedArmorContents) {
-                        savedArmorContents = true;
-                    }
-                }
-            }
-        } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.CHAOTIC.name())) {
-            respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
-        }
-        event.setDroppedExp(0);
-        ArrayList<ItemStack> items = new ArrayList<>();
-        if (!event.getDrops().isEmpty()) {
-            for (ItemStack itemStack : event.getDrops()) {
-                if (itemStack != null && itemStack.getType() != Material.AIR) {
-                    if (itemStack.equals(armorToSave[0]) || itemStack.equals(armorToSave[1]) || itemStack.equals(armorToSave[2]) || itemStack.equals(armorToSave[3]) || itemStack.equals(armorToSave[4])) {
-                        //event.getDrops().remove(itemStack);
-                        continue;
-                    }
-                    net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-                    if (nms != null) {
-                        if (nms.getTag() != null) {
-                            if ((nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) || nms.hasTag() && nms.getTag().hasKey("subtype")) {
-                                //event.getDrops().remove(itemStack);
-                                continue;
-                            }
-                        }
-                    }
-                    if (API.isItemUntradeable(itemStack) || API.isItemPermanentlyUntradeable(itemStack) || API.isItemSoulbound(itemStack))
-                        continue;
-//                    if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
-//                        //event.getDrops().remove(itemStack);
-//                        continue;
-//                    }
-                    items.add(itemStack);
-                }
-            }
-        }
-        event.getDrops().clear();
-        for (ItemStack itemStack : items) {
-            event.getEntity().getWorld().dropItemNaturally(deathLocation, itemStack);
-        }
-        items.clear();
-        player.teleport(respawnLocation);
-        player.setHealth(20);
-        player.teleport(respawnLocation);
-        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
-            player.removePotionEffect(potionEffect.getType());
-        }
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
-        player.teleport(respawnLocation);
-        player.setFireTicks(0);
-        player.setMaximumNoDamageTicks(50);
-        player.setNoDamageTicks(50);
-        player.setFallDistance(0);
-        final boolean finalSavedArmorContents = savedArmorContents;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            HealthHandler.getInstance().setPlayerMaxHPLive(player, 50);
-            HealthHandler.getInstance().setPlayerHPLive(player, 50);
-            PlayerManager.checkInventory(player.getUniqueId());
-            GamePlayer gp = API.getGamePlayer(player);
-            if (gp != null) {
-                gp.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
-                gp.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
-            }
-            if (finalSavedArmorContents) {
-
-//            	for(ItemStack itemStack : savedItems){
-//            		 if (itemStack != null && itemStack.getType() != Material.AIR) {
-//                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
-//                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
-//                         }
-//                         player.getInventory().addItem(itemStack);
-//                     }	
-//            	}
-
-                for (ItemStack itemStack : armorToSave) {
-                    if (itemStack != null && itemStack.getType() != Material.AIR) {
-                        if (RepairAPI.getCustomDurability(itemStack) - 400 > 1D) {
-                            RepairAPI.subtractCustomDurability(player, itemStack, 400);
-                            player.getInventory().addItem(itemStack);
-                        } else {
-                        }
-                    }
-                }
-            }
-            ItemManager.giveStarter(player);
-        }, 20L);
-    }*/
->>>>>>> Temporary merge branch 2
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         PlayerManager.checkInventory(event.getPlayer().getUniqueId());
