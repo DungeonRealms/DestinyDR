@@ -680,8 +680,6 @@ public class API {
 
         }
 
-        PlayerManager.checkInventory(uuid);
-
         // Essentials
         //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
@@ -849,7 +847,10 @@ public class API {
         GamePlayer gp = new GamePlayer(player);
 
         // calculate attributes
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> API.calculateAllAttributes(player), 5L);
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+            API.calculateAllAttributes(player);
+            PlayerManager.checkInventory(uuid);
+        }, 5L);
 
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
