@@ -28,6 +28,8 @@ import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
 import java.util.UUID;
@@ -115,12 +117,13 @@ public class MountUtils {
                 break;
             }
             case TIER2_HORSE: {
-                Horse mountHorse = new Horse(world, horseType, 0.25D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, horseType, 0.21D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
+                horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
                 horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
@@ -131,12 +134,13 @@ public class MountUtils {
                 break;
             }
             case TIER3_HORSE: {
-                Horse mountHorse = new Horse(world, horseType, 0.34D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, horseType, 0.22D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
+                horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
                 horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
@@ -147,12 +151,13 @@ public class MountUtils {
                 break;
             }
             case TIER4_HORSE: {
-                Horse mountHorse = new Horse(world, horseType, 0.4D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, horseType, 0.23D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
+                horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3));
                 horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
