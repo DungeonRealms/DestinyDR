@@ -600,8 +600,6 @@ public class ItemManager {
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
-
-
         player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
                 ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
 
@@ -610,6 +608,11 @@ public class ItemManager {
         } else {
             player.getInventory().addItem(ItemGenerator.getNamedItem("training_axe"));
         }
+
+        player.getInventory().addItem(ItemGenerator.getNamedItem("traininghelm"));
+        player.getInventory().addItem(ItemGenerator.getNamedItem("trainingchest"));
+        player.getInventory().addItem(ItemGenerator.getNamedItem("traininglegs"));
+        player.getInventory().addItem(ItemGenerator.getNamedItem("trainingboots"));
     }
 
 
