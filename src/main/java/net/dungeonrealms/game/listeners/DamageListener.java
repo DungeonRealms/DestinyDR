@@ -824,7 +824,7 @@ public class DamageListener implements Listener {
 //                    if (!(shooter instanceof LivingEntity)) return;
 //                    LivingEntity leShooter = (LivingEntity) shooter;
 //                    if (API.isPlayer(leShooter)) {
-//                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player)leShooter, defender, event.getDamage(), 0, 0);
+//                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player)leShooter, defender, event.getDamage(), 0, 0, DamageCause.REFLECT);
 //                    }
 //                    else {
 //                        HealthHandler.getInstance().handleMonsterBeingDamaged(leShooter, defender, event.getDamage());
@@ -1478,18 +1478,15 @@ public class DamageListener implements Listener {
                 dmg = maxHP * 0.03;
                 break;
             case SUFFOCATION:
-                dmg = 0;
-                break;
-            case VOID:
-                dmg = 0;
-                break;
+                return;
+            case VOID: // should only be when exiting realm
+                return;
             default:
-                dmg = 0;
-                break;
+                return;
         }
         if (dmg > 0) {
             if (event.getEntity() instanceof Player) {
-                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0);
+                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0, event.getCause());
             } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, dmg);
             }

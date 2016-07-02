@@ -28,6 +28,7 @@ import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -444,6 +445,11 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor) {
+        // default damage cause is entity attack (called in onMonsterHitEntity and onPlayerHitEntity)
+        handlePlayerBeingDamaged(player, damager, damage, armourReducedDamage, totalArmor, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+    }
+
+    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, EntityDamageEvent.DamageCause cause) {
         if (!API.isPlayer(player)) {
             return;
         }
@@ -475,7 +481,9 @@ public class HealthHandler implements GenericMechanic {
 
         if (leAttacker instanceof Player) {
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
-                KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
+                if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                    KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
+                }
                 if (newHP <= 0 && API.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
                     if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
                         newHP = 1;
@@ -491,9 +499,63 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
-                    + (int) totalArmor + "%A -> -" + (int) armourReducedDamage + ChatColor.BOLD + "DMG" + ChatColor.GRAY
-                    + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
+                        + (int) totalArmor + "%A -> -" + (int) armourReducedDamage + ChatColor.BOLD + "DMG" +
+                        ChatColor.GRAY
+                        + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            }
+            else { // foreign damage
+                ChatColor causeColor;
+                String damageCauseName;
+                switch (cause) {
+                    case FALL:
+                        causeColor = ChatColor.GRAY;
+                        damageCauseName = "(FALL)";
+                        break;
+                    case THORNS:
+                        causeColor = ChatColor.GREEN;
+                        damageCauseName = "(THORNS)";
+                        break;
+                    case CUSTOM: // reflect
+                        causeColor = ChatColor.GOLD;
+                        damageCauseName = "(REFLECT)";
+                        break;
+                    case SUFFOCATION:
+                        causeColor = ChatColor.BLACK;
+                        damageCauseName = "(SUFFOCATION)";
+                        break;
+                    case DROWNING:
+                        causeColor = ChatColor.DARK_BLUE;
+                        damageCauseName = "(DROWNING)";
+                        break;
+                    case FIRE:
+                        causeColor = ChatColor.DARK_RED;
+                        damageCauseName = "(IN FIRE)";
+                        break;
+                    case FIRE_TICK:
+                        causeColor = ChatColor.RED;
+                        damageCauseName = "(ON FIRE)";
+                        break;
+                    case POISON:
+                        causeColor = ChatColor.DARK_GREEN;
+                        damageCauseName = "(POISON)";
+                        break;
+                    case LAVA:
+                        causeColor = ChatColor.RED;
+                        damageCauseName = "(LAVA)";
+                        break;
+                    case CONTACT:
+                        causeColor = ChatColor.GREEN;
+                        damageCauseName = "(CACTUS)";
+                        break;
+                    default: // it should never get here
+                        causeColor = ChatColor.GRAY;
+                        damageCauseName = "(CUSTOM)";
+                        break;
+                }
+                player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + causeColor + damageCauseName + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            }
         }
 
         player.playEffect(EntityEffect.HURT);
