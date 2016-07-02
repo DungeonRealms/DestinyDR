@@ -418,7 +418,6 @@ public class MainListener implements Listener {
             return;
         }
         if (API.isInSafeRegion(event.getFrom()) || API.isNonPvPRegion(event.getFrom())) {
-            event.setCancelled(true);
             player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
             player.sendMessage(ChatColor.RED + "The guards have kicked you of of this area due to your alignment");
             return;
