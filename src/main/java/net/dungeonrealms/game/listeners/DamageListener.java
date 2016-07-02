@@ -1090,11 +1090,18 @@ public class DamageListener implements Listener {
             }
         }
 
-        for (ItemStack stack : new ArrayList<>(event.getDrops())) {
-            p.getWorld().dropItemNaturally(deathLocation, stack);
-            event.getDrops().remove(stack);
+        List<ItemStack> toDrop = new ArrayList<>();
+        for (ItemStack stack : event.getDrops()) {
+            if (stack.getType() != Material.SKULL_ITEM) {
+                toDrop.add(stack);
+            }
         }
         event.getDrops().clear();
+
+        for (ItemStack stack : toDrop) {
+            event.getEntity().getWorld().dropItemNaturally(deathLocation, stack);
+        }
+        toDrop.clear();
 
         Location respawnLocation = Teleportation.Cyrennica;
         if (alignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
