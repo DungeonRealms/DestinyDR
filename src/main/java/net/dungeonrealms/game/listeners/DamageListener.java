@@ -281,15 +281,15 @@ public class DamageListener implements Listener {
             }
 
 
-            if (Cooldown.hasCooldown(attacker.getUniqueId())) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
+            if (event.getEntity() instanceof Player) {
+                if (Cooldown.hasCooldown(attacker.getUniqueId())) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+                Cooldown.addCooldown(attacker.getUniqueId(), 350L);
+                event.getEntity().setVelocity(event.getEntity().getVelocity().divide(new Vector(2, 2, 2)));
             }
-
-
-            Cooldown.addCooldown(attacker.getUniqueId(), 350L);
-            event.getEntity().setVelocity(event.getEntity().getVelocity().divide(new Vector(2, 2, 2)));
 
             if (CombatLog.isInCombat(attacker)) {
                 CombatLog.updateCombat(attacker);
