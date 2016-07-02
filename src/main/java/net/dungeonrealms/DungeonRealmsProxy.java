@@ -42,7 +42,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         return instance;
     }
 
-    private final String MOTD = "&6Dungeon Realms &8- &7&oNew code in 1.9!                    &7Open Beta Weekend         &8-&f&nwww.dungeonrealms.net &8-";
+    private final String MOTD = "&6Dungeon Realms &8- &7&bNew code in 1.9!                          &7Open Beta Weekend         &8-&f&nwww.dungeonrealms.net &8-";
 
     @Override
     public void onEnable() {
@@ -69,7 +69,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         int players = ping.getPlayers().getOnline();
         ServerPing.PlayerInfo[] sample = ping.getPlayers().getSample();
 
-        ping.setDescription(MOTD);
+        ping.setDescription(ChatColor.translateAlternateColorCodes('&', MOTD));
         ping.setPlayers(new ServerPing.Players(500, players, sample));
     }
 
