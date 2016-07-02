@@ -600,6 +600,7 @@ public class API {
                     String banMessage = PunishUtils.getBannedMessage(uuid);
                     PunishUtils.kick(name, banMessage);
                     player.kickPlayer(ChatColor.RED + banMessage);
+                    return;
                 }
 
                 player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
