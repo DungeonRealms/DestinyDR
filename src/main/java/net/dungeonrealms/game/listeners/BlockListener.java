@@ -441,8 +441,11 @@ public class BlockListener implements Listener {
         if (block.getType() != Material.CHEST) return;
         LootSpawner loot = LootManager.getSpawner(e.getClickedBlock().getLocation());
         if (loot == null) {
-            e.getPlayer().sendMessage(org.bukkit.ChatColor.GRAY + "This chest is locked.");
-            e.setCancelled(true);
+            Shop shop = ShopMechanics.getShop(e.getClickedBlock());
+            if (shop == null) {
+                e.getPlayer().sendMessage(org.bukkit.ChatColor.GRAY + "This chest is locked.");
+                e.setCancelled(true);
+            }
             return;
         }
         Collection<Entity> list = API.getNearbyMonsters(loot.location, 10);
