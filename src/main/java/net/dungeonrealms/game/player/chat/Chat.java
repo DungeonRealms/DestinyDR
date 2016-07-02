@@ -194,6 +194,7 @@ public class Chat {
         }
         for (String string : message.split(" ")) {
             for (String word : bannedWords) {
+                string = " " + string;
                 if (string.toLowerCase().contains(word.toLowerCase())) {
                     int wordLength = word.length();
                     String replacementCharacter = "";
