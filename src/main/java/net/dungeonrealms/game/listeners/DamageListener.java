@@ -1125,6 +1125,7 @@ public class DamageListener implements Listener {
             }
 
             ItemManager.giveStarter(p);
+            PlayerManager.checkInventory(p.getUniqueId());
         }, 20L);
     }
 
