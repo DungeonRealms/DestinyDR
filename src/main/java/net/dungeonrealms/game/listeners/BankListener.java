@@ -118,7 +118,7 @@ public class BankListener implements Listener {
                     ItemStack gemPouch = event.getPlayer().getInventory().getItem(i);
                     if (gemPouch == null || gemPouch.getType() == Material.AIR)
                         continue;
-                    if (gemPouch.getType() != Material.INK_SACK)
+                    if (!BankMechanics.getInstance().isGemPouch(gemPouch))
                         continue;
                     net.minecraft.server.v1_9_R2.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
                     int currentAmount = nmsPouch.getTag().getInt("worth");
@@ -132,6 +132,7 @@ public class BankListener implements Listener {
                             gems -= 1;
                         }
                         event.getPlayer().getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
+                        break;
                     }
                 }
                 if (gems > 0) {
