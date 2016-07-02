@@ -4,7 +4,6 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.mongo.PlayerDataGrabber;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.md_5.bungee.api.ChatColor;
 
@@ -26,7 +25,7 @@ public class PunishUtils {
      */
     public static void ban(UUID uuid, String playerName, long duration, String reason) {
         if (uuid == null) return;
-        if (isBanned(uuid, DatabaseAPI.getInstance())) return;
+        if (isBanned(uuid)) return;
 
         // KICK PLAYER //
         if (duration == -1)
@@ -59,8 +58,8 @@ public class PunishUtils {
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_REASON, reason, true);
     }
 
-    public static String getBannedMessage(UUID uuid, PlayerDataGrabber grabber) {
-        if (!isBanned(uuid, grabber)) return null;
+    public static String getBannedMessage(UUID uuid) {
+        if (!isBanned(uuid)) return null;
 
         long banTime = (long) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME);
         String reason = (String) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_REASON);
@@ -70,10 +69,9 @@ public class PunishUtils {
         if (banTime != -1)
             message = ChatColor.RED + "You will be unbanned in " + timeString((int) ((banTime - System.currentTimeMillis()) / 60000)) + (reason != null ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net";
         else
-            message = ChatColor.RED + "You have been permanently banned from DungeonRealms." + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net";
+            message = ChatColor.RED + "You have been permanently banned from DungeonRealms." + (reason != null && !reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net";
 
         return message;
-
     }
 
     public static String getMutedMessage(UUID uuid) {
@@ -92,7 +90,7 @@ public class PunishUtils {
      */
     public static void unban(UUID uuid) {
         if (uuid == null) return;
-        if (!isBanned(uuid, DatabaseAPI.getInstance())) return;
+        if (!isBanned(uuid)) return;
 
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, 0L, true);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, "", true);
@@ -129,9 +127,9 @@ public class PunishUtils {
     }
 
 
-    public static boolean isBanned(UUID uuid, PlayerDataGrabber grabber) {
+    public static boolean isBanned(UUID uuid) {
         try {
-            long banTime = ((Long) grabber.getValue(uuid, EnumData.BANNED_TIME));
+            long banTime = ((Long) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME));
             return banTime == -1 || banTime != 0 && System.currentTimeMillis() < banTime;
         } catch (NullPointerException ignored) {
             return false;
