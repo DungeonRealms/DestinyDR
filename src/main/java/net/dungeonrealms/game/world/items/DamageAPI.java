@@ -864,6 +864,8 @@ public class DamageAPI {
             case 2:
                 projectile = player.launchProjectile(SmallFireball.class);
                 projectile.setVelocity(projectile.getVelocity().multiply(1.5));
+                ((SmallFireball) projectile).setYield(0);
+                ((SmallFireball) projectile).setIsIncendiary(false);
                 break;
             case 3:
                 projectile = player.launchProjectile(EnderPearl.class);
@@ -872,6 +874,8 @@ public class DamageAPI {
             case 4:
                 projectile = player.launchProjectile(LargeFireball.class);
                 projectile.setVelocity(projectile.getVelocity().multiply(2));
+                ((LargeFireball) projectile).setYield(0);
+                ((LargeFireball) projectile).setIsIncendiary(false);
                 break;
             case 5:
                 projectile = player.launchProjectile(WitherSkull.class);
@@ -937,6 +941,8 @@ public class DamageAPI {
             case 2:
                 projectile = livingEntity.launchProjectile(SmallFireball.class);
                 vector.multiply(1.5);
+                ((SmallFireball) projectile).setYield(0);
+                ((SmallFireball) projectile).setIsIncendiary(false);
                 break;
             case 3:
                 projectile = livingEntity.launchProjectile(EnderPearl.class);
@@ -945,6 +951,8 @@ public class DamageAPI {
             case 4:
                 projectile = livingEntity.launchProjectile(LargeFireball.class);
                 vector.multiply(2);
+                ((LargeFireball) projectile).setYield(0);
+                ((LargeFireball) projectile).setIsIncendiary(false);
                 break;
             case 5:
                 projectile = livingEntity.launchProjectile(WitherSkull.class);
