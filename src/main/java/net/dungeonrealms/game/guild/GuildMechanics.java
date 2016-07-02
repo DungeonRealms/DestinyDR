@@ -99,14 +99,16 @@ public class GuildMechanics {
     }
 
     public void doLogout(Player player) {
-        guildChat.remove(player.getUniqueId());
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
-        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
-        String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
+        try {
+            guildChat.remove(player.getUniqueId());
+            String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+            String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+            String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        GuildDatabaseAPI.get().getAllOfGuild(guildName)
-                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has left your shard.")));
-
+            GuildDatabaseAPI.get().getAllOfGuild(guildName)
+                    .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has left your shard.")));
+        } catch (NullPointerException ignored) {
+        }
     }
 
     /**

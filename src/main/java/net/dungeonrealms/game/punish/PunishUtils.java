@@ -133,8 +133,12 @@ public class PunishUtils {
 
 
     public static boolean isBanned(UUID uuid) {
-        long banTime = ((Long) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME));
-        return (banTime == -1) || (banTime != 0 && System.currentTimeMillis() < banTime);
+        try {
+            long banTime = ((Long) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME));
+            return (banTime == -1) || (banTime != 0 && System.currentTimeMillis() < banTime);
+        } catch (NullPointerException ignored) {
+            return false;
+        }
     }
 
 
