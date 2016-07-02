@@ -4,7 +4,6 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -137,8 +136,6 @@ public class BlockListener implements Listener {
                 if (gamePlayer == null) return;
                 gamePlayer.addExperience((experienceGain / 8), false, false);
                 int duraBuff = Mining.getDurabilityBuff(stackInHand);
-                if (rand.nextInt(100) > duraBuff)
-                    RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int breakChance = Mining.getBreakChance(stackInHand);
                 breakChance += Mining.getSuccessChance(stackInHand);
                 int willBreak = rand.nextInt(100);
@@ -146,7 +143,13 @@ public class BlockListener implements Listener {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     p.getInventory().addItem(Mining.getBlock(type));
                     gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
+                    if (rand.nextInt(100) > duraBuff) {
+                        RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), 2);
+                    }
                 } else {
+                    if (rand.nextInt(100) > duraBuff) {
+                        RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), 1);
+                    }
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }
 

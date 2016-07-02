@@ -30,6 +30,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
@@ -542,12 +543,6 @@ public class MainListener implements Listener {
             }
         }
 
-        if (e.getState() == State.FAILED_ATTEMPT || e.getState() == State.CAUGHT_ENTITY) {
-            RepairAPI.subtractCustomDurability(pl, pl.getEquipment().getItemInMainHand(), 1);
-        } else if (e.getState() == State.CAUGHT_FISH) {
-            RepairAPI.subtractCustomDurability(pl, pl.getEquipment().getItemInMainHand(), 2);
-        }
-
         if (e.getState() == State.CAUGHT_FISH) {
             final Location fish_loc = Fishing.getInstance().getFishingSpot(pl.getLocation());
             final int spot_tier = Fishing.getInstance().getFishingSpotTier(pl.getLocation());
@@ -558,6 +553,8 @@ public class MainListener implements Listener {
                 pl.sendMessage(ChatColor.RED + "You must be near a Fishing Location to catch fish!");
                 return;
             }
+
+            int duraBuff = Fishing.getDurabilityBuff(pl.getEquipment().getItemInMainHand());
 
             pl.sendMessage(ChatColor.GRAY + "You examine your catch... ");
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -579,6 +576,9 @@ public class MainListener implements Listener {
 
                 if (success_rate <= do_i_get_fish) {
                     pl.sendMessage(ChatColor.RED + "It got away..");
+                    if (new Random().nextInt(100) > duraBuff) {
+                        RepairAPI.subtractCustomDurability(pl, pl.getEquipment().getItemInMainHand(), 1);
+                    }
                     return;
                 }
 
@@ -590,6 +590,9 @@ public class MainListener implements Listener {
                     } else {
                         // Full inventory!
                         pl.getWorld().dropItem(pl.getLocation(), fish);
+                    }
+                    if (new Random().nextInt(100) > duraBuff) {
+                        RepairAPI.subtractCustomDurability(pl, pl.getEquipment().getItemInMainHand(), 2);
                     }
                     pl.sendMessage(ChatColor.GREEN + "... you caught some " + fish.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 
