@@ -217,6 +217,11 @@ public class MainListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void worldInit(org.bukkit.event.world.WorldInitEvent e) {
+        e.getWorld().setKeepSpawnInMemory(false);
+    }
+
     /**
      * This event is the main event once the player has actually entered the
      * world! It is now safe to do things to the player e.g BountifulAPI or
