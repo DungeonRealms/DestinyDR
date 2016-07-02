@@ -29,7 +29,6 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.rank.Subscription;
-import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -58,7 +57,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
-import org.primesoft.asyncworldedit.api.IAsyncWorldEdit;
 
 import java.io.File;
 import java.io.IOException;
@@ -307,24 +305,6 @@ public class API {
         return world != null && player.getLocation().getWorld().equals(world);
     }
 
-    /**
-     * Gets the WorldGuard plugin.
-     *
-     * @return
-     * @since 1.0
-     */
-    public static IAsyncWorldEdit getAsyncWorldEdit() {
-        Plugin plugin = DungeonRealms.getInstance().getServer().getPluginManager().getPlugin("AsyncWorldEdit");
-        if (plugin == null || !(plugin instanceof IAsyncWorldEdit)) {
-            try {
-                throw new UnknownObjectException("getAsyncWorldEdit() of API.class is RETURNING NULL!");
-            } catch (UnknownObjectException e) {
-                e.printStackTrace();
-            }
-        }
-        return (IAsyncWorldEdit) plugin;
-    }
-
     public static void setMobElement(net.minecraft.server.v1_9_R2.Entity ent, String element) {
         ent.getBukkitEntity().setMetadata("element", new FixedMetadataValue(DungeonRealms.getInstance(), element));
         String name = ent.getCustomName();
@@ -449,12 +429,15 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+
         if (!DatabaseAPI.getInstance().PLAYER_TIME.containsKey(uuid) || DatabaseAPI.getInstance().PLAYER_TIME.get(uuid) <= 5) {
             //Dont save.
             DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
             return;
         }
         DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
+
+        if (player == null) return;
         if (player.getWorld().getName().contains("DUNGEON")) {
             for (ItemStack stack : player.getInventory().getContents()) {
                 if (stack != null && stack.getType() != Material.AIR) {
@@ -594,15 +577,6 @@ public class API {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
             return;
         } else if (player != null) {
-
-            if (PunishUtils.isBanned(uuid)) {
-                String name = DatabaseAPI.getInstance().getOfflineName(uuid);
-                String banMessage = PunishUtils.getBannedMessage(uuid);
-                PunishUtils.kick(name, banMessage);
-                player.kickPlayer(ChatColor.RED + banMessage);
-                return;
-            }
-
             long lastLogin = ((Long) DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid));
 
             //TODO: Remove this when the Database Wipes.

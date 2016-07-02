@@ -45,7 +45,7 @@ public class CommandUnban extends BasicCommand {
 
         UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
 
-        if (!PunishUtils.isBanned(p_uuid)) {
+        if (!PunishUtils.isBanned(p_uuid, DatabaseAPI.getInstance())) {
             sender.sendMessage(ChatColor.RED + p_name + " is not banned.");
             return true;
         }

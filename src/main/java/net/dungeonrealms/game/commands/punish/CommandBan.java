@@ -65,6 +65,9 @@ public class CommandBan extends BasicCommand {
             return true;
         }
 
+        if (isNull)
+            duration = Integer.parseInt(args[1]);
+
         if (duration < -1) {
             sender.sendMessage(ChatColor.RED + args[1] + " is not a valid number.");
             return true;
@@ -84,14 +87,14 @@ public class CommandBan extends BasicCommand {
             for (int arg = 3; arg < args.length; arg++) reason.append(" ").append(args[arg]);
 
             if (duration != -1)
-                sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + Utils.timeString((int) (duration / 60)) + " for " + reason.toString());
+                sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)) + " for " + reason.toString());
             else
                 sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + reason.toString());
 
             PunishUtils.ban(p_uuid, p_name, duration, reason.toString());
         } else {
             if (duration != -1)
-                sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + Utils.timeString((int) (duration / 60)));
+                sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)));
             else
                 sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name);
 
