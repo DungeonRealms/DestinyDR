@@ -47,7 +47,6 @@ public class Utils {
         return true;
     }
 
-
     public static String timeString(int totalMinutes) {
         String timeStr = "";
 

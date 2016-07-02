@@ -79,7 +79,7 @@ public class GuildMechanics {
             filter.add(Bukkit.getPlayer(uuid).getName());
         });
 
-        sendAlert(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
+        sendAlertFilter(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
         showMotd(player, guildName);
     }
 
@@ -94,6 +94,7 @@ public class GuildMechanics {
             String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
             sendChat(guildName, player, message);
             event.setCancelled(true);
+
         }
     }
 
@@ -175,7 +176,7 @@ public class GuildMechanics {
      * @param message   Alert message
      * @param filters   Filters
      */
-    public void sendAlert(String guildName, String message, String... filters) {
+    public void sendAlertFilter(String guildName, String message, String... filters) {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
@@ -342,8 +343,8 @@ public class GuildMechanics {
             if (isOwner) {
                 if (officers.size() > 0) {
                     UUID sucessor = officers.get(0);
-                    GuildDatabaseAPI.get().setOwner(guildName, sucessor);
                     sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
+                    GuildDatabaseAPI.get().setOwner(guildName, sucessor);
                 } else {
                     // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");

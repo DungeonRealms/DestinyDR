@@ -14,7 +14,9 @@ import net.dungeonrealms.game.commands.newcommands.RealmTestCommand;
 import net.dungeonrealms.game.commands.newcommands.StarterCommand;
 import net.dungeonrealms.game.commands.parties.*;
 import net.dungeonrealms.game.commands.punish.CommandBan;
+import net.dungeonrealms.game.commands.punish.CommandMute;
 import net.dungeonrealms.game.commands.punish.CommandUnban;
+import net.dungeonrealms.game.commands.punish.CommandUnmute;
 import net.dungeonrealms.game.commands.support.CommandSupport;
 import net.dungeonrealms.game.commands.testcommands.CommandTestRank;
 import net.dungeonrealms.game.commands.testcommands.CommandTestingHall;
@@ -366,8 +368,10 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
             cm.registerCommand(new CommandRealmFix("realmfix", "/<command> [args]", "Realm fix command"));
 
-            cm.registerCommand(new CommandBan("ban", "/<command> [args]", "Ban command", "drban"));
+            cm.registerCommand(new CommandBan("ban", "/ban <player> <duration | eg. 15 m / 5 d> [reason ...]", "Ban command", "drban"));
             cm.registerCommand(new CommandUnban("unban", "/<command> [args]", "Unban command", "drunban", "drpardon"));
+            cm.registerCommand(new CommandMute("mute", "/mute <player> <duration | eg. 15 m / 5 d> [reason ...]", "Mute command", "drmute"));
+            cm.registerCommand(new CommandUnmute("unmute", "/<command> [args]", "Unmute command", "drunmute"));
 
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));

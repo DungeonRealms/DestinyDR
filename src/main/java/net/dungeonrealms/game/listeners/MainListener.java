@@ -30,6 +30,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Item;
@@ -181,6 +182,12 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
+        if (PunishUtils.isMuted(event.getPlayer().getUniqueId())) {
+            event.setMessage(PunishUtils.getMutedMessage(event.getPlayer().getUniqueId()));
+            event.setCancelled(true);
+            return;
+        }
+
         Chat.getInstance().doChat(event);
         GuildMechanics.getInstance().doChat(event);
         Chat.getInstance().doLocalChat(event);
@@ -199,13 +206,14 @@ public class MainListener implements Listener {
             return;
         }
 
-//        if (PunishUtils.isBanned(event.getUniqueId())) {
-//            String name = DatabaseAPI.getInstance().getOfflineName(event.getUniqueId());
-//            String banMessage = PunishUtils.getBannedMessage(event.getUniqueId());
-//            PunishUtils.kick(name, PunishUtils.getBannedMessage(event.getUniqueId()));
-//            event.disallow(Result.KICK_BANNED, banMessage);
-//            return;
-//        }
+        if (PunishUtils.isBanned(event.getUniqueId())) {
+            String name = DatabaseAPI.getInstance().getOfflineName(event.getUniqueId());
+            String banMessage = PunishUtils.getBannedMessage(event.getUniqueId());
+            PunishUtils.kick(name, banMessage);
+            event.disallow(Result.KICK_OTHER, banMessage);
+            return;
+        }
+
 
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
@@ -220,6 +228,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onJoin(PlayerJoinEvent event) {
+
         event.setJoinMessage(null);
         DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();

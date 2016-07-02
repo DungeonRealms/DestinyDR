@@ -839,7 +839,7 @@ public class API {
         GamePlayer gp = new GamePlayer(player);
 
         // calculate attributes
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> API.calculateAllAttributes(player),5L);
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> API.calculateAllAttributes(player), 5L);
 
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
