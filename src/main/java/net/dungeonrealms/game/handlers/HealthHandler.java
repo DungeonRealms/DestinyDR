@@ -554,7 +554,7 @@ public class HealthHandler implements GenericMechanic {
                         damageCauseName = "(CUSTOM)";
                         break;
                 }
-                player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + causeColor + damageCauseName + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+                player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + causeColor + ChatColor.BOLD.toString() + damageCauseName + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
             }
         }
 
