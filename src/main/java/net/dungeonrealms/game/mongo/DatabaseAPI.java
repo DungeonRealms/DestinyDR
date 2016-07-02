@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by Nick on 8/29/2015.
  */
-public class DatabaseAPI implements PlayerDataGrabber {
+public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();

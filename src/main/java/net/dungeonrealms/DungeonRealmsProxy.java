@@ -2,17 +2,13 @@ package net.dungeonrealms;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.client.model.Filters;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.listeners.ProxyChannelListener;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.PlayerDataGrabber;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.PingResponse;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerAddress;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerPinger;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.response.BungeePingResponse;
-import net.dungeonrealms.game.punish.PunishUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
@@ -27,12 +23,13 @@ import net.md_5.bungee.event.EventHandler;
 import org.bson.Document;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 5/31/2016
  */
 
-public class DungeonRealmsProxy extends Plugin implements Listener, PlayerDataGrabber {
+public class DungeonRealmsProxy extends Plugin implements Listener {
 
     private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "sub1"}; // @note: don't include us0
 
@@ -40,7 +37,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener, PlayerDataGr
     public static MongoClientURI mongoClientURI = null;
     public static com.mongodb.client.MongoDatabase database = null;
     public static com.mongodb.client.MongoCollection<Document> guilds = null;
-    public static com.mongodb.client.MongoCollection<Document> players = null;
     private static DungeonRealmsProxy instance;
 
     public static DungeonRealmsProxy getInstance() {
@@ -63,7 +59,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener, PlayerDataGr
         mongoClientURI = new MongoClientURI("mongodb://dungeonuser:mwH47e552qxWPwxL@ds025224-a0.mlab.com:25224,ds025224-a1.mlab.com:25224/dungeonrealms?replicaSet=rs-ds025224");
         mongoClient = new MongoClient(mongoClientURI);
         database = mongoClient.getDatabase("dungeonrealms");
-        players = database.getCollection("player_data");
         guilds = database.getCollection("guilds");
         GuildDatabase.setGuilds(guilds);
         getLogger().info("DungeonRealmsProxy [MONGODB] has connected successfully!");
@@ -78,19 +73,19 @@ public class DungeonRealmsProxy extends Plugin implements Listener, PlayerDataGr
         final int[] count = {0};
 
         // DUPE GLITCH FIX //
-        getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> {
+        getProxy().getScheduler().runAsync(this, () -> getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> {
             count[0]++;
 
             if (count[0] >= 2) {
-                if (player != null)
-                    player.disconnect(ChatColor.RED + "Another player with your account has logged into the server!");
+                if (player != null) {
+                    getProxy().getScheduler().schedule(DungeonRealmsProxy.this,
+                            () -> player.disconnect(ChatColor.RED + "Another player with your account has logged into the server!"), 1, TimeUnit.NANOSECONDS);
 
-                p.disconnect(ChatColor.RED + "Another player with your account has logged into the server!");
+                }
+                getProxy().getScheduler().schedule(DungeonRealmsProxy.this,
+                        () -> p.disconnect(ChatColor.RED + "Another player with your account has logged into the server!"), 1, TimeUnit.NANOSECONDS);
             }
-        });
-
-        if (PunishUtils.isBanned(player.getUniqueId(), this))
-            player.disconnect(PunishUtils.getBannedMessage(player.getUniqueId(), this));
+        }));
     }
 
     @EventHandler
@@ -104,7 +99,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener, PlayerDataGr
         ping.setPlayers(new ServerPing.Players(MAX_PLAYERS, players, sample));
     }
 
-    public List<ServerInfo> getOptimalShards(UUID uuid) {
+    public List<ServerInfo> getOptimalShards() {
         List<ServerInfo> servers = new ArrayList<>();
 
         for (String shardName : DR_SHARDS)
@@ -115,23 +110,13 @@ public class DungeonRealmsProxy extends Plugin implements Listener, PlayerDataGr
 
         Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
 
-        if (getValue(uuid, EnumData.RANK) != null && getValue(uuid, EnumData.RANK).equals("youtube"))
-            servers.add(0, getProxy().getServerInfo("yt1"));
-
         return servers;
-    }
-
-    public Object getValue(UUID uuid, EnumData data) {
-        Document doc = players.find(Filters.eq("info.uuid", uuid.toString())).first();
-        if (doc == null) return null;
-        String[] key = data.getKey().split("\\.");
-        return ((Document) doc.get(key[0])).get(key[1]);
     }
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
         if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby")) {
-            Iterator<ServerInfo> optimalShardFinder = getOptimalShards(event.getPlayer().getUniqueId()).iterator();
+            Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
             event.getPlayer().sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Finding an available shard for you...");
 
             while (optimalShardFinder.hasNext()) {
