@@ -70,9 +70,13 @@ public class CommandBan extends BasicCommand {
             return true;
         }
 
-        if ((sender instanceof Player) && Rank.isPMOD((Player) sender) && duration > 1209600L) {
-            sender.sendMessage(ChatColor.RED + "You cannot ban players for more than 14 days.");
-            return true;
+        if (sender instanceof Player) {
+            if (!Rank.isGM((Player) sender)) {
+                if (Rank.isPMOD((Player) sender) && duration > 1209600L) {
+                    sender.sendMessage(ChatColor.RED + "You cannot ban players for more than 14 days.");
+                    return true;
+                }
+            }
         }
 
         if (args.length >= 3) {
