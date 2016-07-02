@@ -621,6 +621,8 @@ public class API {
             }
         }
 
+        GamePlayer gp = new GamePlayer(player);
+
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.
 
@@ -843,8 +845,6 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
         }
-
-        GamePlayer gp = new GamePlayer(player);
 
         // calculate attributes
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
