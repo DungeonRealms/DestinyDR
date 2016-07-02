@@ -1120,12 +1120,13 @@ public class DamageListener implements Listener {
                 gamePlayer.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
             }
 
+            PlayerManager.checkInventory(p.getUniqueId());
+
             for (ItemStack stack : gearToSave) {
                 p.getInventory().addItem(stack);
             }
 
             ItemManager.giveStarter(p);
-            PlayerManager.checkInventory(p.getUniqueId());
         }, 20L);
     }
 
