@@ -588,7 +588,7 @@ public class HealthHandler implements GenericMechanic {
                 }
                 API.calculateAllAttributes(player);
                 CombatLog.removeFromCombat(player);
-            }, 20L);
+            }, 1L);
             return true;
         }
         return false;
