@@ -451,6 +451,9 @@ public class API {
             player.getInventory().addItem(BankMechanics.shopPricing.get(player.getName()));
             BankMechanics.shopPricing.remove(player.getName());
         }
+        if (API._hiddenPlayers.contains(player)) {
+            API._hiddenPlayers.remove(player);
+        }
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             return;
         }

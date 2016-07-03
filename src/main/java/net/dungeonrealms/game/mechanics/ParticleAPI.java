@@ -40,7 +40,8 @@ public class ParticleAPI {
         CLOUD(16, "CLOUD", EnumParticle.CLOUD, new org.bukkit.inventory.ItemStack(Material.BEACON), "Cloudy"),
         HAPPY_VILLAGER(17, "POISON", EnumParticle.VILLAGER_HAPPY, new org.bukkit.inventory.ItemStack(Material.SPIDER_EYE), "Poison"),
         SPELL(18, "SPELL", EnumParticle.SPELL, new org.bukkit.inventory.ItemStack(Material.BLAZE_POWDER), "Potion"),
-        SNOW_SHOVEL(19, "SNOWING", EnumParticle.SNOW_SHOVEL, new org.bukkit.inventory.ItemStack(Material.SNOW), "Snowfall");
+        SNOW_SHOVEL(19, "SNOWING", EnumParticle.SNOW_SHOVEL, new org.bukkit.inventory.ItemStack(Material.SNOW), "Snowfall"),
+        VALENTINES(20, "VALENTINES", EnumParticle.HEART, new org.bukkit.inventory.ItemStack(Material.APPLE), "Hearts");
 
         private int id;
         private String rawName;
