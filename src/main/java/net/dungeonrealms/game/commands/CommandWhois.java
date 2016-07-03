@@ -1,12 +1,8 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.mastery.UUIDFetcher;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,9 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.StringTokenizer;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 /**
  * Created by Nick on 11/8/2015.

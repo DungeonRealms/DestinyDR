@@ -228,6 +228,16 @@ public class DamageListener implements Listener {
             return;
         }
 
+        if (event.getDamager().hasMetadata("lastAttack") && System.currentTimeMillis() - event.getDamager().getMetadata("lastAttack").get(0).asLong() < 80) {
+            event.setDamage(0);
+            event.setCancelled(true);
+            if (API.isPlayer(leDamageSource)) {
+                ((Player) leDamageSource).updateInventory();
+            }
+            return;
+        }
+        event.getDamager().setMetadata("lastAttack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+
         if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
             if (!DuelingMechanics.isDueling(leDamageSource.getUniqueId())) {
                 if (API.isInSafeRegion(event.getEntity().getLocation())) {
