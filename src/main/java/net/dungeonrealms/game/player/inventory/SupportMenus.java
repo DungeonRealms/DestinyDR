@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -17,7 +19,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,6 +34,16 @@ public class SupportMenus {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("name", new NBTTagString(playerName));
         tag.set("uuid", new NBTTagString(uuid.toString()));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+    private static ItemStack addNbtTag(ItemStack item, String tagId, String tagValue) {
+        if (tagId == null || tagValue == null || tagId == "" || tagValue == "") return item;
+
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set(tagId, new NBTTagString(tagValue));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
@@ -405,12 +419,25 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "Trail", new String[]{
-                ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                "",
-                ChatColor.WHITE + "One day, a tool for support will go here."
-        });
-        inv.setItem(18, applySupportItemTags(item, playerName, uuid));
+        List<String> unlockedPlayerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
+        int i = 18;
+        for (ParticleAPI.ParticleEffect trailType : ParticleAPI.ParticleEffect.values()) {
+            boolean hasUnlockedPlayerTrail = false;
+            for (String unlockedTrails : unlockedPlayerTrails) {
+                if (unlockedTrails.equalsIgnoreCase(trailType.getRawName())) {
+                    hasUnlockedPlayerTrail = true;
+                    break;
+                }
+            }
+            item = editItem(trailType.getSelectionItem(), (hasUnlockedPlayerTrail ? ChatColor.GREEN : ChatColor.RED) + trailType.getDisplayName(), new String[] {
+                    ChatColor.WHITE + "Click to " + (hasUnlockedPlayerTrail ? "lock" : "unlock") + " the " + trailType.getDisplayName().toLowerCase() + " player trail."
+            });
+
+            item = addNbtTag(item, "trail", trailType.getRawName());
+
+            inv.setItem(i, applySupportItemTags(item, playerName, uuid));
+            i++;
+        }
 
         player.openInventory(inv);
     }
@@ -443,12 +470,26 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "Pet", new String[]{
-                ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                "",
-                ChatColor.WHITE + "One day, a tool for support will go here."
-        });
-        inv.setItem(18, applySupportItemTags(item, playerName, uuid));
+        List<String> unlockedPlayerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
+        int i = 18;
+        for (EnumPets petType : EnumPets.values()) {
+            boolean hasUnlockedPet = false;
+            for (String unlockedPets : unlockedPlayerPets) {
+                if (unlockedPets.equalsIgnoreCase(petType.getRawName())) {
+                    hasUnlockedPet = true;
+                    break;
+                }
+            }
+            // @todo: Figure out why monster egg damages aren't working even with editItemWithShort(...)
+            item = editItem(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[] {
+                    ChatColor.WHITE + "Click to " + (hasUnlockedPet ? "lock" : "unlock") + " the " + petType.getDisplayName().toLowerCase() + " pet."
+            });
+
+            item = addNbtTag(item, "pet", petType.getRawName());
+
+            inv.setItem(i, applySupportItemTags(item, playerName, uuid));
+            i++;
+        }
 
         player.openInventory(inv);
     }
@@ -459,6 +500,10 @@ public class SupportMenus {
 
     private static ItemStack editItem(ItemStack itemStack, String name, String[] lore) {
         return PlayerMenus.editItem(itemStack, name, lore);
+    }
+
+    private static ItemStack editItemWithShort(ItemStack itemStack, short shortID, String name, String[] lore) {
+        return PlayerMenus.editItemWithShort(itemStack, shortID, name, lore);
     }
 
 }

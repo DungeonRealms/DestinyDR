@@ -1377,16 +1377,36 @@ public class ClickHandler {
                 // Only continue if the playerName & uuid aren't empty.
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
 
-                switch (slot) {
-                    case 4:
-                        SupportMenus.openMainMenu(player, playerName);
-                        return;
-                    case 0: // @todo: change me
-                        break;
-                    default:
-                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
-                        return;
+                if (slot == 4) {
+                    SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+                    return;
+                } else if (!tag.hasKey("trail")) {
+                    player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [1]");
+                    return;
                 }
+
+                String trailName = tag.getString("trail").toUpperCase();
+                if (!API.isStringTrail(trailName)) {
+                    player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [2]");
+                    return;
+                }
+                ParticleAPI.ParticleEffect supportEffect = ParticleAPI.ParticleEffect.getByName(trailName);
+
+                List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
+                boolean supportTrailLocked = false;
+                if (!playerTrails.isEmpty()) {
+                    if (playerTrails.contains(trailName)) {
+                        supportTrailLocked = true;
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PARTICLES, trailName, true);
+                    }
+                }
+
+                if (!supportTrailLocked)
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailName, true);
+
+                player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + (supportTrailLocked ? "LOCKED" : "UNLOCKED") + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+                API.updatePlayerData(uuid);
                 break;
             case "Support Tools (Mounts)":
                 event.setCancelled(true);
@@ -1402,7 +1422,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        SupportMenus.openMainMenu(player, playerName);
+                        SupportMenus.openCosmeticsMenu(player, playerName, uuid);
                         return;
                     case 0: // @todo: change me
                         break;
@@ -1423,18 +1443,36 @@ public class ClickHandler {
                 // Only continue if the playerName & uuid aren't empty.
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
 
-                switch (slot) {
-                    case 4:
-                        SupportMenus.openMainMenu(player, playerName);
-                        return;
-                    case 0: // @todo: change me
-                        break;
-                    default:
-                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
-                        return;
+                if (slot == 4) {
+                    SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+                    return;
+                } else if (!tag.hasKey("pet")) {
+                    player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [1]");
+                    return;
                 }
-                break;
-            default:
+
+                String petName = tag.getString("pet").toUpperCase();
+                if (!API.isStringPet(petName)) {
+                    player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [2]");
+                    return;
+                }
+                EnumPets supportPets = EnumPets.getByName(petName);
+
+                List<String> playerSupportPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
+                boolean supportPetLocked = false;
+                if (!playerSupportPets.isEmpty()) {
+                    if (playerSupportPets.contains(petName)) {
+                        supportPetLocked = true;
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PETS, petName, true);
+                    }
+                }
+
+                if (!supportPetLocked)
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petName, true);
+
+                player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + (supportPetLocked ? "LOCKED" : "UNLOCKED") + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                SupportMenus.openCosmeticsMenu(player, playerName, uuid);
+                API.updatePlayerData(uuid);
                 break;
             case "Game Master Toggles":
                 event.setCancelled(true);

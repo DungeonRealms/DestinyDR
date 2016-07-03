@@ -58,7 +58,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)))
                 continue;
 
-            GUIButton button = new GUIButton(shardID.equalsIgnoreCase("US-0") ? Material.DIAMOND : Material.END_CRYSTAL) {
+            GUIButton button = new GUIButton(getShardItem(shardID)) {
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
                     Player player = event.getWhoClicked();
@@ -119,7 +119,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            button.setDisplayName((!shardID.equalsIgnoreCase("US-0") ? ChatColor.YELLOW : ChatColor.AQUA) + "" + ChatColor.BOLD + shardID);
+            button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
             button.setLore(lore);
 
 //            button.setSlot(slot);
@@ -153,6 +153,40 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
         }
 
         return count;
+    }
+
+    /**
+     * Returns the material associated with a shard.
+     *
+     * @param shardID
+     * @return Material
+     */
+    private Material getShardItem(String shardID) {
+        shardID = shardID.toUpperCase();
+
+        if (shardID.equals("US-0")) return Material.DIAMOND;
+        else if (shardID.startsWith("CS-")) return Material.PRISMARINE_SHARD;
+        else if (shardID.startsWith("YT-")) return Material.GOLD_NUGGET;
+        else if (shardID.startsWith("SUB-")) return Material.EMERALD;
+
+        return Material.END_CRYSTAL;
+    }
+
+    /**
+     * Returns the chat colour associated with a shard.
+     *
+     * @param shardID
+     * @return ChatColor
+     */
+    private ChatColor getShardColour(String shardID) {
+        shardID = shardID.toUpperCase();
+
+        if (shardID.equals("US-0")) return ChatColor.AQUA;
+        else if (shardID.startsWith("CS-")) return ChatColor.BLUE;
+        else if (shardID.startsWith("YT-")) return ChatColor.RED;
+        else if (shardID.startsWith("SUB-")) return ChatColor.GREEN;
+
+        return ChatColor.YELLOW;
     }
 
     private static Map<String, BungeeServerInfo> getFilteredServers() {

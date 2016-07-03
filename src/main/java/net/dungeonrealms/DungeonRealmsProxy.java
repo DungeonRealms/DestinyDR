@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DungeonRealmsProxy extends Plugin implements Listener {
 
-    private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "sub1"}; // @note: don't include us0
+    private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "sub1"}; // @note: don't include special shards
 
     public static com.mongodb.MongoClient mongoClient = null;
     public static MongoClientURI mongoClientURI = null;
@@ -47,7 +47,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     private final int MAX_PLAYERS;
 
     public DungeonRealmsProxy() {
-        MOTD = "&6Dungeon Realms &8- &7&aNow available on v1.9 & v1.10!                          &7Open Beta Weekend         &8-&f&nwww.dungeonrealms.net &8-";
+        MOTD = "&6Dungeon Realms &8- &7&aNow available on v1.9 & v1.10!              &7Open Beta Weekend     &8-&f&nwww.dungeonrealms.net &8-";
         MAX_PLAYERS = 500;
     }
 
