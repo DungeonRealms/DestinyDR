@@ -198,6 +198,7 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
+        if (!API.isArmor(event.getNewArmorPiece()) && !API.isArmor(event.getOldArmorPiece())) return;
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());

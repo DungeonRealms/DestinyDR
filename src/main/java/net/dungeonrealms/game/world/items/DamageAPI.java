@@ -616,6 +616,9 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile) {
+        boolean isAttackerPlayer = attacker instanceof Player;
+        boolean isDefenderPlayer = defender instanceof Player;
+
         try {
             double damageAfterArmor = totalDamage;
             int totalArmor = 0;
@@ -623,10 +626,9 @@ public class DamageAPI {
             Map<String, Integer[]> defenderAttributes;
             Map<String, Integer[]> attackerAttributes;
 
-            if (API.isPlayer(defender)) {
+            if (isDefenderPlayer) {
                 Player p = (Player) defender;
                 for (ItemStack armor : defender.getEquipment().getArmorContents()) {
-                    if (!API.isArmor(armor)) continue;
                     RepairAPI.subtractCustomDurability(p, armor, 1);
                 }
                 defenderAttributes = API.getGamePlayer(p).getAttributes();
@@ -636,7 +638,7 @@ public class DamageAPI {
                 return new double[]{totalArmorReduction, totalArmor};
             }
 
-            if (API.isPlayer(attacker)) {
+            if (isAttackerPlayer) {
                 if (projectile == null)
                     attackerAttributes = API.getGamePlayer((Player) attacker).getAttributes();
                 else
@@ -647,34 +649,15 @@ public class DamageAPI {
                 return new double[]{totalArmorReduction, totalArmor};
             }
 
-            if (projectile != null) { // if projectile damage, we need to transfer metadata
-                Map<String, Integer[]> projectileAttributes = new HashMap<>();
-                for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
-                    String modifier = type.getNBTName();
-                    if (type.isRange()) {
-                        if (projectile.hasMetadata(modifier + "Min") && projectile.getMetadata(modifier + "Min").get(0)
-                                .asInt() != 0) {
-                            projectileAttributes.put(type.getName(), new Integer[]{projectile.getMetadata(modifier +
-                                    "Min").get(0).asInt(), projectile.getMetadata(modifier + "Max").get(0).asInt()});
-                        }
-                    } else {
-                        if (projectile.hasMetadata(modifier) && projectile.getMetadata(modifier).get(0).asInt() != 0) {
-                            projectileAttributes.put(type.getName(), new Integer[]{0, projectile.getMetadata(modifier)
-                                    .get(0).asInt()});
-                        }
-                    }
-                }
-                attackerAttributes.putAll(projectileAttributes);
-            }
-
             // DODGE AND BLOCK
             int dodgeChance = defenderAttributes.get("dodge")[1];
             int blockChance = defenderAttributes.get("block")[1];
             final int DODGE_ROLL = new Random().nextInt(100);
             final int BLOCK_ROLL = new Random().nextInt(100);
-            boolean toggleDebug = attacker instanceof Player ? (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()) : false;
+            boolean toggleDebug = isAttackerPlayer ? (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()) : false;
+            int accuracy = projectile == null ? attackerAttributes.get("accuracy")[1] : 0;
 
-            if (DODGE_ROLL < dodgeChance - attackerAttributes.get("accuracy")[1]) {
+            if (DODGE_ROLL < dodgeChance - accuracy) {
                 if (toggleDebug && DODGE_ROLL >= dodgeChance) {
                     attacker.sendMessage(ChatColor.GREEN + "Your " + API.getGamePlayer((Player) attacker)
                             .getRangedAttributeVal(Item.WeaponAttributeType.ACCURACY)[1] + "% accuracy has prevented " +
@@ -688,7 +671,7 @@ public class DamageAPI {
                 }
                 totalArmorReduction = -1;
                 return new double[]{Math.round(totalArmorReduction), totalArmor};
-            } else if (BLOCK_ROLL < blockChance - attackerAttributes.get("accuracy")[1]) {
+            } else if (BLOCK_ROLL < blockChance - accuracy) {
                 if (toggleDebug && BLOCK_ROLL >= blockChance) {
                     attacker.sendMessage(ChatColor.GREEN + "Your " + API.getGamePlayer((Player) attacker)
                             .getRangedAttributeVal(Item.WeaponAttributeType.ACCURACY)[1] + "% accuracy has prevented " +
@@ -713,7 +696,7 @@ public class DamageAPI {
             totalArmor = Utils.randInt(defenderAttributes.get("armor")[0], defenderAttributes.get("armor")[1]);
 
             // ARMOR PENETRATION
-            if (attackerAttributes.get("armorPenetration")[1] != 0) {
+            if (projectile == null && attackerAttributes.get("armorPenetration")[1] != 0) {
                 totalArmor -= attackerAttributes.get("armorPenetration")[1];
                 if (totalArmor < 0) totalArmor = 0;
             }
@@ -726,7 +709,7 @@ public class DamageAPI {
                 if (damageFromThorns > 0) {
                     attacker.getLocation().getWorld().playEffect(attacker.getLocation(), Effect.STEP_SOUND, 18);
                 }
-                if (attacker instanceof Player) {
+                if (isAttackerPlayer) {
                     if (((Player) attacker).getGameMode() == GameMode.SURVIVAL && !API.getGamePlayer((Player)
                             attacker).isInvulnerable()) {
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns, 0, 0, EntityDamageEvent.DamageCause.THORNS);
@@ -737,14 +720,20 @@ public class DamageAPI {
             }
 
             // ELEMENTAL DAMAGE
-            int pureDamage = API.isPlayer(attacker) ? attackerAttributes.get("pureDamage")[1] : 0;
-            int fireDamage = API.isPlayer(attacker) ? attackerAttributes.get("fireDamage")[1] : 0;
-            int iceDamage = API.isPlayer(attacker) ? attackerAttributes.get("iceDamage")[1] : 0;
-            int poisonDamage = API.isPlayer(attacker) ? attackerAttributes.get("poisonDamage")[1] : 0;
+            int pureDamage = isAttackerPlayer && projectile == null ? attackerAttributes.get("pureDamage")[1] : 0;
+            int fireDamage = isAttackerPlayer && projectile == null ? attackerAttributes.get("fireDamage")[1] : 0;
+            int iceDamage = isAttackerPlayer && projectile == null ? attackerAttributes.get("iceDamage")[1] : 0;
+            int poisonDamage = isAttackerPlayer && projectile == null ? attackerAttributes.get("poisonDamage")[1] : 0;
             int elementalDamage = 0;
             int armorFromResistance = 0;
 
-            if (API.isPlayer(attacker)) {
+            if (projectile != null) {
+                fireDamage = projectile.getMetadata("fireDamage").get(0).asInt();
+                iceDamage = projectile.getMetadata("iceDamage").get(0).asInt();
+                poisonDamage = projectile.getMetadata("poisonDamage").get(0).asInt();
+            }
+
+            if (isAttackerPlayer) {
                 if (fireDamage != 0) {
                     float fireResistance = (float) defenderAttributes.get("fireResistance")[1];
                     elementalDamage = fireDamage;
@@ -821,12 +810,12 @@ public class DamageAPI {
             ex.printStackTrace();
             Utils.log.warning("Attacker: " + attacker.getName());
             Utils.log.warning("Defender: " + defender.getName());
-            if (API.isPlayer(attacker)) {
+            if (isAttackerPlayer) {
                 API.calculateAllAttributes((Player) attacker);
             } else {
                 API.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
             }
-            if (API.isPlayer(defender)) {
+            if (isDefenderPlayer) {
                 API.calculateAllAttributes((Player) defender);
             }
             else {
