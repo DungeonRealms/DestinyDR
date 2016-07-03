@@ -233,7 +233,7 @@ public class BankListener implements Listener {
                                     if (number <= 0) {
                                         player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
                                     } else if (number > 100000) {
-                                        player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but I cannot create bank notes that large");
+                                        player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but I cannot create bank notes that large.");
                                     } else if (number > currentGems) {
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but you only have " + currentGems + " GEM(s) stored in our bank.");
                                         player.sendMessage(ChatColor.GRAY + "You cannot withdraw more GEM(s) than you have stored.");
