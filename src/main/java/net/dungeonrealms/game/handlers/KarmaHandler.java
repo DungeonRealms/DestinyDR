@@ -13,7 +13,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,36 +101,31 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     private void updateAllPlayerAlignments() {
-        List<Player> toRemove = new ArrayList<>();
         for (Map.Entry<Player, EnumPlayerAlignments> alignment : PLAYER_ALIGNMENTS.entrySet()) {
             Player player = alignment.getKey();
-            EnumPlayerAlignments currentAlignment = alignment.getValue();
             if (!(PLAYER_ALIGNMENT_TIMES.containsKey(player))) {
                 continue;
             }
-            if (!(player.getWorld().getName().equalsIgnoreCase(DungeonRealms.getInstance().getServer().getWorlds().get(0).getName()))) {
+            if (!(player.getWorld().equals(Bukkit.getServer().getWorlds().get(0)))) {
                 continue;
             }
+            EnumPlayerAlignments currentAlignment = alignment.getValue();
 
             int timeLeft = PLAYER_ALIGNMENT_TIMES.get(player);
             timeLeft--;
 
             if (timeLeft <= 0) {
-                try {
-                    if (currentAlignment.equals(EnumPlayerAlignments.CHAOTIC)) {
-                        setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name, false);
-                        PLAYER_ALIGNMENT_TIMES.put(player, 120);
-                    } else if (currentAlignment.equals(EnumPlayerAlignments.NEUTRAL)) {
-                        setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL.name, false);
-                        toRemove.add(player);
-                    }
-                } catch (NullPointerException npe) {
+                if (currentAlignment.equals(EnumPlayerAlignments.CHAOTIC)) {
+                    setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name, false);
+                    PLAYER_ALIGNMENT_TIMES.put(player, 120);
+                } else if (currentAlignment.equals(EnumPlayerAlignments.NEUTRAL)) {
+                    setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL.name, false);
+                    PLAYER_ALIGNMENT_TIMES.remove(player);
                 }
             } else if (timeLeft > 0) {
                 PLAYER_ALIGNMENT_TIMES.put(player, timeLeft);
             }
         }
-        toRemove.forEach(PLAYER_ALIGNMENT_TIMES::remove);
     }
 
     /**
