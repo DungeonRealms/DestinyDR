@@ -232,7 +232,7 @@ public class BankListener implements Listener {
                                     }
                                     if (number <= 0) {
                                         player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
-                                    } else if (number > 999999) {
+                                    } else if (number > 100000) {
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but I cannot create bank notes that large");
                                     } else if (number > currentGems) {
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but you only have " + currentGems + " GEM(s) stored in our bank.");
@@ -479,7 +479,7 @@ public class BankListener implements Listener {
                     int note1Worth = BankMechanics.getInstance().getNoteValue(e.getCurrentItem());
                     int note2Worth = BankMechanics.getInstance().getNoteValue(e.getCursor());
                     int worth = note1Worth + note2Worth;
-                    if (worth > 999999) {
+                    if (worth > 100000) {
                         player.sendMessage(ChatColor.RED + "You cannot create a banknote of this value.");
                         e.setCancelled(true);
                         return;
