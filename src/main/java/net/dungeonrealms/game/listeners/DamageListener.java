@@ -1468,7 +1468,7 @@ public class DamageListener implements Listener {
 
         switch (event.getCause()) {
             case FALL:
-                double blocks = dmg;
+                float blocks = event.getEntity().getFallDistance();
                 if (blocks >= 2) {
                     dmg = maxHP * 0.02D * event.getDamage();
                 }
