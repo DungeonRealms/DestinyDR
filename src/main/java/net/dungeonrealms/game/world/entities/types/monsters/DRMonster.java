@@ -119,7 +119,6 @@ public interface DRMonster {
                     break;
             }
             gem_drop_amount *= drop_multiplier;
-            killer.sendMessage("Gems: " + gem_drop_amount);
 
             while (gem_drop_amount > 64) {
                 gem_drop_amount -= 64;
