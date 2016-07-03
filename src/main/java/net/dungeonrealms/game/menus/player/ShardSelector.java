@@ -111,7 +111,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
                 lore.add(ChatColor.RED.toString() + ChatColor.ITALIC + getServerType(shardID));
 
 
-            final int slot = getServerType(shardID).equals("") ? getSize() : Math.min(getInventorySize(), getInventorySize() - 1) - (getSize() - getNormalServers());
+            //final int slot = getServerType(shardID).equals("") ? getSize() : Math.min(getInventorySize(), getInventorySize() - 1) - (getSize() - getNormalServers());
 
             lore.add(ChatColor.GREEN + "This shard is online!");
             lore.add(ChatColor.WHITE + "Click here to load your");
@@ -139,7 +139,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
 //
 //            NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Ping", playerHostName);
 
-            set(slot, button);
+            set(getSize(), button);
         }
     }
 

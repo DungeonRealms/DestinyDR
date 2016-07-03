@@ -449,12 +449,12 @@ public class DungeonRealms extends JavaPlugin {
     private Map<String, ShardInfo> getShards() {
         Map<String, ShardInfo> map = new HashMap<>();
 
-        map.put("cs1", new ShardInfo("CS-1", "192.99.200.110", 11250));
         map.put("us0", new ShardInfo("US-0", "158.69.122.139", 40007));
         map.put("us1", new ShardInfo("US-1", "131.153.25.2", 40007));
         map.put("us2", new ShardInfo("US-2", "131.153.25.218", 40007));
         map.put("us3", new ShardInfo("US-3", "131.153.25.114", 40007));
         map.put("sub1", new ShardInfo("SUB-1", "158.69.122.139", 40008)); // @todo: Temporary for weekend | move to own box.
+        map.put("cs1", new ShardInfo("CS-1", "192.99.200.110", 11250));
 
         return map;
     }
