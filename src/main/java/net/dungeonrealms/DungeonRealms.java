@@ -253,6 +253,8 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new DungeonListener(), this);
             pm.registerEvents(new BossListener(), this);
             pm.registerEvents(new RestrictionListener(), this);
+            pm.registerEvents(new PvPListener(), this);
+            pm.registerEvents(new PvEListener(), this);
         } else {
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
@@ -266,6 +268,8 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new RestrictionListener(), this);
             pm.registerEvents(new DungeonListener(), this);
             pm.registerEvents(new BossListener(), this);
+            pm.registerEvents(new PvPListener(), this);
+            pm.registerEvents(new PvEListener(), this);
         }
 
         //pm.registerEvents(new MainListener(), this);

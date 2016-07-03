@@ -823,15 +823,14 @@ public class DamageAPI {
             Utils.log.warning("Defender: " + defender.getName());
             if (API.isPlayer(attacker)) {
                 API.calculateAllAttributes((Player) attacker);
-            }
-            else {
-                API.calculateAllAttributes(attacker, ((DRMonster) attacker).getAttributes());
+            } else {
+                API.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
             }
             if (API.isPlayer(defender)) {
                 API.calculateAllAttributes((Player) defender);
             }
             else {
-                API.calculateAllAttributes(attacker, ((DRMonster) attacker).getAttributes());
+                API.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
             }
             return calculateArmorReduction(attacker, defender, totalDamage, projectile);
         }

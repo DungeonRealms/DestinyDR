@@ -265,7 +265,9 @@ public class GamePlayer {
         int futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
+            int continuedExperience = futureExperience - xpNeeded;
             updateLevel(level + 1, true, false);
+            addExperience(continuedExperience, isParty, displayMessage);
         } else {
             setPlayerEXP(futureExperience);
             if (displayMessage) {

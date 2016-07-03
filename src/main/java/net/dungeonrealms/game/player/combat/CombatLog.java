@@ -76,11 +76,13 @@ public class CombatLog implements GenericMechanic {
             if (player.getVehicle() != null) {
                 if (EntityAPI.hasMountOut(player.getUniqueId())) {
                     net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(player.getUniqueId());
-                    mount.dead = true;
+                    player.eject();
+                    mount.getBukkitEntity().remove();
                     EntityAPI.removePlayerMountList(player.getUniqueId());
+                } else {
+                    player.eject();
+                    player.getVehicle().remove();
                 }
-                player.eject();
-                player.getVehicle().remove();
             }
 
         }
