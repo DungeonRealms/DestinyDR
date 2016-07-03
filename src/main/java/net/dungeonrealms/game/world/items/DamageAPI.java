@@ -643,10 +643,7 @@ public class DamageAPI {
             }
 
             if (isAttackerPlayer) {
-                if (projectile == null)
-                    attackerAttributes = API.getGamePlayer((Player) attacker).getAttributes();
-                else
-                    attackerAttributes = new HashMap<>(API.getGamePlayer((Player) attacker).getAttributes());
+                attackerAttributes = API.getGamePlayer((Player) attacker).getAttributes();
             } else if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
                 attackerAttributes = ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes();
             } else {
@@ -732,6 +729,7 @@ public class DamageAPI {
             int armorFromResistance = 0;
 
             if (projectile != null) {
+                pureDamage = 0;
                 fireDamage = projectile.getMetadata("fireDamage").get(0).asInt();
                 iceDamage = projectile.getMetadata("iceDamage").get(0).asInt();
                 poisonDamage = projectile.getMetadata("poisonDamage").get(0).asInt();
