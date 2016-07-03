@@ -38,7 +38,9 @@ public class PvEListener implements Listener {
         if (event.getEntity() instanceof LivingEntity) {
             if (!event.getEntity().hasMetadata("type")) return;
         } else {
-            return;
+            if (event.getEntity().hasMetadata("type")) {
+                if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+            }
         }
 
         Player damager = (Player) event.getDamager();
@@ -186,7 +188,9 @@ public class PvEListener implements Listener {
         if (event.getEntity() instanceof LivingEntity) {
             if (!event.getEntity().hasMetadata("type")) return;
         } else {
-            return;
+            if (event.getEntity().hasMetadata("type")) {
+                if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+            }
         }
         Player damager = (Player) projectile.getShooter();
         LivingEntity receiver = (LivingEntity) event.getEntity();
