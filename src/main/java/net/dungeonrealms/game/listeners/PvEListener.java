@@ -100,7 +100,6 @@ public class PvEListener implements Listener {
         double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
-        event.setDamage(finalDamage);
 
         if (!receiver.hasMetadata("tier")) return;
         if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId())) return;
