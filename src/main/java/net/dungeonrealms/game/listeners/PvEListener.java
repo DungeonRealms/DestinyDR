@@ -2,7 +2,7 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.PowerMove;
@@ -20,7 +20,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 
@@ -45,29 +44,12 @@ public class PvEListener implements Listener {
             }
         }
 
+        event.setDamage(0);
+
         Player damager = (Player) event.getDamager();
         LivingEntity receiver = (LivingEntity) event.getEntity();
 
-        if (API.isInSafeRegion(damager.getLocation()) || API.isInSafeRegion(receiver.getLocation())) {
-            event.setDamage(0);
-            event.setCancelled(true);
-            damager.updateInventory();
-            return;
-        }
-
         double finalDamage;
-
-        if (damager.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(damager) <= 0) {
-            event.setCancelled(true);
-            event.setDamage(0);
-            damager.playSound(damager.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            return;
-        }
 
         if (CombatLog.isInCombat(damager)) {
             CombatLog.updateCombat(damager);
@@ -78,7 +60,7 @@ public class PvEListener implements Listener {
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
 
         if (!API.isWeapon(damager.getEquipment().getItemInMainHand())) {
-            event.setDamage(1);
+            HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, 1);
             return;
         }
 
@@ -115,7 +97,9 @@ public class PvEListener implements Listener {
         }
 
         finalDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
-
+        double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
+        finalDamage = finalDamage - armorCalculation[0];
+        HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
         event.setDamage(finalDamage);
 
         if (!receiver.hasMetadata("tier")) return;
@@ -196,15 +180,11 @@ public class PvEListener implements Listener {
                 return;
             }
         }
+
+        event.setDamage(0);
+
         Player damager = (Player) projectile.getShooter();
         LivingEntity receiver = (LivingEntity) event.getEntity();
-
-        if (API.isInSafeRegion(damager.getLocation()) || API.isInSafeRegion(receiver.getLocation())) {
-            event.setDamage(0);
-            event.setCancelled(true);
-            damager.updateInventory();
-            return;
-        }
 
         double finalDamage;
 
@@ -215,8 +195,9 @@ public class PvEListener implements Listener {
         }
 
         finalDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
-
-        event.setDamage(finalDamage);
+        double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
+        finalDamage = finalDamage - armorCalculation[0];
+        HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
 
         if (!receiver.hasMetadata("tier")) return;
         if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId())) return;

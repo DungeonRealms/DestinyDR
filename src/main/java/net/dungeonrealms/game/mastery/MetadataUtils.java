@@ -80,6 +80,7 @@ public class MetadataUtils {
      * @since 1.0
      */
     public static void registerProjectileMetadata(Map<String, Integer[]> attributes, NBTTagCompound tag, Projectile projectile) {
+        projectile.setMetadata("drProjectile", new FixedMetadataValue(DungeonRealms.getInstance(), true));
         // transfer only the weapon attributes. The armor attributes will be grabbed in the calculateProjectileDamage
         // method.
         for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {

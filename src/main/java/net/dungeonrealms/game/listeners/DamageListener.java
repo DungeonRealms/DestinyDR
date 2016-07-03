@@ -5,7 +5,6 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -25,7 +24,6 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -39,7 +37,6 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -49,7 +46,6 @@ import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -72,6 +68,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -496,13 +493,16 @@ public class DamageListener implements Listener {
         if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
-        if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
-            event.setCancelled(true);
-            event.setDamage(0);
-            return;
+        if (!(event.getDamager() instanceof LivingEntity)) {
+            if (!(((Projectile) event.getDamager()).getShooter() instanceof LivingEntity)) return;
         }
+
+        event.setDamage(0);
+
         double finalDamage = 0;
         Player player = (Player) event.getEntity();
+        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
+                : (LivingEntity)((Projectile) event.getDamager()).getShooter();
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             EntityEquipment attackerEquipment = attacker.getEquipment();
@@ -552,12 +552,9 @@ public class DamageListener implements Listener {
             }
         }
 
-
         Entity theEntity = null;
         if (event.getDamager() instanceof LivingEntity) {
-
             theEntity = event.getDamager();
-
         } else if (DamageAPI.isBowProjectile(event.getDamager())) {
             Projectile attackingArrow = (Projectile) event.getDamager();
             theEntity = (Entity) attackingArrow.getShooter();
@@ -572,9 +569,11 @@ public class DamageListener implements Listener {
             PowerStrike.powerStrike.remove(theEntity.getUniqueId());
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
             player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3, 3);
-
         }
-        event.setDamage(finalDamage);
+
+        double[] armorCalculation =DamageAPI.calculateArmorReduction(leDamageSource, player, finalDamage, null);
+        finalDamage = finalDamage - armorCalculation[0];
+        HealthHandler.getInstance().handlePlayerBeingDamaged(player, leDamageSource, finalDamage, armorCalculation[0], armorCalculation[1]);
     }
 
     /**
@@ -583,12 +582,15 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void playerPunchPlayer(EntityDamageByEntityEvent event) {
         if (!API.isPlayer(event.getEntity()) || !API.isPlayer(event.getDamager()))
             return;
         Player p1 = (Player) event.getDamager();
         Player p2 = (Player) event.getEntity();
+
+        event.setDamage(0);
+        event.setCancelled(true);
 
         if (!API.isNonPvPRegion(p1.getLocation()) && !API.isNonPvPRegion(p2.getLocation())) return;
         if (!DuelingMechanics.isDueling(p2.getUniqueId())) return;
@@ -602,316 +604,6 @@ public class DamageListener implements Listener {
         if (!offer.canFight) {
             event.setCancelled(true);
             event.setDamage(0);
-        }
-    }
-
-    /**
-     * Reduces damage after it is set previously based on the defenders armor
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onArmorReduceBaseDamage(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
-            return;
-        if (!(event.getEntity() instanceof LivingEntity)) return;
-        if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
-            if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
-                if (DuelingMechanics.isDueling(event.getEntity().getUniqueId()) && DuelingMechanics.isDueling(event.getDamager().getUniqueId())) {
-                    if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
-                } else {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
-        }
-        if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
-            if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
-                if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, event.getDamager().getUniqueId()).toString())) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
-                        event.getDamager().sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
-                    }
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-                if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-                if (!GuildDatabaseAPI.get().isGuildNull(event.getDamager().getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(event.getEntity().getUniqueId())) {
-                    if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        ((Player) event.getDamager()).updateInventory();
-                        ((Player) event.getEntity()).updateInventory();
-                        return;
-                    }
-                }
-            }
-        }
-        double armourReducedDamage = 0, totalArmor = 0;
-        LivingEntity defender = (LivingEntity) event.getEntity();
-        EntityEquipment defenderEquipment = defender.getEquipment();
-        LivingEntity attacker = null;
-        if (defenderEquipment.getArmorContents() == null) return;
-        if (event.getDamager() instanceof LivingEntity) {
-            attacker = (LivingEntity) event.getDamager();
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage(), null);
-            armourReducedDamage = result[0];
-            totalArmor = result[1];
-            ItemStack attackerWeapon = attacker.getEquipment().getItemInMainHand();
-            if (API.isWeapon(attackerWeapon) && new Attribute(attackerWeapon).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
-                DamageAPI.polearmAOEProcessing.add(attacker);
-                boolean attackerIsMob = attacker.hasMetadata("type");
-                for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
-                    // mobs should only be able to damage players, not other mobs
-                    if (attackerIsMob && (!(API.isPlayer(entity) || API.isInSafeRegion(entity.getLocation()))))
-                        continue;
-                    // let's not damage ourself
-                    if (entity.equals(attacker)) continue;
-                    if ((event.getDamage() - armourReducedDamage) <= 0) continue;
-                    if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
-                        if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                            entity.playEffect(EntityEffect.HURT);
-                            HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, ((event.getDamage() - armourReducedDamage) / 2));
-                        }
-                    } else if (API.isPlayer(entity)) {
-                        if (attackerIsMob) {
-                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, ((event.getDamage() - armourReducedDamage) / 2), armourReducedDamage, totalArmor);
-                        } else if (!API.isNonPvPRegion(entity.getLocation())) {
-                            if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), entity.getUniqueId())) {
-                                if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
-                                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
-                                    }
-                                    continue;
-                                }
-                                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) entity)) {
-                                    continue;
-                                }
-                            }
-                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, ((event.getDamage() - armourReducedDamage) / 2), armourReducedDamage, totalArmor);
-                        }
-                    }
-                }
-                DamageAPI.polearmAOEProcessing.remove(attacker);
-            }
-        } else if (DamageAPI.isBowProjectile(event.getDamager())) {
-            Projectile attackingArrow = (Projectile) event.getDamager();
-            if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
-            attacker = (LivingEntity) attackingArrow.getShooter();
-            if (defender instanceof Player) {
-                if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
-            if (attacker instanceof Player) {
-                if (API.isNonPvPRegion(attacker.getLocation()) && defender instanceof Player) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
-            if (attacker instanceof Player && defender instanceof Player) {
-                if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
-                    if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
-                            attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
-                        }
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
-                    if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
-                    if (!GuildDatabaseAPI.get().isGuildNull(attacker.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(defender.getUniqueId())) {
-                        if (GuildDatabaseAPI.get().getGuildOf(attacker.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(defender.getUniqueId()))) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            ((Player) attacker).updateInventory();
-                            ((Player) defender).updateInventory();
-                            return;
-                        }
-                    }
-                }
-            }
-            if (!(attacker instanceof Player)) {
-                if (!(defender instanceof Player)) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage(), attackingArrow);
-            armourReducedDamage = result[0];
-            totalArmor = result[1];
-            attackingArrow.remove();
-        } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
-            Projectile staffProjectile = (Projectile) event.getDamager();
-            if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
-            attacker = (LivingEntity) staffProjectile.getShooter();
-            if (defender instanceof Player) {
-                if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
-            if (attacker instanceof Player) {
-                if (API.isNonPvPRegion(attacker.getLocation()) && defender instanceof Player) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
-            if (attacker instanceof Player && defender instanceof Player) {
-                if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
-                    if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
-                            attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
-                        }
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
-                    if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
-                    if (!GuildDatabaseAPI.get().isGuildNull(attacker.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(defender.getUniqueId())) {
-                        if (GuildDatabaseAPI.get().getGuildOf(attacker.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(defender.getUniqueId()))) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            ((Player) attacker).updateInventory();
-                            ((Player) defender).updateInventory();
-                            return;
-                        }
-                    }
-                }
-            }
-            if (!(attacker instanceof Player)) {
-                if (!(defender instanceof Player)) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
-            // staff hit particle
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, defender.getLocation(), new Random().nextFloat(), new Random().nextFloat(),
-                        new Random().nextFloat(), 0.5F, 20);
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, event.getDamage(), staffProjectile);
-            armourReducedDamage = result[0];
-            totalArmor = result[1];
-            staffProjectile.remove();
-        }
-        if (event.getDamage() - armourReducedDamage <= 0) {
-            event.setCancelled(true);
-            event.setDamage(0);
-            return;
-        }
-        String defenderName;
-        if (defender instanceof Player) {
-            defenderName = defender.getName();
-        } else if (defender.hasMetadata("customname")) {
-            defenderName = defender.getMetadata("customname").get(0).asString().trim();
-        } else {
-            defenderName = "Enemy";
-        }
-        String attackerName;
-        if (attacker instanceof Player) {
-            attackerName = attacker.getName();
-        } else if (attacker.hasMetadata("customname")) {
-            attackerName = attacker.getMetadata("customname").get(0).asString().trim();
-        } else {
-            attackerName = "Enemy";
-        }
-        if (armourReducedDamage == -1) {
-            if (attacker instanceof Player) {
-                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
-            }
-            if (defender instanceof Player) {
-                defender.sendMessage(org.bukkit.ChatColor.GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *DODGE* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.GREEN + ")");
-            }
-            //The defender dodged the attack
-            defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
-            event.setDamage(0);
-        } else if (armourReducedDamage == -2) {
-            if (attacker instanceof Player) {
-                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
-            }
-            if (defender instanceof Player) {
-                defender.sendMessage(org.bukkit.ChatColor.DARK_GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *BLOCK* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.DARK_GREEN + ")");
-            }
-            defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-            event.setDamage(0);
-        } else if (armourReducedDamage == -3) {
-            //todo: debug reflect
-//            if (API.isPlayer(attacker)) {
-//                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT REFLECT* ("
-//                        + defenderName + org.bukkit.ChatColor.RED + ")");
-//                HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, event.getDamage(), 0, 0);
-//            } else {
-//                if (attacker instanceof Projectile) {
-//                    ProjectileSource shooter = ((Projectile) attacker).getShooter();
-//                    if (!(shooter instanceof LivingEntity)) return;
-//                    LivingEntity leShooter = (LivingEntity) shooter;
-//                    if (API.isPlayer(leShooter)) {
-//                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player)leShooter, defender, event.getDamage(), 0, 0, DamageCause.REFLECT);
-//                    }
-//                    else {
-//                        HealthHandler.getInstance().handleMonsterBeingDamaged(leShooter, defender, event.getDamage());
-//                    }
-//                }
-//                else {
-//                    HealthHandler.getInstance().handleMonsterBeingDamaged(attacker, defender, event.getDamage());
-//                }
-//            }
-//            if (API.isPlayer(defender)) {
-//                defender.sendMessage(org.bukkit.ChatColor.GOLD + "" + org.bukkit.ChatColor.BOLD + "              " +
-//                        "          *REFLECT* (" + attackerName + org.bukkit.ChatColor.GOLD + ")");
-//            }
-            defender.getWorld().playSound(defender.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1.0f, 1.0f);
-        } else {
-            if (API.isPlayer(defender)) {
-                if (((Player) defender).isBlocking() && ((Player) defender).getEquipment().getItemInMainHand() != null && ((Player) defender).getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    if (new Random().nextInt(100) <= 80) {
-                        double blockDamage = event.getDamage() / 2;
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage), armourReducedDamage, totalArmor);
-                        event.setDamage(0);
-                    } else {
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
-                        event.setDamage(0);
-                    }
-                } else {
-                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
-                    event.setDamage(0);
-                }
-            } else if (defender.hasMetadata("type") && defender.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), attacker, (event.getDamage() - armourReducedDamage));
-                event.setDamage(0);
-            } else {
-                event.setDamage(event.getDamage() - armourReducedDamage);
-            }
         }
     }
 

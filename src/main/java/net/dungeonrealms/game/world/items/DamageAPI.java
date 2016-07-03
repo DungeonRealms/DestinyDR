@@ -240,7 +240,7 @@ public class DamageAPI {
                 Utils.log.info("Defender: " + receiver.getName());
                 Utils.log.info("Attacker attributes: ");
                 ((DRMonster) attacker).getAttributes().toString();
-                return calculateWeaponDamage(attacker, receiver);
+                return 0;
             }
             API.calculateAllAttributes((Player) attacker);
             Utils.log.info("[DamageAPI] calculateWeaponDamage attribute error.");
@@ -249,7 +249,7 @@ public class DamageAPI {
             Utils.log.info("Defender: " + receiver.getName());
             Utils.log.info("Attacker attributes: ");
             API.getGamePlayer((Player) attacker).getAttributes().toString();
-            return calculateWeaponDamage(attacker, receiver);
+            return 0;
         }
     }
 
@@ -507,7 +507,7 @@ public class DamageAPI {
                 Utils.log.info("Defender: " + receiver.getName());
                 Utils.log.info("Attacker attributes: ");
                 ((DRMonster) attacker).getAttributes().toString();
-                return calculateProjectileDamage(attacker, receiver, projectile);
+                return 0;
             }
             API.calculateAllAttributes((Player) attacker);
             Utils.log.info("[DamageAPI] calculateProjectileDamage attribute error.");
@@ -516,7 +516,7 @@ public class DamageAPI {
             Utils.log.info("Defender: " + receiver.getName());
             Utils.log.info("Attacker attributes: ");
             API.getGamePlayer((Player) attacker).getAttributes().toString();
-            return calculateProjectileDamage(attacker, receiver, projectile);
+            return 0;
         }
     }
 
@@ -812,18 +812,13 @@ public class DamageAPI {
             ex.printStackTrace();
             Utils.log.warning("Attacker: " + attacker.getName());
             Utils.log.warning("Defender: " + defender.getName());
-            if (isAttackerPlayer) {
-                API.calculateAllAttributes((Player) attacker);
-            } else {
-                API.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
-            }
             if (isDefenderPlayer) {
-                API.calculateAllAttributes((Player) defender);
+                API.calculateAllAttributes((Player)defender);
             }
             else {
-                API.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
+                API.calculateAllAttributes(defender, ((DRMonster) ((CraftLivingEntity) defender).getHandle()).getAttributes());
             }
-            return calculateArmorReduction(attacker, defender, totalDamage, projectile);
+            return new double[]{0, 0};
         }
     }
 
