@@ -326,13 +326,17 @@ public class DatabaseAPI {
         return ((Document) doc.get(key[0])).get(key[1]);
     }
 
-    public String getUUIDFromName(String playerName) {
+    public UUID getUUIDFromName(String playerName) {
         Document doc = Database.collection.find(Filters.eq("info.username", playerName.toLowerCase())).first();
-        if (doc == null) {
+        return UUID.fromString(((Document) doc.get("info")).get("uuid", String.class));
+    }
+
+    public String getFormattedShardName(UUID uuid) {
+        Document doc = Database.collection.find(Filters.eq("info.current", uuid.toString())).first();
+        if (doc == null)
             return "";
-        } else {
-            return ((Document) doc.get("info")).get("uuid", String.class);
-        }
+        String name = ((Document) doc.get("info")).get("uuid", String.class);
+        return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
     }
 
     public String getOfflineName(UUID uuid) {
