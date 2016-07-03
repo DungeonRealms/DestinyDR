@@ -11,12 +11,18 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeZombie;
+import net.dungeonrealms.game.world.entities.utils.EntityAPI;
+import net.minecraft.server.v1_9_R2.DataWatcherObject;
+import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
-import org.bukkit.entity.*;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -67,7 +73,13 @@ public class CombatLog implements GenericMechanic {
             /*
             Knock player off of horse, if they're tagged in combat.
              */
-            if (player.getVehicle() != null && player.getVehicle() instanceof Horse) {
+            if (player.getVehicle() != null) {
+                if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                    net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(player.getUniqueId());
+                    mount.dead = true;
+                    EntityAPI.removePlayerMountList(player.getUniqueId());
+                }
+                player.eject();
                 player.getVehicle().remove();
             }
 
@@ -77,6 +89,8 @@ public class CombatLog implements GenericMechanic {
     public static void removeFromCombat(Player player) {
         if (isInCombat(player)) {
             COMBAT.remove(player);
+            //Removes all arrows from player.
+            ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b),0);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 BountifulAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Leaving Combat", 4 * 20);
             }

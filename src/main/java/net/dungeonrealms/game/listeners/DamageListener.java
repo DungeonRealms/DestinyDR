@@ -176,6 +176,24 @@ public class DamageListener implements Listener {
     }
 
     /**
+     * Checks for null gameplayer on damage by entity. Keep this priority lowest because onPlayerHitEntity and
+     * onMonsterHitPlayer are priority low.
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void entDamageNullCheck(EntityDamageByEntityEvent event) {
+        if (API.isPlayer(event.getDamager())) {
+            if (API.getGamePlayer((Player) event.getDamager()) == null) {
+                event.setCancelled(true);
+            }
+        }
+        if (API.isPlayer(event.getEntity())) {
+            if (API.getGamePlayer((Player) event.getEntity()) == null) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    /**
      * Listen for the players weapon hitting an entity
      * Used for calculating damage based on player weapon
      *
@@ -209,6 +227,16 @@ public class DamageListener implements Listener {
             }
             return;
         }
+
+        if (event.getDamager().hasMetadata("lastAttack") && System.currentTimeMillis() - event.getDamager().getMetadata("lastAttack").get(0).asLong() < 80) {
+            event.setDamage(0);
+            event.setCancelled(true);
+            if (API.isPlayer(leDamageSource)) {
+                ((Player) leDamageSource).updateInventory();
+            }
+            return;
+        }
+        event.getDamager().setMetadata("lastAttack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
 
         if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
             if (!DuelingMechanics.isDueling(leDamageSource.getUniqueId())) {

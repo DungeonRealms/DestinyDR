@@ -116,6 +116,11 @@ public enum LootType {
                     Material m = Material.getMaterial(item_id);
                     ItemStack item = null;//new ItemStack(m, 1, item_meta);
                     switch (m) {
+                        case FLOWER_POT:
+                        case FLOWER_POT_ITEM:
+                            //Quiver drops, replace these with gems for now.
+                            item = BankMechanics.createBankNote(120);
+                            break;
                         case EMERALD:
                             int min_amount = Integer.parseInt(s.substring(s.indexOf(":") + 1, s.indexOf("-")));
                             int max_amount = Integer.parseInt(s.substring(s.indexOf("-") + 1, s.indexOf("%")));

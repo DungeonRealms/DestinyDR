@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -36,10 +37,13 @@ public class CommandStuck extends BasicCommand {
                 !player.getLocation().getBlock().getType().equals(Material.STATIONARY_LAVA) &&
                 !player.getLocation().getBlock().getType().equals(Material.GRASS) &&
                 !player.getLocation().getBlock().getType().equals(Material.LONG_GRASS)
-
-                ){
+                ) {
             player.sendMessage(ChatColor.GREEN + "It appears that you're stuck inside of a block?");
-            player.teleport(player.getLocation().add(0, 2, 0));
+            Location loc = player.getLocation();
+            while (!loc.getBlock().getType().equals(Material.AIR)) {
+                loc.add(0, 2, 0);
+            }
+            player.teleport(loc);
             return true;
         }
 

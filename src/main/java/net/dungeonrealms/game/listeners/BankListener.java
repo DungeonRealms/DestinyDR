@@ -9,6 +9,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,8 +35,6 @@ import java.util.UUID;
  * Created by Chase, by fixed by Proxying and under inspection of xFinityPro.
  */
 public class BankListener implements Listener {
-
-    public ArrayList<UUID> prompted = new ArrayList<>();
 
     /**
      * Bank Inventory. When a player moves items
@@ -103,6 +102,10 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
+            if (event.getItem().getItemStack().getAmount() <= 0) {
+                event.setCancelled(true);
+                event.getItem().remove();
+            }
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
             if (nms.hasTag() && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                 event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
@@ -229,6 +232,8 @@ public class BankListener implements Listener {
                                     }
                                     if (number <= 0) {
                                         player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
+                                    } else if (number > 100000) {
+                                        player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but I cannot create bank notes that large.");
                                     } else if (number > currentGems) {
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but you only have " + currentGems + " GEM(s) stored in our bank.");
                                         player.sendMessage(ChatColor.GRAY + "You cannot withdraw more GEM(s) than you have stored.");
@@ -474,6 +479,11 @@ public class BankListener implements Listener {
                     int note1Worth = BankMechanics.getInstance().getNoteValue(e.getCurrentItem());
                     int note2Worth = BankMechanics.getInstance().getNoteValue(e.getCursor());
                     int worth = note1Worth + note2Worth;
+                    if (worth > 100000) {
+                        player.sendMessage(ChatColor.RED + "You cannot create a banknote of this value.");
+                        e.setCancelled(true);
+                        return;
+                    }
                     e.setCursor(null);
                     e.setCurrentItem(BankMechanics.createBankNote(worth));
                     player.sendMessage(ChatColor.GRAY + "You have combined bank notes " + ChatColor.ITALIC + note1Worth + "G + " + note2Worth + "G " + ChatColor.GRAY + "with the value of " + ChatColor.BOLD + worth + "G");
@@ -536,6 +546,8 @@ public class BankListener implements Listener {
                 player.sendMessage(ChatColor.GRAY + "you'd like to sign an additional bank note for. Alternatively,");
                 player.sendMessage(ChatColor.GRAY + "type" + ChatColor.RED + " 'cancel' " + ChatColor.GRAY + "to stop this operation.");
 
+                String ePochTag = AntiCheat.getInstance().getUniqueEpochIdentifier(player.getInventory().getItemInMainHand());
+
                 Chat.listenForMessage(player, event -> {
                     if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("c")) {
                         player.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED");
@@ -553,19 +565,37 @@ public class BankListener implements Listener {
                     } else if (number > noteWorth) {
                         player.sendMessage(ChatColor.GRAY + "You cannot split a note more than what it's worth.");
                     } else {
-                        if (player.getInventory().firstEmpty() != -1) {
-                            if (number == noteWorth) return;
-                            int newValue = noteWorth - number;
-                            player.getInventory().setItemInMainHand(BankMechanics.createBankNote(newValue));
-                            player.getInventory().addItem(BankMechanics.createBankNote(number));
+                        if (hasOriginalBankNote(player, ePochTag)) {
+                            if (player.getInventory().firstEmpty() != -1) {
+                                if (number == noteWorth) return;
+                                int newValue = noteWorth - number;
+                                player.getInventory().setItemInMainHand(BankMechanics.createBankNote(newValue));
+                                player.getInventory().addItem(BankMechanics.createBankNote(number));
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You do not have enough space in your inventory to perform this action.");
+                            }
                         } else {
-                            player.sendMessage(ChatColor.RED + "You do not have enough space in your inventory to perform this action.");
+                            player.sendMessage(ChatColor.RED + "You can no longer split this bank note.");
                         }
                     }
                 }, p -> p.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED"));
 
             }
         }
+    }
+
+    private boolean hasOriginalBankNote(Player player, String ePoch) {
+        String ePochToCheck;
+        for (ItemStack stack : player.getInventory().getContents()) {
+            ePochToCheck = AntiCheat.getInstance().getUniqueEpochIdentifier(stack);
+            if (ePochToCheck == null) {
+                continue;
+            }
+            if (ePochToCheck.equals(ePoch)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

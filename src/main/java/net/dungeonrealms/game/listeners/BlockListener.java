@@ -134,7 +134,7 @@ public class BlockListener implements Listener {
                 int experienceGain = Mining.getOreEXP(stackInHand, type);
                 GamePlayer gamePlayer = API.getGamePlayer(e.getPlayer());
                 if (gamePlayer == null) return;
-                gamePlayer.addExperience((experienceGain / 8), false, false);
+                gamePlayer.addExperience((experienceGain / 8), false, true);
                 int duraBuff = Mining.getDurabilityBuff(stackInHand);
                 int breakChance = Mining.getBreakChance(stackInHand);
                 breakChance += Mining.getSuccessChance(stackInHand);

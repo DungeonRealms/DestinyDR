@@ -787,12 +787,12 @@ public class Fishing implements GenericMechanic {
                 case 100:
                     addEnchant = true;
                     Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_V);
-                    rod.getItemMeta().setDisplayName(ChatColor.YELLOW.toString() + "Grand Master Fishingrod");
-                    p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Fishingrod has reached " + ChatColor.UNDERLINE + "LVL 100"
+                    rod.getItemMeta().setDisplayName(ChatColor.YELLOW.toString() + "Grand Master Fishing Rod");
+                    p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Fishing Rod has reached " + ChatColor.UNDERLINE + "LVL 100"
                             + ChatColor.YELLOW + " this means you can no longe repair it. You now have TWO options.");
-                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Fishingrod at the merchant for a 'Buff Token' that will hold all the custom stats of your Fishingrod and may be applied to a new Fishingrod.");
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Fishing Rod at the merchant for a 'Buff Token' that will hold all the custom stats of your Fishingrod and may be applied to a new Fishingrod.");
                     p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(2) " + ChatColor.YELLOW + "If you continue to use this" +
-                            " Fishingrod until it runs out of durability, it will transform into a LVL 1 Fishingrod "
+                            " Fishingrod until it runs out of durability, it will transform into a LVL 1 Fishing Rod "
                             + ", but it will retain all its custom stats.");
                     p.sendMessage("");
                     break;
@@ -800,7 +800,7 @@ public class Fishing implements GenericMechanic {
                     break;
             }
             nms = CraftItemStack.asNMSCopy(rod);
-            p.sendMessage(ChatColor.YELLOW + "Your pick has increased to level " + ChatColor.AQUA + lvl);
+            p.sendMessage(ChatColor.YELLOW + "Your Fishing Rod has increased to level " + ChatColor.AQUA + lvl);
             nms.getTag().setInt("maxXP", getEXPNeeded(lvl));
             nms.getTag().setInt("XP", 0);
             nms.getTag().setInt("level", lvl);

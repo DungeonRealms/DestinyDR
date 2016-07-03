@@ -182,6 +182,10 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
+        if (API.getGamePlayer(event.getPlayer()) == null) { // server is restarting
+            event.setCancelled(true);
+            return;
+        }
         if (PunishUtils.isMuted(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(PunishUtils.getMutedMessage(event.getPlayer().getUniqueId()));
             event.setCancelled(true);
@@ -599,7 +603,7 @@ public class MainListener implements Listener {
                     Fishing.gainExp(pl.getEquipment().getItemInMainHand(), pl, exp);
                     GamePlayer gamePlayer = API.getGamePlayer(pl);
                     if (gamePlayer == null) return;
-                    gamePlayer.addExperience(exp / 8, false, false);
+                    gamePlayer.addExperience(exp / 8, false, true);
                     gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
                     int doi_double_drop = new Random().nextInt(100) + 1;
                     if (Fishing.getDoubleDropChance(pl.getEquipment().getItemInMainHand()) >= doi_double_drop) {

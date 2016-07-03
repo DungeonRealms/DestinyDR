@@ -118,13 +118,19 @@ public interface DRMonster {
                     gem_drop_amount = (random.nextInt(200 - 75) + 75) * gold_drop_multiplier;
                     break;
             }
+            gem_drop_amount *= drop_multiplier;
 
-            ItemStack item = BankMechanics.gem.clone();
-            item.setAmount((int) (gem_drop_amount * drop_multiplier));
-            if (item.getAmount() < 1) {
-                item.setAmount(1);
+            while (gem_drop_amount > 64) {
+                gem_drop_amount -= 64;
+                ItemStack item = BankMechanics.gem.clone();
+                item.setAmount(64);
+                world.getWorld().dropItem(loc.add(0, 1, 0), item);
             }
-            world.getWorld().dropItem(loc.add(0, 1, 0), item);
+            if (gem_drop_amount > 0) {
+                ItemStack item = BankMechanics.gem.clone();
+                item.setAmount((int) gem_drop_amount);
+                world.getWorld().dropItem(loc.add(0, 1, 0), item);
+            }
         }
 
         int armorRoll = random.nextInt(1000);

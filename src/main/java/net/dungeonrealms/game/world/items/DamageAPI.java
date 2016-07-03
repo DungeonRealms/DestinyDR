@@ -213,28 +213,7 @@ public class DamageAPI {
                 damage += (damage * (attacker.getMetadata("damageBonus").get(0).asDouble() / 100.));
             }
 
-            // ELITE CALCULATION
-            if (attacker.hasMetadata("elite")) {
-                switch (attacker.getMetadata("tier").get(0).asInt()) {
-                    case 1:
-                        damage *= 2.5;
-                        break;
-                    case 2:
-                        damage *= 2.5;
-                        break;
-                    case 3:
-                        damage *= 3;
-                        break;
-                    case 4:
-                        damage *= 5;
-                        break;
-                    case 5:
-                        damage *= 7;
-                        break;
-                    default:
-                        break;
-                }
-            }
+            damage = addSpecialDamage(attacker, damage);
 
             if (isHitCrit) {
                 if (attacker instanceof Player) {
@@ -491,6 +470,8 @@ public class DamageAPI {
 
             damage = applyIncreaseDamagePotion(attacker, damage);
 
+            damage = addSpecialDamage(attacker, damage);
+
             if (!(attacker instanceof Player)) {
                 if (attacker.hasMetadata("attack")) {
                     damage += (damage * (attacker.getMetadata("attack").get(0).asDouble() / 100));
@@ -533,6 +514,49 @@ public class DamageAPI {
             API.getGamePlayer((Player) attacker).getAttributes().toString();
             return calculateProjectileDamage(attacker, receiver, projectile);
         }
+    }
+
+    /**
+     * Adds extra damage for dungeon, elite, and boss mobs.
+     *
+     * @param attacker
+     * @param damage
+     * @return
+     */
+    public static double addSpecialDamage(LivingEntity attacker, double damage) {
+        // DUNGEON CALCULATION
+        if (attacker.hasMetadata("dungeon")) {
+            damage *= 2;
+        }
+
+        // ELITE CALCULATION
+        if (attacker.hasMetadata("elite") && attacker.hasMetadata("tier")) {
+            switch (attacker.getMetadata("tier").get(0).asInt()) {
+                case 1:
+                    damage *= 2.5;
+                    break;
+                case 2:
+                    damage *= 2.5;
+                    break;
+                case 3:
+                    damage *= 3;
+                    break;
+                case 4:
+                    damage *= 5;
+                    break;
+                case 5:
+                    damage *= 7;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // DUNGEON BOSS CALCULATION
+        if (attacker.hasMetadata("boss")) {
+            damage *= 6;
+        }
+        return damage;
     }
 
     public static double applyIncreaseDamagePotion(LivingEntity attacker, double damage) {
