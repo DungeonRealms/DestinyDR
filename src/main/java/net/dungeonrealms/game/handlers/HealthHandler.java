@@ -201,6 +201,10 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerHPLive(Player player, int hp) {
+        if (player.hasMetadata("maxHP") && hp > player.getMetadata("maxHP").get(0).asInt() && !Rank.isGM(player)) {
+            player.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), player.getMetadata("maxHP").get(0).asInt()));
+            return;
+        }
         player.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
     }
 
@@ -241,7 +245,8 @@ public class HealthHandler implements GenericMechanic {
         if (player.hasMetadata("maxHP")) {
             return player.getMetadata("maxHP").get(0).asInt();
         } else {
-            return API.getGamePlayer(player).getPlayerMaxHP();
+            player.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), calculateMaxHPFromItems(player)));
+            return this.calculateMaxHPFromItems(player);
         }
     }
 
@@ -906,7 +911,6 @@ public class HealthHandler implements GenericMechanic {
         if (entity.hasMetadata("boss")) {
             totalHP *= 6;
         }
-
 
         return totalHP;
     }

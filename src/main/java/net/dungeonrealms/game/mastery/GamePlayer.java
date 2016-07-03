@@ -201,7 +201,7 @@ public class GamePlayer {
      * @since 1.0
      */
     public int getPlayerMaxHP() {
-        return HealthHandler.getInstance().calculateMaxHPFromItems(T);
+        return HealthHandler.getInstance().getPlayerMaxHPLive(T);
     }
 
     /**
