@@ -11,15 +11,16 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeZombie;
+import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
-import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
@@ -72,7 +73,13 @@ public class CombatLog implements GenericMechanic {
             /*
             Knock player off of horse, if they're tagged in combat.
              */
-            if (player.getVehicle() != null && player.getVehicle() instanceof Horse) {
+            if (player.getVehicle() != null) {
+                if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                    net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(player.getUniqueId());
+                    mount.dead = true;
+                    EntityAPI.removePlayerMountList(player.getUniqueId());
+                }
+                player.eject();
                 player.getVehicle().remove();
             }
 
