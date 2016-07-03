@@ -35,10 +35,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-/*import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;*/
-
 /**
  * Created by Chase on Sep 23, 2015
  */
@@ -207,7 +203,6 @@ public class ShopListener implements Listener {
                     }, player -> {
                         player.getInventory().addItem(BankMechanics.shopPricing.get(player.getName()));
                         BankMechanics.shopPricing.remove(player.getName());
-                        player.sendMessage(ChatColor.RED + "Action cancelled.");
                     });
                 } else {
                     ItemStack stackClicked = event.getCurrentItem();
@@ -321,7 +316,6 @@ public class ShopListener implements Listener {
                         }, player -> {
                             clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                             BankMechanics.shopPricing.remove(clicker.getName());
-                            player.sendMessage(ChatColor.RED + "Action cancelled.");
                         });
                         clicker.closeInventory();
                         return;

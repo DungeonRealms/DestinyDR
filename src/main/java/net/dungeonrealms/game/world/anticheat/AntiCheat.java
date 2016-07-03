@@ -5,7 +5,6 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -89,7 +88,9 @@ public class AntiCheat {
      * @since 1.0
      */
     public String getUniqueEpochIdentifier(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return null;
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        if (nmsStack == null) return null;
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null || !tag.hasKey("u")) return null;
         return tag.getString("u");
