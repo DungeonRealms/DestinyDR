@@ -138,6 +138,9 @@ public class TradeCalculator {
             if (is == null || is.getType() == Material.AIR) {
                 continue;
             }
+            if (!API.isItemTradeable(is)) {
+                continue;
+            }
             int tier = RepairAPI.getArmorOrWeaponTier(is);
             if (RepairAPI.isItemArmorOrWeapon(is)) {
                 int payout = 0;
