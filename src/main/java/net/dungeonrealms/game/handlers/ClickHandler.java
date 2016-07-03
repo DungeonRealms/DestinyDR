@@ -1355,10 +1355,10 @@ public class ClickHandler {
                         SupportMenus.openTrailsMenu(player, playerName, uuid);
                         break;
                     case 22:
-                        SupportMenus.openMountsMenu(player, playerName, uuid);
+                        SupportMenus.openPetsMenu(player, playerName, uuid);
                         break;
                     case 25:
-                        SupportMenus.openPetsMenu(player, playerName, uuid);
+                        SupportMenus.openMountsMenu(player, playerName, uuid);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");

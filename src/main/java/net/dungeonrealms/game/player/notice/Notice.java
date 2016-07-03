@@ -52,10 +52,10 @@ public class Notice {
 
                 if (24 - diffHours <= 0) {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, s, true);
-                    FriendHandler.getInstance().sendFriendMessage(player, ChatColor.RED + "Friend request for " + ChatColor.AQUA + name + ChatColor.RED + " has expired!");
+                    player.sendMessage(ChatColor.RED + "Friend request for " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.RED + " has expired.");
                 }
             }
-            FriendHandler.getInstance().sendFriendMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + friendRequests.size() + ChatColor.GREEN + " pending friend request!");
+            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.ITALIC + friendRequests.size() + ChatColor.GREEN + " pending friend request" + (friendRequests.size() != 1 ? "s" : "") + ".");
         }
 
         if (mailbox.size() > 0)

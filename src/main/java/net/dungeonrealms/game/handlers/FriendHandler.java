@@ -49,7 +49,7 @@ public class FriendHandler {
                 //Remove Pending request
                 player.closeInventory();
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true);
-                sendFriendMessage(player, ChatColor.GREEN + "You have deleted " + itemStack.getItemMeta().getDisplayName().split("'")[0] + " from your friends list!");
+                player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + " from your friends list!");
                 PlayerMenus.openFriendInventory(player);
                 DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.toString(), true);
                 break;
@@ -75,7 +75,7 @@ public class FriendHandler {
                 //Remove Pending request
                 player.closeInventory();
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), true);
-                sendFriendMessage(player, ChatColor.GREEN + "You have successfully removed pending request for " + itemStack.getItemMeta().getDisplayName().split("'")[0]);
+                player.sendMessage(ChatColor.GREEN + "You have successfully cancelled the pending request for " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + ".");
                 PlayerMenus.openFriendInventory(player);
                 break;
             case LEFT:
@@ -83,7 +83,7 @@ public class FriendHandler {
                 player.closeInventory();
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), false);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
-                sendFriendMessage(player, ChatColor.GREEN + "You have successfully added " + ChatColor.AQUA + itemStack.getItemMeta().getDisplayName().split("'")[0]);
+                player.sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + ".");
                 DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId().toString(), true);
                 break;
         }
@@ -97,12 +97,19 @@ public class FriendHandler {
      * @since 1.0
      */
     public void sendRequest(Player player, Player friend) {
-        if (areFriends(player, friend.getUniqueId())) return;
+        if (player.getDisplayName().equalsIgnoreCase(friend.getDisplayName())) {
+            player.sendMessage(ChatColor.RED + "You cannot add yourself.");
+            return;
+        }
+        if (areFriends(player, friend.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "You are already friends with " + ChatColor.BOLD + ChatColor.UNDERLINE + friend.getDisplayName() + ChatColor.RED + ".");
+            return;
+        }
 
         DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId() + "," + (System.currentTimeMillis() / 1000L), true);
-        sendFriendMessage(player, ChatColor.GREEN + "Friend request was successfully sent.");
+        player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
 
-        sendFriendMessage(friend, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " sent you a friend request! Check your friend management UI to accept / deny!");
+        friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + player.getName() + ChatColor.GREEN + " sent you a friend request.");
         //NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
     }
 
@@ -129,17 +136,6 @@ public class FriendHandler {
         long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(uuid.toString())).count();
 
         return pendingRequests >= 1;
-    }
-
-    /**
-     * simple method to format messages for future.
-     *
-     * @param player  Player
-     * @param message Message
-     * @since 1.0
-     */
-    public void sendFriendMessage(Player player, String message) {
-        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "FRIENDS" + ChatColor.WHITE + "] " + ChatColor.RESET + message);
     }
 
 }
