@@ -672,18 +672,39 @@ public class DamageListener implements Listener {
             ItemStack attackerWeapon = attacker.getEquipment().getItemInMainHand();
             if (API.isWeapon(attackerWeapon) && new Attribute(attackerWeapon).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                 DamageAPI.polearmAOEProcessing.add(attacker);
+                boolean attackerIsMob = attacker.hasMetadata("type");
                 for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                    // mobs should only be able to damage players, not other mobs
+                    if (attackerIsMob && (!(API.isPlayer(entity) || API.isInSafeRegion(entity.getLocation()))))
+                        continue;
+                    // let's not damage ourself
                     if (entity.equals(attacker)) continue;
+                    if ((event.getDamage() - armourReducedDamage) <= 0) continue;
                     if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
-                        if ((event.getDamage() - armourReducedDamage) > 0) {
-                            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                                entity.playEffect(EntityEffect.HURT);
-                                HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage) / 2);
+                        if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                            entity.playEffect(EntityEffect.HURT);
+                            HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, ((event.getDamage() - armourReducedDamage) / 2));
+                        }
+                    } else if (API.isPlayer(entity)) {
+                        if (attackerIsMob) {
+                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, ((event.getDamage() - armourReducedDamage) / 2), armourReducedDamage, totalArmor);
+                        } else if (!API.isNonPvPRegion(entity.getLocation())) {
+                            if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), entity.getUniqueId())) {
+                                if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
+                                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
+                                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+                                    }
+                                    continue;
+                                }
+                                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) entity)) {
+                                    continue;
+                                }
                             }
+                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, attacker, ((event.getDamage() - armourReducedDamage) / 2), armourReducedDamage, totalArmor);
                         }
                     }
-                    DamageAPI.polearmAOEProcessing.remove(attacker);
                 }
+                DamageAPI.polearmAOEProcessing.remove(attacker);
             }
         } else if (DamageAPI.isBowProjectile(event.getDamager())) {
             Projectile attackingArrow = (Projectile) event.getDamager();
