@@ -74,7 +74,7 @@ public class DonationEffects implements GenericMechanic {
 
     private void handleCreeperFireworks() {
         if (fireWorkCreepers.isEmpty()) return;
-        FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.BLUE).withFade(Color.RED).with(FireworkEffect.Type.STAR).trail(true).build();
+        FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.BLUE, Color.RED, Color.WHITE).withFade(Color.BLUE, Color.RED, Color.WHITE).with(FireworkEffect.Type.STAR).trail(true).build();
         for (Creeper creeper : fireWorkCreepers) {
             if (!creeper.isAlive()) {
                 fireWorkCreepers.remove(creeper);
@@ -83,7 +83,7 @@ public class DonationEffects implements GenericMechanic {
             Firework fw = (Firework) creeper.getBukkitEntity().getWorld().spawnEntity(creeper.getBukkitEntity().getLocation(), EntityType.FIREWORK);
             FireworkMeta fwm = fw.getFireworkMeta();
             fwm.addEffect(effect);
-            fwm.setPower(random.nextInt(5));
+            fwm.setPower(1); // 0.5 seconds
             fw.setFireworkMeta(fwm);
         }
     }

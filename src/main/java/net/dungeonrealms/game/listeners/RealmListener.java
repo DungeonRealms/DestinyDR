@@ -81,15 +81,10 @@ public class RealmListener implements Listener {
         if (REALMS.getRealm(to) != null) {
             RealmToken realm = REALMS.getRealm(to);
 
-            if (!player.getUniqueId().equals(realm.getOwner())) {
+            if (!player.getUniqueId().equals(realm.getOwner()))
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + realm.getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
-                if (realm.getPropertyBoolean("flight")) {
-                    player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
-                    player.setAllowFlight(true);
-                }
-            } else {
+            else
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have returned to " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
-            }
 
             if ((realm.getBuilders().contains(player.getUniqueId()) || realm.getOwner().equals(player.getUniqueId())) && realm.getPropertyBoolean("flight")) {
                 player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");

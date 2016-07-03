@@ -6,7 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -144,6 +145,49 @@ public class Utils {
 
     public static String ucfirst(String string) {
         return Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase();
+    }
+
+    /**
+     * Convert seconds into a human readable format.
+     *
+     * @param seconds
+     * @return seconds.
+     */
+    public static String formatTimeAgo(int seconds) {
+        if (seconds == 0) return "0 seconds"; // @note: 0 seconds is a special case.
+
+        String date = "";
+
+        String[] unitNames = { "week", "day", "hour", "minute", "second" };
+        int[] unitValues = { 604800, 86400, 3600, 60, 1 };
+
+        // Loop through all of the units.
+        for (int i = 0; i < unitNames.length; i++) {
+            int quot = seconds / unitValues[i];
+            if (quot > 0) {
+                date += quot + " " + unitNames[i] + (Math.abs(quot) > 1 ? "s" : "") + ", ";
+                seconds -= (quot * unitValues[i]);
+            }
+        }
+
+        // Return the date, substring -2 to remove the trailing ", ".
+        return date.substring(0, date.length() - 2);
+    }
+
+    /**
+     * Convert milliseconds into a human readable format.
+     *
+     * @param milliseconds
+     * @return String
+     */
+    public static String formatTimeAgo(Long milliseconds) {
+        return formatTimeAgo((int) (milliseconds / 1000));
+    }
+
+    public static String getDate(Long milliseconds) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC-0"));
+        return dateFormat.format(new Date(milliseconds));
     }
 
 }

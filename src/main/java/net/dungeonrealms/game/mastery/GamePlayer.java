@@ -57,6 +57,10 @@ public class GamePlayer {
     @Getter
     private long lastArmorEquip;
 
+    @Setter
+    @Getter
+    private String reply;
+
     @Getter
     @Setter
     private int playerEXP;
@@ -230,14 +234,11 @@ public class GamePlayer {
         double difficulty = 1;
         if (level >= 1 && level < 40) {
             difficulty = 1.3;
-        }
-        else if (level >= 40 && level < 60) {
+        } else if (level >= 40 && level < 60) {
             difficulty = 1.6;
-        }
-        else if (level >= 60 && level < 80) {
+        } else if (level >= 60 && level < 80) {
             difficulty = 2.2;
-        }
-        else if (level >= 80) {
+        } else if (level >= 80) {
             difficulty = 2.6;
         }
 //        return (int) (100 * Math.pow(level, 2.24)); old level exp formula
@@ -281,8 +282,9 @@ public class GamePlayer {
     /**
      * Updates a player's level. Can be called for a natural level up or for
      * an artificial change of a player's level via /set level or other means.
+     *
      * @param newLevel - the new level
-     * @param levelUp - if the level change is natural
+     * @param levelUp  - if the level change is natural
      * @param levelSet - if the level change is set artificially
      */
     public void updateLevel(int newLevel, boolean levelUp, boolean levelSet) {
@@ -307,8 +309,7 @@ public class GamePlayer {
             Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + this.getStats().freePoints);
             Utils.sendCenteredMessage(T, ChatColor.AQUA.toString() + ChatColor.BOLD + "******************************");
             T.sendMessage("");
-        }
-        else if (levelSet) { // level was set
+        } else if (levelSet) { // level was set
             getStats().setPlayerLevel(newLevel);
 
             Utils.sendCenteredMessage(T, ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
@@ -389,7 +390,7 @@ public class GamePlayer {
     }
 
     public Integer[] getRangedAttributeVal(AttributeType type) {
-        if (type == null) return new Integer[] { 0, 0 };
+        if (type == null) return new Integer[]{0, 0};
         return attributes.get(type.getNBTName());
     }
 
@@ -415,12 +416,11 @@ public class GamePlayer {
      *
      * @param type
      * @param difference
-     *
      * @return the new value of the attribute
      */
     public Integer[] changeAttributeVal(AttributeType type, Integer[] difference) {
         Integer[] oldVal = getRangedAttributeVal(type);
-        Integer[] newTotalVal = new Integer[] { oldVal[0] + difference[0], oldVal[1] + difference[1] };
+        Integer[] newTotalVal = new Integer[]{oldVal[0] + difference[0], oldVal[1] + difference[1]};
         attributes.put(type.getNBTName(), newTotalVal);
         return newTotalVal;
     }
@@ -438,8 +438,8 @@ public class GamePlayer {
         int newHigh = (int) (attributes.get(type.getNBTName())[1] * ((percentDifference + 100.) / 100.));
         if (newLow < 0) newLow = 0;
         if (newHigh < 0) newHigh = 0;
-        attributes.put(type.getNBTName(), new Integer[] { newLow, newHigh });
-        return new Integer[] { newLow, newHigh };
+        attributes.put(type.getNBTName(), new Integer[]{newLow, newHigh});
+        return new Integer[]{newLow, newHigh};
     }
 
     public void setInvulnerable(boolean flag) {

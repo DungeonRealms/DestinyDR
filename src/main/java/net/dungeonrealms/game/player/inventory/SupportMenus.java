@@ -62,14 +62,16 @@ public class SupportMenus {
 
             Inventory inv = Bukkit.createInventory(null, 45, "Support Tools");
 
-            item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+            item = editItem(playerName, ChatColor.GREEN + playerName + ChatColor.WHITE + " (" + uuid + ")", new String[]{
                     ChatColor.WHITE + "Rank: " + Rank.rankFromPrefix(playerRank),
                     ChatColor.WHITE + "Level: " + DatabaseAPI.getInstance().getData(EnumData.LEVEL, uuid),
                     ChatColor.WHITE + "Experience: " + DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, uuid),
                     ChatColor.WHITE + "E-Cash: " + DatabaseAPI.getInstance().getData(EnumData.ECASH, uuid),
                     ChatColor.WHITE + "Bank Balance: " + DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid),
                     ChatColor.WHITE + "Hearthstone Location: " + Utils.ucfirst((String) DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid)).replace("_", " "),
-                    ChatColor.WHITE + "Alignment: " + Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid).toString())
+                    ChatColor.WHITE + "Alignment: " + Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid).toString()),
+                    ChatColor.WHITE + "Last Logout: " + Utils.formatTimeAgo((int) (System.currentTimeMillis() / 1000) - Integer.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid).toString())) + " ago",
+                    ChatColor.WHITE + "Join Date: " + Utils.getDate((Long) DatabaseAPI.getInstance().getData(EnumData.FIRST_LOGIN, uuid) * 1000)
             });
             inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
@@ -389,21 +391,21 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        // Rank Manager
+        // Trail Manager
         item = editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GOLD + "Trail Manager", new String[]{
                 ChatColor.WHITE + "Modify trails of " + playerName + "."
         });
         inv.setItem(19, applySupportItemTags(item, playerName, uuid));
 
-        // Level Manager
-        item = editItem(new ItemStack(Material.SADDLE), ChatColor.GOLD + "Mount / Mule Manager", new String[]{
-                ChatColor.WHITE + "Manage mounts / mules of " + playerName + "."
+        // Pet Manager
+        item = editItem(new ItemStack(Material.NAME_TAG), ChatColor.GOLD + "Pet Manager", new String[]{
+                ChatColor.WHITE + "Manage pets of " + playerName + "."
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
 
-        // E-Cash Manager
-        item = editItem(new ItemStack(Material.NAME_TAG), ChatColor.GOLD + "Pet Manager", new String[]{
-                ChatColor.WHITE + "Manage pets of " + playerName + "."
+        // Mule Manager
+        item = editItem(new ItemStack(Material.SADDLE), ChatColor.GOLD + "Mount / Mule Manager", new String[]{
+                ChatColor.WHITE + "Manage mounts / mules of " + playerName + "."
         });
         inv.setItem(25, applySupportItemTags(item, playerName, uuid));
 
@@ -480,14 +482,12 @@ public class SupportMenus {
                     break;
                 }
             }
-            // @todo: Figure out why monster egg damages aren't working even with editItemWithShort(...)
-            item = editItem(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[] {
+
+            item = editItemWithShort(applySupportItemTags(addNbtTag(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), "pet", petType.getRawName()), playerName, uuid), (short) petType.getEggShortData(), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[] {
                     ChatColor.WHITE + "Click to " + (hasUnlockedPet ? "lock" : "unlock") + " the " + petType.getDisplayName().toLowerCase() + " pet."
             });
 
-            item = addNbtTag(item, "pet", petType.getRawName());
-
-            inv.setItem(i, applySupportItemTags(item, playerName, uuid));
+            inv.setItem(i, item);
             i++;
         }
 
