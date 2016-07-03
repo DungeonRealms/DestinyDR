@@ -30,10 +30,10 @@ public class CommandWhois extends BasicCommand {
             sender.sendMessage("Syntax. /whois <player>");
             return true;
         }
-        UUID uuid = DatabaseAPI.getInstance().getUUIDFromName(p_name);
-        if (uuid == null) {
+        if (DatabaseAPI.getInstance().getUUIDFromName(p_name) == null) {
             sender.sendMessage(ChatColor.RED + "Player " + p_name + " has never logged into DungeonRealms.");
         }
+        UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(p_name));
         API.updatePlayerData(uuid);
         boolean isPlaying = (boolean)DatabaseAPI.getInstance().getValue(uuid, EnumData.IS_PLAYING);
         String server = DatabaseAPI.getInstance().getFormattedShardName(uuid);

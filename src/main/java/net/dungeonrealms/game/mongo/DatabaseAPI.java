@@ -326,9 +326,10 @@ public class DatabaseAPI {
         return ((Document) doc.get(key[0])).get(key[1]);
     }
 
-    public UUID getUUIDFromName(String playerName) {
+    public String getUUIDFromName(String playerName) {
         Document doc = Database.collection.find(Filters.eq("info.username", playerName.toLowerCase())).first();
-        return UUID.fromString(((Document) doc.get("info")).get("uuid", String.class));
+        if (doc == null) return "";
+        return ((Document) doc.get("info")).get("uuid", String.class);
     }
 
     public String getFormattedShardName(UUID uuid) {
