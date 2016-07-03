@@ -40,6 +40,8 @@ public class PvEListener implements Listener {
         } else {
             if (event.getEntity().hasMetadata("type")) {
                 if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+            } else {
+                return;
             }
         }
 
@@ -190,6 +192,8 @@ public class PvEListener implements Listener {
         } else {
             if (event.getEntity().hasMetadata("type")) {
                 if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+            } else {
+                return;
             }
         }
         Player damager = (Player) projectile.getShooter();
