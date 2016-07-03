@@ -176,6 +176,24 @@ public class DamageListener implements Listener {
     }
 
     /**
+     * Checks for null gameplayer on damage by entity. Keep this priority lowest because onPlayerHitEntity and
+     * onMonsterHitPlayer are priority low.
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void entDamageNullCheck(EntityDamageByEntityEvent event) {
+        if (API.isPlayer(event.getDamager())) {
+            if (API.getGamePlayer((Player) event.getDamager()) == null) {
+                event.setCancelled(true);
+            }
+        }
+        if (API.isPlayer(event.getEntity())) {
+            if (API.getGamePlayer((Player) event.getEntity()) == null) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    /**
      * Listen for the players weapon hitting an entity
      * Used for calculating damage based on player weapon
      *
