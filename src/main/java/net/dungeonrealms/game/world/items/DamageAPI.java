@@ -530,7 +530,7 @@ public class DamageAPI {
         }
 
         // ELITE CALCULATION
-        if (attacker.hasMetadata("elite")) {
+        if (attacker.hasMetadata("elite") && attacker.hasMetadata("tier")) {
             switch (attacker.getMetadata("tier").get(0).asInt()) {
                 case 1:
                     damage *= 2.5;
