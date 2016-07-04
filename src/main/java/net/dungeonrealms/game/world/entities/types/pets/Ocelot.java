@@ -25,7 +25,7 @@ public class Ocelot extends EntityOcelot {
         this.getBukkitEntity().setCustomName(mobName);
         this.canPickUpLoot = false;
         this.persistent = true;
-        this.setAge(0);
+        this.setAgeRaw(-24000);
         this.ageLocked = true;
         this.setSitting(false);
 

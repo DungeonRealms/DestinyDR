@@ -292,7 +292,7 @@ public class PetUtils implements GenericMechanic{
                 petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petOcelot, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                petOcelot.setAge(0);
+                petOcelot.setAgeRaw(-24000);
                 petOcelot.ageLocked = true;
                 petOcelot.setTamed(true);
                 player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 1F, 1F);
