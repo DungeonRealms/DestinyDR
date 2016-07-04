@@ -23,8 +23,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
  */
 public class PvPListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOW)
     public void playerMeleePlayer(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         if (!API.isPlayer(event.getDamager())) return;
         if (!API.isPlayer(event.getEntity())) return;
 

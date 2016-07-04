@@ -486,8 +486,9 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         if (API.isPlayer(event.getDamager()))
             return;
         if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))

@@ -388,16 +388,16 @@ public class BlockListener implements Listener {
                     itemEntity.remove();
                     middle.getWorld().playEffect(middle, Effect.STEP_SOUND, Material.IRON_BLOCK);
                     middle.getWorld().playSound(middle, Sound.BLOCK_ANVIL_USE, 3, 1.4F);
+
+                    player.sendMessage(ChatColor.RED + "-" + newCost + ChatColor.BOLD.toString() + "G");
+                    player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "ITEM REPAIRED");
+                    BankMechanics.getInstance().takeGemsFromInventory(newCost, player);
                     if (player.getEquipment().getItemInMainHand() == null) {
                         player.getEquipment().setItemInMainHand(item);
                     } else {
                         player.getInventory().addItem(item);
                     }
                     player.updateInventory();
-
-                    player.sendMessage(ChatColor.RED + "-" + newCost + ChatColor.BOLD.toString() + "G");
-                    player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "ITEM REPAIRED");
-                    BankMechanics.getInstance().takeGemsFromInventory(newCost, player);
                     repairMap.remove(block.getLocation());
                 } else {
                     //Cancel

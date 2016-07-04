@@ -72,11 +72,11 @@ public class PlayerDamageRestrictionListener implements Listener {
             return;
         }
 
-        if (API.isInSafeRegion(damager.getLocation()) || API.isInSafeRegion(receiver.getLocation())) {
-            event.setDamage(0);
-            event.setCancelled(true);
-            pDamager.updateInventory();
-            return;
+        if (isAttackerPlayer && !isDefenderPlayer || (isDefenderPlayer && !isAttackerPlayer)) {
+            if (API.isInSafeRegion(damager.getLocation()) || API.isInSafeRegion(receiver.getLocation())) {
+                event.setCancelled(true);
+                return;
+            }
         }
 
         if (isAttackerPlayer) {
@@ -97,6 +97,7 @@ public class PlayerDamageRestrictionListener implements Listener {
         }
 
         if (isAttackerPlayer && isDefenderPlayer) {
+
             if (API.isNonPvPRegion(pDamager.getLocation()) || API.isNonPvPRegion(pReceiver.getLocation())) {
                 if (DuelingMechanics.isDueling(pDamager.getUniqueId())) { //TODO: Check if you can attack players that are dueling.
                     if (DuelingMechanics.isDueling(pReceiver.getUniqueId())) {
