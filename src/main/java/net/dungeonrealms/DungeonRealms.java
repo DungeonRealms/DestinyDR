@@ -363,6 +363,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "Manage your received mail and send your own mail."));
             cm.registerCommand(new CommandReboot("reboot", "/<command>", "Displays the time until the shard will next reboot."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
+            cm.registerCommand(new CommandHead("head", "/<command> [args]", "Spawn a player's Minecraft head."));
 
             cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "Sends a message to global chat."));
             cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Sendsa message to local chat."));
