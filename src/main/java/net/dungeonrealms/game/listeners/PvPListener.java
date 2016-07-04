@@ -116,6 +116,7 @@ public class PvPListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerRangedPlayer(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
         if (!API.isPlayer(event.getEntity())) return;
         Projectile projectile = (Projectile) event.getDamager();

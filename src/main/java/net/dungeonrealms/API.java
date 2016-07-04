@@ -161,14 +161,30 @@ public class API {
         GamePlayer gp = API.getGamePlayer(player);
         int level = gp.getLevel();
         int mob_level = kill.getMetadata("level").get(0).asInt();
-        int xp = 0;
-        if (mob_level > level + 20) {  // limit mob xp calculation to 10 levels above player level
-            xp = calculateXP(player, kill, level + 20);
+        int xp;
+        double amplifier = 1.0;
+        if (mob_level > level + 10) {  // limit mob xp calculation to 10 levels above player level
+            xp = calculateXP(level, level + 10, amplifier);
         } else {
-            xp = calculateXP(player, kill, mob_level);
+            xp = calculateXP(level, mob_level, amplifier);
+        }
+        if (level + 5 > mob_level) {
+            int difference = (level + 5) - mob_level;
+            int toReduce = 0;
+            while (difference > 0) {
+                if (toReduce >= 75) {
+                    break;
+                }
+                difference--;
+                toReduce += 5;
+            }
+            amplifier = ((100.0 - toReduce) / 100.0);
+            xp = calculateXP(mob_level + 5, mob_level, amplifier);
         }
         return xp;
     }
+
+    //639 Realm instance
 
     public static ItemStack[] getTierArmor(int tier) {
         int chance = RandomHelper.getRandomNumberBetween(1, 1000);
@@ -222,9 +238,9 @@ public class API {
      * @param mob_level
      * @return integer
      */
-    private static int calculateXP(Player player, Entity kill, int mob_level) {
-        int pLevel = API.getGamePlayer(player).getStats().getLevel();
-        return (int) (((pLevel * 5) + 45) * (1 + (0.07 * (pLevel + (mob_level - pLevel)))));
+    private static int calculateXP(int pLevel, int mob_level, double reduction) {
+        int expToGive = (int) (((pLevel * 5) + 45) * (1 + (0.07 * (pLevel + (mob_level - pLevel)))));
+        return (int) (expToGive * reduction);
     }
 
 

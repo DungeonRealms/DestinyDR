@@ -179,38 +179,40 @@ public class Teleportation implements GenericMechanic {
         final boolean[] hasCancelled = {false};
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId()) && !hasCancelled[0]) {
-                if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
-                    player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING " + ChatColor.RESET + "... " + taskTimer[0] + "s");
-                    try {
-                        ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
-                        ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
-                    } catch (Exception e) {
-                        Utils.log.info("[TELEPORT] Tried to send particle to player and failed. Continuing");
-                    }
-                    if (taskTimer[0] <= 0) {
-                        if (CombatLog.isInCombat(player)) {
-                            player.sendMessage(ChatColor.RED + "Your teleport has been interrupted by combat!");
-                            if (teleportType == EnumTeleportType.HEARTHSTONE) {
-                                TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
-                            }
-                        } else {
-                            player.teleport(location);
-                            if (teleportType == EnumTeleportType.HEARTHSTONE) {
-                                TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
-                            }
+                if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                    if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
+                        player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING " + ChatColor.RESET + "... " + taskTimer[0] + "s");
+                        try {
+                            ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
+                            ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
+                        } catch (Exception e) {
+                            Utils.log.info("[TELEPORT] Tried to send particle to player and failed. Continuing");
                         }
-                        TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
-                    }
-                    taskTimer[0]--;
-                } else {
-                    hasCancelled[0] = true;
-                    if (teleportType == EnumTeleportType.TELEPORT_BOOK) {
-                        player.removePotionEffect(PotionEffectType.BLINDNESS);
-                        player.removePotionEffect(PotionEffectType.CONFUSION);
-                    }
-                    player.sendMessage(ChatColor.RED + "Your teleport was canceled!");
-                    if (teleportType == EnumTeleportType.HEARTHSTONE) {
-                        TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                        if (taskTimer[0] <= 0) {
+                            if (CombatLog.isInCombat(player)) {
+                                player.sendMessage(ChatColor.RED + "Your teleport has been interrupted by combat!");
+                                if (teleportType == EnumTeleportType.HEARTHSTONE) {
+                                    TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
+                                }
+                            } else {
+                                player.teleport(location);
+                                if (teleportType == EnumTeleportType.HEARTHSTONE) {
+                                    TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
+                                }
+                            }
+                            TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
+                        }
+                        taskTimer[0]--;
+                    } else {
+                        hasCancelled[0] = true;
+                        if (teleportType == EnumTeleportType.TELEPORT_BOOK) {
+                            player.removePotionEffect(PotionEffectType.BLINDNESS);
+                            player.removePotionEffect(PotionEffectType.CONFUSION);
+                        }
+                        player.sendMessage(ChatColor.RED + "Your teleport was canceled!");
+                        if (teleportType == EnumTeleportType.HEARTHSTONE) {
+                            TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                        }
                     }
                 }
             }
