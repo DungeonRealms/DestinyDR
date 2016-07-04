@@ -362,7 +362,7 @@ public class DamageAPI {
                 if (entity.equals(damager)) continue;
                 double[] armorCalculation = calculateArmorReduction((LivingEntity)entity, damager, damage, null);
                 if (damage - armorCalculation[0] <= 0) continue;
-                if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
+                if (entity != event.getEntity() && !(entity instanceof Player)) {
                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                         HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, damager, damage - armorCalculation[0]);
                     }

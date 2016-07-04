@@ -703,7 +703,6 @@ public class API {
         Rank.getInstance().doGet(uuid);
 
         // Scoreboard Safety
-        ScoreboardHandler.getInstance().matchMainScoreboard(player);
 
         player.setGameMode(GameMode.SURVIVAL);
 
@@ -890,7 +889,14 @@ public class API {
             });
         }
 
+        ScoreboardHandler.getInstance().matchMainScoreboard(player);
         ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            //Prevent weird scoreboard thing when sharding.
+            ScoreboardHandler.getInstance().matchMainScoreboard(player);
+            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+        }, 100L);
     }
 
     static void backupDatabase() {

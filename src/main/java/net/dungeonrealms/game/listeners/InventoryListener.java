@@ -10,7 +10,6 @@ import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -42,7 +41,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -737,6 +735,13 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
+                event.getWhoClicked().getWorld().playSound(event.getWhoClicked().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2.0F, 1.25F);
+
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LAVA, event.getWhoClicked().getLocation().add(0, 2.5, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 75);
+                } catch(Exception e1) {
+                    e1.printStackTrace();
+                }
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
                 gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
@@ -747,7 +752,7 @@ public class InventoryListener implements Listener {
             String itemName = meta2.getDisplayName();
             ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
 
-            String newName = "";
+            String newName;
             if (amount == 0) {
                 newName = itemName;
             } else {
@@ -763,7 +768,6 @@ public class InventoryListener implements Listener {
             }
             int finalDmgMin = (int) Math.round(doublenewDamageMin);
             int finalDmgMax = (int) Math.round(doublenewDamageMax);
-            Attribute att = new Attribute(slotItem);
 
             // update the item lore
             lore.set(0, ChatColor.RED + "DMG: " + finalDmgMin + " - " + finalDmgMax);
@@ -791,7 +795,7 @@ public class InventoryListener implements Listener {
             }
             event.getCurrentItem().setType(Material.AIR);
             event.setCurrentItem(new ItemStack(Material.AIR));
-            if ((amount + 1) > 3)
+            if ((amount + 1) >= 4)
                 EnchantmentAPI.addGlow(newItem);
             event.getWhoClicked().getInventory().addItem(newItem);
             ((Player) event.getWhoClicked()).updateInventory();
@@ -886,6 +890,13 @@ public class InventoryListener implements Listener {
                     return;
                 }
 
+                event.getWhoClicked().getWorld().playSound(event.getWhoClicked().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2.0F, 1.25F);
+
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LAVA, event.getWhoClicked().getLocation().add(0, 2.5, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 75);
+                } catch(Exception e1) {
+                    e1.printStackTrace();
+                }
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
                 gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
@@ -894,7 +905,7 @@ public class InventoryListener implements Listener {
 
             ItemMeta meta2 = slotItem.getItemMeta();
             String itemName = meta2.getDisplayName();
-            String newName = "";
+            String newName;
             if (amount == 0) {
                 newName = itemName;
             } else {
