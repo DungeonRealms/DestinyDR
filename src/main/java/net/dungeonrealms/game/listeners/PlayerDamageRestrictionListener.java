@@ -72,7 +72,7 @@ public class PlayerDamageRestrictionListener implements Listener {
             return;
         }
 
-        if (isAttackerPlayer && !isDefenderPlayer || (isDefenderPlayer && !isAttackerPlayer)) {
+        if (!isAttackerPlayer || !isDefenderPlayer) {
             if (API.isInSafeRegion(damager.getLocation()) || API.isInSafeRegion(receiver.getLocation())) {
                 event.setCancelled(true);
                 return;
@@ -154,14 +154,8 @@ public class PlayerDamageRestrictionListener implements Listener {
                     event.setDamage(0);
                     pDamager.updateInventory();
                     pReceiver.updateInventory();
-                    return;
                 }
             }
         }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void cancelAllVanillaDamageFailsafe(EntityDamageByEntityEvent event) {
-        event.setDamage(0);
     }
 }

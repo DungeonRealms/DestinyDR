@@ -96,9 +96,9 @@ public class Utils {
                 Low = 40;
                 if (lvlRange.equalsIgnoreCase("high"))
                     Low = 45;
-                High = 50;
+                High = 100;
                 if (lvlRange.equalsIgnoreCase("low"))
-                    High = 45;
+                    High = 95;
                 R = r.nextInt(High - Low) + Low + 2;
                 return R;
         }
