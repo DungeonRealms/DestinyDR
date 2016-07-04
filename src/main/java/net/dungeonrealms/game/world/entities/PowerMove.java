@@ -34,7 +34,6 @@ public abstract class PowerMove {
                         rand.nextFloat(), rand.nextFloat(), 0.5F, 35);
 
 
-
             });
         }, 0, 20);
 
@@ -57,4 +56,7 @@ public abstract class PowerMove {
     public abstract void schedulePowerMove(LivingEntity entity, Player attack);
 
 
+    public static boolean doingPowerMove(UUID uniqueId) {
+        return chargedMonsters.contains(uniqueId) || chargingMonsters.contains(uniqueId);
+    }
 }
