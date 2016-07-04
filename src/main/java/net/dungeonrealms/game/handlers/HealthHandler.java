@@ -27,7 +27,10 @@ import org.bukkit.EntityEffect;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -59,11 +62,10 @@ public class HealthHandler implements GenericMechanic {
     public void startInitialization() {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
-                if (API.getGamePlayer(pl) == null || !API.getGamePlayer(pl).isAttributesLoaded()) continue;
                 setPlayerOverheadHP(pl, getPlayerHPLive(pl));
             }
         }, 0L, 5L);
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40L, 20L);
     }
 
     @Override
@@ -157,7 +159,7 @@ public class HealthHandler implements GenericMechanic {
      */
     private void setPlayerOverheadHP(Player player, int hp) {
         GamePlayer gamePlayer = API.getGamePlayer(player);
-        if (gamePlayer == null) {
+        if (gamePlayer == null || !gamePlayer.isAttributesLoaded()) {
             return;
         }
         ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
@@ -201,6 +203,10 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerHPLive(Player player, int hp) {
+        if (player.hasMetadata("maxHP") && hp > player.getMetadata("maxHP").get(0).asInt() && !Rank.isGM(player)) {
+            player.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), player.getMetadata("maxHP").get(0).asInt()));
+            return;
+        }
         player.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
     }
 
@@ -241,7 +247,8 @@ public class HealthHandler implements GenericMechanic {
         if (player.hasMetadata("maxHP")) {
             return player.getMetadata("maxHP").get(0).asInt();
         } else {
-            return API.getGamePlayer(player).getPlayerMaxHP();
+            player.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), calculateMaxHPFromItems(player)));
+            return this.calculateMaxHPFromItems(player);
         }
     }
 
@@ -292,46 +299,41 @@ public class HealthHandler implements GenericMechanic {
             if (CombatLog.isInCombat(player)) {
                 continue;
             }
-            if (!API.isPlayer(player)) {
+            //Check their Max HP from wherever we decide to store it.
+            double currentHP = getPlayerHPLive(player);
+            double amountToHealPlayer = getPlayerHPRegenLive(player);
+            GamePlayer gp = API.getGamePlayer(player);
+
+            if (gp == null || gp.getStats() == null) return;
+
+            amountToHealPlayer += gp.getStats().getHPRegen();
+
+            double maxHP = getPlayerMaxHPLive(player);
+            if (currentHP + 1 > maxHP) {
+                if (player.getHealth() != 20) {
+                    player.setHealth(20);
+                }
                 continue;
             }
-            //Check their Max HP from wherever we decide to store it.
-            if (!CombatLog.isInCombat(player)) {
-                double currentHP = getPlayerHPLive(player);
-                double amountToHealPlayer = getPlayerHPRegenLive(player);
-                GamePlayer gp = API.getGamePlayer(player);
 
-                if (gp == null || gp.getStats() == null) return;
-
-                amountToHealPlayer += gp.getStats().getHPRegen();
-
-                double maxHP = getPlayerMaxHPLive(player);
-                if (currentHP + 1 > maxHP) {
-                    if (player.getHealth() != 20) {
-                        player.setHealth(20);
+            if ((currentHP + amountToHealPlayer) >= maxHP) {
+                player.setHealth(20);
+                setPlayerHPLive(player, (int) maxHP);
+            } else if ((currentHP + amountToHealPlayer) < maxHP) {
+                setPlayerHPLive(player, (int) (getPlayerHPLive(player) + amountToHealPlayer));
+                double playerHPPercent = (getPlayerHPLive(player) + amountToHealPlayer) / maxHP;
+                double newPlayerHP = playerHPPercent * 20;
+                if (newPlayerHP >= 19.50D) {
+                    if (playerHPPercent >= 1.0D) {
+                        newPlayerHP = 20;
+                    } else {
+                        newPlayerHP = 19;
                     }
-                    continue;
                 }
-
-                if ((currentHP + amountToHealPlayer) >= maxHP) {
-                    player.setHealth(20);
-                    setPlayerHPLive(player, (int) maxHP);
-                } else if ((currentHP + amountToHealPlayer) < maxHP) {
-                    setPlayerHPLive(player, (int) (getPlayerHPLive(player) + amountToHealPlayer));
-                    double playerHPPercent = (getPlayerHPLive(player) + amountToHealPlayer) / maxHP;
-                    double newPlayerHP = playerHPPercent * 20;
-                    if (newPlayerHP >= 19.50D) {
-                        if (playerHPPercent >= 1.0D) {
-                            newPlayerHP = 20;
-                        } else {
-                            newPlayerHP = 19;
-                        }
-                    }
-                    if (newPlayerHP < 1) {
-                        newPlayerHP = 1;
-                    }
-                    player.setHealth((int) newPlayerHP);
+                if (newPlayerHP < 1) {
+                    newPlayerHP = 1;
                 }
+                player.setHealth((int) newPlayerHP);
             }
         }
     }
@@ -504,8 +506,7 @@ public class HealthHandler implements GenericMechanic {
                         + (int) totalArmor + "%A -> -" + (int) armourReducedDamage + ChatColor.BOLD + "DMG" +
                         ChatColor.GRAY
                         + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
-            }
-            else { // foreign damage
+            } else { // foreign damage
                 ChatColor causeColor;
                 String damageCauseName;
                 switch (cause) {
@@ -906,7 +907,6 @@ public class HealthHandler implements GenericMechanic {
         if (entity.hasMetadata("boss")) {
             totalHP *= 6;
         }
-
 
         return totalHP;
     }

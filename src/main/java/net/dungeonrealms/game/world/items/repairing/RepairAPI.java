@@ -476,6 +476,7 @@ public class RepairAPI {
      */
     public static void subtractCustomDurability(Player player, ItemStack itemStack, double amountToSubtract) {
         if (player.getGameMode() == GameMode.CREATIVE) return;
+        if (itemStack == null || itemStack.getType() == Material.AIR) return;
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return;

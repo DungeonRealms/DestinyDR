@@ -91,7 +91,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
                     player.sendMessage("                     " + ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...");
                     player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, true, false);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
                     API.handleLogout(player.getUniqueId());
                     DungeonRealms.getInstance().getLoggingOut().add(player.getName());

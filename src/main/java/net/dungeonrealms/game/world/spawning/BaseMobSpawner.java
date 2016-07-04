@@ -346,7 +346,7 @@ public class BaseMobSpawner {
         randomZ = zMin + (int) (Math.random() * (zMax - zMin + 1));
 
         x = randomX;
-        y = location.getY();
+        y = location.getY() + 1;
         z = randomZ;
 
         x = x + 0.5; // add .5 so they spawn in the middle of the block

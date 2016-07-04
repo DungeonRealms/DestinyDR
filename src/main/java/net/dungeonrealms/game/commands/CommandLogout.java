@@ -34,7 +34,6 @@ public class CommandLogout extends BasicCommand {
 
                 Location startingLocation = player.getLocation();
                 if (API.isInSafeRegion(startingLocation)) {
-                    API.handleLogout(player.getUniqueId());
                     NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
                     return true;
                 }
@@ -52,7 +51,6 @@ public class CommandLogout extends BasicCommand {
                     player.sendMessage(ChatColor.RED + "Logging out in ... " + ChatColor.BOLD + taskTimer[0] + "s");
                     taskTimer[0]--;
                     if (taskTimer[0] == 0) {
-                        API.handleLogout(player.getUniqueId());
                         NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
                     }
                 }, 0, 20L);
