@@ -268,6 +268,7 @@ public class DatabaseAPI {
             case DUELS_WON:
             case DUELS_LOST:
             case ORE_MINED:
+            case ORBS_USED:
             case FISH_CAUGHT:
             case TIME_PLAYED:
             case SUCCESSFUL_ENCHANTS:
