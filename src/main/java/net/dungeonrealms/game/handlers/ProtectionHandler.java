@@ -41,7 +41,7 @@ public class ProtectionHandler implements GenericMechanic, Listener {
 
     public void handleLogin(Player player) {
         long firstJoin = (long) DatabaseAPI.getInstance().getData(EnumData.FIRST_LOGIN, player.getUniqueId());
-        if ((System.currentTimeMillis() - firstJoin) <= (24 * 3600000)) {
+        if ((System.currentTimeMillis() - firstJoin) < (24 * 3600000)) {
             if ((int) DatabaseAPI.getInstance().getData(EnumData.PLAYER_KILLS, player.getUniqueId()) == 0) {
                 //Still under 24 hour newbie protection.
                 long hours = (System.currentTimeMillis() - firstJoin) / 3600000;

@@ -687,6 +687,8 @@ public class API {
                     Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]),
                     Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
         } else {
+
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             /**
              PLAYER IS NEW
              */
