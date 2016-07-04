@@ -59,12 +59,15 @@ public class BuffManager implements GenericMechanic {
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                 continue;
             }
+            if (API._hiddenPlayers.contains(player)) {
+                continue;
+            }
             if (player.getEquipment().getItemInMainHand().getType() != Material.AIR && player.getEquipment().getItemInMainHand() != null) {
                 if (Mining.isDRPickaxe(player.getEquipment().getItemInMainHand()) || Fishing.isDRFishingPole(player.getEquipment().getItemInMainHand())) {
                     continue;
                 }
             }
-            if (getNearbyBuffs(player, 10).size() > 1) {
+            if (getNearbyBuffs(player, 10).size() >= 1) {
                 continue;
             }
             if (new Random().nextInt(21) < 4) {

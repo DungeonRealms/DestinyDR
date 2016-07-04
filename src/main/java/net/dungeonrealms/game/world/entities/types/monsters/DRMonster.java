@@ -84,6 +84,10 @@ public interface DRMonster {
                 chance = ent.hasMetadata("elite") ? 10 : 2; // 1%, 0.2%
                 break;
         }
+        if (ent.hasMetadata("namedElite")) {
+            chance /= 2;
+        }
+
         if (DonationEffects.getInstance().isLootBuffActive()) {
             chance *= 1.2;
         }

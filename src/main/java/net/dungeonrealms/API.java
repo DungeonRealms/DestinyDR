@@ -165,10 +165,7 @@ public class API {
         double amplifier = 1.0;
         if (mob_level > level + 10) {  // limit mob xp calculation to 10 levels above player level
             xp = calculateXP(level, level + 10, amplifier);
-        } else {
-            xp = calculateXP(level, mob_level, amplifier);
-        }
-        if (level + 5 > mob_level) {
+        } else if (level + 5 > mob_level) {
             int difference = (level + 5) - mob_level;
             int toReduce = 0;
             while (difference > 0) {
@@ -180,6 +177,8 @@ public class API {
             }
             amplifier = ((100.0 - toReduce) / 100.0);
             xp = calculateXP(mob_level + 5, mob_level, amplifier);
+        } else {
+            xp = calculateXP(level, mob_level, amplifier);
         }
         return xp;
     }
@@ -233,9 +232,9 @@ public class API {
     }
 
     /**
-     * @param player
-     * @param kill
+     * @param pLevel
      * @param mob_level
+     * @param reduction
      * @return integer
      */
     private static int calculateXP(int pLevel, int mob_level, double reduction) {
