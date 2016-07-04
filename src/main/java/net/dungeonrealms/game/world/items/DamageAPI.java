@@ -381,10 +381,8 @@ public class DamageAPI {
                                 continue;
                             }
 
-                            if (!GuildDatabaseAPI.get().isGuildNull(damager.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(entity.getUniqueId())) {
-                                if (GuildDatabaseAPI.get().getGuildOf(damager.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(entity.getUniqueId()))) {
-                                    continue;
-                                }
+                            if (GuildDatabaseAPI.get().areInSameGuild(damager.getUniqueId(), entity.getUniqueId())) {
+                                continue;
                             }
                         }
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);

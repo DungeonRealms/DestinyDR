@@ -219,4 +219,11 @@ public interface GuildDatabaseAPI {
      */
     boolean doesGuildNameExist(String guildName, Consumer<Boolean> action);
 
+    /**
+     * @param uuid1 UUID of first player.
+     * @param uuid2 UUID of second player.
+     * @return boolean.
+     */
+    boolean areInSameGuild(UUID uuid1, UUID uuid2);
+
 }
