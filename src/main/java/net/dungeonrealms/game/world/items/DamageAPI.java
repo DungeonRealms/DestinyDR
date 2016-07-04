@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.items;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -360,7 +361,7 @@ public class DamageAPI {
                 // let's not damage ourself
                 if (entity.equals(damager)) continue;
                 if (damage <= 0) continue;
-                double[] armorCalculation = calculateArmorReduction((LivingEntity)entity, damager, damage / 2, null);
+                double[] armorCalculation = calculateArmorReduction((LivingEntity)entity, damager, damage, null);
                 if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                         HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, damager, damage - armorCalculation[0]);
@@ -378,6 +379,15 @@ public class DamageAPI {
                             }
                             if (Affair.getInstance().areInSameParty(damager, (Player) entity)) {
                                 continue;
+                            }
+
+                            if (!GuildDatabaseAPI.get().isGuildNull(damager.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(entity.getUniqueId())) {
+                                if (GuildDatabaseAPI.get().getGuildOf(damager.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(entity.getUniqueId()))) {
+                                    event.setCancelled(true);
+                                    event.setDamage(0);
+                                    damager.updateInventory();
+                                    ((Player) entity).updateInventory();
+                                }
                             }
                         }
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);

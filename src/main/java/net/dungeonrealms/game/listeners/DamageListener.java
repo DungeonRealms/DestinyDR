@@ -680,7 +680,6 @@ public class DamageListener implements Listener {
             if (event.getEntity() instanceof Player) {
                 event.setDamage(0);
                 event.setCancelled(true);
-                event.getEntity().setFireTicks(0);
             }
         }
         if (event.getCause() == DamageCause.FIRE) {

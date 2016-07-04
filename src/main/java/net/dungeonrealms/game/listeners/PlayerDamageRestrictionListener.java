@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.ProtectionHandler;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -106,7 +107,7 @@ public class PlayerDamageRestrictionListener implements Listener {
         }
 
         if (isDefenderPlayer) {
-            if (API.getGamePlayer(pReceiver).isInvulnerable() || API.getGamePlayer(pReceiver).isTargettable()) {
+            if (API.getGamePlayer(pReceiver).isInvulnerable() || !API.getGamePlayer(pReceiver).isTargettable()) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 return;
@@ -114,7 +115,6 @@ public class PlayerDamageRestrictionListener implements Listener {
         }
 
         if (isAttackerPlayer && isDefenderPlayer) {
-
             if (API.isNonPvPRegion(pDamager.getLocation()) || API.isNonPvPRegion(pReceiver.getLocation())) {
                 if (DuelingMechanics.isDueling(pDamager.getUniqueId())) { //TODO: Check if you can attack players that are dueling.
                     if (DuelingMechanics.isDueling(pReceiver.getUniqueId())) {
@@ -165,8 +165,10 @@ public class PlayerDamageRestrictionListener implements Listener {
                 return;
             }
 
-            if (!GuildDatabaseAPI.get().isGuildNull(pDamager.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(pReceiver.getUniqueId())) {
-                if (GuildDatabaseAPI.get().getGuildOf(pDamager.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(pReceiver.getUniqueId()))) {
+            if (!GuildDatabaseAPI.get().isGuildNull(pDamager.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull
+                    (pReceiver.getUniqueId())) {
+                if (GuildDatabaseAPI.get().getGuildOf(pDamager.getUniqueId()).equals(GuildDatabaseAPI.get()
+                        .getGuildOf(pReceiver.getUniqueId()))) {
                     event.setCancelled(true);
                     event.setDamage(0);
                     pDamager.updateInventory();

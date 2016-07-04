@@ -4,25 +4,20 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.party.Affair;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.EntityEffect;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
@@ -62,21 +57,31 @@ public class PvPListener implements Listener {
                 switch (tier) {
                     case TIER_1:
                         DamageAPI.knockbackEntity(damager, receiver, 1.2);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     case TIER_2:
                         DamageAPI.knockbackEntity(damager, receiver, 1.5);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     case TIER_3:
                         DamageAPI.knockbackEntity(damager, receiver, 1.8);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     case TIER_4:
                         DamageAPI.knockbackEntity(damager, receiver, 2.0);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     case TIER_5:
                         DamageAPI.knockbackEntity(damager, receiver, 2.2);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     default:
-                        break;
+                        return;
                 }
             case STAFF:
                 event.setDamage(0);
@@ -111,12 +116,12 @@ public class PvPListener implements Listener {
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
-        DamageAPI.handlePolearmAOE(event, finalDamage, damager);
+        DamageAPI.handlePolearmAOE(event, finalDamage / 2, damager);
+
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerRangedPlayer(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) return;
         if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
         if (!API.isPlayer(event.getEntity())) return;
         Projectile projectile = (Projectile) event.getDamager();
@@ -156,6 +161,5 @@ public class PvPListener implements Listener {
         double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
-        event.setDamage(0);
     }
 }

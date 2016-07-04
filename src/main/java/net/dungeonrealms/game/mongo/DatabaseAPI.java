@@ -333,10 +333,10 @@ public class DatabaseAPI {
     }
 
     public String getFormattedShardName(UUID uuid) {
-        Document doc = Database.collection.find(Filters.eq("info.current", uuid.toString())).first();
+        Document doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null)
             return "";
-        String name = ((Document) doc.get("info")).get("uuid", String.class);
+        String name = ((Document) doc.get("info")).get("current", String.class);
         return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
     }
 

@@ -79,21 +79,31 @@ public class PvEListener implements Listener {
                 switch (tier) {
                     case TIER_1:
                         DamageAPI.knockbackEntity(damager, receiver, 1.2);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     case TIER_2:
                         DamageAPI.knockbackEntity(damager, receiver, 1.5);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     case TIER_3:
                         DamageAPI.knockbackEntity(damager, receiver, 1.8);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     case TIER_4:
                         DamageAPI.knockbackEntity(damager, receiver, 2.0);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     case TIER_5:
                         DamageAPI.knockbackEntity(damager, receiver, 2.2);
-                        break;
+                        event.setCancelled(true);
+                        damager.updateInventory();
+                        return;
                     default:
-                        break;
+                        return;
                 }
             case STAFF:
                 event.setDamage(0);
@@ -107,7 +117,7 @@ public class PvEListener implements Listener {
         double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
-        DamageAPI.handlePolearmAOE(event, finalDamage, damager);
+        DamageAPI.handlePolearmAOE(event, finalDamage / 2, damager);
 
         if (!receiver.hasMetadata("tier")) return;
         if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId())) return;
