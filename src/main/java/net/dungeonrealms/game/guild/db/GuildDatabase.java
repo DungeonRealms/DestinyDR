@@ -118,7 +118,7 @@ public class  GuildDatabase implements GuildDatabaseAPI {
     }
 
     public boolean isGuildNull(UUID uuid) {
-        return getGuildOf(uuid) == null || (getGuildOf(uuid) != null && getGuildOf(uuid).equals(""));
+        return getGuildOf(uuid) == null || getGuildOf(uuid).equals("");
     }
 
     public String getGuildOf(UUID uuid) {

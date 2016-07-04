@@ -413,9 +413,10 @@ public class DungeonRealms extends JavaPlugin {
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                Bukkit.getScheduler().cancelAllTasks();
                 DungeonRealms.getInstance().setFinishedSetup(false);
                 ShopMechanics.deleteAllShops(true);
-                API.logoutAllPlayers(true);
+                API.logoutAllPlayers(true, false);
                 CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
                 AsyncUtils.pool.shutdown();
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -439,7 +440,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
-        API.logoutAllPlayers(true);
+        API.logoutAllPlayers(true, false);
         ShopMechanics.deleteAllShops(true);
         AsyncUtils.pool.shutdown();
         ps.onDisable();

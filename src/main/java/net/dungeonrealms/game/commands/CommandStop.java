@@ -41,14 +41,23 @@ public class CommandStop extends BasicCommand {
             return true;
         }
 
+        boolean stoppingAll = false;
+        if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("all")) {
+                stoppingAll = true;
+            }
+        }
+
         DungeonRealms.getInstance().getLogger().info("DRStop called.");
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
             combatLogger.handleTimeOut();
         }
-        API.logoutAllPlayers(true);
+        Bukkit.getScheduler().cancelAllTasks();
+        API.logoutAllPlayers(true, stoppingAll);
         ShopMechanics.deleteAllShops(true);
+        DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

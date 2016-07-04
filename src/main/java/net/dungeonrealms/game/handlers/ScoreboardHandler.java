@@ -225,7 +225,9 @@ public class ScoreboardHandler implements GenericMechanic {
      */
     public Team getPlayerTeam(Scoreboard scoreboard, Player player) {
         if (scoreboard.getTeam(player.getName()) == null) {
-            return scoreboard.registerNewTeam(player.getName());
+            Team team = scoreboard.registerNewTeam(player.getName());
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+            return team;
         }
         return scoreboard.getTeam(player.getName());
     }
@@ -241,10 +243,13 @@ public class ScoreboardHandler implements GenericMechanic {
      */
     private Team getMainScoreboardTeam(Scoreboard scoreboard, String name) {
         if (mainScoreboard.getTeam(name) == null) {
-            mainScoreboard.registerNewTeam(name);
+            Team mainTeam = mainScoreboard.registerNewTeam(name);
+            mainTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         }
         if (scoreboard.getTeam(name) == null) {
-            return scoreboard.registerNewTeam(name);
+            Team scTeam = scoreboard.registerNewTeam(name);
+            scTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+            return scTeam;
         }
         return scoreboard.getTeam(name);
     }

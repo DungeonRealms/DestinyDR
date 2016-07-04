@@ -563,11 +563,17 @@ public class API {
      * @param customStop
      * @since 1.0
      */
-    public static void logoutAllPlayers(boolean customStop) {
+    public static void logoutAllPlayers(boolean customStop, boolean stoppingAll) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
             if (CombatLog.isInCombat(player)) {
                 CombatLog.removeFromCombat(player);
+            }
+            if (stoppingAll) {
+                DungeonRealms.getInstance().getLoggingOut().add(player.getName());
+                DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
+                player.kickPlayer("The DungeonRealms Servers are rebooting. Please wait to reconnect.");
+                continue;
             }
             if (customStop) {
                 API.handleLogout(player.getUniqueId());
@@ -575,8 +581,7 @@ public class API {
                 DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
-                    DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-                }, 1L);
+                }, 3L);
             }
         }
     }
