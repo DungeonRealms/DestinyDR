@@ -82,6 +82,11 @@ public class PlayerDamageRestrictionListener implements Listener {
         }
 
         if (isDefenderPlayer) {
+            if (API.getGamePlayer(pReceiver).isInvulnerable() || API.getGamePlayer(pReceiver).isTargettable()) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
         }
 
         if (isAttackerPlayer && isDefenderPlayer) {

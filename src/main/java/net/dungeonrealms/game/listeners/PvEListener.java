@@ -3,16 +3,22 @@ package net.dungeonrealms.game.listeners;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.party.Affair;
+import org.bukkit.EntityEffect;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -20,6 +26,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 
@@ -28,9 +35,8 @@ import java.util.Random;
  */
 public class PvEListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerMeleeMob(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) return;
         if (!API.isPlayer(event.getDamager())) return;
         if (event.getEntity() instanceof Player) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -101,6 +107,7 @@ public class PvEListener implements Listener {
         double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
+        DamageAPI.handlePolearmAOE(event, finalDamage, damager);
 
         if (!receiver.hasMetadata("tier")) return;
         if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId())) return;
@@ -161,9 +168,8 @@ public class PvEListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerRangedMob(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) return;
         if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
         if (event.getEntity() instanceof Player) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;

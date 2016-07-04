@@ -7,25 +7,30 @@ import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.party.Affair;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.EntityEffect;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
  */
 public class PvPListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerMeleePlayer(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) return;
         if (!API.isPlayer(event.getDamager())) return;
         if (!API.isPlayer(event.getEntity())) return;
 
@@ -103,12 +108,13 @@ public class PvPListener implements Listener {
             }
         }
 
-        double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
+        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
+        DamageAPI.handlePolearmAOE(event, finalDamage, damager);
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerRangedPlayer(EntityDamageByEntityEvent event) {
         if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
         if (!API.isPlayer(event.getEntity())) return;

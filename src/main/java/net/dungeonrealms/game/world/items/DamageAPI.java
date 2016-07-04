@@ -10,8 +10,10 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.party.Affair;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
@@ -19,6 +21,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +29,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Created by Kieran on 9/21/2015.
@@ -335,6 +341,50 @@ public class DamageAPI {
                 break;
             default:
                 break;
+        }
+    }
+
+    public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, Player damager) {
+        ItemStack attackerWeapon = damager.getEquipment().getItemInMainHand();
+        if (API.isWeapon(attackerWeapon) && new Attribute(attackerWeapon).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(damager))) {
+            DamageAPI.polearmAOEProcessing.add(damager);
+            boolean damagerIsMob = damager.hasMetadata("type");
+            for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                if (!(entity instanceof LivingEntity)) continue;
+                // mobs should only be able to damage players, not other mobs
+                if (damagerIsMob && !API.isPlayer(entity))
+                    continue;
+                // no damage in safezones
+                if (API.isInSafeRegion(event.getEntity().getLocation()) || API.isInSafeRegion(damager.getLocation()))
+                    continue;
+                // let's not damage ourself
+                if (entity.equals(damager)) continue;
+                if (damage <= 0) continue;
+                double[] armorCalculation = calculateArmorReduction((LivingEntity)entity, damager, damage / 2, null);
+                if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
+                    if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, damager, damage - armorCalculation[0]);
+                    }
+                } else if (API.isPlayer(entity)) {
+                    if (damagerIsMob) {
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);
+                    } else if (!API.isNonPvPRegion(entity.getLocation())) {
+                        if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
+                            if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, damager.getUniqueId()).toString())) {
+                                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
+                                    damager.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+                                }
+                                continue;
+                            }
+                            if (Affair.getInstance().areInSameParty(damager, (Player) entity)) {
+                                continue;
+                            }
+                        }
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);
+                    }
+                }
+            }
+            DamageAPI.polearmAOEProcessing.remove(damager);
         }
     }
 

@@ -304,9 +304,7 @@ public class HealthHandler implements GenericMechanic {
             double amountToHealPlayer = getPlayerHPRegenLive(player);
             GamePlayer gp = API.getGamePlayer(player);
 
-            if (gp == null || gp.getStats() == null) return;
-
-            amountToHealPlayer += gp.getStats().getHPRegen();
+            if (gp == null) return;
 
             double maxHP = getPlayerMaxHPLive(player);
             if (currentHP + 1 > maxHP) {
