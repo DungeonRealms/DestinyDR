@@ -3,6 +3,9 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.handlers.FriendHandler;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.punish.PunishUtils;
 import org.bukkit.Bukkit;
@@ -14,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Kieran Quigley (Proxying) on 01-Jul-16.
@@ -47,6 +51,19 @@ public class CommandMessage extends BasicCommand {
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PM_DEV);
         }
         String finalMessage = message;
+        String testUUID = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+        if (testUUID.equals("")) {
+            player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
+            return true;
+        }
+        UUID uuid = UUID.fromString(testUUID);
+
+        if (!FriendHandler.getInstance().areFriends(player, uuid)) {
+            if (!(boolean) DatabaseAPI.getInstance().getValue(uuid, EnumData.TOGGLE_RECEIVE_MESSAGE)) {
+                player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
+                return true;
+            }
+        }
         player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO: " + ChatColor.AQUA + playerName + ChatColor.GRAY + ": " + ChatColor.WHITE + finalMessage);
         if (Bukkit.getPlayer(playerName) != null) {
             Bukkit.getOnlinePlayers().stream().filter(player1 -> player1.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {

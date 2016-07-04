@@ -3,6 +3,7 @@ package net.dungeonrealms.game.player.chat;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.network.NetworkAPI;
@@ -89,6 +90,21 @@ public class Chat {
             }
             fixedMessage = fixedMessage.replace("@" + playerName, "");
             String tempFixedMessage = fixedMessage.replace("@" + playerName, "");
+            String testUUID = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+            if (testUUID.equals("")) {
+                event.getPlayer().sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
+                event.setCancelled(true);
+                return;
+            }
+            UUID toUUID = UUID.fromString(testUUID);
+
+            if (!FriendHandler.getInstance().areFriends(event.getPlayer(), toUUID)) {
+                if (!(boolean) DatabaseAPI.getInstance().getValue(toUUID, EnumData.TOGGLE_RECEIVE_MESSAGE)) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
+                    event.setCancelled(true);
+                    return;
+                }
+            }
             event.getPlayer().sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO: " + ChatColor.AQUA + playerName + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
             if (Bukkit.getPlayer(playerName) != null) {
                 Bukkit.getOnlinePlayers().stream().filter(player1 -> player1.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {
