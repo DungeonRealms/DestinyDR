@@ -383,10 +383,7 @@ public class DamageAPI {
 
                             if (!GuildDatabaseAPI.get().isGuildNull(damager.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(entity.getUniqueId())) {
                                 if (GuildDatabaseAPI.get().getGuildOf(damager.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(entity.getUniqueId()))) {
-                                    event.setCancelled(true);
-                                    event.setDamage(0);
-                                    damager.updateInventory();
-                                    ((Player) entity).updateInventory();
+                                    continue;
                                 }
                             }
                         }
