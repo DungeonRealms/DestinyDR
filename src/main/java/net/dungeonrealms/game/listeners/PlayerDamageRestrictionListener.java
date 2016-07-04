@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.party.Affair;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -35,6 +36,17 @@ public class PlayerDamageRestrictionListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAttemptAttackEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            if (event.getEntity() instanceof LivingEntity) {
+                if (!event.getEntity().hasMetadata("type")) return;
+            } else {
+                if (event.getEntity().hasMetadata("type")) {
+                    if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+                } else {
+                    return;
+                }
+            }
+        }
         Entity damager = event.getDamager();
         Entity receiver = event.getEntity();
         boolean isAttackerPlayer = false;
