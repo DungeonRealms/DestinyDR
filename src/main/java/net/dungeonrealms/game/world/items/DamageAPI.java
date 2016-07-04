@@ -360,7 +360,7 @@ public class DamageAPI {
                     continue;
                 // let's not damage ourself
                 if (entity.equals(damager)) continue;
-                double[] armorCalculation = calculateArmorReduction((LivingEntity) entity, damager, damage, null);
+                double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity)entity, damage, null);
                 if (damage - armorCalculation[0] <= 0) continue;
                 if (entity != event.getEntity() && !(entity instanceof Player)) {
                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
