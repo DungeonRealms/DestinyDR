@@ -348,6 +348,14 @@ public class CommandAdd extends BasicCommand {
                             if (playerPets.contains(pets.getRawName().toUpperCase())) {
                                 continue;
                             }
+                            boolean hasPet = false;
+                            for (String playerPet : playerPets) {
+                                if (playerPet.contains("@") && playerPet.split("@")[0].equals(pets.getRawName())) {
+                                    hasPet = true;
+                                    break;
+                                }
+                            }
+                            if (hasPet) continue;
                         }
                         DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, pets.getRawName(), false);
                         player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(pets.getRawName()) + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
