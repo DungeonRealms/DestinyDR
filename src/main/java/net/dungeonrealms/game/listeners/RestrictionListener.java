@@ -152,20 +152,20 @@ public class RestrictionListener implements Listener {
         }, 150L);
     }
 
-    /**
-     * Prevents players from launching vanilla projectiles.
-     *
-     * @param event
-     */
-    @EventHandler
-    public void onPlayerLaunchVanillaProjectile(ProjectileLaunchEvent event) {
-        ProjectileSource shooter = event.getEntity().getShooter();
-        if (!(shooter instanceof Player)) return;
-        if (!(event.getEntity().hasMetadata("drProjectile"))) {
-            event.setCancelled(true);
-            ((Player) shooter).updateInventory();
-        }
-    }
+//    /**
+//     * Prevents players from launching vanilla projectiles.
+//     *
+//     * @param event
+//     */
+//    @EventHandler
+//    public void onPlayerLaunchVanillaProjectile(ProjectileLaunchEvent event) {
+//        ProjectileSource shooter = event.getEntity().getShooter();
+//        if (!(shooter instanceof Player)) return;
+//        if (!(event.getEntity().hasMetadata("drProjectile"))) {
+//            event.setCancelled(true);
+//            ((Player) shooter).updateInventory();
+//        }
+//    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerOpenEmptyMap(PlayerInteractEvent event) {

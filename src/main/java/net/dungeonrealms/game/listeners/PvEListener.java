@@ -28,8 +28,9 @@ import java.util.Random;
  */
 public class PvEListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOW)
     public void playerMeleeMob(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         if (!API.isPlayer(event.getDamager())) return;
         if (event.getEntity() instanceof Player) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -160,8 +161,9 @@ public class PvEListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOW)
     public void playerRangedMob(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
         if (event.getEntity() instanceof Player) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
