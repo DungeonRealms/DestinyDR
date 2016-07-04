@@ -151,6 +151,7 @@ public class BlockListener implements Listener {
                         RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), 1);
                     }
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
+                    return;
                 }
 
                 p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 1F, 0.75F);
