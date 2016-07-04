@@ -64,8 +64,9 @@ public class DatabaseAPI {
         if (PLAYERS.containsKey(uuid)) {
             // GRABBED CACHED DATA
             doc = PLAYERS.get(uuid);
-
-        } else doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        } else {
+            doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        }
 
         switch (data) {
             /*

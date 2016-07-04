@@ -583,7 +583,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerPunchPlayer(EntityDamageByEntityEvent event) {
         if (!API.isPlayer(event.getEntity()) || !API.isPlayer(event.getDamager()))
             return;
@@ -591,7 +591,6 @@ public class DamageListener implements Listener {
         Player p2 = (Player) event.getEntity();
 
         event.setDamage(0);
-        event.setCancelled(true);
 
         if (!API.isNonPvPRegion(p1.getLocation()) && !API.isNonPvPRegion(p2.getLocation())) return;
         if (!DuelingMechanics.isDueling(p2.getUniqueId())) return;

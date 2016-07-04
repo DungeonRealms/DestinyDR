@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
@@ -31,6 +32,9 @@ public class PvPListener implements Listener {
 
         Player damager = (Player) event.getDamager();
         Player receiver = (Player) event.getEntity();
+
+        damager.sendMessage("" + System.currentTimeMillis());
+        receiver.sendMessage("" + System.currentTimeMillis());
 
         event.setDamage(0);
 
@@ -116,8 +120,15 @@ public class PvPListener implements Listener {
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
+        damager.sendMessage("" + System.currentTimeMillis());
+        receiver.sendMessage("" + System.currentTimeMillis());
         DamageAPI.handlePolearmAOE(event, finalDamage / 2, damager);
 
+        // prevent crazy knockback
+        if (receiver.hasMetadata("lastPvpHit") && System.currentTimeMillis() - receiver.getMetadata("lastPvpHit").get(0).asLong() < 200) {
+            event.setCancelled(true);
+        }
+        receiver.setMetadata("lastPvpHit", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
