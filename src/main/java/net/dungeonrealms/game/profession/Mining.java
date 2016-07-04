@@ -393,18 +393,23 @@ public class Mining implements GenericMechanic {
             switch (tier) {
                 case 1:
                     name = ChatColor.WHITE + "Novice Pickaxe";
+                    lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of sturdy wood.");
                     break;
                 case 2:
                     name = ChatColor.GREEN.toString() + "Apprentice Pickaxe";
+                    lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of cave stone.");
                     break;
                 case 3:
                     name = ChatColor.AQUA.toString() + "Expert Pickaxe";
+                    lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of forged iron.");
                     break;
                 case 4:
                     name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Pickaxe";
+                    lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of hardened diamond.");
                     break;
                 case 5:
                     name = ChatColor.YELLOW.toString() + "Master Pickaxe";
+                    lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of reinforced gold.");
                     break;
                 default:
                     break;

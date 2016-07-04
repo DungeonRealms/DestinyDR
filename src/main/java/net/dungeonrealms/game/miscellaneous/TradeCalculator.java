@@ -227,7 +227,7 @@ public class TradeCalculator {
                     String enchantString = line.substring(2, line.indexOf("+")).trim();
                     Bukkit.getServer().getLogger().info(enchantString);
                     Mining.EnumMiningEnchant enchant = Mining.EnumMiningEnchant.getEnchant(enchantString);
-                    int percent = CraftItemStack.asNMSCopy(is).getTag().getInt(enchant.name());
+                    int percent = Integer.parseInt(line.substring(line.indexOf("+"), line.indexOf("%")));
                     ItemStack enchantItem = Mining.getEnchant(tier, enchant, percent);
                     merchant_offer.add(enchantItem);
                 }

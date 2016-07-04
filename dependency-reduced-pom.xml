@@ -31,7 +31,6 @@
                 <includes>
                   <include>org.ini4j:ini4j</include>
                   <include>org.mongodb:mongo-java-driver</include>
-                  <include>mysql:mysql-connector-java</include>
                   <include>org.mongodb:bson</include>
                   <include>commons-net:commons-net</include>
                   <include>com:nitronet</include>
