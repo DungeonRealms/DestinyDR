@@ -192,56 +192,54 @@ public class BaseMobSpawner {
 
             if (firstSpawn) {
                 firstSpawn = false;
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    for (int i = 0; i < 2; i++) {
-                        Entity newEntity = SpawningMechanics.getMob(world, tier, monsterType);
-                        Location firstSpawn = getRandomLocation(loc, ((loc.getX() - mininmumXZ) - maximumXZ), ((loc.getX() + mininmumXZ) + maximumXZ), ((loc.getZ() - mininmumXZ) - maximumXZ), ((loc.getZ() + mininmumXZ) + maximumXZ));
-                        if (firstSpawn.getBlock().getType() != Material.AIR) {
-                            if (firstSpawn.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) {
-                                firstSpawn.add(0, 1, 0);
-                            } else if (firstSpawn.clone().add(0, 2, 0).getBlock().getType() == Material.AIR) {
-                                firstSpawn.add(0, 2, 0);
-                            } else {
-                                return;
-                            }
-                        }
-                        if (API.isInSafeRegion(firstSpawn)) {
+                for (int i = 0; i < 2; i++) {
+                    Entity newEntity = SpawningMechanics.getMob(world, tier, monsterType);
+                    Location firstSpawn = getRandomLocation(loc, ((loc.getX() - mininmumXZ) - maximumXZ), ((loc.getX() + mininmumXZ) + maximumXZ), ((loc.getZ() - mininmumXZ) - maximumXZ), ((loc.getZ() + mininmumXZ) + maximumXZ));
+                    if (firstSpawn.getBlock().getType() != Material.AIR) {
+                        if (firstSpawn.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) {
+                            firstSpawn.add(0, 1, 0);
+                        } else if (firstSpawn.clone().add(0, 2, 0).getBlock().getType() == Material.AIR) {
+                            firstSpawn.add(0, 2, 0);
+                        } else {
                             return;
                         }
-                        if (newEntity == null) {
-                            return;
-                        }
-                        if (!isFriendlyMob(monsterType)) {
-                            int newLevel = Utils.getRandomFromTier(tier, lvlRange);
-                            EntityStats.setMonsterRandomStats(newEntity, newLevel, tier);
-                            SpawningMechanics.rollElement(newEntity, monsterType);
-                            String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";
-                            String newMobName = "";
-                            try {
-                                newMobName = newEntity.getBukkitEntity().getMetadata("customname").get(0).asString();
-                            } catch (Exception exc) {
-                                newMobName = monsterType.name.trim();
-                            }
-                            if (this.hasCustomName) {
-                                newEntity.setCustomName(newLevelName + API.getTierColor(tier) + monsterCustomName.trim());
-                                newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
-                            } else {
-                                newEntity.setCustomName(newLevelName + API.getTierColor(tier) + newMobName.trim());
-                                newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newMobName.trim()));
-                            }
-                        }
-                        newEntity.setLocation(firstSpawn.getX(), firstSpawn.getY(), firstSpawn.getZ(), 1, 1);
-                        world.addEntity(newEntity, SpawnReason.CUSTOM);
-                        newEntity.setLocation(firstSpawn.getX(), firstSpawn.getY(), firstSpawn.getZ(), 1, 1);
-                        SPAWNED_MONSTERS.add(newEntity);
                     }
-                }, 5L);
-            } else {
-                entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                world.addEntity(entity, SpawnReason.CUSTOM);
-                entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                SPAWNED_MONSTERS.add(entity);
+                    if (API.isInSafeRegion(firstSpawn)) {
+                        return;
+                    }
+                    if (newEntity == null) {
+                        return;
+                    }
+                    if (!isFriendlyMob(monsterType)) {
+                        int newLevel = Utils.getRandomFromTier(tier, lvlRange);
+                        EntityStats.setMonsterRandomStats(newEntity, newLevel, tier);
+                        SpawningMechanics.rollElement(newEntity, monsterType);
+                        String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";
+                        String newMobName;
+                        try {
+                            newMobName = newEntity.getBukkitEntity().getMetadata("customname").get(0).asString();
+                        } catch (Exception exc) {
+                            newMobName = monsterType.name.trim();
+                        }
+                        if (this.hasCustomName) {
+                            newEntity.setCustomName(newLevelName + API.getTierColor(tier) + monsterCustomName.trim());
+                            newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
+                        } else {
+                            newEntity.setCustomName(newLevelName + API.getTierColor(tier) + newMobName.trim());
+                            newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newMobName.trim()));
+                        }
+                    }
+                    newEntity.setLocation(firstSpawn.getX(), firstSpawn.getY(), firstSpawn.getZ(), 1, 1);
+                    world.addEntity(newEntity, SpawnReason.CUSTOM);
+                    newEntity.setLocation(firstSpawn.getX(), firstSpawn.getY(), firstSpawn.getZ(), 1, 1);
+                    SPAWNED_MONSTERS.add(newEntity);
+                }
             }
+
+            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+            world.addEntity(entity, SpawnReason.CUSTOM);
+            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+            SPAWNED_MONSTERS.add(entity);
         }
     }
 

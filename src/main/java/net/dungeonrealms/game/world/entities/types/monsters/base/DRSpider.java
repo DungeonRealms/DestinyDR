@@ -72,14 +72,15 @@ public abstract class DRSpider extends EntitySpider implements DRMonster {
 		org.bukkit.inventory.ItemStack weapon = getTierWeapon(tier);
 		LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
 		boolean armorMissing = false;
-		if (random.nextInt(10) <= 5) {
+		int chance = 6 + tier;
+		if (random.nextInt(10) <= chance) {
 			org.bukkit.inventory.ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
 			livingEntity.getEquipment().setBoots(armor0);
 			this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor0));
 		} else {
 			armorMissing = true;
 		}
-		if (random.nextInt(10) <= 5 || armorMissing) {
+		if (random.nextInt(10) <= chance || armorMissing) {
 			org.bukkit.inventory.ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
 			livingEntity.getEquipment().setLeggings(armor1);
 			this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor1));
@@ -87,7 +88,7 @@ public abstract class DRSpider extends EntitySpider implements DRMonster {
 		} else {
 			armorMissing = true;
 		}
-		if (random.nextInt(10) <= 5 || armorMissing) {
+		if (random.nextInt(10) <= chance || armorMissing) {
 			org.bukkit.inventory.ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
 			livingEntity.getEquipment().setChestplate(armor2);
 			this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor2));
