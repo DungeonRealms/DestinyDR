@@ -123,7 +123,6 @@ public class BuffUtils {
                 }
             }
             for (Player player : toBuff) {
-                player.addPotionEffect(new PotionEffect(effectTypeToGive, ticksToLast, tier));
                 player.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "           " + correctName);
             }
         }
