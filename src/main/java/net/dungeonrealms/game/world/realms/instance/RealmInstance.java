@@ -15,7 +15,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.listeners.RealmListener;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
@@ -288,8 +287,6 @@ public class RealmInstance implements Realms {
         location.add(0, 1, 0).getBlock().setType(Material.PORTAL);
 
         Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), location.add(0.5, 1.5, 0.5));
-        KarmaHandler.EnumPlayerAlignments playerAlignment = KarmaHandler.EnumPlayerAlignments.getByName(KarmaHandler.getInstance().getPlayerRawAlignment(player));
-        assert playerAlignment != null;
         realmHologram.getVisibilityManager().setVisibleByDefault(true);
         realm.setHologram(realmHologram);
         updateRealmHologram(player.getUniqueId());

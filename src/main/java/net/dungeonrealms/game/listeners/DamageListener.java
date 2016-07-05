@@ -418,7 +418,7 @@ public class DamageListener implements Listener {
             }
         }
         List<ItemStack> gearToSave = new ArrayList<>();
-        KarmaHandler.EnumPlayerAlignments alignment = KarmaHandler.EnumPlayerAlignments.getByName(KarmaHandler.getInstance().getPlayerRawAlignment(p));
+        KarmaHandler.EnumPlayerAlignments alignment = KarmaHandler.getInstance().getPlayerRawAlignment(p);
 
         if (alignment == null) return;
 
