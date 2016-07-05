@@ -30,12 +30,12 @@ import java.util.Random;
  * Created by Alan Lu (dartaran) on 03-Jul-16.
  */
 public class PlayerDamageRestrictionListener implements Listener {
-
-    /**
+/*
+    *//**
      * Checks if a player can be damaged and if they can damage.
      *
      * @param event
-     */
+     *//*
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAttemptAttackEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) {
@@ -171,5 +171,5 @@ public class PlayerDamageRestrictionListener implements Listener {
                 pReceiver.updateInventory();
             }
         }
-    }
+    }*/
 }

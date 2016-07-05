@@ -133,6 +133,7 @@ public class DamageListener implements Listener {
     }
 
 
+/*
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerBreakArmorStand(EntityDamageByEntityEvent event) {
         if (!(API.isPlayer(event.getDamager()))) return;
@@ -166,11 +167,12 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
         }
     }
-
-    /**
+*/
+/*
+    *//**
      * Checks for null gameplayer on damage by entity. Keep this priority lowest because onPlayerHitEntity and
      * onMonsterHitPlayer are priority low.
-     */
+     *//*
     @EventHandler(priority = EventPriority.LOWEST)
     public void entDamageNullCheck(EntityDamageByEntityEvent event) {
         if (API.isPlayer(event.getDamager())) {
@@ -183,7 +185,7 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
             }
         }
-    }
+    }*/
 
     /**
      * Listen for the players weapon hitting an entity
@@ -486,8 +488,8 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
+//    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+  /*  public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
         if (API.isPlayer(event.getDamager()))
             return;
@@ -575,7 +577,7 @@ public class DamageListener implements Listener {
         double[] armorCalculation =DamageAPI.calculateArmorReduction(leDamageSource, player, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handlePlayerBeingDamaged(player, leDamageSource, finalDamage, armorCalculation[0], armorCalculation[1]);
-    }
+    }*/
 
     /**
      * Handling Duels. When a player punches another player.
@@ -583,7 +585,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+/*    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerPunchPlayer(EntityDamageByEntityEvent event) {
         if (!API.isPlayer(event.getEntity()) || !API.isPlayer(event.getDamager()))
             return;
@@ -605,16 +607,19 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             event.setDamage(0);
         }
-    }
+    }*/
 
-    /**
+/*
+    */
+/**
      * Listen for Pets Damage.
      * <p>
      * E.g. I can't attack Xwaffle's Wolf it's a pet!
      *
      * @param event
      * @since 1.0
-     */
+     *//*
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void petDamageListener(EntityDamageByEntityEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
@@ -640,6 +645,7 @@ public class DamageListener implements Listener {
                 break;
         }
     }
+*/
 
 
     /**

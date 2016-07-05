@@ -84,19 +84,19 @@ public class InfernalGhast extends DRGhast implements Boss {
 
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
-		LivingEntity en = (LivingEntity) event.getEntity();
-		double totalHP = HealthHandler.getInstance().getMonsterMaxHPLive(en);
-		if (totalHP < 10000) {
-			totalHP = maxHP;
-		}
-		totalHP *= 0.5;
-		double currHP = HealthHandler.getInstance().getMonsterHPLive(en);
-
-		if (currHP <= totalHP) {
-			this.getBukkitEntity().eject();
-			this.getBukkitEntity().setPassenger(null);
-			boss.doFinalForm(currHP);
-			this.die();
-		}
+//		LivingEntity en = (LivingEntity) event.getEntity();
+//		double totalHP = HealthHandler.getInstance().getMonsterMaxHPLive(en);
+//		if (totalHP < 10000) {
+//			totalHP = maxHP;
+//		}
+//		totalHP *= 0.5;
+//		double currHP = HealthHandler.getInstance().getMonsterHPLive(en);
+//
+//		if (currHP <= totalHP) {
+//			this.getBukkitEntity().eject();
+//			this.getBukkitEntity().setPassenger(null);
+//			boss.doFinalForm(currHP);
+//			this.die();
+//		}
 	}
 }

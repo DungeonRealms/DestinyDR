@@ -104,8 +104,8 @@ public class RestrictionListener implements Listener {
         checkPlayersArmorIsValid((Player) event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.LOW)
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
+//    @EventHandler(priority = EventPriority.LOW)
+    /*public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             if (player.getEquipment().getItemInMainHand() != null) {
@@ -120,7 +120,7 @@ public class RestrictionListener implements Listener {
                 }
             }
         }
-    }
+    }*/
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void playerInteract(PlayerInteractEvent event) {

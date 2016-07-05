@@ -470,7 +470,7 @@ public class RealmListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   /* @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onAddBuilder(EntityDamageByEntityEvent event) {
         if (!API.isPlayer(event.getDamager()) || !API.isPlayer(event.getEntity())) return;
 
@@ -533,7 +533,7 @@ public class RealmListener implements Listener {
                 target.setAllowFlight(false);
 
         }
-    }
+    }*/
 
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
