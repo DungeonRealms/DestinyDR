@@ -129,7 +129,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
 
     @Override
     public void onBossHit(EntityDamageByEntityEvent event) {
-        /*LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         if (canSpawnMobs(livingEntity)) {
             canSpawn = false;
             try {
@@ -159,7 +159,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
             for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
                 p.sendMessage(ChatColor.RED.toString() + "Mayel The Cruel" + ChatColor.RESET.toString() + ": " + "Come to my call, brothers!");
             }
-        }*/
+        }
     }
 
 

@@ -28,7 +28,7 @@ import java.util.Random;
  */
 public class PvEListener implements Listener {
 
-/*    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerMeleeMob(EntityDamageByEntityEvent event) {
         if (!API.isPlayer(event.getDamager())) return;
         if (event.getEntity() instanceof Player) return;
@@ -266,5 +266,5 @@ public class PvEListener implements Listener {
                 PowerMove.doPowerMove("powerstrike", receiver, null);
             }
         }
-    }*/
+    }
 }

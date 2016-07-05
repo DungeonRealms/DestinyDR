@@ -5,9 +5,11 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -15,6 +17,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
+import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -24,10 +27,13 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitch;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -37,6 +43,7 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -46,6 +53,7 @@ import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -68,7 +76,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +141,6 @@ public class DamageListener implements Listener {
     }
 
 
-/*
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerBreakArmorStand(EntityDamageByEntityEvent event) {
         if (!(API.isPlayer(event.getDamager()))) return;
@@ -167,12 +174,12 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
         }
     }
-*/
-/*
-    *//**
+
+
+    /**
      * Checks for null gameplayer on damage by entity. Keep this priority lowest because onPlayerHitEntity and
      * onMonsterHitPlayer are priority low.
-     *//*
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void entDamageNullCheck(EntityDamageByEntityEvent event) {
         if (API.isPlayer(event.getDamager())) {
@@ -185,7 +192,7 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
             }
         }
-    }*/
+    }
 
     /**
      * Listen for the players weapon hitting an entity
@@ -195,9 +202,10 @@ public class DamageListener implements Listener {
      * @since 1.0
      */
     @Deprecated //Moved to PvP // PvE listeners
-    /*@EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager())))) return;
+        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+            return;
         if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
@@ -464,7 +472,7 @@ public class DamageListener implements Listener {
                 PowerMove.doPowerMove("powerstrike", entity, null);
             }
         }
-    }*/
+    }
 
 
     /**
@@ -488,8 +496,8 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-//    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-  /*  public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
         if (API.isPlayer(event.getDamager()))
             return;
@@ -505,7 +513,7 @@ public class DamageListener implements Listener {
         double finalDamage = 0;
         Player player = (Player) event.getEntity();
         LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
-                : (LivingEntity)((Projectile) event.getDamager()).getShooter();
+                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             EntityEquipment attackerEquipment = attacker.getEquipment();
@@ -574,10 +582,10 @@ public class DamageListener implements Listener {
             player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3, 3);
         }
 
-        double[] armorCalculation =DamageAPI.calculateArmorReduction(leDamageSource, player, finalDamage, null);
+        double[] armorCalculation = DamageAPI.calculateArmorReduction(leDamageSource, player, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handlePlayerBeingDamaged(player, leDamageSource, finalDamage, armorCalculation[0], armorCalculation[1]);
-    }*/
+    }
 
     /**
      * Handling Duels. When a player punches another player.
@@ -585,7 +593,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-/*    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerPunchPlayer(EntityDamageByEntityEvent event) {
         if (!API.isPlayer(event.getEntity()) || !API.isPlayer(event.getDamager()))
             return;
@@ -607,11 +615,10 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             event.setDamage(0);
         }
-    }*/
+    }
 
-/*
-    */
-/**
+
+    /**
      * Listen for Pets Damage.
      * <p>
      * E.g. I can't attack Xwaffle's Wolf it's a pet!
@@ -645,7 +652,7 @@ public class DamageListener implements Listener {
                 break;
         }
     }
-*/
+
 
 
     /**

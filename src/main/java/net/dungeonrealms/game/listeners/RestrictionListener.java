@@ -104,8 +104,8 @@ public class RestrictionListener implements Listener {
         checkPlayersArmorIsValid((Player) event.getPlayer());
     }
 
-//    @EventHandler(priority = EventPriority.LOW)
-    /*public void onEntityDamage(EntityDamageByEntityEvent event) {
+    @EventHandler(priority = EventPriority.LOW)
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             if (player.getEquipment().getItemInMainHand() != null) {
@@ -120,7 +120,7 @@ public class RestrictionListener implements Listener {
                 }
             }
         }
-    }*/
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void playerInteract(PlayerInteractEvent event) {
@@ -152,20 +152,20 @@ public class RestrictionListener implements Listener {
         }, 150L);
     }
 
-//    /**
-//     * Prevents players from launching vanilla projectiles.
-//     *
-//     * @param event
-//     */
-//    @EventHandler
-//    public void onPlayerLaunchVanillaProjectile(ProjectileLaunchEvent event) {
-//        ProjectileSource shooter = event.getEntity().getShooter();
-//        if (!(shooter instanceof Player)) return;
-//        if (!(event.getEntity().hasMetadata("drProjectile"))) {
-//            event.setCancelled(true);
-//            ((Player) shooter).updateInventory();
-//        }
-//    }
+    /**
+     * Prevents players from launching vanilla projectiles.
+     *
+     * @param event
+     */
+    @EventHandler
+    public void onPlayerLaunchVanillaProjectile(ProjectileLaunchEvent event) {
+        ProjectileSource shooter = event.getEntity().getShooter();
+        if (!(shooter instanceof Player)) return;
+        if (!(event.getEntity().hasMetadata("drProjectile"))) {
+            event.setCancelled(true);
+            ((Player) shooter).updateInventory();
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerOpenEmptyMap(PlayerInteractEvent event) {

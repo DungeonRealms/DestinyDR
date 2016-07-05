@@ -788,7 +788,7 @@ public class MainListener implements Listener {
     }
 
 
-/*    @EventHandler
+    @EventHandler
     public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
         if (e.getCause() == DamageCause.PROJECTILE) return;
         if (API.isPlayer(e.getEntity())) return;
@@ -797,7 +797,7 @@ public class MainListener implements Listener {
             ent.setMaximumNoDamageTicks(0);
             ent.setNoDamageTicks(0);
         }
-    }*/
+    }
 
     /**
      * Checks for player punching a map on a wall
@@ -828,7 +828,7 @@ public class MainListener implements Listener {
      * @param event
      * @since 1.0
      */
-/*    @EventHandler(priority = EventPriority.HIGHEST)
+   @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerHitMapItemFrame(EntityDamageByEntityEvent event) {
         if (event.getEntity().getType() == EntityType.ITEM_FRAME) {
             ItemFrame is = (ItemFrame) event.getEntity();
@@ -844,7 +844,7 @@ public class MainListener implements Listener {
                 plr.getInventory().addItem(is.getItem());
             }
         }
-    }*/
+    }
 
     /**
      * Prevents players from shearing sheep etc.
@@ -1081,7 +1081,7 @@ public class MainListener implements Listener {
         }
     }
 
-/*    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void characterJournalPartyInvite(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             if (!API.isPlayer(event.getEntity())) return;
@@ -1116,5 +1116,5 @@ public class MainListener implements Listener {
                 }
             }
         }
-    }*/
+    }
 }
