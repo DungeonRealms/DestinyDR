@@ -64,6 +64,11 @@ public class ECashMenus {
                 //sketchy effects that don't do much.
                 continue;
             }
+
+            // Holiday Effects | Only to be sold in the BC shop.
+            if (effect == ParticleAPI.ParticleEffect.VALENTINES)
+                continue;
+
             int price = 650;
             if (effect == ParticleAPI.ParticleEffect.RED_DUST || effect == ParticleAPI.ParticleEffect.NOTE || effect == ParticleAPI.ParticleEffect.FLAME || effect == ParticleAPI.ParticleEffect.PORTAL
                     || effect == ParticleAPI.ParticleEffect.CLOUD || effect == ParticleAPI.ParticleEffect.SMALL_SMOKE) {
