@@ -5,11 +5,9 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -17,7 +15,6 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
-import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -27,13 +24,10 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitch;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -43,7 +37,6 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -53,7 +46,6 @@ import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -76,7 +68,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +100,7 @@ public class DamageListener implements Listener {
         if (event.getEntity().getWorld().getName().contains("DUNGEON")) return;
         if (!(event.getEntity().hasMetadata("type"))) return;
         event.blockList().clear();
-        event.setYield(0.1F);
+        event.setYield(0.0F);
         event.setCancelled(true);
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
@@ -193,287 +184,6 @@ public class DamageListener implements Listener {
             }
         }
     }
-
-    /**
-     * Listen for the players weapon hitting an entity
-     * Used for calculating damage based on player weapon
-     *
-     * @param event
-     * @since 1.0
-     */
-    @Deprecated //Moved to PvP // PvE listeners
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
-    public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(API.isPlayer(event.getDamager()))) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
-            return;
-        if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
-        if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (event.getEntity() instanceof LivingEntity) {
-            if (!(event.getEntity() instanceof Player)) {
-                if (!event.getEntity().hasMetadata("type")) return;
-            }
-        }
-
-        Entity damager = event.getDamager();
-        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
-                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
-
-        if (API.isPlayer(leDamageSource) && event.getEntity().getLocation().distance(leDamageSource.getLocation()) >= 10D)
-            ((Player) leDamageSource).playSound(leDamageSource.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-
-        if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
-            event.setDamage(0);
-            event.setCancelled(true);
-            if (API.isPlayer(leDamageSource)) {
-                ((Player) leDamageSource).updateInventory();
-            }
-            return;
-        }
-
-        if (event.getDamager().hasMetadata("lastAttack") && System.currentTimeMillis() - event.getDamager().getMetadata("lastAttack").get(0).asLong() < 80) {
-            event.setDamage(0);
-            event.setCancelled(true);
-            if (API.isPlayer(leDamageSource)) {
-                ((Player) leDamageSource).updateInventory();
-            }
-            return;
-        }
-        event.getDamager().setMetadata("lastAttack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-
-        if (API.isPlayer(event.getEntity()) && API.isPlayer(leDamageSource)) {
-            if (!DuelingMechanics.isDueling(leDamageSource.getUniqueId())) {
-                if (API.isInSafeRegion(event.getEntity().getLocation())) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    ((Player) leDamageSource).updateInventory();
-                    return;
-                } else if (ProtectionHandler.getInstance().hasNewbieProtection((Player) event.getEntity())) {
-                    leDamageSource.sendMessage(ChatColor.RED + "The player you are attempting to attack has " +
-                            "newbie " +
-                            "protection! You cannot attack them.");
-                    event.getEntity().sendMessage(ChatColor.GREEN + "Your " + ChatColor.UNDERLINE + "NEWBIE " +
-                            "PROTECTION" + ChatColor.GREEN + " has prevented " + leDamageSource.getCustomName() +
-                            ChatColor.GREEN + " from attacking you!");
-                    event.getEntity();
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    ((Player) damager).updateInventory();
-                    return;
-                }
-            }
-        }
-
-        //Make sure the player is HOLDING something!
-        double finalDamage = 0;
-        if (API.isPlayer(event.getDamager())) {
-            if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
-                if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
-                    if (DuelingMechanics.isDueling(event.getEntity().getUniqueId()) && DuelingMechanics.isDueling(event.getDamager().getUniqueId())) {
-                        if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            return;
-                        }
-                    } else {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
-                }
-            }
-
-            if (API.isPlayer(event.getEntity())) {
-                if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-
-                if (!GuildDatabaseAPI.get().isGuildNull(event.getDamager().getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(event.getEntity().getUniqueId())) {
-                    if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
-                        event.setCancelled(true);
-                        event.setDamage(0);
-                        return;
-                    }
-                }
-            }
-
-            Player attacker = (Player) event.getDamager();
-
-            if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker) <= 0) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                attacker.playSound(attacker.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                return;
-            }
-
-
-            if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-                if (Cooldown.hasCooldown(attacker.getUniqueId())) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-                Cooldown.addCooldown(attacker.getUniqueId(), 250L);
-                event.getEntity().setVelocity(event.getEntity().getVelocity().divide(new Vector(2, 2.5, 2)));
-            }
-
-            if (CombatLog.isInCombat(attacker)) {
-                CombatLog.updateCombat(attacker);
-            } else {
-                CombatLog.addToCombat(attacker);
-            }
-            EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getEquipment().getItemInMainHand()));
-
-
-            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-            if (!API.isWeapon(attacker.getEquipment().getItemInMainHand())) {
-                event.setDamage(1);
-                return;
-            }
-
-            ItemType weaponType = new Attribute(attacker.getInventory().getItemInMainHand()).getItemType();
-            Item.ItemTier tier = new Attribute(attacker.getInventory().getItemInMainHand()).getItemTier();
-
-            switch (weaponType) {
-                case BOW:
-                    switch (tier) {
-                        case TIER_1:
-                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.2);
-                            break;
-                        case TIER_2:
-                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.5);
-                            break;
-                        case TIER_3:
-                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 1.8);
-                            break;
-                        case TIER_4:
-                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 2.0);
-                            break;
-                        case TIER_5:
-                            DamageAPI.knockbackEntity(attacker, event.getEntity(), 2.2);
-                            break;
-                        default:
-                            break;
-                    }
-                case STAFF:
-                    event.setDamage(0);
-                    event.setCancelled(true);
-                    return;
-                default:
-                    break;
-            }
-
-            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
-
-            if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
-                if (API.getGamePlayer((Player) event.getEntity()) != null && API.getGamePlayer((Player) event.getDamager()) != null) {
-                    if (API.getGamePlayer((Player) event.getEntity()).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                        if (API.getGamePlayer((Player) event.getDamager()).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, event.getDamager().getUniqueId()).toString())) {
-                                if (finalDamage >= HealthHandler.getInstance().getPlayerHPLive((Player) event.getEntity())) {
-                                    event.setCancelled(true);
-                                    event.setDamage(0);
-                                    event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + event.getEntity().getName() + "!");
-                                    event.getEntity().sendMessage(ChatColor.YELLOW + event.getDamager().getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else if (DamageAPI.isBowProjectile(event.getDamager())) { // bow
-            Projectile attackingArrow = (Projectile) event.getDamager();
-            if (!(attackingArrow.getShooter() instanceof Player)) return;
-            finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
-            if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
-                CombatLog.updateCombat(((Player) attackingArrow.getShooter()));
-            } else {
-                CombatLog.addToCombat(((Player) attackingArrow.getShooter()));
-            }
-        } else if (DamageAPI.isStaffProjectile(event.getDamager())) { // staff
-            Projectile staffProjectile = (Projectile) event.getDamager();
-            if (!(staffProjectile.getShooter() instanceof Player)) return;
-            finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
-            if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
-                CombatLog.updateCombat(((Player) staffProjectile.getShooter()));
-            } else {
-                CombatLog.addToCombat(((Player) staffProjectile.getShooter()));
-            }
-        }
-        event.setDamage(finalDamage);
-
-
-        LivingEntity entity = (LivingEntity) event.getEntity();
-        if (!entity.hasMetadata("tier")) return;
-        if (PowerMove.chargedMonsters.contains(entity.getUniqueId()) || PowerMove.chargingMonsters.contains(entity.getUniqueId()))
-            return;
-
-        int tier = entity.getMetadata("tier").get(0).asInt();
-        Random rand = new Random();
-        int powerChance = 0;
-        if (entity.hasMetadata("elite")) {
-            switch (tier) {
-                case 1:
-                    powerChance = 5;
-                    break;
-                case 2:
-                    powerChance = 7;
-                    break;
-                case 3:
-                    powerChance = 10;
-                    break;
-                case 4:
-                    powerChance = 13;
-                    break;
-                case 5:
-                    powerChance = 20;
-                    break;
-
-            }
-            if (rand.nextInt(100) <= powerChance) {
-                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("whirlwind", entity, null);
-
-            }
-        } else if (event.getEntity().hasMetadata("boss")) {
-            if (event.getEntity() instanceof CraftLivingEntity) {
-                Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
-                b.onBossHit(event);
-            }
-        } else {
-            switch (tier) {
-                case 1:
-                    powerChance = 5;
-                    break;
-                case 2:
-                    powerChance = 7;
-                    break;
-                case 3:
-                    powerChance = 10;
-                    break;
-                case 4:
-                    powerChance = 13;
-                    break;
-                case 5:
-                    powerChance = 20;
-                    break;
-
-            }
-
-            if (rand.nextInt(100) <= powerChance) {
-                PowerMove.doPowerMove("powerstrike", entity, null);
-            }
-        }
-    }
-
 
     /**
      * Makes mobs untarget a player after they have entered a safezone.
@@ -561,21 +271,10 @@ public class DamageListener implements Listener {
             }
         }
 
-        Entity theEntity = null;
-        if (event.getDamager() instanceof LivingEntity) {
-            theEntity = event.getDamager();
-        } else if (DamageAPI.isBowProjectile(event.getDamager())) {
-            Projectile attackingArrow = (Projectile) event.getDamager();
-            theEntity = (Entity) attackingArrow.getShooter();
-        } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
-            Projectile attackingSkull = (Projectile) event.getDamager();
-            theEntity = (Entity) attackingSkull.getShooter();
-        }
-
-        if (PowerStrike.powerStrike.contains(theEntity.getUniqueId())) {
+        if (PowerStrike.powerStrike.contains(leDamageSource.getUniqueId())) {
             finalDamage *= 3;
-            PowerStrike.chargedMonsters.remove(theEntity.getUniqueId());
-            PowerStrike.powerStrike.remove(theEntity.getUniqueId());
+            PowerStrike.chargedMonsters.remove(leDamageSource.getUniqueId());
+            PowerStrike.powerStrike.remove(leDamageSource.getUniqueId());
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
             player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3, 3);
         }
@@ -623,12 +322,11 @@ public class DamageListener implements Listener {
      *
      * @param event
      * @since 1.0
-     *//*
+     */
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void petDamageListener(EntityDamageByEntityEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
-        if (event.getEntity() instanceof Player) return;
         String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
         switch (metaValue) {
             case "pet":
