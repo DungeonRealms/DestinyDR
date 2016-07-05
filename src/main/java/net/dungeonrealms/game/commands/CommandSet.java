@@ -190,6 +190,7 @@ public class CommandSet extends BasicCommand {
                     }
                     int hp = Integer.parseInt(args[1]);
                     if (hp > 0) {
+                        HealthHandler.getInstance().setPlayerMaxHPLive(player, hp);
                         HealthHandler.getInstance().setPlayerHPLive(player, hp);
                         player.sendMessage(ChatColor.GREEN + "Set health to " + hp + ".");
                     } else {
