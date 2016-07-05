@@ -57,6 +57,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +67,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -898,6 +903,32 @@ public class API {
             ScoreboardHandler.getInstance().matchMainScoreboard(player);
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
         }, 100L);
+    }
+
+    /**
+     * Utility method for calling async tasks with callbacks.
+     *
+     * @param callable Callable method
+     * @param consumer Consumer task
+     * @param <T>      Type of data
+     */
+    public static <T> void runAsyncCallbackTask(Callable<T> callable, Consumer<Future<T>> consumer) {
+        FutureTask<T> task = new FutureTask<>(callable);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                task.run();
+
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        consumer.accept(task);
+                    }
+                }.runTask(DungeonRealms.getInstance());
+            }
+        }.runTaskAsynchronously(DungeonRealms.getInstance());
     }
 
     static void backupDatabase() {
