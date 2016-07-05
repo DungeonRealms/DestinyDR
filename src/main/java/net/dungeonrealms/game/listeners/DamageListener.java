@@ -498,14 +498,12 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) return;
-        if (API.isPlayer(event.getDamager()))
-            return;
-        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
-            return;
+        if (event.getDamager() instanceof Player) return;
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager())))) return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (!(event.getDamager() instanceof LivingEntity)) {
             if (!(((Projectile) event.getDamager()).getShooter() instanceof LivingEntity)) return;
+            if (((Projectile) event.getDamager()).getShooter() instanceof Player) return;
         }
 
         event.setDamage(0);
