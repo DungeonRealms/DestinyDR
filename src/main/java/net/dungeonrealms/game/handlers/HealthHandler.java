@@ -451,9 +451,6 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, EntityDamageEvent.DamageCause cause) {
-        if (!API.isPlayer(player)) {
-            return;
-        }
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
@@ -570,8 +567,7 @@ public class HealthHandler implements GenericMechanic {
         int convHPToDisplay = (int) newPlayerHPToDisplay;
         if (convHPToDisplay <= 0) {
             convHPToDisplay = 1;
-        }
-        if (convHPToDisplay > 20) {
+        } else if (convHPToDisplay > 20) {
             convHPToDisplay = 20;
         }
         player.setHealth(convHPToDisplay);
