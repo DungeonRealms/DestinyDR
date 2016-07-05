@@ -393,18 +393,23 @@ public class Mining implements GenericMechanic {
             switch (tier) {
                 case 1:
                     name = ChatColor.WHITE + "Novice Pickaxe";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of sturdy wood.");
                     break;
                 case 2:
                     name = ChatColor.GREEN.toString() + "Apprentice Pickaxe";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of cave stone.");
                     break;
                 case 3:
                     name = ChatColor.AQUA.toString() + "Expert Pickaxe";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of forged iron.");
                     break;
                 case 4:
                     name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Pickaxe";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of hardened diamond.");
                     break;
                 case 5:
                     name = ChatColor.YELLOW.toString() + "Master Pickaxe";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of reinforced gold.");
                     break;
                 default:
                     break;
@@ -458,16 +463,24 @@ public class Mining implements GenericMechanic {
 
         Iterator<String> i = lore.iterator();
 
+        int prevValue = -1;
+
         while (i.hasNext()) {
             String line = i.next();
-            if (line.contains(enchant.display))
+            if (line.contains(enchant.display)) {
+                prevValue = Integer.valueOf(line.substring(line.indexOf("+"), line.indexOf("%")));
                 i.remove();
+            }
         }
 
 
         String clone = lore.get(lore.size() - 1).toString();
         lore.remove(lore.size() - 1);
         int value = enchant.getBuff(pickTier);
+        if (value == 0)
+            value = 1;
+        if (prevValue != -1)
+            prevValue += value;
         lore.add(ChatColor.RED + enchant.display + " +" + value + "%");
         lore.add(clone);
         meta.setLore(lore);
@@ -490,24 +503,6 @@ public class Mining implements GenericMechanic {
         fwm.addEffect(effect);
         fwm.setPower(0);
         fw.setFireworkMeta(fwm);
-
-
-//        Iterator<String> i = lore.iterator();
-//
-//        while (i.hasNext()) {
-//            String line = i.next();
-//            if (line.contains(enchant.display))
-//                i.remove();
-//        }
-//
-//
-//        String clone = lore.get(lore.size() - 1).toString();
-//        lore.remove(lore.size() - 1);
-//        lore.add(ChatColor.RED + enchant.display + " +" + enchant.getBuff(pickTier) + "%");
-//        lore.add(clone);
-//        meta.setLore(lore);
-//        pick.setItemMeta(meta);
-
     }
 
     public static int getDoubleDropChance(ItemStack is) {

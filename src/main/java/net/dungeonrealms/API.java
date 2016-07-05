@@ -57,6 +57,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +67,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -687,6 +692,8 @@ public class API {
                     Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]),
                     Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
         } else {
+
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             /**
              PLAYER IS NEW
              */
@@ -830,7 +837,7 @@ public class API {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-        instance.setBaseValue(6.0D);
+        instance.setBaseValue(1024.0D);
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
 
         // Permissions
@@ -880,8 +887,11 @@ public class API {
         }
 
         if (Rank.isGM(player)) {
+            HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);
             HealthHandler.getInstance().setPlayerHPLive(player, 10000);
-            gp.setInvulnerable(true);
+
+            //TODO: Re-Add this whenever we have a way to toggle it.
+            //gp.setInvulnerable(true);
             player.sendMessage(new String[]{
                     "",
                     ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",
@@ -896,6 +906,32 @@ public class API {
             ScoreboardHandler.getInstance().matchMainScoreboard(player);
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
         }, 100L);
+    }
+
+    /**
+     * Utility method for calling async tasks with callbacks.
+     *
+     * @param callable Callable method
+     * @param consumer Consumer task
+     * @param <T>      Type of data
+     */
+    public static <T> void runAsyncCallbackTask(Callable<T> callable, Consumer<Future<T>> consumer) {
+        FutureTask<T> task = new FutureTask<>(callable);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                task.run();
+
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        consumer.accept(task);
+                    }
+                }.runTask(DungeonRealms.getInstance());
+            }
+        }.runTaskAsynchronously(DungeonRealms.getInstance());
     }
 
     static void backupDatabase() {

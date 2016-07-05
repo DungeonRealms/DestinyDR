@@ -67,7 +67,10 @@ public class BuffManager implements GenericMechanic {
                     continue;
                 }
             }
-            if (getNearbyBuffs(player, 10).size() >= 1) {
+            if (getNearbyBuffs(player, 15).size() >= 1) {
+                continue;
+            }
+            if (API.getNearbyPlayers(player.getLocation(), 10).size() > 2) {
                 continue;
             }
             if (new Random().nextInt(21) < 4) {

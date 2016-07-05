@@ -12,6 +12,8 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.world.entities.PowerMove;
+import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
@@ -236,8 +238,7 @@ public class DamageAPI {
             }
 
             return Math.round(damage);
-        }
-        catch (Exception ex) { // SAFETY CHECK todo: debug everything causing exceptions
+        } catch (Exception ex) { // SAFETY CHECK todo: debug everything causing exceptions
             // recalculate all attributes as a failsafe
             if (!isAttackerPlayer) {
                 Utils.log.warning("[DamageAPI] Mob caused exception in calculateWeaponDamage.");
@@ -317,8 +318,7 @@ public class DamageAPI {
                 receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
             else
                 receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
-        }
-        else {
+        } else {
             receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
         }
     }
@@ -360,7 +360,7 @@ public class DamageAPI {
                     continue;
                 // let's not damage ourself
                 if (entity.equals(damager)) continue;
-                double[] armorCalculation = calculateArmorReduction((LivingEntity)entity, damager, damage, null);
+                double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity)entity, damage, null);
                 if (damage - armorCalculation[0] <= 0) continue;
                 if (entity != event.getEntity() && !(entity instanceof Player)) {
                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
@@ -381,10 +381,8 @@ public class DamageAPI {
                                 continue;
                             }
 
-                            if (!GuildDatabaseAPI.get().isGuildNull(damager.getUniqueId()) && !GuildDatabaseAPI.get().isGuildNull(entity.getUniqueId())) {
-                                if (GuildDatabaseAPI.get().getGuildOf(damager.getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(entity.getUniqueId()))) {
-                                    continue;
-                                }
+                            if (GuildDatabaseAPI.get().areInSameGuild(damager.getUniqueId(), entity.getUniqueId())) {
+                                continue;
                             }
                         }
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);
@@ -553,8 +551,7 @@ public class DamageAPI {
                 damage = damage * 2;
             }
             return Math.round(damage) + 1;
-        }
-        catch (Exception ex) { // SAFETY CHECK todo: debug everything causing exceptions
+        } catch (Exception ex) { // SAFETY CHECK todo: debug everything causing exceptions
             // recalculate all attributes as a failsafe
             if (!isAttackerPlayer) {
                 Utils.log.warning("[DamageAPI] Mob caused exception in calculateProjectileDamage.");
@@ -585,10 +582,13 @@ public class DamageAPI {
      * @return
      */
     public static double addSpecialDamage(LivingEntity attacker, double damage) {
+        if (PowerMove.doingPowerMove(attacker.getUniqueId()))
+            return damage;
         // DUNGEON CALCULATION
         if (attacker.hasMetadata("dungeon")) {
             damage *= 2;
         }
+
 
         // ELITE CALCULATION
         if (attacker.hasMetadata("elite") && attacker.hasMetadata("tier")) {
@@ -673,7 +673,7 @@ public class DamageAPI {
      * @param attacker
      * @param defender
      * @param totalDamage
-     * @param projectile must leave null if melee damage (no projectile)!
+     * @param projectile  must leave null if melee damage (no projectile)!
      * @since 1.0
      */
     public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile) {
@@ -864,15 +864,13 @@ public class DamageAPI {
                 totalArmorReduction += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmorReduction;
             }
             return new double[]{Math.round(totalArmorReduction), totalArmor};
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             Utils.log.warning("Attacker: " + attacker.getName());
             Utils.log.warning("Defender: " + defender.getName());
             if (isDefenderPlayer) {
-                API.calculateAllAttributes((Player)defender);
-            }
-            else {
+                API.calculateAllAttributes((Player) defender);
+            } else {
                 API.calculateAllAttributes(defender, ((DRMonster) ((CraftLivingEntity) defender).getHandle()).getAttributes());
             }
             return new double[]{0, 0};

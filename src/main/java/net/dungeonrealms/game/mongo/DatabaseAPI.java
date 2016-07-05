@@ -64,8 +64,9 @@ public class DatabaseAPI {
         if (PLAYERS.containsKey(uuid)) {
             // GRABBED CACHED DATA
             doc = PLAYERS.get(uuid);
-
-        } else doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        } else {
+            doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        }
 
         switch (data) {
             /*
@@ -268,6 +269,7 @@ public class DatabaseAPI {
             case DUELS_WON:
             case DUELS_LOST:
             case ORE_MINED:
+            case ORBS_USED:
             case FISH_CAUGHT:
             case TIME_PLAYED:
             case SUCCESSFUL_ENCHANTS:

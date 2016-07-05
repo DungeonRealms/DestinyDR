@@ -111,7 +111,7 @@ public class ScoreboardHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
-        Affair affair = Affair.getInstance();
+      Affair affair = Affair.getInstance();
         for (Player player1 : Bukkit.getOnlinePlayers()) {
 
             //Party support.
@@ -159,7 +159,7 @@ public class ScoreboardHandler implements GenericMechanic {
     }
 
     public void updateCurrentPlayerLevel(Player toSetFor, Scoreboard scoreboard) {
-        GamePlayer gamePlayer = API.getGamePlayer(toSetFor);
+       GamePlayer gamePlayer = API.getGamePlayer(toSetFor);
 
         int level = gamePlayer.getStats().getLevel();
 

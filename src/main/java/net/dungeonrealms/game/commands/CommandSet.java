@@ -9,8 +9,6 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.handlers.ScoreboardHandler;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -26,7 +24,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -156,13 +153,13 @@ public class CommandSet extends BasicCommand {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, true);
                     break;
                 case "chaotic":
-                    KarmaHandler.getInstance().setPlayerAlignment(player, "chaotic", false);
+                    KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.CHAOTIC, null, false);
                     break;
                 case "neutral":
-                    KarmaHandler.getInstance().setPlayerAlignment(player, "neutral", false);
+                    KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.NEUTRAL, null, false);
                     break;
                 case "lawful":
-                    KarmaHandler.getInstance().setPlayerAlignment(player, "lawful", false);
+                    KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
                     break;
                 case "g":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
@@ -193,6 +190,7 @@ public class CommandSet extends BasicCommand {
                     }
                     int hp = Integer.parseInt(args[1]);
                     if (hp > 0) {
+                        HealthHandler.getInstance().setPlayerMaxHPLive(player, hp);
                         HealthHandler.getInstance().setPlayerHPLive(player, hp);
                         player.sendMessage(ChatColor.GREEN + "Set health to " + hp + ".");
                     } else {
