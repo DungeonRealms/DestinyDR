@@ -127,7 +127,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
 
     @Override
     public void onBossHit(EntityDamageByEntityEvent event) {
-        for (Entity entity : spawnedMobs) {
+       /* for (Entity entity : spawnedMobs) {
             if (!entity.isAlive()) {
                 spawnedMobs.remove(entity);
             }
@@ -199,7 +199,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     }
                 }
             }
-        }
+        }*/
     }
 
     @Override
