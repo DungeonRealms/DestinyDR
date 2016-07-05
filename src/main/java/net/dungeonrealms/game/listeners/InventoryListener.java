@@ -1383,7 +1383,7 @@ public class InventoryListener implements Listener {
 
                                 } else {
                                     for (int i = 0; i < number; i++)
-                                        stats.allocatePoint("str", p, inv);
+                                        stats.allocatePoint("dex", p, inv);
                                     p.openInventory(inv);
 
                                 }
@@ -1431,7 +1431,7 @@ public class InventoryListener implements Listener {
 
                                 } else {
                                     for (int i = 0; i < number; i++)
-                                        stats.allocatePoint("str", p, inv);
+                                        stats.allocatePoint("int", p, inv);
                                     p.openInventory(inv);
 
                                 }
@@ -1481,7 +1481,7 @@ public class InventoryListener implements Listener {
 
                                 } else {
                                     for (int i = 0; i < number; i++)
-                                        stats.allocatePoint("str", p, inv);
+                                        stats.allocatePoint("vit", p, inv);
                                     p.openInventory(inv);
 
                                 }
