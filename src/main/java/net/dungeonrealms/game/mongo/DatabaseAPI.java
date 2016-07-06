@@ -86,6 +86,8 @@ public class DatabaseAPI {
                 return ((Document) doc.get("info")).get("freeEcash", Long.class);
             case LAST_SHARD_TRANSFER:
                 return ((Document) doc.get("info")).get("lastShardTransfer", Long.class);
+            case IP_ADDRESS:
+                return ((Document) doc.get("info")).get("ipAddress", String.class);
             case IS_PLAYING:
                 return ((Document) doc.get("info")).get("isPlaying", Boolean.class);
             case IS_SWITCHING_SHARDS:
@@ -334,6 +336,10 @@ public class DatabaseAPI {
         return ((Document) doc.get("info")).get("uuid", String.class);
     }
 
+    public Document getDocumentFromAddress(String ipAddress) {
+        return Database.collection.find(Filters.eq("info.ipAddress", ipAddress)).first();
+    }
+
     public String getFormattedShardName(UUID uuid) {
         Document doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null)
@@ -366,6 +372,7 @@ public class DatabaseAPI {
                                 .append("health", 50)
                                 .append("gems", 0)
                                 .append("ecash", 0)
+                                .append("ipAddress", "")
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0L)
                                 .append("lastLogout", 0L)
