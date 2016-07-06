@@ -1,5 +1,6 @@
 package net.dungeonrealms;
 
+import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
@@ -486,7 +487,7 @@ public class API {
                 }
             }
         }
-
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, "none", true);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
@@ -533,7 +534,7 @@ public class API {
         } else {
             //Dungeon or realm, should already have their last main world location saved.
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000L, false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, (System.currentTimeMillis() - 1000 * 10), false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
@@ -840,6 +841,15 @@ public class API {
 
         player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
 
+
+        String shard = DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId()).toString().toUpperCase();
+
+        ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
+        friendsOut.writeUTF("Friends");
+        friendsOut.writeUTF("join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + shard);
+        player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
+
+
         Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
@@ -913,6 +923,8 @@ public class API {
             ScoreboardHandler.getInstance().matchMainScoreboard(player);
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
         }, 100L);
+
+
     }
 
     /**

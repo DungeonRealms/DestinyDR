@@ -51,9 +51,7 @@ public class CommandStop extends BasicCommand {
         DungeonRealms.getInstance().getLogger().info("DRStop called.");
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
-        for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
-            combatLogger.handleTimeOut();
-        }
+        CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
         API.logoutAllPlayers(true, stoppingAll);
         ShopMechanics.deleteAllShops(true);

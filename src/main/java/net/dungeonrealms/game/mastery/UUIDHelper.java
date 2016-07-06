@@ -2,6 +2,8 @@ package net.dungeonrealms.game.mastery;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.dungeonrealms.game.mongo.Database;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
 import org.apache.commons.io.Charsets;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 
@@ -72,4 +74,5 @@ public class UUIDHelper {
     public static String cleanUUID(String uuid) {
         return uuid.replaceAll("-", "");
     }
+
 }

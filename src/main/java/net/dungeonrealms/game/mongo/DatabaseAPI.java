@@ -483,4 +483,6 @@ public class DatabaseAPI {
         requestPlayer(uuid);
         Utils.log.info("Requesting new data for : " + uuid);
     }
+
+
 }

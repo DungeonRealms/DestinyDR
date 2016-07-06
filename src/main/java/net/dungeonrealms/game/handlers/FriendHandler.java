@@ -113,6 +113,18 @@ public class FriendHandler {
         //NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
     }
 
+
+    /**
+     *
+     * @param uuid
+     * @return list off UUIDs as String.
+     */
+    public ArrayList<String> getFriendsList(UUID uuid) {
+        return (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+
+    }
+
+
     /**
      * Will check and determine if the players are friends or have a pending
      * friend request.

@@ -181,19 +181,6 @@ public class KarmaHandler implements GenericMechanic {
     }
 
     /**
-     * Returns the seconds passed since last login
-     *
-     * @param player
-     * @return int
-     * @since 1.0
-     */
-    public int getSecondsPassed(Player player) {
-        long currentTime = System.currentTimeMillis() / 1000L;
-        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId())));
-        return (int) (currentTime - endTime);
-    }
-
-    /**
      * Sets the alignment of a specific player
      * adds them to hashmap with cooldown
      * if applicable and sends them a message

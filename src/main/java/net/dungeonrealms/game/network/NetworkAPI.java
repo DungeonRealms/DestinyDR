@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.menus.player.ShardSelector;
@@ -68,6 +69,23 @@ public class NetworkAPI implements PluginMessageListener {
                 if (subChannel.equals("Update")) {
                     UUID uuid = UUID.fromString(in.readUTF());
                     if (Bukkit.getPlayer(uuid) != null) DatabaseAPI.getInstance().requestPlayer(uuid);
+
+                    return;
+                }
+
+                if (subChannel.equals("Friends")) {
+                    Bukkit.broadcastMessage("FRIENDS PACKET");
+                    String msg = in.readUTF();
+                    if (msg.contains("join:")) {
+                        String[] content = msg.split(",");
+                        String uuid = content[1];
+                        String name = content[2];
+                        String shard = content[3];
+
+                        Bukkit.getOnlinePlayers().stream().filter(p -> FriendHandler.getInstance().areFriends(p, UUID.fromString(uuid))).forEach(p -> {
+                            p.sendMessage(ChatColor.GREEN + name + ChatColor.YELLOW + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard);
+                        });
+                    }
 
                     return;
                 }

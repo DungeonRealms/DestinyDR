@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -879,6 +880,9 @@ public class ItemManager {
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
 
+
+        ArrayList<String> friendsList = FriendHandler.getInstance().getFriendsList(p.getUniqueId());
+
         bm.setAuthor("King Bulwar");
         pages.add(page1_string);
         pages.add(page2_string);
@@ -886,6 +890,31 @@ public class ItemManager {
         pages.add(page4_string);
         pages.add(page5_string);
         pages.add(page6_string);
+        int count = 0;
+        String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
+        for (String uuidString : friendsList) {
+            UUID uuid = UUID.fromString(uuidString);
+            String playerName = DatabaseAPI.getInstance().getOfflineName(uuid);
+            String shard = DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).toString().toUpperCase();
+            boolean isOnline = !shard.equalsIgnoreCase("none");
+            long currentTime = System.currentTimeMillis();
+            long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid)));
+            long millis = currentTime - endTime;
+            long second = (millis / 1000) % 60;
+            long minute = (millis / (1000 * 60)) % 60;
+            long hour = (millis / (1000 * 60 * 60)) % 24;
+            String time = hour + "h:" + minute + "m:" + second + "s";
+
+            if (playerName.length() > 10)
+                playerName = playerName.substring(0, 10);
+            friendsPage_string += ChatColor.DARK_GRAY + ChatColor.BOLD.toString() + playerName + ChatColor.BLACK + " - " + (isOnline ? ChatColor.GREEN + shard : ChatColor.RED + "OFFLINE " + ChatColor.GRAY + "[" + time + "]") + new_line;
+            count++;
+            if (count == 10 || uuidString.equalsIgnoreCase(friendsList.get(friendsList.size() - 1))) {
+                pages.add(friendsPage_string);
+                friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
+            }
+        }
+
 
         bm.setPages(pages);
         stack.setItemMeta(bm);

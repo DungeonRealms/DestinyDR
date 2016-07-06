@@ -5,6 +5,8 @@ import com.mongodb.MongoClientURI;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.listeners.ProxyChannelListener;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.PingResponse;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerAddress;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerPinger;
@@ -176,8 +178,22 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         }
     }
 
+    public void notifyFriends(UUID login, String name, String shardJoined) {
+        ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, login);
+        for (String uuidString : list) {
+            UUID uuid = UUID.fromString(uuidString);
+            ProxiedPlayer player = getProxy().getPlayer(uuid);
+
+            if (player != null) {
+                player.sendMessage(ChatColor.GREEN + name + ChatColor.YELLOW + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shardJoined);
+            }
+        }
+    }
+
+
     public void relayPacket(String channel, byte[] data) {
         for (ServerInfo server : ProxyServer.getInstance().getServers().values())
             server.sendData(channel, data);
     }
+
 }
