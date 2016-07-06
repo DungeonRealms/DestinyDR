@@ -3,8 +3,6 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.DungeonRealmsProxy;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -51,6 +49,12 @@ public class ProxyChannelListener implements Listener {
                 plugin.relayPacket("DungeonRealms", event.getData());
             }
 
+            if (subChannel.equals("Alert")) {
+                // READ MESSAGE IN STREAM //
+                String message = in.readUTF();
+
+                plugin.getProxy().getPlayers().stream().forEach(player -> player.sendMessage(message));
+            }
 
             if (subChannel.equals("Guilds")) {
                 String command = in.readUTF();

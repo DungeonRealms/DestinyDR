@@ -72,27 +72,6 @@ public class NetworkAPI implements PluginMessageListener {
                     return;
                 }
 
-                if (subChannel.equals("IP")) {
-                    String address = in.readUTF();
-
-                    Document existingDoc = DatabaseAPI.getInstance().getDocumentFromAddress(address);
-
-                    if (existingDoc != null) {
-                        UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
-
-                        if (PunishUtils.isBanned(uuid)) {
-                            String bannedMessage = PunishUtils.getBannedMessage(uuid);
-                            PunishUtils.kick(player.getName(), bannedMessage);
-
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_TIME, DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME), true);
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_REASON, DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_REASON), true);
-                        }
-                    }
-
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
-                    return;
-                }
-
 
                 if (subChannel.equals("Ping")) {
                     final long currentTime = System.currentTimeMillis();
@@ -132,6 +111,27 @@ public class NetworkAPI implements PluginMessageListener {
 
             } else {
                 try {
+                    if (subChannel.equals("IP")) {
+                        String address = in.readUTF();
+
+                        Document existingDoc = DatabaseAPI.getInstance().getDocumentFromAddress(address);
+
+                        if (existingDoc != null) {
+                            UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
+
+                            if (PunishUtils.isBanned(uuid)) {
+                                String bannedMessage = PunishUtils.getBannedMessage(uuid);
+                                PunishUtils.kick(player.getName(), bannedMessage);
+
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_TIME, DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME), true);
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_REASON, DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_REASON), true);
+                            }
+                        }
+
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
+                        return;
+                    }
+
                     if (subChannel.equals("PlayerCount")) {
                         String server = in.readUTF();
 
