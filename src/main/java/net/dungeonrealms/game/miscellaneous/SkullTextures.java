@@ -16,9 +16,7 @@ import java.util.UUID;
 public enum SkullTextures {
 
     /*
-    *
     * Takes a base 64 string of the skull, can be found here; http://heads.freshcoal.com/ or via the players texture page on Minecraft.
-    *
     */
     PUG("456de2b44c66a6b039b1a2e46561af76e829faa27626aaf8b948a5065c81262"),
     BEAGLE("aa266a9acd19cec3cb7e956e335774944f154633ce89993c566f766fcb0cd3d"),
