@@ -693,6 +693,20 @@ public class ItemManager {
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
+    public static ItemStack createGlobalMessenger() {
+        ItemStack rawStack = new ItemStack(Material.FIREWORK);
+        ItemMeta meta = rawStack.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Global Messenger");
+        meta.setLore(Arrays.asList(ChatColor.GOLD + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY + "Sends a message to all players on " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"));
+        rawStack.setItemMeta(meta);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("globalMessenger", new NBTTagString("true"));
+        nmsStack.setTag(tag);
+
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
 
     public static ItemStack createFishingPole(int tier) {
         ItemStack rawStack = null;

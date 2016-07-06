@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.listeners;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -14,6 +16,7 @@ import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
@@ -329,6 +332,45 @@ public class ItemListener implements Listener {
                             API.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
                             event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
                         }
+                    }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+                }
+            }
+            if (event.getItem().getType() == Material.FIREWORK) {
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
+                if (nms.hasTag() && nms.getTag().hasKey("globalMessenger")) {
+                    event.getPlayer().sendMessage("");
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Please enter the message you'd like to send to " + ChatColor.UNDERLINE + "all servers" + ChatColor.YELLOW
+                            + " -- think before you speak!");
+                    event.getPlayer().sendMessage(ChatColor.GRAY + "Type 'cancel' (no apostrophes) to cancel this and get your Global Messenger back.");
+                    event.getPlayer().sendMessage("");
+                    Chat.listenForMessage(event.getPlayer(), chat -> {
+                        if (chat.getMessage().equalsIgnoreCase("cancel")) {
+                            event.getPlayer().sendMessage(ChatColor.RED + "Global Messenger - " + ChatColor.BOLD + "CANCELLED");
+                            return;
+                        }
+
+                        if (event.getItem().getAmount() > 1) {
+                            event.getItem().setAmount(event.getItem().getAmount() - 1);
+                        } else {
+                            event.getPlayer().getInventory().remove(event.getItem());
+                        }
+
+                        String msg = chat.getMessage();
+                        if (msg.contains(".com") || msg.contains(".net") || msg.contains(".org") || msg.contains("http://") || msg.contains("www.")) {
+                            if (!Rank.isDev(event.getPlayer())) {
+                                event.getPlayer().sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in your global messages please!");
+                                return;
+                            }
+                        }
+
+
+                        final String fixedMessage = Chat.getInstance().checkForBannedWords(msg);
+
+                        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                        out.writeUTF("Alert");
+                        out.writeUTF(" \n" + ChatColor.GOLD.toString() + ChatColor.BOLD + ">>" + ChatColor.GOLD + " (" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(event.getPlayer()) + ChatColor.GOLD + fixedMessage + "\n ");
+
+                        event.getPlayer().sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", out.toByteArray());
                     }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                 }
             } else if (event.getItem().getType() == Material.ENDER_CHEST) {

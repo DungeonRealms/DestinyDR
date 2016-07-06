@@ -64,6 +64,11 @@ public class ECashMenus {
                 //sketchy effects that don't do much.
                 continue;
             }
+
+            // Holiday Effects | Only to be sold in the BC shop.
+            if (effect == ParticleAPI.ParticleEffect.VALENTINES)
+                continue;
+
             int price = 650;
             if (effect == ParticleAPI.ParticleEffect.RED_DUST || effect == ParticleAPI.ParticleEffect.NOTE || effect == ParticleAPI.ParticleEffect.FLAME || effect == ParticleAPI.ParticleEffect.PORTAL
                     || effect == ParticleAPI.ParticleEffect.CLOUD || effect == ParticleAPI.ParticleEffect.SMALL_SMOKE) {
@@ -86,9 +91,15 @@ public class ECashMenus {
     public static void openEcashMisc(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 9, "E-Cash Miscellaneous");
         inventory.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
         inventory.addItem(new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
                 ChatColor.GRAY + "Refund ALL Stat Points!",
                 ChatColor.WHITE + "550" + ChatColor.GREEN + " E-Cash"}).setNBTString("retrainingBook", "true").setNBTInt("eCash", 550).build());
+
+        inventory.addItem(new ItemBuilder().setItem(new ItemStack(Material.FIREWORK), ChatColor.GOLD + "Global Messenger", new String[]{
+                ChatColor.GOLD + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY + "Sends a message to all players on " + ChatColor.UNDERLINE + "ALL SHARDS.",
+                ChatColor.GRAY + "Permanent Untradeable",
+                ChatColor.WHITE + "200" + ChatColor.GREEN + " E-Cash"}).setNBTString("globalMessenger", "true").setNBTInt("eCash", 200).build());
 
         player.openInventory(inventory);
     }

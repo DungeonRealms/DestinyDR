@@ -1644,6 +1644,20 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
                     }
                 }
+                if (nmsStack.getTag().hasKey("globalMessenger")) {
+                    eCashCost = nmsStack.getTag().getInt("eCash");
+                    if (player.getInventory().firstEmpty() != -1) {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                            player.sendMessage(ChatColor.GREEN + "You have purchased a global messenger.");
+                            player.getInventory().addItem(ItemManager.createGlobalMessenger());
+                            player.closeInventory();
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
+                    }
+                }
                 break;
         }
     }

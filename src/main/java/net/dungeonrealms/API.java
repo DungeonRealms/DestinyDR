@@ -1,5 +1,7 @@
 package net.dungeonrealms;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -829,10 +831,15 @@ public class API {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
         }
 
-        //
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), false);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("IP");
+
+        player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+
         Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);

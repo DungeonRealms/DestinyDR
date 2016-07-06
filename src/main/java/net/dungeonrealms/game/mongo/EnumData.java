@@ -13,6 +13,7 @@ public enum EnumData {
     FREE_ECASH("info.freeEcash"),
     LAST_SHARD_TRANSFER("info.lastShardTransfer"),
     LEVEL("info.netLevel"),
+    IP_ADDRESS("info.ipAddress"),
     IS_PLAYING("info.isPlaying"),
     IS_SWITCHING_SHARDS("info.isSwitchingShards"),
     EXPERIENCE("info.experience"),
