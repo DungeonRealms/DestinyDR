@@ -1342,7 +1342,7 @@ public class InventoryListener implements Listener {
 
                                 }
                             }, thing -> {
-                                thing.sendMessage(ChatColor.RED + "CUSTOM STAT - CANCELLED");
+                                 thing.sendMessage(ChatColor.RED + "CUSTOM STAT - CANCELLED");
                                 stats.resetTemp();
                             });
 
