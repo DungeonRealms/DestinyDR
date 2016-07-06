@@ -893,8 +893,11 @@ public class API {
         }
 
         if (Rank.isGM(player)) {
+            HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);
             HealthHandler.getInstance().setPlayerHPLive(player, 10000);
-            gp.setInvulnerable(true);
+
+            //TODO: Re-Add this whenever we have a way to toggle it.
+            //gp.setInvulnerable(true);
             player.sendMessage(new String[]{
                     "",
                     ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",

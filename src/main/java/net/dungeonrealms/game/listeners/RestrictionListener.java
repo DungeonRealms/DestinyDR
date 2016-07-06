@@ -18,12 +18,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.projectiles.ProjectileSource;
 
 /**
  * Created by Kieran Quigley (Proxying) on 16-Jun-16.
@@ -150,21 +148,6 @@ public class RestrictionListener implements Listener {
                 checkPlayersArmorIsValid(event.getPlayer());
             }
         }, 150L);
-    }
-
-    /**
-     * Prevents players from launching vanilla projectiles.
-     *
-     * @param event
-     */
-    @EventHandler
-    public void onPlayerLaunchVanillaProjectile(ProjectileLaunchEvent event) {
-        ProjectileSource shooter = event.getEntity().getShooter();
-        if (!(shooter instanceof Player)) return;
-        if (!(event.getEntity().hasMetadata("drProjectile"))) {
-            event.setCancelled(true);
-            ((Player) shooter).updateInventory();
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

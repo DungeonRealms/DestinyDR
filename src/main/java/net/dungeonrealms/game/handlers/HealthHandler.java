@@ -27,10 +27,7 @@ import org.bukkit.EntityEffect;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -202,8 +199,11 @@ public class HealthHandler implements GenericMechanic {
      * @param hp
      * @since 1.0
      */
+    /*
+     && !Rank.isGM(player) MOVE TO ITS OWN METHOD. No need to call for every player and waste resources so GMs can set their HP easier.
+     */
     public void setPlayerHPLive(Player player, int hp) {
-        if (player.hasMetadata("maxHP") && hp > player.getMetadata("maxHP").get(0).asInt() && !Rank.isGM(player)) {
+        if (player.hasMetadata("maxHP") && hp > player.getMetadata("maxHP").get(0).asInt()) {
             player.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), player.getMetadata("maxHP").get(0).asInt()));
             return;
         }
@@ -299,13 +299,8 @@ public class HealthHandler implements GenericMechanic {
             if (API.getGamePlayer(player) == null || !API.getGamePlayer(player).isAttributesLoaded()) {
                 continue;
             }
-            //Check their Max HP from wherever we decide to store it.
-            //TODO: Checks for Templar.
             double currentHP = getPlayerHPLive(player);
             double amountToHealPlayer = getPlayerHPRegenLive(player);
-            GamePlayer gp = API.getGamePlayer(player);
-
-            if (gp == null) return;
 
             double maxHP = getPlayerMaxHPLive(player);
             if (currentHP + 1 > maxHP) {
@@ -426,8 +421,7 @@ public class HealthHandler implements GenericMechanic {
                 } else {
                     newMonsterHP = entity.getMaxHealth();
                 }
-            }
-            if (newMonsterHP < 1) {
+            } else if (newMonsterHP < 1) {
                 newMonsterHP = 1;
             }
             entity.setHealth((int) newMonsterHP);
@@ -457,33 +451,28 @@ public class HealthHandler implements GenericMechanic {
 
         LivingEntity leAttacker = null;
         if (damager != null) {
-            if (damager instanceof CraftLivingEntity) {
+            if (damager instanceof Player) {
+                leAttacker = (LivingEntity) damager;
+            } else if (damager instanceof CraftLivingEntity) {
                 leAttacker = (LivingEntity) damager;
             } else if (damager instanceof Projectile) {
                 leAttacker = (LivingEntity) ((Projectile) damager).getShooter();
             }
-        }
-
-        if (damager instanceof Player) {
-            leAttacker = (LivingEntity) damager;
-        }
-        if (leAttacker != null) {
             CombatLog.addToCombat(player);
         }
 
-        if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
-            DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
-            offer.endDuel((Player) leAttacker, player);
-            return;
-        }
-
         if (leAttacker instanceof Player) {
+            if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
+                DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
+                offer.endDuel((Player) leAttacker, player);
+                return;
+            }
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
                 if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                     KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
                 }
                 if (newHP <= 0 && API.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
-                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
+                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
                         newHP = 1;
                         leAttacker.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
                         player.sendMessage(ChatColor.YELLOW + leAttacker.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
@@ -555,8 +544,6 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
-        player.playEffect(EntityEffect.HURT);
-
         if (newHP <= 0) {
             if (handlePlayerDeath(player, leAttacker)) return;
         }
@@ -571,7 +558,7 @@ public class HealthHandler implements GenericMechanic {
             convHPToDisplay = 20;
         }
         player.setHealth(convHPToDisplay);
-        if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
+        if (leAttacker != null && leAttacker.getType() != EntityType.PLAYER) {
             Entities.MONSTER_LAST_ATTACK.put(leAttacker, 15);
             if (!Entities.MONSTERS_LEASHED.contains(leAttacker)) {
                 Entities.MONSTERS_LEASHED.add(leAttacker);
@@ -834,26 +821,23 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (attacker != null) {
-            if (entity != null) {
-                setMonsterHPLive(entity, (int) newHP);
-                double monsterHPPercent = (newHP / maxHP);
-                double newMonsterHPToDisplay = monsterHPPercent * entity.getMaxHealth();
-                int convHPToDisplay = (int) newMonsterHPToDisplay;
-                if (convHPToDisplay <= 1) {
-                    convHPToDisplay = 1;
-                }
-                if (convHPToDisplay > (int) entity.getMaxHealth()) {
-                    convHPToDisplay = (int) entity.getMaxHealth();
-                }
-                if (entity.hasMetadata("type") && entity.hasMetadata("level") && entity.hasMetadata("tier")) {
-                    int tier = entity.getMetadata("tier").get(0).asInt();
-                    boolean elite = entity.hasMetadata("elite");
-                    entity.setCustomName(Entities.getInstance().generateOverheadBar(entity, newHP, maxHP, tier, elite));
-                    entity.setCustomNameVisible(true);
-                    entity.setHealth(convHPToDisplay);
-                    if (!Entities.MONSTERS_LEASHED.contains(entity)) {
-                        Entities.MONSTERS_LEASHED.add(entity);
-                    }
+            setMonsterHPLive(entity, (int) newHP);
+            double monsterHPPercent = (newHP / maxHP);
+            double newMonsterHPToDisplay = monsterHPPercent * entity.getMaxHealth();
+            int convHPToDisplay = (int) newMonsterHPToDisplay;
+            if (convHPToDisplay <= 1) {
+                convHPToDisplay = 1;
+            } else if (convHPToDisplay > (int) entity.getMaxHealth()) {
+                convHPToDisplay = (int) entity.getMaxHealth();
+            }
+            if (entity.hasMetadata("type") && entity.hasMetadata("level") && entity.hasMetadata("tier")) {
+                int tier = entity.getMetadata("tier").get(0).asInt();
+                boolean elite = entity.hasMetadata("elite");
+                entity.setCustomName(Entities.getInstance().generateOverheadBar(entity, newHP, maxHP, tier, elite));
+                entity.setCustomNameVisible(true);
+                entity.setHealth(convHPToDisplay);
+                if (!Entities.MONSTERS_LEASHED.contains(entity)) {
+                    Entities.MONSTERS_LEASHED.add(entity);
                 }
             }
         }

@@ -276,8 +276,9 @@ public class  GuildDatabase implements GuildDatabaseAPI {
 
     public boolean areInSameGuild(UUID uuid1, UUID uuid2) {
         String p1Guild = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid1);
+        if (p1Guild.equals("")) return false;
         String p2Guild = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid2);
-        return !(p1Guild.equals("") || p2Guild.equals("")) && p1Guild.equals(p2Guild);
+        return !(p2Guild.equals("")) && p1Guild.equals(p2Guild);
     }
 
 

@@ -178,7 +178,7 @@ public class PlayerStats {
     ItemStack loadVitItem() {
         boolean spent = tempvitPoints > 0;
 
-        return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Vitality", new String[]{ChatColor.GRAY + "Adds health, hp regen, ", ChatColor.GRAY + " and ", ChatColor.GRAY + "sword damage.",
+        return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Vitality", new String[]{ChatColor.GRAY + "Adds health, hp regen, ", ChatColor.GRAY + "elemental resistance and ", ChatColor.GRAY + "sword damage.",
                 ChatColor.AQUA + "Allocated Points: " + vitPoints + (spent ? ChatColor.GREEN + " [+" + tempvitPoints + "]" : ""),
                 ChatColor.RED + "Free Points: " + tempFreePoints});
     }
@@ -218,7 +218,13 @@ public class PlayerStats {
 
         return ItemManager.createItem(Material.ENCHANTED_BOOK, ChatColor.YELLOW + "Stat Point Info", new String[]{ChatColor.LIGHT_PURPLE + "Points to Allocate: " + tempFreePoints,
                 ChatColor.AQUA + "LCLICK" + ChatColor.GRAY + " to allocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "1" + ChatColor.GRAY + " point",
-                ChatColor.AQUA + "RCLICK" + ChatColor.GRAY + " to unallocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "1" + ChatColor.GRAY + " point"});
+                ChatColor.AQUA + "RCLICK" + ChatColor.GRAY + " to unallocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "1" + ChatColor.GRAY + " point",
+                ChatColor.AQUA + "S-LCLICK" + ChatColor.GRAY + " to allocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "3" + ChatColor.GRAY + " points",
+                ChatColor.AQUA + "S-RCLICK" + ChatColor.GRAY + " to unallocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "3" + ChatColor.GRAY + " points",
+                ChatColor.AQUA + "MCLICK" + ChatColor.GRAY + " to allocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "custom" + ChatColor.GRAY + " points",
+
+
+        });
     }
 
     ItemStack loadIntStatsItem() {
