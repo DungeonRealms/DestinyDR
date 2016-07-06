@@ -2,22 +2,16 @@ package net.dungeonrealms.game.listeners;
 
 
 import net.dungeonrealms.DungeonRealmsProxy;
-import net.dungeonrealms.game.handlers.FriendHandler;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.UUID;
 
 public class ProxyChannelListener implements Listener {
 
@@ -87,14 +81,9 @@ public class ProxyChannelListener implements Listener {
                 }
             }
             if (subChannel.equals("Friends")) {
-                Bukkit.broadcastMessage("FRIENDS PACKET");
                 String msg = in.readUTF();
                 if (msg.contains("join:")) {
-                    String[] content = msg.split(",");
-                    String uuid = content[1];
-                    String name = content[2];
-                    String shard = content[3];
-                    plugin.notifyFriends(UUID.fromString(uuid), name, shard);
+                    plugin.relayPacket("DungeonRealms", event.getData());
                 }
 
                 return;

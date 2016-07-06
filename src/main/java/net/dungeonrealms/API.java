@@ -841,12 +841,9 @@ public class API {
 
         player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
 
-
-        String shard = DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId()).toString().toUpperCase();
-
         ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
         friendsOut.writeUTF("Friends");
-        friendsOut.writeUTF("join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + shard);
+        friendsOut.writeUTF("join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().bungeeName.toUpperCase());
         player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
 
 

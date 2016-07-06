@@ -18,6 +18,7 @@ import net.dungeonrealms.game.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.ui.item.GUIButton;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,6 +28,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -74,17 +76,21 @@ public class NetworkAPI implements PluginMessageListener {
                 }
 
                 if (subChannel.equals("Friends")) {
-                    Bukkit.broadcastMessage("FRIENDS PACKET");
                     String msg = in.readUTF();
                     if (msg.contains("join:")) {
                         String[] content = msg.split(",");
                         String uuid = content[1];
                         String name = content[2];
                         String shard = content[3];
+                        ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, UUID.fromString(uuid));
+                        for (String uuidString : list) {
+                            UUID friendUuid = UUID.fromString(uuidString);
+                            Player friend = Bukkit.getPlayer(friendUuid);
 
-                        Bukkit.getOnlinePlayers().stream().filter(p -> FriendHandler.getInstance().areFriends(p, UUID.fromString(uuid))).forEach(p -> {
-                            p.sendMessage(ChatColor.GREEN + name + ChatColor.YELLOW + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard);
-                        });
+                            if (friend != null && !friendUuid.toString().equalsIgnoreCase(uuid)) {
+                                friend.sendMessage(ChatColor.GREEN + name + ChatColor.YELLOW + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard);
+                            }
+                        }
                     }
 
                     return;

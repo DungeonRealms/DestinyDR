@@ -178,19 +178,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         }
     }
 
-    public void notifyFriends(UUID login, String name, String shardJoined) {
-        ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, login);
-        for (String uuidString : list) {
-            UUID uuid = UUID.fromString(uuidString);
-            ProxiedPlayer player = getProxy().getPlayer(uuid);
-
-            if (player != null) {
-                player.sendMessage(ChatColor.GREEN + name + ChatColor.YELLOW + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shardJoined);
-            }
-        }
-    }
-
-
     public void relayPacket(String channel, byte[] data) {
         for (ServerInfo server : ProxyServer.getInstance().getServers().values())
             server.sendData(channel, data);
