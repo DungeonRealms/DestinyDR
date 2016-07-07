@@ -7,6 +7,8 @@ import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -203,6 +205,8 @@ public class DatabaseAPI {
                 return ((Document) doc.get("info")).get("shopOpen", Boolean.class);
             case ARMOR:
                 return ((Document) doc.get("inventory")).get("armor", ArrayList.class);
+            case ITEMUIDS:
+                return ((Document) doc.get("inventory")).get("itemuids", HashSet.class);
             /*
             Toggles
              */
@@ -446,7 +450,8 @@ public class DatabaseAPI {
                                         .append("storage", "")
                                         .append("level", 1)
                                         .append("player", "")
-                                        .append("armor", new ArrayList<String>()))
+                                        .append("armor", new ArrayList<String>())
+                                        .append("itemuids", new HashSet<String>()))
                         .append("stats",
                                 new Document("player_kills", 0)
                                         .append("lawful_kills", 0)

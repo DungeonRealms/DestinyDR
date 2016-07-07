@@ -42,6 +42,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.updater.UpdateTask;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
@@ -167,7 +168,7 @@ public class DungeonRealms extends JavaPlugin {
         Database.getInstance().startInitialization();
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
-        //AntiCheat.getInstance().startInitialization();
+        AntiCheat.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
         ItemGenerator.loadModifiers();
@@ -239,8 +240,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new BlockListener(), this);
             pm.registerEvents(new BankListener(), this);
             pm.registerEvents(new EnergyListener(), this);
-            //pm.registerEvents(new AntiCheatListener(), this);
-            //TODO: Fix.
+//            pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new ShopListener(), this);
             pm.registerEvents(new AchievementManager(), this);
             hs = new HearthStone();
@@ -262,8 +262,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new InventoryListener(), this);
             pm.registerEvents(new BlockListener(), this);
             pm.registerEvents(new EnergyListener(), this);
-            //pm.registerEvents(new AntiCheatListener(), this);
-            //TODO: Fix.
+//            pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new AchievementManager(), this);
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new RestrictionListener(), this);

@@ -29,6 +29,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.rank.Subscription;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -641,6 +642,8 @@ public class API {
             return;
         }
 
+        AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
+
         GamePlayer gp = new GamePlayer(player);
 
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
@@ -990,6 +993,7 @@ public class API {
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false);
                         String inventory = ItemSerialization.toString(inv);
                         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ITEMUIDS, inventory, false);
                         if (API.GAMEPLAYERS.size() > 0) {
                             GamePlayer gp = API.getGamePlayer(player);
                             if (gp != null) {
