@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.listeners;
+package net.dungeonrealms.game.listener.inventory;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;

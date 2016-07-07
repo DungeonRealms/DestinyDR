@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.listeners;
+package net.dungeonrealms.game.listener;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import com.vexsoftware.votifier.model.VotifierEvent;

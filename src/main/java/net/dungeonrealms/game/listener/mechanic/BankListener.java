@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.listeners;
+package net.dungeonrealms.game.listener.mechanic;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
