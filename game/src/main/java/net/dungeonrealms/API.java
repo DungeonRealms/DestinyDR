@@ -1353,8 +1353,9 @@ public class API {
         ItemStack[] armorSet = ent.getEquipment().getArmorContents().clone();
 
         // check if we have a skull
-        if (armorSet[3].getType() == Material.SKULL_ITEM) {
-            Item.ItemTier tier = Item.ItemTier.getByTier(ent.getMetadata("tier").get(0).asInt());
+        int intTier = ent.getMetadata("tier").get(0).asInt();
+        Item.ItemTier tier = Item.ItemTier.getByTier(intTier);
+        if (armorSet[3].getType() == Material.SKULL_ITEM && (intTier >= 3 || new Random().nextInt(10) <= (6 + intTier))) {
             // if we have a skull we need to generate a helmet so mob stats are calculated correctly
             armorSet[3] = new ItemGenerator().setTier(tier).setRarity(API.getItemRarity(ent.hasMetadata("elite"))).generateItem().getItem();
         }
