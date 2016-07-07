@@ -622,7 +622,7 @@ public class PlayerMenus {
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Check your progress.",
                 "",
-                ChatColor.WHITE + "Use: View achievements."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View achievements."
         }));
         inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GOLD + "Toggles", new String[]{
                 "",
