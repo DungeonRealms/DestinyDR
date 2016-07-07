@@ -1,8 +1,11 @@
-package net.dungeonrealms.game.listeners;
+package net.dungeonrealms.game.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.*;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
@@ -25,9 +28,7 @@ public class TabCompleteCommands implements Listener {
 
                     PacketContainer packet = event.getPacket();
                     String message = (packet.getSpecificModifier(String.class).read(0)).toLowerCase();
-                    if ((message.startsWith("/"))) {
-                        event.setCancelled(true);
-                    }
+                    if ((message.startsWith("/") || message.startsWith("@"))) event.setCancelled(true);
                 }
             }
         };

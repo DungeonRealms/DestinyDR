@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.listeners;
+package net.dungeonrealms.game.listener.inventory;
 
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;

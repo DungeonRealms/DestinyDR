@@ -15,7 +15,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.listeners.RealmListener;
+import net.dungeonrealms.game.listener.world.RealmListener;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;

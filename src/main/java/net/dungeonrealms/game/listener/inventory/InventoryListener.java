@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.listeners;
+package net.dungeonrealms.game.listener.inventory;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.google.common.collect.Lists;

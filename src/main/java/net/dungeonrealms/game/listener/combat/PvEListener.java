@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.listeners;
+package net.dungeonrealms.game.listener.combat;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.EnergyHandler;

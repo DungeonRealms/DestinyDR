@@ -1,15 +1,26 @@
-package net.dungeonrealms.game.listeners;
+package net.dungeonrealms.game.listener.mechanic;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +33,10 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.Random;
 
 /**
  * Created by Kieran Quigley (Proxying) on 16-Jun-16.
@@ -220,5 +235,145 @@ public class RestrictionListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Checks if a player can be damaged and if they can damage.
+     *
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onAttemptAttackEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            if (event.getEntity() instanceof LivingEntity) {
+                if (!event.getEntity().hasMetadata("type")) return;
+            } else {
+                if (event.getEntity().hasMetadata("type")) {
+                    if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+                } else {
+                    return;
+                }
+            }
+        }
+        Entity damager = event.getDamager();
+        Entity receiver = event.getEntity();
+        boolean isAttackerPlayer = false;
+        boolean isDefenderPlayer = false;
+        Player pDamager = null;
+        Player pReceiver = null;
+
+        if (API.isPlayer(damager)) {
+            isAttackerPlayer = true;
+            pDamager = (Player) event.getDamager();
+        } else if ((damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Player && (DamageAPI.isStaffProjectile(damager) ||
+                DamageAPI.isBowProjectile(damager)))) {
+            isAttackerPlayer = true;
+            pDamager = (Player) ((Projectile) damager).getShooter();
+        }
+
+        if (API.isPlayer(receiver)) {
+            isDefenderPlayer = true;
+            pReceiver = (Player) event.getEntity();
+        }
+        if (!isAttackerPlayer && !isDefenderPlayer) {
+            return;
+        }
+
+        if (!isAttackerPlayer || !isDefenderPlayer) {
+            if (API.isInSafeRegion(damager.getLocation()) || API.isInSafeRegion(receiver.getLocation())) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+        if (isAttackerPlayer) {
+            if (pDamager.hasMetadata("last_Attack")) {
+                if (System.currentTimeMillis() - pDamager.getMetadata("last_Attack").get(0).asLong() < 80) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    pDamager.updateInventory();
+                    return;
+                }
+            }
+            pDamager.setMetadata("last_Attack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+            if (pDamager.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(pDamager) <= 0) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                pDamager.playSound(pDamager.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
+                pDamager.updateInventory();
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                return;
+            }
+        }
+
+        if (isDefenderPlayer) {
+            if (API.getGamePlayer(pReceiver).isInvulnerable() || !API.getGamePlayer(pReceiver).isTargettable()) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
+        }
+
+        if (isAttackerPlayer && isDefenderPlayer) {
+            if (API.isNonPvPRegion(pDamager.getLocation()) || API.isNonPvPRegion(pReceiver.getLocation())) {
+                if (DuelingMechanics.isDueling(pDamager.getUniqueId())) { //TODO: Check if you can attack players that are dueling.
+                    if (DuelingMechanics.isDueling(pReceiver.getUniqueId())) {
+                        if (!DuelingMechanics.isDuelPartner(pDamager.getUniqueId(), pReceiver.getUniqueId())) {
+                            event.setDamage(0);
+                            event.setCancelled(true);
+                            pDamager.updateInventory();
+                            pReceiver.updateInventory();
+                        }
+                    }
+                } else {
+                    event.setDamage(0);
+                    event.setCancelled(true);
+                    pDamager.updateInventory();
+                    pReceiver.updateInventory();
+                }
+                return;
+            }
+
+            if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, pDamager.getUniqueId()).toString())) {
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, pDamager.getUniqueId()).toString())) {
+                    pDamager.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP disabled. You currently cannot attack players.");
+                }
+                event.setCancelled(true);
+                event.setDamage(0);
+                pDamager.updateInventory();
+                pReceiver.updateInventory();
+                return;
+            }
+
+            if (ProtectionHandler.getInstance().hasNewbieProtection(pReceiver)) {
+                pDamager.sendMessage(net.md_5.bungee.api.ChatColor.RED + "The player you are attempting to attack has newbie protection! You cannot attack them.");
+                event.getEntity().sendMessage(net.md_5.bungee.api.ChatColor.GREEN + "Your " + net.md_5.bungee.api.ChatColor.UNDERLINE + "NEWBIE " + "PROTECTION" + net.md_5.bungee.api.ChatColor.GREEN + " has prevented " + pDamager.getName() +
+                        net.md_5.bungee.api.ChatColor.GREEN + " from attacking you!");
+                event.getEntity();
+                event.setCancelled(true);
+                event.setDamage(0);
+                pDamager.updateInventory();
+                pReceiver.updateInventory();
+                return;
+            }
+
+            if (Affair.getInstance().areInSameParty(pDamager, pReceiver)) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                pDamager.updateInventory();
+                pReceiver.updateInventory();
+                return;
+            }
+
+            if (GuildDatabaseAPI.get().areInSameGuild(pDamager.getUniqueId(), pReceiver.getUniqueId())) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                pDamager.updateInventory();
+                pReceiver.updateInventory();
+            }
+        }
+    }
     //TODO: Prevent players entering realms
 }
