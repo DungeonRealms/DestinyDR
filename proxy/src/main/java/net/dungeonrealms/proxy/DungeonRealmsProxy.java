@@ -118,7 +118,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
             event.getPlayer().sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Finding an available shard for you...");
 
             while (optimalShardFinder.hasNext()) {
-
                 ServerInfo target = optimalShardFinder.next();
 
                 try {

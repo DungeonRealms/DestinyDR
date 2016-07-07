@@ -50,12 +50,6 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>net.dungeonrealms</groupId>
-      <artifactId>DungonRealms-network</artifactId>
-      <version>5.0-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot</artifactId>
       <version>1.9.4-R0.1-SNAPSHOT</version>
