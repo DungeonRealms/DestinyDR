@@ -1,10 +1,14 @@
 package net.dungeonrealms.game.handlers;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -113,9 +117,23 @@ public class FriendHandler {
         //NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
     }
 
+    /**
+     * Send a friend request over network, NO CHECKS.
+     */
+    public void sendRequestOverNetwork(Player player, String uuid) {
+
+        ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
+        friendsOut.writeUTF("Friends");
+        friendsOut.writeUTF("request:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid);
+        player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
+        player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
+        DatabaseAPI.getInstance().update(UUID.fromString(uuid), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, uuid + "," + (System.currentTimeMillis() / 1000L), true);
+
+        //NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
+    }
+
 
     /**
-     *
      * @param uuid
      * @return list off UUIDs as String.
      */
@@ -150,4 +168,19 @@ public class FriendHandler {
         return pendingRequests >= 1;
     }
 
+    public boolean isPendingFrom(UUID uuid, String name) {
+        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, uuid);
+        String friendUUID = DatabaseAPI.getInstance().getUUIDFromName(name);
+        return pendingRequest.contains(friendUUID);
+
+    }
+
+    public void acceptFriend(UUID uniqueId, String name) {
+        UUID friend = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
+        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, friend, false);
+        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
+        Bukkit.getPlayer(uniqueId).sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
+        DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, uniqueId.toString(), true);
+
+    }
 }

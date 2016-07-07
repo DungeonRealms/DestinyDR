@@ -5,6 +5,8 @@ import lombok.Getter;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.dungeonhelpers.*;
+import net.dungeonrealms.game.commands.friends.AcceptCommand;
+import net.dungeonrealms.game.commands.friends.AddCommand;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.*;
@@ -398,6 +400,13 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm."));
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server."));
             cm.registerCommand(new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcasts a global message across all shards!"));
+
+            //FRIENDS
+            cm.registerCommand(new AddCommand("add", "/<command> [args]", "Send Friend request!", Arrays.asList("friend")));
+            cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Arrays.asList("acc")));
+            cm.registerCommand(new AcceptCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
+
+
         }
 
         // Commands exclusive to support agents on their special server.
