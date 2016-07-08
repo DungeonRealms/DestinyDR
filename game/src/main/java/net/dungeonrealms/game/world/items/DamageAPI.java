@@ -1064,26 +1064,32 @@ public class DamageAPI {
         if (!(target instanceof Player)) return;
         org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
         Projectile projectile;
-        switch (API.getMobElement(livingEntity)) {
-            case "fire":
-                projectile = livingEntity.launchProjectile(TippedArrow.class);
-                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 0, 0),
-                        true);
-            case "ice":
-                projectile = livingEntity.launchProjectile(TippedArrow.class);
-                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 0, 0),
-                        true);
-            case "poison":
-                projectile = livingEntity.launchProjectile(TippedArrow.class);
-                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0), true);
-                break;
-            case "pure":
-                projectile = livingEntity.launchProjectile(TippedArrow.class);
-                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WITHER, 0, 0), true);
-                break;
-            default:
-                projectile = livingEntity.launchProjectile(Arrow.class);
-                break;
+        if (API.isMobElemental(livingEntity)) {
+            switch (API.getMobElement(livingEntity)) {
+                case "fire":
+                    projectile = livingEntity.launchProjectile(TippedArrow.class);
+                    ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 0, 0),
+                            true);
+                case "ice":
+                    projectile = livingEntity.launchProjectile(TippedArrow.class);
+                    ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 0, 0),
+                            true);
+                case "poison":
+                    projectile = livingEntity.launchProjectile(TippedArrow.class);
+                    ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0), true);
+
+                    break;
+                case "pure":
+                    projectile = livingEntity.launchProjectile(TippedArrow.class);
+                    ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WITHER, 0, 0), true);
+                    break;
+                default:
+                    projectile = livingEntity.launchProjectile(Arrow.class);
+                    break;
+            }
+        }
+        else {
+            projectile = livingEntity.launchProjectile(Arrow.class);
         }
         if (projectile == null) {
             return;
