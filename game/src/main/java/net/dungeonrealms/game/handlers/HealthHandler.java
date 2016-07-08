@@ -756,9 +756,30 @@ public class HealthHandler implements GenericMechanic {
         else if (API.isPlayer(entity))
             totalHP += 50 + API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, (Player) entity);
 
-        if (entity.hasMetadata("dungeon")) {
-            totalHP *= 2;
+        if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equals("hostile")) {
+            switch (entity.getMetadata("tier").get(0).asInt()) {
+                case 1:
+                    totalHP *= .9;
+                    break;
+                case 2:
+                    totalHP *= 1.1;
+                    break;
+                case 3:
+                    totalHP *= 1.3;
+                    break;
+                case 4:
+                    totalHP *= 1.6;
+                    break;
+                case 5:
+                    totalHP *= 2;
+                    break;
+            }
         }
+
+        // commented out because dungeons already spawn with full unique
+        /*if (entity.hasMetadata("dungeon")) {
+            totalHP *= 2;
+        }*/
 
         if (entity.hasMetadata("elite")) {
             switch (entity.getMetadata("tier").get(0).asInt()) {
@@ -772,10 +793,10 @@ public class HealthHandler implements GenericMechanic {
                     totalHP *= 3.;
                     break;
                 case 4:
-                    totalHP *= 5.;
+                    totalHP *= 4.;
                     break;
                 case 5:
-                    totalHP *= 7.;
+                    totalHP *= 5.5;
                     break;
             }
         }

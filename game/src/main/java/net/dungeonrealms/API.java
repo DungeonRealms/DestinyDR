@@ -644,7 +644,8 @@ public class API {
             return;
         }
 
-        AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
+        // todo: finish anticheat system
+//        AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
 
         GamePlayer gp = new GamePlayer(player);
 
@@ -845,7 +846,7 @@ public class API {
 
         ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
         friendsOut.writeUTF("Friends");
-        friendsOut.writeUTF("join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().bungeeName.toUpperCase());
+        friendsOut.writeUTF("join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
         player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
 
 

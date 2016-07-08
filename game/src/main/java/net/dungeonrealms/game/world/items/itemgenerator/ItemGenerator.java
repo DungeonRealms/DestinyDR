@@ -124,6 +124,7 @@ public class ItemGenerator {
             tier = Item.ItemTier.getByTier(tag.getInt("itemTier"));
             type = Item.ItemType.getById(tag.getInt("itemType"));
             rarity = Item.ItemRarity.getById(tag.getInt("itemRarity"));
+            this.isSoulbound = tag.getInt("soulbound") == 1;
         }
         
         // if no values given, generate a random item
@@ -438,6 +439,9 @@ public class ItemGenerator {
                 }
             }
         }
+
+        // retain soulbound name
+        if (isReroll && isSoulbound) name = origItem.getItemMeta().getDisplayName();
 
         if (isReroll && EnchantmentAPI.isItemProtected(origItem)) lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "PROTECTED");
 

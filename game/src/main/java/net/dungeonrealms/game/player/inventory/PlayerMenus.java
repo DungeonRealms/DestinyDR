@@ -38,7 +38,7 @@ public class PlayerMenus {
 
     public static void openFriendsMenu(Player player) {
         UUID uuid = player.getUniqueId();
-        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
 
         Inventory inv = Bukkit.createInventory(null, 54, "Friends");
 
@@ -48,8 +48,8 @@ public class PlayerMenus {
 
 
         int slot = 9;
-        for (String s : friendRequest) {
-            String name = API.getNameFromUUID(UUID.fromString(s));
+        for (String s : friends) {
+            String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(s));
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!"
             });
@@ -84,27 +84,19 @@ public class PlayerMenus {
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to view friends!"
         }));
 
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
-
         int slot = 9;
-        for (String s : friendRequest) {
-            String from = s.split(",")[0];
-            String name = API.getNameFromUUID(UUID.fromString(from));
-
-            long unix = Long.valueOf(s.split(",")[1]);
-            Date sentDate = new Date(unix * 1000);
-            String date = sdf.format(sentDate);
-
+        for (String from : friendRequest) {
+            if (from.contains(","))
+                from = from.split(",")[0];
+            String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(from));
             ItemStack stack = editItem(name, name, new String[]{
-                    ChatColor.GRAY + "Sent: " + date,
-                    "",
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to accept!",
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to deny!"
             });
 
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("info", new NBTTagString(s));
+            tag.set("info", new NBTTagString(from));
             nmsStack.setTag(tag);
 
             inv.setItem(slot, CraftItemStack.asBukkitCopy(nmsStack));
@@ -600,7 +592,7 @@ public class PlayerMenus {
         inv.setItem(16, editItem(new ItemStack(Material.LEASH), ChatColor.GOLD + "Storage Mule", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Inventory getting full on your travels?",
-				ChatColor.GRAY.toString() + ChatColor.ITALIC + "purchase a Mule from the Animal Tamer.",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "purchase a Mule from the Animal Tamer.",
                 "",
                 ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " Spawn Storage Mule.",
                 ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Mule Leash."
@@ -614,7 +606,7 @@ public class PlayerMenus {
         inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GOLD + "E-Cash Vendor", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "E-Cash is obtained by voting and online store purchase.",
-				ChatColor.GRAY + "http://dungeonrealms.net/shop",
+                ChatColor.GRAY + "http://dungeonrealms.net/shop",
                 "",
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open the E-Cash Vendor."
         }));

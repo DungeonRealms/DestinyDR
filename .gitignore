@@ -17,3 +17,7 @@ tools/pushBuildToServer/WinSCP.map
 tools/pushBuildToServer/pushUS1.bat
 tools/pushBuildToServer/pushUS2.bat
 tools/pushBuildToServer/pushUS3.bat
+/network/target
+/game/target
+/proxy/target
+/common/target

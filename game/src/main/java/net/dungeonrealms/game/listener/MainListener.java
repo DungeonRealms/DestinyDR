@@ -789,7 +789,8 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onCraft(CraftItemEvent event) {
-        event.setCancelled(true);
+        if (event.getWhoClicked().getLocation().getWorld().equals(Bukkit.getWorlds().get(0)))
+            event.setCancelled(true);
     }
 
 
@@ -833,7 +834,7 @@ public class MainListener implements Listener {
      * @param event
      * @since 1.0
      */
-   @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerHitMapItemFrame(EntityDamageByEntityEvent event) {
         if (event.getEntity().getType() == EntityType.ITEM_FRAME) {
             ItemFrame is = (ItemFrame) event.getEntity();

@@ -20,6 +20,7 @@ import net.dungeonrealms.network.BungeeServerInfo;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -86,9 +87,36 @@ public class NetworkAPI implements PluginMessageListener {
                             Player friend = Bukkit.getPlayer(friendUuid);
 
                             if (friend != null && !friendUuid.toString().equalsIgnoreCase(uuid)) {
-                                friend.sendMessage(ChatColor.GREEN + name + ChatColor.YELLOW + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard);
+                                friend.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
+                                friend.playSound(friend.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                             }
                         }
+                    } else if (msg.contains("request:")) {
+                        String[] content = msg.split(",");
+                        String senderUuid = content[1];
+                        String senderName = content[2];
+                        String friendUUID = content[3];
+                        UUID uuid = UUID.fromString(friendUUID);
+                        if (Bukkit.getPlayer(uuid) != null) {
+                            Player friend = Bukkit.getPlayer(uuid);
+                            DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, senderUuid, true);
+                            friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " sent you a friend request.");
+                            friend.sendMessage(ChatColor.GREEN + "Use /accept (player) to accept.");
+
+                        }
+                    } else if (msg.contains("accept:")) {
+                        String[] content = msg.split(",");
+                        String senderUuid = content[1];
+                        String senderName = content[2];
+                        String friendUUID = content[3];
+                        UUID uuid = UUID.fromString(friendUUID);
+                        if (Bukkit.getPlayer(uuid) != null) {
+                            Player friend = Bukkit.getPlayer(uuid);
+                            DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, senderUuid, true);
+                            DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, senderUuid, true);
+                            friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " accepted your friend request.");
+                        }
+
                     }
 
                     return;

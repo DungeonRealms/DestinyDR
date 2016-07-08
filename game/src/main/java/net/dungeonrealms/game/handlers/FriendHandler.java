@@ -1,10 +1,14 @@
 package net.dungeonrealms.game.handlers;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -48,10 +52,11 @@ public class FriendHandler {
             case RIGHT:
                 //Remove Pending request
                 player.closeInventory();
+                DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true);
                 player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + " from your friends list!");
                 PlayerMenus.openFriendInventory(player);
-                DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.toString(), true);
+
                 break;
         }
     }
@@ -83,7 +88,16 @@ public class FriendHandler {
                 player.closeInventory();
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), false);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
-                player.sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + ".");
+                String name = itemStack.getItemMeta().getDisplayName().split("'")[0];
+                player.sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
+
+                UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
+                ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
+                friendsOut.writeUTF("Friends");
+                friendsOut.writeUTF("accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
+                player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
+                FriendHandler.getInstance().acceptFriend(player.getUniqueId(), uuid, name);
+
                 DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId().toString(), true);
                 break;
         }
@@ -106,16 +120,28 @@ public class FriendHandler {
             return;
         }
 
-        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId() + "," + (System.currentTimeMillis() / 1000L), true);
+        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId().toString(), true);
         player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
 
         friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + player.getName() + ChatColor.GREEN + " sent you a friend request.");
-        //NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
+        friend.sendMessage(ChatColor.GREEN + "Use /accept (player) to accept.");
+
+    }
+
+    /**
+     * Send a friend request over network, NO CHECKS.
+     */
+    public void sendRequestOverNetwork(Player player, String uuid) {
+
+        ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
+        friendsOut.writeUTF("Friends");
+        friendsOut.writeUTF("request:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid);
+        player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
+        player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
     }
 
 
     /**
-     *
      * @param uuid
      * @return list off UUIDs as String.
      */
@@ -150,4 +176,20 @@ public class FriendHandler {
         return pendingRequests >= 1;
     }
 
+    public boolean isPendingFrom(UUID uuid, String name) {
+        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, uuid);
+        String friendUUID = DatabaseAPI.getInstance().getUUIDFromName(name);
+        long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(friendUUID.toString())).count();
+
+        return pendingRequests >= 1;
+
+    }
+
+    public void acceptFriend(UUID uniqueId, UUID friend, String name) {
+
+        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, friend.toString(), true);
+        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
+        Bukkit.getPlayer(uniqueId).sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
+
+    }
 }

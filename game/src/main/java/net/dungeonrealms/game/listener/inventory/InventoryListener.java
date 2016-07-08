@@ -43,6 +43,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -230,6 +231,23 @@ public class InventoryListener implements Listener {
                     "cannot" + ChatColor.RED + " switch armor right now.");
             event.setCancelled(true);
             player.updateInventory();
+        }
+    }
+
+    @EventHandler
+    public void playerWeaponSwitch(PlayerItemHeldEvent event) {
+        Player p = event.getPlayer();
+        ItemStack i = p.getInventory().getItem(event.getNewSlot());
+
+        if (API.isWeapon(i)) {
+            if (API.getItemTier(i).getRangeValues()[0] > API.getGamePlayer(p).getLevel()) {
+                event.setCancelled(true);
+                p.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + "cannot" + ChatColor.RED + " equip this " +
+                        "item! You must be level: " + ChatColor.BOLD + API.getItemTier(i).getRangeValues()[0]);
+                p.updateInventory();
+                return;
+            }
+            p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
         }
     }
 
@@ -514,11 +532,6 @@ public class InventoryListener implements Listener {
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
         Player player = (Player) event.getWhoClicked();
-        if (API.isItemSoulbound(slotItem)) {
-            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " Orb a Soulbound item.");
-            event.setCancelled(true);
-            return;
-        }
         GamePlayer gp = API.getGamePlayer(player);
         if (gp == null) {
             return;
