@@ -374,7 +374,6 @@ public class RepairAPI {
      * @since 1.0
      */
     public static boolean isItemArmorOrWeapon(ItemStack itemStack) {
-
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
             return false;

@@ -173,30 +173,30 @@ public class WeaponModifiers {
 
 			setOrderPriority(0);
 
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, Item.ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 3, 7)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, Item.ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 8, 10, 14)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, Item.ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 15, 17, 21)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_1, Item.ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 22, 24, 28)));
+			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 2, 4, 10)));
+			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 6, 10, 16)));
+			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 12, 18, 46)));
+			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 18, 30, 48)));
 
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, Item.ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 35, 39, 46)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, Item.ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 47, 51, 58)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, Item.ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 59, 63, 70)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, Item.ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 71, 75, 82)));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 20, 24, 34)));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 32, 36, 48)));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 40, 60, 130)));
+			addCondition(new ModifierCondition(ItemTier.TIER_2, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 44, 70, 140)));
 
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, Item.ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 95, 101, 114)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, Item.ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 115, 121, 134)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, Item.ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 135, 141, 154)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_3, Item.ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 155, 161, 174)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 50, 60, 90)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 60, 70, 140)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 100, 180, 300)));
+			addCondition(new ModifierCondition(ItemTier.TIER_3, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 120, 200, 320)));
 
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, Item.ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 190, 199, 224)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, Item.ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 225, 234, 259)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, Item.ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 260, 269, 294)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, Item.ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 295, 304, 329)));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 130, 160, 250)));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 140, 170, 310)));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 180, 220, 440)));
+			addCondition(new ModifierCondition(ItemTier.TIER_4, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 220, 300, 480)));
 
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, Item.ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 350, 365, 400)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, Item.ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 401, 416, 451)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, Item.ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 452, 467, 502)));
-			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, Item.ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 503, 518, 553)));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 260, 280, 420)));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 300, 320, 520)));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.RARE, new ModifierRange(ModifierType.TRIPLE, 220, 460, 814)));
+			addCondition(new ModifierCondition(ItemTier.TIER_5, ItemRarity.UNIQUE, new ModifierRange(ModifierType.TRIPLE, 380, 500, 900)));
 	    }
 
 	}
