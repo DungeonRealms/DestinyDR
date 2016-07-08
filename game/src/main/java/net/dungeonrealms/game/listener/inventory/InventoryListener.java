@@ -238,6 +238,7 @@ public class InventoryListener implements Listener {
     public void playerWeaponSwitch(PlayerItemHeldEvent event) {
         Player p = event.getPlayer();
         ItemStack i = p.getInventory().getItem(event.getNewSlot());
+        if (i == null || i.getType() == Material.AIR) return;
 
         if (API.isWeapon(i)) {
             if (API.getItemTier(i).getRangeValues()[0] > API.getGamePlayer(p).getLevel()) {
