@@ -644,7 +644,8 @@ public class API {
             return;
         }
 
-        AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
+        // todo: finish anticheat system
+//        AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
 
         GamePlayer gp = new GamePlayer(player);
 
