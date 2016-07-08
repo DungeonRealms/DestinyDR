@@ -22,9 +22,11 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +40,8 @@ public class SpawningMechanics implements GenericMechanic {
     public static ArrayList<BaseMobSpawner> BanditTroveSpawns = new ArrayList<>();
     private static SpawningMechanics instance;
 
+    // CUSTOM_MOB_NAME, LIST OF DROP TABLE RULES (loot mechanics)
+    public static Map<String, List<String>> customMobLootTables = new HashMap<>();
 
     private static void initAllSpawners() {
         ALLSPAWNERS.forEach(BaseMobSpawner::init);
@@ -153,6 +157,32 @@ public class SpawningMechanics implements GenericMechanic {
             entity.remove();
         });
         Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity -> ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f));
+    }
+
+    public void loadCustomMobDrops() {
+        int count = 0;
+        try {
+            Utils.log.info("LOADING ALL DUNGEON REALMS CUSTOM MOB DROPS...");
+            for (File f : new File("plugins/DungeonRealms/custom_mobs").listFiles()) {
+                List<String> lmsg_template = new ArrayList<>();
+                String tn = f.getName();
+                if (tn.endsWith(".loot")) {
+                    BufferedReader reader = new BufferedReader(new FileReader(f));
+                    String line = "";
+                    while ((line = reader.readLine()) != null) {
+                        lmsg_template.add(line);
+                    }
+                    reader.close();
+                }
+                Utils.log.info(tn + " -> " + lmsg_template);
+                customMobLootTables.put(tn.replaceAll(".loot", ""), lmsg_template);
+                count++;
+            }
+
+            Utils.log.info(count + " CUSTOM MOB DROP profiles have been LOADED.");
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     public static void loadSpawner(String line) {
@@ -485,6 +515,7 @@ public class SpawningMechanics implements GenericMechanic {
     @Override
     public void startInitialization() {
         loadBaseSpawners();
+        loadCustomMobDrops();
     }
 
     @Override

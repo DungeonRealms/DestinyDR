@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -85,7 +86,15 @@ public interface DRMonster {
                 break;
         }
         if (ent.hasMetadata("namedElite")) {
-            chance /= 2;
+            for (String s : SpawningMechanics.customMobLootTables.get(ChatColor.stripColor(ent.getMetadata("namedElite").get(0).asString()))) {
+                String customItemName = s.substring(1, s.indexOf(":"));
+                int namedEliteChance = (int)Math.round(Double.parseDouble(s.substring(s.lastIndexOf('%') + 1)) * 10d);
+                if (DonationEffects.getInstance().isLootBuffActive()) namedEliteChance *= 1.2;
+                if (new Random().nextInt(1000) < namedEliteChance) {
+                    world.getWorld().dropItem(loc.add(0, 1, 0), ItemGenerator.getNamedItem(customItemName));
+                }
+            }
+            return;
         }
 
         if (DonationEffects.getInstance().isLootBuffActive()) {
