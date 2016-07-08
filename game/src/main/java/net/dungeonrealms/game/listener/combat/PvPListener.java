@@ -162,30 +162,35 @@ public class PvPListener implements Listener {
         API.runAsyncCallbackTask(() -> DamageAPI.calculateProjectileDamage(damager, receiver, projectile), consumer -> {
             try {
                 double calculatedDamage = consumer.get();
-                if (API.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                    if (API.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
-                            if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
-                                event.setCancelled(true);
-                                event.setDamage(0);
-                                damager.updateInventory();
-                                receiver.updateInventory();
-                                event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
-                                event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
-                                return;
+                if (API.getGamePlayer(receiver) != null && API.getGamePlayer(damager) != null) {
+                    if (API.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                        if (API.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
+                                if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
+                                    event.setCancelled(true);
+                                    event.setDamage(0);
+                                    damager.updateInventory();
+                                    receiver.updateInventory();
+                                    event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
+                                    event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                                    return;
+                                }
                             }
                         }
                     }
                 }
-
-                double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
-                calculatedDamage = calculatedDamage - armorCalculation[0];
-                HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, calculatedDamage, armorCalculation[0], armorCalculation[1]);
+                API.runAsyncCallbackTask(() -> DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null), armorConsumer -> {
+                    try {
+                        double[] armorCalculation = armorConsumer.get();
+                        final double finalDamage = calculatedDamage - armorCalculation[0];
+                        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                });
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-
         });
-
     }
 }

@@ -507,19 +507,6 @@ public class MainListener implements Listener {
             NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
             return;
         }
-        if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
-            if (API.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {
-                event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Type 'y' when ye ready to leave!");
-                Chat.listenForMessage(event.getPlayer(), e -> {
-                    if (e.getMessage().equalsIgnoreCase("y")) {
-                        event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
-                        event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85,
-                                362));
-                        ItemManager.giveStarter(event.getPlayer());
-                    }
-                }, pl -> pl.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
-            }
-        }
     }
 
 

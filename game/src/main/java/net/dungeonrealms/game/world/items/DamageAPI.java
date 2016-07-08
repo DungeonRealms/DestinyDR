@@ -273,7 +273,7 @@ public class DamageAPI {
 
     public static void applyPoisonDebuff(LivingEntity receiver, int weaponTier) {
         receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-        receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_SWIRL, 4);
+        receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8228);
 
         switch (weaponTier) {
             case 1:
@@ -299,7 +299,8 @@ public class DamageAPI {
             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
                     new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_SWIRL, 12);
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, receiver.getLocation(),
+                    new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f, 10);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -672,7 +673,7 @@ public class DamageAPI {
 
     public static void applyIceDebuff(LivingEntity receiver, int weaponTier) {
         receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-        receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8194);
+        receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8226);
 
         switch (weaponTier) {
             case 1:
@@ -1077,7 +1078,6 @@ public class DamageAPI {
                 case "poison":
                     projectile = livingEntity.launchProjectile(TippedArrow.class);
                     ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0), true);
-
                     break;
                 case "pure":
                     projectile = livingEntity.launchProjectile(TippedArrow.class);
