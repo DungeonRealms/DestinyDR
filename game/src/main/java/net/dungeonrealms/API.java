@@ -615,7 +615,7 @@ public class API {
             //TODO: Remove this when the Database Wipes.
             try {
                 if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid))
-                        && (lastLogin != 0 && (System.currentTimeMillis() - lastLogin) < 5000)) {
+                        && (lastLogin != 0 && (System.currentTimeMillis() - lastLogin) < 5000) && !Rank.isGM(player)) {
                     String kickMessage = ChatColor.RED + "You must wait 5 seconds before logging into a shard!";
 
                     NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), kickMessage);
