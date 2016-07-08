@@ -127,9 +127,6 @@ public class FriendHandler {
         friendsOut.writeUTF("request:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid);
         player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
         player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
-        DatabaseAPI.getInstance().update(UUID.fromString(uuid), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, uuid + "," + (System.currentTimeMillis() / 1000L), true);
-
-        //NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
     }
 
 
@@ -171,7 +168,7 @@ public class FriendHandler {
     public boolean isPendingFrom(UUID uuid, String name) {
         ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, uuid);
         String friendUUID = DatabaseAPI.getInstance().getUUIDFromName(name);
-        return pendingRequest.contains(friendUUID);
+        return pendingRequest.contains(friendUUID) || pendingRequest.contains(name);
 
     }
 

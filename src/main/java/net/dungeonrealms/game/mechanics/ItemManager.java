@@ -892,12 +892,12 @@ public class ItemManager {
         pages.add(page6_string);
         int count = 0;
         String nextLine = "\n";
-        String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + nextLine);
+        String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
         for (String uuidString : friendsList) {
             UUID uuid = UUID.fromString(uuidString);
             String playerName = DatabaseAPI.getInstance().getOfflineName(uuid);
             String shard = DatabaseAPI.getInstance().getFormattedShardName(uuid);
-            boolean isOnline = !shard.equalsIgnoreCase("none");
+            boolean isOnline = !shard.contains("none");
             long currentTime = System.currentTimeMillis();
             long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid)));
             long millis = currentTime - endTime;
@@ -907,19 +907,21 @@ public class ItemManager {
             String time = "";
 
             if (hour > 0) {
-                time += hour + "h " + minute + "m " + second + "s";
+                time += hour + "h " + minute + "m " + second + "s ";
             } else if (minute > 0) {
-                time += minute + "m " + second + "s";
+                time += minute + "m " + second + "s ";
 
             } else {
-                time += second + "s";
+                time += second + "s ";
             }
-            time += "ago";
+            if (hour > 99)
+                time = "Many moons.";
+            time += nextLine;
 
-            if (playerName.length() >= 9)
-                playerName = playerName.substring(0, 9);
-            friendsPage_string += (isOnline ? ChatColor.DARK_RED + ChatColor.BOLD.toString() + "O" : ChatColor.GREEN + ChatColor.BOLD.toString() + "O") + ChatColor.BLACK + ChatColor.BOLD.toString() + playerName + nextLine;
-            friendsPage_string += (isOnline ? ChatColor.BLACK + "Shard: " + shard : ChatColor.BLACK + "Last On: " + time);
+            if (playerName.length() >= 15)
+                playerName = playerName.substring(0, 15);
+            friendsPage_string += (isOnline ? ChatColor.GREEN + ChatColor.BOLD.toString() + "O" : ChatColor.DARK_RED + ChatColor.BOLD.toString() + "O") + ChatColor.BLACK + ChatColor.BOLD.toString() + " " + playerName + nextLine;
+            friendsPage_string += (isOnline ? ChatColor.BLACK + "Shard: " + ChatColor.BOLD + shard + nextLine  : ChatColor.BLACK + "Last On: " + time);
 
 
             count++;
@@ -927,6 +929,8 @@ public class ItemManager {
                 count = 0;
                 pages.add(friendsPage_string);
                 friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
+                if (uuidString.equalsIgnoreCase(friendsList.get(friendsList.size() - 1)))
+                    break;
             }
         }
 

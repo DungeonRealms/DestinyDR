@@ -7,6 +7,7 @@ import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.dungeonhelpers.*;
 import net.dungeonrealms.game.commands.friends.AcceptCommand;
 import net.dungeonrealms.game.commands.friends.AddCommand;
+import net.dungeonrealms.game.commands.friends.FriendsCommand;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.*;
@@ -416,7 +417,7 @@ public class DungeonRealms extends JavaPlugin {
             //FRIENDS
             cm.registerCommand(new AddCommand("add", "/<command> [args]", "Send Friend request!", Arrays.asList("friend")));
             cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Arrays.asList("acc")));
-            cm.registerCommand(new AcceptCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
+            cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
 
 
         }

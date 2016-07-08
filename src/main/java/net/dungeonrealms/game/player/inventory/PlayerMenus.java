@@ -38,7 +38,7 @@ public class PlayerMenus {
 
     public static void openFriendsMenu(Player player) {
         UUID uuid = player.getUniqueId();
-        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
 
         Inventory inv = Bukkit.createInventory(null, 54, "Friends");
 
@@ -48,8 +48,8 @@ public class PlayerMenus {
 
 
         int slot = 9;
-        for (String s : friendRequest) {
-            String name = API.getNameFromUUID(UUID.fromString(s));
+        for (String s : friends) {
+            String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(s));
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!"
             });
@@ -89,7 +89,7 @@ public class PlayerMenus {
         int slot = 9;
         for (String s : friendRequest) {
             String from = s.split(",")[0];
-            String name = API.getNameFromUUID(UUID.fromString(from));
+            String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(from));
 
             long unix = Long.valueOf(s.split(",")[1]);
             Date sentDate = new Date(unix * 1000);

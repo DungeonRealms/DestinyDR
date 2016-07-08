@@ -103,6 +103,17 @@ public class NetworkAPI implements PluginMessageListener {
                             friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " sent you a friend request.");
 
                         }
+                    }else if(msg.contains("accept:")){
+                        String[] content = msg.split(",");
+                        String senderUuid = content[1];
+                        String senderName = content[2];
+                        String friendUUID = content[3];
+                        UUID uuid = UUID.fromString(friendUUID);
+                        if (Bukkit.getPlayer(uuid) != null) {
+                            Player friend = Bukkit.getPlayer(uuid);
+                            DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, UUID.fromString(senderUuid) + "," + (System.currentTimeMillis() / 1000L), true);
+                            friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " accepted your friend request.");
+                        }
 
                     }
 

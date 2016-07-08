@@ -2,6 +2,8 @@ package net.dungeonrealms.game.commands.friends;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.FriendHandler;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -9,6 +11,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by chase on 7/7/2016.
@@ -26,7 +29,13 @@ public class AcceptCommand extends BasicCommand {
 
         String name = args[0];
 
-        if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), name)) {
+
+        if (!isPlayer(name) || !isOnline(name)) {
+            player.sendMessage(ChatColor.RED + "That is not a player, or that player is not on any shards.");
+            return false;
+        }
+
+        if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), name.toLowerCase())) {
             player.sendMessage(ChatColor.RED + "You're not pending a request from that user.");
             return false;
         }
@@ -34,4 +43,15 @@ public class AcceptCommand extends BasicCommand {
         FriendHandler.getInstance().acceptFriend(player.getUniqueId(), name);
         return false;
     }
+
+    private boolean isOnline(String playerName) {
+        String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+        return DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, UUID.fromString(uuid)).equals("none") ? false : true;
+    }
+
+    private boolean isPlayer(String player) {
+        String uuid = DatabaseAPI.getInstance().getUUIDFromName(player);
+        return uuid.equals("") ? false : true;
+    }
+
 }
