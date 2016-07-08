@@ -419,7 +419,9 @@ public class DungeonRealms extends JavaPlugin {
             //FRIENDS
             cm.registerCommand(new AddCommand("add", "/<command> [args]", "Send Friend request!", Arrays.asList("friend")));
             cm.registerCommand(new RemoveCommand("unfriend", "/<command> [args]", "Remove friend from list!", Arrays.asList("rem")));
-            cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Arrays.asList("acc")));
+            cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Arrays.asList("draccept")));
+            cm.registerCommand(new AcceptCommand("deny", "/<command> [args]", "Deny Friend request!", Arrays.asList("drdeny")));
+
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
 
 
