@@ -352,6 +352,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
         cm.registerCommand(new DebuffCrystal("debuffcrystal", "/<command>", "Spawns a debuff crystal"));
         cm.registerCommand(new CommandMessage("message", "/<command>", "Messages a player", Arrays.asList("msg", "tell")));
+        cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));
@@ -423,6 +424,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new AcceptCommand("deny", "/<command> [args]", "Deny Friend request!", Arrays.asList("drdeny")));
 
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
+            cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
 
 
         }

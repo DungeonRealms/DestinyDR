@@ -13,7 +13,10 @@ import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.handlers.*;
+import net.dungeonrealms.game.handlers.EnergyHandler;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -31,7 +34,6 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.rank.Subscription;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -819,7 +821,8 @@ public class API {
         Notice.getInstance().doLogin(player);
 
         // Newbie Protection
-        ProtectionHandler.getInstance().handleLogin(player);
+        //ProtectionHandler.getInstance().handleLogin(player);
+        //Unfinished, correct way to remove it was never implemented. Should be after 3 PvP attacks.
 
         // Free E-Cash
         int freeEcash = (int) (Long.valueOf(DatabaseAPI.getInstance().getData(EnumData.FREE_ECASH, uuid).toString()) / 1000);
