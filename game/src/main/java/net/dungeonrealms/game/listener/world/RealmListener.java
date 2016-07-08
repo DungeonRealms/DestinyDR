@@ -378,15 +378,15 @@ public class RealmListener implements Listener {
             REALMS.updateRealmHologram(p.getUniqueId());
         }
 
-        int amount = p.getItemInHand().getAmount();
-        ItemStack in_hand = p.getItemInHand();
+        int amount = p.getInventory().getItemInMainHand().getAmount();
+        ItemStack in_hand = p.getInventory().getItemInMainHand();
 
         if (amount <= 1) {
-            p.setItemInHand(new ItemStack(Material.AIR));
+            p.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         } else if (amount > 1) {
             amount--;
             in_hand.setAmount(amount);
-            p.setItemInHand(in_hand);
+            p.getInventory().setItemInMainHand(in_hand);
         }
         p.updateInventory();
     }
