@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.handlers;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -14,11 +16,9 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.rank.Rank;
-import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.party.Affair;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import org.bukkit.Bukkit;
@@ -35,12 +35,16 @@ import org.bukkit.potion.PotionEffect;
 import org.inventivetalent.bossbar.BossBarAPI;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 10/3/2015.
  */
 public class HealthHandler implements GenericMechanic {
+
+    @Getter
+    private HashMap<UUID, DamageTracker> monsterTrackers = new HashMap<>();
 
     private static HealthHandler instance = null;
 
@@ -639,6 +643,16 @@ public class HealthHandler implements GenericMechanic {
         return false;
     }
 
+    private void handleMonsterDamageTracker(UUID monster, Player attacker, double damage) {
+        if (monsterTrackers.containsKey(monster)) {
+            monsterTrackers.get(monster).addPlayerDamage(attacker, damage);
+        } else {
+            DamageTracker damageTracker = new DamageTracker(monster);
+            damageTracker.addPlayerDamage(attacker, damage);
+            monsterTrackers.put(monster, damageTracker);
+        }
+    }
+
     /**
      * Called from damage event,
      * used to update the monsters
@@ -665,6 +679,7 @@ public class HealthHandler implements GenericMechanic {
 
         if (attacker != null) {
             if (API.isPlayer(attacker)) {
+                handleMonsterDamageTracker(entity.getUniqueId(), (Player) attacker, damage);
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     if (!entity.hasMetadata("uuid")) {
                         String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
@@ -701,144 +716,26 @@ public class HealthHandler implements GenericMechanic {
             if (Entities.MONSTERS_LEASHED.contains(entity)) {
                 Entities.MONSTERS_LEASHED.remove(entity);
             }
-            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile") && !entity.hasMetadata("uuid") && !entity.hasMetadata("boss")) {
-                if (attacker != null) {
-                    if (attacker instanceof Player) {
-                        ((DRMonster) entity1).onMonsterDeath((Player) attacker);
-                        int exp = API.getMonsterExp((Player) attacker, entity);
-                        if (API.getGamePlayer((Player) attacker) == null) {
-                            return;
-                        }
-                        if (Affair.getInstance().isInParty((Player) attacker)) {
-                            List<Player> nearbyPlayers = API.getNearbyPlayers(attacker.getLocation(), 10);
-                            List<Player> nearbyPartyMembers = new ArrayList<>();
-                            if (!nearbyPlayers.isEmpty()) {
-                                for (Player player : nearbyPlayers) {
-                                    if (player.equals(attacker)) {
-                                        continue;
-                                    }
-                                    if (!API.isPlayer(attacker)) {
-                                        continue;
-                                    }
-                                    if (Affair.getInstance().areInSameParty((Player) attacker, player)) {
-                                        nearbyPartyMembers.add(player);
-                                    }
-                                }
-                                if (nearbyPartyMembers.size() > 0) {
-                                    nearbyPartyMembers.add((Player) attacker);
-                                    switch (nearbyPartyMembers.size()) {
-                                        case 1:
-                                            break;
-                                        case 2:
-                                            break;
-                                        case 3:
-                                            exp *= 1.2;
-                                            break;
-                                        case 4:
-                                            exp *= 1.3;
-                                            break;
-                                        case 5:
-                                            exp *= 1.4;
-                                            break;
-                                        case 6:
-                                            exp *= 1.5;
-                                            break;
-                                        case 7:
-                                            exp *= 1.6;
-                                            break;
-                                        case 8:
-                                            exp *= 1.7;
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    exp /= nearbyPartyMembers.size();
-                                    for (Player player : nearbyPartyMembers) {
-                                        API.getGamePlayer(player).addExperience(exp, true, true);
-                                    }
-                                } else {
-                                    API.getGamePlayer((Player) attacker).addExperience(exp, false, true);
-                                }
-                            } else {
-                                API.getGamePlayer((Player) attacker).addExperience(exp, false, true);
-                            }
-                        } else {
-                            API.getGamePlayer((Player) attacker).addExperience(exp, false, true);
-                        }
-                        PlayerStatistics playerStatistics = API.getGamePlayer((Player) attacker)
-                                .getPlayerStatistics();
-                        switch (entity.getMetadata("tier").get(0).asInt()) {
-                            case 1:
-                                playerStatistics.setT1MobsKilled(playerStatistics.getT1MobsKilled() + 1);
-                                break;
-                            case 2:
-                                playerStatistics.setT2MobsKilled(playerStatistics.getT2MobsKilled() + 1);
-                                break;
-                            case 3:
-                                playerStatistics.setT3MobsKilled(playerStatistics.getT3MobsKilled() + 1);
-                                break;
-                            case 4:
-                                playerStatistics.setT4MobsKilled(playerStatistics.getT4MobsKilled() + 1);
-                                break;
-                            case 5:
-                                playerStatistics.setT5MobsKilled(playerStatistics.getT5MobsKilled() + 1);
-                                break;
-                            default:
-                                break;
-                        }
-                        switch (playerStatistics.getTotalMobKills()) {
-                            case 100:
-                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
-                                        .EnumAchievements.MONSTER_HUNTER_I);
-                                break;
-                            case 300:
-                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
-                                        .EnumAchievements.MONSTER_HUNTER_II);
-                                break;
-                            case 500:
-                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
-                                        .EnumAchievements.MONSTER_HUNTER_III);
-                                break;
-                            case 1000:
-                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
-                                        .EnumAchievements.MONSTER_HUNTER_IV);
-                                break;
-                            case 1500:
-                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
-                                        .EnumAchievements.MONSTER_HUNTER_V);
-                                break;
-                            case 2000:
-                                Achievements.getInstance().giveAchievement(attacker.getUniqueId(), Achievements
-                                        .EnumAchievements.MONSTER_HUNTER_VI);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-            }
             return;
         }
 
-        if (attacker != null) {
-            setMonsterHPLive(entity, (int) newHP);
-            double monsterHPPercent = (newHP / maxHP);
-            double newMonsterHPToDisplay = monsterHPPercent * entity.getMaxHealth();
-            int convHPToDisplay = (int) newMonsterHPToDisplay;
-            if (convHPToDisplay <= 1) {
-                convHPToDisplay = 1;
-            } else if (convHPToDisplay > (int) entity.getMaxHealth()) {
-                convHPToDisplay = (int) entity.getMaxHealth();
-            }
-            if (entity.hasMetadata("type") && entity.hasMetadata("level") && entity.hasMetadata("tier")) {
-                int tier = entity.getMetadata("tier").get(0).asInt();
-                boolean elite = entity.hasMetadata("elite");
-                entity.setCustomName(Entities.getInstance().generateOverheadBar(entity, newHP, maxHP, tier, elite));
-                entity.setCustomNameVisible(true);
-                entity.setHealth(convHPToDisplay);
-                if (!Entities.MONSTERS_LEASHED.contains(entity)) {
-                    Entities.MONSTERS_LEASHED.add(entity);
-                }
+        setMonsterHPLive(entity, (int) newHP);
+        double monsterHPPercent = (newHP / maxHP);
+        double newMonsterHPToDisplay = monsterHPPercent * entity.getMaxHealth();
+        int convHPToDisplay = (int) newMonsterHPToDisplay;
+        if (convHPToDisplay <= 1) {
+            convHPToDisplay = 1;
+        } else if (convHPToDisplay > (int) entity.getMaxHealth()) {
+            convHPToDisplay = (int) entity.getMaxHealth();
+        }
+        if (entity.hasMetadata("type") && entity.hasMetadata("level") && entity.hasMetadata("tier")) {
+            int tier = entity.getMetadata("tier").get(0).asInt();
+            boolean elite = entity.hasMetadata("elite");
+            entity.setCustomName(Entities.getInstance().generateOverheadBar(entity, newHP, maxHP, tier, elite));
+            entity.setCustomNameVisible(true);
+            entity.setHealth(convHPToDisplay);
+            if (!Entities.MONSTERS_LEASHED.contains(entity)) {
+                Entities.MONSTERS_LEASHED.add(entity);
             }
         }
     }

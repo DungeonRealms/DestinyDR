@@ -1,15 +1,21 @@
 package net.dungeonrealms.game.listener.combat;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.PowerMove;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.party.Affair;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -20,7 +26,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -107,13 +116,14 @@ public class PvEListener implements Listener {
         }
 
         finalDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
-        double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
+        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
         DamageAPI.handlePolearmAOE(event, finalDamage / 2, damager);
 
         if (!receiver.hasMetadata("tier")) return;
-        if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId())) return;
+        if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId()))
+            return;
 
         int mobTier = receiver.getMetadata("tier").get(0).asInt();
         Random rand = new Random();
@@ -205,12 +215,13 @@ public class PvEListener implements Listener {
         }
 
         finalDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
-        double[] armorCalculation =DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
+        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
 
         if (!receiver.hasMetadata("tier")) return;
-        if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId())) return;
+        if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId()))
+            return;
 
         int mobTier = receiver.getMetadata("tier").get(0).asInt();
         Random rand = new Random();
@@ -265,6 +276,134 @@ public class PvEListener implements Listener {
             if (rand.nextInt(100) <= powerChance) {
                 PowerMove.doPowerMove("powerstrike", receiver, null);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onMonsterDeath(EntityDeathEvent event) {
+        if (!event.getEntity().hasMetadata("type")) return;
+        if (!event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) return;
+        if (event.getEntity().hasMetadata("uuid") || event.getEntity().hasMetadata("boss")) return;
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+        LivingEntity monster = event.getEntity();
+        Player killer = monster.getKiller();
+        Player highestDamage = null;
+        if (HealthHandler.getInstance().getMonsterTrackers().containsKey(monster.getUniqueId())) {
+            highestDamage = HealthHandler.getInstance().getMonsterTrackers().get(monster.getUniqueId()).findHighestDamageDealer();
+        }
+        if (highestDamage == null || !highestDamage.isOnline()) {
+            highestDamage = killer;
+        }
+        HealthHandler.getInstance().getMonsterTrackers().remove(monster.getUniqueId());
+        if (killer == null) {
+            return;
+        }
+        ((DRMonster) ((CraftLivingEntity) monster).getHandle()).onMonsterDeath(highestDamage);
+        int exp = API.getMonsterExp(highestDamage, monster);
+        GamePlayer gamePlayer = API.getGamePlayer(highestDamage);
+        if (gamePlayer == null) {
+            return;
+        }
+        if (!highestDamage.getUniqueId().toString().equals(killer.getUniqueId().toString())) {
+            killer.sendMessage(ChatColor.RED + highestDamage.getName() + " has dealt more damage to this mob than you. They have been awarded the XP.");
+        }
+        if (Affair.getInstance().isInParty(highestDamage)) {
+            List<Player> nearbyPlayers = API.getNearbyPlayers(highestDamage.getLocation(), 10);
+            List<Player> nearbyPartyMembers = new ArrayList<>();
+            if (!nearbyPlayers.isEmpty()) {
+                for (Player player : nearbyPlayers) {
+                    if (player.equals(highestDamage)) {
+                        continue;
+                    }
+                    if (!API.isPlayer(highestDamage)) {
+                        continue;
+                    }
+                    if (Affair.getInstance().areInSameParty(highestDamage, player)) {
+                        nearbyPartyMembers.add(player);
+                    }
+                }
+                if (nearbyPartyMembers.size() > 0) {
+                    nearbyPartyMembers.add(highestDamage);
+                    switch (nearbyPartyMembers.size()) {
+                        case 1:
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            exp *= 1.2;
+                            break;
+                        case 4:
+                            exp *= 1.3;
+                            break;
+                        case 5:
+                            exp *= 1.4;
+                            break;
+                        case 6:
+                            exp *= 1.5;
+                            break;
+                        case 7:
+                            exp *= 1.6;
+                            break;
+                        case 8:
+                            exp *= 1.7;
+                            break;
+                        default:
+                            break;
+                    }
+                    exp /= nearbyPartyMembers.size();
+                    for (Player player : nearbyPartyMembers) {
+                        API.getGamePlayer(player).addExperience(exp, true, true);
+                    }
+                } else {
+                    gamePlayer.addExperience(exp, false, true);
+                }
+            } else {
+                gamePlayer.addExperience(exp, false, true);
+            }
+        } else {
+            gamePlayer.addExperience(exp, false, true);
+        }
+        PlayerStatistics playerStatistics = gamePlayer.getPlayerStatistics();
+        switch (monster.getMetadata("tier").get(0).asInt()) {
+            case 1:
+                playerStatistics.setT1MobsKilled(playerStatistics.getT1MobsKilled() + 1);
+                break;
+            case 2:
+                playerStatistics.setT2MobsKilled(playerStatistics.getT2MobsKilled() + 1);
+                break;
+            case 3:
+                playerStatistics.setT3MobsKilled(playerStatistics.getT3MobsKilled() + 1);
+                break;
+            case 4:
+                playerStatistics.setT4MobsKilled(playerStatistics.getT4MobsKilled() + 1);
+                break;
+            case 5:
+                playerStatistics.setT5MobsKilled(playerStatistics.getT5MobsKilled() + 1);
+                break;
+            default:
+                break;
+        }
+        switch (playerStatistics.getTotalMobKills()) {
+            case 100:
+                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_I);
+                break;
+            case 300:
+                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_II);
+                break;
+            case 500:
+                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_III);
+                break;
+            case 1000:
+                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_IV);
+                break;
+            case 1500:
+                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_V);
+                break;
+            case 2000:
+                Achievements.getInstance().giveAchievement(highestDamage.getUniqueId(), Achievements.EnumAchievements.MONSTER_HUNTER_VI);
+                break;
+            default:
+                break;
         }
     }
 }

@@ -325,15 +325,15 @@ public class EnergyHandler implements GenericMechanic {
             case BOW:
                 switch (RepairAPI.getArmorOrWeaponTier(itemStack)) {
                     case 1:
-                        return 0.105F;
+                        return 0.125F;
                     case 2:
-                        return 0.115F;
+                        return 0.145F;
                     case 3:
-                        return 0.135F;
+                        return 0.165F;
                     case 4:
-                        return 0.155F;
+                        return 0.185F;
                     case 5:
-                        return 0.175F;
+                        return 0.205F;
                 }
         }
         return 0.10F;

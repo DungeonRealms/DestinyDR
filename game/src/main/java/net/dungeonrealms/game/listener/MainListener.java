@@ -8,7 +8,9 @@ import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
@@ -316,6 +318,9 @@ public class MainListener implements Listener {
         event.setQuitMessage(null);
         GuildMechanics.getInstance().doLogout(event.getPlayer());
         Realms.getInstance().doLogout(event.getPlayer());
+        for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
+            tracker.removeDamager(event.getPlayer());
+        }
 
         //Ensures the player has played at least 5 seconds before saving to the database.
         if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {
