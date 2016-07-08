@@ -80,11 +80,7 @@ public class ProxyChannelListener implements Listener {
                 }
             }
             if (subChannel.equals("Friends")) {
-                String msg = in.readUTF();
-                if (msg.contains("join:")) {
-                    plugin.relayPacket("DungeonRealms", event.getData());
-                }
-
+                plugin.relayPacket("DungeonRealms", event.getData());
                 return;
             }
 

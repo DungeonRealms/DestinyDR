@@ -75,13 +75,28 @@ public class DungeonListener implements Listener {
             return;
         DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
         if (dungeonObject.keysDropped <= 10) {
+            if (event.getEntity().hasMetadata("customname")) {
+                String name = ChatColor.stripColor(event.getEntity().getMetadata("customname").get(0).asString());
+                if (name.equalsIgnoreCase("The Priest")) {
+                    ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.LIGHT_PURPLE + "A mystical key", new String[]{
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "One of four mysterious keys.", ChatColor.RED + "Dungeon Item"});
+                    key.setAmount(2);
+                    if (event.getEntity().getKiller() != null) {
+                        event.getEntity().getKiller().getInventory().addItem(key);
+                    } else {
+                        event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation().add(0, 2, 0), key);
+                    }
+                    dungeonObject.keysDropped = dungeonObject.keysDropped + 2;
+                    return;
+                }
+            }
             if (new Random().nextInt(20) <= 14) {
                 ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.LIGHT_PURPLE + "A mystical key", new String[]{
                         ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "One of four mysterious keys.", ChatColor.RED + "Dungeon Item"});
                 if (event.getEntity().getKiller() != null) {
                     event.getEntity().getKiller().getInventory().addItem(key);
                 } else {
-                    event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), 36, 54, -4), key);
+                    event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation().add(0, 2, 0), key);
                 }
                 dungeonObject.keysDropped = dungeonObject.keysDropped + 1;
             }

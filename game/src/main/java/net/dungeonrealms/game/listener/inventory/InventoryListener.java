@@ -43,6 +43,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -514,11 +515,6 @@ public class InventoryListener implements Listener {
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
         Player player = (Player) event.getWhoClicked();
-        if (API.isItemSoulbound(slotItem)) {
-            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " Orb a Soulbound item.");
-            event.setCancelled(true);
-            return;
-        }
         GamePlayer gp = API.getGamePlayer(player);
         if (gp == null) {
             return;

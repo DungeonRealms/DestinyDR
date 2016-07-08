@@ -4,6 +4,10 @@ import lombok.Getter;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.dungeonhelpers.*;
+import net.dungeonrealms.game.commands.friends.AcceptCommand;
+import net.dungeonrealms.game.commands.friends.AddCommand;
+import net.dungeonrealms.game.commands.friends.FriendsCommand;
+import net.dungeonrealms.game.commands.friends.RemoveCommand;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.*;
@@ -348,6 +352,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
         cm.registerCommand(new DebuffCrystal("debuffcrystal", "/<command>", "Spawns a debuff crystal"));
         cm.registerCommand(new CommandMessage("message", "/<command>", "Messages a player", Arrays.asList("msg", "tell")));
+        cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));
@@ -368,7 +373,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "This will teleport a Game Master to their spawn point."));
-            cm.registerCommand(new CommandAdd("add", "/<command> [args]", "This will spawn a Dungeon Realms item.", Collections.singletonList("ad")));
+            cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "This will spawn a Dungeon Realms item.", Collections.singletonList("ad")));
             cm.registerCommand(new CommandList("list", "/<command> [args]", "Displays a list of online players."));
             cm.registerCommand(new CommandSetRank("setrank", "/<command> [args]", "Sets the rank of a player."));
             cm.registerCommand(new CommandArmorSee("armorsee", "/<command> [args]", "Shows the armor of a player or entity."));
@@ -411,6 +416,17 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm."));
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server."));
             cm.registerCommand(new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcasts a global message across all shards!"));
+
+            //FRIENDS
+            cm.registerCommand(new AddCommand("add", "/<command> [args]", "Send Friend request!", Arrays.asList("friend")));
+            cm.registerCommand(new RemoveCommand("unfriend", "/<command> [args]", "Remove friend from list!", Arrays.asList("rem")));
+            cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Arrays.asList("draccept")));
+            cm.registerCommand(new AcceptCommand("deny", "/<command> [args]", "Deny Friend request!", Arrays.asList("drdeny")));
+
+            cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
+            cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
+
+
         }
 
         // Commands exclusive to support agents on their special server.

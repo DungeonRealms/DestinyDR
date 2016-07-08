@@ -107,6 +107,25 @@ public class RestrictionListener implements Listener {
         }
     }
 
+
+    @EventHandler
+    public void playerWeaponSwitch(PlayerItemHeldEvent event) {
+        Player p = event.getPlayer();
+        ItemStack i = p.getInventory().getItem(event.getNewSlot());
+        if (i == null || i.getType() == Material.AIR) return;
+
+        if (API.isWeapon(i)) {
+            if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(i))) {
+                event.setCancelled(true);
+                p.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
+                        + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(i)) + " to use this weapon.");
+                p.updateInventory();
+                return;
+            }
+            p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
         checkPlayersArmorIsValid((Player) event.getPlayer());
