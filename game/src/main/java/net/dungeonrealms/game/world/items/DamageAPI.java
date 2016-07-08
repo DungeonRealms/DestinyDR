@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.world.items;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
@@ -226,6 +228,14 @@ public class DamageAPI {
 
             damage = addSpecialDamage(attacker, damage);
 
+            // LEVEL DAMAGE
+            if (isDefenderPlayer && !isAttackerPlayer) {
+                // add 5% damage per level difference
+                int attackerLevel = attacker.getMetadata("level").get(0).asInt();
+                int defenderLevel = API.getGamePlayer((Player) receiver).getLevel();
+                damage = addLevelDamage(attackerLevel, defenderLevel, damage);
+            }
+
             if (isHitCrit) {
                 if (isAttackerPlayer) {
                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId
@@ -263,7 +273,7 @@ public class DamageAPI {
 
     public static void applyPoisonDebuff(LivingEntity receiver, int weaponTier) {
         receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-        receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 4);
+        receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_SWIRL, 4);
 
         switch (weaponTier) {
             case 1:
@@ -288,6 +298,8 @@ public class DamageAPI {
         try {
             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
                     new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_SWIRL, 12);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -343,6 +355,13 @@ public class DamageAPI {
             default:
                 break;
         }
+    }
+
+    public static double addLevelDamage(int attackerLevel, int receiverLevel, double damage) {
+        if (attackerLevel >= receiverLevel) return damage;
+        int difference = receiverLevel - attackerLevel;
+        if (difference > 10) difference = 10;
+        return damage * (1 + (difference * 0.10));
     }
 
     public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, Player damager) {
@@ -445,8 +464,7 @@ public class DamageAPI {
                 }
             }
 
-            // we add 1 because it's tierID which is 0-4 instead of 1-5
-            int weaponTier = projectile.getMetadata("itemTier").get(0).asInt() + 1;
+            int weaponTier = projectile.getMetadata("itemTier").get(0).asInt();
 
             // DPS
             damage += Utils.randInt(attributes.get("dps")[0], attributes.get("dps")[1]);
@@ -530,6 +548,14 @@ public class DamageAPI {
             damage = applyIncreaseDamagePotion(attacker, damage);
 
             damage = addSpecialDamage(attacker, damage);
+
+            // LEVEL DAMAGE
+            if (isDefenderPlayer && !isAttackerPlayer) {
+                // add 5% damage per level difference
+                int attackerLevel = attacker.getMetadata("level").get(0).asInt();
+                int defenderLevel = API.getGamePlayer((Player) receiver).getLevel();
+                damage = addLevelDamage(attackerLevel, defenderLevel, damage);
+            }
 
             if (!(isAttackerPlayer)) {
                 if (attacker.hasMetadata("attack")) {
@@ -917,7 +943,7 @@ public class DamageAPI {
         return Math.round(totalStat);
     }
 
-    public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
+    public static void  fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
         RepairAPI.subtractCustomDurability(player, itemStack, 1);
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = null;
@@ -966,13 +992,16 @@ public class DamageAPI {
         Projectile projectile;
         if (tag.hasKey("fireDamage")) {
             projectile = player.launchProjectile(TippedArrow.class);
-            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1, 1), true);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 0, 0), true);
         } else if (tag.hasKey("iceDamage")) {
             projectile = player.launchProjectile(TippedArrow.class);
-            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1, 1), true);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 0, 0), true);
         } else if (tag.hasKey("poisonDamage")) {
             projectile = player.launchProjectile(TippedArrow.class);
-            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.JUMP, 1, 1), true);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0), true);
+        } else if (tag.hasKey("pureDamage")) {
+            projectile = player.launchProjectile(TippedArrow.class);
+            ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WITHER, 0, 0), true);
         } else {
             projectile = player.launchProjectile(Arrow.class);
         }
@@ -1034,7 +1063,31 @@ public class DamageAPI {
     public static void fireArrowFromMob(CraftLivingEntity livingEntity, NBTTagCompound tag, LivingEntity target) {
         if (!(target instanceof Player)) return;
         org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
-        Projectile projectile = livingEntity.launchProjectile(Arrow.class);
+        Projectile projectile;
+        switch (API.getMobElement(livingEntity)) {
+            case "fire":
+                projectile = livingEntity.launchProjectile(TippedArrow.class);
+                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 0, 0),
+                        true);
+            case "ice":
+                projectile = livingEntity.launchProjectile(TippedArrow.class);
+                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 0, 0),
+                        true);
+            case "poison":
+                projectile = livingEntity.launchProjectile(TippedArrow.class);
+                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0), true);
+                break;
+            case "pure":
+                projectile = livingEntity.launchProjectile(TippedArrow.class);
+                ((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.WITHER, 0, 0), true);
+                break;
+            default:
+                projectile = livingEntity.launchProjectile(Arrow.class);
+                break;
+        }
+        if (projectile == null) {
+            return;
+        }
         projectile.setBounce(false);
         vector.multiply(1.25);
         projectile.setVelocity(vector);
