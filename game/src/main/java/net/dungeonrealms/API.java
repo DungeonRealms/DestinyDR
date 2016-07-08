@@ -354,6 +354,7 @@ public class API {
                 break;
             case "poison":
                 name = ChatColor.DARK_GREEN + (splitName.length == 1 ? "Poison " + splitName[0] : splitName[0] + " Poison " + splitName[1]);
+                addMobPotionEffect(ent.getId(), MobEffects.SLOWER_DIG);
                 break;
             default:
                 break;
@@ -371,6 +372,13 @@ public class API {
 
     public static String getMobElement(LivingEntity ent) {
         return ent.getMetadata("element").get(0).asString();
+    }
+
+    public static void addMobPotionEffect(int mobid, MobEffectList me) {
+        // MobEffectList, duration, amplification
+        MobEffect m = new MobEffect(me, 100000, 0);
+        PacketPlayOutEntityEffect packet = new PacketPlayOutEntityEffect(mobid, m);
+        Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet));
     }
 
     /**
