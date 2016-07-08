@@ -484,8 +484,8 @@ public class DungeonRealms extends JavaPlugin {
         map.put("us0", new ShardInfo("US-0", "158.69.122.139", 40007));
         map.put("us1", new ShardInfo("US-1", "131.153.25.2", 40007));
         map.put("us2", new ShardInfo("US-2", "131.153.25.2", 40008));
-        map.put("us3", new ShardInfo("US-3", "131.153.25.218", 40007));
-        map.put("us4", new ShardInfo("US-4", "131.153.25.218", 40008));
+        map.put("us3", new ShardInfo("US-3", "131.153.25.218", 40001));
+        map.put("us4", new ShardInfo("US-4", "131.153.25.218", 40002));
         map.put("us5", new ShardInfo("US-5", "131.153.25.114", 40007));
         map.put("br1", new ShardInfo("BR-1", "131.153.25.114", 40008));
         map.put("sub1", new ShardInfo("SUB-1", "158.69.122.139", 40008));
