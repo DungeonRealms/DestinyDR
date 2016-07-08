@@ -14,6 +14,7 @@
         <module>network</module>
         <module>proxy</module>
         <module>game</module>
+        <module>bootstrap</module>
     </modules>
 
     <build>

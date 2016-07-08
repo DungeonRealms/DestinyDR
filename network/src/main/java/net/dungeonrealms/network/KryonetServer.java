@@ -1,10 +1,10 @@
-package net.dungeonrealms.network.kryonet;
+package net.dungeonrealms.network;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import net.dungeonrealms.Constants;
-import net.dungeonrealms.network.kryonet.packet.Packet;
+import net.dungeonrealms.network.packet.Packet;
 
 import java.io.IOException;
 

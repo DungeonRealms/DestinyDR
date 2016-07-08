@@ -1,7 +1,6 @@
 package net.dungeonrealms.network;
 
 import com.esotericsoftware.minlog.Log;
-import net.dungeonrealms.network.kryonet.KryonetServer;
 
 import java.io.IOException;
 
@@ -12,7 +11,6 @@ import java.io.IOException;
  * The platform is using the Kryonet library
  * check out https://github.com/EsotericSoftware/kryonet for
  * documentation.
- * <p>
  * <p>
  * Class written by APOLLOSOFTWARE.IO on 7/7/2016
  */
