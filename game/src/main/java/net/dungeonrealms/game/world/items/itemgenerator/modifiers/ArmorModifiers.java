@@ -560,7 +560,7 @@ public class ArmorModifiers {
 
 		@Override
 		public String getPrefix(ItemMeta meta){
-			if (chosenStat == null || chosenStat == "") chooseStat();
+			chooseStat();
 		    return r + chosenStat + " RESISTANCE: ";
 		}
 
