@@ -12,6 +12,7 @@ resources/META_INF/MANIFEST.MF
 .settings
 tools/*
 tools/pushBuildToServer/pushDev.bat
+tools/pushBuildToServer/pushDeploymentServer.bat
 tools/pushBuildToServer/WinSCP.com
 tools/pushBuildToServer/WinSCP.map
 tools/pushBuildToServer/pushUS1.bat
