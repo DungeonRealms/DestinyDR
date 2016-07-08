@@ -30,7 +30,9 @@ import java.util.concurrent.TimeUnit;
 
 public class DungeonRealmsProxy extends Plugin implements Listener {
 
-    private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "sub1"}; // @note: don't include special shards
+    private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "sub1"
+            //,"us4", "us5" , "br1"
+    }; // @note: don't include special shards
 
     public static com.mongodb.MongoClient mongoClient = null;
     public static MongoClientURI mongoClientURI = null;
@@ -46,7 +48,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     private final int MAX_PLAYERS;
 
     public DungeonRealmsProxy() {
-        MOTD = "&6Dungeon Realms &8- &7&aNow available on v1.9 & v1.10!              &7Open Beta Weekend     &8-&f&nwww.dungeonrealms.net &8-";
+        MOTD = "&6Dungeon Realms &8- &7&a&lNow available on v1.9 & v1.10!              &7Open Beta         &8-&f&nwww.dungeonrealms.net &8-";
         MAX_PLAYERS = 500;
     }
 
@@ -158,20 +160,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
             }
         }
     }
-//
-//    public void sendMessageToGuild(String guildName, String message, String... filters) {
-//        loop:
-//        for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
-//            ProxiedPlayer player = getProxy().getPlayer(uuid);
-//
-//            if (player != null) {
-//                for (String s : filters)
-//                    if (player.getName().equalsIgnoreCase(s))
-//                        continue loop;
-//                player.sendMessage(message);
-//            }
-//        }
-//    }
 
     public void relayPacket(String channel, byte[] data) {
         for (ServerInfo server : ProxyServer.getInstance().getServers().values())

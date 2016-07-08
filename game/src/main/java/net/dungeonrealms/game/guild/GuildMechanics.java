@@ -398,6 +398,27 @@ public class GuildMechanics {
         return info;
     }
 
+    /**
+     * Sends a message to all members of a guild.
+     *
+     * @param guildName Guild
+     * @param message   Message
+     * @param filters   Filters
+     */
+    public void sendMessageToGuild(String guildName, String message, String... filters) {
+        loop:
+        for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
+            Player player = Bukkit.getServer().getPlayer(uuid);
+
+            if (player != null) {
+                for (String s : filters)
+                    if (player.getName().equalsIgnoreCase(s))
+                        continue loop;
+                player.sendMessage(message);
+            }
+        }
+    }
+
 
     /**
      * Creates a guild... DA!
