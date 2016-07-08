@@ -147,13 +147,6 @@ public class MainListener implements Listener {
                     }
                     break;
             }
-        } else {
-            /*
-            This shouldn't ever happen because the Bungee plugin passes the vote down to the
-            server that the player joins, but.. if it does happen!
-             */
-            DatabaseAPI.getInstance().update(UUID.fromString(event.getVote().getUsername()), EnumOperators.$INC, EnumData.ECASH, 15, false);
-            Utils.log.warning("Unable to process rank for user: " + event.getVote().getUsername() + " the vote was passed to the server and the player ISNT ONLINE WTF?");
         }
 
     }
