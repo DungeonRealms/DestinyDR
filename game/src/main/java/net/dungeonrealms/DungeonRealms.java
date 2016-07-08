@@ -274,7 +274,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new RestrictionListener(), this);
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
-            pm.registerEvents(new TutorialIslandHandler(), this);
+//            pm.registerEvents(new TutorialIslandHandler(), this);
         } else {
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
