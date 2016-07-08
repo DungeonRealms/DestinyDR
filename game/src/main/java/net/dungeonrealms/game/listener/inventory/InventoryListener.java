@@ -514,11 +514,6 @@ public class InventoryListener implements Listener {
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
         Player player = (Player) event.getWhoClicked();
-        if (API.isItemSoulbound(slotItem)) {
-            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " Orb a Soulbound item.");
-            event.setCancelled(true);
-            return;
-        }
         GamePlayer gp = API.getGamePlayer(player);
         if (gp == null) {
             return;
