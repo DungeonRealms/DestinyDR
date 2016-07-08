@@ -20,6 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -57,7 +58,6 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
                 continue;
 
             GUIButton button = new GUIButton(getShardItem(shardID)) {
-
 
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
@@ -183,15 +183,16 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
      * @param shardID
      * @return Material
      */
-    private Material getShardItem(String shardID) {
+    private ItemStack getShardItem(String shardID) {
         shardID = shardID.toUpperCase();
 
-        if (shardID.equals("US-0")) return Material.DIAMOND;
-        else if (shardID.startsWith("CS-")) return Material.PRISMARINE_SHARD;
-        else if (shardID.startsWith("YT-")) return Material.GOLD_NUGGET;
-        else if (shardID.startsWith("SUB-")) return Material.EMERALD;
+        if (shardID.equals("US-0")) return new ItemStack(Material.DIAMOND);
+        else if (shardID.startsWith("CS-")) return new ItemStack(Material.PRISMARINE_SHARD);
+        else if (shardID.startsWith("YT-")) return new ItemStack(Material.GOLD_NUGGET);
+        else if (shardID.startsWith("BR-")) return new ItemStack(Material.SAPLING, 1, (byte) 3);
+        else if (shardID.startsWith("SUB-")) return new ItemStack(Material.EMERALD);
 
-        return Material.END_CRYSTAL;
+        return new ItemStack(Material.END_CRYSTAL);
     }
 
     /**
