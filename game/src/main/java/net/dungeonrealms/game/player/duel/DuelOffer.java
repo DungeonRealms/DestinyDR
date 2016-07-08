@@ -3,6 +3,7 @@ package net.dungeonrealms.game.player.duel;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.items.Item;
@@ -86,8 +87,14 @@ public class DuelOffer {
                 winner.getInventory().addItem(current);
             }
         }
-//		Bukkit.broadcastMessage(ChatColor.AQUA + winner.getName() + ChatColor.YELLOW + " has defeated "
-//		        + loser.getName() + " in a duel");
+        GamePlayer wGP = API.getGamePlayer(winner);
+        GamePlayer lGP = API.getGamePlayer(loser);
+        if (wGP != null) {
+            wGP.getPlayerStatistics().setDuelsWon(wGP.getPlayerStatistics().getDuelsWon() + 1);
+        }
+        if (lGP != null) {
+            lGP.getPlayerStatistics().setDuelsLost(lGP.getPlayerStatistics().getDuelsLost() + 1);
+        }
 
         String winnerName = GameChat.getPreMessage(winner).replaceAll(":", "").trim().intern();
         if (ChatColor.stripColor(winnerName).startsWith("<G>")) {
