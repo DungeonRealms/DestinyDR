@@ -21,3 +21,4 @@ tools/pushBuildToServer/pushUS3.bat
 /game/target
 /proxy/target
 /common/target
+/bootstrap/target
