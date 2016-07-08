@@ -111,7 +111,7 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
                         "Equipment Master", "Interface Guide", "Item Enchanter", "Armor " +
                                 "Guide", "Alignment Guide", ChatColor.YELLOW.toString() + "Neutral Guide", ChatColor
                                 .RED.toString
-                                () + "Chaotic Guide", ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee"));
+                                        () + "Chaotic Guide", ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee"));
                 quest_map.put(pl.getName(), quests_left);
                 completion_delay.put(pl.getName(), new ArrayList<String>());
             }

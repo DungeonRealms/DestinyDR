@@ -2,13 +2,10 @@ package net.dungeonrealms.game.menus.player;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.menus.AbstractMenu;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.rank.Rank;
@@ -16,9 +13,10 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.ui.GUIButtonClickEvent;
 import net.dungeonrealms.game.ui.VolatileGUI;
 import net.dungeonrealms.game.ui.item.GUIButton;
+import net.dungeonrealms.game.updater.Updater;
 import net.dungeonrealms.network.BungeeServerInfo;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -59,6 +57,8 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
                 continue;
 
             GUIButton button = new GUIButton(getShardItem(shardID)) {
+
+
                 @Override
                 public void action(GUIButtonClickEvent event) throws Exception {
                     Player player = event.getWhoClicked();
@@ -84,24 +84,45 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
                         return;
                     }
 
-                    TitleAPI.sendTitle(player, 1, 60, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
+                    TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
 
                     player.sendMessage(ChatColor.GRAY + "Retrieving relevant server information...");
                     player.sendMessage(" ");
                     player.sendMessage("                     " + ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...");
                     player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, true, false);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
-                    API.handleLogout(player.getUniqueId());
-                    DungeonRealms.getInstance().getLoggingOut().add(player.getName());
-                    DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
+                    final Location startingLocation = player.getLocation();
 
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
-                            () -> {
-                                NetworkAPI.getInstance().sendToServer(player.getName(), bungeeName);
-                                DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-                            }, 10);
+                    if (API.isInSafeRegion(startingLocation)) {
+                        API.moveToShard(player, bungeeName);
+                        return;
+                    }
+
+                    final int[] taskTimer = {5};
+
+                    new Updater(DungeonRealms.getInstance(), 20L, null) {
+                        @Override
+                        public void run() {
+                            if (taskTimer[0] <= 0) {
+                                return;
+                            }
+
+                            if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
+                                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "/shard - CANCELLED");
+                                TitleAPI.sendTitle(player, 1, 1, 1, "");
+                                cancel();
+                                return;
+                            }
+
+                            player.sendMessage(ChatColor.RED + "Transferring shard ... " + net.md_5.bungee.api.ChatColor.BOLD + taskTimer[0] + "s");
+                            taskTimer[0]--;
+
+                            if (taskTimer[0] == 0) {
+                                API.moveToShard(player, bungeeName);
+                                cancel();
+                            }
+                        }
+                    };
                 }
             };
 
@@ -142,6 +163,7 @@ public class ShardSelector extends AbstractMenu implements VolatileGUI {
             set(getSize(), button);
         }
     }
+
 
     private int getNormalServers() {
         int count = 0;

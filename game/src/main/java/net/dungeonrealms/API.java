@@ -1,6 +1,5 @@
 package net.dungeonrealms;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
@@ -10,7 +9,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import de.inventivegames.npc.util.Reflection;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
@@ -23,7 +21,6 @@ import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
-import net.dungeonrealms.game.mechanics.ReflectionAPI;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -47,16 +44,14 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagList;
 import org.bukkit.*;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -129,6 +124,18 @@ public class API {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static ItemStack makeItemUntradeable(ItemStack item) {
+        if (!item.getItemMeta().hasLore()) {
+            item.getItemMeta().setLore(Arrays.asList(ChatColor.GRAY + "Untradeable"));
+        } else {
+            item.getItemMeta().getLore().add(ChatColor.GRAY + "Untradeable");
+        }
+        NBTItem nbtItem = new NBTItem(item);
+        nbtItem.setString("subtype", "starter");
+        nbtItem.setInteger("untradeable", 1);
+        return nbtItem.getItem();
     }
 
     public static int getItemSlot(PlayerInventory inv, String type) {
@@ -342,19 +349,15 @@ public class API {
         switch (element) {
             case "pure":
                 name = ChatColor.GOLD + "Holy " + name;
-                addMobPotionEffect(ent.getId(), MobEffects.WITHER);
                 break;
             case "fire":
                 name = ChatColor.RED + (splitName.length == 1 ? "Fire " + splitName[0] : splitName[0] + " Fire " + splitName[1]);
-                addMobPotionEffect(ent.getId(), MobEffects.FIRE_RESISTANCE);
                 break;
             case "ice":
                 name = ChatColor.BLUE + (splitName.length == 1 ? "Ice " + splitName[0] : splitName[0] + " Ice " + splitName[1]);
-                addMobPotionEffect(ent.getId(), MobEffects.WATER_BREATHING);
                 break;
             case "poison":
                 name = ChatColor.DARK_GREEN + (splitName.length == 1 ? "Poison " + splitName[0] : splitName[0] + " Poison " + splitName[1]);
-                addMobPotionEffect(ent.getId(), MobEffects.SLOWER_DIG);
                 break;
             default:
                 break;
@@ -372,13 +375,6 @@ public class API {
 
     public static String getMobElement(LivingEntity ent) {
         return ent.getMetadata("element").get(0).asString();
-    }
-
-    public static void addMobPotionEffect(int mobid, MobEffectList me) {
-        // MobEffectList, duration, amplification
-        MobEffect m = new MobEffect(me, 100000, 0);
-        PacketPlayOutEntityEffect packet = new PacketPlayOutEntityEffect(mobid, m);
-        Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet));
     }
 
     /**
@@ -942,9 +938,29 @@ public class API {
             ScoreboardHandler.getInstance().matchMainScoreboard(player);
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
         }, 100L);
-
-
     }
+
+
+    /**
+     * Method used to switch shard
+     *
+     * @param player           Player
+     * @param serverBungeeName Bungee name
+     */
+    public static void moveToShard(Player player, String serverBungeeName) {
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, true, false);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
+        API.handleLogout(player.getUniqueId());
+        DungeonRealms.getInstance().getLoggingOut().add(player.getName());
+        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                () -> {
+                    NetworkAPI.getInstance().sendToServer(player.getName(), serverBungeeName);
+                    DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+                }, 10);
+    }
+
 
     /**
      * Utility method for calling async tasks with callbacks.
@@ -1728,19 +1744,6 @@ public class API {
             }
         }
         return true;
-    }
-
-    public static ItemStack makeItemUntradeable(ItemStack item) {
-        if (!item.getItemMeta().hasLore()) {
-            item.getItemMeta().setLore(Arrays.asList(ChatColor.GRAY + "Untradeable"));
-        }
-        else {
-            item.getItemMeta().getLore().add(ChatColor.GRAY + "Untradeable");
-        }
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("subtype", "starter");
-        nbtItem.setInteger("untradeable", 1);
-        return nbtItem.getItem();
     }
 
     public static boolean isItemUntradeable(ItemStack item) {

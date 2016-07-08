@@ -9,14 +9,14 @@ import java.io.InputStreamReader;
 
 public class BuildDeployApplication {
 
-    static String TOOL_PATH = "\"C:\\Users\\XenoJava\\Desktop\\DR\\DungeonRealms\\util\\tools\"";
+    static String TOOL_PATH = "\"C:\\Users\\XenoJava\\Desktop\\DR\\DungeonRealms\\tools\"";
 
     public static void main(String[] args) {
 
         if (args.length > 0) {
             switch (args[0]) {
                 case "-updateBungee":
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat bungeedr 131.153.25.114");
+                    executeCommand("cd " + TOOL_PATH + " && pushBungee.bat bungeedr 131.153.25.114");
                     break;
                 case "-updateServer":
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat " + args[1].substring(1) + " " + args[2].substring(1));
@@ -48,6 +48,7 @@ public class BuildDeployApplication {
 //                    executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us4");
 //                    break;
                 case "-updateAll":
+                    executeCommand("cd " + TOOL_PATH + " && pushBungee.bat bungeedr 131.153.25.114");
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat us0 158.69.122.139");
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat us1 131.153.25.2");
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat us2 131.153.25.218");
