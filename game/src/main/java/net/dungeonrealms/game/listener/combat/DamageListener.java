@@ -878,14 +878,6 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (event.getEntity().hasMetadata("last_environment_damage")) {
-            if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() <= 800) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
-            }
-        }
-        event.getEntity().setMetadata("last_environment_damage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
 
         switch (event.getCause()) {
             case FALL:
