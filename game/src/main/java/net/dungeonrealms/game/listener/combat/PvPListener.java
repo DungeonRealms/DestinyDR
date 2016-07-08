@@ -115,18 +115,23 @@ public class PvPListener implements Listener {
                         }
                     }
                 }
+                API.runAsyncCallbackTask(() -> DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null), armorConsumer -> {
+                    try {
+                        double[] armorCalculation = armorConsumer.get();
+                        final double finalDamage = calculatedDamage - armorCalculation[0];
+                        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
 
+                        DamageAPI.handlePolearmAOE(event, calculatedDamage / 2, damager);
 
-                double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
-                calculatedDamage = calculatedDamage - armorCalculation[0];
-                HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, calculatedDamage, armorCalculation[0], armorCalculation[1]);
-                DamageAPI.handlePolearmAOE(event, calculatedDamage / 2, damager);
-
-                // prevent crazy knockback
-                if (receiver.hasMetadata("lastPvpHit") && System.currentTimeMillis() - receiver.getMetadata("lastPvpHit").get(0).asLong() < 200)
-                    event.setCancelled(true);
-                receiver.setMetadata("lastPvpHit", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-
+                        // prevent crazy knockback
+                        if (receiver.hasMetadata("lastPvpHit") && System.currentTimeMillis() - receiver.getMetadata("lastPvpHit").get(0).asLong() < 200)
+                            event.setCancelled(true);
+                        receiver.setMetadata("lastPvpHit", new FixedMetadataValue(DungeonRealms.getInstance(), System
+                                .currentTimeMillis()));
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                });
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
