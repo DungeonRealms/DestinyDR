@@ -274,6 +274,7 @@ public class Mining implements GenericMechanic {
             p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + experienceGain + ChatColor.BOLD + " EXP"
                     + ChatColor.YELLOW + ChatColor.GRAY + " [" + currentXP + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded(getLvl(stackInHand)) + " EXP]");
         }
+
         currentXP += experienceGain;
         if (currentXP > maxXP) {
             lvlUp(tier, p);

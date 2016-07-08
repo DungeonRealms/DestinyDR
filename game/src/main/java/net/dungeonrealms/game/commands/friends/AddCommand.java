@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,6 +59,17 @@ public class AddCommand extends BasicCommand {
 
 
         String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+
+        if (FriendHandler.getInstance().areFriends(player, UUID.fromString(uuid))) {
+            player.sendMessage(ChatColor.RED + "You're already friends.");
+            return false;
+        }
+        ArrayList<String> requests = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, UUID.fromString(uuid));
+
+        if (requests.contains(player.getUniqueId().toString())) {
+            player.sendMessage(ChatColor.RED + "You've already sent this user a friend request.");
+            return false;
+        }
 
         FriendHandler.getInstance().sendRequestOverNetwork(player, uuid);
 

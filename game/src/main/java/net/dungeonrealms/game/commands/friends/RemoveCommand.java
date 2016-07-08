@@ -7,6 +7,7 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,11 +18,11 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by chase on 7/7/2016.
+ * Created by chase on 7/8/2016.
  */
-public class AcceptCommand extends BasicCommand {
+public class RemoveCommand extends BasicCommand {
 
-    public AcceptCommand(String command, String usage, String description, List<String> aliases) {
+    public RemoveCommand(String command, String usage, String description, List<String> aliases) {
         super(command, usage, description, aliases);
     }
 
@@ -33,38 +34,33 @@ public class AcceptCommand extends BasicCommand {
         String name = args[0];
 
 
-        if (!isPlayer(name)) {
-            player.sendMessage(ChatColor.RED + "That is not a player.");
-            return false;
-        }
-
-        if (!isOnline(name)) {
-            player.sendMessage(ChatColor.RED + "That player is not on any shards.");
-            return false;
-        }
-
-
-        if (!FriendHandler.getInstance().isPendingFrom(player.getUniqueId(), name.toLowerCase())) {
-            player.sendMessage(ChatColor.RED + "You're not pending a request from that user.");
+        if (!isPlayer(name) || !isOnline(name)) {
+            player.sendMessage(ChatColor.RED + "That is not a player, or that player is not on any shards.");
             return false;
         }
         UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
-        ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
-        friendsOut.writeUTF("Friends");
-        friendsOut.writeUTF("accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
-        player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
-        FriendHandler.getInstance().acceptFriend(player.getUniqueId(), uuid, name);
+
+        if (!FriendHandler.getInstance().areFriends(player, uuid)) {
+            player.sendMessage(ChatColor.RED + "You're not friends with that user.");
+            return false;
+        }
+
+
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, uuid.toString(), true);
+        player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " from your friends list!");
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
+
+
         return false;
     }
 
     private boolean isOnline(String playerName) {
         String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-        return Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, UUID.fromString(uuid)).toString());
+        return DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, UUID.fromString(uuid)).equals("none") ? false : true;
     }
 
     private boolean isPlayer(String player) {
         String uuid = DatabaseAPI.getInstance().getUUIDFromName(player);
         return uuid.equals("") ? false : true;
     }
-
 }

@@ -42,19 +42,6 @@ public class Notice {
         ArrayList<String> mailbox = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, player.getUniqueId());
 
         if (friendRequests.size() > 0) {
-            for (String s : friendRequests) {
-                String name = API.getNameFromUUID(UUID.fromString(s.split(",")[0]));
-                long inviteSent = Long.valueOf(s.split(",")[1]) * 1000;
-                long currentTime = System.currentTimeMillis();
-                long differenceInTime = currentTime - inviteSent;
-                long diffHours = differenceInTime / (60 * 60 * 1000);
-
-                if (24 - diffHours <= 0) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, s, true);
-                    player.sendMessage(ChatColor.RED + "Friend request for " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.RED + " has expired.");
-                }
-            }
-            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.ITALIC + friendRequests.size() + ChatColor.GREEN + " pending friend request" + (friendRequests.size() != 1 ? "s" : "") + ".");
         }
 
         if (mailbox.size() > 0)
