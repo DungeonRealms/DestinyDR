@@ -20,6 +20,7 @@ import net.dungeonrealms.network.BungeeServerInfo;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -86,7 +87,8 @@ public class NetworkAPI implements PluginMessageListener {
                             Player friend = Bukkit.getPlayer(friendUuid);
 
                             if (friend != null && !friendUuid.toString().equalsIgnoreCase(uuid)) {
-                                friend.sendMessage(ChatColor.GREEN + name + ChatColor.YELLOW + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard);
+                                friend.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
+                                friend.playSound(friend.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                             }
                         }
                     } else if (msg.contains("request:")) {

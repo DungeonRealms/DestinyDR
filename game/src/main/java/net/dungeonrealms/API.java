@@ -846,7 +846,7 @@ public class API {
 
         ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
         friendsOut.writeUTF("Friends");
-        friendsOut.writeUTF("join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().bungeeName.toUpperCase());
+        friendsOut.writeUTF("join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
         player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
 
 
