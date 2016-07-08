@@ -30,9 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DungeonRealmsProxy extends Plugin implements Listener {
 
-    private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "sub1"
-            //,"us4", "us5" , "br1"
-    }; // @note: don't include special shards
+    private final String[] LOAD_BALANCED_SHARDS = new String[]{"us1", "us2", "us3", "us4", "us5"}; // @note: don't include special shards
 
     public static com.mongodb.MongoClient mongoClient = null;
     public static MongoClientURI mongoClientURI = null;
@@ -48,7 +46,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     private final int MAX_PLAYERS;
 
     public DungeonRealmsProxy() {
-        MOTD = "&6Dungeon Realms &8- &7&a&lNow available on v1.9 & v1.10!              &7Open Beta         &8-&f&nwww.dungeonrealms.net &8-";
+        MOTD = "&6Dungeon Realms &8- &e&oCompletely re-coded v1.9+\n&7Open Beta!     &8- &f&nwww.dungeonrealms.net &8-";
         MAX_PLAYERS = 500;
     }
 
@@ -102,7 +100,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     public List<ServerInfo> getOptimalShards() {
         List<ServerInfo> servers = new ArrayList<>();
 
-        for (String shardName : DR_SHARDS)
+        for (String shardName : LOAD_BALANCED_SHARDS)
             // We want to only put them on a US as they may fail the criteria for another shard.
             // They are free to join another shard once connected.
             if (shardName.startsWith("us") && !shardName.equalsIgnoreCase("us0"))
