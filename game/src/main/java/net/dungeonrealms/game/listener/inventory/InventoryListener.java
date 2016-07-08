@@ -234,24 +234,6 @@ public class InventoryListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void playerWeaponSwitch(PlayerItemHeldEvent event) {
-        Player p = event.getPlayer();
-        ItemStack i = p.getInventory().getItem(event.getNewSlot());
-        if (i == null || i.getType() == Material.AIR) return;
-
-        if (API.isWeapon(i)) {
-            if (API.getItemTier(i).getRangeValues()[0] > API.getGamePlayer(p).getLevel()) {
-                event.setCancelled(true);
-                p.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + "cannot" + ChatColor.RED + " equip this " +
-                        "item! You must be level: " + ChatColor.BOLD + API.getItemTier(i).getRangeValues()[0]);
-                p.updateInventory();
-                return;
-            }
-            p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
-        }
-    }
-
     /**
      * Calculates the differences between two armor pieces' modifiers and updates the player's
      * stats accordingly. Also sends the difference message to the player. Called on armor
