@@ -131,7 +131,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
     public void onBossHit(EntityDamageByEntityEvent event) {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         if (canSpawnMobs(livingEntity)) {
-            canSpawn = false;
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = false, 100L);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, loc, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
             } catch (Exception err) {
