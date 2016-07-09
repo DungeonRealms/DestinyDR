@@ -356,7 +356,7 @@ public class ClickHandler {
                         }).setNBTString("acceptButton", "whynot").build());
                         player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 2.F);
 
-                        for (ItemStack itemStack : player.getInventory()) {
+                        for (ItemStack itemStack : player.getInventory().getStorageContents()) {
                             if (itemStack == null || itemStack.getType() == Material.AIR) {
                                 player_Inv_Available++;
                             }
