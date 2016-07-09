@@ -9,8 +9,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 5/31/2016
@@ -66,24 +64,15 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     }
 
     @EventHandler
-    public void onProxyConnection(PostLoginEvent event) {
-        ProxiedPlayer player = event.getPlayer();
-        final int[] count = {0};
-
+    public void onProxyConnection(PreLoginEvent event) {
         // DUPE GLITCH FIX //
-        getProxy().getScheduler().runAsync(this, () -> getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> {
-            count[0]++;
+        getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(event.getConnection().getUniqueId())).forEach(p -> {
+            if (p != null)
+                p.disconnect(ChatColor.RED + "Another player with your account has logged into the server!");
 
-            if (count[0] >= 2) {
-                if (player != null) {
-                    getProxy().getScheduler().schedule(DungeonRealmsProxy.this,
-                            () -> player.disconnect(ChatColor.RED + "Another player with your account has logged into the server!"), 1, TimeUnit.NANOSECONDS);
-
-                }
-                getProxy().getScheduler().schedule(DungeonRealmsProxy.this,
-                        () -> p.disconnect(ChatColor.RED + "Another player with your account has logged into the server!"), 1, TimeUnit.NANOSECONDS);
-            }
-        }));
+            event.setCancelReason(ChatColor.RED + "Another player with your account has logged into the server!");
+            event.setCancelled(true);
+        });
     }
 
     @EventHandler

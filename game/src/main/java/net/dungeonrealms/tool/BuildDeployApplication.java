@@ -18,6 +18,9 @@ public class BuildDeployApplication {
                 case "-updateBungee":
                     executeCommand("cd " + TOOL_PATH + " && pushBungee.bat bungeedr 131.153.25.114");
                     break;
+                case "-updateDeploymentServer":
+                    executeCommand("cd " + TOOL_PATH + " && pushDeploymentServer.bat");
+                    break;
                 case "-updateServer":
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat " + args[1].substring(1) + " " + args[2].substring(1));
                     break;
@@ -49,10 +52,11 @@ public class BuildDeployApplication {
 //                    break;
                 case "-updateAll":
                     executeCommand("cd " + TOOL_PATH + " && pushBungee.bat bungeedr 131.153.25.114");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us0 158.69.122.139");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us1 131.153.25.2");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us2 131.153.25.218");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us3 131.153.25.114");
+                    executeCommand("cd " + TOOL_PATH + " && pushDeploymentServer.bat");
+//                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us0 158.69.122.139");
+//                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us1 131.153.25.2");
+//                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us2 131.153.25.218");
+//                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us3 131.153.25.114");
                     break;
             }
         } else {
