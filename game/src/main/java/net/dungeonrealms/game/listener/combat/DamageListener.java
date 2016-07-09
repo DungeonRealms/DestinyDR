@@ -83,17 +83,6 @@ public class DamageListener implements Listener {
     public void onSufficate(EntityDamageEvent event) {
         if (event.getEntity() instanceof LivingEntity) if (event.getCause() == DamageCause.SUFFOCATION)
             event.setCancelled(true);
-
-        if (event.getEntity() instanceof DRMonster)
-            if (event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.FIRE)
-                event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onFireTick(EntityDamageEvent event) {
-        if (event.getEntity() instanceof DRMonster)
-            if (event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.FIRE)
-                event.setCancelled(true);
     }
 
     /**
@@ -887,6 +876,7 @@ public class DamageListener implements Listener {
             return;
         }
 
+
         switch (event.getCause()) {
             case FALL:
                 float blocks = event.getEntity().getFallDistance();
@@ -906,22 +896,35 @@ public class DamageListener implements Listener {
                 }
                 break;
             case DROWNING:
-                dmg = maxHP * 0.04;
+                if (API.isPlayer(event.getEntity())) {
+                    dmg = maxHP * 0.04;
+                } else
+                    dmg = 0;
                 break;
             case FIRE_TICK:
-                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
-                    dmg = maxHP * 0.01;
-                } else {
+                if ((event.getEntity().hasMetadata("lastFireDamage") && System.currentTimeMillis() - event.getEntity().getMetadata("lastFireDamage").get(0).asLong() < 800)) {
                     dmg = 0;
+                    break;
                 }
+
+                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)))
+                    dmg = maxHP * 0.01;
+                else dmg = 0;
+
+                event.getEntity().setMetadata("lastFireDamage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 break;
             case LAVA:
             case FIRE:
-                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
-                    dmg = maxHP * 0.03;
-                } else {
+                if ((event.getEntity().hasMetadata("lastFireDamage") && System.currentTimeMillis() - event.getEntity().getMetadata("lastFireDamage").get(0).asLong() < 800)) {
                     dmg = 0;
+                    break;
                 }
+
+                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)))
+                    dmg = maxHP * 0.03;
+                else dmg = 0;
+
+                event.getEntity().setMetadata("lastFireDamage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 break;
             case POISON:
                 dmg = maxHP * 0.01;
