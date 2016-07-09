@@ -86,9 +86,15 @@ public class RealmListener implements Listener {
             else
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have returned to " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
 
-            if ((realm.getBuilders().contains(player.getUniqueId()) || realm.getOwner().equals(player.getUniqueId())) && realm.getPropertyBoolean("flight")) {
-                player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
-                player.setAllowFlight(true);
+            if (((realm.getBuilders().contains(player.getUniqueId()) || realm.getOwner().equals(player.getUniqueId()) || Realms.getInstance().isApollosRealm(to.getName())) && realm.getPropertyBoolean("flight"))) {
+                if (Realms.getInstance().isApollosRealm(to.getName())) {
+                    player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "FLYING ENABLED BECAUSE PIMPING AINT EZZ");
+                    player.setAllowFlight(true);
+                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                } else {
+                    player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
+                    player.setAllowFlight(true);
+                }
             }
 
             if (!REALMS.getRealmTitle(realm.getOwner()).equals(""))
@@ -341,12 +347,22 @@ public class RealmListener implements Listener {
             p.sendMessage(ChatColor.GRAY + "Only YOU and anyone you add to your build list will be able to fly in your realm.");
             p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
 
-            for (Player pl : realm.getWorld().getPlayers()) {
-                if (pl == null || (!realm.getBuilders().contains(pl.getUniqueId()) && !realm.getOwner().equals(pl.getUniqueId())))
-                    continue;
-                if (!realm.getOwner().equals(pl.getUniqueId()))
-                    pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
-                pl.setAllowFlight(true);
+            if (!Realms.getInstance().isApollosRealm(realm.getWorld().getName())) {
+                for (Player pl : realm.getWorld().getPlayers()) {
+                    if (pl == null || ((!realm.getBuilders().contains(pl.getUniqueId()) && !Realms.getInstance().isApollosRealm(realm.getWorld().getName())) && !realm.getOwner().equals(pl.getUniqueId())))
+                        continue;
+                    if (!realm.getOwner().equals(pl.getUniqueId()))
+                        pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
+                    pl.setAllowFlight(true);
+                }
+            } else {
+                for (Player pl : realm.getWorld().getPlayers()) {
+                    if (pl == null && !realm.getOwner().equals(pl.getUniqueId()))
+                        continue;
+                    pl.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "FLYING ENABLED BECAUSE PIMPING AINT EZZ");
+                    pl.setAllowFlight(true);
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                }
             }
 
             RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");

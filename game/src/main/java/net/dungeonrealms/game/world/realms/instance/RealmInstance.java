@@ -77,6 +77,8 @@ public class RealmInstance implements Realms {
     private File pluginFolder = null;
     private File rootFolder = null;
 
+    private Random random = new Random();
+
     public static RealmInstance getInstance() {
         if (instance == null) {
             instance = new RealmInstance();
@@ -135,6 +137,11 @@ public class RealmInstance implements Realms {
         // REMOVES ALL CACHED REALMS //
         Utils.log.info("[REALM] [SYNC] Uploading all player realms..");
         removeAllRealms(false);
+    }
+
+    @Override
+    public boolean isApollosRealm(String world) {
+        return world.equals("c7f83b31-2eeb-4b0b-baa3-bb2a330726d7");
     }
 
     @Override
@@ -311,6 +318,7 @@ public class RealmInstance implements Realms {
     public void openRealmMaterialStore(Player player) {
         RealmMaterialFactory.getInstance().openMaterialStore(player, 0);
     }
+
 
     @Override
     public void loadRealmWorld(UUID uuid) {
@@ -822,7 +830,10 @@ public class RealmInstance implements Realms {
 
         realmHologram.clearLines();
 
-        realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
+        ChatColor[] pimpColoursM8 = new ChatColor[]{ChatColor.BLUE, ChatColor.RED, ChatColor.YELLOW, ChatColor.GOLD, ChatColor.AQUA, ChatColor.GREEN, ChatColor.LIGHT_PURPLE};
+        int rnd = new Random().nextInt(pimpColoursM8.length);
+
+        realmHologram.insertTextLine(0, !isApollosRealm(uuid.toString()) ? ChatColor.WHITE.toString() + ChatColor.BOLD + name : pimpColoursM8[rnd].toString() + ChatColor.BOLD + "APOLLO'S REALM [HOT GIRLS ONLY]");
         realmHologram.insertTextLine(1, realm.getPropertyBoolean("peaceful") ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
     }
 
@@ -830,7 +841,6 @@ public class RealmInstance implements Realms {
     public World getRealmWorld(UUID uuid) {
         return Bukkit.getWorld(uuid.toString());
     }
-
 
     public boolean isRealmCached(UUID uuid) {
         return CACHED_REALMS.containsKey(uuid);
