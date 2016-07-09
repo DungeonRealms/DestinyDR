@@ -4,6 +4,7 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -83,6 +84,9 @@ public class Storage {
                     inv.addItem(item);
                 }
             }
+            Player p = Bukkit.getPlayer(ownerUUID);
+            if (p != null)
+                p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
             this.collection_bin = inv;
         }
     }

@@ -7,6 +7,9 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -62,7 +65,8 @@ public class CommandCloseShop extends BasicCommand {
             UUID uuid = UUID.fromString(uuidString);
             player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", shopClose.toByteArray());
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, false);
-            player.sendMessage(ChatColor.YELLOW + "Force closed Shop on all Shards.");
+            player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(uuid).update(), 20);
         }
         return false;
     }

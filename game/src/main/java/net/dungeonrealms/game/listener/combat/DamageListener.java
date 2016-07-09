@@ -16,6 +16,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
+import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -878,6 +879,9 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             return;
         }
+
+        Cooldown.addCooldown(event.getEntity().getUniqueId(), 800);
+
 
         switch (event.getCause()) {
             case FALL:
