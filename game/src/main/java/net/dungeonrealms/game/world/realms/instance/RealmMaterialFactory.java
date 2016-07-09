@@ -445,7 +445,7 @@ class RealmMaterialFactory {
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
             player.sendMessage(ChatColor.GREEN + "Transaction successful.");
 
-            player.getInventory().setItem(player.getInventory().firstEmpty(), new ItemStack(item.getType(), amount_to_buy, item.getDurability()));
+            player.getInventory().setItem(player.getInventory().firstEmpty(), API.makeItemUntradeable(new ItemStack(item.getType(), amount_to_buy, item.getDurability())));
         }, null);
     }
 

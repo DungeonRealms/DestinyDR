@@ -217,6 +217,9 @@ public class RealmListener implements Listener {
                 property.setExpiry(System.currentTimeMillis() - 1000L);
             }
 
+            if (REALMS.isApollosRealm(realm.getWorld().getName()))
+                REALMS.updateRealmHologram(realm.getOwner());
+
             for (RealmProperty<?> p : realm.getRealmProperties().values()) {
                 if (!(p.hasExpired() && p.isAcknowledgeExpiration())) continue;
 
