@@ -187,6 +187,8 @@ public class GuildDatabase implements GuildDatabaseAPI {
             update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
 
         }
+
+        updateCache(guildName);
     }
 
 
@@ -209,11 +211,13 @@ public class GuildDatabase implements GuildDatabaseAPI {
                 update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
         }
         update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, uuid.toString());
+        updateCache(guildName);
     }
 
 
     public void setMotdOf(String guildName, String motd) {
         update(guildName, EnumGuildData.MOTD, EnumOperators.$SET, motd);
+        updateCache(guildName);
     }
 
     public void removeFromGuild(String guildName, UUID uuid) {
@@ -234,6 +238,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         }
 
         setGuild(uuid, "");
+        updateCache(guildName);
     }
 
 
