@@ -86,15 +86,6 @@ public class Chat {
      * @since 1.0
      */
     public void doChat(AsyncPlayerChatEvent event) {
-
-        Consumer<? super AsyncPlayerChatEvent> messageListener = chatListeners.remove(event.getPlayer());
-        if (messageListener != null) {
-            messageListener.accept(event);
-            orElseListeners.remove(event.getPlayer());
-            event.setCancelled(true);
-            return;
-        }
-
         UUID uuid = event.getPlayer().getUniqueId();
 
         String fixedMessage = checkForBannedWords(event.getMessage());

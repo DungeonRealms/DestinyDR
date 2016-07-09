@@ -147,7 +147,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     public void deleteGuild(String guildName) {
         Database.guilds.deleteOne(Filters.eq("info.name", guildName));
-
+        removeFromCache(guildName);
         Utils.log.warning("Guild deleted: " + guildName);
     }
 

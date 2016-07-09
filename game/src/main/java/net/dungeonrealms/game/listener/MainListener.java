@@ -266,7 +266,7 @@ public class MainListener implements Listener {
             event.setCancelled(true);
         }
     }
-
+    
     /**
      * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
      * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
