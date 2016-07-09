@@ -179,7 +179,7 @@ public class MainListener implements Listener {
 
         Chat.getInstance().doMessageChatListener(event);
 
-        if (PunishUtils.isMuted(event.getPlayer().getUniqueId())) {
+        if (PunishUtils.isMuted(event.getPlayer().getUniqueId()) && !event.isCancelled()) {
             event.getPlayer().sendMessage(PunishUtils.getMutedMessage(event.getPlayer().getUniqueId()));
             event.setCancelled(true);
             return;
