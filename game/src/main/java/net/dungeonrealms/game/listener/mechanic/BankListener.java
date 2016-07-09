@@ -670,8 +670,12 @@ public class BankListener implements Listener {
         storage.setItemMeta(collectionMeta);
         net.minecraft.server.v1_9_R2.ItemStack collectionBin = CraftItemStack.asNMSCopy(storage);
         collectionBin.getTag().setString("type", "collection");
-        if (BankMechanics.getInstance().getStorage(uuid).collection_bin != null)
+        if (BankMechanics.getInstance().getStorage(uuid).collection_bin != null) {
             inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
+        }else if(DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, uuid).toString().length() > 1){
+            BankMechanics.getInstance().getStorage(uuid).update();
+            inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
+        }
         return inv;
     }
 

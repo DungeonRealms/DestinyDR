@@ -1,0 +1,3 @@
+build x.x.1
+	- Mining an ore below your tier pick, is guaranteed.
+	- Shops can now be closed from other shards, and sent to collection bin.

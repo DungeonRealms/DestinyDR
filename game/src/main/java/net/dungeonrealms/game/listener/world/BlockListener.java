@@ -139,7 +139,7 @@ public class BlockListener implements Listener {
                 int breakChance = Mining.getBreakChance(stackInHand);
                 breakChance += Mining.getSuccessChance(stackInHand);
                 int willBreak = rand.nextInt(100);
-                if (willBreak < breakChance) {
+                if (willBreak < breakChance || pickTier > tier) {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     p.getInventory().addItem(Mining.getBlock(type));
                     gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);

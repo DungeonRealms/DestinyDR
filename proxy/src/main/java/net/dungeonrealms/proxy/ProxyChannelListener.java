@@ -79,7 +79,7 @@ public class ProxyChannelListener implements Listener {
                     }
                 }
             }
-            if (subChannel.equals("Friends")) {
+            if (subChannel.equals("Friends") || subChannel.equals("Shop")) {
                 plugin.relayPacket("DungeonRealms", event.getData());
                 return;
             }
