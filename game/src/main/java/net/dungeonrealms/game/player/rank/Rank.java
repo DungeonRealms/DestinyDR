@@ -9,6 +9,7 @@ import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -32,12 +33,12 @@ public class Rank implements GenericMechanic {
 
     /**
      * Returns true if user has the rank "dev".
-     * @todo: Remove "DEV" rank, use "GM" rank and check if in getDevelopers array in the DungeonRealms class.
      *
      * @param player
      * @return boolean
+     * @todo: Remove "DEV" rank, use "GM" rank and check if in getDevelopers array in the DungeonRealms class.
      */
-    public static boolean isDev(Player player) {
+    public static boolean isDev(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("dev") && DungeonRealms.getInstance().getDevelopers().contains(player.getName());
     }
@@ -48,7 +49,7 @@ public class Rank implements GenericMechanic {
      * @param player
      * @return boolean
      */
-    public static boolean isGM(Player player) {
+    public static boolean isGM(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev") || player.isOp();
     }
@@ -59,7 +60,7 @@ public class Rank implements GenericMechanic {
      * @param player
      * @return boolean
      */
-    public static boolean isSupport(Player player) {
+    public static boolean isSupport(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("dev");
     }
@@ -70,7 +71,7 @@ public class Rank implements GenericMechanic {
      * @param player
      * @return boolean
      */
-    public static boolean isPMOD(Player player) {
+    public static boolean isPMOD(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
     }
@@ -81,7 +82,7 @@ public class Rank implements GenericMechanic {
      * @param player
      * @return boolean
      */
-    public static boolean isYouTuber(Player player) {
+    public static boolean isYouTuber(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
     }

@@ -37,6 +37,8 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Recipe;
 
@@ -680,6 +682,9 @@ public class RealmInstance implements Realms {
 
         // UNLOAD WORLD
         Utils.log.info("[REALM] [SYNC] Unloading realm world for " + uuid.toString());
+
+        // REMOVED ITEMS
+        getRealmWorld(uuid).getEntities().stream().filter(e -> e instanceof Item).forEach(Entity::remove);
 
         Bukkit.getWorlds().remove(getRealmWorld(uuid));
         Bukkit.getServer().unloadWorld(getRealmWorld(uuid), true);

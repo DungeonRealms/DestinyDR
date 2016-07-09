@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.punish.TimeFormat;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -74,12 +75,17 @@ public class CommandBan extends BasicCommand {
         }
 
         if (sender instanceof Player) {
-            if (!Rank.isGM((Player) sender)) {
+            if (!Rank.isGM((Player) sender) && !Rank.isDev((Player) sender)) {
                 if (Rank.isPMOD((Player) sender) && duration > 1209600L) {
                     sender.sendMessage(ChatColor.RED + "You cannot ban players for more than 14 days.");
                     return true;
                 }
             }
+        }
+
+        if (Rank.isPMOD(Bukkit.getOfflinePlayer(p_uuid))) {
+            sender.sendMessage(ChatColor.RED + "You cannot ban that player.");
+            return true;
         }
 
         if (args.length >= 3) {
