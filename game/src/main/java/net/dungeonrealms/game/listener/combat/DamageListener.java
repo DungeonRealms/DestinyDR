@@ -81,11 +81,19 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSufficate(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            if (event.getCause() == DamageCause.SUFFOCATION) {
+        if (event.getEntity() instanceof LivingEntity) if (event.getCause() == DamageCause.SUFFOCATION)
+            event.setCancelled(true);
+
+        if (event.getEntity() instanceof DRMonster)
+            if (event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.FIRE)
                 event.setCancelled(true);
-            }
-        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onFireTick(EntityDamageEvent event) {
+        if (event.getEntity() instanceof DRMonster)
+            if (event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.FIRE)
+                event.setCancelled(true);
     }
 
     /**
@@ -209,7 +217,8 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) return;
-        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager())))) return;
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+            return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (!(event.getDamager() instanceof LivingEntity)) {
             if (!(((Projectile) event.getDamager()).getShooter() instanceof LivingEntity)) return;
@@ -348,7 +357,6 @@ public class DamageListener implements Listener {
                 break;
         }
     }
-
 
 
     /**
