@@ -17,6 +17,8 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.ui.item.GUIButton;
+import net.dungeonrealms.game.world.shops.Shop;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.network.BungeeServerInfo;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -148,6 +150,16 @@ public class NetworkAPI implements PluginMessageListener {
                     }
 
                     return;
+                } else if (subChannel.equals("Shop")) {
+                    String msg = in.readUTF();
+                    if (msg.contains("close:")) {
+                        String[] content = msg.split(",");
+                        String playerName = content[1];
+                        Shop shop = ShopMechanics.getShop(playerName);
+                        if (shop != null) {
+                            shop.deleteShop(false);
+                        }
+                    }
                 }
 
 

@@ -400,7 +400,6 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandUnmute("unmute", "/<command> [args]", "Unmute command", "drunmute"));
 
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
-            cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));
             cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Will announce a purchase messages."));
 
             cm.registerCommand(new CommandMount("mount", "/<command> [args]", "Opens the player mounts menu.", Collections.singletonList("mounts")));
@@ -423,6 +422,9 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new RemoveCommand("unfriend", "/<command> [args]", "Remove friend from list!", Arrays.asList("rem")));
             cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Arrays.asList("draccept")));
             cm.registerCommand(new AcceptCommand("deny", "/<command> [args]", "Deny Friend request!", Arrays.asList("drdeny")));
+
+            cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close Shop on all Shards!", Arrays.asList("shopclose")));
+
 
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
             cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
