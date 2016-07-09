@@ -16,7 +16,6 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
-import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -82,11 +81,8 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSufficate(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            if (event.getCause() == DamageCause.SUFFOCATION) {
-                event.setCancelled(true);
-            }
-        }
+        if (event.getEntity() instanceof LivingEntity) if (event.getCause() == DamageCause.SUFFOCATION)
+            event.setCancelled(true);
     }
 
     /**
@@ -210,7 +206,8 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) return;
-        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager())))) return;
+        if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
+            return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (!(event.getDamager() instanceof LivingEntity)) {
             if (!(((Projectile) event.getDamager()).getShooter() instanceof LivingEntity)) return;
@@ -349,7 +346,6 @@ public class DamageListener implements Listener {
                 break;
         }
     }
-
 
 
     /**
@@ -866,7 +862,14 @@ public class DamageListener implements Listener {
 
         double dmg = event.getDamage();
         event.setDamage(0);
-        event.setCancelled(true);
+
+        if (event.getEntity().hasMetadata("lastEnvironmentDamage") && (System.currentTimeMillis() - event.getEntity()
+                .getMetadata("lastEnvironmentDamage").get(0).asLong()) < 800) {
+            event.setCancelled(true);
+            return;
+        }
+        event.getEntity().setMetadata("lastEnvironmentDamage", new FixedMetadataValue(DungeonRealms.getInstance(),
+                System.currentTimeMillis()));
 
         int maxHP = 0;
         if (API.isPlayer(event.getEntity())) {
@@ -879,8 +882,6 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             return;
         }
-
-        Cooldown.addCooldown(event.getEntity().getUniqueId(), 800);
 
 
         switch (event.getCause()) {
@@ -902,22 +903,21 @@ public class DamageListener implements Listener {
                 }
                 break;
             case DROWNING:
-                dmg = maxHP * 0.04;
+                if (API.isPlayer(event.getEntity())) {
+                    dmg = maxHP * 0.04;
+                } else
+                    dmg = 0;
                 break;
             case FIRE_TICK:
-                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
+                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)))
                     dmg = maxHP * 0.01;
-                } else {
-                    dmg = 0;
-                }
+                else dmg = 0;
                 break;
             case LAVA:
             case FIRE:
-                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE))) {
+                if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)))
                     dmg = maxHP * 0.03;
-                } else {
-                    dmg = 0;
-                }
+                else dmg = 0;
                 break;
             case POISON:
                 dmg = maxHP * 0.01;

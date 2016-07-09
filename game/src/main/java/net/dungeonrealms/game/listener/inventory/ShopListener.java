@@ -413,8 +413,9 @@ public class ShopListener implements Listener {
                 return;
             }
 
-            if (event.getRawSlot() == (shop.getInvSize() - 1))
+            if (event.getRawSlot() >= (shop.getInvSize() - 1))
                 return;
+
             ItemStack itemClicked = event.getCurrentItem();
             if (itemClicked == null || itemClicked.getType() == Material.AIR) return;
             if (clicker.getInventory().firstEmpty() == -1) {

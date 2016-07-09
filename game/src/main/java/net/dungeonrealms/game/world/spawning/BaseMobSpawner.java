@@ -21,6 +21,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -112,7 +113,7 @@ public class BaseMobSpawner {
                         }
                     }
                 } else {
-                    RESPAWN_TIMES.put(monster, respawnDelay);
+                    RESPAWN_TIMES.put(monster, respawnDelay + (new Random().nextInt(respawnDelay / 2) + 15));
                     SPAWNED_MONSTERS.remove(monster);
                 }
             }
@@ -289,7 +290,7 @@ public class BaseMobSpawner {
                             Bukkit.getScheduler().cancelTask(timerID);
                         } else
                             spawnIn();
-                    }, 0L, 20L);
+                    }, 0L, 30L);
                 }
             } else {
                 if (timerID != -1) {

@@ -2,7 +2,6 @@ package net.dungeonrealms.game.mongo;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
 
@@ -35,7 +34,8 @@ public class Database {
         collection = database.getCollection("player_data");
         guilds = database.getCollection("guilds");
 
-        GuildDatabase.setGuilds(guilds);
+
+
         Utils.log.info("DungeonRealms [MONGODB] has connected successfully!");
     }
 }

@@ -10,6 +10,7 @@
 package net.dungeonrealms.game.miscellaneous;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -17,6 +18,8 @@ import org.bukkit.DyeColor;
 import java.util.Map;
 
 public abstract class ColorConverter {
+
+    @Getter
     private static Map<DyeColor, ChatColor> dyeChatMap;
 
     static {

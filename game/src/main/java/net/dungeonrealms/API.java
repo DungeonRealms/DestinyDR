@@ -34,6 +34,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.rank.Subscription;
+import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -292,7 +293,7 @@ public class API {
 
 
     /**
-     * Requests an update for cached data on target
+     * Requests an update for cached player data on target
      * player's server
      *
      * @param uuid Target
@@ -301,6 +302,18 @@ public class API {
         // SENDS PACKET ON MESSAGING CHANNEL //
         NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Update", uuid.toString());
     }
+
+    /**
+     * Requests an update for cached guild data on target
+     * player's server
+     *
+     * @param guildName Target
+     */
+    public static void updateGuildData(String guildName) {
+        // SENDS PACKET ON MESSAGING CHANNEL //
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guild", "Update", guildName);
+    }
+
 
     /**
      * Gets players UUID from Name. ASYNC.
@@ -593,7 +606,7 @@ public class API {
             if (stoppingAll) {
                 DungeonRealms.getInstance().getLoggingOut().add(player.getName());
                 DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                player.kickPlayer("The DungeonRealms Servers are rebooting. Please wait to reconnect.");
+                PunishUtils.kick(player.getName(), ChatColor.AQUA + "All DungeonRealm shards are restarting.");
                 continue;
             }
             if (customStop) {
@@ -662,6 +675,10 @@ public class API {
 //        AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
 
         GamePlayer gp = new GamePlayer(player);
+
+        gp.setAbleToDrop(false);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToDrop(true), 20L * 10L);
 
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.

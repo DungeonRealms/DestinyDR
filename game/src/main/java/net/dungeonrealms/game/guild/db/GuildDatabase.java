@@ -1,15 +1,11 @@
 package net.dungeonrealms.game.guild.db;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumGuildData;
-import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.mongo.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -17,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -31,20 +28,35 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     @Setter
     @Getter
-    private static MongoCollection<Document> guilds = null;
-
-    @Setter
-    @Getter
     private static Logger logger = null;
 
+    public volatile ConcurrentHashMap<String, Document> CACHED_GUILD = new ConcurrentHashMap<>();
 
     public static GuildDatabaseAPI getAPI() {
         if (instance == null) instance = new GuildDatabase();
         return instance;
     }
 
+    public void updateCache(String guildName) {
+        Document doc = Database.guilds.find(Filters.eq("info.name", guildName)).first();
+        CACHED_GUILD.put(guildName, doc);
+    }
+
+    @Override
+    public void removeFromCache(String guildName) {
+        CACHED_GUILD.remove(guildName);
+    }
+
+    @Override
+    public boolean isGuildCached(String guildName) {
+        return CACHED_GUILD.containsKey(guildName);
+    }
+
     public void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback) {
-        guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag, banner));
+        Document template = GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag, banner);
+
+        Database.guilds.insertOne(template);
+        CACHED_GUILD.put(guildName, template);
 
         Utils.log.warning("New guild created: " + guildName);
 
@@ -64,7 +76,12 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     private Object get(String guildName, EnumGuildData data, Class<?> clazz) {
-        Document doc = (Document) get(EnumGuildData.NAME, guildName);
+        Document doc;
+
+        // GRABBED CACHED DATA
+        if (CACHED_GUILD.containsKey(guildName)) doc = CACHED_GUILD.get(guildName);
+        else doc = (Document) get(EnumGuildData.NAME, guildName);
+
         if (doc == null) return null;
 
         return ((Document) doc.get("info")).get(data.getKey().substring(5), clazz);
@@ -72,9 +89,8 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     private Object get(EnumGuildData data, Object value) {
-
         Bson query = Filters.eq(data.getKey(), value);
-        return guilds.find(query).first();
+        return Database.guilds.find(query).first();
     }
 
     public EnumGuildData get(UUID uuid, String guildName) {
@@ -103,7 +119,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     private void update(String guildName, EnumGuildData data, EnumOperators EO, Object value) {
 
         // INSTANTLY UPDATES THE MONGODB SERVER //
-        guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
+        Database.guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
     }
 
     public boolean doesTagExist(String tag, Consumer<Boolean> action) {
@@ -130,8 +146,8 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public void deleteGuild(String guildName) {
-        guilds.deleteOne(Filters.eq("info.name", guildName));
-
+        Database.guilds.deleteOne(Filters.eq("info.name", guildName));
+        removeFromCache(guildName);
         Utils.log.warning("Guild deleted: " + guildName);
     }
 
@@ -159,20 +175,20 @@ public class GuildDatabase implements GuildDatabaseAPI {
         List<String> officers = (List<String>) get(guildName, EnumGuildData.OFFICERS, ArrayList.class);
 
         assert officers != null;
-        if (!officers.contains(uuid.toString())) {
-            if (promote) {
-                //ADD TO OFFICERS
-                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PUSH, uuid.toString());
-                // REMOVE FROM MEMBERS
-                update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString());
-            } else {
-                //REMOVE FROM OFFICERS
-                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
-                // ADD TO MEMBERS
-                update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
+        if (promote) {
+            //ADD TO OFFICERS
+            update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PUSH, uuid.toString());
+            // REMOVE FROM MEMBERS
+            update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString());
+        } else {
+            //REMOVE FROM OFFICERS
+            update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+            // ADD TO MEMBERS
+            update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
 
-            }
         }
+
+        updateCache(guildName);
     }
 
 
@@ -195,11 +211,13 @@ public class GuildDatabase implements GuildDatabaseAPI {
                 update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
         }
         update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, uuid.toString());
+        updateCache(guildName);
     }
 
 
     public void setMotdOf(String guildName, String motd) {
         update(guildName, EnumGuildData.MOTD, EnumOperators.$SET, motd);
+        updateCache(guildName);
     }
 
     public void removeFromGuild(String guildName, UUID uuid) {
@@ -220,6 +238,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         }
 
         setGuild(uuid, "");
+        updateCache(guildName);
     }
 
 

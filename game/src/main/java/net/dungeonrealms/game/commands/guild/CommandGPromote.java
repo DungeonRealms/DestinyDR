@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands.guild;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -79,8 +80,11 @@ public class CommandGPromote extends BasicCommand {
         }
 
         GuildDatabaseAPI.get().promotePlayer(guildName, p_uuid);
+        API.updateGuildData(guildName);
+
         player.sendMessage(ChatColor.DARK_AQUA + "You have " + ChatColor.UNDERLINE + "promoted" + ChatColor.DARK_AQUA + " " + p_name + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
         GuildMechanics.getInstance().sendAlert(guildName, ChatColor.GREEN + " " + p_name + " has been " + ChatColor.UNDERLINE + "promoted" + ChatColor.GREEN + " to the rank of " + ChatColor.BOLD + "GUILD OFFICER" + ChatColor.GREEN + ".");
+
 
         if (p != null) {
             p.sendMessage("");

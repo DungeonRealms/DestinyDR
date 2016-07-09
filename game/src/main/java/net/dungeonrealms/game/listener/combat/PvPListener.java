@@ -11,6 +11,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -18,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.concurrent.ExecutionException;
@@ -46,6 +48,9 @@ public class PvPListener implements Listener {
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
 
         if (!API.isWeapon(damager.getEquipment().getItemInMainHand())) {
+            for (ItemStack i : receiver.getInventory().getArmorContents()) {
+                RepairAPI.subtractCustomDurability(receiver, i, 1);
+            }
             HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, 1, 0, 0);
             return;
         }
@@ -95,47 +100,35 @@ public class PvPListener implements Listener {
         }
 
 
-        API.runAsyncCallbackTask(() -> DamageAPI.calculateWeaponDamage(damager, receiver), consumer -> {
-            try {
-                double calculatedDamage = consumer.get();
-                if (API.getGamePlayer(receiver) != null && API.getGamePlayer(damager) != null) {
-                    if (API.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                        if (API.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
-                                if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
-                                    event.setCancelled(true);
-                                    event.setDamage(0);
-                                    damager.updateInventory();
-                                    receiver.updateInventory();
-                                    event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
-                                    event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
-                                    return;
-                                }
-                            }
+        double calculatedDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
+        if (API.getGamePlayer(receiver) != null && API.getGamePlayer(damager) != null) {
+            if (API.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                if (API.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
+                        if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
+                            event.setCancelled(true);
+                            event.setDamage(0);
+                            damager.updateInventory();
+                            receiver.updateInventory();
+                            event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
+                            event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                            return;
                         }
                     }
                 }
-                API.runAsyncCallbackTask(() -> DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null), armorConsumer -> {
-                    try {
-                        double[] armorCalculation = armorConsumer.get();
-                        final double finalDamage = calculatedDamage - armorCalculation[0];
-                        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
-
-                        DamageAPI.handlePolearmAOE(event, calculatedDamage / 2, damager);
-
-                        // prevent crazy knockback
-                        if (receiver.hasMetadata("lastPvpHit") && System.currentTimeMillis() - receiver.getMetadata("lastPvpHit").get(0).asLong() < 200)
-                            event.setCancelled(true);
-                        receiver.setMetadata("lastPvpHit", new FixedMetadataValue(DungeonRealms.getInstance(), System
-                                .currentTimeMillis()));
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
             }
-        });
+        }
+        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
+        final double finalDamage = calculatedDamage - armorCalculation[0];
+        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
+
+        DamageAPI.handlePolearmAOE(event, calculatedDamage / 2, damager);
+
+        // prevent crazy knockback
+        if (receiver.hasMetadata("lastPvpHit") && System.currentTimeMillis() - receiver.getMetadata("lastPvpHit").get(0).asLong() < 200)
+            event.setCancelled(true);
+        receiver.setMetadata("lastPvpHit", new FixedMetadataValue(DungeonRealms.getInstance(), System
+                .currentTimeMillis()));
 
     }
 
@@ -159,38 +152,26 @@ public class PvPListener implements Listener {
             CombatLog.addToCombat(damager);
         }
 
-        API.runAsyncCallbackTask(() -> DamageAPI.calculateProjectileDamage(damager, receiver, projectile), consumer -> {
-            try {
-                double calculatedDamage = consumer.get();
-                if (API.getGamePlayer(receiver) != null && API.getGamePlayer(damager) != null) {
-                    if (API.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                        if (API.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
-                                if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
-                                    event.setCancelled(true);
-                                    event.setDamage(0);
-                                    damager.updateInventory();
-                                    receiver.updateInventory();
-                                    event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
-                                    event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
-                                    return;
-                                }
-                            }
+        double calculatedDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
+        if (API.getGamePlayer(receiver) != null && API.getGamePlayer(damager) != null) {
+            if (API.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                if (API.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
+                        if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
+                            event.setCancelled(true);
+                            event.setDamage(0);
+                            damager.updateInventory();
+                            receiver.updateInventory();
+                            event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
+                            event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                            return;
                         }
                     }
                 }
-                API.runAsyncCallbackTask(() -> DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null), armorConsumer -> {
-                    try {
-                        double[] armorCalculation = armorConsumer.get();
-                        final double finalDamage = calculatedDamage - armorCalculation[0];
-                        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
             }
-        });
+        }
+        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, projectile);
+        final double finalDamage = calculatedDamage - armorCalculation[0];
+        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
     }
 }

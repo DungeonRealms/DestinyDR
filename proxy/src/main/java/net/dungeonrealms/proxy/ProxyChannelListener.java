@@ -77,6 +77,10 @@ public class ProxyChannelListener implements Listener {
                         //  plugin.sendMessageToGuild(guildName, message);
                         break;
                     }
+                    case "update": {
+                        plugin.relayPacket("DungeonRealms", event.getData());
+                        break;
+                    }
                 }
             }
             if (subChannel.equals("Friends") || subChannel.equals("Shop")) {

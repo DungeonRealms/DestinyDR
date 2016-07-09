@@ -259,6 +259,14 @@ public class MainListener implements Listener {
         }, 20L * 5);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDropEvent(PlayerDropItemEvent event) {
+        Player p = event.getPlayer();
+        if (!API.getGamePlayer(p).isAbleToDrop()) {
+            event.setCancelled(true);
+        }
+    }
+    
     /**
      * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
      * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
@@ -503,11 +511,14 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             if (API.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {
-                event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Type 'y' when ye ready to leave!");
+                event.getPlayer().sendMessage("");
+                event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Are you ready to start ye adventure " + event.getPlayer().getName() + "?"); //+ " " + ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "Y " + ChatColor.GRAY.toString() + "/" + ChatColor.RED.toString() + ChatColor.BOLD.toString() + " N");
+                event.getPlayer().sendMessage(ChatColor.GRAY + "Type either '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' or '" + ChatColor.RED + "N" + ChatColor.GRAY + "' -- Yes or No; Once you leave this island you can never come back, your epic adventure in the lands of Andalucia will begin!");
+                event.getPlayer().sendMessage("");
                 Chat.listenForMessage(event.getPlayer(), e -> {
                     if (e.getMessage().equalsIgnoreCase("y")) {
                         event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
-                        event.getPlayer().teleport(Teleportation.Cyrennica);
+                        event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -466, 75, 389));
                         ItemManager.giveStarter(event.getPlayer());
                     }
                 }, pl -> pl.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));

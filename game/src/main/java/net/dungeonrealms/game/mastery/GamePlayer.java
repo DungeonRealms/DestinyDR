@@ -71,6 +71,10 @@ public class GamePlayer {
     @Setter
     private boolean isTargettable;
 
+    @Getter
+    @Setter
+    private boolean ableToDrop;
+
     public GamePlayer(Player player) {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());

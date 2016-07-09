@@ -28,6 +28,7 @@ public interface Realms extends GenericMechanic {
     // BUFFER SIZE OF BLOCK PROCESSOR //
     int BLOCK_PROCESSOR_BUFFER_SIZE = 1024;
 
+
     /**
      * @return EnumPriority.BISHOP
      */
@@ -44,6 +45,9 @@ public interface Realms extends GenericMechanic {
      * All realms must be uploaded and removed from cache before shutdown
      */
     void stopInvocation();
+
+
+    boolean isApollosRealm(String worldName);
 
 
     /**

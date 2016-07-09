@@ -74,14 +74,18 @@ public class CommandBan extends BasicCommand {
             return true;
         }
 
-        if (sender instanceof Player) {
-            if (!Rank.isGM((Player) sender) && !Rank.isDev((Player) sender)) {
-                if (Rank.isPMOD((Player) sender) && duration > 1209600L) {
+        if (sender instanceof Player)
+            if (!Rank.isGM((Player) sender) && !Rank.isDev((Player) sender) && Rank.isPMOD((Player) sender)) {
+                if (duration > 1209600L) {
                     sender.sendMessage(ChatColor.RED + "You cannot ban players for more than 14 days.");
                     return true;
                 }
+
+                if (duration == -1) {
+                    sender.sendMessage(ChatColor.RED + "You cannot permanently ban players");
+                    return true;
+                }
             }
-        }
 
         if (Rank.isPMOD(Bukkit.getOfflinePlayer(p_uuid))) {
             sender.sendMessage(ChatColor.RED + "You cannot ban that player.");

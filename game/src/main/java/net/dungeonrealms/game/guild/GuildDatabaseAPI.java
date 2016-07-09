@@ -64,6 +64,30 @@ public interface GuildDatabaseAPI {
      */
     boolean isGuildNull(UUID uuid);
 
+
+    /**
+     * Updates cached guild
+     *
+     * @param guildName Guild name
+     */
+    void updateCache(String guildName);
+
+    /**
+     * Remove from guild
+     *
+     * @param guildName Guild name
+     */
+    void removeFromCache(String guildName);
+
+
+    /**
+     * Checks if guild is cached
+     *
+     * @param guildName Guild name
+     */
+    boolean isGuildCached(String guildName);
+
+
     /**
      * Gets the guild of a player.
      *
