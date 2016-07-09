@@ -292,7 +292,7 @@ public class API {
 
 
     /**
-     * Requests an update for cached data on target
+     * Requests an update for cached player data on target
      * player's server
      *
      * @param uuid Target
@@ -301,6 +301,18 @@ public class API {
         // SENDS PACKET ON MESSAGING CHANNEL //
         NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Update", uuid.toString());
     }
+
+    /**
+     * Requests an update for cached guild data on target
+     * player's server
+     *
+     * @param guildName Target
+     */
+    public static void updateGuildData(String guildName) {
+        // SENDS PACKET ON MESSAGING CHANNEL //
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guild", "Update", guildName);
+    }
+
 
     /**
      * Gets players UUID from Name. ASYNC.

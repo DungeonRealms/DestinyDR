@@ -25,6 +25,7 @@ import net.dungeonrealms.game.commands.testcommands.CommandTestRank;
 import net.dungeonrealms.game.commands.testcommands.CommandTestingHall;
 import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.guild.GuildChannelListener;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listener.MainListener;
 import net.dungeonrealms.game.listener.TabCompleteCommands;
@@ -274,14 +275,14 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new RestrictionListener(), this);
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
-//            pm.registerEvents(new TutorialIslandHandler(), this);
+            //pm.registerEvents(new TutorialIslandHandler(), this);
         } else {
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
             pm.registerEvents(new InventoryListener(), this);
             pm.registerEvents(new BlockListener(), this);
             pm.registerEvents(new EnergyListener(), this);
-//            pm.registerEvents(new AntiCheatListener(), this);
+            //pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new AchievementManager(), this);
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new RestrictionListener(), this);
@@ -290,6 +291,8 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
         }
+
+        new GuildChannelListener(this);
 
         //pm.registerEvents(new MainListener(), this);
         //pm.registerEvents(new DamageListener(), this);

@@ -133,7 +133,7 @@ public class RealmInstance implements Realms {
     @Override
     public void stopInvocation() {
         // REMOVES ALL CACHED REALMS //
-        Utils.log.info("[REALM] [SYNC] Removing all player realms..");
+        Utils.log.info("[REALM] [SYNC] Uploading all player realms..");
         removeAllRealms(false);
     }
 

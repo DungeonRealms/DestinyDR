@@ -9,17 +9,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class GuildChannelListener implements PluginMessageListener {
-
-    private static GuildChannelListener instance;
-
-    public static GuildChannelListener getInstance() {
-        if (instance == null) {
-            instance = new GuildChannelListener(DungeonRealms.getInstance());
-        }
-        return instance;
-    }
 
     public GuildChannelListener(DungeonRealms plugin) {
         Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "DungeonRealms");
@@ -28,7 +20,6 @@ public class GuildChannelListener implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-
         if (!channel.equals("DungeonRealms")) return;
 
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
@@ -37,14 +28,38 @@ public class GuildChannelListener implements PluginMessageListener {
             String subChannel = in.readUTF();
 
             if (subChannel.equals("Guilds")) {
-
                 String command = in.readUTF();
 
-                switch (command) {
-                    //TODO
+                if (command.contains("message:")) {
+                    String[] commandArray = command.split(":");
+                    String[] filter = Arrays.copyOfRange(commandArray, 1, commandArray.length);
+
+                    String guildName = in.readUTF();
+                    String msg = in.readUTF();
+
+                    GuildMechanics.getInstance().sendMessageToGuild(guildName, msg, filter);
+                    return;
                 }
 
+                switch (command) {
+                    case "message": {
+                        String guildName = in.readUTF();
+                        String msg = in.readUTF();
+
+                        GuildMechanics.getInstance().sendMessageToGuild(guildName, msg);
+                        break;
+                    }
+
+                    case "update": {
+                        String guildName = in.readUTF();
+
+                        if (GuildDatabaseAPI.get().isGuildCached(guildName))
+                            GuildDatabaseAPI.get().cacheGuild(guildName);
+                        break;
+                    }
+                }
             }
+
 
         } catch (EOFException e) {
             // Do nothing.

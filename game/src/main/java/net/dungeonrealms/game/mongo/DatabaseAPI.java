@@ -8,7 +8,6 @@ import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,7 +45,7 @@ public class DatabaseAPI {
                 /*(result, exception) -> {
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
-                        requestPlayer(uuid);
+                        requestGuild(uuid);
                     }
                 });*/
     }

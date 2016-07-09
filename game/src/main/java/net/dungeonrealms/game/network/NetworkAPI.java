@@ -8,7 +8,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
@@ -33,7 +32,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -85,31 +83,6 @@ public class NetworkAPI implements PluginMessageListener {
                         }
                     }
                     return;
-                }
-
-                if (subChannel.equals("Guilds")) {
-                    String command = in.readUTF();
-
-                    if (command.contains("message:")) {
-                        String[] commandArray = command.split(":");
-                        String[] filter = Arrays.copyOfRange(commandArray, 1, commandArray.length);
-
-                        String guildName = in.readUTF();
-                        String msg = in.readUTF();
-
-                        GuildMechanics.getInstance().sendMessageToGuild(guildName, msg, filter);
-                        return;
-                    }
-
-                    switch (command) {
-                        case "message": {
-                            String guildName = in.readUTF();
-                            String msg = in.readUTF();
-
-                            GuildMechanics.getInstance().sendMessageToGuild(guildName, msg);
-                            break;
-                        }
-                    }
                 }
 
                 if (subChannel.equals("Friends")) {

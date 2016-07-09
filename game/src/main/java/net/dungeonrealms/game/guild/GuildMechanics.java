@@ -65,6 +65,10 @@ public class GuildMechanics {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
 
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+
+        if (!GuildDatabaseAPI.get().isGuildCached(guildName))
+            GuildDatabaseAPI.get().cacheGuild(guildName);
+
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
@@ -107,6 +111,8 @@ public class GuildMechanics {
 
             GuildDatabaseAPI.get().getAllOfGuild(guildName)
                     .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has left your shard.")));
+
+            if (getAllOnlineGuildMembers(guildName).size() >= 1) GuildDatabaseAPI.get().removeFromCache(guildName);
         } catch (NullPointerException ignored) {
         }
     }
@@ -159,6 +165,15 @@ public class GuildMechanics {
             player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to <" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
             player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
         }
+    }
+
+    public List<UUID> getAllOnlineGuildMembers(String guildName) {
+        List<UUID> online = new ArrayList<>();
+
+        GuildDatabaseAPI.get().getAllOfGuild(guildName)
+                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null).forEach(online::add);
+
+        return online;
     }
 
     /**
@@ -225,6 +240,8 @@ public class GuildMechanics {
      * @param guildName Guild
      */
     public void showGuildInfo(Player player, String guildName, boolean showMotd) {
+        API.updateGuildData(guildName);
+
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
@@ -290,6 +307,8 @@ public class GuildMechanics {
 
                 sendAlert(guildName, player.getName() + ChatColor.GRAY.toString() + " has " +
                         ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild." + (referrer != null ? " [INVITE: " + ChatColor.ITALIC + referrer + ChatColor.GRAY + "]" : ""));
+                API.updateGuildData(guildName);
+
             } else {
                 player.sendMessage(ChatColor.RED + "This guild no longer exists.");
 
@@ -370,6 +389,7 @@ public class GuildMechanics {
             if (gp != null)
                 ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());*/
 
+            API.updateGuildData(guildName);
             API.updatePlayerData(player.getUniqueId());
         }, null);
     }

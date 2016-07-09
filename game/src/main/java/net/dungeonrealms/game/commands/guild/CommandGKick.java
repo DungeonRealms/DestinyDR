@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands.guild;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -78,6 +79,7 @@ public class CommandGKick extends BasicCommand {
         }
 
         GuildMechanics.getInstance().kickFromGuild(player, p_uuid, guildName);
+        API.updateGuildData(guildName);
 
         if (p != null) {
             p.sendMessage("");
