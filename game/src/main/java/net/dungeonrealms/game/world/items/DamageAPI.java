@@ -255,7 +255,7 @@ public class DamageAPI {
                 Utils.log.info("Attacker: " + attacker.getName());
                 Utils.log.info("Defender: " + receiver.getName());
                 Utils.log.info("Attacker attributes: ");
-                ((DRMonster) attacker).getAttributes().toString();
+                ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes().toString();
                 return 0;
             }
             API.calculateAllAttributes((Player) attacker);
@@ -585,7 +585,7 @@ public class DamageAPI {
                 Utils.log.info("Attacker: " + attacker.getName());
                 Utils.log.info("Defender: " + receiver.getName());
                 Utils.log.info("Attacker attributes: ");
-                ((DRMonster) attacker).getAttributes().toString();
+                ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes().toString();
                 return 0;
             }
             API.calculateAllAttributes((Player) attacker);
