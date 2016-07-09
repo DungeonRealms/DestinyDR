@@ -166,6 +166,7 @@ public class NetworkAPI implements PluginMessageListener {
                         Shop shop = ShopMechanics.getShop(playerName);
                         if (shop != null) {
                             shop.deleteShop(false);
+                            NetworkAPI.getInstance().sendPlayerMessage(playerName, ChatColor.YELLOW + "Shop found and removed.");
                         }
                     }
                 }
