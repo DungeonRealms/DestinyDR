@@ -9,8 +9,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -65,20 +64,14 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     }
 
     @EventHandler
-    public void onProxyConnection(PostLoginEvent event) {
-        ProxiedPlayer player = event.getPlayer();
-        final int[] count = {0};
-
+    public void onProxyConnection(PreLoginEvent event) {
         // DUPE GLITCH FIX //
-        getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> {
-            count[0]++;
-
-            if (count[0] >= 2) {
-                if (player != null)
-                    player.disconnect(ChatColor.RED + "Another player with your account has logged into the server!");
-
+        getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(event.getConnection().getUniqueId())).forEach(p -> {
+            if (p != null)
                 p.disconnect(ChatColor.RED + "Another player with your account has logged into the server!");
-            }
+
+            event.setCancelReason(ChatColor.RED + "Another player with your account has logged into the server!");
+            event.setCancelled(true);
         });
     }
 
