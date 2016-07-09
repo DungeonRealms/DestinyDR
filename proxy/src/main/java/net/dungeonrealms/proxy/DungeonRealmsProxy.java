@@ -47,7 +47,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     public DungeonRealmsProxy() {
         MOTD = "&6Dungeon Realms &8- &e&oCompletely re-coded v1.9+\n&7Open Beta!     &8- &f&nwww.dungeonrealms.net &8-";
-        MAX_PLAYERS = 500;
+        MAX_PLAYERS = 1300;
     }
 
     @Override
