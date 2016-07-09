@@ -259,6 +259,13 @@ public class MainListener implements Listener {
         }, 20L * 5);
     }
 
+    public void onDropEvent(PlayerDropItemEvent event) {
+        Player p = event.getPlayer();
+        if (!API.getGamePlayer(p).isAbleToDrop()) {
+            event.setCancelled(true);
+        }
+    }
+
     /**
      * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
      * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
