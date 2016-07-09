@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 5/31/2016
@@ -71,19 +70,16 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         final int[] count = {0};
 
         // DUPE GLITCH FIX //
-        getProxy().getScheduler().runAsync(this, () -> getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> {
+        getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(player.getUniqueId())).forEach(p -> {
             count[0]++;
 
             if (count[0] >= 2) {
-                if (player != null) {
-                    getProxy().getScheduler().schedule(DungeonRealmsProxy.this,
-                            () -> player.disconnect(ChatColor.RED + "Another player with your account has logged into the server!"), 1, TimeUnit.NANOSECONDS);
+                if (player != null)
+                    player.disconnect(ChatColor.RED + "Another player with your account has logged into the server!");
 
-                }
-                getProxy().getScheduler().schedule(DungeonRealmsProxy.this,
-                        () -> p.disconnect(ChatColor.RED + "Another player with your account has logged into the server!"), 1, TimeUnit.NANOSECONDS);
+                p.disconnect(ChatColor.RED + "Another player with your account has logged into the server!");
             }
-        }));
+        });
     }
 
     @EventHandler
