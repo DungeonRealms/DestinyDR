@@ -862,7 +862,14 @@ public class DamageListener implements Listener {
 
         double dmg = event.getDamage();
         event.setDamage(0);
-        event.setCancelled(true);
+
+        if (event.getEntity().hasMetadata("lastEnvironmentDamage") && (System.currentTimeMillis() - event.getEntity()
+                .getMetadata("lastEnvironmentDamage").get(0).asLong()) < 800) {
+            event.setCancelled(true);
+            return;
+        }
+        event.getEntity().setMetadata("lastEnvironmentDamage", new FixedMetadataValue(DungeonRealms.getInstance(),
+                System.currentTimeMillis()));
 
         int maxHP = 0;
         if (API.isPlayer(event.getEntity())) {
@@ -902,29 +909,15 @@ public class DamageListener implements Listener {
                     dmg = 0;
                 break;
             case FIRE_TICK:
-                if ((event.getEntity().hasMetadata("lastFireDamage") && System.currentTimeMillis() - event.getEntity().getMetadata("lastFireDamage").get(0).asLong() < 800)) {
-                    dmg = 0;
-                    break;
-                }
-
                 if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)))
                     dmg = maxHP * 0.01;
                 else dmg = 0;
-
-                event.getEntity().setMetadata("lastFireDamage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 break;
             case LAVA:
             case FIRE:
-                if ((event.getEntity().hasMetadata("lastFireDamage") && System.currentTimeMillis() - event.getEntity().getMetadata("lastFireDamage").get(0).asLong() < 800)) {
-                    dmg = 0;
-                    break;
-                }
-
                 if (!(((LivingEntity) event.getEntity()).hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)))
                     dmg = maxHP * 0.03;
                 else dmg = 0;
-
-                event.getEntity().setMetadata("lastFireDamage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 break;
             case POISON:
                 dmg = maxHP * 0.01;
