@@ -25,7 +25,7 @@ public class ECashMenus {
         Inventory inventory = Bukkit.createInventory(null, 18, "E-Cash Pets");
         inventory.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         for (EnumPets pet : EnumPets.values()) {
-            if (pet == EnumPets.BABY_HORSE || pet == EnumPets.SNOWMAN || pet == EnumPets.CREEPER_OF_INDEPENDENCE) {
+            if (pet == EnumPets.BABY_HORSE || pet == EnumPets.SNOWMAN || pet == EnumPets.CREEPER_OF_INDEPENDENCE || pet == EnumPets.SILVERFISH) {
                 //special pets
                 continue;
             }

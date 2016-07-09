@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.world.items;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
@@ -252,7 +250,7 @@ public class DamageAPI {
             // recalculate all attributes as a failsafe
             if (!isAttackerPlayer) {
                 Utils.log.warning("[DamageAPI] Mob caused exception in calculateWeaponDamage.");
-                API.calculateAllAttributes(attacker, ((DRMonster) attacker).getAttributes());
+                API.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity)attacker).getHandle()).getAttributes());
                 ex.printStackTrace();
                 Utils.log.info("Attacker: " + attacker.getName());
                 Utils.log.info("Defender: " + receiver.getName());
@@ -582,7 +580,7 @@ public class DamageAPI {
             // recalculate all attributes as a failsafe
             if (!isAttackerPlayer) {
                 Utils.log.warning("[DamageAPI] Mob caused exception in calculateProjectileDamage.");
-                API.calculateAllAttributes(attacker, ((DRMonster) attacker).getAttributes());
+                API.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity)attacker).getHandle()).getAttributes());
                 ex.printStackTrace();
                 Utils.log.info("Attacker: " + attacker.getName());
                 Utils.log.info("Defender: " + receiver.getName());
