@@ -407,7 +407,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "Opens the player trails menu.", Arrays.asList("trails", "effect", "effects")));
             cm.registerCommand(new CommandAchievements("achievements", "/<command> [args]", "Opens the player achievements menu.", Collections.singletonList("achievement")));
             cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "Opens the player profile menu."));
-            cm.registerCommand(new CommandEcash("ecash", "/<command> [args]", "Opens the E-Cash vendor menu."));
+            cm.registerCommand(new CommandEcash("ecash", "/<command> [args]", "Opens the E-Cash vendor menu.", Arrays.asList("shop", "buy")));
 
             cm.registerCommand(new CommandTestRank("testrank", "/<command> [args]", "This is a test command."));
             cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a test command.", Collections.singletonList("testinghall")));

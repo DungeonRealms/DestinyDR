@@ -6,8 +6,10 @@ import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.menus.player.ShardSelector;
@@ -74,8 +76,14 @@ public class NetworkAPI implements PluginMessageListener {
 
                 if (subChannel.equals("Update")) {
                     UUID uuid = UUID.fromString(in.readUTF());
-                    if (Bukkit.getPlayer(uuid) != null) DatabaseAPI.getInstance().requestPlayer(uuid);
-
+                    Player player1 = Bukkit.getPlayer(uuid);
+                    if (player1 != null) {
+                        DatabaseAPI.getInstance().requestPlayer(uuid);
+                        if (API.getGamePlayer(player1) != null) {
+                            //Updates tab menu, prefixes etc.
+                            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player1, API.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor(), API.getGamePlayer(player1).getLevel());
+                        }
+                    }
                     return;
                 }
 

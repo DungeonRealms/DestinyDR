@@ -12,7 +12,6 @@ import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
@@ -71,7 +70,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -178,6 +176,9 @@ public class MainListener implements Listener {
             event.setCancelled(true);
             return;
         }
+
+        Chat.getInstance().doMessageChatListener(event);
+
         if (PunishUtils.isMuted(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(PunishUtils.getMutedMessage(event.getPlayer().getUniqueId()));
             event.setCancelled(true);

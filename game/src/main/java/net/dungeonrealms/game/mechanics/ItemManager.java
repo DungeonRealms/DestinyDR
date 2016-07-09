@@ -316,9 +316,9 @@ public class ItemManager {
                     name = ChatColor.WHITE + "Poor Elixir of Splash Healing";
                 }
                 if (!fromShop) {
-                    healAmount = RandomHelper.getRandomNumberBetween(30, 100);
+                    healAmount = RandomHelper.getRandomNumberBetween(10, 50);
                 } else {
-                    healAmount = 75;
+                    healAmount = 40;
                 }
                 break;
             case 2:
@@ -328,9 +328,9 @@ public class ItemManager {
                     name = ChatColor.GREEN + "Inferior Elixir of Splash Healing";
                 }
                 if (!fromShop) {
-                    healAmount = RandomHelper.getRandomNumberBetween(270, 375);
+                    healAmount = RandomHelper.getRandomNumberBetween(60, 120);
                 } else {
-                    healAmount = 325;
+                    healAmount = 90;
                 }
                 break;
             case 3:
@@ -340,9 +340,9 @@ public class ItemManager {
                     name = ChatColor.AQUA + "Modest Elixir of Splash Healing";
                 }
                 if (!fromShop) {
-                    healAmount = RandomHelper.getRandomNumberBetween(800, 1000);
+                    healAmount = RandomHelper.getRandomNumberBetween(250, 400);
                 } else {
-                    healAmount = 900;
+                    healAmount = 350;
                 }
                 break;
             case 4:
@@ -352,9 +352,9 @@ public class ItemManager {
                     name = ChatColor.LIGHT_PURPLE + "Superior Elixir of Splash Healing";
                 }
                 if (!fromShop) {
-                    healAmount = RandomHelper.getRandomNumberBetween(2000, 2400);
+                    healAmount = RandomHelper.getRandomNumberBetween(700, 950);
                 } else {
-                    healAmount = 2250;
+                    healAmount = 850;
                 }
                 break;
             case 5:
@@ -364,9 +364,9 @@ public class ItemManager {
                     name = ChatColor.YELLOW + "Legendary Elixir of Splash Healing";
                 }
                 if (!fromShop) {
-                    healAmount = RandomHelper.getRandomNumberBetween(3700, 4300);
+                    healAmount = RandomHelper.getRandomNumberBetween(1600, 2100);
                 } else {
-                    healAmount = 4000;
+                    healAmount = 1900;
                 }
                 break;
             default:

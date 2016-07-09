@@ -63,6 +63,22 @@ public class Chat {
             "cunt", "titty", "anus", " faggot", "gay", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "titanrift", "fucked"));
 
     /**
+     * Listens for chat event listener
+     *
+     * @param event Chat event
+     * @since 1.0
+     */
+    public void doMessageChatListener(AsyncPlayerChatEvent event) {
+        Consumer<? super AsyncPlayerChatEvent> messageListener = chatListeners.remove(event.getPlayer());
+        if (messageListener != null) {
+            messageListener.accept(event);
+            orElseListeners.remove(event.getPlayer());
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    /**
      * Monitor the players primary language also check for bad words.
      *
      * @param event Chat event
