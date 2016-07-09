@@ -405,6 +405,14 @@ public class RealmListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onItemFramePlace(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        RealmToken realm = REALMS.getRealm(event.getPlayer().getLocation().getWorld());
+
+        if (realm != null && event.getItem().getType().equals(Material.ITEM_FRAME))
+            event.setCancelled(true);
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPortalDestory(PlayerInteractEvent event) {
