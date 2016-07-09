@@ -67,7 +67,7 @@ public class GuildMechanics {
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
         if (!GuildDatabaseAPI.get().isGuildCached(guildName))
-            GuildDatabaseAPI.get().cacheGuild(guildName);
+            GuildDatabaseAPI.get().updateCache(guildName);
 
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;

@@ -54,7 +54,7 @@ public class GuildChannelListener implements PluginMessageListener {
                         String guildName = in.readUTF();
 
                         if (GuildDatabaseAPI.get().isGuildCached(guildName))
-                            GuildDatabaseAPI.get().cacheGuild(guildName);
+                            GuildDatabaseAPI.get().updateCache(guildName);
                         break;
                     }
                 }

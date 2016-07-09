@@ -37,7 +37,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return instance;
     }
 
-    public void cacheGuild(String guildName) {
+    public void updateCache(String guildName) {
         Document doc = Database.guilds.find(Filters.eq("info.name", guildName)).first();
         CACHED_GUILD.put(guildName, doc);
     }

@@ -70,7 +70,7 @@ public interface GuildDatabaseAPI {
      *
      * @param guildName Guild name
      */
-    void cacheGuild(String guildName);
+    void updateCache(String guildName);
 
     /**
      * Remove from guild
