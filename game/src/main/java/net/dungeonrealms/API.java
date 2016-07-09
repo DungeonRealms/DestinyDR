@@ -34,6 +34,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.rank.Subscription;
+import net.dungeonrealms.game.punish.PunishUtils;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -605,7 +606,7 @@ public class API {
             if (stoppingAll) {
                 DungeonRealms.getInstance().getLoggingOut().add(player.getName());
                 DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                player.kickPlayer("The DungeonRealms Servers are rebooting. Please wait to reconnect.");
+                PunishUtils.kick(player.getName(), ChatColor.AQUA + "All DungeonRealm shards are restarting.");
                 continue;
             }
             if (customStop) {
