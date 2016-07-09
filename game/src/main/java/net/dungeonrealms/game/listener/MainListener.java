@@ -259,6 +259,7 @@ public class MainListener implements Listener {
         }, 20L * 5);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onDropEvent(PlayerDropItemEvent event) {
         Player p = event.getPlayer();
         if (!API.getGamePlayer(p).isAbleToDrop()) {
