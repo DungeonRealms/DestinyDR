@@ -7,6 +7,7 @@ import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.punish.PunishUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -57,8 +58,8 @@ public class CommandMessage extends BasicCommand {
             return true;
         }
         UUID uuid = UUID.fromString(testUUID);
+        if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.getInstance().isGM(Bukkit.getOfflinePlayer(uuid))) {
 
-        if (!FriendHandler.getInstance().areFriends(player, uuid)) {
             if (!(boolean) DatabaseAPI.getInstance().getValue(uuid, EnumData.TOGGLE_RECEIVE_MESSAGE)) {
                 player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
                 return true;
