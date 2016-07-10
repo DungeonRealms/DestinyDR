@@ -3,7 +3,8 @@ Patch <build>
 Bug Fixes:
 - Fixed the removal of display items from inventories.
 - Mining an ore below your tier pick, is guaranteed.
-- Shops can now be closed from other shards, and sent to collection bin.
+- Shops can now be closed from other shards,
+and sent to collection bin.
 - Re-Fixed shops and banks.
 New Features:
 - Added patch note system.
