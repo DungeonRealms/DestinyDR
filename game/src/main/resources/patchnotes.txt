@@ -1,10 +1,7 @@
 Patch <build>
 
 Bug Fixes:
-- Shop dupe glitch
-- Fixed being able to shift click untradeable
-items in shop and putting mounts in shop
-- Fixed guild quit bug
+- Fixed the removal of display items from inventories.
 
 New Features:
--Added patch note system :3
+- Added patch note system.
