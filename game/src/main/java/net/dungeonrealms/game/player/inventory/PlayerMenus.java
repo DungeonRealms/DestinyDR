@@ -27,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -36,6 +35,8 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "chasesTouch"})
 public class PlayerMenus {
 
+    //TODO: DisplayItem Lore on stuff here.
+
     public static void openFriendsMenu(Player player) {
         UUID uuid = player.getUniqueId();
         ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
@@ -43,7 +44,8 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 54, "Friends");
 
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to go back!"
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to go back!",
+                ChatColor.GRAY + "Display Item"
         }));
 
 
@@ -51,7 +53,8 @@ public class PlayerMenus {
         for (String s : friends) {
             String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(s));
             ItemStack stack = editItem(name, name, new String[]{
-                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!"
+                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!",
+                    ChatColor.GRAY + "Display Item"
             });
 
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
@@ -77,11 +80,13 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 45, "Friend Management");
 
         inv.setItem(0, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + "Add Friend", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to add friend!"
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to add friend!",
+                ChatColor.GRAY + "Display Item"
         }));
 
         inv.setItem(1, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "View Friend", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to view friends!"
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to view friends!",
+                ChatColor.GRAY + "Display Item"
         }));
 
         int slot = 9;
@@ -91,7 +96,8 @@ public class PlayerMenus {
             String name = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(from));
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to accept!",
-                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to deny!"
+                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to deny!",
+                    ChatColor.GRAY + "Display Item"
             });
 
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
@@ -116,7 +122,8 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 45, "Mailbox");
 
         inv.setItem(8, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Tax", new String[]{
-                ChatColor.GRAY + "Tax: " + ChatColor.AQUA + "5 GEMS"
+                ChatColor.GRAY + "Tax: " + ChatColor.AQUA + "5 GEMS",
+                ChatColor.GRAY + "Display Item"
         }));
 
         int slot = 9;
@@ -183,6 +190,7 @@ public class PlayerMenus {
                     ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
                     "",
                     ChatColor.GREEN + "Name: " + ChatColor.WHITE + petName,
+                    ChatColor.GRAY + "Display Item"
             }));
         }
 
@@ -243,6 +251,7 @@ public class PlayerMenus {
         tag.set("mountType", new NBTTagString(mountType));
         nmsStack.setTag(tag);
         inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), EnumMounts.getByName(mountType).getShortID(), ChatColor.GREEN + EnumMounts.getByName(mountType).getDisplayName(), new String[]{
+                ChatColor.GRAY + "Display Item"
         }));
 
         player.openInventory(inv);
@@ -270,6 +279,7 @@ public class PlayerMenus {
             tag.set("playerTrailType", new NBTTagString(trailType));
             nmsStack.setTag(tag);
             inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + ParticleAPI.ParticleEffect.getByName(trailType).getDisplayName(), new String[]{
+                    ChatColor.GRAY + "Display Item"
             }));
         }
 
@@ -312,31 +322,37 @@ public class PlayerMenus {
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Exploration",
                 "",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(3, editItem(new ItemStack(Material.GOLD_SWORD), ChatColor.GOLD + "Combat", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Combat",
                 "",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(4, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GOLD + "Character", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Character customization",
                 "",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(5, editItem(new ItemStack(Material.EMERALD), ChatColor.GOLD + "Currency", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Currency",
                 "",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(6, editItem(new ItemStack(Material.WRITTEN_BOOK), ChatColor.GOLD + "Social", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Social Achievements",
                 "",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(7, editItem(new ItemStack(Material.NETHER_STAR), ChatColor.GOLD + "Realm", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to your Realm",
                 "",
+                ChatColor.GRAY + "Display Item"
         }));
         player.openInventory(inv);
     }
@@ -361,6 +377,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 } else {
                     inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
@@ -369,6 +386,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 }
             }
@@ -396,6 +414,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 } else {
                     inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
@@ -404,6 +423,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 }
             }
@@ -431,6 +451,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 } else {
                     inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
@@ -439,6 +460,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 }
             }
@@ -466,6 +488,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 } else {
                     inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
@@ -474,6 +497,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 }
             }
@@ -501,6 +525,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 } else {
                     inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
@@ -509,6 +534,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 }
             }
@@ -536,6 +562,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 } else {
                     inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
@@ -544,6 +571,7 @@ public class PlayerMenus {
                             ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
                             "",
                             ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                            ChatColor.GRAY + "Display Item"
                     }));
                 }
             }
@@ -557,13 +585,15 @@ public class PlayerMenus {
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Place stat points on different attributes. ",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View Attributes."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View Attributes.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(1, editItem("Shrek", ChatColor.GOLD + "Friend List", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Add or remove friends.",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View Friend list."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View Friend list.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile", new String[]{
         }));
@@ -573,21 +603,24 @@ public class PlayerMenus {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "with powerful effects.",
                 "",
                 ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View obtained effect.",
-                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive effect item."
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive effect item.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GOLD + "Mounts", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Travel Andalucia quickly.",
                 "",
                 ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View obtained mounts.",
-                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Saddle."
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Saddle.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GOLD + "Pets", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Travel with a cute companion.",
                 "",
                 ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " View available pets.",
-                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Pet Leash."
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Pet Leash.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(16, editItem(new ItemStack(Material.LEASH), ChatColor.GOLD + "Storage Mule", new String[]{
                 "",
@@ -595,32 +628,37 @@ public class PlayerMenus {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "purchase a Mule from the Animal Tamer.",
                 "",
                 ChatColor.WHITE + "Left-Click:" + ChatColor.GREEN + " Spawn Storage Mule.",
-                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Mule Leash."
+                ChatColor.WHITE + "Right-Click:" + ChatColor.GREEN + " Receive Mule Leash.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(17, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GOLD + "Mount Skins", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Equip your mount with a fancy skin.",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained mount skins."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained mount skins.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GOLD + "E-Cash Vendor", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "E-Cash is obtained by voting and online store purchase.",
                 ChatColor.GRAY + "http://dungeonrealms.net/shop",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open the E-Cash Vendor."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open the E-Cash Vendor.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(24, editItem(new ItemStack(Material.COMPASS), ChatColor.GOLD + "Achievements", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Check your progress.",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View achievements."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View achievements.",
+                ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GOLD + "Toggles", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Adjust preferences here.",
                 "",
-                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open toggles menu."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open toggles menu.",
+                ChatColor.GRAY + "Display Item"
         }));
 
         player.openInventory(inv);
@@ -672,11 +710,16 @@ public class PlayerMenus {
         int i = 0;
         for (PlayerManager.PlayerToggles playerToggles : PlayerManager.PlayerToggles.values()) {
             boolean isToggled = (boolean) DatabaseAPI.getInstance().getData(playerToggles.getDbField(), player.getUniqueId());
-            inv.setItem(i, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "/" + playerToggles.getCommandName(), new String[]{(ChatColor.GRAY + playerToggles.getDescription())}).build());
+            inv.setItem(i, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "/" + playerToggles.getCommandName(), new String[]{
+                    ChatColor.GRAY + playerToggles.getDescription(),
+                    ChatColor.GRAY + "Display Item"
+            }).build());
             i++;
         }
 
-        inv.setItem(i, ItemManager.createItem(Material.BARRIER, ChatColor.YELLOW + "Back", new String[]{ChatColor.AQUA + "Back to the Profile Menu!"}));
+        inv.setItem(i, ItemManager.createItem(Material.BARRIER, ChatColor.YELLOW + "Back", new String[]{
+                ChatColor.AQUA + "Back to the Profile Menu!",
+                ChatColor.GRAY + "Display Item"}));
         player.openInventory(inv);
     }
 
@@ -694,11 +737,15 @@ public class PlayerMenus {
 
         // Invisible
         isToggled = API._hiddenPlayers.contains(player);
-        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Invisible Mode", new String[]{(ChatColor.GRAY + "Toggling this will make you invisible to players and mobs.")}).build());
+        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Invisible Mode", new String[]{
+                ChatColor.GRAY + "Toggling this will make you invisible to players and mobs.",
+                ChatColor.GRAY + "Display Item"}).build());
 
         // Allow Fight
         isToggled = false; // @todo: Alan - change this to check if they've got fight enabled.
-        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Allow Combat", new String[]{(ChatColor.GRAY + "Toggling this will make you vulnerable to attacks but also allow outgoing damage.")}).build());
+        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Allow Combat", new String[]{
+                ChatColor.GRAY + "Toggling this will make you vulnerable to attacks but also allow outgoing damage.",
+                ChatColor.GRAY + "Display Item"}).build());
 
         player.openInventory(inv);
     }

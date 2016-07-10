@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.shops;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -7,8 +8,11 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.world.entities.utils.MountUtils;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,6 +52,10 @@ public class ShopMechanics implements GenericMechanic {
             shop.deleteShop(shutDown);
         }
         Bukkit.getWorlds().get(0).save();
+    }
+
+    public static boolean isItemSellable(ItemStack i) {
+        return !API.isItemTradeable(i) || !API.isItemDroppable(i) || API.isItemSoulbound(i) || MountUtils.isMount(i);
     }
 
     public static void setupShop(Block block, UUID uniqueId) {
@@ -96,6 +105,88 @@ public class ShopMechanics implements GenericMechanic {
      */
     public static Shop getShop(String ownerName) {
         return ALLSHOPS.get(ownerName);
+    }
+
+    public static void stripPriceLore(ItemStack stackClicked) {
+        ItemMeta meta = stackClicked.getItemMeta();
+        List<String> lore = meta.getLore();
+        if (lore != null)
+            for (int i = 0; i < lore.size(); i++) {
+                String current = lore.get(i);
+                if (current.contains("Price")) {
+                    lore.remove(i);
+                    break;
+                }
+            }
+        meta.setLore(lore);
+        stackClicked.setItemMeta(meta);
+    }
+
+    public static void listenForPricing(Shop shop, Player clicker, net.minecraft.server.v1_9_R2.ItemStack nms, int playerSlot) {
+        Chat.listenForMessage(clicker, chat -> {
+            if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
+                clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
+                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                BankMechanics.shopPricing.remove(clicker.getName());
+                return;
+            }
+            if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
+                clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
+                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                BankMechanics.shopPricing.remove(clicker.getName());
+                return;
+            }
+            int number = 0;
+            try {
+                number = Integer.parseInt(chat.getMessage());
+            } catch (Exception exc) {
+                clicker.sendMessage(ChatColor.RED + "Please enter a valid number");
+                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                BankMechanics.shopPricing.remove(clicker.getName());
+                return;
+            }
+            if (number <= 0) {
+                clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
+                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                BankMechanics.shopPricing.remove(clicker.getName());
+                return;
+            } else {
+                if (BankMechanics.shopPricing.get(clicker.getName()) == null) return;
+                net.minecraft.server.v1_9_R2.ItemStack newNMS = CraftItemStack.asNMSCopy(BankMechanics.shopPricing.get(clicker.getName()).clone());
+                NBTTagCompound tag = newNMS.hasTag() ? nms.getTag() : new NBTTagCompound();
+                tag.setInt("Price", number);
+                newNMS.setTag(tag);
+                if (shop.inventory.firstEmpty() >= 0) {
+                    int slot = shop.inventory.firstEmpty();
+
+                    ItemStack stack = CraftItemStack.asBukkitCopy(newNMS);
+                    ItemMeta meta = stack.getItemMeta();
+                    ArrayList<String> lore = new ArrayList<>();
+                    if (meta.hasLore()) {
+                        lore = (ArrayList<String>) meta.getLore();
+                    }
+                    lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
+                            + ChatColor.WHITE.toString() + number + "g" + ChatColor.GREEN + " each");
+                    meta.setLore(lore);
+                    stack.setItemMeta(meta);
+                    shop.inventory.setItem(slot, stack);
+                    clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
+
+                    clicker.sendMessage(new String[]{
+                            ChatColor.GREEN.toString() + "Price set. Right-Click item to edit.",
+                            ChatColor.YELLOW + "Left Click the item to remove it from your shop."});
+                    clicker.getInventory().setItem(playerSlot, new ItemStack(Material.AIR));
+                    BankMechanics.shopPricing.remove(clicker.getName());
+                } else {
+                    clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                    BankMechanics.shopPricing.remove(clicker.getName());
+                    clicker.sendMessage("There is no room for this item in your Shop");
+                }
+            }
+        }, player -> {
+            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+            BankMechanics.shopPricing.remove(clicker.getName());
+        });
     }
 
     @Override

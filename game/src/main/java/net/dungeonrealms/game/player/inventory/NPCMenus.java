@@ -21,6 +21,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,29 +36,34 @@ public class NPCMenus {
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(), new String[]{
                 ChatColor.RED + "Speed 120%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old brown starter horse.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3000g"}).setNBTString("mountType", EnumMounts.TIER1_HORSE.getRawName()).setNBTInt("mountCost", 3000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3000g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("mountType", EnumMounts.TIER1_HORSE.getRawName()).setNBTInt("mountCost", 3000).build());
         inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
                 ChatColor.RED + "Speed 140%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A horse fit for a humble squire.",
                 ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(),
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7000g"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 7000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7000g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 7000).build());
         inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.DIAMOND_BARDING), ChatColor.LIGHT_PURPLE + EnumMounts.TIER3_HORSE.getDisplayName(), new String[]{
                 ChatColor.RED + "Speed 170%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A well versed travelling companion.",
                 ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(),
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", EnumMounts.TIER3_HORSE.getRawName()).setNBTInt("mountCost", 15000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("mountType", EnumMounts.TIER3_HORSE.getRawName()).setNBTInt("mountCost", 15000).build());
         inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.GOLD_BARDING), ChatColor.YELLOW + EnumMounts.TIER4_HORSE.getDisplayName(), new String[]{
                 ChatColor.RED + "Speed 200%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A mount fit for even the best of adventurers.",
                 ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.LIGHT_PURPLE + EnumMounts.TIER3_HORSE.getDisplayName(),
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "30000g"}).setNBTString("mountType", EnumMounts.TIER4_HORSE.getRawName()).setNBTInt("mountCost", 30000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "30000g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("mountType", EnumMounts.TIER4_HORSE.getRawName()).setNBTInt("mountCost", 30000).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Storage Mule", new String[]{
                 ChatColor.RED + "Storage Size: 9 Items",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old worn-out storage mule.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "5000g"}).setNBTString("mountType", EnumMounts.MULE.getRawName()).setNBTInt("mountCost", 5000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "5000g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("mountType", EnumMounts.MULE.getRawName()).setNBTInt("mountCost", 5000).build());
         player.openInventory(inv);
     }
 
@@ -68,12 +74,14 @@ public class NPCMenus {
         ItemMeta meta = pickAxe.getItemMeta();
         List<String> lore = meta.getLore();
         lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
+        lore.add(ChatColor.GRAY + "Display Item");
         String[] arr = lore.toArray(new String[lore.size()]);
         inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), arr));
 
         ItemMeta meta2 = fishingRod.getItemMeta();
         List<String> lore2 = meta2.getLore();
         lore2.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
+        lore2.add(ChatColor.GRAY + "Display Item");
         String[] arr2 = lore2.toArray(new String[lore2.size()]);
         inv.addItem(editItem(fishingRod, fishingRod.getItemMeta().getDisplayName(), arr2));
         player.openInventory(inv);
@@ -133,21 +141,27 @@ public class NPCMenus {
         Inventory inv = Bukkit.createInventory(null, 18, "E-Cash Vendor");
 
         inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.MONSTER_EGG), ChatColor.GOLD + "Pets", new String[]{
-                ChatColor.GRAY + "View the available E-Cash Pets."
+                ChatColor.GRAY + "View the available E-Cash Pets.",
+                ChatColor.GRAY + "Display Item"
         }).build());
         inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.GLOWSTONE_DUST), ChatColor.GOLD + "Effects", new String[]{
-                ChatColor.GRAY + "View the available E-Cash Effects."
+                ChatColor.GRAY + "View the available E-Cash Effects.",
+                ChatColor.GRAY + "Display Item"
         }).build());
         inv.setItem(5, new ItemBuilder().setItem(new ItemStack(Material.SKULL_ITEM), ChatColor.GOLD + "Skins", new String[]{
-                ChatColor.GRAY + "View the available E-Cash Skins."
+                ChatColor.GRAY + "View the available E-Cash Skins.",
+                ChatColor.GRAY + "Display Item"
         }).build());
         inv.setItem(7, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK), ChatColor.GOLD + "Miscellaneous", new String[]{
-                ChatColor.GRAY + "View the available E-Cash Miscellaneous Items."
+                ChatColor.GRAY + "View the available E-Cash Miscellaneous Items.",
+                ChatColor.GRAY + "Display Item"
         }).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Our Store", new String[]{
-                ChatColor.AQUA + "Click here to visit our store!"}).setNBTString("donationStore", "ProxyIsAwesome").build());
+                ChatColor.AQUA + "Click here to visit our store!",
+                ChatColor.GRAY + "Display Item"}).setNBTString("donationStore", "ProxyIsAwesome").build());
         inv.setItem(17, new ItemBuilder().setItem(new ItemStack(Material.GOLDEN_APPLE), ChatColor.GREEN + "Current E-Cash", new String[]{
-                ChatColor.AQUA + "Your E-Cash Balance is: " + ChatColor.YELLOW.toString() + ChatColor.BOLD + API.getGamePlayer(player).getEcashBalance()}).build());
+                ChatColor.AQUA + "Your E-Cash Balance is: " + ChatColor.YELLOW.toString() + ChatColor.BOLD + API.getGamePlayer(player).getEcashBalance(),
+                ChatColor.GRAY + "Display Item"}).build());
 
         player.openInventory(inv);
     }
@@ -156,21 +170,29 @@ public class NPCMenus {
         Inventory inv = Bukkit.createInventory(null, 9, "Hearthstone Re-Location");
 
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Cyrennica", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "1000g"}).setNBTString("hearthstoneLocation", "CYRENNICA").setNBTInt("gemCost", 1000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "1000g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "CYRENNICA").setNBTInt("gemCost", 1000).build());
         inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Harrison Fields", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "1500g"}).setNBTString("hearthstoneLocation", "HARRISON_FIELD").setNBTInt("gemCost", 1500).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "1500g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "HARRISON_FIELD").setNBTInt("gemCost", 1500).build());
         inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Dark Oak Tavern", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3500g"}).setNBTString("hearthstoneLocation", "DARK_OAK").setNBTInt("gemCost", 3500).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3500g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "DARK_OAK").setNBTInt("gemCost", 3500).build());
         inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Gloomy Hollows", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3500g"}).setNBTString("hearthstoneLocation", "GLOOMY_HOLLOWS").setNBTInt("gemCost", 3500).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3500g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "GLOOMY_HOLLOWS").setNBTInt("gemCost", 3500).build());
         inv.setItem(4, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Tripoli", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7500g"}).setNBTString("hearthstoneLocation", "TRIPOLI").setNBTInt("gemCost", 7500).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7500g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "TRIPOLI").setNBTInt("gemCost", 7500).build());
         inv.setItem(5, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Trollsbane Tavern", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7500g"}).setNBTString("hearthstoneLocation", "TROLLSBANE").setNBTInt("gemCost", 7500).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7500g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "TROLLSBANE").setNBTInt("gemCost", 7500).build());
         inv.setItem(6, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Crestguard Keep", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("hearthstoneLocation", "CRESTGUARD").setNBTInt("gemCost", 15000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "CRESTGUARD").setNBTInt("gemCost", 15000).build());
         inv.setItem(7, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Deadpeaks Mountain", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "25000g"}).setNBTString("hearthstoneLocation", "DEADPEAKS").setNBTInt("gemCost", 25000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "25000g",
+                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "DEADPEAKS").setNBTInt("gemCost", 25000).build());
 
         player.openInventory(inv);
     }
@@ -179,18 +201,25 @@ public class NPCMenus {
         Inventory inv = Bukkit.createInventory(null, 9, "Dungeoneer");
 
         inv.setItem(0, new ItemBuilder().setItem(ItemManager.createMuleUpgrade(2)).addLore(ChatColor.WHITE + "5000" + ChatColor.AQUA + " Portal Key Shards")
+                .addLore(ChatColor.GRAY + "Display Item")
                 .setNBTInt("shardCost", 5000).setNBTInt("shardTier", 3).build());
         inv.setItem(1, new ItemBuilder().setItem(ItemManager.createMuleUpgrade(3)).addLore(ChatColor.WHITE + "8000" + ChatColor.LIGHT_PURPLE + " Portal Key Shards")
+                .addLore(ChatColor.GRAY + "Display Item")
                 .setNBTInt("shardCost", 8000).setNBTInt("shardTier", 4).build());
-        inv.setItem(2, new ItemBuilder().setItem(ItemManager.createProtectScroll(1)).addLore(ChatColor.WHITE + "1500 Portal Shards").setNBTInt("shardTier", 1)
+        inv.setItem(2, new ItemBuilder().setItem(ItemManager.createProtectScroll(1)).addLore(ChatColor.WHITE + "1500 Portal Shards")
+                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 1)
                 .setNBTString("shardColor", ChatColor.WHITE.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(3, new ItemBuilder().setItem(ItemManager.createProtectScroll(2)).addLore(ChatColor.WHITE + "1500 " + ChatColor.GREEN + "Portal Shards").setNBTInt("shardTier", 2)
+        inv.setItem(3, new ItemBuilder().setItem(ItemManager.createProtectScroll(2)).addLore(ChatColor.WHITE + "1500 " + ChatColor.GREEN + "Portal Shards")
+                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 2)
                 .setNBTString("shardColor", ChatColor.GREEN.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(4, new ItemBuilder().setItem(ItemManager.createProtectScroll(3)).addLore(ChatColor.WHITE + "1500 " + ChatColor.AQUA + "Portal Shards").setNBTInt("shardTier", 3)
+        inv.setItem(4, new ItemBuilder().setItem(ItemManager.createProtectScroll(3)).addLore(ChatColor.WHITE + "1500 " + ChatColor.AQUA + "Portal Shards")
+                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 3)
                 .setNBTString("shardColor", ChatColor.AQUA.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(5, new ItemBuilder().setItem(ItemManager.createProtectScroll(4)).addLore(ChatColor.WHITE + "1500 " + ChatColor.LIGHT_PURPLE + "Portal Shards").setNBTInt("shardTier", 4)
+        inv.setItem(5, new ItemBuilder().setItem(ItemManager.createProtectScroll(4)).addLore(ChatColor.WHITE + "1500 " + ChatColor.LIGHT_PURPLE + "Portal Shards")
+                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 4)
                 .setNBTString("shardColor", ChatColor.LIGHT_PURPLE.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(6, new ItemBuilder().setItem(ItemManager.createProtectScroll(5)).addLore(ChatColor.WHITE + "1500 " + ChatColor.YELLOW + "Portal Shards").setNBTInt("shardTier", 5)
+        inv.setItem(6, new ItemBuilder().setItem(ItemManager.createProtectScroll(5)).addLore(ChatColor.WHITE + "1500 " + ChatColor.YELLOW + "Portal Shards")
+                .addLore(ChatColor.GRAY + "Display Item").setNBTInt("shardTier", 5)
                 .setNBTString("shardColor", ChatColor.YELLOW.toString()).setNBTInt("shardCost", 1500).build());
 
         player.openInventory(inv);
@@ -199,11 +228,12 @@ public class NPCMenus {
     public static void openMerchantMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, "Merchant");
 
-        inv.setItem(4, new ItemStack(Material.THIN_GLASS));
-        inv.setItem(13, new ItemStack(Material.THIN_GLASS));
-        inv.setItem(22, new ItemStack(Material.THIN_GLASS));
+        inv.setItem(4, addDisplayLore(new ItemStack(Material.THIN_GLASS)));
+        inv.setItem(13,  addDisplayLore(new ItemStack(Material.THIN_GLASS)));
+        inv.setItem(22, addDisplayLore(new ItemStack(Material.THIN_GLASS)));
         inv.setItem(0, new ItemBuilder().setItem(Material.INK_SACK, (short) 8, ChatColor.YELLOW + "Click to ACCEPT", new String[]{
-                ""
+                "",
+                ChatColor.GRAY + "Display Item"
         }).setNBTString("acceptButton", "whynot").build());
         player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.f, 1.f);
 
@@ -217,6 +247,15 @@ public class NPCMenus {
         itemStack.setItemMeta(meta);
         itemStack.setAmount(1);
         return itemStack;
+    }
+
+    private static ItemStack addDisplayLore(ItemStack stack) {
+        ItemMeta meta = stack.getItemMeta();
+        List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Display Item");
+        String[] arr = lore.toArray(new String[lore.size()]);
+        stack = NPCMenus.editItem(stack, stack.getItemMeta().getDisplayName(), arr);
+        return stack;
     }
 
     public static void openItemVendorMenu(Player player) {
@@ -268,25 +307,25 @@ public class NPCMenus {
         ItemStack enchantedApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, Item.ItemRarity.RARE), 100);
         ItemStack goldCarrot = ShopMechanics.addPrice(ItemManager.createHealingFood(5, Item.ItemRarity.UNIQUE), 128);
 
-        inv.setItem(0, potato);
-        inv.setItem(1, loadedPotato);
-        inv.setItem(2, apple);
+        inv.setItem(0, addDisplayLore(potato));
+        inv.setItem(1, addDisplayLore(loadedPotato));
+        inv.setItem(2, addDisplayLore(apple));
 
-        inv.setItem(3, unCookedChicken);
-        inv.setItem(4, RoastedChicken);
-        inv.setItem(5, pumpkinPie);
+        inv.setItem(3, addDisplayLore(unCookedChicken));
+        inv.setItem(4, addDisplayLore(RoastedChicken));
+        inv.setItem(5, addDisplayLore(pumpkinPie));
 
-        inv.setItem(6, saltedPork);
-        inv.setItem(7, seasonedPork);
-        inv.setItem(8, mushroomSoup);
+        inv.setItem(6, addDisplayLore(saltedPork));
+        inv.setItem(7, addDisplayLore(seasonedPork));
+        inv.setItem(8, addDisplayLore(mushroomSoup));
 
-        inv.setItem(9, frozenSteak);
-        inv.setItem(10, sizzlingSteak);
-        inv.setItem(11, grilledRabbit);
+        inv.setItem(9, addDisplayLore(frozenSteak));
+        inv.setItem(10, addDisplayLore(sizzlingSteak));
+        inv.setItem(11, addDisplayLore(grilledRabbit));
 
-        inv.setItem(12, kingsApple);
-        inv.setItem(13, enchantedApple);
-        inv.setItem(14, goldCarrot);
+        inv.setItem(12, addDisplayLore(kingsApple));
+        inv.setItem(13, addDisplayLore(enchantedApple));
+        inv.setItem(14, addDisplayLore(goldCarrot));
         player.openInventory(inv);
     }
 

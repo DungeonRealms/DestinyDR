@@ -13,7 +13,6 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,7 +32,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Chase on Sep 23, 2015
@@ -120,6 +118,7 @@ public class ShopListener implements Listener {
                 shop.updateStatus();
                 return;
             }
+            int playerSlot = clicker.getInventory().firstEmpty();
             ItemStack itemHeld = event.getCursor();
             ItemStack stackInSlot = event.getCurrentItem();
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemHeld);
@@ -136,88 +135,18 @@ public class ShopListener implements Listener {
                     if (BankMechanics.shopPricing.containsKey(clicker.getName())) {
                         clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                     }
+                    if (!ShopMechanics.isItemSellable(itemHeld)) {
+                        event.setCancelled(true);
+                        clicker.sendMessage(ChatColor.RED + "You cannot sell this item!");
+                        return;
+                    }
                     BankMechanics.shopPricing.put(clicker.getName(), stackClicked);
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
                     clicker.closeInventory();
-                    Chat.listenForMessage(clicker, chat -> {
-                        if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
-                            clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
-                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                            BankMechanics.shopPricing.remove(clicker.getName());
-                            return;
-                        }
-                        if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
-                            clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
-                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                            BankMechanics.shopPricing.remove(clicker.getName());
-                            return;
-                        }
-                        int number = 0;
-                        try {
-                            number = Integer.parseInt(chat.getMessage());
-                        } catch (Exception exc) {
-                            clicker.sendMessage(ChatColor.RED + "Please enter a valid number");
-                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                            BankMechanics.shopPricing.remove(clicker.getName());
-                            return;
-                        }
-                        if (number <= 0) {
-                            clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
-                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                            BankMechanics.shopPricing.remove(clicker.getName());
-                            return;
-                        } else {
-                            if (BankMechanics.shopPricing.get(clicker.getName()) == null) return;
-                            net.minecraft.server.v1_9_R2.ItemStack newNMS = CraftItemStack.asNMSCopy(stackClicked.clone());
-                            NBTTagCompound tagCompound = newNMS.getTag() == null ? new NBTTagCompound() : newNMS.getTag();
-                            tagCompound.setInt("Price", number);
-                            newNMS.setTag(tagCompound);
-                            if (shop.inventory.firstEmpty() >= 0) {
-                                int slot = shop.inventory.firstEmpty();
-
-                                ItemStack stack = CraftItemStack.asBukkitCopy(newNMS);
-                                ItemMeta meta = stack.getItemMeta();
-                                ArrayList<String> lore = new ArrayList<>();
-                                if (meta.hasLore()) {
-                                    lore = (ArrayList<String>) meta.getLore();
-                                }
-                                lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-                                        + ChatColor.WHITE.toString() + number + "g" + ChatColor.GREEN + " each");
-                                meta.setLore(lore);
-                                stack.setItemMeta(meta);
-                                shop.inventory.setItem(slot, stack);
-
-
-                                clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
-
-                                clicker.sendMessage(new String[]{
-                                        ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
-                                        ChatColor.YELLOW + "Left Click the item to remove it from your shop."});
-                                BankMechanics.shopPricing.remove(clicker.getName());
-                            } else {
-                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                                BankMechanics.shopPricing.remove(clicker.getName());
-                                clicker.sendMessage("There is no room for this item in your Shop");
-                            }
-                        }
-                    }, player -> {
-                        player.getInventory().addItem(BankMechanics.shopPricing.get(player.getName()));
-                        BankMechanics.shopPricing.remove(player.getName());
-                    });
+                    ShopMechanics.listenForPricing(shop, clicker, nms, playerSlot);
                 } else {
                     ItemStack stackClicked = event.getCurrentItem();
-                    ItemMeta meta = stackClicked.getItemMeta();
-                    List<String> lore = meta.getLore();
-                    if (lore != null)
-                        for (int i = 0; i < lore.size(); i++) {
-                            String current = lore.get(i);
-                            if (current.contains("Price")) {
-                                lore.remove(i);
-                                break;
-                            }
-                        }
-                    meta.setLore(lore);
-                    stackClicked.setItemMeta(meta);
+                    ShopMechanics.stripPriceLore(stackClicked);
 
                 }
                 return;
@@ -239,84 +168,20 @@ public class ShopListener implements Listener {
                             event.setCancelled(true);
                             return;
                         }
-                        if (!API.isItemTradeable(itemHeld) || !API.isItemDroppable(itemHeld) || API.isItemSoulbound(itemHeld) || nms.hasTag() && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
+                        if (!ShopMechanics.isItemSellable(itemHeld)) {
                             event.setCancelled(true);
                             clicker.sendMessage(ChatColor.RED + "You cannot sell this item!");
                             return;
                         }
                         event.setCancelled(true);
                         event.setCursor(null);
-                        int playerSlot = clicker.getInventory().firstEmpty();
                         if (BankMechanics.shopPricing.containsKey(clicker.getName())) {
                             clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                         }
                         BankMechanics.shopPricing.put(clicker.getName(), itemHeld);
                         clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
                         clicker.closeInventory();
-                        Chat.listenForMessage(clicker, chat -> {
-                            if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
-                                clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
-                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                                BankMechanics.shopPricing.remove(clicker.getName());
-                                return;
-                            }
-                            if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
-                                clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
-                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                                BankMechanics.shopPricing.remove(clicker.getName());
-                                return;
-                            }
-                            int number = 0;
-                            try {
-                                number = Integer.parseInt(chat.getMessage());
-                            } catch (Exception exc) {
-                                clicker.sendMessage(ChatColor.RED + "Please enter a valid number");
-                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                                BankMechanics.shopPricing.remove(clicker.getName());
-                                return;
-                            }
-                            if (number <= 0) {
-                                clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
-                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                                BankMechanics.shopPricing.remove(clicker.getName());
-                                return;
-                            } else {
-                                if (BankMechanics.shopPricing.get(clicker.getName()) == null) return;
-                                net.minecraft.server.v1_9_R2.ItemStack newNMS = CraftItemStack.asNMSCopy(BankMechanics.shopPricing.get(clicker.getName()).clone());
-                                NBTTagCompound tag = newNMS.hasTag() ? nms.getTag() : new NBTTagCompound();
-                                tag.setInt("Price", number);
-                                newNMS.setTag(tag);
-                                if (shop.inventory.firstEmpty() >= 0) {
-                                    int slot = shop.inventory.firstEmpty();
-
-                                    ItemStack stack = CraftItemStack.asBukkitCopy(newNMS);
-                                    ItemMeta meta = stack.getItemMeta();
-                                    ArrayList<String> lore = new ArrayList<>();
-                                    if (meta.hasLore()) {
-                                        lore = (ArrayList<String>) meta.getLore();
-                                    }
-                                    lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-                                            + ChatColor.WHITE.toString() + number + "g" + ChatColor.GREEN + " each");
-                                    meta.setLore(lore);
-                                    stack.setItemMeta(meta);
-                                    shop.inventory.setItem(slot, stack);
-                                    clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
-
-                                    clicker.sendMessage(new String[]{
-                                            ChatColor.GREEN.toString() + "Price set. Right-Click item to edit.",
-                                            ChatColor.YELLOW + "Left Click the item to remove it from your shop."});
-                                    clicker.getInventory().setItem(playerSlot, new ItemStack(Material.AIR));
-                                    BankMechanics.shopPricing.remove(clicker.getName());
-                                } else {
-                                    clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                                    BankMechanics.shopPricing.remove(clicker.getName());
-                                    clicker.sendMessage("There is no room for this item in your Shop");
-                                }
-                            }
-                        }, player -> {
-                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
-                            BankMechanics.shopPricing.remove(clicker.getName());
-                        });
+                        ShopMechanics.listenForPricing(shop, clicker, nms, playerSlot);
                         clicker.closeInventory();
                         return;
                     }
@@ -329,18 +194,7 @@ public class ShopListener implements Listener {
 
                     // Removing item from Shop
                     ItemStack stack = stackInSlot.clone();
-                    ItemMeta meta = stack.getItemMeta();
-                    List<String> lore = meta.getLore();
-                    if (lore != null)
-                        for (int i = 0; i < lore.size(); i++) {
-                            String current = lore.get(i);
-                            if (current.contains("Price")) {
-                                lore.remove(i);
-                                break;
-                            }
-                        }
-                    meta.setLore(lore);
-                    stack.setItemMeta(meta);
+                    ShopMechanics.stripPriceLore(stack);
                     event.setCancelled(true);
                     net.minecraft.server.v1_9_R2.ItemStack nms2 = CraftItemStack.asNMSCopy(stack);
                     nms2.getTag().remove("Price");
@@ -356,48 +210,7 @@ public class ShopListener implements Listener {
                     clicker.closeInventory();
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
                     clicker.closeInventory();
-                    Chat.listenForMessage(clicker, chat -> {
-                        if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
-                            clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
-                            return;
-                        }
-                        if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
-                            clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
-                            return;
-                        }
-                        int number = 0;
-                        try {
-                            number = Integer.parseInt(chat.getMessage());
-                        } catch (Exception exc) {
-                            chat.getPlayer().sendMessage(ChatColor.RED + "Please enter a valid number");
-                            return;
-                        }
-                        if (number < 0) {
-                            clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
-                        } else {
-                            ItemStack stack = stackInSlot.clone();
-                            ItemMeta meta = stackInSlot.getItemMeta();
-                            ArrayList<String> lore = new ArrayList<>();
-                            if (meta.hasLore()) {
-                                lore = (ArrayList<String>) meta.getLore();
-                            }
-                            for (int i = 0; i < lore.size(); i++) {
-                                String current = lore.get(i);
-                                if (current.contains("Price")) {
-                                    lore.remove(i);
-                                    break;
-                                }
-                            }
-                            lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-                                    + ChatColor.WHITE.toString() + number + "g " + ChatColor.GREEN + "each");
-                            meta.setLore(lore);
-                            stack.setItemMeta(meta);
-                            net.minecraft.server.v1_9_R2.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
-                            nms1.getTag().setInt("Price", number);
-                            shop.inventory.setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms1));
-                            clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
-                        }
-                    }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
+                    ShopMechanics.listenForPricing(shop, clicker, nms, playerSlot);
                 }
             }
         } else {
@@ -467,19 +280,7 @@ public class ShopListener implements Listener {
                         }
                         BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker);
                         ItemStack toGive = itemClicked.clone();
-                        ItemMeta meta = toGive.getItemMeta();
-                        List<String> lore = meta.getLore();
-                        if (lore != null) {
-                            for (int i = 0; i < lore.size(); i++) {
-                                String current = lore.get(i);
-                                if (current.contains("Price")) {
-                                    lore.remove(i);
-                                    break;
-                                }
-                            }
-                        }
-                        meta.setLore(lore);
-                        toGive.setItemMeta(meta);
+                        ShopMechanics.stripPriceLore(toGive);
                         toGive.setAmount(quantity);
                         clicker.getInventory().addItem(toGive);
                         clicker.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + totalPrice + ChatColor.BOLD + "G");
@@ -541,19 +342,7 @@ public class ShopListener implements Listener {
                 if (BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker)) {
                     event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR));
                     ItemStack clickClone = itemClicked.clone();
-                    ItemMeta meta = clickClone.getItemMeta();
-                    List<String> lore = meta.getLore();
-                    if (lore != null) {
-                        for (int i = 0; i < lore.size(); i++) {
-                            String current = lore.get(i);
-                            if (current.contains("Price")) {
-                                lore.remove(i);
-                                break;
-                            }
-                        }
-                    }
-                    meta.setLore(lore);
-                    clickClone.setItemMeta(meta);
+                    ShopMechanics.stripPriceLore(clickClone);
                     DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, true);
                     if (shop.getOwner() != null) {
                         if (shop.hasCustomName(itemClicked)) {
