@@ -34,11 +34,6 @@ public class CommandRealm extends BasicCommand {
         StringBuilder newTitle = new StringBuilder(args[0]);
         for (int arg = 1; arg < args.length; arg++) newTitle.append(" ").append(args[arg]);
 
-        if (newTitle.length() > 16) {
-            player.sendMessage(ChatColor.RED + "Your realm title cannot be longer than 11 characters");
-            return true;
-        }
-
         if (newTitle.toString().contains("$")) {
             player.sendMessage(ChatColor.RED + "Title contains illegal character '$'.");
             return true;

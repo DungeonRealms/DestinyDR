@@ -140,7 +140,7 @@ public class RealmInstance implements Realms {
 
     @Override
     public boolean isApollosRealm(String world) {
-        return world.equals("c7f83b31-2eeb-4b0b-baa3-bb2a330726d7");
+        return world.equals("c7f83b31-2eeb-4b0b-baa3-bb2a330726d7") || world.equals("4fc64a66-c54e-4f99-833c-a5b3e2de79d6");
     }
 
     @Override
@@ -834,7 +834,7 @@ public class RealmInstance implements Realms {
         ChatColor[] pimpColoursM8 = new ChatColor[]{ChatColor.BLUE, ChatColor.RED, ChatColor.YELLOW, ChatColor.GOLD, ChatColor.AQUA, ChatColor.GREEN, ChatColor.LIGHT_PURPLE};
         int rnd = new Random().nextInt(pimpColoursM8.length);
 
-        realmHologram.insertTextLine(0, !isApollosRealm(uuid.toString()) ? ChatColor.WHITE.toString() + ChatColor.BOLD + name : pimpColoursM8[rnd].toString() + ChatColor.BOLD + "APOLLO'S REALM [HOT GIRLS ONLY]");
+        realmHologram.insertTextLine(0, !isApollosRealm(uuid.toString()) ? ChatColor.WHITE.toString() + ChatColor.BOLD + name : pimpColoursM8[rnd].toString() + ChatColor.BOLD + "APOLLO'S REALM [PIMPS ONLY]");
         realmHologram.insertTextLine(1, realm.getPropertyBoolean("peaceful") ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
     }
 
