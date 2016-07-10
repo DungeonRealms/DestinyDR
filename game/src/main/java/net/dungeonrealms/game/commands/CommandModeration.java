@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.rank.Rank;
@@ -72,6 +74,12 @@ public class CommandModeration extends BasicCommand {
                 if (Bukkit.getPlayer(playerName) != null) {
                     Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
                     sender.openInventory(storage.inv);
+                }
+                break;
+            case "gems":
+                playerName = args[1];
+                if (Bukkit.getPlayer(playerName) != null) {
+                    sender.sendMessage(ChatColor.YELLOW + playerName + " balance: " + ChatColor.AQUA + DatabaseAPI.getInstance().getData(EnumData.GEMS, Bukkit.getPlayer(playerName).getUniqueId()));
                 }
                 break;
         }

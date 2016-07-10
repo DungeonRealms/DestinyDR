@@ -419,11 +419,11 @@ public class Mining implements GenericMechanic {
             meta.setLore(lore);
             pick.setItemMeta(meta);
 
-            if (addEnchant)
+            if (addEnchant) {
                 giveRandomEnchant(p, pick, tier);
-
-
-            p.getEquipment().setItemInMainHand(pick);
+            }else {
+                p.getEquipment().setItemInMainHand(pick);
+            }
         }
     }
 
@@ -481,7 +481,7 @@ public class Mining implements GenericMechanic {
         if (value == 0)
             value = 1;
         if (prevValue != -1)
-            prevValue += value;
+            value += prevValue;
         lore.add(ChatColor.RED + enchant.display + " +" + value + "%");
         lore.add(clone);
         meta.setLore(lore);
