@@ -91,10 +91,6 @@ import java.util.*;
 public class DungeonRealms extends JavaPlugin {
 
 
-    public static String version = "v5.0";
-    public static String buildNumber = "#100";
-
-
     private static final long serverStart = System.currentTimeMillis();
 
     private static DungeonRealms instance = null;

@@ -365,7 +365,6 @@ public class GuildMechanics {
                 if (officers.size() > 0) {
                     UUID sucessor = officers.get(0);
                     sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
-                    GuildDatabaseAPI.get().setOwner(guildName, sucessor);
                 } else {
                     // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");
@@ -383,6 +382,8 @@ public class GuildMechanics {
                         if (exists) GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
                     }
             );
+
+            if (officers.size() > 0) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
 
             // guild tags in scoreboard disabled
             /*GamePlayer gp = API.getGamePlayer(player);

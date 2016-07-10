@@ -1,6 +1,7 @@
 package net.dungeonrealms.tool;
 
 import lombok.Getter;
+import net.dungeonrealms.Constants;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -61,7 +62,7 @@ public class PatchTools implements GenericMechanic {
                 }
 
                 // APPEND BOOK PAGE ///
-                builder.append(ChatColor.translateAlternateColorCodes('&', str.replace("<build>", DungeonRealms.buildNumber))).append("\n");
+                builder.append(ChatColor.translateAlternateColorCodes('&', str.replace("<build>", Constants.BUILD_NUMBER))).append("\n");
                 line++;
             }
 
@@ -74,7 +75,7 @@ public class PatchTools implements GenericMechanic {
         }
 
         ItemStack patchBook = ItemManager.createItem(Material.WRITTEN_BOOK,
-                ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for " + DungeonRealms.version + " " + DungeonRealms.buildNumber, new String[]{});
+                ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER, new String[]{});
         BookMeta bm = (BookMeta) patchBook.getItemMeta();
 
         bm.setAuthor("DungeonRealms Development Team");

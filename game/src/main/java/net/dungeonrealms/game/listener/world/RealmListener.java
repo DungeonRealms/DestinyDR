@@ -455,7 +455,8 @@ public class RealmListener implements Listener {
 
         RealmToken realm = REALMS.getRealm(event.getClickedBlock().getLocation());
 
-        if (realm != null && event.getClickedBlock().getType().equals(Material.PORTAL) && realm.getOwner().equals(event.getPlayer().getUniqueId()) || Rank.isGM(event.getPlayer())) {
+        if (realm != null && event.getClickedBlock().getType().equals(Material.PORTAL) && realm.getOwner().equals(event.getPlayer().getUniqueId()) ||
+                Rank.isGM(event.getPlayer())) {
             REALMS.closeRealmPortal(realm.getOwner(), true, "");
             event.setCancelled(true);
         }

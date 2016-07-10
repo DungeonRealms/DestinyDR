@@ -6,8 +6,16 @@ package net.dungeonrealms;
 
 public class Constants {
 
-    // SERVER PORT //
+    // PACKET SERVER SERVER PORT //
     public static final int MASTER_SERVER_PORT = 6969;
+
+
+    // BUILD VERSION //
+    public static final String BUILD_VERSION = "v5.0";
+
+
+    // BUILD NUMBER //
+    public static final String BUILD_NUMBER = "#100";
 
 
 }
