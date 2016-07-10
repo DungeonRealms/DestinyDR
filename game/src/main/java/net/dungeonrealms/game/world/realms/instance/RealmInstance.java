@@ -331,6 +331,8 @@ public class RealmInstance implements Realms {
         World world = Bukkit.getServer().createWorld(new WorldCreator(uuid.toString()));
         world.setKeepSpawnInMemory(false);
         world.setStorm(false);
+        
+        world.getEntities().stream().filter(e -> e instanceof Item).forEach(Entity::remove);
 
         Utils.log.info("[REALM] [SYNC] World loaded for " + uuid.toString());
         Utils.log.info("[REALM] [SYNC] Setting world region " + uuid.toString());

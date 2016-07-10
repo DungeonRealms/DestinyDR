@@ -117,7 +117,8 @@ public class RealmListener implements Listener {
         } else if (REALMS.getRealm(event.getFrom()) != null) {
             RealmToken realm = REALMS.getRealm(event.getFrom());
 
-            player.setAllowFlight(false);
+            if (!player.getGameMode().equals(GameMode.CREATIVE))
+                player.setAllowFlight(false);
 
             if (player.getUniqueId().equals(realm.getOwner()))
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have left " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
@@ -424,13 +425,27 @@ public class RealmListener implements Listener {
         }
     }
 
+
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onItemFramePlace(PlayerInteractEvent event) {
+    public void onInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         RealmToken realm = REALMS.getRealm(event.getPlayer().getLocation().getWorld());
 
-        if (realm != null && event.getItem().getType().equals(Material.ITEM_FRAME))
+        Player p = event.getPlayer();
+
+        if (realm == null) return;
+
+        if (event.getItem().getType().equals(Material.ITEM_FRAME)) {
             event.setCancelled(true);
+            return;
+        }
+
+        if (!realm.getOwner().equals(p.getUniqueId()) && !realm.getBuilders().contains(p.getUniqueId()) && !Rank.isGM(p)) {
+            p.sendMessage(ChatColor.RED + "You aren't authorized to build in " + Bukkit.getPlayer(realm.getOwner()).getName() + "'s realm.");
+            p.sendMessage(ChatColor.GRAY + Bukkit.getPlayer(realm.getOwner()).getName() + " will have to " + ChatColor.UNDERLINE + "Sneak Left Click" + ChatColor.GRAY +
+                    " you with their Realm Portal Rune to add you to their builder list.");
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -440,7 +455,7 @@ public class RealmListener implements Listener {
 
         RealmToken realm = REALMS.getRealm(event.getClickedBlock().getLocation());
 
-        if (realm != null && (realm.getOwner().equals(event.getPlayer().getUniqueId()) || Rank.isGM(event.getPlayer()))) {
+        if (realm != null && event.getClickedBlock().getType().equals(Material.PORTAL) && realm.getOwner().equals(event.getPlayer().getUniqueId()) || Rank.isGM(event.getPlayer())) {
             REALMS.closeRealmPortal(realm.getOwner(), true, "");
             event.setCancelled(true);
         }
