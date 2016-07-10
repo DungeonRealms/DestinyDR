@@ -445,7 +445,6 @@ public class MainListener implements Listener {
             player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
         }
     }
-
     /**
      * Checks for player interacting with NPC Players, opens an inventory if
      * they have one.

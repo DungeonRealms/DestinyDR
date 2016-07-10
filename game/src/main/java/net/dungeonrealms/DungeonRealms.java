@@ -73,6 +73,7 @@ import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.ServerAddress;
+import net.dungeonrealms.tool.PatchTools;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -89,8 +90,13 @@ import java.util.*;
 
 public class DungeonRealms extends JavaPlugin {
 
+
+    public static String version = "v5.0";
+    public static String buildNumber = "#100";
+
+
     private static final long serverStart = System.currentTimeMillis();
-    public static String version = "5.0";
+
     private static DungeonRealms instance = null;
     private static HearthStone hs;
     private static Profile ps;
@@ -220,6 +226,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
             mm.registerMechanic(TutorialIslandHandler.getInstance());
+            mm.registerMechanic(PatchTools.getInstance());
         } else {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
@@ -233,6 +240,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(ScoreboardHandler.getInstance());
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
+            mm.registerMechanic(PatchTools.getInstance());
             mm.registerMechanic(Mining.getInstance());
             mm.registerMechanic(RealmInstance.getInstance());
             mm.registerMechanic(AchievementManager.getInstance());
@@ -411,6 +419,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandAchievements("achievements", "/<command> [args]", "Opens the player achievements menu.", Collections.singletonList("achievement")));
             cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "Opens the player profile menu."));
             cm.registerCommand(new CommandEcash("ecash", "/<command> [args]", "Opens the E-Cash vendor menu.", Arrays.asList("shop", "buy")));
+            cm.registerCommand(new CommandPatchNotes("patchnotes", "/<command>", "Shows patch for current build", Collections.singletonList("patch")));
 
             cm.registerCommand(new CommandTestRank("testrank", "/<command> [args]", "This is a test command."));
             cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a test command.", Collections.singletonList("testinghall")));

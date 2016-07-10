@@ -45,6 +45,7 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.tool.PatchTools;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import org.bukkit.*;
@@ -752,13 +753,13 @@ public class API {
         for (int j = 0; j < 20; j++) {
             player.sendMessage("");
         }
-
         player.setMaximumNoDamageTicks(15);
 
+        Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(DungeonRealms.version) + " Build " + String.valueOf(DungeonRealms.buildNumber));
+        Utils.sendCenteredMessage(player, ChatColor.GRAY + "http://www.dungeonrealms.net/");
+        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + ChatColor.BOLD + DungeonRealms.getInstance().shardid + ChatColor.YELLOW + " shard.");
+
         player.sendMessage(new String[]{
-                "               " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(DungeonRealms.version),
-                ChatColor.GRAY + "               http://www.dungeonrealms.net/",
-                ChatColor.YELLOW + "                You are on the " + ChatColor.BOLD + DungeonRealms.getInstance().shardid + ChatColor.YELLOW + " shard.",
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Type " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/shard" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " to change your shard instance at any time.",
         });
@@ -848,6 +849,9 @@ public class API {
 
         // Notices
         Notice.getInstance().doLogin(player);
+
+        // Patch notes
+        PatchTools.getInstance().doLogin(player);
 
         // Newbie Protection
         //ProtectionHandler.getInstance().handleLogin(player);
