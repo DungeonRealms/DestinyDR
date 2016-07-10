@@ -130,6 +130,7 @@ public class ShopListener implements Listener {
 
             if (event.isShiftClick()) {
                 if (event.getRawSlot() >= event.getInventory().getSize()) {
+                    ItemStack stackClicked = event.getCurrentItem().clone();
                     if (BankMechanics.shopPricing.containsKey(clicker.getName())) {
                         clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                     }
@@ -139,7 +140,7 @@ public class ShopListener implements Listener {
                         return;
                     }
                     event.setCurrentItem(null);
-                    BankMechanics.shopPricing.put(clicker.getName(), stackInSlot);
+                    BankMechanics.shopPricing.put(clicker.getName(), stackClicked);
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
                     clicker.closeInventory();
                     ShopMechanics.listenForPricing(shop, clicker, nms, playerSlot);
@@ -207,6 +208,7 @@ public class ShopListener implements Listener {
                     event.setCancelled(true);
                     clicker.closeInventory();
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
+                    clicker.closeInventory();
                     ShopMechanics.listenForPricing(shop, clicker, nms, playerSlot);
                 }
             }

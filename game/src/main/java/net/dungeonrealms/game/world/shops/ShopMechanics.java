@@ -55,8 +55,10 @@ public class ShopMechanics implements GenericMechanic {
     }
 
     public static boolean isItemSellable(ItemStack i) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
-        return !API.isItemTradeable(i) || !API.isItemDroppable(i) || API.isItemSoulbound(i) || MountUtils.isMount(i) ||  nms.hasTag() && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
+        if (!API.isItemTradeable(i)) return false;
+        if (!API.isItemDroppable(i)) return false;
+        if (API.isItemSoulbound(i)) return false;
+        return true;
     }
 
     public static void setupShop(Block block, UUID uniqueId) {
