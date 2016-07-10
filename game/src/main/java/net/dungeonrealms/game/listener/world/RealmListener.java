@@ -454,8 +454,9 @@ public class RealmListener implements Listener {
         if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         RealmToken realm = REALMS.getRealm(event.getClickedBlock().getLocation());
+        if (realm == null) return;
 
-        if (realm != null && event.getClickedBlock().getType().equals(Material.PORTAL) && realm.getOwner().equals(event.getPlayer().getUniqueId()) ||
+        if (event.getClickedBlock().getType().equals(Material.PORTAL) && realm.getOwner().equals(event.getPlayer().getUniqueId()) ||
                 Rank.isGM(event.getPlayer())) {
             REALMS.closeRealmPortal(realm.getOwner(), true, "");
             event.setCancelled(true);
