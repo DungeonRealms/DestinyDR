@@ -2,6 +2,7 @@ Patch <build>
 
 Bug Fixes:
 - Fixed the removal of display items from inventories.
+- Removed Lifesteal on Monsters.
 
 New Features:
 - Added patch note system.

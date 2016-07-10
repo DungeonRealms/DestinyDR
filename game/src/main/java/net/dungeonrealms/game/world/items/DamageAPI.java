@@ -200,15 +200,13 @@ public class DamageAPI {
                 isHitCrit = true;
             }
 
-            // LIFESTEAL
-            if (attackerAttributes.get("lifesteal")[1] != 0) {
-                double lifeToHeal = ((((float) attackerAttributes.get("lifesteal")[1]) / 100.) * damage);
-                if (isAttackerPlayer) {
+            // LIFESTEAL ONLY FOR PLAYERS.
+            if (isAttackerPlayer) {
+                if (attackerAttributes.get("lifesteal")[1] != 0) {
+                    double lifeToHeal = ((((float) attackerAttributes.get("lifesteal")[1]) / 100.) * damage);
                     HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal + 1);
-                } else if (attacker.hasMetadata("type")) {
-                    HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal + 1);
+                    damage += lifeToHeal + 1;
                 }
-                damage += lifeToHeal + 1;
             }
 
             // DAMAGE BUFFS
