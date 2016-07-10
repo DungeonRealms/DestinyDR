@@ -130,17 +130,16 @@ public class ShopListener implements Listener {
 
             if (event.isShiftClick()) {
                 if (event.getRawSlot() >= event.getInventory().getSize()) {
-                    ItemStack stackClicked = event.getCurrentItem().clone();
                     if (BankMechanics.shopPricing.containsKey(clicker.getName())) {
                         clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                     }
-                    if (!ShopMechanics.isItemSellable(stackClicked)) {
+                    if (!ShopMechanics.isItemSellable(stackInSlot)) {
                         event.setCancelled(true);
                         clicker.sendMessage(ChatColor.RED + "You cannot sell this item!");
                         return;
                     }
                     event.setCurrentItem(null);
-                    BankMechanics.shopPricing.put(clicker.getName(), stackClicked);
+                    BankMechanics.shopPricing.put(clicker.getName(), stackInSlot);
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
                     clicker.closeInventory();
                     ShopMechanics.listenForPricing(shop, clicker, nms, playerSlot);
@@ -180,7 +179,6 @@ public class ShopListener implements Listener {
                         }
                         BankMechanics.shopPricing.put(clicker.getName(), itemHeld);
                         clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
-                        clicker.closeInventory();
                         ShopMechanics.listenForPricing(shop, clicker, nms, playerSlot);
                         clicker.closeInventory();
                         return;
@@ -209,7 +207,6 @@ public class ShopListener implements Listener {
                     event.setCancelled(true);
                     clicker.closeInventory();
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
-                    clicker.closeInventory();
                     ShopMechanics.listenForPricing(shop, clicker, nms, playerSlot);
                 }
             }

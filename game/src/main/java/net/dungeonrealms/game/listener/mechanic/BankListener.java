@@ -307,7 +307,7 @@ public class BankListener implements Listener {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
-                                    if (!API.isItemTradeable(e.getCursor()) || API.isItemSoulbound(e.getCursor()) || !API.isItemDroppable(e.getCursor())) {
+                                    if (!API.isItemTradeable(e.getCursor()) || API.isItemSoulbound(e.getCursor()) || !API.isItemDroppable(e.getCursor()) || nms.hasTag() && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
                                         player.sendMessage(ChatColor.RED + "You can't store this item!");
                                         e.setCancelled(true);
                                         return;
