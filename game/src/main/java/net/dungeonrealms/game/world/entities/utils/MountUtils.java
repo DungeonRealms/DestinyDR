@@ -22,6 +22,7 @@ import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -60,6 +61,8 @@ public class MountUtils {
 
     public static boolean isMount(ItemStack i) {
         NBTItem nbtItem = new NBTItem(i);
+        if (!CraftItemStack.asNMSCopy(i).hasTag())
+            return false;
         return nbtItem.hasKey("mountType");
     }
 

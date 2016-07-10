@@ -2,9 +2,9 @@ Patch <build>
 
 Bug Fixes:
 - Shop dupe glitch
-- Fixed being able to shift click untradeable
-items in shop and putting mounts in shop
+- Fixed being able to shift click untradeable 	items in shop and putting mounts in shop
 - Fixed guild quit bug
-
+- Mining an ore below your tier pick, is guaranteed.
+- Shops can now be closed from other shards, and sent to collection bin.
 New Features:
 -Added patch note system :3
