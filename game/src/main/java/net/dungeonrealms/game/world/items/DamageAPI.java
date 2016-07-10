@@ -229,7 +229,9 @@ public class DamageAPI {
                 // add 5% damage per level difference
                 int attackerLevel = attacker.getMetadata("level").get(0).asInt();
                 int defenderLevel = API.getGamePlayer((Player) receiver).getLevel();
-                damage = addLevelDamage(attackerLevel, defenderLevel, damage);
+                if (attackerLevel > defenderLevel) {
+                    damage = addLevelDamage(attackerLevel, defenderLevel, damage);
+                }
             }
 
             if (isHitCrit) {
@@ -241,6 +243,13 @@ public class DamageAPI {
                     receiver.getWorld().playSound(attacker.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
                 }
                 damage *= 2;
+            }
+
+            if (!isAttackerPlayer) {
+                if (damage >= weaponTier * 600) {
+                    //Should prevent shit like 40k damage from T2. T1 damage capped at 600, T5 at 3k.
+                    damage = weaponTier * 600;
+                }
             }
 
             return Math.round(damage);
@@ -354,11 +363,11 @@ public class DamageAPI {
         }
     }
 
-    public static double addLevelDamage(int attackerLevel, int receiverLevel, double damage) {
-        if (attackerLevel >= receiverLevel) return damage;
-        int difference = receiverLevel - attackerLevel;
+    //This makes mobs stronger when they hit you IF they are higher than you. Not if you are higher than them...
+    private static double addLevelDamage(int attackerLevel, int receiverLevel, double damage) {
+        int difference = attackerLevel - receiverLevel;
         if (difference > 10) difference = 10;
-        return damage * (1 + (difference * 0.10));
+        return damage * (1 + (difference * 0.09));
     }
 
     public static void handlePolearmAOE(EntityDamageByEntityEvent event, double damage, Player damager) {
@@ -530,16 +539,12 @@ public class DamageAPI {
                 }
             }
 
-            if (projectile.getMetadata("lifesteal").get(0).asDouble() != 0) {
-                double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
-                if (isAttackerPlayer) {
+            if (isAttackerPlayer) {
+                if (projectile.getMetadata("lifesteal").get(0).asDouble() != 0) {
+                    double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
                     HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal + 1);
-                } else {
-                    if (attacker.hasMetadata("type")) {
-                        HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal + 1);
-                    }
+                    damage += (int) lifeToHeal + 1;
                 }
-                damage += (int) lifeToHeal + 1;
             }
 
             damage = applyIncreaseDamagePotion(attacker, damage);
@@ -551,7 +556,9 @@ public class DamageAPI {
                 // add 5% damage per level difference
                 int attackerLevel = attacker.getMetadata("level").get(0).asInt();
                 int defenderLevel = API.getGamePlayer((Player) receiver).getLevel();
-                damage = addLevelDamage(attackerLevel, defenderLevel, damage);
+                if (attackerLevel > defenderLevel) {
+                    damage = addLevelDamage(attackerLevel, defenderLevel, damage);
+                }
             }
 
             if (!(isAttackerPlayer)) {
@@ -573,7 +580,14 @@ public class DamageAPI {
                 }
                 damage = damage * 2;
             }
-            return Math.round(damage) + 1;
+
+            if (!isAttackerPlayer) {
+                if (damage >= weaponTier * 600) {
+                    //Should prevent shit like 40k damage from T2. T1 damage capped at 600, T5 at 3k.
+                    damage = weaponTier * 600;
+                }
+            }
+            return Math.round(damage);
         } catch (Exception ex) { // SAFETY CHECK todo: debug everything causing exceptions
             // recalculate all attributes as a failsafe
             if (!isAttackerPlayer) {
