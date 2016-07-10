@@ -307,6 +307,12 @@ public class BankListener implements Listener {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
+                                    if (!API.isItemTradeable(e.getCurrentItem()) || API.isItemSoulbound(e.getCurrentItem()) || !API.isItemDroppable(e.getCurrentItem())) {
+                                        player.sendMessage(ChatColor.RED + "You can't store this item!");
+                                        e.setCancelled(true);
+                                        return;
+                                    }
+                                    
                                     storage.inv.addItem(e.getCursor());
                                     e.setCursor(null);
 //                                    e.setCurrentItem(null);
