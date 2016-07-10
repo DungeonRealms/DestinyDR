@@ -65,7 +65,25 @@ public class RestrictionListener implements Listener {
         return tier == 1 || tier == 2 && level >= 10 || tier == 3 && level >= 20 || tier == 4 && level >= 30 || tier == 5 && level >= 40;
     }
 
-    public void checkPlayersArmorIsValid(Player p) {
+    private void checkForIllegalItems(Player p) {
+        int slot = 0;
+        for (ItemStack is : p.getInventory().getArmorContents()) {
+            slot++;
+            if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM)
+                continue;
+            if (!p.isOnline()) return;
+            if (!is.hasItemMeta()) continue;
+            if (!is.getItemMeta().hasLore()) continue;
+            for (String s : is.getItemMeta().getLore()) {
+                if (s.equals(ChatColor.GRAY + "Display Item")) {
+                    p.getInventory().setItem(slot, new ItemStack(Material.AIR));
+                    break;
+                }
+            }
+        }
+    }
+
+    private void checkPlayersArmorIsValid(Player p) {
         boolean hadIllegalArmor = false;
         for (ItemStack is : p.getInventory().getArmorContents()) {
             if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM)
@@ -129,11 +147,13 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
         checkPlayersArmorIsValid((Player) event.getPlayer());
+        checkForIllegalItems((Player) event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
         checkPlayersArmorIsValid((Player) event.getPlayer());
+        checkForIllegalItems((Player) event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOW)

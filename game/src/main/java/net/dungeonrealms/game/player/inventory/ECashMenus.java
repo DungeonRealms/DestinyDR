@@ -37,6 +37,7 @@ public class ECashMenus {
             nmsStack.setTag(tag);
             inventory.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pet.getEggShortData(), ChatColor.YELLOW + pet.getDisplayName(), new String[]{
                     ChatColor.WHITE + "549" + ChatColor.GREEN + " E-Cash",
+                    ChatColor.GRAY + "Display Item"
             }));
         }
 
@@ -48,10 +49,12 @@ public class ECashMenus {
         inventory.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inventory.addItem(new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 2, ChatColor.GREEN + "Zombie Horse Skin", new String[]{
                 ChatColor.RED + "Requires a mount to purchase",
-                ChatColor.WHITE + "1250" + ChatColor.GREEN + " E-Cash"}).setNBTString("skinType", EnumMountSkins.ZOMBIE_HORSE.getRawName()).setNBTInt("eCash", 1250).build());
+                ChatColor.WHITE + "1250" + ChatColor.GREEN + " E-Cash",
+                ChatColor.GRAY + "Display Item"}).setNBTString("skinType", EnumMountSkins.ZOMBIE_HORSE.getRawName()).setNBTInt("eCash", 1250).build());
         inventory.addItem(new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 0, ChatColor.GRAY + "Skeleton Horse Skin", new String[]{
                 ChatColor.RED + "Requires a mount to purchase",
-                ChatColor.WHITE + "1250" + ChatColor.GREEN + " E-Cash"}).setNBTString("skinType", EnumMountSkins.SKELETON_HORSE.getRawName()).setNBTInt("eCash", 1250).build());
+                ChatColor.WHITE + "1250" + ChatColor.GREEN + " E-Cash",
+                ChatColor.GRAY + "Display Item"}).setNBTString("skinType", EnumMountSkins.SKELETON_HORSE.getRawName()).setNBTInt("eCash", 1250).build());
 
         player.openInventory(inventory);
     }
@@ -82,6 +85,7 @@ public class ECashMenus {
             nmsStack.setTag(tag);
             inventory.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) 0, ChatColor.YELLOW + effect.getDisplayName(), new String[]{
                     ChatColor.WHITE + String.valueOf(price) + ChatColor.GREEN + " E-Cash",
+                    ChatColor.GRAY + "Display Item"
             }));
         }
 
@@ -94,12 +98,14 @@ public class ECashMenus {
 
         inventory.addItem(new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
                 ChatColor.GRAY + "Refund ALL Stat Points!",
-                ChatColor.WHITE + "550" + ChatColor.GREEN + " E-Cash"}).setNBTString("retrainingBook", "true").setNBTInt("eCash", 550).build());
+                ChatColor.WHITE + "550" + ChatColor.GREEN + " E-Cash",
+                ChatColor.GRAY + "Display Item"}).setNBTString("retrainingBook", "true").setNBTInt("eCash", 550).build());
 
         inventory.addItem(new ItemBuilder().setItem(new ItemStack(Material.FIREWORK), ChatColor.GOLD + "Global Messenger", new String[]{
                 ChatColor.GOLD + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY + "Sends a message to all players on " + ChatColor.UNDERLINE + "ALL SHARDS.",
                 ChatColor.GRAY + "Permanent Untradeable",
-                ChatColor.WHITE + "200" + ChatColor.GREEN + " E-Cash"}).setNBTString("globalMessenger", "true").setNBTInt("eCash", 200).build());
+                ChatColor.WHITE + "200" + ChatColor.GREEN + " E-Cash",
+                ChatColor.GRAY + "Display Item"}).setNBTString("globalMessenger", "true").setNBTInt("eCash", 200).build());
 
         player.openInventory(inventory);
     }

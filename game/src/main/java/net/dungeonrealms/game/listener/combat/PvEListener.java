@@ -292,12 +292,13 @@ public class PvEListener implements Listener {
             highestDamage = HealthHandler.getInstance().getMonsterTrackers().get(monster.getUniqueId()).findHighestDamageDealer();
         }
         if (highestDamage == null || !highestDamage.isOnline()) {
-            highestDamage = killer;
+            if (killer != null) {
+                highestDamage = killer;
+            } else {
+                return;
+            }
         }
         HealthHandler.getInstance().getMonsterTrackers().remove(monster.getUniqueId());
-        if (killer == null) {
-            return;
-        }
         ((DRMonster) ((CraftLivingEntity) monster).getHandle()).onMonsterDeath(highestDamage);
         int exp = API.getMonsterExp(highestDamage, monster);
         GamePlayer gamePlayer = API.getGamePlayer(highestDamage);
