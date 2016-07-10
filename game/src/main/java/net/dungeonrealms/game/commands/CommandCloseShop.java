@@ -61,10 +61,9 @@ public class CommandCloseShop extends BasicCommand {
             shopClose.writeUTF("Shop");
             shopClose.writeUTF("close:" + " ," + player.getName());
             String uuidString = DatabaseAPI.getInstance().getUUIDFromName(player.getName());
-
             UUID uuid = UUID.fromString(uuidString);
             player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", shopClose.toByteArray());
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, false);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.HASSHOP, false, false);
             player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(uuid).update(), 20);
         }

@@ -55,7 +55,10 @@ public class ShopMechanics implements GenericMechanic {
     }
 
     public static boolean isItemSellable(ItemStack i) {
-        return !API.isItemTradeable(i) || !API.isItemDroppable(i) || API.isItemSoulbound(i) || MountUtils.isMount(i);
+        if (!API.isItemTradeable(i)) return false;
+        if (!API.isItemDroppable(i)) return false;
+        if (API.isItemSoulbound(i)) return false;
+        return true;
     }
 
     public static void setupShop(Block block, UUID uniqueId) {
