@@ -4,6 +4,7 @@ Bug Fixes:
 - Shop dupe glitch
 - Fixed being able to shift click untradeable
 items in shop and putting mounts in shop
+- Fixed guild quit bug
 
 New Features:
 -Added patch note system :3
