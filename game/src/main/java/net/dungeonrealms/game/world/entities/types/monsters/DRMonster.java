@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -91,7 +92,10 @@ public interface DRMonster {
                 int namedEliteChance = (int)Math.round(Double.parseDouble(s.substring(s.lastIndexOf('%') + 1)) * 10d);
                 if (DonationEffects.getInstance().isLootBuffActive()) namedEliteChance *= 1.2;
                 if (new Random().nextInt(1000) < namedEliteChance) {
-                    world.getWorld().dropItem(loc.add(0, 1, 0), ItemGenerator.getNamedItem(customItemName));
+                    ItemStack stack = ItemGenerator.getNamedItem(customItemName);
+                    if (stack == null) return;
+                    RepairAPI.setCustomItemDurability(stack, Utils.randInt(200, 1000));
+                    world.getWorld().dropItem(loc.add(0, 1, 0), stack);
                 }
             }
             return;
