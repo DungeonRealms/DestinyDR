@@ -66,9 +66,7 @@ public class RestrictionListener implements Listener {
     }
 
     private void checkForIllegalItems(Player p) {
-        int slot = 0;
-        for (ItemStack is : p.getInventory().getArmorContents()) {
-            slot++;
+        for (ItemStack is : p.getInventory().getContents()) {
             if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM)
                 continue;
             if (!p.isOnline()) return;
@@ -76,7 +74,7 @@ public class RestrictionListener implements Listener {
             if (!is.getItemMeta().hasLore()) continue;
             for (String s : is.getItemMeta().getLore()) {
                 if (s.equals(ChatColor.GRAY + "Display Item")) {
-                    p.getInventory().setItem(slot, new ItemStack(Material.AIR));
+                    p.getInventory().remove(is);
                     break;
                 }
             }
