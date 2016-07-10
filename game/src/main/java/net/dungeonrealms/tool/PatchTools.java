@@ -50,21 +50,26 @@ public class PatchTools implements GenericMechanic {
             BufferedReader in = new BufferedReader(new InputStreamReader(fileIn));
 
             String str;
+            int curCharacters = 0;
 
             StringBuilder builder = new StringBuilder();
 
             while ((str = in.readLine()) != null) {
+                String text = ChatColor.translateAlternateColorCodes('&', str.replace("<build>", Constants.BUILD_NUMBER));
+                curCharacters += text.length();
 
-                if (builder.length() >= 256) {
+                if (curCharacters >= 255) {
+                    curCharacters = 0;
                     pages.add(builder.toString());
                     builder = new StringBuilder();
                 }
 
+
                 // APPEND BOOK PAGE ///
-                builder.append(ChatColor.translateAlternateColorCodes('&', str.replace("<build>", Constants.BUILD_NUMBER))).append("\n");
+                builder.append(text).append("\n");
             }
 
-            if (builder.length() < 256)
+            if (curCharacters < 255)
                 pages.add(builder.toString());
 
             in.close();
