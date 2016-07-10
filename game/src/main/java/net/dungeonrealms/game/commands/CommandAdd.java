@@ -7,6 +7,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -16,6 +17,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.items.Item;
@@ -291,6 +293,23 @@ public class CommandAdd extends BasicCommand {
                     }
                     player.getInventory().addItem(BankMechanics.createBankNote(quantity));
                     player.sendMessage(ChatColor.GREEN + "Successfully created a bank note worth " + NumberFormat.getIntegerInstance().format(quantity) + " gems.");
+                    break;
+                case "displayitem":
+                    player.getInventory().addItem( new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
+                            ChatColor.RED + "Speed 140%",
+                            ChatColor.RED + "Jump 110%",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + "A horse fit for a humble squire.",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(),
+                            ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7000g",
+                            ChatColor.GRAY + "Display Item"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 7000).build());
+                    break;
+                case "untradable":
+                    player.getInventory().addItem(API.makeItemUntradeable(new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
+                            ChatColor.RED + "Speed 140%",
+                            ChatColor.RED + "Jump 110%",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + "A horse fit for a humble squire.",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(),
+                            ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7000g"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 7000).build()));
                     break;
                 case "teleport":
                 case "teleports":

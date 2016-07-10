@@ -62,6 +62,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -129,10 +130,11 @@ public class API {
     }
 
     public static ItemStack makeItemUntradeable(ItemStack item) {
-        if (!item.getItemMeta().hasLore()) {
-            item.getItemMeta().setLore(Arrays.asList(ChatColor.GRAY + "Untradeable"));
-        } else {
-            item.getItemMeta().getLore().add(ChatColor.GRAY + "Untradeable");
+        if (item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Untradeable");
+            meta.setLore(lore);
         }
         NBTItem nbtItem = new NBTItem(item);
         nbtItem.setString("subtype", "starter");
