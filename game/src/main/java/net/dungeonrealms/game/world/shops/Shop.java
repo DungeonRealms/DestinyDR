@@ -94,6 +94,7 @@ public class Shop {
             }
         }
         DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false);
+        uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
         hologram.delete();
         block1.setType(Material.AIR);
         block2.setType(Material.AIR);

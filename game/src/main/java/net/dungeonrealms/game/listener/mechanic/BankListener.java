@@ -312,7 +312,7 @@ public class BankListener implements Listener {
                                         e.setCancelled(true);
                                         return;
                                     }
-                                    
+
                                     storage.inv.addItem(e.getCursor());
                                     e.setCursor(null);
 //                                    e.setCurrentItem(null);
