@@ -4,5 +4,6 @@ Bug Fixes:
 - Fixed Pickaxe Dupe after tier up.
 - Re-Enabled Shops.
 - /friends no longer forces a book in slot 9.
+- Implemented maximum damage check for monsters.
 New Features:
 - Moderators can see Gems in bank.
