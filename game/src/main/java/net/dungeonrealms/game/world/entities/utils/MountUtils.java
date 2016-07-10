@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.rank.Rank;
@@ -55,6 +56,11 @@ public class MountUtils {
             default:
                 return true;
         }
+    }
+
+    public static boolean isMount(ItemStack i) {
+        NBTItem nbtItem = new NBTItem(i);
+        return nbtItem.hasKey("mountType");
     }
 
     public static boolean hasRequiredLevel(EnumMounts mountType, UUID player) {
