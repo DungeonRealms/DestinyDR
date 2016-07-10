@@ -1,10 +1,8 @@
 Patch <build>
 
 Bug Fixes:
-- Fixed the removal of display items from inventories.
-- Mining an ore below your tier pick, is guaranteed.
-- Shops can now be closed from other shards,
-and sent to collection bin.
-- Re-Fixed shops and banks.
+- Fixed Pickaxe Dupe after tier up.
+- Re-Enabled Shops.
+- /friends no longer forces a book in slot 9.
 New Features:
-- Added patch note system.
+- Moderators can see Gems in bank.

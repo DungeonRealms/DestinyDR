@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.tool.PatchTools;
+import net.minecraft.server.v1_9_R2.EnumHand;
 import net.minecraft.server.v1_9_R2.PacketDataSerializer;
 import net.minecraft.server.v1_9_R2.PacketPlayOutCustomPayload;
 import org.bukkit.command.Command;
@@ -29,18 +31,12 @@ public class FriendsCommand extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
         ItemStack book = ItemManager.createCharacterJournal(player);
-        int slot = 8;
-        player.getInventory().setHeldItemSlot(slot);
-        player.getInventory().setItem(slot, book);
-        ByteBuf buf = Unpooled.buffer(256);
-        buf.setByte(0, (byte) 0);
-        buf.writerIndex(1);
-
-        PacketPlayOutCustomPayload packet = new PacketPlayOutCustomPayload("MC|BOpen", new PacketDataSerializer(buf));
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-        player.getInventory().setItem(slot, book);
-
-
+        final ItemStack savedItem = player.getInventory().getItemInMainHand();
+        player.getInventory().setItemInMainHand(book);
+        PacketDataSerializer packetdataserializer = new PacketDataSerializer(Unpooled.buffer());
+        packetdataserializer.a(EnumHand.MAIN_HAND);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
+        player.getInventory().setItemInMainHand(savedItem);
         return false;
     }
 }
