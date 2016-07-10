@@ -525,9 +525,6 @@ public class BlockListener implements Listener {
             Player player = e.getPlayer();
             if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())) {
 
-                if (true)
-                    return;
-
                 if (ShopMechanics.ALLSHOPS.containsKey(player.getName())) {
                     Shop shop = ShopMechanics.getShop(player.getName());
                     player.sendMessage(ChatColor.YELLOW + "You already have an open shop on " + ChatColor.UNDERLINE + "this" + ChatColor.YELLOW + " server.");

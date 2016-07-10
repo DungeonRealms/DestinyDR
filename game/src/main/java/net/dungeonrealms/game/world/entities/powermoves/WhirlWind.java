@@ -63,14 +63,12 @@ public class WhirlWind extends PowerMove {
                         if ((p_y - 1) <= e_y || m == Material.AIR) {
                             p.setVelocity(unitVector.multiply(3));
                         }
+                        // * 4 for whirlwind
                         double dmg = DamageAPI.calculateWeaponDamage(entity, p) * 4;
                         double[] result = DamageAPI.calculateArmorReduction(entity, p, dmg, null);
                         int armourReducedDamage = (int) result[0];
                         int totalArmor = (int) result[1];
-                        // * 4 for whirlwind
-                        HealthHandler.getInstance().handlePlayerBeingDamaged(p, entity, (dmg - armourReducedDamage) * 4, armourReducedDamage, totalArmor);
-
-
+                        HealthHandler.getInstance().handlePlayerBeingDamaged(p, entity, (dmg - armourReducedDamage), armourReducedDamage, totalArmor);
                     });
 
                     entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 0.5F);
