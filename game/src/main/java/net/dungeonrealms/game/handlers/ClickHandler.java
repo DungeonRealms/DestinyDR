@@ -27,6 +27,7 @@ import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.support.Support;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
@@ -93,6 +94,24 @@ public class ClickHandler {
                                     if (mount != EnumMounts.MULE) {
                                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
                                         Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
+                                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mount")) {
+                                            player.getInventory().addItem(ItemManager.getPlayerMountItem());
+                                        }
+                                    } else {
+                                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mule")) {
+                                            Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+                                            if (muleTier == null) {
+                                                player.sendMessage(ChatColor.RED + "No mule data found.");
+                                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
+                                                muleTier = 1;
+                                            }
+                                            MuleTier tier = MuleTier.getByTier((int) muleTier);
+                                            if (tier == null) {
+                                                System.out.println("Invalid mule tier!");
+                                                return;
+                                            }
+                                            player.getInventory().addItem(ItemManager.getPlayerMuleItem(tier));
+                                        }
                                     }
                                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount.");
                                     player.closeInventory();
@@ -1543,6 +1562,9 @@ public class ClickHandler {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType, false);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
+                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"pet")) {
+                        player.getInventory().addItem(ItemManager.getPlayerPetItem());
+                    }
                     player.closeInventory();
                 } else {
                     player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
@@ -1577,6 +1599,9 @@ public class ClickHandler {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, effectType, false);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect.");
+                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"trail")) {
+                        player.getInventory().addItem(ItemManager.getPlayerTrailItem());
+                    }
                     player.closeInventory();
                 } else {
                     player.sendMessage(ChatColor.RED + "You cannot afford this effect, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
