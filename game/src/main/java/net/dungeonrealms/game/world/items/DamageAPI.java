@@ -205,7 +205,6 @@ public class DamageAPI {
                 if (attackerAttributes.get("lifesteal")[1] != 0) {
                     double lifeToHeal = ((((float) attackerAttributes.get("lifesteal")[1]) / 100.) * damage);
                     HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal + 1);
-                    damage += lifeToHeal + 1;
                 }
             }
 
@@ -543,7 +542,6 @@ public class DamageAPI {
                 if (projectile.getMetadata("lifesteal").get(0).asDouble() != 0) {
                     double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
                     HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal + 1);
-                    damage += (int) lifeToHeal + 1;
                 }
             }
 
