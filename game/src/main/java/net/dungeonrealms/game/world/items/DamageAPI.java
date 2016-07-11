@@ -646,10 +646,8 @@ public class DamageAPI {
                 default:
                     break;
             }
-        }
-
-        // DUNGEON BOSS CALCULATION
-        if (attacker.hasMetadata("boss")) {
+        } else if (attacker.hasMetadata("boss")) {
+            // DUNGEON BOSS CALCULATION
             damage *= 6;
         }
         return damage;
