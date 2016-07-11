@@ -43,7 +43,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -252,6 +251,7 @@ public class InventoryListener implements Listener {
                 ChatColor.BOLD + " -> " + ChatColor.GRAY + "" + newArmorName + "");
         if (newArmor == null || newArmor.getType() == Material.AIR) { // unequipping armor
             List<String> oldModifiers = API.getModifiers(oldArmor);
+            assert oldModifiers != null;
             net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
             // iterate through to get decreases from stats not in the new armor
             for (String modifier : oldModifiers) {
@@ -274,6 +274,7 @@ public class InventoryListener implements Listener {
             }
         } else { // equipping armor
             List<String> newModifiers = API.getModifiers(newArmor);
+            assert newModifiers != null;
             net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newArmor).getTag();
 
             if (oldArmor != null && oldArmor.getType() != Material.AIR) { // switching armor
