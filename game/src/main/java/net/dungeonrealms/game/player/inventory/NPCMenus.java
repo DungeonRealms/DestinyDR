@@ -266,7 +266,7 @@ public class NPCMenus {
 
         if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
             String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
-            ItemStack item = ItemManager.makeSoulBound(ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName)));
+            ItemStack item = API.makeItemUntradeable(ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName)));
             ItemStack guildBanner = ShopMechanics.addPrice(item, 1000);
 
             inv.setItem(0, guildBanner);
