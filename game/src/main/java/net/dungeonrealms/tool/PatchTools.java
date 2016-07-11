@@ -6,10 +6,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -81,20 +79,13 @@ public class PatchTools implements GenericMechanic {
                 ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER, new String[]{});
         BookMeta bm = (BookMeta) patchBook.getItemMeta();
 
+        System.out.print(pages.size());
         bm.setAuthor("DungeonRealms Development Team");
         bm.setPages(pages);
 
         patchBook.setItemMeta(bm);
 
         this.patchBook = patchBook;
-    }
-
-    public void doLogin(Player player) {
-        final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GOLD + " Patch notes available! " + ChatColor.GRAY +
-                "To view patch notes click ", ChatColor.WHITE);
-        normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
-        normal.addText(ChatColor.GREEN + "*");
-        normal.sendToPlayer(player);
     }
 
 

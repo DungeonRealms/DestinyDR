@@ -45,7 +45,6 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.tool.PatchTools;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import org.bukkit.*;
@@ -852,8 +851,6 @@ public class API {
         // Notices
         Notice.getInstance().doLogin(player);
 
-        // Patch notes
-        PatchTools.getInstance().doLogin(player);
 
         // Newbie Protection
         //ProtectionHandler.getInstance().handleLogin(player);
@@ -940,6 +937,15 @@ public class API {
                 }
             }, 100);
         }
+
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GOLD + " Patch notes available! " + ChatColor.GRAY +
+                    "To view patch notes click ", ChatColor.WHITE);
+            normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
+            normal.addText(ChatColor.GREEN + "*");
+            normal.sendToPlayer(player);
+        }, 200);
+
 
         if (Rank.isGM(player)) {
             HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);
