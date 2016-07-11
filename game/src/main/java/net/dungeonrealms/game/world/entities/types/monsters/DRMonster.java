@@ -4,7 +4,6 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -14,7 +13,6 @@ import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -86,8 +84,8 @@ public interface DRMonster {
                 chance = ent.hasMetadata("elite") ? 10 : 2; // 1%, 0.2%
                 break;
         }
-        if (ent.hasMetadata("namedElite")) {
-            for (String s : SpawningMechanics.customMobLootTables.get(ChatColor.stripColor(ent.getMetadata("namedElite").get(0).asString()))) {
+        if (ent.hasMetadata("namedElite")) {//java.lang.NullPointerException at net.dungeonrealms.game.world.entities.types.monsters.DRMonster.checkItemDrop(DRMonster.java:90) ~[?:?]
+            /*for (String s : SpawningMechanics.customMobLootTables.get(ChatColor.stripColor(ent.getMetadata("namedElite").get(0).asString()))) {
                 String customItemName = s.substring(1, s.indexOf(":"));
                 int namedEliteChance = (int)Math.round(Double.parseDouble(s.substring(s.lastIndexOf('%') + 1)) * 10d);
                 if (DonationEffects.getInstance().isLootBuffActive()) namedEliteChance *= 1.2;
@@ -98,7 +96,8 @@ public interface DRMonster {
                     world.getWorld().dropItem(loc.add(0, 1, 0), stack);
                 }
             }
-            return;
+            return;*/
+            chance /= 3;
         }
 
         if (DonationEffects.getInstance().isLootBuffActive()) {
