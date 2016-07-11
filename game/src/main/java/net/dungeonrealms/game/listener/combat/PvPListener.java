@@ -120,17 +120,15 @@ public class PvPListener implements Listener {
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
         double armorReducedDamage = armorCalculation[0];
         double finalDamage = calculatedDamage;
-        String defenderName = receiver.getName();
-        String attackerName = damager.getName();
         if (armorReducedDamage == -1) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
-            receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + attackerName + ChatColor.GREEN + ")");
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + receiver.getName() + ChatColor.RED + ")");
+            receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + damager.getName() + ChatColor.GREEN + ")");
             //The defender dodged the attack
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             finalDamage = 0;
         } else if (armorReducedDamage == -2) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
-            receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + receiver.getName() + ChatColor.RED + ")");
+            receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + damager.getName() + ChatColor.DARK_GREEN + ")");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             finalDamage = 0;
         } else if (armorReducedDamage == -3) {
