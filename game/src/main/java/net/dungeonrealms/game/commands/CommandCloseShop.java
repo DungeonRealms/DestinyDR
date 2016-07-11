@@ -2,6 +2,7 @@ package net.dungeonrealms.game.commands;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -65,7 +66,10 @@ public class CommandCloseShop extends BasicCommand {
             player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", shopClose.toByteArray());
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(uuid).update(), 20);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                API.updatePlayerData(uuid);
+                BankMechanics.getInstance().getStorage(uuid).update();
+            }, 20);
         }
         return false;
     }
