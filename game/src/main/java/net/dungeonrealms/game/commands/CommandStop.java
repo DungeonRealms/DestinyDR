@@ -49,6 +49,7 @@ public class CommandStop extends BasicCommand {
         }
 
         DungeonRealms.getInstance().getLogger().info("DRStop called.");
+        Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
