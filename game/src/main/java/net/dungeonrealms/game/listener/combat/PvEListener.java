@@ -345,9 +345,11 @@ public class PvEListener implements Listener {
         if (gamePlayer == null) {
             return;
         }
-        if (!highestDamage.getUniqueId().toString().equals(killer.getUniqueId().toString())) {
-            killer.sendMessage(ChatColor.GRAY + highestDamage.getName() + " has dealt more damage to this mob than you.");
-            killer.sendMessage(ChatColor.GRAY + "They have been awarded the XP.");
+        if (killer != null) {
+            if (!highestDamage.getUniqueId().toString().equals(killer.getUniqueId().toString())) {
+                killer.sendMessage(ChatColor.GRAY + highestDamage.getName() + " has dealt more damage to this mob than you.");
+                killer.sendMessage(ChatColor.GRAY + "They have been awarded the XP.");
+            }
         }
         if (Affair.getInstance().isInParty(highestDamage)) {
             List<Player> nearbyPlayers = API.getNearbyPlayers(highestDamage.getLocation(), 10);
