@@ -437,6 +437,11 @@ public class RealmListener implements Listener {
 
         if (realm == null) return;
 
+        if (event.hasBlock()) if (event.getClickedBlock().getType().equals(Material.ENCHANTMENT_TABLE)) {
+            event.setCancelled(true);
+            return;
+        }
+
         if (event.getItem().getType().equals(Material.ITEM_FRAME)) {
             event.setCancelled(true);
             return;
