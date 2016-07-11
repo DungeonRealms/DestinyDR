@@ -472,7 +472,7 @@ public class DamageAPI {
             int weaponTier = projectile.getMetadata("itemTier").get(0).asInt();
 
             // DPS
-            damage += Utils.randInt(attributes.get("dps")[0], attributes.get("dps")[1]);
+            damage += damage * (((double) Utils.randInt(attributes.get("dps")[0], attributes.get("dps")[1])) / 100.);
 
             // BLIND AND SLOW
             if (projectile.getMetadata("blind").get(0).asInt() > 0) {
