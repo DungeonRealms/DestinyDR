@@ -315,6 +315,62 @@ public class MainListener implements Listener {
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerKick(PlayerKickEvent event) {
+        Chat.listenForMessage(event.getPlayer(), null, null);
+        event.setLeaveMessage(null);
+        GuildMechanics.getInstance().doLogout(event.getPlayer());
+        Realms.getInstance().doLogout(event.getPlayer());
+        for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
+            tracker.removeDamager(event.getPlayer());
+        }
+
+        //Ensures the player has played at least 5 seconds before saving to the database.
+        if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {
+            Player player = event.getPlayer();
+            // Player leaves while in duel
+            if (DuelingMechanics.isDueling(player.getUniqueId())) {
+                DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
+            }
+            API.handleLogout(player.getUniqueId());
+
+            if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                net.minecraft.server.v1_9_R2.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
+                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerPet)) {
+                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerPet);
+                }
+                if (playerPet.isAlive()) { // Safety check
+                    playerPet.dead = true;
+                }
+                // .damageEntity(DamageSource.GENERIC, 20);
+                EntityAPI.removePlayerPetList(player.getUniqueId());
+            }
+
+            if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                net.minecraft.server.v1_9_R2.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
+                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerMount)) {
+                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerMount);
+                }
+                if (playerMount.isAlive()) { // Safety check
+                    if (playerMount.passengers != null) {
+                        playerMount.passengers.stream().forEach(passenger -> passenger = null);
+                    }
+                    playerMount.dead = true;
+                }
+                EntityAPI.removePlayerMountList(player.getUniqueId());
+            }
+        }
+        if (Affair.getInstance().isInParty(event.getPlayer())) {
+            Affair.getInstance().removeMember(event.getPlayer(), false);
+        }
+    }
+
+    /**
+     * Handles player leaving the server
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Chat.listenForMessage(event.getPlayer(), null, null);
         event.setQuitMessage(null);
