@@ -279,6 +279,27 @@ public class DamageListener implements Listener {
 
         double[] armorCalculation = DamageAPI.calculateArmorReduction(leDamageSource, player, finalDamage, null);
         finalDamage = finalDamage - armorCalculation[0];
+        double armorReducedDamage = armorCalculation[0];
+        String attackerName;
+        if (leDamageSource.hasMetadata("customname")) {
+            attackerName = leDamageSource.getMetadata("customname").get(0).asString().trim();
+        } else {
+            attackerName = "Enemy";
+        }
+        if (armorReducedDamage == -1) {
+            player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + attackerName + ChatColor.GREEN + ")");
+            //The defender dodged the attack
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -2) {
+            player.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -3) {
+            //Reflect when its fixed. @TODO
+        } else {
+            finalDamage = finalDamage - armorCalculation[0];
+        }
         HealthHandler.getInstance().handlePlayerBeingDamaged(player, leDamageSource, finalDamage, armorCalculation[0], armorCalculation[1]);
     }
 

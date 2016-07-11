@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -21,8 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
@@ -119,7 +118,27 @@ public class PvPListener implements Listener {
             }
         }
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
-        final double finalDamage = calculatedDamage - armorCalculation[0];
+        double armorReducedDamage = armorCalculation[0];
+        double finalDamage = calculatedDamage;
+        String defenderName = receiver.getName();
+        String attackerName = damager.getName();
+        if (armorReducedDamage == -1) {
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
+            receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + attackerName + ChatColor.GREEN + ")");
+            //The defender dodged the attack
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -2) {
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
+            receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -3) {
+            //Reflect when its fixed. @TODO
+        } else {
+            finalDamage = finalDamage - armorCalculation[0];
+            calculatedDamage = calculatedDamage - armorCalculation[0];
+        }
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
 
         DamageAPI.handlePolearmAOE(event, calculatedDamage / 2, damager);
@@ -171,7 +190,26 @@ public class PvPListener implements Listener {
             }
         }
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, projectile);
-        final double finalDamage = calculatedDamage - armorCalculation[0];
+        double finalDamage = calculatedDamage - armorCalculation[0];
+        double armorReducedDamage = armorCalculation[0];
+        String defenderName = receiver.getName();
+        String attackerName = damager.getName();
+        if (armorReducedDamage == -1) {
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
+            receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + attackerName + ChatColor.GREEN + ")");
+            //The defender dodged the attack
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -2) {
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
+            receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -3) {
+            //Reflect when its fixed. @TODO
+        } else {
+            finalDamage = finalDamage - armorCalculation[0];
+        }
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
     }
 }

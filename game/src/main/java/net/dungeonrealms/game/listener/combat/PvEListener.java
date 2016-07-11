@@ -117,7 +117,27 @@ public class PvEListener implements Listener {
 
         finalDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
-        finalDamage = finalDamage - armorCalculation[0];
+        double armorReducedDamage = armorCalculation[0];
+        String defenderName;
+        if (receiver.hasMetadata("customname")) {
+            defenderName = receiver.getMetadata("customname").get(0).asString().trim();
+        } else {
+            defenderName = "Enemy";
+        }
+        if (armorReducedDamage == -1) {
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
+            //The defender dodged the attack
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -2) {
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -3) {
+            //Reflect when its fixed. @TODO
+        } else {
+            finalDamage = finalDamage - armorCalculation[0];
+        }
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
         DamageAPI.handlePolearmAOE(event, finalDamage / 2, damager);
 
@@ -216,7 +236,27 @@ public class PvEListener implements Listener {
 
         finalDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
-        finalDamage = finalDamage - armorCalculation[0];
+        double armorReducedDamage = armorCalculation[0];
+        String defenderName;
+        if (receiver.hasMetadata("customname")) {
+            defenderName = receiver.getMetadata("customname").get(0).asString().trim();
+        } else {
+            defenderName = "Enemy";
+        }
+        if (armorReducedDamage == -1) {
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
+            //The defender dodged the attack
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -2) {
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+            finalDamage = 0;
+        } else if (armorReducedDamage == -3) {
+            //Reflect when its fixed. @TODO
+        } else {
+            finalDamage = finalDamage - armorCalculation[0];
+        }
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
 
         if (!receiver.hasMetadata("tier")) return;

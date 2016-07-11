@@ -664,7 +664,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleMonsterBeingDamaged(LivingEntity entity, LivingEntity attacker, double damage) {
-        if (damage < 0) return;
+        if (damage <= 0) return;
         double maxHP = getMonsterMaxHPLive(entity);
         double currentHP = getMonsterHPLive(entity);
         double newHP = currentHP - damage;
