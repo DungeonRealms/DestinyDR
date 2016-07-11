@@ -668,6 +668,7 @@ public class HealthHandler implements GenericMechanic {
         double maxHP = getMonsterMaxHPLive(entity);
         double currentHP = getMonsterHPLive(entity);
         double newHP = currentHP - damage;
+        if (newHP >= currentHP) return;
         if (entity instanceof EntityArmorStand) return;
         if (currentHP <= 0) {
             if (!entity.isDead()) {
