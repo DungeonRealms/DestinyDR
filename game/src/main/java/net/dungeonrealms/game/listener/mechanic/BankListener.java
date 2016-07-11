@@ -307,7 +307,7 @@ public class BankListener implements Listener {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
-                                    if (!API.isItemTradeable(e.getCursor()) || API.isItemSoulbound(e.getCursor()) || !API.isItemDroppable(e.getCursor()) || nms.hasTag() && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
+                                    if (!API.isItemTradeable(e.getCursor())  || !API.isItemDroppable(e.getCursor())) {
                                         player.sendMessage(ChatColor.RED + "You can't store this item!");
                                         e.setCancelled(true);
                                         return;
@@ -408,7 +408,7 @@ public class BankListener implements Listener {
                         if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGemPouch(e.getCurrentItem())) {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (storage.hasSpace()) {
-                                if (!API.isItemTradeable(e.getCurrentItem()) || API.isItemSoulbound(e.getCurrentItem()) || !API.isItemDroppable(e.getCurrentItem())) {
+                                if (!API.isItemTradeable(e.getCurrentItem()) || !API.isItemDroppable(e.getCurrentItem())) {
                                     player.sendMessage(ChatColor.RED + "You can't store this item!");
                                     e.setCancelled(true);
                                     return;
@@ -530,7 +530,7 @@ public class BankListener implements Listener {
                 }
             }
 
-            if (!API.isItemTradeable(item) || API.isItemSoulbound(item) || !API.isItemDroppable(item)) {
+            if (!API.isItemTradeable(item) || !API.isItemDroppable(item)) {
                 p.sendMessage(ChatColor.RED + "You can't store this item!");
                 e.setCancelled(true);
             }
