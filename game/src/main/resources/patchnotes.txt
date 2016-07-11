@@ -3,5 +3,6 @@ Patch <build>
 Bug Fixes:
 - Ore EXP nerfed
 - Add pet/mule/mount/trail item on purchase.
+- Enchanting in realms
 New Features:
 - Guild banners are now soulbound
