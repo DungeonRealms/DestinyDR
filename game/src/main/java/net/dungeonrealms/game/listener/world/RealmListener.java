@@ -217,7 +217,9 @@ public class RealmListener implements Listener {
                 RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
                 property.setExpiry(System.currentTimeMillis() - 1000L);
             }
-
+            if (realm.getWorld() == null) {
+                continue;
+            }
             if (REALMS.isApollosRealm(realm.getWorld().getName()))
                 REALMS.updateRealmHologram(realm.getOwner());
 

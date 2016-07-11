@@ -827,7 +827,7 @@ public class RealmInstance implements Realms {
 
         String name = Bukkit.getPlayer(uuid).getName();
 
-        if (realmHologram == null) return;
+        if (realmHologram == null || realmHologram.isDeleted()) return;
 
         realmHologram.clearLines();
 
