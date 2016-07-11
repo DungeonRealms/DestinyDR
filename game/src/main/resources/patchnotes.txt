@@ -1,11 +1,7 @@
 Patch <build>
 
 Bug Fixes:
-- Fixed Pickaxe Dupe after tier up.
-- Re-Enabled Shops.
-- /friends no longer forces a book in slot 9.
-- Implemented maximum damage check for monsters.
-- Fixed Block/Dodge not working correctly.
+- Ore EXP nerfed
+- Add pet/mule/mount/trail item on purchase.
 New Features:
-- Moderators can see Gems in bank.
 - Guild banners are now soulbound
