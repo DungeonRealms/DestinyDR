@@ -919,8 +919,6 @@ public class MainListener implements Listener {
         if (event.isCancelled()) return;
         if (!API.isItemDroppable(event.getItemDrop().getItemStack())) return;
         if (!API.isItemTradeable(event.getItemDrop().getItemStack())) return;
-        if (API.isItemSoulbound(event.getItemDrop().getItemStack())) return;
-
 
         Player pl = event.getPlayer();
 

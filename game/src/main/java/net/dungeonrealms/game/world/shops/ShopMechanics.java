@@ -8,11 +8,8 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
-import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,7 +53,6 @@ public class ShopMechanics implements GenericMechanic {
     public static boolean isItemSellable(ItemStack i) {
         if (!API.isItemTradeable(i)) return false;
         if (!API.isItemDroppable(i)) return false;
-        if (API.isItemSoulbound(i)) return false;
         return true;
     }
 

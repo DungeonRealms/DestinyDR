@@ -78,18 +78,6 @@ public class ItemListener implements Listener {
             event.getItemDrop().remove();
             p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
-        } else if (API.isItemSoulbound(item)) {
-            event.setCancelled(true);
-            p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor
-                    .RED + " this soulbound item? Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.RED + "" +
-                    " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N");
-            Chat.listenForMessage(p, chat -> {
-                if (chat.getMessage().equalsIgnoreCase("y")) {
-                    p.sendMessage(ChatColor.RED + "Item " + item.getItemMeta().getDisplayName() + ChatColor.RED + " has been " + ChatColor.UNDERLINE + "destroyed.");
-                    p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
-                    p.getInventory().remove(item);
-                }
-            }, player -> player.sendMessage(ChatColor.RED + "Item destroying " + ChatColor.UNDERLINE + "cancelled."));
         }
     }
 
@@ -272,6 +260,7 @@ public class ItemListener implements Listener {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
+        if (!tag.hasKey("journal")) return;
         if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
         p.getInventory().setItem(p.getInventory().getHeldItemSlot(), ItemManager.createCharacterJournal(p));
     }

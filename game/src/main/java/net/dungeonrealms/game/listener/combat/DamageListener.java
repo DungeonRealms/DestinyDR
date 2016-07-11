@@ -431,7 +431,7 @@ public class DamageListener implements Listener {
         p.setExp(0F);
         p.setLevel(0);
         for (ItemStack itemStack : new ArrayList<>(event.getDrops())) {
-            if (API.isItemSoulbound(itemStack) || !API.isItemDroppable(itemStack) || API.isItemUntradeable(itemStack)) {
+            if (!API.isItemDroppable(itemStack) || API.isItemUntradeable(itemStack)) {
                 event.getDrops().remove(itemStack);
             }
         }
