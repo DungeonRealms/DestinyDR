@@ -8,3 +8,4 @@ Bug Fixes:
 - Fixed Block/Dodge not working correctly.
 New Features:
 - Moderators can see Gems in bank.
+- Guild banners are now soulbound
