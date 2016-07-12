@@ -1,4 +1,4 @@
-name: DungeonRealmsLoby
+name: DungeonRealmsLobby
 main: net.dungeonrealms.lobby.DungeonRealms
 version: ${project.parent.version}
 authors: [apollosoftware, Bradez1571, EtherealTemplar, iFamasssxD, Proxying, Xwaffle]

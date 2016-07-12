@@ -13,6 +13,12 @@
     <build>
         <defaultGoal>clean install</defaultGoal>
         <finalName>Lobby</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -37,7 +43,12 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
+                                    <include>org.ini4j:ini4j</include>
+                                    <include>org.mongodb:mongo-java-driver</include>
+                                    <include>org.mongodb:bson</include>
+                                    <include>commons-net:commons-net</include>
                                     <include>com.esotericsoftware:kryo-shaded</include>
+                                    <include>net.lingala.zip4j:zip4j</include>
                                     <include>net.dungeonrealms:DungeonRealms-common</include>
                                     <include>net.dungeonrealms:DungeonRealms-network</include>
                                 </includes>
@@ -78,6 +89,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>bson</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
+        <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
             <version>3.5</version>
@@ -87,6 +110,12 @@
             <groupId>org.ini4j</groupId>
             <artifactId>ini4j</artifactId>
             <version>0.5.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>1.3.2</version>
         </dependency>
 
     </dependencies>

@@ -9,6 +9,12 @@
   <artifactId>DungeonRealms-game</artifactId>
   <build>
     <defaultGoal>clean install</defaultGoal>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <finalName>DungeonRealms</finalName>
     <plugins>
       <plugin>
