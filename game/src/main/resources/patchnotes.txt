@@ -1,10 +1,4 @@
 Patch <build>
 
-Bug Fixes:
-- Ore EXP nerfed.
-- Add pet/mule/mount/trail item on purchase.
-- Enchanting in realms.
-- Items are given on purchase of Mounts/Mules etc.
-New Features:
-- Guild banners are now untradable.
-- Soulbound items can now properly be traded/dropped/stored.
+Bug Fixes
+- Fixed enchanting glitch

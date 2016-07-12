@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -15,6 +16,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 /**
  * Created by Chase on Nov 11, 2015
  */
@@ -22,6 +27,8 @@ public class CommandModeration extends BasicCommand {
     public CommandModeration(String command, String usage, String description) {
         super(command, usage, description);
     }
+
+    public static Map<UUID, UUID> offline_inv_watchers = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
@@ -47,9 +54,27 @@ public class CommandModeration extends BasicCommand {
                 break;
             case "invsee":
                 playerName = args[1];
-                player = Bukkit.getPlayer(playerName);
-                if (player != null) {
-                    sender.openInventory(player.getInventory());
+
+                if (Bukkit.getPlayer(playerName) != null) {
+                    sender.openInventory(Bukkit.getPlayer(playerName).getInventory());
+                } else {
+
+                    if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {
+                        sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
+                        return true;
+                    }
+
+                    UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                    Inventory inventoryView = Bukkit.createInventory(null, 36, playerName + "'s Offline Inventory View");
+
+                    String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, p_uuid);
+                    if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
+                        ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
+                        inventoryView.setContents(items);
+                    }
+
+                    offline_inv_watchers.put(sender.getUniqueId(), p_uuid);
+                    sender.openInventory(inventoryView);
                 }
                 break;
             case "armorsee":

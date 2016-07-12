@@ -23,6 +23,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
@@ -430,6 +431,10 @@ public class DamageListener implements Listener {
         final Location deathLocation = p.getEyeLocation();
         p.setExp(0F);
         p.setLevel(0);
+
+        if (Rank.isGM(p))
+            event.getDrops().clear();
+
         for (ItemStack itemStack : new ArrayList<>(event.getDrops())) {
             if (!API.isItemDroppable(itemStack) || API.isItemUntradeable(itemStack)) {
                 event.getDrops().remove(itemStack);
