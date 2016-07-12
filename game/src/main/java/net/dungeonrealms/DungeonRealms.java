@@ -44,6 +44,7 @@ import net.dungeonrealms.game.listener.world.DungeonListener;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
+import net.dungeonrealms.game.mechanics.TutorialIsland;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
 import net.dungeonrealms.game.menus.player.HearthStone;
 import net.dungeonrealms.game.menus.player.Profile;
@@ -221,7 +222,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
-            mm.registerMechanic(TutorialIslandHandler.getInstance());
+            mm.registerMechanic(TutorialIsland.getInstance());
             mm.registerMechanic(PatchTools.getInstance());
         } else {
             mm.registerMechanic(PetUtils.getInstance());
@@ -279,7 +280,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new RestrictionListener(), this);
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
-            //pm.registerEvents(new TutorialIslandHandler(), this);
+            pm.registerEvents(new TutorialIsland(), this);
         } else {
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);

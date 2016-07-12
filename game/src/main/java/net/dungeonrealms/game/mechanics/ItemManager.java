@@ -29,6 +29,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -714,7 +715,9 @@ public class ItemManager {
         String name = "";
         ArrayList<String> lore = new ArrayList<>();
         rawStack = new ItemStack(Material.FISHING_ROD, 1);
+
         ItemMeta meta = rawStack.getItemMeta();
+        meta.addEnchant(Enchantment.LURE, 3, false);
         String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
         int lvl = Fishing.getTierLvl(tier);
         lore.add(ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);

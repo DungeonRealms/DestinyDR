@@ -1,10 +1,9 @@
-package net.dungeonrealms.game.handlers;
+package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -12,6 +11,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.teleportation.Teleportation;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -26,34 +26,26 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import java.util.*;
 
 /**
- * Created by Kieran on 30-Nov-15.
+ * Created by chase on 7/11/2016.
  */
-public class TutorialIslandHandler implements GenericMechanic, Listener {
+public class TutorialIsland implements GenericMechanic, Listener {
 
-    private static TutorialIslandHandler instance = null;
-
-    public static HashMap<String, List<String>> quest_map = new HashMap<String, List<String>>();
+    public static HashMap<String, List<String>> quest_map = new HashMap<>();
     // Player_name, List of remaining NPC names to be spoken too.
 
-    public static HashMap<String, List<String>> completion_delay = new HashMap<String, List<String>>();
+    public static HashMap<String, List<String>> completion_delay = new HashMap<>();
     // Player_name, List of NPC names who have a timer event to tell them they've completed running. (used for rewards)
 
     public static final String tutorialRegion = "tutorial_island";
     // Region name of tutorial island.
 
-    List<String> got_exp = new ArrayList<String>();
+    List<String> got_exp = new ArrayList<>();
     // Already got exp.
 
-    public static TutorialIslandHandler getInstance() {
-        if (instance == null) {
-            instance = new TutorialIslandHandler();
-        }
-        return instance;
-    }
+    private static TutorialIsland instance = null;
 
     @Override
     public EnumPriority startPriority() {
@@ -65,12 +57,12 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::hideVanishedPlayers, 100L, 1L);
     }
 
-    @Override
-    public void stopInvocation() {
-    }
 
-    public boolean onTutorialIsland(UUID uuid) {
-        return AchievementManager.REGION_TRACKER.get(uuid).equalsIgnoreCase("tutorial_island");
+    public static TutorialIsland getInstance() {
+        if (instance == null) {
+            instance = new TutorialIsland();
+        }
+        return instance;
     }
 
     private void hideVanishedPlayers() {
@@ -85,6 +77,62 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
             }
         });
     }
+
+
+    public boolean onTutorialIsland(UUID uuid) {
+        return AchievementManager.REGION_TRACKER.get(uuid).equalsIgnoreCase("tutorial_island");
+    }
+
+    public static boolean onTutorialIsland(Location loc) {
+        if (loc == null) {
+            return false;
+        }
+        if (API.getRegionName(loc).equalsIgnoreCase(tutorialRegion)) {
+            return true;
+        }
+        return false;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onItemDrop(PlayerDropItemEvent e) {
+        Player pl = e.getPlayer();
+        if (onTutorialIsland(pl.getLocation())) {
+            e.setCancelled(true);
+            pl.updateInventory();
+        }
+    }
+
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
+        if (event.getEntity().getType() == EntityType.ITEM_FRAME) {
+            ItemFrame is = (ItemFrame) event.getEntity();
+            is.setItem(is.getItem());
+            is.setRotation(Rotation.NONE);
+            event.setCancelled(true);
+            if (event.getDamager() instanceof Player) {
+                if (is.getItem().getType() != Material.MAP) return;
+                Player plr = (Player) event.getDamager();
+                if (plr.getInventory().contains(is.getItem())) {
+                    return;
+                }
+                plr.getInventory().addItem(is.getItem());
+            }
+            return;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getType() == EntityType.ITEM_FRAME) {
+            event.setCancelled(true);
+            ItemFrame is = (ItemFrame) event.getRightClicked();
+            is.setItem(is.getItem());
+            is.setRotation(Rotation.NONE);
+            return;
+        }
+    }
+
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -118,80 +166,36 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
-        if(event.getEntity().getType() == EntityType.ITEM_FRAME) {
-            ItemFrame is = (ItemFrame) event.getEntity();
-            is.setItem(is.getItem());
-            is.setRotation(Rotation.NONE);
-            event.setCancelled(true);
-            if(event.getDamager() instanceof Player) {
-                if(is.getItem().getType() != Material.MAP) return;
-                Player plr = (Player) event.getDamager();
-                if(plr.getInventory().contains(is.getItem())) { return; }
-                plr.getInventory().addItem(is.getItem());
-            }
-            return;
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityInteract(PlayerInteractEntityEvent event) {
-        if(event.getRightClicked().getType() == EntityType.ITEM_FRAME) {
-            event.setCancelled(true);
-            ItemFrame is = (ItemFrame) event.getRightClicked();
-            is.setItem(is.getItem());
-            is.setRotation(Rotation.NONE);
-            return;
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onItemDrop(PlayerDropItemEvent e) {
-        Player pl = e.getPlayer();
-        if(onTutorialIsland(pl)) {
-            e.setCancelled(true);
-            pl.updateInventory();
-        }
-    }
-
-    public static boolean onTutorialIsland(Location loc) {
-        if(loc == null) { return false; }
-        if(API.getRegionName(loc).equalsIgnoreCase(tutorialRegion)) { return true; }
-        return false;
-    }
-
-    public static boolean onTutorialIsland(Player pl) {
-        if(pl.getLocation() == null) { return false; }
-        if(API.getRegionName(pl.getLocation()).equalsIgnoreCase(tutorialRegion)) { return true; }
-        return false;
-    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteractNPC(PlayerInteractEntityEvent e) {
         final Player pl = e.getPlayer();
-        if(!(onTutorialIsland(pl))) return; // Don't care.
+        if (!(onTutorialIsland(pl.getUniqueId()))) return;
 
         Entity e_npc = e.getRightClicked();
-        if(!(e_npc instanceof Player)) { return; }
+        if (!(e_npc instanceof Player)) {
+            return;
+        }
         Player npc = (Player) e_npc;
-        if(!(npc.hasMetadata("NPC"))) { return; } // Only NPC's matter.
+        if (!(npc.hasMetadata("NPC"))) {
+            return;
+        }
 
-        if(npc.getName().equalsIgnoreCase("Ship Sailor")) {
+        if (npc.getName().equalsIgnoreCase("Ship Sailor")) {
             e.setCancelled(true);
             pl.performCommand("skip");
             return;
         }
 
-        if(npc.getName().equalsIgnoreCase("Ship Captain")) {
+        if (npc.getName().equalsIgnoreCase("Ship Captain")) {
             // Check to see if they're ready to head to the mainland.
-            if(quest_map.containsKey(pl.getName()) && quest_map.get(pl.getName()).size() > 0) {
+            if (quest_map.containsKey(pl.getName()) && quest_map.get(pl.getName()).size() > 0) {
                 List<String> all_quests = new ArrayList<String>(Arrays.asList("Island Greeter", "Master Miner", "Master Fisherman", "Equipment Master", "Interface Guide", "Item Enchanter", "Armor Guide", "Alignment Guide", ChatColor.RED.toString() + "Chaotic Guide", ChatColor.YELLOW.toString() + "Neutral Guide", ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee"));
                 List<String> quest_list = quest_map.get(pl.getName());
-                if(quest_list.size() > 0) {
+                if (quest_list.size() > 0) {
                     pl.sendMessage("");
-                    for(String s : all_quests) {
-                        if(quest_list.contains(s)) {
+                    for (String s : all_quests) {
+                        if (quest_list.contains(s)) {
                             pl.sendMessage(ChatColor.RED.toString() + s);
                             continue; // They haven't completed this one.
                         }
@@ -211,47 +215,43 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
             Chat.listenForMessage(e.getPlayer(), ev -> {
                 if (ev.getMessage().equalsIgnoreCase("y")) {
                     ev.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
-                    ev.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85,
-                            362));
+                    ev.getPlayer().teleport(Teleportation.Cyrennica);
                     ItemManager.giveStarter(e.getPlayer());
                 }
             }, pla -> pla.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
             return;
-        }
-        else if(npc.getName().equalsIgnoreCase("Island Greeter")) {
+        } else if (npc.getName().equalsIgnoreCase("Island Greeter")) {
             // Give the player 1x gem.
+
             // TODO: Should be a banker...
-        }
-        else if(npc.getName().equalsIgnoreCase("Master Miner") && !(quest_map.get(pl.getName()).contains("Master Miner")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
+        } else if (npc.getName().equalsIgnoreCase("Master Miner") && !(quest_map.get(pl.getName()).contains("Master Miner")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
             // Give the player 5x coal ore, tell them to trade it.
-            if(!(pl.getInventory().contains(Material.COAL_ORE))) {
+            if (!(pl.getInventory().contains(Material.COAL_ORE))) {
                 e.setCancelled(true);
                 ItemStack reward = (Mining.getBlock(Material.COAL_ORE));
                 reward.setAmount(5);
-                if(pl.getInventory().firstEmpty() != -1) {
+                if (pl.getInventory().firstEmpty() != -1) {
                     pl.getInventory().addItem(reward);
                     pl.sendMessage(ChatColor.GRAY.toString() + "Master Miner: " + ChatColor.WHITE.toString() + "Ahh, here be some ore for ye' time. You could trade it with the Merchant!");
                     pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
                 }
             }
-        }
-        else if(npc.getName().equalsIgnoreCase("Master Fisherman") && !(quest_map.get(pl.getName()).contains("Master Fisherman")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
+        } else if (npc.getName().equalsIgnoreCase("Master Fisherman") && !(quest_map.get(pl.getName()).contains("Master Fisherman")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
             // Give the player 1x raw fish, tell them to cook it.
-            if(!(pl.getInventory().contains(Material.RAW_FISH)) && !(pl.getInventory().contains(Material.COOKED_FISH))) {
+            if (!(pl.getInventory().contains(Material.RAW_FISH)) && !(pl.getInventory().contains(Material.COOKED_FISH))) {
                 e.setCancelled(true);
                 ItemStack reward = API.makeItemUntradeable(Fishing.getFishDrop(1));
-                if(pl.getInventory().firstEmpty() != -1) {
+                if (pl.getInventory().firstEmpty() != -1) {
                     pl.getInventory().addItem(reward);
                     pl.sendMessage(ChatColor.GRAY.toString() + "Master Fisherman: " + ChatColor.WHITE.toString() + "Here's a freshly caught " + reward.getItemMeta().getDisplayName() + "! You should cook it over by the fire.");
                     pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
                 }
             }
-        }
-        else if(npc.getName().equalsIgnoreCase("Master Duelist") && !(quest_map.get(pl.getName()).contains("Master Duelist")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
+        } else if (npc.getName().equalsIgnoreCase("Master Duelist") && !(quest_map.get(pl.getName()).contains("Master Duelist")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
             // Give the player a sword.
-            if(!(pl.getInventory().contains(Material.WOOD_SWORD)) && !(pl.getInventory().contains(Material.WOOD_AXE))) {
+            if (!(pl.getInventory().contains(Material.WOOD_SWORD)) && !(pl.getInventory().contains(Material.WOOD_AXE))) {
                 e.setCancelled(true);
-                if(pl.getInventory().firstEmpty() != -1) {
+                if (pl.getInventory().firstEmpty() != -1) {
                     if (Utils.randInt(0, 1) == 1) {
                         pl.getInventory().addItem(ItemGenerator.getNamedItem("training_sword"));
                     } else {
@@ -261,36 +261,32 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
                 }
             }
-        }
-        else if (npc.getName().equalsIgnoreCase("Master Marksmen") && !(quest_map.get(pl.getName()).contains("Master Marksmen")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
+        } else if (npc.getName().equalsIgnoreCase("Master Marksmen") && !(quest_map.get(pl.getName()).contains("Master Marksmen")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
             // todo: give something else because before he gave arrows
-        }
-        else if (npc.getName().equalsIgnoreCase("Armor Guide") && !(quest_map.get(pl.getName()).contains("Armor Guide")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
+        } else if (npc.getName().equalsIgnoreCase("Armor Guide") && !(quest_map.get(pl.getName()).contains("Armor Guide")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
             // Give the player 1x T1 Scrap
-            if(!(pl.getInventory().contains(Material.LEATHER))) {
+            if (!(pl.getInventory().contains(Material.LEATHER))) {
                 e.setCancelled(true);
                 ItemStack reward = API.makeItemUntradeable(ItemManager.createArmorScrap(1));
-                if(pl.getInventory().firstEmpty() != -1) {
+                if (pl.getInventory().firstEmpty() != -1) {
                     pl.getInventory().addItem(reward);
                     pl.sendMessage(ChatColor.GRAY.toString() + "Armor Guide: " + ChatColor.WHITE.toString() + "Gah! Phew! Nearly burnt me'self there, here's an armor scrap for listening to an old man ramble. Use it to repair your equipment in the field.");
                     pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
                 }
             }
-        }
-        else if(npc.getName().equalsIgnoreCase("Item Enchanter") && !(quest_map.get(pl.getName()).contains("Item Enchanter")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
+        } else if (npc.getName().equalsIgnoreCase("Item Enchanter") && !(quest_map.get(pl.getName()).contains("Item Enchanter")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
             // Give the player 1x T1 Weapon Scroll, tell them to use it.
-            if(!(pl.getInventory().contains(Material.EMPTY_MAP))) {
+            if (!(pl.getInventory().contains(Material.EMPTY_MAP))) {
                 e.setCancelled(true);
                 ItemStack reward = API.makeItemUntradeable(ItemManager.createWeaponEnchant(1));
-                if(pl.getInventory().firstEmpty() != -1) {
+                if (pl.getInventory().firstEmpty() != -1) {
                     pl.getInventory().addItem(reward);
                     pl.sendMessage(ChatColor.GRAY.toString() + "Item Enchanter: " + ChatColor.WHITE.toString() + "Use this enchantment scroll on your weapon to increase its potency.");
                     pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
                 }
             }
-        }
-        else if(npc.getName().equalsIgnoreCase(ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee") && !(quest_map.get(pl.getName()).contains(ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
-            if(got_exp.contains(pl.getName())) return;
+        } else if (npc.getName().equalsIgnoreCase(ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee") && !(quest_map.get(pl.getName()).contains(ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee")) && !(completion_delay.get(pl.getName()).contains(npc.getName()))) {
+            if (got_exp.contains(pl.getName())) return;
             got_exp.add(pl.getName());
 
             final List<String> messages = Arrays.asList(
@@ -321,12 +317,13 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
 
             new BukkitRunnable() {
                 private int pos = 0;
+
                 @Override
                 public void run() {
-                    if(messages.size() - 1 >= pos){
+                    if (messages.size() - 1 >= pos) {
                         pl.sendMessage(ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee" + ": " + ChatColor.WHITE + "\"" + messages.get(pos) + "\"");
                         pos++;
-                    }else{
+                    } else {
                         API.getGamePlayer(pl).addExperience(50, false, true);
                         cancel();
                     }
@@ -334,44 +331,46 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
             }.runTaskTimer(DungeonRealms.getInstance(), 0L, 20L * 3L);
         }
 
-        if(quest_map.containsKey(pl.getName())) {
+        if (quest_map.containsKey(pl.getName())) {
             List<String> quests_left = quest_map.get(pl.getName());
-            if(quests_left.contains(npc.getName())) {
-                // This is someone the player has to talk to! Update the quest!
-                if(completion_delay.containsKey(pl.getName())) {
+            if (quests_left.contains(npc.getName())) {
+                if (completion_delay.containsKey(pl.getName())) {
                     List<String> lcd = completion_delay.get(pl.getName());
                     lcd.add(npc.getName());
                     completion_delay.put(pl.getName(), lcd);
                 } else {
-                    completion_delay.put(pl.getName(), new ArrayList<String>(Arrays.asList(npc.getName())));
+                    completion_delay.put(pl.getName(), new ArrayList<>(Arrays.asList(npc.getName())));
                 }
 
                 quests_left.remove(npc.getName());
                 quest_map.put(pl.getName(), quests_left);
 
                 final String npc_name = npc.getName();
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), new Runnable() {
-                    public void run() {
-                        List<String> lcd = completion_delay.get(pl.getName());
-                        if(lcd == null) return;
-                        lcd.remove(npc_name);
-                        completion_delay.put(pl.getName(), lcd);
-                        pl.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "       OBJECTIVE COMPLETE:" + ChatColor.GREEN.toString() + " Speak to " + ChatColor.UNDERLINE + npc_name + ChatColor.GREEN.toString() + "!");
-                        if(npc_name.equalsIgnoreCase("Island Greeter")) {
-                            pl.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Your next objective is to follow the road out of the house and meet your first guide.");
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    List<String> lcd = completion_delay.get(pl.getName());
+                    if (lcd == null) return;
+                    lcd.remove(npc_name);
+                    completion_delay.put(pl.getName(), lcd);
+                    pl.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "       OBJECTIVE COMPLETE:" + ChatColor.GREEN.toString() + " Speak to " + ChatColor.UNDERLINE + npc_name + ChatColor.GREEN.toString() + "!");
+                    if (npc_name.equalsIgnoreCase("Island Greeter")) {
+                        pl.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Your next objective is to follow the road out of the house and meet your first guide.");
+                    } else {
+                        if (npc_name.equalsIgnoreCase("Master Miner") || npc_name.equalsIgnoreCase("Master Fisherman") || npc_name.equalsIgnoreCase("Master Duelist") || npc_name.equalsIgnoreCase("Master Marksmen") || npc_name.equalsIgnoreCase("Armor Guide") || npc_name.equalsIgnoreCase("Item Enchanter")) {
+                            pl.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Claim your " + ChatColor.UNDERLINE + "reward" + ChatColor.RESET + ChatColor.GRAY + ChatColor.ITALIC + " by speaking to " + npc_name + ", then continue down the road.");
                         } else {
-                            if(npc_name.equalsIgnoreCase("Master Miner") || npc_name.equalsIgnoreCase("Master Fisherman") || npc_name.equalsIgnoreCase("Master Duelist") || npc_name.equalsIgnoreCase("Master Marksmen") || npc_name.equalsIgnoreCase("Armor Guide") || npc_name.equalsIgnoreCase("Item Enchanter")) {
-                                pl.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Claim your " + ChatColor.UNDERLINE + "reward" + ChatColor.RESET + ChatColor.GRAY + ChatColor.ITALIC + " by speaking to " + npc_name + ", then continue down the road.");
-                            } else {
-                                pl.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "To discover your next objective, finish speaking with the " + npc_name + ChatColor.GRAY + ", then continue down the road.");
-                            }
+                            pl.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "To discover your next objective, finish speaking with the " + npc_name + ChatColor.GRAY + ", then continue down the road.");
                         }
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 4.0F);
                     }
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 4.0F);
                 }, 6 * 20L);
 
             }
         }
     }
 
+
+    @Override
+    public void stopInvocation() {
+
+    }
 }

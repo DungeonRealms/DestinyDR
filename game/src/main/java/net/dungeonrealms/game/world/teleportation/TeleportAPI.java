@@ -3,8 +3,8 @@ package net.dungeonrealms.game.world.teleportation;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.handlers.TutorialIslandHandler;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.TutorialIsland;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -35,7 +35,7 @@ public class TeleportAPI {
         if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(player.getUniqueId())) {
             if (API.getGamePlayer(Bukkit.getPlayer(player.getUniqueId())).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                 if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                    if (!TutorialIslandHandler.getInstance().onTutorialIsland(player.getUniqueId())) {
+                    if (!TutorialIsland.getInstance().onTutorialIsland(player.getLocation())) {
                         if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(player.getUniqueId()) <= 0) {
                             return true;
                         } else {

@@ -15,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -577,6 +578,9 @@ public class Fishing implements GenericMechanic {
         lore.set(2, ChatColor.GRAY + "EXP: " + newexpBar);
 
         meta.setLore(lore);
+        if (!meta.hasEnchant(Enchantment.LURE))
+            meta.addEnchant(Enchantment.LURE, 3, false);
+
         stack.setItemMeta(meta);
         p.getEquipment().setItemInMainHand(stack);
     }
@@ -840,6 +844,8 @@ public class Fishing implements GenericMechanic {
             }
             meta.setDisplayName(name);
             meta.setLore(lore);
+            if (!meta.hasEnchant(Enchantment.LURE))
+                meta.addEnchant(Enchantment.LURE, 3, false);
             rod.setItemMeta(meta);
             if (addEnchant)
                 giveRandomStatBuff(rod, tier);
