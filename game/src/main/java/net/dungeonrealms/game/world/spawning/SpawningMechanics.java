@@ -89,10 +89,10 @@ public class SpawningMechanics implements GenericMechanic {
                 if (!isElite) {
                     switch (tier) {
                         case 1:
-                            spawnDelay = 35;
+                            spawnDelay = 40;
                             break;
                         case 2:
-                            spawnDelay = 75;
+                            spawnDelay = 80;
                             break;
                         case 3:
                             spawnDelay = 105;
@@ -130,6 +130,7 @@ public class SpawningMechanics implements GenericMechanic {
                     }
                 }
             }
+            spawnDelay += spawnDelay / 10;
             String locationRange[] = line.substring(line.indexOf("#") + 1, line.lastIndexOf("$")).split("-");
             int minXZ = Integer.parseInt(locationRange[0]);
             int maxXZ = Integer.parseInt(locationRange[1]);

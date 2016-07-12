@@ -112,7 +112,7 @@ public class ShopListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString()) || Rank.isDev(clicker)) {
+        if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString()) || Rank.isGM(clicker)) {
             // Owner is Clicking
             if (event.getRawSlot() == (shop.getInvSize() - 1)) {
                 event.setCancelled(true);

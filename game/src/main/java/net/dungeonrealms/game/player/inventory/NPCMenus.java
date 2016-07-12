@@ -229,7 +229,7 @@ public class NPCMenus {
         Inventory inv = Bukkit.createInventory(null, 27, "Merchant");
 
         inv.setItem(4, addDisplayLore(new ItemStack(Material.THIN_GLASS)));
-        inv.setItem(13,  addDisplayLore(new ItemStack(Material.THIN_GLASS)));
+        inv.setItem(13, addDisplayLore(new ItemStack(Material.THIN_GLASS)));
         inv.setItem(22, addDisplayLore(new ItemStack(Material.THIN_GLASS)));
         inv.setItem(0, new ItemBuilder().setItem(Material.INK_SACK, (short) 8, ChatColor.YELLOW + "Click to ACCEPT", new String[]{
                 "",
@@ -266,7 +266,7 @@ public class NPCMenus {
 
         if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
             String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
-            ItemStack item = ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName));
+            ItemStack item = API.makeItemUntradeable(ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName)));
             ItemStack guildBanner = ShopMechanics.addPrice(item, 1000);
 
             inv.setItem(0, guildBanner);

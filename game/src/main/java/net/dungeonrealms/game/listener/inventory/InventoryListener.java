@@ -4,10 +4,12 @@ import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.commands.CommandModeration;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.ClickHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -43,7 +45,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -51,10 +52,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -158,6 +156,18 @@ public class InventoryListener implements Listener {
     }
 
 
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        if (!CommandModeration.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
+
+        UUID target = CommandModeration.offline_inv_watchers.get(event.getPlayer().getUniqueId());
+
+        String inventory = ItemSerialization.toString(event.getInventory());
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
+
+        CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
+    }
+
     /**
      * @param event
      * @since 1.0 Dragging is naughty.
@@ -252,6 +262,7 @@ public class InventoryListener implements Listener {
                 ChatColor.BOLD + " -> " + ChatColor.GRAY + "" + newArmorName + "");
         if (newArmor == null || newArmor.getType() == Material.AIR) { // unequipping armor
             List<String> oldModifiers = API.getModifiers(oldArmor);
+            assert oldModifiers != null;
             net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
             // iterate through to get decreases from stats not in the new armor
             for (String modifier : oldModifiers) {
@@ -274,6 +285,7 @@ public class InventoryListener implements Listener {
             }
         } else { // equipping armor
             List<String> newModifiers = API.getModifiers(newArmor);
+            assert newModifiers != null;
             net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newArmor).getTag();
 
             if (oldArmor != null && oldArmor.getType() != Material.AIR) { // switching armor
@@ -1339,7 +1351,7 @@ public class InventoryListener implements Listener {
 
                                 }
                             }, thing -> {
-                                 thing.sendMessage(ChatColor.RED + "CUSTOM STAT - CANCELLED");
+                                thing.sendMessage(ChatColor.RED + "CUSTOM STAT - CANCELLED");
                                 stats.resetTemp();
                             });
 

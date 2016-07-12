@@ -217,7 +217,9 @@ public class RealmListener implements Listener {
                 RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
                 property.setExpiry(System.currentTimeMillis() - 1000L);
             }
-
+            if (realm.getWorld() == null) {
+                continue;
+            }
             if (REALMS.isApollosRealm(realm.getWorld().getName()))
                 REALMS.updateRealmHologram(realm.getOwner());
 
@@ -434,6 +436,11 @@ public class RealmListener implements Listener {
         Player p = event.getPlayer();
 
         if (realm == null) return;
+
+        if (event.hasBlock()) if (event.getClickedBlock().getType().equals(Material.ENCHANTMENT_TABLE)) {
+            event.setCancelled(true);
+            return;
+        }
 
         if (event.getItem().getType().equals(Material.ITEM_FRAME)) {
             event.setCancelled(true);

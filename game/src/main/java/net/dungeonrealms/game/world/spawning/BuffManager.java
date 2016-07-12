@@ -76,9 +76,12 @@ public class BuffManager implements GenericMechanic {
             if (new Random().nextInt(21) < 4) {
                 if (!CURRENT_BUFFS.isEmpty()) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        EnderCrystal enderCrystal = CURRENT_BUFFS.get(new Random().nextInt(CURRENT_BUFFS.size()));
-                        CURRENT_BUFFS.remove(enderCrystal);
-                        enderCrystal.dead = true;
+                        try {
+                            EnderCrystal enderCrystal = CURRENT_BUFFS.get(new Random().nextInt(CURRENT_BUFFS.size()));
+                            CURRENT_BUFFS.remove(enderCrystal);
+                            enderCrystal.dead = true;
+                        } catch (NullPointerException ignored) {
+                        }
                     }, 0L);
                 }
             }

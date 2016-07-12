@@ -50,6 +50,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
@@ -914,13 +915,17 @@ public class MainListener implements Listener {
     }
 
 
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void playerEnchant(EnchantItemEvent event) {
+        event.setCancelled(true);
+    }
+
+
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void playerAttemptTrade(PlayerDropItemEvent event) {
         if (event.isCancelled()) return;
         if (!API.isItemDroppable(event.getItemDrop().getItemStack())) return;
         if (!API.isItemTradeable(event.getItemDrop().getItemStack())) return;
-        if (API.isItemSoulbound(event.getItemDrop().getItemStack())) return;
-
 
         Player pl = event.getPlayer();
 

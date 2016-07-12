@@ -751,6 +751,7 @@ public class ItemManager {
         meta.setDisplayName(name);
         meta.setLore(lore);
         rawStack.setItemMeta(meta);
+        rawStack.addEnchantment(Enchantment.LURE, 3);
         RepairAPI.setCustomItemDurability(rawStack, 1500);
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();

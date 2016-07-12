@@ -23,6 +23,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
@@ -270,7 +271,7 @@ public class DamageListener implements Listener {
         }
 
         if (PowerStrike.powerStrike.contains(leDamageSource.getUniqueId())) {
-            finalDamage *= 3;
+            finalDamage *= 2;
             PowerStrike.chargedMonsters.remove(leDamageSource.getUniqueId());
             PowerStrike.powerStrike.remove(leDamageSource.getUniqueId());
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
@@ -430,8 +431,12 @@ public class DamageListener implements Listener {
         final Location deathLocation = p.getEyeLocation();
         p.setExp(0F);
         p.setLevel(0);
+
+        if (Rank.isGM(p))
+            event.getDrops().clear();
+
         for (ItemStack itemStack : new ArrayList<>(event.getDrops())) {
-            if (API.isItemSoulbound(itemStack) || !API.isItemDroppable(itemStack) || API.isItemUntradeable(itemStack)) {
+            if (!API.isItemDroppable(itemStack) || API.isItemUntradeable(itemStack)) {
                 event.getDrops().remove(itemStack);
             }
         }

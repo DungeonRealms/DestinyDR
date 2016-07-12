@@ -78,18 +78,6 @@ public class ItemListener implements Listener {
             event.getItemDrop().remove();
             p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
-        } else if (API.isItemSoulbound(item)) {
-            event.setCancelled(true);
-            p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor
-                    .RED + " this soulbound item? Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.RED + "" +
-                    " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N");
-            Chat.listenForMessage(p, chat -> {
-                if (chat.getMessage().equalsIgnoreCase("y")) {
-                    p.sendMessage(ChatColor.RED + "Item " + item.getItemMeta().getDisplayName() + ChatColor.RED + " has been " + ChatColor.UNDERLINE + "destroyed.");
-                    p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
-                    p.getInventory().remove(item);
-                }
-            }, player -> player.sendMessage(ChatColor.RED + "Item destroying " + ChatColor.UNDERLINE + "cancelled."));
         }
     }
 
@@ -272,6 +260,7 @@ public class ItemListener implements Listener {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
+        if (!tag.hasKey("journal")) return;
         if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
         p.getInventory().setItem(p.getInventory().getHeldItemSlot(), ItemManager.createCharacterJournal(p));
     }
@@ -378,6 +367,11 @@ public class ItemListener implements Listener {
                 if (nms.hasTag() && nms.getTag().hasKey("type")) {
                     if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
                         Player player = event.getPlayer();
+                        if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
+                            player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
+                            player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
+                            return;
+                        }
                         int invlvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
                         if (invlvl >= 6) {
                             player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");

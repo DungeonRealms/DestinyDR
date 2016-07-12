@@ -262,8 +262,20 @@ public class EliteMobSpawner {
                 armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helm");
                 break;
             case DURANOR:
+                /*armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "halberd");
+                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
+                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
+                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
+                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helm");*/
+                //TODO: Wait on Item ID's and Lore to be complete for these items.
                 break;
             case MOTHEROFDOOM:
+                /*armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Sword");
+                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Boots");
+                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Legs");
+                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Plate");
+                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "Helm");*/
+                //TODO: Wait on Item ID's and Lore to be complete for these items.
                 break;
             case KILATAN:
                 armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "staff");
