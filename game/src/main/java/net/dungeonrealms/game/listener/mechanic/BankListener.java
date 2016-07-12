@@ -312,7 +312,7 @@ public class BankListener implements Listener {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
-                                    if (!API.isItemTradeable(e.getCursor())  || !API.isItemDroppable(e.getCursor())) {
+                                    if (!API.isItemTradeable(e.getCursor()) || !API.isItemDroppable(e.getCursor())) {
                                         player.sendMessage(ChatColor.RED + "You can't store this item!");
                                         e.setCancelled(true);
                                         return;
@@ -563,6 +563,10 @@ public class BankListener implements Listener {
 
                 String ePochTag = AntiCheat.getInstance().getUniqueEpochIdentifier(player.getInventory().getItemInMainHand());
 
+
+                ItemStack heldItem = interactEvent.getPlayer().getEquipment().getItemInMainHand().clone();
+                interactEvent.getPlayer().getInventory().setItemInMainHand(null);
+
                 Chat.listenForMessage(player, event -> {
                     if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("c")) {
                         player.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED");
@@ -573,45 +577,34 @@ public class BankListener implements Listener {
                         number = Integer.parseInt(event.getMessage());
                     } catch (Exception exc) {
                         player.sendMessage(ChatColor.RED + "Please enter a valid number");
+                        player.getInventory().addItem(heldItem);
                         return;
                     }
                     if (number <= 0) {
                         player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
+                        player.getInventory().addItem(heldItem);
                     } else if (number > noteWorth) {
                         player.sendMessage(ChatColor.GRAY + "You cannot split a note more than what it's worth.");
+                        player.getInventory().addItem(heldItem);
                     } else {
-                        if (hasOriginalBankNote(player, ePochTag)) {
-                            if (player.getInventory().firstEmpty() != -1) {
-                                if (number == noteWorth) return;
-                                int newValue = noteWorth - number;
-                                player.getInventory().setItemInMainHand(BankMechanics.createBankNote(newValue));
-                                player.getInventory().addItem(BankMechanics.createBankNote(number));
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You do not have enough space in your inventory to perform this action.");
-                            }
+                        if (player.getInventory().firstEmpty() != -1) {
+                            if (number == noteWorth) return;
+                            int newValue = noteWorth - number;
+                            player.getInventory().addItem(BankMechanics.createBankNote(newValue));
+                            player.getInventory().addItem(BankMechanics.createBankNote(number));
                         } else {
-                            player.sendMessage(ChatColor.RED + "You can no longer split this bank note.");
+                            player.sendMessage(ChatColor.RED + "You do not have enough space in your inventory to perform this action.");
                         }
                     }
-                }, p -> p.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED"));
+                }, p -> {
+                    player.getInventory().addItem(heldItem);
+                    p.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED");
+                });
 
             }
         }
     }
 
-    private boolean hasOriginalBankNote(Player player, String ePoch) {
-        String ePochToCheck;
-        for (ItemStack stack : player.getInventory().getContents()) {
-            ePochToCheck = AntiCheat.getInstance().getUniqueEpochIdentifier(stack);
-            if (ePochToCheck == null) {
-                continue;
-            }
-            if (ePochToCheck.equals(ePoch)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Checks if player has room in inventory for amount of gems to withdraw.
@@ -687,7 +680,7 @@ public class BankListener implements Listener {
         collectionBin.getTag().setString("type", "collection");
         if (BankMechanics.getInstance().getStorage(uuid).collection_bin != null) {
             inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
-        }else if(DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, uuid).toString().length() > 1){
+        } else if (DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, uuid).toString().length() > 1) {
             BankMechanics.getInstance().getStorage(uuid).update();
             inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
         }
