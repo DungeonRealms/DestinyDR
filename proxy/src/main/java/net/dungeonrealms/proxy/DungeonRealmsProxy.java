@@ -100,7 +100,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         return servers;
     }
 
-    @EventHandler
+    //@EventHandler
     public void onServerConnect(ServerConnectEvent event) {
         if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby")) {
             Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
