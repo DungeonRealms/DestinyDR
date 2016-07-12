@@ -15,7 +15,7 @@ public class Constants {
 
 
     // BUILD NUMBER //
-    public static final String BUILD_NUMBER = "#111";
+    public static final String BUILD_NUMBER = "#112";
 
 
 }

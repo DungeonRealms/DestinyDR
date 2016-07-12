@@ -50,6 +50,11 @@ public class BankListener implements Listener {
 
             e.setCancelled(true);
             Player p = e.getPlayer();
+            if (BankMechanics.storage.get(p.getUniqueId()).collection_bin != null) {
+                p.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
+                p.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
+                return;
+            }
 
             int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
             if (storage_lvl >= 6) {
@@ -350,6 +355,11 @@ public class BankListener implements Listener {
                             player.openInventory(storage.inv);
                         } else if (e.getClick() == ClickType.MIDDLE) {
                             Player p = (Player) e.getWhoClicked();
+                            if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
+                                player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
+                                player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
+                                return;
+                            }
 
                             int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
                             if (storage_lvl >= 6) {

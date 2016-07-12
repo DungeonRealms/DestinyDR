@@ -1,4 +1,8 @@
 Patch <build>
 
 Bug Fixes
-- Fixed enchanting glitch
+- Fixed enchanting glitch.
+- Fixed bank upgrade glitch.
+- Prevent negative damage.
+- Fixed damage values for certain dungeon mobs.
+- Fixed spawn/respawn times of elites.

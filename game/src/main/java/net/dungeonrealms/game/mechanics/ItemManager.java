@@ -29,6 +29,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -748,6 +749,7 @@ public class ItemManager {
         meta.setDisplayName(name);
         meta.setLore(lore);
         rawStack.setItemMeta(meta);
+        rawStack.addEnchantment(Enchantment.LURE, 3);
         RepairAPI.setCustomItemDurability(rawStack, 1500);
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();

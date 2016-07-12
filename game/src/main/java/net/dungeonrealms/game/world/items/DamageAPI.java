@@ -622,12 +622,6 @@ public class DamageAPI {
     public static double addSpecialDamage(LivingEntity attacker, double damage) {
         if (PowerMove.doingPowerMove(attacker.getUniqueId()))
             return damage;
-        // DUNGEON CALCULATION
-        if (attacker.hasMetadata("dungeon")) {
-            damage *= 2;
-        }
-
-
         // ELITE CALCULATION
         if (attacker.hasMetadata("elite") && attacker.hasMetadata("tier")) {
             switch (attacker.getMetadata("tier").get(0).asInt()) {
