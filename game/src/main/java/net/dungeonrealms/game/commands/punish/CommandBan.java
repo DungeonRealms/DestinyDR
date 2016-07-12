@@ -96,12 +96,14 @@ public class CommandBan extends BasicCommand {
             StringBuilder reason = new StringBuilder(args[2]);
             for (int arg = 3; arg < args.length; arg++) reason.append(" ").append(args[arg]);
 
-            if (duration != -1)
-                sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)) + " for " + reason.toString());
-            else
-                sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + reason.toString());
+            String reasonString = reason.toString() + " [" + sender.getName() + "]";
 
-            PunishUtils.ban(p_uuid, p_name, duration, reason.toString());
+            if (duration != -1)
+                sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)) + " for " + reasonString);
+            else
+                sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + reasonString);
+
+            PunishUtils.ban(p_uuid, p_name, duration, reasonString);
         } else {
             if (duration != -1)
                 sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)));

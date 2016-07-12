@@ -7,14 +7,12 @@
         <groupId>net.dungeonrealms</groupId>
         <version>5.0-SNAPSHOT</version>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>DungeonRealms-proxy</artifactId>
-
+    <artifactId>DungeonRealms-lobby</artifactId>
     <build>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>DungeonRealmsProxy</finalName>
+        <finalName>Lobby</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -49,6 +47,7 @@
                                     <include>org.mongodb:mongo-java-driver</include>
                                     <include>org.mongodb:bson</include>
                                     <include>commons-net:commons-net</include>
+                                    <include>com.esotericsoftware:kryo-shaded</include>
                                     <include>net.lingala.zip4j:zip4j</include>
                                     <include>net.dungeonrealms:DungeonRealms-common</include>
                                     <include>net.dungeonrealms:DungeonRealms-network</include>
@@ -61,7 +60,34 @@
         </plugins>
     </build>
 
+
     <dependencies>
+        <dependency>
+            <groupId>net.dungeonrealms</groupId>
+            <artifactId>DungeonRealms-network</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--Spigot API-->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.9.4-R0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <!--Bukkit API-->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.9.4-R0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
@@ -75,34 +101,23 @@
         </dependency>
 
         <dependency>
-            <groupId>net.dungeonrealms</groupId>
-            <artifactId>DungeonRealms-network</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.8-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.8-SNAPSHOT</version>
-            <type>javadoc</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
             <version>3.5</version>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>org.ini4j</groupId>
+            <artifactId>ini4j</artifactId>
+            <version>0.5.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+    </dependencies>
 
 </project>
