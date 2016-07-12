@@ -772,12 +772,8 @@ public class InventoryListener implements Listener {
             String finalName = ChatColor.RED + "[" + "+" + (amount + 1) + "] " + newName;
             double doublenewDamageMin = nmsItem.getTag().getInt("damageMin") + ((5 * nmsItem.getTag().getInt("damageMin")) / 100);
             double doublenewDamageMax = nmsItem.getTag().getInt("damageMax") + ((5 * nmsItem.getTag().getInt("damageMax")) / 100);
-            if (tier == 1) {
-                doublenewDamageMin += 1;
-                doublenewDamageMax += 1;
-            }
-            int finalDmgMin = (int) Math.round(doublenewDamageMin);
-            int finalDmgMax = (int) Math.round(doublenewDamageMax);
+            int finalDmgMin = (int) Math.round(doublenewDamageMin) + 1;
+            int finalDmgMax = (int) Math.round(doublenewDamageMax) + 1;
 
             // update the item lore
             lore.set(0, ChatColor.RED + "DMG: " + finalDmgMin + " - " + finalDmgMax);
