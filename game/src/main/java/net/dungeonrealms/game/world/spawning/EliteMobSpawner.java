@@ -89,7 +89,7 @@ public class EliteMobSpawner {
     /**
      * Initialize spawner
      */
-    void init() {
+    /*void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             boolean playersNearby = !API.getNearbyPlayers(location, 24).isEmpty();
             if (playersNearby) {
@@ -108,34 +108,50 @@ public class EliteMobSpawner {
                 }
             }
         }, 0L, 40L);
+    }*/
+
+    void init() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            if (timerID == -1) {
+                timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                    if (isRemoved) {
+                        Bukkit.getScheduler().cancelTask(timerID);
+                    } else
+                        spawnIn();
+                }, 0L, 20L);
+            }
+        }, 0L, 40L);
     }
 
     private void spawnIn() {
-        if (!SPAWNED_MONSTERS.isEmpty()) {
-            for (Entity monster : SPAWNED_MONSTERS) {
-                LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
-                if (monster.isAlive()) {
-                    if (API.isInSafeRegion(livingEntity.getLocation())) {
-                        if (livingEntity instanceof Creature) {
-                            ((Creature) livingEntity).setTarget(null);
+        boolean playersNearby = !API.getNearbyPlayers(location, 24).isEmpty();
+        if (playersNearby) {
+            if (!SPAWNED_MONSTERS.isEmpty()) {
+                for (Entity monster : SPAWNED_MONSTERS) {
+                    LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
+                    if (monster.isAlive()) {
+                        if (API.isInSafeRegion(livingEntity.getLocation())) {
+                            if (livingEntity instanceof Creature) {
+                                ((Creature) livingEntity).setTarget(null);
+                            }
+                            monster.setPosition(location.getX(), location.getY(), location.getZ());
+                            return;
                         }
-                        monster.setPosition(location.getX(), location.getY(), location.getZ());
-                        return;
-                    }
-                    double num = livingEntity.getLocation().distanceSquared(location);
-                    if (num > 900) {
-                        if (livingEntity instanceof Creature) {
-                            ((Creature) livingEntity).setTarget(null);
+                        double num = livingEntity.getLocation().distanceSquared(location);
+                        if (num > 900) {
+                            if (livingEntity instanceof Creature) {
+                                ((Creature) livingEntity).setTarget(null);
+                            }
+                            monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
                         }
-                        monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
+                    } else {
+                        SPAWNED_MONSTERS.remove(monster);
                     }
-                } else {
-                    SPAWNED_MONSTERS.remove(monster);
                 }
             }
         }
         if (SPAWNED_MONSTERS.isEmpty()) {
-            if (!canMobsSpawn()) {
+            if (!canMobsSpawn(playersNearby)) {
                 //Mobs haven't passed their respawn timer yet.
                 return;
             }
@@ -370,13 +386,19 @@ public class EliteMobSpawner {
     }
 
     //Checks whether mobs can spawn based on their delay set in config.
-    private boolean canMobsSpawn() {
+    private boolean canMobsSpawn(boolean playersNearby) {
         if (counter < respawnDelay) {
             counter++;
             return false;
+        } else {
+            if (playersNearby) {
+                counter = 0;
+                return true;
+            } else {
+                counter = respawnDelay;
+                return false;
+            }
         }
-        counter = 0;
-        return true;
     }
 
     private Location getRandomLocation(Location location, double xMin, double xMax, double zMin, double zMax) {
