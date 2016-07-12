@@ -7,6 +7,7 @@ import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -45,7 +46,7 @@ public class AntiCheat {
 
     //TODO: Have a look at this
     public void checkForDupedItems(Player player) {
-        if (/*Rank.isGM(player) || */player.getGameMode() != GameMode.SURVIVAL) return;
+        if (Rank.isGM(player) || player.getGameMode() != GameMode.SURVIVAL) return;
         List<ItemStack> registeredItems = new ArrayList<>();
         for (ItemStack is : player.getInventory().getContents()) {
             if (is == null || is.getType() == Material.AIR) continue;
