@@ -439,6 +439,9 @@ public class DamageAPI {
                 return 0;
             }
 
+            if (!projectile.hasMetadata("damageMin") || !projectile.hasMetadata("damageMax")) {
+                return 1;
+            }
             double damage = Utils.randInt(projectile.getMetadata("damageMin").get(0).asInt(), projectile.getMetadata
                     ("damageMax").get(0).asInt());
             boolean isHitCrit = false;
