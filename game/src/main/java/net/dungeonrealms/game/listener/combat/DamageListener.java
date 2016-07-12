@@ -270,7 +270,7 @@ public class DamageListener implements Listener {
         }
 
         if (PowerStrike.powerStrike.contains(leDamageSource.getUniqueId())) {
-            finalDamage *= 3;
+            finalDamage *= 2;
             PowerStrike.chargedMonsters.remove(leDamageSource.getUniqueId());
             PowerStrike.powerStrike.remove(leDamageSource.getUniqueId());
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
