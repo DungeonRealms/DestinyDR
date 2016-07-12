@@ -61,10 +61,9 @@ public class BlockListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (event.getItemInHand() == null) return;
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
-        if (nmsItem == null) return;
-        if (!event.getBlockPlaced().getWorld().equals(Bukkit.getWorlds().get(0))) return;
-        event.setCancelled(true);
+        if (event.getBlock().getWorld() == Bukkit.getWorlds().get(0) || event.getBlock().getWorld().getName().contains("DUNGEON")) {
+            event.setCancelled(true);
+        }
     }
 
     /**
@@ -86,8 +85,9 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void breakBlock(BlockBreakEvent e) {
         if (e.getPlayer().isOp() || e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        if (e.getBlock().getWorld() == Bukkit.getWorlds().get(0) || e.getBlock().getWorld().getName().contains("DUNGEON"))
+        if (e.getBlock().getWorld() == Bukkit.getWorlds().get(0) || e.getBlock().getWorld().getName().contains("DUNGEON")) {
             e.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
