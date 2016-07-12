@@ -50,6 +50,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
@@ -911,6 +912,12 @@ public class MainListener implements Listener {
                 return;
             if (nms.getTag().hasKey("subtype")) event.getItemDrop().remove();
         }
+    }
+
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void playerEnchant(EnchantItemEvent event) {
+        event.setCancelled(true);
     }
 
 
