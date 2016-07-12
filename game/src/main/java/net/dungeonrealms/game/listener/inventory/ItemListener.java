@@ -367,6 +367,11 @@ public class ItemListener implements Listener {
                 if (nms.hasTag() && nms.getTag().hasKey("type")) {
                     if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
                         Player player = event.getPlayer();
+                        if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
+                            player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
+                            player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
+                            return;
+                        }
                         int invlvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
                         if (invlvl >= 6) {
                             player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");
