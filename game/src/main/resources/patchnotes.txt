@@ -1,4 +1,6 @@
 Patch <build>
 
 Bug Fixes
-- Fixed enchanting glitch
+- Fixed enchanting glitch.
+- Fixed bank upgrade glitch.
+- Prevent negative damage.
