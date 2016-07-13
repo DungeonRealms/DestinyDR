@@ -415,9 +415,18 @@ public class ItemGenerator {
 		
 		// if no extra attributes, then make sure the item has the basic name
 	    if (!(name.contains(type.getTierName(tier)))) name += type.getTierName(tier);
-	    
+
+        List<String> lore = meta.getLore();
+        // add soulbound lore
+        if (isReroll && isSoulbound && origItem.hasItemMeta() && origItem.getItemMeta().hasLore()) {
+            for (String line : origItem.getItemMeta().getLore()) {
+                if (line.contains(ChatColor.GRAY.toString())) {
+                    lore.add(line);
+                }
+            }
+        }
+
 		// add the rarity tag
-		List<String> lore = meta.getLore();
 		lore.add(rarity.getName());
 
         // add soulbound, untradeable, puntradeable
@@ -431,14 +440,6 @@ public class ItemGenerator {
             lore.add(ChatColor.GRAY + "Permanently Untradeable");
         }
 
-        // add soulbound lore
-        if (isReroll && isSoulbound && origItem.hasItemMeta() && origItem.getItemMeta().hasLore()) {
-            for (String line : origItem.getItemMeta().getLore()) {
-                if (line.contains(ChatColor.GRAY.toString())) {
-                    lore.add(line);
-                }
-            }
-        }
         // add custom EC lore
         if (isReroll && origItem != null && origItem.hasItemMeta() && origItem.getItemMeta().hasLore()) {
             for (String line : origItem.getItemMeta().getLore()) {
@@ -707,7 +708,9 @@ public class ItemGenerator {
         if (rarity == null) {
             // Add rarity if needed.
             rarity = Item.ItemRarity.UNIQUE; // default to unique
+            item_lore.remove(ChatColor.DARK_RED + "Soulbound");
             item_lore.add(rarity.getName());
+            item_lore.add(ChatColor.DARK_RED + "Soulbound");
             im.setLore(item_lore);
             is.setItemMeta(im);
             RepairAPI.setCustomItemDurability(is, 1500);
