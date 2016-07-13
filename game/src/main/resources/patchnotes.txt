@@ -3,3 +3,4 @@ Patch <build>
 Bug Fixes
 - Fixes for lower tier weapons not receiving damage on enchants.
 - Dungeon Boss Invulnerability fixed.
+- Fixed block clipping issue while mounting.
