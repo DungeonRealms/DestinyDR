@@ -143,7 +143,7 @@ public class CommandMonSpawn extends BasicCommand {
                             }
                         }
                         EnumMonster monsEnum = EnumMonster.getMonsterByString(args[1]);
-                        EnumEntityType method = EnumEntityType.HOSTILE_MOB;
+                        EnumEntityType type = EnumEntityType.HOSTILE_MOB;
                         Entity entity = SpawningMechanics.getMob(((CraftWorld) player.getWorld()).getHandle(), tier, monsEnum);
 
                         int level = Utils.getRandomFromTier(tier, lvlRange);

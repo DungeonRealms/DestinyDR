@@ -603,7 +603,7 @@ public class DungeonManager implements GenericMechanic {
     private void loadInWorld(String worldName, Map<Player, Boolean> playerList, DungeonType type) {
         /*
          * Only creates a world if the contents of a world don't already exist.
-		 * This method loadInWorld() is called in the actual object load().
+		 * This type loadInWorld() is called in the actual object load().
 		 */
         AsyncUtils.pool.submit(() -> {
             if (new File(worldName + "/" + "uid.dat").exists()) {
@@ -767,7 +767,7 @@ public class DungeonManager implements GenericMechanic {
     }
 
     /**
-     * Enum method of dungeons includes, zip locations & bossNames
+     * Enum type of dungeons includes, zip locations & bossNames
      *
      * @since 1.0
      */

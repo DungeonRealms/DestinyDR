@@ -5,7 +5,7 @@ import net.dungeonrealms.network.PingResponse;
 import net.dungeonrealms.network.ServerAddress;
 import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.ping.ServerPinger;
-import net.dungeonrealms.network.ping.method.BungeePingResponse;
+import net.dungeonrealms.network.ping.type.BungeePingResponse;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;

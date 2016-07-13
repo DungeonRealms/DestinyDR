@@ -105,9 +105,9 @@ public class ItemGenerator {
     }
     
     /**
-     * Generates an item with the given tier, method, and rarity. If the
-     * tier, method, and rarity instance variables do not have values,
-     * this will generate an item with random tier, method, and rarity.
+     * Generates an item with the given tier, type, and rarity. If the
+     * tier, type, and rarity instance variables do not have values,
+     * this will generate an item with random tier, type, and rarity.
      * @return - an instance of the current ItemGenerator 
      * (call getItem() for the ItemStack)
      * @since 1.0
@@ -753,7 +753,7 @@ public class ItemGenerator {
         tag.set("AttributeModifiers", new NBTTagList());
         tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getTierId()));
         
-        // set item method
+        // set item type
         if (Item.ItemType.isWeapon(is)) {
             tag.set("method", new NBTTagString("weapon"));
         } else if (Item.ItemType.isArmor(is)) {

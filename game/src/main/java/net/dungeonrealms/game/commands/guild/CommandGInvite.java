@@ -89,7 +89,7 @@ public class CommandGInvite extends BasicCommand {
 
         if (p != null) {
             p.sendMessage("");
-            p.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, method " + ChatColor.DARK_AQUA.toString() + "/gdecline");
+            p.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline");
             p.sendMessage("");
         } else {
             GameAPI.updatePlayerData(p_uuid);

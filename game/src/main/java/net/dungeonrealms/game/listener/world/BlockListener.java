@@ -52,7 +52,7 @@ public class BlockListener implements Listener {
 
     /**
      * Disables the placement of core items that have NBTData of `important` in
-     * `method` field.
+     * `type` field.
      *
      * @param event
      * @since 1.0

@@ -113,7 +113,7 @@ public interface Realms extends GenericMechanic {
      * @param player          Owner of realm
      * @param callOnException Should call callback if exception is caught
      * @param task            Async task
-     * @param callback        Callback method?
+     * @param callback        Callback type?
      */
     void loadRealmAsync(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> callback);
 

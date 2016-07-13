@@ -272,11 +272,11 @@ public class InventoryListener implements Listener {
                 int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
                 ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
                 // calculate new values
-//                Integer[] newTotalVal = method.isRange()
-//                        ? new Integer[]{gp.getRangedAttributeVal(method)[0] - oldTag.getInt(modifier + "Min"),
-//                        gp.getRangedAttributeVal(method)[1] - oldTag.getInt(modifier + "Max")}
-//                        : new Integer[]{0, gp.getRangedAttributeVal(method)[1] - oldTag.getInt(modifier)};
-//                gp.setAttributeVal(method, newTotalVal);
+//                Integer[] newTotalVal = type.isRange()
+//                        ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
+//                        gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
+//                        : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
+//                gp.setAttributeVal(type, newTotalVal);
                 Integer[] newTotalVal = gp.getAttributes().get(type.getNBTName());
                 if (oldArmorVal != 0) { // note the decrease to the p
                     p.sendMessage(ChatColor.RED + "-" + oldArmorVal
@@ -294,7 +294,7 @@ public class InventoryListener implements Listener {
                 net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
                 // get differences
                 for (String modifier : newModifiers) {
-                    // get the attribute method to determine if we need a percentage or not and to get the
+                    // get the attribute type to determine if we need a percentage or not and to get the
                     // correct display name
                     ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
                     // get the tag name (in case the stat is a range, in which case compare max values)
@@ -304,12 +304,12 @@ public class InventoryListener implements Listener {
                     int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
                     // calculate new values
 //                    Integer[] newTotalVal;
-//                    if (method.isRange()) {
-//                        newTotalVal = gp.changeAttributeVal(method, new Integer[]{newTag.getInt(modifier + "Min") -
+//                    if (type.isRange()) {
+//                        newTotalVal = gp.changeAttributeVal(type, new Integer[]{newTag.getInt(modifier + "Min") -
 //                                oldTag.getInt(modifier + "Min"), newTag.getInt(modifier + "Max") - oldTag.getInt
 //                                (modifier + "Max")});
 //                    } else {
-//                        newTotalVal = gp.changeAttributeVal(method, new Integer[]{0, newTag.getInt(modifier) -
+//                        newTotalVal = gp.changeAttributeVal(type, new Integer[]{0, newTag.getInt(modifier) -
 //                                oldTag.getInt(modifier)});
 //                    }
                     Integer[] newTotalVal = gp.getAttributes().get(type.getNBTName());
@@ -330,11 +330,11 @@ public class InventoryListener implements Listener {
                     String tagName = type.isRange() ? modifier + "Max" : modifier;
                     int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
                     Integer[] newTotalVal = gp.getAttributes().get(type.getNBTName());
-//                    Integer[] newTotalVal = method.isRange()
-//                            ? new Integer[]{gp.getRangedAttributeVal(method)[0] - oldTag.getInt(modifier + "Min"),
-//                            gp.getRangedAttributeVal(method)[1] - oldTag.getInt(modifier + "Max")}
-//                            : new Integer[]{0, gp.getRangedAttributeVal(method)[1] - oldTag.getInt(modifier)};
-//                    gp.setAttributeVal(method, newTotalVal);
+//                    Integer[] newTotalVal = type.isRange()
+//                            ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
+//                            gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
+//                            : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
+//                    gp.setAttributeVal(type, newTotalVal);
                     if (oldArmorVal != 0) { // note the decrease to the player
                         p.sendMessage(ChatColor.RED + "-" + oldArmorVal
                                 + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
@@ -343,20 +343,20 @@ public class InventoryListener implements Listener {
                 }
             } else { // only equipping
                 for (String modifier : newModifiers) {
-                    // get the attribute method to determine if we need a percentage or not and to get the
+                    // get the attribute type to determine if we need a percentage or not and to get the
                     // correct display name
                     ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
                     // get the tag name (in case the stat is a range, in which case compare max values)
                     String tagName = type.isRange() ? modifier + "Max" : modifier;
                     // calculate new values
-//                    Integer[] newTotalVal = method.isRange()
-//                            ? new Integer[]{gp.getRangedAttributeVal(method)[0] + newTag.getInt(modifier + "Min"),
-//                            gp.getRangedAttributeVal(method)[1] + newTag.getInt(modifier + "Max")}
-//                            : new Integer[]{0, gp.getRangedAttributeVal(method)[1] + newTag.getInt(modifier)};
+//                    Integer[] newTotalVal = type.isRange()
+//                            ? new Integer[]{gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
+//                            gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max")}
+//                            : new Integer[]{0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier)};
                     // get the tag values (if the armor piece doesn't have the modifier, set equal to 0)
                     int newArmorVal = newTag.hasKey(tagName) ? newTag.getInt(tagName) : 0;
                     Integer[] newTotalVal = gp.getAttributes().get(type.getNBTName());
-//                    gp.setAttributeVal(method, newTotalVal);
+//                    gp.setAttributeVal(type, newTotalVal);
                     p.sendMessage(ChatColor.GREEN + "+" + newArmorVal
                             + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
                             + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");

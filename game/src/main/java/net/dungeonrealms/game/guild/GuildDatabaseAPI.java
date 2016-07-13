@@ -60,7 +60,7 @@ public interface GuildDatabaseAPI {
      * @param guildName Guild Name.
      * @param tag       Clan Tag.
      * @param owner     owner UUID
-     * @param callback  Call back method
+     * @param callback  Call back type
      */
 
     void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback);

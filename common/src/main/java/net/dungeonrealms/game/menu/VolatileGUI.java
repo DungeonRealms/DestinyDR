@@ -10,7 +10,7 @@ public interface VolatileGUI {
 
 
     /**
-     * This method will be called when the gui is destroyed
+     * This type will be called when the gui is destroyed
      *
      * @param event Event that fired the destruction
      */

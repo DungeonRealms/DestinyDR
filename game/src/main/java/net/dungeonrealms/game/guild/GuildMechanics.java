@@ -517,7 +517,7 @@ public class GuildMechanics {
     }
 
     /**
-     * This single method is used for the dialogue of successfully
+     * This single type is used for the dialogue of successfully
      * creating a guild.
      *
      * @param player Player in dialogue interaction

@@ -407,7 +407,7 @@ public class GamePlayer {
      */
     public int getStaticAttributeVal(AttributeType type) {
         if (type == null || type.isRange()) {
-            Utils.log.warning("Invalid method or method is a ranged attribute.");
+            Utils.log.warning("Invalid type or type is a ranged attribute.");
             return -1;
         }
         if (attributes.get(type.getNBTName()) == null) return -1;
