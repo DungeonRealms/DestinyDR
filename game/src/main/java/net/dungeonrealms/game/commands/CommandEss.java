@@ -190,7 +190,7 @@ public class CommandEss extends BasicCommand {
                                     commandSender.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash from " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                     break;
                                 default:
-                                    commandSender.sendMessage(ChatColor.RED + "Invalid modification method, please use: ADD | SET | REMOVE");
+                                    commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
                                     return false;
                             }
                             GameAPI.updatePlayerData(uuid);
@@ -229,7 +229,7 @@ public class CommandEss extends BasicCommand {
                                     subscriptionLength = subscriptionLength - days;
                                     if (subscriptionLength < 0) subscriptionLength = 0;
                                 } else {
-                                    commandSender.sendMessage(ChatColor.RED + "Invalid modification method, please use: ADD | SET | REMOVE");
+                                    commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
                                     return false;
                                 }
                                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true);
@@ -280,7 +280,7 @@ public class CommandEss extends BasicCommand {
                                     break;
 
                                 default:
-                                    commandSender.sendMessage(ChatColor.RED + "Invalid purchase method: " + type + ".");
+                                    commandSender.sendMessage(ChatColor.RED + "Invalid purchase type: " + type + ".");
                                     return false;
                             }
                         } catch (IllegalArgumentException ex) {
@@ -288,7 +288,7 @@ public class CommandEss extends BasicCommand {
                             return false;
                         }
                     } else {
-                        commandSender.sendMessage(ChatColor.RED + "Invalid usage /dr purchase <player> <method> [args]");
+                        commandSender.sendMessage(ChatColor.RED + "Invalid usage /dr purchase <player> <type> [args]");
                         return false;
                     }
                     break;

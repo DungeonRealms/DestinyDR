@@ -283,7 +283,7 @@ public class PetUtils implements GenericMechanic{
                 petChicken.setAge(-1);
                 petChicken.ageLocked = true;
                 player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_AMBIENT, 1F, 1F);
-                makePet(petChicken, player.getUniqueId(), 1.3D, EnumPets.CHICKEN);
+                makePet(petChicken, player.getUniqueId(), 1.1D, EnumPets.CHICKEN);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petChicken);
                 player.closeInventory();
                 break;
@@ -296,7 +296,7 @@ public class PetUtils implements GenericMechanic{
                 petOcelot.ageLocked = true;
                 petOcelot.setTamed(true);
                 player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 1F, 1F);
-                makePet(petOcelot, player.getUniqueId(), 1.1D, EnumPets.OCELOT);
+                makePet(petOcelot, player.getUniqueId(), 1D, EnumPets.OCELOT);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petOcelot);
                 player.closeInventory();
                 break;
@@ -308,7 +308,7 @@ public class PetUtils implements GenericMechanic{
                 petRabbit.setAge(-1);
                 petRabbit.ageLocked = true;
                 player.playSound(player.getLocation(), Sound.ENTITY_RABBIT_AMBIENT, 1F, 1F);
-                makePet(petRabbit, player.getUniqueId(), 1.1D, EnumPets.RABBIT);
+                makePet(petRabbit, player.getUniqueId(), 0.9D, EnumPets.RABBIT);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petRabbit);
                 player.closeInventory();
                 break;

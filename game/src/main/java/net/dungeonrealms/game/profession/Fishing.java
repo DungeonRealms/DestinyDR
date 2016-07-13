@@ -869,7 +869,7 @@ public class Fishing implements GenericMechanic {
 
     public enum FishingRodEnchant {
         DoubleCatch("DOUBLE CATCH"), TripleCatch("TRIPLE CATCH"), TreasureFind("TREASURE FIND"),
-        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND"),;
+        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND");
 
 
         public String name;
@@ -969,7 +969,8 @@ public class Fishing implements GenericMechanic {
 
         public static FishingRodEnchant getEnchant(String enchantTypeString) {
             for (FishingRodEnchant temp : values()) {
-                if (temp.name().equalsIgnoreCase(enchantTypeString) || temp.name.contains(enchantTypeString))
+                Bukkit.getLogger().info(temp.name + " || " + enchantTypeString);
+                if (temp.name().equalsIgnoreCase(enchantTypeString) || temp.name.contains(enchantTypeString) || temp.name.equalsIgnoreCase(enchantTypeString))
                     return temp;
             }
             return FishingRodEnchant.DoubleCatch;

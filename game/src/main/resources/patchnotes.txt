@@ -4,6 +4,11 @@ Bug Fixes
 - Fixes for lower tier weapons not receiving damage on enchants.
 - Dungeon Boss Invulnerability fixed.
 - Fixed block clipping issue while mounting.
+- Fixed incorrect names upon orbing soulbound items.
+- Removed ability to cast fishing rod in Dungeons/Realms.
+- Fixed AI on Infernal Abyss Dungeon Boss.
+- Fishing enchantments fixed.
 
 New Features
 - Readded the lobby
+- To improve the speed of Fishing, Lure 3 has been added to Rods.

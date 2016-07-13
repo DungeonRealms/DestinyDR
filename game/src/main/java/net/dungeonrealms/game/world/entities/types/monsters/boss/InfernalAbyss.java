@@ -313,6 +313,9 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
     private void doBossDrops() {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         for (Player pl : livingEntity.getWorld().getPlayers()) {
+            if (pl.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
             GamePlayer gp = GameAPI.getGamePlayer(pl);
             if (gp != null) {
                 gp.getPlayerStatistics().setInfernalAbyssKills(gp.getPlayerStatistics().getInfernalAbyssKills() + 1);
@@ -368,7 +371,14 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
             livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
         }
         int gemDrop = random.nextInt(2000) + 10000;
-        int perPlayerDrop = Math.round(gemDrop / livingEntity.getWorld().getPlayers().size());
+        int groupSize = 0;
+        for (Player player : livingEntity.getWorld().getPlayers()) {
+            if (player.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
+            groupSize++;
+        }
+        int perPlayerDrop = Math.round(gemDrop / groupSize);
         ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {
@@ -378,6 +388,9 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
         }, 5L);
         String partyMembers = "";
         for (Player player : livingEntity.getWorld().getPlayers()) {
+            if (player.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
             partyMembers += player.getName() + ", ";
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), banknote);
