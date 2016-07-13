@@ -14,6 +14,7 @@ import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -51,6 +52,10 @@ public class CommandMount extends BasicCommand {
             }
             if (CombatLog.isInCombat(player)) {
                 player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
+                return true;
+            }
+            if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
+                player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
                 return true;
             }
             String mountType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());

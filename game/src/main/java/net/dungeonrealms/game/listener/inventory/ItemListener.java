@@ -989,6 +989,10 @@ public class ItemListener implements Listener {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                         return;
                     }
+                    if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
+                        player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
+                        return;
+                    }
                     String mountType = tag.getString("usage").equals("mule") ? "MULE" : (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
                     if (mountType == null || mountType.equals("")) {
                         player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");

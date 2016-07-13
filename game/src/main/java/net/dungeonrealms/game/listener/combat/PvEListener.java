@@ -58,6 +58,18 @@ public class PvEListener implements Listener {
         Player damager = (Player) event.getDamager();
         LivingEntity receiver = (LivingEntity) event.getEntity();
 
+        if (DamageAPI.isInvulnerable(receiver)) {
+            if (receiver.hasMetadata("boss")) {
+                if (receiver instanceof CraftLivingEntity) {
+                    Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
+                    b.onBossHit(event);
+                }
+            }
+            event.setCancelled(true);
+            damager.updateInventory();
+            return;
+        }
+
         double finalDamage;
 
         if (CombatLog.isInCombat(damager)) {
@@ -225,6 +237,18 @@ public class PvEListener implements Listener {
 
         Player damager = (Player) projectile.getShooter();
         LivingEntity receiver = (LivingEntity) event.getEntity();
+
+        if (DamageAPI.isInvulnerable(receiver)) {
+            if (receiver.hasMetadata("boss")) {
+                if (receiver instanceof CraftLivingEntity) {
+                    Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
+                    b.onBossHit(event);
+                }
+            }
+            event.setCancelled(true);
+            damager.updateInventory();
+            return;
+        }
 
         double finalDamage;
 
