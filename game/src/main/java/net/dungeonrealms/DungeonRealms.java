@@ -210,6 +210,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(HealthHandler.getInstance());
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
+            mm.registerMechanic(NetworkChannelListener.getInstance());
             //mm.registerMechanic(DungeonManager.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
@@ -234,6 +235,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(new Entities());
+            mm.registerMechanic(NetworkChannelListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());

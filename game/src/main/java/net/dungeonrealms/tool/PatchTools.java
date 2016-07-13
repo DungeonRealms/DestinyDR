@@ -62,7 +62,6 @@ public class PatchTools implements GenericMechanic {
                     builder = new StringBuilder();
                 }
 
-
                 // APPEND BOOK PAGE ///
                 builder.append(text).append("\n");
             }
@@ -79,7 +78,6 @@ public class PatchTools implements GenericMechanic {
                 ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER, new String[]{});
         BookMeta bm = (BookMeta) patchBook.getItemMeta();
 
-        System.out.print(pages.size());
         bm.setAuthor("DungeonRealms Development Team");
         bm.setPages(pages);
 

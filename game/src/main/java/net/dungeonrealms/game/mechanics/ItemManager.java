@@ -925,7 +925,7 @@ public class ItemManager {
             if (playerName.length() >= 15)
                 playerName = playerName.substring(0, 15);
             friendsPage_string += (isOnline ? ChatColor.GREEN + ChatColor.BOLD.toString() + "O" : ChatColor.DARK_RED + ChatColor.BOLD.toString() + "O") + ChatColor.BLACK + ChatColor.BOLD.toString() + " " + playerName + nextLine;
-            friendsPage_string += (isOnline ? ChatColor.BLACK + "Shard: " + ChatColor.BOLD + shard + nextLine  : ChatColor.BLACK + "Last On: " + time);
+            friendsPage_string += (isOnline ? ChatColor.BLACK + "Shard: " + ChatColor.BOLD + shard + nextLine : ChatColor.BLACK + "Last On: " + time);
 
 
             count++;

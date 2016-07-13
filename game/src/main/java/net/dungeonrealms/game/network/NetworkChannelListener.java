@@ -11,6 +11,8 @@ import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.menu.item.GUIButton;
 import net.dungeonrealms.game.player.menu.ShardSwitcher;
 import net.dungeonrealms.game.punishment.PunishAPI;
@@ -41,7 +43,7 @@ import java.util.UUID;
  * Created by Nick on 10/12/2015.
  */
 @SuppressWarnings("unchecked")
-public class NetworkChannelListener implements PluginMessageListener {
+public class NetworkChannelListener implements PluginMessageListener, GenericMechanic {
 
     static NetworkChannelListener instance = null;
 
@@ -50,6 +52,11 @@ public class NetworkChannelListener implements PluginMessageListener {
             instance = new NetworkChannelListener();
         }
         return instance;
+    }
+
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CARDINALS;
     }
 
     public void startInitialization() {
@@ -62,6 +69,13 @@ public class NetworkChannelListener implements PluginMessageListener {
 
         BungeeServerTracker.startTask(DungeonRealms.getInstance(), 1L);
         Utils.log.info("[NetworkChannelListener] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
+    }
+
+    @Override
+    public void stopInvocation() {
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
+        Utils.log.info("[NetworkChannelListener] Unregistering Outbound/Inbound BungeeCord channels...");
     }
 
     @Override

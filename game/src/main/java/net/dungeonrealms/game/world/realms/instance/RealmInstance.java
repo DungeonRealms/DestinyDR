@@ -346,6 +346,12 @@ public class RealmInstance implements Realms {
                     getRealm(player.getUniqueId()).setStatus(RealmStatus.CLOSED);
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
+
+                    // UDPATE REALM PORTAL RUNE //
+                    int slot = GameAPI.getItemSlot(player.getInventory(), "realmPortalRune");
+
+                    if (slot != -1)
+                        player.getInventory().setItem(slot, ItemManager.createRealmPortalRune(player.getUniqueId()));
                 }));
     }
 
