@@ -2,16 +2,16 @@ package net.dungeonrealms.game.donate;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.world.entities.types.pets.Creeper;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.*;
@@ -178,7 +178,7 @@ public class DonationEffects implements GenericMechanic {
             return false;
         }
         if (playerEcash - amount >= 0) {
-            GamePlayer gamePlayer = API.getGamePlayer(player);
+            GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
             if (gamePlayer == null) return false;
             gamePlayer.getPlayerStatistics().setEcashSpent(gamePlayer.getPlayerStatistics().getEcashSpent() + amount);
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);

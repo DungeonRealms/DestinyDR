@@ -2,8 +2,8 @@ package net.dungeonrealms.game.world.party;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
@@ -96,8 +96,8 @@ public class Affair implements GenericMechanic {
     public void invitePlayer(Player inviting, Player invitor) {
         _invitations.put(inviting, getParty(invitor).get());
         inviting.sendMessage(
-                ChatColor.LIGHT_PURPLE.toString() + ChatColor.UNDERLINE + invitor.getName() + ChatColor.GRAY + " has invited you to join their party! To accept, type "
-                        + ChatColor.LIGHT_PURPLE + "/paccept" + ChatColor.GRAY + " or to decline, type " + ChatColor.LIGHT_PURPLE + "/pdecline");
+                ChatColor.LIGHT_PURPLE.toString() + ChatColor.UNDERLINE + invitor.getName() + ChatColor.GRAY + " has invited you to join their party! To accept, method "
+                        + ChatColor.LIGHT_PURPLE + "/paccept" + ChatColor.GRAY + " or to decline, method " + ChatColor.LIGHT_PURPLE + "/pdecline");
 
         invitor.sendMessage(ChatColor.GRAY + "You have invited " + ChatColor.LIGHT_PURPLE + inviting.getDisplayName() + ChatColor.GRAY + " to join your party.");
     }
@@ -109,8 +109,8 @@ public class Affair implements GenericMechanic {
         allPlayers.addAll(party.getMembers());
 
         allPlayers.stream().forEach(player -> {
-            if (API.getGamePlayer(player) != null) {
-                if (API.getGamePlayer(player).isInDungeon()) {
+            if (GameAPI.getGamePlayer(player) != null) {
+                if (GameAPI.getGamePlayer(player).isInDungeon()) {
                     DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(player.getWorld());
                     if (!dungeonObject.beingRemoved) {
                         dungeonObject.beingRemoved = true;
@@ -154,8 +154,8 @@ public class Affair implements GenericMechanic {
 
         player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
 
-        if (player.isOnline() && API.getGamePlayer(player) != null) {
-            if (API.getGamePlayer(player).isInDungeon()) {
+        if (player.isOnline() && GameAPI.getGamePlayer(player) != null) {
+            if (GameAPI.getGamePlayer(player).isInDungeon()) {
                 DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 300);
                 player.teleport(Teleportation.Cyrennica);
             }

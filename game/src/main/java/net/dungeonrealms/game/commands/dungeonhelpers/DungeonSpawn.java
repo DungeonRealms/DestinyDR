@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.commands.dungeonhelpers;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -110,8 +110,8 @@ public class DungeonSpawn extends BasicCommand {
         if (customName.equals("")) {
             customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
         }
-        entity.setCustomName(newLevelName + API.getTierColor(tier) + customName.trim());
+        entity.setCustomName(newLevelName + GameAPI.getTierColor(tier) + customName.trim());
         entity.setCustomNameVisible(true);
-        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + customName.trim()));
+        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + customName.trim()));
     }
 }

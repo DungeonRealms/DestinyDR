@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.player.chat;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -57,7 +57,7 @@ public final class GameChat {
         // We're using global chat, append global prefix.
         boolean gChat =  isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
         if (gChat) {
-            // Determine which global type we should use, default is GLOBAL.
+            // Determine which global method we should use, default is GLOBAL.
             switch (globalType.toLowerCase()) {
                 case "local": // This allows us to do a cheap hack for "/l".
                     break;
@@ -116,7 +116,7 @@ public final class GameChat {
             case "youtube":
             case "pmod":
             default:
-                String alignmentName = API.getGamePlayer(player).getPlayerAlignment().name();
+                String alignmentName = GameAPI.getGamePlayer(player).getPlayerAlignment().name();
                 return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
         }
     }

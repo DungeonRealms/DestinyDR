@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -28,12 +28,12 @@ public class CommandSkip extends BasicCommand {
 
         Player player = (Player) sender;
 
-        if (API.getRegionName(player.getLocation()).equalsIgnoreCase("tutorial_island")) {
+        if (GameAPI.getRegionName(player.getLocation()).equalsIgnoreCase("tutorial_island")) {
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED
                     + "If you skip this tutorial you will not recieve " + ChatColor.UNDERLINE + "ANY"
                     + ChatColor.RED + " of the item rewards for completing it.");
-            player.sendMessage(ChatColor.GRAY + "If you're sure you still want to skip it, type '" + ChatColor.GREEN
-                    + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to finish the tutorial. Otherwise, just type '"
+            player.sendMessage(ChatColor.GRAY + "If you're sure you still want to skip it, method '" + ChatColor.GREEN
+                    + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to finish the tutorial. Otherwise, just method '"
                     + ChatColor.RED + "cancel" + ChatColor.GRAY + "' to continue with the tutorial.");
 
             Chat.getInstance().listenForMessage(player, chat -> {

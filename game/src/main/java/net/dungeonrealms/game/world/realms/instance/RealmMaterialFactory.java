@@ -1,14 +1,15 @@
 package net.dungeonrealms.game.world.realms.instance;
 
 import lombok.Setter;
-import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.AbstractMenu;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.menus.AbstractMenu;
+import net.dungeonrealms.game.menu.GUIButtonClickEvent;
+import net.dungeonrealms.game.menu.item.GUIButton;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.ui.GUIButtonClickEvent;
-import net.dungeonrealms.game.ui.item.GUIButton;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -271,14 +272,14 @@ class RealmMaterialFactory {
         private int page;
 
         RealmMaterialStore(String name) {
-            super(name, 63);
+            super(DungeonRealms.getInstance(), name, 63);
             this.page = getPage(name);
 
             if (page < MAX_PAGES) {
                 GUIButton nextPageButton = new GUIButton(Material.ARROW) {
                     @Override
                     public void action(GUIButtonClickEvent event) {
-                        Bukkit.getScheduler().runTask(plugin, () -> openMaterialStore(event.getWhoClicked(), page));
+                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> openMaterialStore(event.getWhoClicked(), page));
                     }
                 };
 
@@ -293,7 +294,7 @@ class RealmMaterialFactory {
                 GUIButton previousPageButton = new GUIButton(Material.ARROW) {
                     @Override
                     public void action(GUIButtonClickEvent event) {
-                        Bukkit.getScheduler().runTask(plugin, () -> openMaterialStore(event.getWhoClicked(), page - 2));
+                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> openMaterialStore(event.getWhoClicked(), page - 2));
                     }
                 };
 
@@ -428,7 +429,7 @@ class RealmMaterialFactory {
                 return;
             }
 
-            GamePlayer gamePlayer = API.getGamePlayer(player);
+            GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
 
             if (isEcash && gamePlayer.getEcashBalance() < pricePerItem) {
                 player.sendMessage(ChatColor.RED + "You do not have enough E-CASH to complete this purchase.");
@@ -445,7 +446,7 @@ class RealmMaterialFactory {
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
             player.sendMessage(ChatColor.GREEN + "Transaction successful.");
 
-            player.getInventory().setItem(player.getInventory().firstEmpty(), API.makeItemUntradeable(new ItemStack(item.getType(), amount_to_buy, item.getDurability())));
+            player.getInventory().setItem(player.getInventory().firstEmpty(), GameAPI.makeItemUntradeable(new ItemStack(item.getType(), amount_to_buy, item.getDurability())));
         }, null);
     }
 

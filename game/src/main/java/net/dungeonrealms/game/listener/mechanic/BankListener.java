@@ -1,15 +1,14 @@
 package net.dungeonrealms.game.listener.mechanic;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -118,7 +117,7 @@ public class BankListener implements Listener {
                     event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
                 }
                 int gems = event.getItem().getItemStack().getAmount();
-                GamePlayer gamePlayer = API.getGamePlayer(event.getPlayer());
+                GamePlayer gamePlayer = GameAPI.getGamePlayer(event.getPlayer());
                 if (gamePlayer != null) {
                     gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + gems);
                 }
@@ -312,7 +311,7 @@ public class BankListener implements Listener {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
-                                    if (!API.isItemTradeable(e.getCursor()) || !API.isItemDroppable(e.getCursor())) {
+                                    if (!GameAPI.isItemTradeable(e.getCursor()) || !GameAPI.isItemDroppable(e.getCursor())) {
                                         player.sendMessage(ChatColor.RED + "You can't store this item!");
                                         e.setCancelled(true);
                                         return;
@@ -418,7 +417,7 @@ public class BankListener implements Listener {
                         if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGemPouch(e.getCurrentItem())) {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (storage.hasSpace()) {
-                                if (!API.isItemTradeable(e.getCurrentItem()) || !API.isItemDroppable(e.getCurrentItem())) {
+                                if (!GameAPI.isItemTradeable(e.getCurrentItem()) || !GameAPI.isItemDroppable(e.getCurrentItem())) {
                                     player.sendMessage(ChatColor.RED + "You can't store this item!");
                                     e.setCancelled(true);
                                     return;
@@ -540,7 +539,7 @@ public class BankListener implements Listener {
                 }
             }
 
-            if (!API.isItemTradeable(item) || !API.isItemDroppable(item)) {
+            if (!GameAPI.isItemTradeable(item) || !GameAPI.isItemDroppable(item)) {
                 p.sendMessage(ChatColor.RED + "You can't store this item!");
                 e.setCancelled(true);
             }

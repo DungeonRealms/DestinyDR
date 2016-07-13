@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.listener.combat;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -39,15 +39,15 @@ public class PvEListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerMeleeMob(EntityDamageByEntityEvent event) {
-        if (!API.isPlayer(event.getDamager())) return;
+        if (!GameAPI.isPlayer(event.getDamager())) return;
         if (event.getEntity() instanceof Player) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (event.getEntity() instanceof LivingEntity) {
-            if (!event.getEntity().hasMetadata("type")) return;
+            if (!event.getEntity().hasMetadata("method")) return;
         } else {
-            if (event.getEntity().hasMetadata("type")) {
-                if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+            if (event.getEntity().hasMetadata("method")) {
+                if (event.getEntity().getMetadata("method").get(0).asString().equals("buff")) return;
             } else {
                 return;
             }
@@ -57,6 +57,18 @@ public class PvEListener implements Listener {
 
         Player damager = (Player) event.getDamager();
         LivingEntity receiver = (LivingEntity) event.getEntity();
+
+        if (DamageAPI.isInvulnerable(receiver)) {
+            if (receiver.hasMetadata("boss")) {
+                if (receiver instanceof CraftLivingEntity) {
+                    Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
+                    b.onBossHit(event);
+                }
+            }
+            event.setCancelled(true);
+            damager.updateInventory();
+            return;
+        }
 
         double finalDamage;
 
@@ -68,7 +80,7 @@ public class PvEListener implements Listener {
 
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
 
-        if (!API.isWeapon(damager.getEquipment().getItemInMainHand())) {
+        if (!GameAPI.isWeapon(damager.getEquipment().getItemInMainHand())) {
             HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, 1);
             return;
         }
@@ -212,10 +224,10 @@ public class PvEListener implements Listener {
             return;
         }
         if (event.getEntity() instanceof LivingEntity) {
-            if (!event.getEntity().hasMetadata("type")) return;
+            if (!event.getEntity().hasMetadata("method")) return;
         } else {
-            if (event.getEntity().hasMetadata("type")) {
-                if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+            if (event.getEntity().hasMetadata("method")) {
+                if (event.getEntity().getMetadata("method").get(0).asString().equals("buff")) return;
             } else {
                 return;
             }
@@ -225,6 +237,18 @@ public class PvEListener implements Listener {
 
         Player damager = (Player) projectile.getShooter();
         LivingEntity receiver = (LivingEntity) event.getEntity();
+
+        if (DamageAPI.isInvulnerable(receiver)) {
+            if (receiver.hasMetadata("boss")) {
+                if (receiver instanceof CraftLivingEntity) {
+                    Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
+                    b.onBossHit(event);
+                }
+            }
+            event.setCancelled(true);
+            damager.updateInventory();
+            return;
+        }
 
         double finalDamage;
 
@@ -321,8 +345,8 @@ public class PvEListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMonsterDeath(EntityDeathEvent event) {
-        if (!event.getEntity().hasMetadata("type")) return;
-        if (!event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) return;
+        if (!event.getEntity().hasMetadata("method")) return;
+        if (!event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) return;
         if (event.getEntity().hasMetadata("uuid") || event.getEntity().hasMetadata("boss")) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         LivingEntity monster = event.getEntity();
@@ -340,8 +364,8 @@ public class PvEListener implements Listener {
         }
         HealthHandler.getInstance().getMonsterTrackers().remove(monster.getUniqueId());
         ((DRMonster) ((CraftLivingEntity) monster).getHandle()).onMonsterDeath(highestDamage);
-        int exp = API.getMonsterExp(highestDamage, monster);
-        GamePlayer gamePlayer = API.getGamePlayer(highestDamage);
+        int exp = GameAPI.getMonsterExp(highestDamage, monster);
+        GamePlayer gamePlayer = GameAPI.getGamePlayer(highestDamage);
         if (gamePlayer == null) {
             return;
         }
@@ -352,14 +376,14 @@ public class PvEListener implements Listener {
             }
         }
         if (Affair.getInstance().isInParty(highestDamage)) {
-            List<Player> nearbyPlayers = API.getNearbyPlayers(highestDamage.getLocation(), 10);
+            List<Player> nearbyPlayers = GameAPI.getNearbyPlayers(highestDamage.getLocation(), 10);
             List<Player> nearbyPartyMembers = new ArrayList<>();
             if (!nearbyPlayers.isEmpty()) {
                 for (Player player : nearbyPlayers) {
                     if (player.equals(highestDamage)) {
                         continue;
                     }
-                    if (!API.isPlayer(highestDamage)) {
+                    if (!GameAPI.isPlayer(highestDamage)) {
                         continue;
                     }
                     if (Affair.getInstance().areInSameParty(highestDamage, player)) {
@@ -396,7 +420,7 @@ public class PvEListener implements Listener {
                     }
                     exp /= nearbyPartyMembers.size();
                     for (Player player : nearbyPartyMembers) {
-                        API.getGamePlayer(player).addExperience(exp, true, true);
+                        GameAPI.getGamePlayer(player).addExperience(exp, true, true);
                     }
                 } else {
                     gamePlayer.addExperience(exp, false, true);

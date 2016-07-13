@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss.subboss;
 
 import lombok.Getter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
@@ -62,7 +62,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(API.getItemRarity(false)).generateItem().getItem();
+        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(GameAPI.getItemRarity(false)).generateItem().getItem();
 	}
 
 	public void setArmor(int tier) {

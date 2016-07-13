@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -110,7 +110,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::doBossDrops, 5L);
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
-            GamePlayer gp = API.getGamePlayer(p);
+            GamePlayer gp = GameAPI.getGamePlayer(p);
             if (gp != null) {
                 gp.getPlayerStatistics().setBurickKills(gp.getPlayerStatistics().getBurickKills() + 1);
             }
@@ -127,26 +127,27 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
 
     @Override
     public void onBossHit(EntityDamageByEntityEvent event) {
-       for (Entity entity : spawnedMobs) {
-            if (!entity.isAlive()) {
-                spawnedMobs.remove(entity);
+        if (!spawnedMobs.isEmpty()) {
+            for (Entity entity : spawnedMobs) {
+                if (!entity.isAlive()) {
+                    spawnedMobs.remove(entity);
+                }
             }
         }
         LivingEntity en = (LivingEntity) event.getEntity();
-        if (spawnedMobs.size() > 0) {
-            event.setDamage(0);
-            event.setCancelled(true);
-            return;
-        } else {
+        if (spawnedMobs.isEmpty()) {
             if (!canAddsRespawn && !hasMessaged) {
                 for (Player pl : en.getWorld().getPlayers()) {
                     pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "Face me, pathetic creatures!");
                 }
                 hasMessaged = true;
             }
-            en.removePotionEffect(PotionEffectType.INVISIBILITY);
-            en.setMaximumNoDamageTicks(0);
-            en.setNoDamageTicks(0);
+            if (en.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+                en.removePotionEffect(PotionEffectType.INVISIBILITY);
+            }
+            if (DamageAPI.isInvulnerable(en)) {
+                DamageAPI.removeInvulnerable(en);
+            }
         }
         int health = HealthHandler.getInstance().getMonsterMaxHPLive(en);
         int hp = HealthHandler.getInstance().getMonsterHPLive(en);
@@ -160,8 +161,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     err.printStackTrace();
                 }
                 en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
-                en.setMaximumNoDamageTicks(Integer.MAX_VALUE);
-                en.setNoDamageTicks(Integer.MAX_VALUE);
+                DamageAPI.setInvulnerable(en);
                 for (Player pl : en.getWorld().getPlayers()) {
                     pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": "
                             + "To me, my undead brethren! Rip these Andalucians to pieces!");
@@ -224,8 +224,8 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                         return; //WTF?? UH OH BOYS WE GOT ISSUES
                     }
                     entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    entity.setCustomName(newLevelName + API.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Protector");
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Protector"));
+                    entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Protector");
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Protector"));
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     ((EntityInsentient) entity).persistent = true;
                     ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
@@ -245,8 +245,8 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                         return; //WTF?? UH OH BOYS WE GOT ISSUES
                     }
                     entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    entity.setCustomName(newLevelName + API.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Acolyte");
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Acolyte"));
+                    entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Acolyte");
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Acolyte"));
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     ((EntityInsentient) entity).persistent = true;
                     ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
@@ -266,8 +266,8 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                         return; //WTF?? UH OH BOYS WE GOT ISSUES
                     }
                     entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    entity.setCustomName(newLevelName + API.getTierColor(2).toString() + ChatColor.BOLD + "Burick's Sacrifice");
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(2).toString() + ChatColor.BOLD + "Burick's Sacrifice"));
+                    entity.setCustomName(newLevelName + GameAPI.getTierColor(2).toString() + ChatColor.BOLD + "Burick's Sacrifice");
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(2).toString() + ChatColor.BOLD + "Burick's Sacrifice"));
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     ((EntityInsentient) entity).persistent = true;
                     ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
@@ -343,7 +343,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             } else {
                 player.getInventory().addItem(banknote);
             }
-            API.getGamePlayer(player).addExperience(25000, false, true);
+            GameAPI.getGamePlayer(player).addExperience(25000, false, true);
         }
         final String adventurers = partyMembers;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

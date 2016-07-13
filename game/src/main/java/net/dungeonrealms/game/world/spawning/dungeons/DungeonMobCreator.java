@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.spawning.dungeons;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
@@ -70,6 +70,8 @@ public class DungeonMobCreator {
                     }
                 } else if (customName.toLowerCase().contains("mountain")) {
                     monsterType = "frozenskeleton";
+                } else if (customName.toLowerCase().contains("bandit pyromancer")) {
+                    tier = 1;
                 }
             }
             enumMonster = EnumMonster.getMonsterByString(monsterType);
@@ -97,11 +99,11 @@ public class DungeonMobCreator {
                     SpawningMechanics.rollElement(entity, enumMonster);
                     String levelName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
                     if (hasCustomName) {
-                        entity.setCustomName(levelName + API.getTierColor(tier) + customName.trim());
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + customName.trim()));
+                        entity.setCustomName(levelName + GameAPI.getTierColor(tier) + customName.trim());
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + customName.trim()));
                     } else {
-                        entity.setCustomName(levelName + API.getTierColor(tier) + enumMonster.name.trim());
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + enumMonster.name.trim()));
+                        entity.setCustomName(levelName + GameAPI.getTierColor(tier) + enumMonster.name.trim());
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + enumMonster.name.trim()));
                     }
                 } else {
                     entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), true));
@@ -109,11 +111,11 @@ public class DungeonMobCreator {
                     EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, level, true);
                     SpawningMechanics.rollElement(entity, enumMonster);
                     if (hasCustomName) {
-                        entity.setCustomName(API.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim());
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim()));
+                        entity.setCustomName(GameAPI.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim());
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim()));
                     } else {
-                        entity.setCustomName(API.getTierColor(tier).toString() + ChatColor.BOLD + enumMonster.name.trim());
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier).toString() + ChatColor.BOLD + enumMonster.name.trim()));
+                        entity.setCustomName(GameAPI.getTierColor(tier).toString() + ChatColor.BOLD + enumMonster.name.trim());
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier).toString() + ChatColor.BOLD + enumMonster.name.trim()));
                     }
                 }
                 entity.setLocation(toSpawnLocation.getX(), toSpawnLocation.getY(), toSpawnLocation.getZ(), 1, 1);

@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.listener.mechanic;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.profession.Mining;
@@ -48,7 +48,7 @@ public class EnergyListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerStarveDamage(EntityDamageEvent event) {
         if (event.getCause() != EntityDamageEvent.DamageCause.STARVATION) return;
-        if (!(API.isPlayer(event.getEntity()))) return;
+        if (!(GameAPI.isPlayer(event.getEntity()))) return;
         event.setCancelled(true);
         event.setDamage(0);
         Player player = (Player) event.getEntity();
@@ -153,7 +153,7 @@ public class EnergyListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
-        if (!(API.isPlayer(event.getEntity()))) return;
+        if (!(GameAPI.isPlayer(event.getEntity()))) return;
         Player player = (Player) event.getEntity();
         if (event.getFoodLevel() < player.getFoodLevel()) {
             if (new Random().nextInt(4) >= 1) {

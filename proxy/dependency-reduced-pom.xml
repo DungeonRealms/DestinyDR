@@ -76,10 +76,6 @@
           <artifactId>bungeecord-protocol</artifactId>
           <groupId>net.md-5</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -104,10 +100,6 @@
         <exclusion>
           <artifactId>bungeecord-protocol</artifactId>
           <groupId>net.md-5</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
         </exclusion>
       </exclusions>
     </dependency>

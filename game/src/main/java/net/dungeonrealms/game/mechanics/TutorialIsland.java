@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.mechanics;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.AchievementManager;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.*;
 
 /**
@@ -66,7 +67,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
     }
 
     private void hideVanishedPlayers() {
-        API._hiddenPlayers.stream().filter(player -> player != null).forEach(player -> {
+        GameAPI._hiddenPlayers.stream().filter(player -> player != null).forEach(player -> {
             for (Player player1 : Bukkit.getOnlinePlayers()) {
                 // GMs can see hidden players whereas non-GMs cannot.
                 if (player1.getUniqueId().toString().equals(player.getUniqueId().toString()) || Rank.isGM(player1)) {
@@ -87,7 +88,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
         if (loc == null) {
             return false;
         }
-        if (API.getRegionName(loc).equalsIgnoreCase(tutorialRegion)) {
+        if (GameAPI.getRegionName(loc).equalsIgnoreCase(tutorialRegion)) {
             return true;
         }
         return false;
@@ -240,7 +241,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
             // Give the player 1x raw fish, tell them to cook it.
             if (!(pl.getInventory().contains(Material.RAW_FISH)) && !(pl.getInventory().contains(Material.COOKED_FISH))) {
                 e.setCancelled(true);
-                ItemStack reward = API.makeItemUntradeable(Fishing.getFishDrop(1));
+                ItemStack reward = GameAPI.makeItemUntradeable(Fishing.getFishDrop(1));
                 if (pl.getInventory().firstEmpty() != -1) {
                     pl.getInventory().addItem(reward);
                     pl.sendMessage(ChatColor.GRAY.toString() + "Master Fisherman: " + ChatColor.WHITE.toString() + "Here's a freshly caught " + reward.getItemMeta().getDisplayName() + "! You should cook it over by the fire.");
@@ -267,7 +268,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
             // Give the player 1x T1 Scrap
             if (!(pl.getInventory().contains(Material.LEATHER))) {
                 e.setCancelled(true);
-                ItemStack reward = API.makeItemUntradeable(ItemManager.createArmorScrap(1));
+                ItemStack reward = GameAPI.makeItemUntradeable(ItemManager.createArmorScrap(1));
                 if (pl.getInventory().firstEmpty() != -1) {
                     pl.getInventory().addItem(reward);
                     pl.sendMessage(ChatColor.GRAY.toString() + "Armor Guide: " + ChatColor.WHITE.toString() + "Gah! Phew! Nearly burnt me'self there, here's an armor scrap for listening to an old man ramble. Use it to repair your equipment in the field.");
@@ -278,7 +279,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
             // Give the player 1x T1 Weapon Scroll, tell them to use it.
             if (!(pl.getInventory().contains(Material.EMPTY_MAP))) {
                 e.setCancelled(true);
-                ItemStack reward = API.makeItemUntradeable(ItemManager.createWeaponEnchant(1));
+                ItemStack reward = GameAPI.makeItemUntradeable(ItemManager.createWeaponEnchant(1));
                 if (pl.getInventory().firstEmpty() != -1) {
                     pl.getInventory().addItem(reward);
                     pl.sendMessage(ChatColor.GRAY.toString() + "Item Enchanter: " + ChatColor.WHITE.toString() + "Use this enchantment scroll on your weapon to increase its potency.");
@@ -324,7 +325,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
                         pl.sendMessage(ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee" + ": " + ChatColor.WHITE + "\"" + messages.get(pos) + "\"");
                         pos++;
                     } else {
-                        API.getGamePlayer(pl).addExperience(50, false, true);
+                        GameAPI.getGamePlayer(pl).addExperience(50, false, true);
                         cancel();
                     }
                 }

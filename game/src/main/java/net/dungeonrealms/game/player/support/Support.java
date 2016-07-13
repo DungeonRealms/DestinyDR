@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.player.support;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -31,7 +31,7 @@ public class Support {
      */
     public static void modifyEcash(Player player, String playerName, UUID uuid, int amount, String type) {
         DatabaseAPI.getInstance().update(uuid, (type != "set" ? EnumOperators.$INC : EnumOperators.$SET), EnumData.ECASH, (type != "remove" ? amount : (amount*-1)), true);
-        API.updatePlayerData(uuid);
+        GameAPI.updatePlayerData(uuid);
         player.sendMessage(ChatColor.GREEN + "Successfully " + type + (type == "add" ? "ed" : (type == "remove" ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);
     }
@@ -52,7 +52,7 @@ public class Support {
         }
 
         DatabaseAPI.getInstance().update(uuid, (type != "set" ? EnumOperators.$INC : EnumOperators.$SET), EnumData.LEVEL, (type != "remove" ? amount : (amount*-1)), true);
-        API.updatePlayerData(uuid);
+        GameAPI.updatePlayerData(uuid);
         player.sendMessage(ChatColor.GREEN + "Successfully " + type + (type == "add" ? "ed" : (type == "remove" ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " level to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);
     }
@@ -68,7 +68,7 @@ public class Support {
      */
     public static void modifyExp(Player player, String playerName, UUID uuid, int amount, String type) {
         DatabaseAPI.getInstance().update(uuid, (type != "set" ? EnumOperators.$INC : EnumOperators.$SET), EnumData.EXPERIENCE, (type != "remove" ? amount : (amount*-1)), true);
-        API.updatePlayerData(uuid);
+        GameAPI.updatePlayerData(uuid);
         player.sendMessage(ChatColor.GREEN + "Successfully " + type + (type == "add" ? "ed" : (type == "remove" ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " experience to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);
     }
@@ -84,7 +84,7 @@ public class Support {
      */
     public static void modifyGems(Player player, String playerName, UUID uuid, int amount, String type) {
         DatabaseAPI.getInstance().update(uuid, (type != "set" ? EnumOperators.$INC : EnumOperators.$SET), EnumData.GEMS, (type != "remove" ? amount : (amount*-1)), true);
-        API.updatePlayerData(uuid);
+        GameAPI.updatePlayerData(uuid);
         player.sendMessage(ChatColor.GREEN + "Successfully " + type + (type == "add" ? "ed" : (type == "remove" ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " gems to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);
     }

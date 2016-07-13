@@ -3,10 +3,10 @@ package net.dungeonrealms.game.handlers;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 

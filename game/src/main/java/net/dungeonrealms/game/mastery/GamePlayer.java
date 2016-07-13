@@ -2,16 +2,16 @@ package net.dungeonrealms.game.mastery;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
@@ -79,7 +79,7 @@ public class GamePlayer {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());
         this.playerStatistics = new PlayerStatistics(player.getUniqueId());
-        API.GAMEPLAYERS.put(player.getName(), this);
+        GameAPI.GAMEPLAYERS.put(player.getName(), this);
         this.attributeBonusesFromStats = new HashMap<>();
         this.lastArmorEquip = System.currentTimeMillis();
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
@@ -407,7 +407,7 @@ public class GamePlayer {
      */
     public int getStaticAttributeVal(AttributeType type) {
         if (type == null || type.isRange()) {
-            Utils.log.warning("Invalid type or type is a ranged attribute.");
+            Utils.log.warning("Invalid method or method is a ranged attribute.");
             return -1;
         }
         if (attributes.get(type.getNBTName()) == null) return -1;

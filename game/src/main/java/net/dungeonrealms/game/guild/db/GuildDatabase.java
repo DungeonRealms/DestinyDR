@@ -3,9 +3,13 @@ package net.dungeonrealms.game.guild.db;
 import com.mongodb.client.model.Filters;
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.DatabaseDriver;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumGuildData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mongo.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -38,7 +42,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     public void updateCache(String guildName) {
-        Document doc = Database.guilds.find(Filters.eq("info.name", guildName)).first();
+        Document doc = DatabaseDriver.guilds.find(Filters.eq("info.name", guildName)).first();
         CACHED_GUILD.put(guildName, doc);
     }
 
@@ -55,7 +59,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     public void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback) {
         Document template = GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag, banner);
 
-        Database.guilds.insertOne(template);
+        DatabaseDriver.guilds.insertOne(template);
         CACHED_GUILD.put(guildName, template);
 
         Utils.log.warning("New guild created: " + guildName);
@@ -90,7 +94,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     private Object get(EnumGuildData data, Object value) {
         Bson query = Filters.eq(data.getKey(), value);
-        return Database.guilds.find(query).first();
+        return DatabaseDriver.guilds.find(query).first();
     }
 
     public EnumGuildData get(UUID uuid, String guildName) {
@@ -119,7 +123,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     private void update(String guildName, EnumGuildData data, EnumOperators EO, Object value) {
 
         // INSTANTLY UPDATES THE MONGODB SERVER //
-        Database.guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
+        DatabaseDriver.guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
     }
 
     public boolean doesTagExist(String tag, Consumer<Boolean> action) {
@@ -146,7 +150,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public void deleteGuild(String guildName) {
-        Database.guilds.deleteOne(Filters.eq("info.name", guildName));
+        DatabaseDriver.guilds.deleteOne(Filters.eq("info.name", guildName));
         removeFromCache(guildName);
         Utils.log.warning("Guild deleted: " + guildName);
     }

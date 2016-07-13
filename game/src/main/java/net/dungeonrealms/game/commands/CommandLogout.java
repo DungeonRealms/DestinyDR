@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,8 +33,8 @@ public class CommandLogout extends BasicCommand {
                 }
 
                 Location startingLocation = player.getLocation();
-                if (API.isInSafeRegion(startingLocation)) {
-                    NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
+                if (GameAPI.isInSafeRegion(startingLocation)) {
+                    BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
                     return true;
                 }
 
@@ -51,7 +51,7 @@ public class CommandLogout extends BasicCommand {
                     player.sendMessage(ChatColor.RED + "Logging out in ... " + ChatColor.BOLD + taskTimer[0] + "s");
                     taskTimer[0]--;
                     if (taskTimer[0] == 0) {
-                        NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
+                        BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
                     }
                 }, 0, 20L);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 6 * 20L);

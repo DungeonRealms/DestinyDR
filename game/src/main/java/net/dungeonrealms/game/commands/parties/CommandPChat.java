@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.commands.parties;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.party.Affair;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;

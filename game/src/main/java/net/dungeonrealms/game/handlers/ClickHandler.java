@@ -1,8 +1,12 @@
 package net.dungeonrealms.game.handlers;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
@@ -11,9 +15,6 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.TradeCalculator;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -22,7 +23,6 @@ import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.inventory.SupportMenus;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.support.Support;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
@@ -452,7 +452,7 @@ public class ClickHandler {
                             player.sendMessage(ChatColor.RED + "Your inventory is currently full!");
                             return;
                         }
-                        if (API.removePortalShardsFromPlayer(player, nmsStack.getTag().getInt("shardTier"), nmsStack.getTag().getInt("shardCost"))) {
+                        if (GameAPI.removePortalShardsFromPlayer(player, nmsStack.getTag().getInt("shardTier"), nmsStack.getTag().getInt("shardCost"))) {
                             player.sendMessage(ChatColor.RED + "- " + shardCost + ChatColor.BOLD + "PKS");
                             player.sendMessage(ChatColor.GREEN + "Transaction successful.");
                             player.closeInventory();
@@ -581,7 +581,7 @@ public class ClickHandler {
                         if (nmsStack.getTag().getString("petName") != null) {
                             petName = nmsStack.getTag().getString("petName");
                         }
-                        player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
+                        player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or method " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
                         player.closeInventory();
                         String finalPetName = petName;
                         Chat.listenForMessage(player, newPetName -> {
@@ -648,6 +648,10 @@ public class ClickHandler {
                     }
                     if (CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
+                        return;
+                    }
+                    if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
+                        player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
                         return;
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
@@ -806,7 +810,7 @@ public class ClickHandler {
                 }
                 break;
             case "Wizard":
-                GamePlayer gp = API.getGamePlayer(player);
+                GamePlayer gp = GameAPI.getGamePlayer(player);
                 if (gp.getLevel() >= 10) {
                     if (gp.getStats().resetAmounts > 0) {
                         player.sendMessage(ChatColor.GREEN + "One free stat reset available. Type 'yes' or 'y' to continue.");
@@ -1122,7 +1126,7 @@ public class ClickHandler {
                 if (Bukkit.getPlayer(playerName) != null) {
                     Rank.getInstance().setRank(uuid, newRank);
                 } else {
-                    API.updatePlayerData(uuid);
+                    GameAPI.updatePlayerData(uuid);
                 }
 
                 player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
@@ -1350,7 +1354,7 @@ public class ClickHandler {
                 if (hearthstoneLocation != null) {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, hearthstoneLocation.toUpperCase(), true);
                     player.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(hearthstoneLocation).replace("_", " ") + ChatColor.GREEN + ".");
-                    API.updatePlayerData(uuid);
+                    GameAPI.updatePlayerData(uuid);
                     SupportMenus.openMainMenu(player, playerName);
                 }
                 break;
@@ -1405,7 +1409,7 @@ public class ClickHandler {
                 }
 
                 String trailName = tag.getString("trail").toUpperCase();
-                if (!API.isStringTrail(trailName)) {
+                if (!GameAPI.isStringTrail(trailName)) {
                     player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [2]");
                     return;
                 }
@@ -1425,7 +1429,7 @@ public class ClickHandler {
 
                 player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + (supportTrailLocked ? "LOCKED" : "UNLOCKED") + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openCosmeticsMenu(player, playerName, uuid);
-                API.updatePlayerData(uuid);
+                GameAPI.updatePlayerData(uuid);
                 break;
             case "Support Tools (Mounts)":
                 event.setCancelled(true);
@@ -1471,7 +1475,7 @@ public class ClickHandler {
                 }
 
                 String petName = tag.getString("pet").toUpperCase();
-                if (!API.isStringPet(petName)) {
+                if (!GameAPI.isStringPet(petName)) {
                     player.sendMessage(ChatColor.RED + "Well this is embarrassing... something went horribly wrong. [2]");
                     return;
                 }
@@ -1491,7 +1495,7 @@ public class ClickHandler {
 
                 player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + (supportPetLocked ? "LOCKED" : "UNLOCKED") + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openCosmeticsMenu(player, playerName, uuid);
-                API.updatePlayerData(uuid);
+                GameAPI.updatePlayerData(uuid);
                 break;
             case "Game Master Toggles":
                 event.setCancelled(true);
@@ -1499,8 +1503,8 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 0: // Invisible
-                        if (API._hiddenPlayers.contains(player)) {
-                            API._hiddenPlayers.remove(player);
+                        if (GameAPI._hiddenPlayers.contains(player)) {
+                            GameAPI._hiddenPlayers.remove(player);
                             for (Player player1 : Bukkit.getOnlinePlayers()) {
                                 if (player1.getUniqueId().toString().equals(player.getUniqueId().toString())) {
                                     continue;
@@ -1512,7 +1516,7 @@ public class ClickHandler {
                             player.setCustomNameVisible(true);
                             player.setGameMode(GameMode.SURVIVAL);
                         } else {
-                            API._hiddenPlayers.add(player);
+                            GameAPI._hiddenPlayers.add(player);
                             player.setCustomNameVisible(false);
                             player.hidePlayer(player);
                             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));

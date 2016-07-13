@@ -2,18 +2,18 @@ package net.dungeonrealms.game.guild;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.menus.banner.BannerCreatorMenu;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -140,7 +140,7 @@ public class GuildMechanics {
         // UPDATE THEIR BOARD
         // guild tags in scoreboard disabled
         /*if (player != null) {
-            GamePlayer gp = API.getGamePlayer(player);
+            GamePlayer gp = GameAPI.getGamePlayer(player);
             if (gp != null)
                 ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
         }*/
@@ -163,7 +163,7 @@ public class GuildMechanics {
         } else {
             guildChat.add(player.getUniqueId());
             player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to <" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
-            player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
+            player.sendMessage(ChatColor.GRAY + "To change back to default local, method " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
         }
     }
 
@@ -185,7 +185,7 @@ public class GuildMechanics {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA.toString() + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">" + ChatColor.GRAY + " " + player.getName() + ": " + ChatColor.GRAY;
 
-        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        BungeeUtils.sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
     /**
@@ -197,7 +197,7 @@ public class GuildMechanics {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message:" + getFilters(filters).toString(), Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        BungeeUtils.sendNetworkMessage("DungeonRealms", "Guilds", "message:" + getFilters(filters).toString(), Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
     private StringBuilder getFilters(String[] filters) {
@@ -217,7 +217,7 @@ public class GuildMechanics {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        BungeeUtils.sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
     /**
@@ -240,7 +240,7 @@ public class GuildMechanics {
      * @param guildName Guild
      */
     public void showGuildInfo(Player player, String guildName, boolean showMotd) {
-        API.updateGuildData(guildName);
+        GameAPI.updateGuildData(guildName);
 
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
@@ -296,10 +296,10 @@ public class GuildMechanics {
                 player.sendMessage(ChatColor.GRAY + "To chat with your new guild, use " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " OR " + ChatColor.BOLD + " /g <message>");
                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GUILD_MEMBER);
                 GuildDatabaseAPI.get().addPlayer(guildName, player.getUniqueId());
-                API.updatePlayerData(player.getUniqueId());
+                GameAPI.updatePlayerData(player.getUniqueId());
 
                 // guild tags in scoreboard disabled
-                GamePlayer gp = API.getGamePlayer(player);
+                GamePlayer gp = GameAPI.getGamePlayer(player);
                 if (gp != null) {
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
                 }
@@ -307,7 +307,7 @@ public class GuildMechanics {
 
                 sendAlert(guildName, player.getName() + ChatColor.GRAY.toString() + " has " +
                         ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild." + (referrer != null ? " [INVITE: " + ChatColor.ITALIC + referrer + ChatColor.GRAY + "]" : ""));
-                API.updateGuildData(guildName);
+                GameAPI.updateGuildData(guildName);
 
             } else {
                 player.sendMessage(ChatColor.RED + "This guild no longer exists.");
@@ -328,7 +328,7 @@ public class GuildMechanics {
         sendAlert(guildName, kicker.getName() + " has kicked " + DatabaseAPI.getInstance().getOfflineName(player) + " from the guild.");
         GuildDatabaseAPI.get().removeFromGuild(guildName, player);
 
-        API.updatePlayerData(player);
+        GameAPI.updatePlayerData(player);
     }
 
     /**
@@ -370,7 +370,7 @@ public class GuildMechanics {
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");
 
                     for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
-                        API.updatePlayerData(uuid);
+                        GameAPI.updatePlayerData(uuid);
                         GuildDatabaseAPI.get().removeFromGuild(guildName, uuid);
                     }
 
@@ -386,12 +386,12 @@ public class GuildMechanics {
             if (officers.size() > 0) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
 
             // guild tags in scoreboard disabled
-            /*GamePlayer gp = API.getGamePlayer(player);
+            /*GamePlayer gp = GameAPI.getGamePlayer(player);
             if (gp != null)
                 ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());*/
 
-            API.updateGuildData(guildName);
-            API.updatePlayerData(player.getUniqueId());
+            GameAPI.updateGuildData(guildName);
+            GameAPI.updatePlayerData(player.getUniqueId());
         }, null);
     }
 
@@ -505,12 +505,12 @@ public class GuildMechanics {
                     BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
                     // guild tags in scoreboard disabled
-                    GamePlayer gp = API.getGamePlayer(player);
+                    GamePlayer gp = GameAPI.getGamePlayer(player);
                     if (gp != null)
                         ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
                     player.getInventory().addItem(info.getCurrentBanner());
-                    API.updatePlayerData(player.getUniqueId());
+                    GameAPI.updatePlayerData(player.getUniqueId());
 
                 });
 
@@ -560,7 +560,7 @@ public class GuildMechanics {
 
             // Prompts the user for requested Guild name
             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, please enter your " + ChatColor.UNDERLINE + "formal guild name" + ChatColor.WHITE + ", this should be your FULL GUILD NAME, you will enter a shorter 'tag' later.");
-            player.sendMessage(ChatColor.GRAY + "You may type 'cancel' at any time to stop this guild creation.");
+            player.sendMessage(ChatColor.GRAY + "You may method 'cancel' at any time to stop this guild creation.");
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Chat.listenForMessage(player, guildNameRequest -> {
 

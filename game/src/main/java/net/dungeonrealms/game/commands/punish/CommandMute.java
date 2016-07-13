@@ -1,10 +1,11 @@
 package net.dungeonrealms.game.commands.punish;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.player.rank.Rank;
-import net.dungeonrealms.game.punish.PunishUtils;
-import net.dungeonrealms.game.punish.TimeFormat;
+import net.dungeonrealms.game.punishment.PunishAPI;
+import net.dungeonrealms.game.punishment.TimeFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -80,16 +81,16 @@ public class CommandMute extends BasicCommand {
             StringBuilder reason = new StringBuilder(args[2]);
             for (int arg = 3; arg < args.length; arg++) reason.append(" ").append(args[arg]);
 
-            PunishUtils.mute(p_uuid, duration, reason.toString());
+            PunishAPI.mute(p_uuid, duration, reason.toString(), doAfter -> GameAPI.updatePlayerData(p_uuid));
 
-            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)) + " for " + reason.toString());
-            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)) + " for " + reason.toString());
+            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)) + " for " + reason.toString());
+            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)) + " for " + reason.toString());
 
         } else {
-            PunishUtils.mute(p_uuid, duration, "");
+            PunishAPI.mute(p_uuid, duration, "", doAfter -> GameAPI.updatePlayerData(p_uuid));
 
-            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)));
-            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishUtils.timeString((int) (duration / 60)));
+            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
+            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
         }
 
         return false;

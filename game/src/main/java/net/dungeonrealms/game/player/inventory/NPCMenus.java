@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.player.inventory;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -88,7 +88,7 @@ public class NPCMenus {
     }
 
     public static void openWizardMenu(Player player) {
-        GamePlayer gp = API.getGamePlayer(player);
+        GamePlayer gp = GameAPI.getGamePlayer(player);
 
         Player p = gp.getPlayer();
         int totalResets = gp.getStats().resetAmounts + 1; //Ours start at 0, old DR started at 1.
@@ -160,7 +160,7 @@ public class NPCMenus {
                 ChatColor.AQUA + "Click here to visit our store!",
                 ChatColor.GRAY + "Display Item"}).setNBTString("donationStore", "ProxyIsAwesome").build());
         inv.setItem(17, new ItemBuilder().setItem(new ItemStack(Material.GOLDEN_APPLE), ChatColor.GREEN + "Current E-Cash", new String[]{
-                ChatColor.AQUA + "Your E-Cash Balance is: " + ChatColor.YELLOW.toString() + ChatColor.BOLD + API.getGamePlayer(player).getEcashBalance(),
+                ChatColor.AQUA + "Your E-Cash Balance is: " + ChatColor.YELLOW.toString() + ChatColor.BOLD + GameAPI.getGamePlayer(player).getEcashBalance(),
                 ChatColor.GRAY + "Display Item"}).build());
 
         player.openInventory(inv);
@@ -266,7 +266,7 @@ public class NPCMenus {
 
         if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
             String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
-            ItemStack item = API.makeItemUntradeable(ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName)));
+            ItemStack item = GameAPI.makeItemUntradeable(ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName)));
             ItemStack guildBanner = ShopMechanics.addPrice(item, 1000);
 
             inv.setItem(0, guildBanner);

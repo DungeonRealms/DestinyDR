@@ -1,18 +1,18 @@
 package net.dungeonrealms.game.listener.inventory;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -509,19 +509,19 @@ public class ShopListener implements Listener {
                             } else {
                                 shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             }
-                            GamePlayer gamePlayer = API.getGamePlayer(shop.getOwner());
+                            GamePlayer gamePlayer = GameAPI.getGamePlayer(shop.getOwner());
                             if (gamePlayer != null) {
                                 gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + totalPrice);
                             }
                             Achievements.getInstance().giveAchievement(shop.getOwner().getUniqueId(), Achievements.EnumAchievements.SHOP_MERCHANT);
                         } else {
                             if (shop.hasCustomName(itemClicked)) {
-                                NetworkAPI.getInstance().sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             } else {
-                                NetworkAPI.getInstance().sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             }
                             DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS_EARNED, totalPrice, true);
-                            API.updatePlayerData(shop.ownerUUID);
+                            GameAPI.updatePlayerData(shop.ownerUUID);
                         }
                         int itemsLeft = 0;
                         for (ItemStack itemStack : event.getInventory().getContents()) {
@@ -572,9 +572,9 @@ public class ShopListener implements Listener {
                         Achievements.getInstance().giveAchievement(shop.getOwner().getUniqueId(), Achievements.EnumAchievements.SHOP_MERCHANT);
                     } else {
                         if (shop.hasCustomName(itemClicked)) {
-                            NetworkAPI.getInstance().sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                            BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                         } else {
-                            NetworkAPI.getInstance().sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                            BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                         }
                     }
                     clickClone.setAmount(itemClicked.getAmount());

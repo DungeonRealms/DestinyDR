@@ -12,17 +12,17 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.listener.world.RealmListener;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
@@ -108,7 +108,7 @@ public class RealmInstance implements Realms {
 
         // REMOVE ANY WORLD FILES THAT ARE STILL THE ROOT FOLDER FOR SOME REASON //
         Arrays.asList(rootFolder.listFiles()).stream()
-                .filter(file -> API.isUUID(file.getName())).forEach(f -> {
+                .filter(file -> GameAPI.isUUID(file.getName())).forEach(f -> {
             try {
                 FileUtils.forceDelete(f);
             } catch (IOException e) {
@@ -264,12 +264,12 @@ public class RealmInstance implements Realms {
             return;
         }
 
-        if (API.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
+        if (GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
             player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
             return;
         }
 
-        if (isPortalNearby(location.clone().add(0, 1, 0), 3) || API.isMaterialNearby(location.clone().getBlock(), 3, Material.PORTAL)) {
+        if (isPortalNearby(location.clone().add(0, 1, 0), 3) || GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.PORTAL)) {
             player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " open a realm portal so close to another.");
             player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "REQ:" + ChatColor.GRAY + " >3 blocks away.");
             return;
@@ -444,7 +444,7 @@ public class RealmInstance implements Realms {
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_UPGRADE, true, true);
 
         // UPGRADE REALM PORTAL RUNE //
-        int slot = API.getItemSlot(player.getInventory(), "realmPortalRune");
+        int slot = GameAPI.getItemSlot(player.getInventory(), "realmPortalRune");
 
         if (slot != -1)
             player.getInventory().setItem(slot, ItemManager.createRealmPortalRune(player.getUniqueId()));
@@ -612,7 +612,7 @@ public class RealmInstance implements Realms {
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
 
             // SEND PLAYER UPDATE PACKET IF THEY SWITCHED SHARDS //
-            API.updatePlayerData(uuid);
+            GameAPI.updatePlayerData(uuid);
 
             getRealm(uuid).setStatus(RealmStatus.CLOSED);
 
@@ -720,7 +720,7 @@ public class RealmInstance implements Realms {
     }
 
     public void setRealmRegion(World world, boolean isChaotic) {
-        RegionManager regionManager = API.getWorldGuard().getRegionManager(world);
+        RegionManager regionManager = GameAPI.getWorldGuard().getRegionManager(world);
         if (regionManager != null) {
             ProtectedRegion global = regionManager.getRegion("__global__");
             boolean add = false;

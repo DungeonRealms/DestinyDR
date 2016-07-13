@@ -2,9 +2,9 @@ package net.dungeonrealms.game.player.statistics;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 
 import java.util.UUID;
 
@@ -172,7 +172,7 @@ public class PlayerStatistics {
         }
         //Leave this seperate I think.?
         if (timePlayed > 0) {
-            //stored in seconds, lets convert it to minutes for easier mongo storage.
+            //stored in seconds, lets convert it to minutes for easier database storage.
             int timeInMins = Math.round(timePlayed / 60);
             if (timeInMins > 0) {
                 DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.TIME_PLAYED, timeInMins, false);

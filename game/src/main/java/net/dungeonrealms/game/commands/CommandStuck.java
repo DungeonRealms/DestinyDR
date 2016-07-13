@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

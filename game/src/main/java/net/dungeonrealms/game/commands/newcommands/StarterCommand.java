@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.commands.newcommands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

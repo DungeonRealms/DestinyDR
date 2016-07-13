@@ -2,23 +2,23 @@ package net.dungeonrealms.game.listener.inventory;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
@@ -68,10 +68,10 @@ public class ItemListener implements Listener {
     public void onItemDrop(PlayerDropItemEvent event) {
         Player p = event.getPlayer();
         ItemStack item = event.getItemDrop().getItemStack();
-        if (!API.isItemDroppable(item)) { //Realm Portal, Character Journal.
+        if (!GameAPI.isItemDroppable(item)) { //Realm Portal, Character Journal.
             event.setCancelled(true);
             event.getItemDrop().remove();
-        } else if (!API.isItemTradeable(item)) {
+        } else if (!GameAPI.isItemTradeable(item)) {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();
             assert tag != null;
@@ -139,7 +139,7 @@ public class ItemListener implements Listener {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
-        if (tag.hasKey("type")) {
+        if (tag.hasKey("method")) {
             event.setCancelled(true);
         }
     }
@@ -163,7 +163,7 @@ public class ItemListener implements Listener {
             Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
             if (p.isSneaking()) {
-                if (!API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
+                if (!GameAPI.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                     p.sendMessage(ChatColor.RED + "You must be inside your realm to modify its size.");
                     return;
                 }
@@ -208,10 +208,10 @@ public class ItemListener implements Listener {
                 return;
             }
 
-            if (API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
+            if (GameAPI.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
 
-                if (API.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
+                if (GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
                     return;
                 }
@@ -221,7 +221,7 @@ public class ItemListener implements Listener {
                 return;
             }
 
-            if (API.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial_island")) {
+            if (GameAPI.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial_island")) {
                 p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
                         + " open a portal to your realm until you have completed Tutorial Island.");
                 return;
@@ -236,7 +236,7 @@ public class ItemListener implements Listener {
             if (event.getPlayer().isSneaking())
                 return;
 
-            if (!API.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
+            if (!GameAPI.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You must be in your realm to open the realm material store.");
                 return;
             }
@@ -318,7 +318,7 @@ public class ItemListener implements Listener {
                             } else {
                                 event.getPlayer().getInventory().remove(event.getItem());
                             }
-                            API.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
+                            GameAPI.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
                             event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
                         }
                     }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
@@ -364,8 +364,8 @@ public class ItemListener implements Listener {
                 }
             } else if (event.getItem().getType() == Material.ENDER_CHEST) {
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
-                if (nms.hasTag() && nms.getTag().hasKey("type")) {
-                    if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
+                if (nms.hasTag() && nms.getTag().hasKey("method")) {
+                    if (nms.getTag().getString("method").equalsIgnoreCase("upgrade")) {
                         Player player = event.getPlayer();
                         if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
                             player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
@@ -404,8 +404,8 @@ public class ItemListener implements Listener {
             potion = player.getInventory().getItemInOffHand();
             nmsItem = CraftItemStack.asNMSCopy(potion);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+            if (!nmsItem.getTag().hasKey("method")) return;
+            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                 event.setCancelled(true);
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);
@@ -424,8 +424,8 @@ public class ItemListener implements Listener {
             potion = player.getInventory().getItemInMainHand();
             nmsItem = CraftItemStack.asNMSCopy(potion);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+            if (!nmsItem.getTag().hasKey("method")) return;
+            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                 event.setCancelled(true);
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);
@@ -453,8 +453,8 @@ public class ItemListener implements Listener {
             if (AntiCheat.getInstance().getUniqueEpochIdentifier(itemUsed).equalsIgnoreCase(AntiCheat.getInstance().getUniqueEpochIdentifier(potion))) {
                 //Drinking their Mainhand potion
                 if (nmsItem == null || nmsItem.getTag() == null) return;
-                if (!nmsItem.getTag().hasKey("type")) return;
-                if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                if (!nmsItem.getTag().hasKey("method")) return;
+                if (nmsItem.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                     event.setCancelled(true);
                     event.setUseItemInHand(Event.Result.DENY);
                     event.setUseInteractedBlock(Event.Result.DENY);
@@ -471,8 +471,8 @@ public class ItemListener implements Listener {
             } else {
                 //Drinking their Offhand potion
                 if (nmsOffhand == null || nmsOffhand.getTag() == null) return;
-                if (!nmsOffhand.getTag().hasKey("type")) return;
-                if (nmsOffhand.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                if (!nmsOffhand.getTag().hasKey("method")) return;
+                if (nmsOffhand.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                     event.setCancelled(true);
                     event.setUseItemInHand(Event.Result.DENY);
                     event.setUseInteractedBlock(Event.Result.DENY);
@@ -503,8 +503,8 @@ public class ItemListener implements Listener {
                 continue;
             }
             nmsPot = CraftItemStack.asNMSCopy(stack);
-            if (nmsPot.hasTag() && nmsPot.getTag() != null && nmsPot.getTag().hasKey("type")) {
-                if (nmsPot.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+            if (nmsPot.hasTag() && nmsPot.getTag() != null && nmsPot.getTag().hasKey("method")) {
+                if (nmsPot.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                     nextPot = stack;
                     player.getInventory().setItem(slotCount, new ItemStack(Material.AIR));
                     break;
@@ -563,8 +563,8 @@ public class ItemListener implements Listener {
             foodItem = player.getInventory().getItemInOffHand();
             nmsItem = CraftItemStack.asNMSCopy(foodItem);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
+            if (!nmsItem.getTag().hasKey("method")) return;
+            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healingFood")) {
                 performPreFoodChecks(player);
                 event.setCancelled(true);
                 if (foodItem.getAmount() == 1) {
@@ -587,8 +587,8 @@ public class ItemListener implements Listener {
             foodItem = player.getInventory().getItemInMainHand();
             nmsItem = CraftItemStack.asNMSCopy(foodItem);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
+            if (!nmsItem.getTag().hasKey("method")) return;
+            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healingFood")) {
                 performPreFoodChecks(player);
                 event.setCancelled(true);
                 if (foodItem.getAmount() == 1) {
@@ -612,8 +612,8 @@ public class ItemListener implements Listener {
             foodItem = player.getInventory().getItemInMainHand();
             nmsItem = CraftItemStack.asNMSCopy(foodItem);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("type")) return;
-            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
+            if (!nmsItem.getTag().hasKey("method")) return;
+            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healingFood")) {
                 performPreFoodChecks(player);
                 event.setCancelled(true);
                 if (foodItem.getAmount() == 1) {
@@ -638,10 +638,10 @@ public class ItemListener implements Listener {
     public void onPotionSplash(PotionSplashEvent event) {
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPotion().getItem()));
         if (nmsItem != null && nmsItem.getTag() != null) {
-            if (nmsItem.getTag().hasKey("type") && nmsItem.getTag().getString("type").equalsIgnoreCase("splashHealthPotion")) {
+            if (nmsItem.getTag().hasKey("method") && nmsItem.getTag().getString("method").equalsIgnoreCase("splashHealthPotion")) {
                 event.setCancelled(true);
                 for (LivingEntity entity : event.getAffectedEntities()) {
-                    if (!API.isPlayer(entity)) {
+                    if (!GameAPI.isPlayer(entity)) {
                         continue;
                     }
                     HealthHandler.getInstance().healPlayerByAmount((Player) entity, nmsItem.getTag().getInt("healAmount"));
@@ -662,7 +662,7 @@ public class ItemListener implements Listener {
         player.updateInventory();
         if (!EntityAPI.hasPetOut(player.getUniqueId())) return;
         if (EntityAPI.getPlayerPet(player.getUniqueId()).equals(((CraftEntity) event.getRightClicked()).getHandle())) {
-            player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
+            player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or method " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
             player.closeInventory();
             Chat.listenForMessage(player, newPetName -> {
                 if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
@@ -857,12 +857,12 @@ public class ItemListener implements Listener {
                 final int amount_to_regen_per_interval = (int) (max_hp * percent_to_regen) / regen_interval;
                 pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + amount_to_regen_per_interval + ChatColor.BOLD
                         + " HP/s" + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + regen_interval + "s]");
-                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) percent_to_regen);
+                GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) percent_to_regen);
 
                 pl.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (int) (regen_interval + (regen_interval * 0.25)), 0));
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     pl.removePotionEffect(PotionEffectType.REGENERATION);
-                    API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) -percent_to_regen);
+                    GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) -percent_to_regen);
                     pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "   " + amount_to_regen_per_interval + " HP/s " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, regen_interval * 20L);
@@ -885,72 +885,72 @@ public class ItemListener implements Listener {
             } else if (s.contains("ENERGY REGEN")) {
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, bonus_percent);
+                GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, bonus_percent);
                 pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + " Energy/s"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, -bonus_percent);
+                    GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, -bonus_percent);
                     pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + " +" + bonus_percent + "% Energy " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% DMG")) {
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, bonus_percent);
+                GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, bonus_percent);
                 pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% DMG"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, -bonus_percent);
+                    GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, -bonus_percent);
                     pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% DMG " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% ARMOR")) {
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, bonus_percent);
+                GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, bonus_percent);
                 pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% ARMOR"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, -bonus_percent);
+                    GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, -bonus_percent);
                     pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% ARMOR " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% BLOCK")) {
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, bonus_percent);
+                GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, bonus_percent);
                 pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% BLOCK"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    API.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, -bonus_percent);
+                    GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, -bonus_percent);
                     pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% BLOCK " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% LIFESTEAL")) {
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, bonus_percent);
+                GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, bonus_percent);
                 pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% LIFESTEAL"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, -bonus_percent);
+                    GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, -bonus_percent);
                     pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% LIFESTEAL " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% CRIT")) {
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
-                API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, bonus_percent);
+                GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, bonus_percent);
                 pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% CRIT"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    API.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, -bonus_percent);
+                    GameAPI.getGamePlayer(pl).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, -bonus_percent);
                     pl.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% CRIT " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
@@ -969,7 +969,7 @@ public class ItemListener implements Listener {
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getEquipment().getItemInMainHand());
             NBTTagCompound tag = nmsStack.getTag();
             if (tag == null) return;
-            if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
+            if (!(tag.getString("method").equalsIgnoreCase("important"))) return;
             switch (tag.getString("usage")) {
                 case "mount":
                 case "mule":
@@ -987,6 +987,10 @@ public class ItemListener implements Listener {
                     }
                     if (CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
+                        return;
+                    }
+                    if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
+                        player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
                         return;
                     }
                     String mountType = tag.getString("usage").equals("mule") ? "MULE" : (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());

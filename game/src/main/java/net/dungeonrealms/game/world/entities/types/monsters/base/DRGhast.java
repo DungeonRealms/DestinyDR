@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
 import lombok.Getter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -52,7 +52,7 @@ public class DRGhast extends EntityGhast implements DRMonster {
     }
 
     public void setArmor(int tier) {
-        ItemStack[] armor = API.getTierArmor(tier);
+        ItemStack[] armor = GameAPI.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         boolean armorMissing = false;
@@ -81,7 +81,7 @@ public class DRGhast extends EntityGhast implements DRMonster {
 
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.STAFF)
-                .setRarity(API.getItemRarity(false)).generateItem().getItem();
+                .setRarity(GameAPI.getItemRarity(false)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

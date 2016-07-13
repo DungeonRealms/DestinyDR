@@ -1,9 +1,13 @@
 package net.dungeonrealms.game.listener.combat;
 
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -16,14 +20,10 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.powermoves.PowerStrike;
@@ -96,16 +96,16 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
         if (event.getEntity().getWorld().getName().contains("DUNGEON")) return;
-        if (!(event.getEntity().hasMetadata("type"))) return;
+        if (!(event.getEntity().hasMetadata("method"))) return;
         event.blockList().clear();
         event.setYield(0.0F);
         event.setCancelled(true);
-        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
+        if (event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
             event.blockList().clear();
             List<Player> toBuff = new ArrayList<>();
             for (Entity entity : event.getEntity().getNearbyEntities(8D, 8D, 8D)) {
-                if (!API.isPlayer(entity)) continue;
+                if (!GameAPI.isPlayer(entity)) continue;
                 toBuff.add((Player) entity);
             }
             BuffUtils.handleBuffEffects(event.getEntity(), toBuff);
@@ -132,16 +132,16 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerBreakArmorStand(EntityDamageByEntityEvent event) {
-        if (!(API.isPlayer(event.getDamager()))) return;
+        if (!(GameAPI.isPlayer(event.getDamager()))) return;
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
         //Armor Stand Spawner check.
         if (event.getEntity().getType() != EntityType.ARMOR_STAND) return;
-        if (!event.getEntity().hasMetadata("type")) {
+        if (!event.getEntity().hasMetadata("method")) {
             event.setCancelled(false);
             event.getEntity().remove();
             return;
         }
-        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")) {
+        if (event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("spawner")) {
             Player attacker = (Player) event.getDamager();
             if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
                 ArrayList<BaseMobSpawner> list = SpawningMechanics.getALLSPAWNERS();
@@ -171,13 +171,13 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void entDamageNullCheck(EntityDamageByEntityEvent event) {
-        if (API.isPlayer(event.getDamager())) {
-            if (API.getGamePlayer((Player) event.getDamager()) == null) {
+        if (GameAPI.isPlayer(event.getDamager())) {
+            if (GameAPI.getGamePlayer((Player) event.getDamager()) == null) {
                 event.setCancelled(true);
             }
         }
-        if (API.isPlayer(event.getEntity())) {
-            if (API.getGamePlayer((Player) event.getEntity()) == null) {
+        if (GameAPI.isPlayer(event.getEntity())) {
+            if (GameAPI.getGamePlayer((Player) event.getEntity()) == null) {
                 event.setCancelled(true);
             }
         }
@@ -189,7 +189,7 @@ public class DamageListener implements Listener {
      * @param event
      */
     public void onPlayerEnterSafezone(PlayerEnterRegionEvent event) {
-        if (API.isInSafeRegion(event.getPlayer().getLocation())) {
+        if (GameAPI.isInSafeRegion(event.getPlayer().getLocation())) {
             for (Entity ent : event.getPlayer().getNearbyEntities(10, 10, 10)) {
                 if (!(ent instanceof Creature)) continue;
                 ((Creature) ent).setTarget(null);
@@ -209,7 +209,7 @@ public class DamageListener implements Listener {
         if (event.getDamager() instanceof Player) return;
         if ((!(event.getDamager() instanceof LivingEntity)) && (!DamageAPI.isBowProjectile(event.getDamager()) && (!DamageAPI.isStaffProjectile(event.getDamager()))))
             return;
-        if (!(API.isPlayer(event.getEntity()))) return;
+        if (!(GameAPI.isPlayer(event.getEntity()))) return;
         if (!(event.getDamager() instanceof LivingEntity)) {
             if (!(((Projectile) event.getDamager()).getShooter() instanceof LivingEntity)) return;
             if (((Projectile) event.getDamager()).getShooter() instanceof Player) return;
@@ -227,7 +227,7 @@ public class DamageListener implements Listener {
             if (attackerEquipment.getItemInMainHand() == null) return;
             attackerEquipment.getItemInMainHand().setDurability(((short) -1));
             //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
-            if (!API.isWeapon(attackerEquipment.getItemInMainHand())) return;
+            if (!GameAPI.isWeapon(attackerEquipment.getItemInMainHand())) return;
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
@@ -237,7 +237,7 @@ public class DamageListener implements Listener {
         } else if (DamageAPI.isBowProjectile(event.getDamager())) {
             Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof CraftLivingEntity)) return;
-            if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
+            if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("method")) {
                 if (!(attackingArrow.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
                     attackingArrow.remove();
                     event.setCancelled(true);
@@ -254,7 +254,7 @@ public class DamageListener implements Listener {
         } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
             Projectile staffProjectile = (Projectile) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof CraftLivingEntity)) return;
-            if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("type")) {
+            if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("method")) {
                 if (!(staffProjectile.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
                     staffProjectile.remove();
                     event.setCancelled(true);
@@ -312,14 +312,14 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerPunchPlayer(EntityDamageByEntityEvent event) {
-        if (!API.isPlayer(event.getEntity()) || !API.isPlayer(event.getDamager()))
+        if (!GameAPI.isPlayer(event.getEntity()) || !GameAPI.isPlayer(event.getDamager()))
             return;
         Player p1 = (Player) event.getDamager();
         Player p2 = (Player) event.getEntity();
 
         event.setDamage(0);
 
-        if (!API.isNonPvPRegion(p1.getLocation()) && !API.isNonPvPRegion(p2.getLocation())) return;
+        if (!GameAPI.isNonPvPRegion(p1.getLocation()) && !GameAPI.isNonPvPRegion(p2.getLocation())) return;
         if (!DuelingMechanics.isDueling(p2.getUniqueId())) return;
         if (!DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
             p1.sendMessage("That's not your dueling partner!");
@@ -346,8 +346,8 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void petDamageListener(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity().hasMetadata("type"))) return;
-        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
+        if (!(event.getEntity().hasMetadata("method"))) return;
+        String metaValue = event.getEntity().getMetadata("method").get(0).asString().toLowerCase();
         switch (metaValue) {
             case "pet":
                 event.setCancelled(true);
@@ -378,8 +378,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
-        if (event.getEntity().hasMetadata("type")) {
-            String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
+        if (event.getEntity().hasMetadata("method")) {
+            String metaValue = event.getEntity().getMetadata("method").get(0).asString().toLowerCase();
             switch (metaValue) {
                 case "pet":
                     event.setCancelled(true);
@@ -436,7 +436,7 @@ public class DamageListener implements Listener {
             event.getDrops().clear();
 
         for (ItemStack itemStack : new ArrayList<>(event.getDrops())) {
-            if (!API.isItemDroppable(itemStack) || API.isItemUntradeable(itemStack)) {
+            if (!GameAPI.isItemDroppable(itemStack) || GameAPI.isItemUntradeable(itemStack)) {
                 event.getDrops().remove(itemStack);
             }
         }
@@ -519,7 +519,7 @@ public class DamageListener implements Listener {
             }
 
             ItemStack weapon_slot = p.getInventory().getItem(0);
-            if (!neutral_weapon && API.isWeapon(weapon_slot)) {
+            if (!neutral_weapon && GameAPI.isWeapon(weapon_slot)) {
                 event.getDrops().remove(weapon_slot);
                 if ((RepairAPI.getCustomDurability(weapon_slot) - w_durability_to_take) > 0.1D) {
                     RepairAPI.subtractCustomDurability(p, weapon_slot, w_durability_to_take);
@@ -554,7 +554,7 @@ public class DamageListener implements Listener {
         }
 
         for (ItemStack stack : event.getDrops()) {
-            if (API.isItemPermanentlyUntradeable(stack)) {
+            if (GameAPI.isItemPermanentlyUntradeable(stack)) {
                 gearToSave.add(stack);
             }
         }
@@ -598,7 +598,7 @@ public class DamageListener implements Listener {
             event.getDrops().clear();
             p.setCanPickupItems(true);
             p.setGameMode(GameMode.SURVIVAL);
-            GamePlayer gamePlayer = API.getGamePlayer(p);
+            GamePlayer gamePlayer = GameAPI.getGamePlayer(p);
             if (gamePlayer != null) {
                 gamePlayer.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
                 gamePlayer.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
@@ -633,8 +633,8 @@ public class DamageListener implements Listener {
             return;
 
         LivingEntity leShooter = (LivingEntity) event.getEntity().getShooter();
-        if (!(leShooter.hasMetadata("type"))) return;
-        if (!(API.isWeapon(leShooter.getEquipment().getItemInMainHand())) && entityType != EntityType.WITCH) return;
+        if (!(leShooter.hasMetadata("method"))) return;
+        if (!(GameAPI.isWeapon(leShooter.getEquipment().getItemInMainHand())) && entityType != EntityType.WITCH) return;
 
         if (entityType != EntityType.WITCH)
             MetadataUtils.registerProjectileMetadata(((DRMonster) ((CraftLivingEntity) leShooter).getHandle()).getAttributes
@@ -653,8 +653,8 @@ public class DamageListener implements Listener {
         if (!(leShooter.getType() == EntityType.WITCH)) return;
 
         for (LivingEntity le : event.getAffectedEntities()) {
-            if (API.isInSafeRegion(le.getLocation())) continue;
-            if (!API.isPlayer(le)) continue;
+            if (GameAPI.isInSafeRegion(le.getLocation())) continue;
+            if (!GameAPI.isPlayer(le)) continue;
             double damage = DamageAPI.calculateProjectileDamage(leShooter, le, event.getPotion());
             double[] armorResult = DamageAPI.calculateArmorReduction(leShooter, le, damage, event.getPotion());
 
@@ -698,7 +698,7 @@ public class DamageListener implements Listener {
                 return;
             }
         }
-        if (API.isInSafeRegion(player.getLocation())) {
+        if (GameAPI.isInSafeRegion(player.getLocation())) {
             if (!DuelingMechanics.isDueling(player.getUniqueId())) {
                 player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1F, 1.25F);
                 try {
@@ -792,7 +792,7 @@ public class DamageListener implements Listener {
                         continue;
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("method") && nmsStack.getTag().getString("method").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                         continue;
                     }
                     location.getWorld().dropItemNaturally(location, itemStack);
@@ -804,7 +804,7 @@ public class DamageListener implements Listener {
                         continue;
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("method") && nmsStack.getTag().getString("method").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                         continue;
                     }
                     location.getWorld().dropItemNaturally(location, itemStack);
@@ -850,7 +850,7 @@ public class DamageListener implements Listener {
                 continue;
             }
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("method") && nmsStack.getTag().getString("method").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                 continue;
             }
             location.getWorld().dropItemNaturally(location, itemStack);
@@ -860,7 +860,7 @@ public class DamageListener implements Listener {
                 continue;
             }
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("method") && nmsStack.getTag().getString("method").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                 continue;
             }
             location.getWorld().dropItemNaturally(location, itemStack);
@@ -880,7 +880,7 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityHurtByNonCombat(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")))
+        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("method") && event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")))
             return;
         if (event.getDamage() <= 0) return;
         if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM)
@@ -898,12 +898,12 @@ public class DamageListener implements Listener {
                 System.currentTimeMillis()));
 
         int maxHP = 0;
-        if (API.isPlayer(event.getEntity())) {
-            maxHP = API.getGamePlayer((Player) event.getEntity()).getPlayerMaxHP();
+        if (GameAPI.isPlayer(event.getEntity())) {
+            maxHP = GameAPI.getGamePlayer((Player) event.getEntity()).getPlayerMaxHP();
         } else {
             maxHP = HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity());
         }
-        if (API.isInSafeRegion(event.getEntity().getLocation())) {
+        if (GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
             event.setDamage(0);
             event.setCancelled(true);
             return;
@@ -916,9 +916,9 @@ public class DamageListener implements Listener {
                 if (blocks >= 2) {
                     dmg = maxHP * 0.02D * event.getDamage();
                 }
-                if (API.isPlayer(event.getEntity())) {
+                if (GameAPI.isPlayer(event.getEntity())) {
                     Player p = (Player) event.getEntity();
-                    GamePlayer gp = API.getGamePlayer(p);
+                    GamePlayer gp = GameAPI.getGamePlayer(p);
                     if (dmg >= gp.getPlayerCurrentHP()) {
                         dmg = gp.getPlayerCurrentHP() - 1;
                     }
@@ -929,7 +929,7 @@ public class DamageListener implements Listener {
                 }
                 break;
             case DROWNING:
-                if (API.isPlayer(event.getEntity())) {
+                if (GameAPI.isPlayer(event.getEntity())) {
                     dmg = maxHP * 0.04;
                 } else
                     dmg = 0;
@@ -961,7 +961,7 @@ public class DamageListener implements Listener {
         if (dmg > 0) {
             if (event.getEntity() instanceof Player) {
                 HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0, event.getCause());
-            } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            } else if (event.getEntity().hasMetadata("method") && event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) {
                 HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, dmg);
             }
         }
@@ -1002,7 +1002,7 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (API.isInSafeRegion(player.getLocation())) {
+        if (GameAPI.isInSafeRegion(player.getLocation())) {
             if (!DuelingMechanics.isDueling(player.getUniqueId())) {
                 player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1f, 1.25F);
                 try {
@@ -1074,8 +1074,8 @@ public class DamageListener implements Listener {
             if (shooter instanceof Ghast) {
                 for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
                     if (ent instanceof Player) {
-                        if (API.isInSafeRegion(ent.getLocation())) continue;
-                        if (!API.isPlayer(ent)) continue;
+                        if (GameAPI.isInSafeRegion(ent.getLocation())) continue;
+                        if (!GameAPI.isPlayer(ent)) continue;
                         double damage = DamageAPI.calculateProjectileDamage(shooter, (LivingEntity) ent, event.getEntity());
                         double[] armorResult = DamageAPI.calculateArmorReduction(shooter, (LivingEntity) ent, damage, event.getEntity());
 
@@ -1096,8 +1096,8 @@ public class DamageListener implements Listener {
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
-                        entity.setCustomName(newLevelName + API.getTierColor(2).toString() + "Lesser Spawn of Inferno");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(2).toString() + "Lesser Spawn of Inferno"));
+                        entity.setCustomName(newLevelName + GameAPI.getTierColor(2).toString() + "Lesser Spawn of Inferno");
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(2).toString() + "Lesser Spawn of Inferno"));
                         Location location = new Location(world.getWorld(), hit_loc.getX() + new Random().nextInt(3), hit_loc.getY(), hit_loc.getZ() + new Random().nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -1121,8 +1121,8 @@ public class DamageListener implements Listener {
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
-                        entity.setCustomName(newLevelName + API.getTierColor(tier).toString() + EnumMonster.MagmaCube.name);
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(tier).toString() + EnumMonster.MagmaCube.name));
+                        entity.setCustomName(newLevelName + GameAPI.getTierColor(tier).toString() + EnumMonster.MagmaCube.name);
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(tier).toString() + EnumMonster.MagmaCube.name));
                         Location location = new Location(world.getWorld(), toSpawn.getX(), toSpawn.getY(), toSpawn.getZ());
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);

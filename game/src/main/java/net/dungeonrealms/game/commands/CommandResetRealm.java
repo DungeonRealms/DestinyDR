@@ -2,10 +2,10 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;

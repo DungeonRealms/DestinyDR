@@ -1,16 +1,16 @@
 package net.dungeonrealms.game.player.combat;
 
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
@@ -65,7 +65,7 @@ public class CombatLog implements GenericMechanic {
     }
 
     public static void addToCombat(Player player) {
-        if (!isInCombat(player) && !API.getGamePlayer(player).isInvulnerable()) {
+        if (!isInCombat(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
             COMBAT.put(player, 10);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
@@ -108,8 +108,8 @@ public class CombatLog implements GenericMechanic {
         List<ItemStack> armorToDrop = new ArrayList<>();
         List<ItemStack> itemsToSave = new ArrayList<>();
         List<ItemStack> armorToSave = new ArrayList<>();
-        KarmaHandler.EnumPlayerAlignments alignments = API.getGamePlayer(player).getPlayerAlignment();
-        int lvl = API.getGamePlayer(player).getLevel();
+        KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
+        int lvl = GameAPI.getGamePlayer(player).getLevel();
         if (alignments == null) {
             return;
         }

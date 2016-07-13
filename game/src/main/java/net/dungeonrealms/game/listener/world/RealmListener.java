@@ -1,7 +1,11 @@
 package net.dungeonrealms.game.listener.world;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -9,12 +13,8 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.updater.UpdateEvent;
 import net.dungeonrealms.game.updater.UpdateType;
 import net.dungeonrealms.game.world.entities.Entities;
@@ -104,14 +104,14 @@ public class RealmListener implements Listener {
             player.sendMessage(ChatColor.GRAY + "You will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GRAY.toString()
                     + " be flagged as 'combat logged' while invincible.");
 
-            if (API.getGamePlayer(player) != null)
-                API.getGamePlayer(player).setInvulnerable(true);
+            if (GameAPI.getGamePlayer(player) != null)
+                GameAPI.getGamePlayer(player).setInvulnerable(true);
 
             Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.setFireTicks(0);
                 player.setFallDistance(0.0F);
-                if (API.getGamePlayer(player) != null)
-                    API.getGamePlayer(player).setInvulnerable(false);
+                if (GameAPI.getGamePlayer(player) != null)
+                    GameAPI.getGamePlayer(player).setInvulnerable(false);
             }, 15 * 20L);
 
         } else if (REALMS.getRealm(event.getFrom()) != null) {
@@ -188,7 +188,7 @@ public class RealmListener implements Listener {
                     } else REALMS.removeRealm(entry.getKey(), true);
 
                     DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true);
-                    API.updatePlayerData(entry.getKey());
+                    GameAPI.updatePlayerData(entry.getKey());
 
                     REALMS.getProcessingBlocks().remove(entry.getKey());
                     realm.setUpgradeProgress(0);
@@ -377,7 +377,7 @@ public class RealmListener implements Listener {
             property.setValue(true);
             property.setAcknowledgeExpiration(true);
         } else if (tag.getString("orb").equalsIgnoreCase("peace")) {
-            GamePlayer gp = API.getGamePlayer(p);
+            GamePlayer gp = GameAPI.getGamePlayer(p);
 
             if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                 p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " use an orb of peace while chaotic.");
@@ -523,7 +523,7 @@ public class RealmListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onAddBuilder(EntityDamageByEntityEvent event) {
-        if (!API.isPlayer(event.getDamager()) || !API.isPlayer(event.getEntity())) return;
+        if (!GameAPI.isPlayer(event.getDamager()) || !GameAPI.isPlayer(event.getEntity())) return;
 
         Player p = (Player) event.getDamager();
         Player target = (Player) event.getEntity();
@@ -885,7 +885,7 @@ public class RealmListener implements Listener {
                 if (realm.getStatus() != RealmStatus.OPENED) return;
 
                 // SAVES THEIR LOCATION
-                DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, API.locationToString(event.getFrom()), true);
+                DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, GameAPI.locationToString(event.getFrom()), true);
                 event.setTo(REALMS.getRealmWorld(realm.getOwner()).getSpawnLocation().clone().add(0, 2, 0));
 
             } else {

@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseDriver;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.Bukkit;
@@ -54,7 +54,7 @@ public class CommandStop extends BasicCommand {
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
-        API.logoutAllPlayers(true, stoppingAll);
+        GameAPI.logoutAllPlayers(true, stoppingAll);
         ShopMechanics.deleteAllShops(true);
         DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
@@ -62,7 +62,7 @@ public class CommandStop extends BasicCommand {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             DungeonRealms.getInstance().mm.stopInvocation();
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
-            Database.mongoClient.close();
+            DatabaseDriver.mongoClient.close();
         }, 200);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 15 * 20L);
         return false;

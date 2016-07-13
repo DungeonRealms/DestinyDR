@@ -2,9 +2,12 @@ package net.dungeonrealms.game.listener.inventory;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.google.common.collect.Lists;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.CommandModeration;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.ClickHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -12,9 +15,6 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -164,6 +164,7 @@ public class InventoryListener implements Listener {
 
         String inventory = ItemSerialization.toString(event.getInventory());
         DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
+        GameAPI.updatePlayerData(target);
 
         CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -189,7 +190,7 @@ public class InventoryListener implements Listener {
             for (int i = 0; i < 4; i++) {
                 if (event.getInventory().getItem(i) != null &&
                         event.getInventory().getItem(i).getType() != Material.AIR &&
-                        API.isArmor(event.getInventory().getItem(i))) {
+                        GameAPI.isArmor(event.getInventory().getItem(i))) {
                     contents[i] = event.getInventory().getItem(i);
                 }
             }
@@ -209,7 +210,7 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
-        if (!API.isArmor(event.getNewArmorPiece()) && !API.isArmor(event.getOldArmorPiece())) return;
+        if (!GameAPI.isArmor(event.getNewArmorPiece()) && !GameAPI.isArmor(event.getOldArmorPiece())) return;
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
@@ -222,16 +223,16 @@ public class InventoryListener implements Listener {
             }
         }
         if (!CombatLog.isInCombat(player)) {
-            if (API.getGamePlayer(player) == null) {
+            if (GameAPI.getGamePlayer(player) == null) {
                 return;
             }
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
             // KEEP THIS DELAY IT PREVENTS ARMOR STACKING
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                API.calculateAllAttributes(player);
+                GameAPI.calculateAllAttributes(player);
                 handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
-                HealthHandler.getInstance().setPlayerMaxHPLive(player, API.getStaticAttributeVal(ArmorAttributeType.HEALTH_POINTS, player) + 50);
-                HealthHandler.getInstance().setPlayerHPRegenLive(player, API.getStaticAttributeVal(ArmorAttributeType.HEALTH_REGEN, player) + 5);
+                HealthHandler.getInstance().setPlayerMaxHPLive(player, GameAPI.getStaticAttributeVal(ArmorAttributeType.HEALTH_POINTS, player) + 50);
+                HealthHandler.getInstance().setPlayerHPRegenLive(player, GameAPI.getStaticAttributeVal(ArmorAttributeType.HEALTH_REGEN, player) + 5);
                 if (HealthHandler.getInstance().getPlayerHPLive(player) > HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
                     HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
                 }
@@ -256,12 +257,12 @@ public class InventoryListener implements Listener {
     private static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
         String oldArmorName = (oldArmor == null || oldArmor.getType() == Material.AIR) ? "NOTHING" : oldArmor.getItemMeta().getDisplayName();
         String newArmorName = (newArmor == null || newArmor.getType() == Material.AIR) ? "NOTHING" : newArmor.getItemMeta().getDisplayName();
-        GamePlayer gp = API.getGamePlayer(p);
+        GamePlayer gp = GameAPI.getGamePlayer(p);
 
         p.sendMessage(ChatColor.GRAY + "" + oldArmorName + "" + ChatColor.WHITE +
                 ChatColor.BOLD + " -> " + ChatColor.GRAY + "" + newArmorName + "");
         if (newArmor == null || newArmor.getType() == Material.AIR) { // unequipping armor
-            List<String> oldModifiers = API.getModifiers(oldArmor);
+            List<String> oldModifiers = GameAPI.getModifiers(oldArmor);
             assert oldModifiers != null;
             net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
             // iterate through to get decreases from stats not in the new armor
@@ -271,11 +272,11 @@ public class InventoryListener implements Listener {
                 int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
                 ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
                 // calculate new values
-//                Integer[] newTotalVal = type.isRange()
-//                        ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
-//                        gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
-//                        : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
-//                gp.setAttributeVal(type, newTotalVal);
+//                Integer[] newTotalVal = method.isRange()
+//                        ? new Integer[]{gp.getRangedAttributeVal(method)[0] - oldTag.getInt(modifier + "Min"),
+//                        gp.getRangedAttributeVal(method)[1] - oldTag.getInt(modifier + "Max")}
+//                        : new Integer[]{0, gp.getRangedAttributeVal(method)[1] - oldTag.getInt(modifier)};
+//                gp.setAttributeVal(method, newTotalVal);
                 Integer[] newTotalVal = gp.getAttributes().get(type.getNBTName());
                 if (oldArmorVal != 0) { // note the decrease to the p
                     p.sendMessage(ChatColor.RED + "-" + oldArmorVal
@@ -284,16 +285,16 @@ public class InventoryListener implements Listener {
                 }
             }
         } else { // equipping armor
-            List<String> newModifiers = API.getModifiers(newArmor);
+            List<String> newModifiers = GameAPI.getModifiers(newArmor);
             assert newModifiers != null;
             net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newArmor).getTag();
 
             if (oldArmor != null && oldArmor.getType() != Material.AIR) { // switching armor
-                List<String> oldModifiers = API.getModifiers(oldArmor);
+                List<String> oldModifiers = GameAPI.getModifiers(oldArmor);
                 net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
                 // get differences
                 for (String modifier : newModifiers) {
-                    // get the attribute type to determine if we need a percentage or not and to get the
+                    // get the attribute method to determine if we need a percentage or not and to get the
                     // correct display name
                     ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
                     // get the tag name (in case the stat is a range, in which case compare max values)
@@ -303,12 +304,12 @@ public class InventoryListener implements Listener {
                     int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
                     // calculate new values
 //                    Integer[] newTotalVal;
-//                    if (type.isRange()) {
-//                        newTotalVal = gp.changeAttributeVal(type, new Integer[]{newTag.getInt(modifier + "Min") -
+//                    if (method.isRange()) {
+//                        newTotalVal = gp.changeAttributeVal(method, new Integer[]{newTag.getInt(modifier + "Min") -
 //                                oldTag.getInt(modifier + "Min"), newTag.getInt(modifier + "Max") - oldTag.getInt
 //                                (modifier + "Max")});
 //                    } else {
-//                        newTotalVal = gp.changeAttributeVal(type, new Integer[]{0, newTag.getInt(modifier) -
+//                        newTotalVal = gp.changeAttributeVal(method, new Integer[]{0, newTag.getInt(modifier) -
 //                                oldTag.getInt(modifier)});
 //                    }
                     Integer[] newTotalVal = gp.getAttributes().get(type.getNBTName());
@@ -329,11 +330,11 @@ public class InventoryListener implements Listener {
                     String tagName = type.isRange() ? modifier + "Max" : modifier;
                     int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
                     Integer[] newTotalVal = gp.getAttributes().get(type.getNBTName());
-//                    Integer[] newTotalVal = type.isRange()
-//                            ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
-//                            gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
-//                            : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
-//                    gp.setAttributeVal(type, newTotalVal);
+//                    Integer[] newTotalVal = method.isRange()
+//                            ? new Integer[]{gp.getRangedAttributeVal(method)[0] - oldTag.getInt(modifier + "Min"),
+//                            gp.getRangedAttributeVal(method)[1] - oldTag.getInt(modifier + "Max")}
+//                            : new Integer[]{0, gp.getRangedAttributeVal(method)[1] - oldTag.getInt(modifier)};
+//                    gp.setAttributeVal(method, newTotalVal);
                     if (oldArmorVal != 0) { // note the decrease to the player
                         p.sendMessage(ChatColor.RED + "-" + oldArmorVal
                                 + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
@@ -342,27 +343,27 @@ public class InventoryListener implements Listener {
                 }
             } else { // only equipping
                 for (String modifier : newModifiers) {
-                    // get the attribute type to determine if we need a percentage or not and to get the
+                    // get the attribute method to determine if we need a percentage or not and to get the
                     // correct display name
                     ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
                     // get the tag name (in case the stat is a range, in which case compare max values)
                     String tagName = type.isRange() ? modifier + "Max" : modifier;
                     // calculate new values
-//                    Integer[] newTotalVal = type.isRange()
-//                            ? new Integer[]{gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
-//                            gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max")}
-//                            : new Integer[]{0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier)};
+//                    Integer[] newTotalVal = method.isRange()
+//                            ? new Integer[]{gp.getRangedAttributeVal(method)[0] + newTag.getInt(modifier + "Min"),
+//                            gp.getRangedAttributeVal(method)[1] + newTag.getInt(modifier + "Max")}
+//                            : new Integer[]{0, gp.getRangedAttributeVal(method)[1] + newTag.getInt(modifier)};
                     // get the tag values (if the armor piece doesn't have the modifier, set equal to 0)
                     int newArmorVal = newTag.hasKey(tagName) ? newTag.getInt(tagName) : 0;
                     Integer[] newTotalVal = gp.getAttributes().get(type.getNBTName());
-//                    gp.setAttributeVal(type, newTotalVal);
+//                    gp.setAttributeVal(method, newTotalVal);
                     p.sendMessage(ChatColor.GREEN + "+" + newArmorVal
                             + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
                             + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
                 }
             }
         }
-        API.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
+        GameAPI.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
     }
 
 
@@ -397,7 +398,7 @@ public class InventoryListener implements Listener {
                     t.handleClose();
                 }
         } else if (event.getInventory().getTitle().contains("Stat Points")) {
-            PlayerStats stat = API.getGamePlayer((Player) event.getPlayer()).getStats();
+            PlayerStats stat = GameAPI.getGamePlayer((Player) event.getPlayer()).getStats();
             if (stat.reset) {
                 stat.resetTemp();
             }
@@ -444,7 +445,7 @@ public class InventoryListener implements Listener {
             if (event.getCurrentItem() == null)
                 return;
 
-            if (!API.isItemTradeable(event.getCurrentItem()) || API.isItemSoulbound(event.getCurrentItem()) || !API.isItemDroppable(event.getCurrentItem())) {
+            if (!GameAPI.isItemTradeable(event.getCurrentItem()) || GameAPI.isItemSoulbound(event.getCurrentItem()) || !GameAPI.isItemDroppable(event.getCurrentItem())) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
                 event.setCancelled(true);
                 return;
@@ -521,13 +522,13 @@ public class InventoryListener implements Listener {
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
         net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
-        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
+        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || nmsCursor.getTag().hasKey("method") && !nmsCursor.getTag().getString("method").equalsIgnoreCase("orb"))
             return;
         ItemStack slotItem = event.getCurrentItem();
-        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
+        if (!GameAPI.isWeapon(slotItem) && !GameAPI.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;
         Player player = (Player) event.getWhoClicked();
-        GamePlayer gp = API.getGamePlayer(player);
+        GamePlayer gp = GameAPI.getGamePlayer(player);
         if (gp == null) {
             return;
         }
@@ -556,8 +557,8 @@ public class InventoryListener implements Listener {
 
         ItemStack oldItem = CraftItemStack.asCraftCopy(slotItem);
 
-        ItemStack item = new ItemGenerator().setReroll(true).setSoulbound(API.isItemSoulbound(slotItem)).setUntradeable(API.isItemUntradeable(slotItem))
-                .setPermanentlyUntradeable(API.isItemPermanentlyUntradeable(slotItem)).setOrigItem(slotItem).generateItem().getItem();
+        ItemStack item = new ItemGenerator().setReroll(true).setSoulbound(GameAPI.isItemSoulbound(slotItem)).setUntradeable(GameAPI.isItemUntradeable(slotItem))
+                .setPermanentlyUntradeable(GameAPI.isItemPermanentlyUntradeable(slotItem)).setOrigItem(slotItem).generateItem().getItem();
         event.setCurrentItem(item);
 
         ItemStack newItem = event.getCurrentItem();
@@ -625,18 +626,18 @@ public class InventoryListener implements Listener {
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
         net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
-        if (cursorItem.getType() != Material.EMPTY_MAP || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type"))
+        if (cursorItem.getType() != Material.EMPTY_MAP || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method"))
             return;
         ItemStack slotItem = event.getCurrentItem();
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
-        if (!API.isWeapon(slotItem) && !API.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem) && !Mining.isDRPickaxe(slotItem))
+        if (!GameAPI.isWeapon(slotItem) && !GameAPI.isArmor(slotItem) && !Fishing.isDRFishingPole(slotItem) && !Mining.isDRPickaxe(slotItem))
             return;
         event.setCancelled(true);
-        GamePlayer gamePlayer = API.getGamePlayer((Player) event.getWhoClicked());
+        GamePlayer gamePlayer = GameAPI.getGamePlayer((Player) event.getWhoClicked());
         if (gamePlayer == null) return;
 
 
-        if (nmsCursor.getTag().getString("type").equalsIgnoreCase("protection")) {
+        if (nmsCursor.getTag().getString("method").equalsIgnoreCase("protection")) {
             if (!EnchantmentAPI.isItemProtected(slotItem)) {
                 int tier = nmsCursor.getTag().getInt("tier");
                 int itemTier;
@@ -664,8 +665,8 @@ public class InventoryListener implements Listener {
             return;
         }
 
-        if (API.isWeapon(slotItem)) {
-            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("weaponenchant")) {
+        if (GameAPI.isWeapon(slotItem)) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("weaponenchant")) {
                 return;
             }
 
@@ -772,12 +773,8 @@ public class InventoryListener implements Listener {
             String finalName = ChatColor.RED + "[" + "+" + (amount + 1) + "] " + newName;
             double doublenewDamageMin = nmsItem.getTag().getInt("damageMin") + ((5 * nmsItem.getTag().getInt("damageMin")) / 100);
             double doublenewDamageMax = nmsItem.getTag().getInt("damageMax") + ((5 * nmsItem.getTag().getInt("damageMax")) / 100);
-            if (tier == 1) {
-                doublenewDamageMin += 1;
-                doublenewDamageMax += 1;
-            }
-            int finalDmgMin = (int) Math.round(doublenewDamageMin);
-            int finalDmgMax = (int) Math.round(doublenewDamageMax);
+            int finalDmgMin = (int) Math.round(doublenewDamageMin) + 1;
+            int finalDmgMax = (int) Math.round(doublenewDamageMax) + 1;
 
             // update the item lore
             lore.set(0, ChatColor.RED + "DMG: " + finalDmgMin + " - " + finalDmgMax);
@@ -817,8 +814,8 @@ public class InventoryListener implements Listener {
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
             gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
-        } else if (API.isArmor(slotItem)) {
-            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")) {
+        } else if (GameAPI.isArmor(slotItem)) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("armorenchant")) {
                 return;
             }
             int tier = nmsCursor.getTag().getInt("tier");
@@ -992,7 +989,7 @@ public class InventoryListener implements Listener {
             fw.setFireworkMeta(fwm);
             gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (Fishing.isDRFishingPole(slotItem)) {
-            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("fishingenchant")) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("fishingenchant")) {
                 return;
             }
 
@@ -1056,7 +1053,7 @@ public class InventoryListener implements Listener {
             gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
 
         } else if (Mining.isDRPickaxe(slotItem)) {
-            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("pickaxeenchant")) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("pickaxeenchant")) {
                 return;
             }
 
@@ -1135,8 +1132,9 @@ public class InventoryListener implements Listener {
         net.minecraft.server.v1_9_R2.ItemStack nmsSlot = CraftItemStack.asNMSCopy(slotItem);
         Player player = (Player) event.getWhoClicked();
         if (!nmsSlot.hasTag() || !nmsCursor.hasTag()) return;
-        if (!nmsSlot.getTag().hasKey("type") || !nmsSlot.getTag().getString("type").equalsIgnoreCase("money")) return;
-        if (!nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("money"))
+        if (!nmsSlot.getTag().hasKey("method") || !nmsSlot.getTag().getString("method").equalsIgnoreCase("money"))
+            return;
+        if (!nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("money"))
             return;
 
         int amount = cursorItem.getAmount();
@@ -1328,7 +1326,7 @@ public class InventoryListener implements Listener {
                                     return;
                                 }
                                 int number = 0;
-                                int currentFreePoints = API.getGamePlayer(p).getStats().tempFreePoints;
+                                int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
                                 try {
                                     number = Integer.parseInt(e.getMessage());
                                 } catch (Exception exc) {
@@ -1374,7 +1372,7 @@ public class InventoryListener implements Listener {
                                     return;
                                 }
                                 int number = 0;
-                                int currentFreePoints = API.getGamePlayer(p).getStats().tempFreePoints;
+                                int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
                                 try {
                                     number = Integer.parseInt(e.getMessage());
                                 } catch (Exception exc) {
@@ -1422,7 +1420,7 @@ public class InventoryListener implements Listener {
                                     return;
                                 }
                                 int number = 0;
-                                int currentFreePoints = API.getGamePlayer(p).getStats().tempFreePoints;
+                                int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
                                 try {
                                     number = Integer.parseInt(e.getMessage());
                                 } catch (Exception exc) {
@@ -1472,7 +1470,7 @@ public class InventoryListener implements Listener {
                                     return;
                                 }
                                 int number = 0;
-                                int currentFreePoints = API.getGamePlayer(p).getStats().tempFreePoints;
+                                int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
                                 try {
                                     number = Integer.parseInt(e.getMessage());
                                 } catch (Exception exc) {
@@ -1548,7 +1546,7 @@ public class InventoryListener implements Listener {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
             }
-            /*if (event.getCurrentItem() != null && !(API.isItemTradeable(event.getCurrentItem()))) {
+            /*if (event.getCurrentItem() != null && !(GameAPI.isItemTradeable(event.getCurrentItem()))) {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
             }*/
@@ -1604,7 +1602,7 @@ public class InventoryListener implements Listener {
                         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(clickedOn);
                         NBTTagCompound tag = nmsStack.getTag();
                         if (tag == null) return;
-                        if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
+                        if (!(tag.getString("method").equalsIgnoreCase("important"))) return;
                         event.setCancelled(true);
                     }
                 }
@@ -1623,7 +1621,7 @@ public class InventoryListener implements Listener {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(onCursor);
                     NBTTagCompound tag = nmsStack.getTag();
                     if (tag == null) return;
-                    if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
+                    if (!(tag.getString("method").equalsIgnoreCase("important"))) return;
                     event.setCancelled(true);
                 }
             }
@@ -1639,7 +1637,7 @@ public class InventoryListener implements Listener {
                 net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(dragged);
                 NBTTagCompound tag = nmsStack.getTag();
                 if (tag == null) return;
-                if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
+                if (!(tag.getString("method").equalsIgnoreCase("important"))) return;
                 int inventorySize = event.getInventory().getSize();
                 for (int i : event.getRawSlots()) {
                     if (i < inventorySize) {

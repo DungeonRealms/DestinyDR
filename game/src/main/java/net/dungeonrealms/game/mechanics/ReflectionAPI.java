@@ -8,15 +8,15 @@ import java.util.List;
 
 /**
  * Created by Kieran on 9/27/2015.
- * Based from some Bukkit API from 2014.
+ * Based from some Bukkit GameAPI from 2014.
  */
 public class ReflectionAPI {
 
     /**
-     * Finds a declared field of a specific type in the target class. With a specific index.
+     * Finds a declared field of a specific method in the target class. With a specific index.
      *
      * @param target    the target class to retrieve the fields from
-     * @param fieldType the field type that you want to search for
+     * @param fieldType the field method that you want to search for
      * @param index     the field index starting in the specified order
      * @return the field
      */
@@ -25,10 +25,10 @@ public class ReflectionAPI {
     }
 
     /**
-     * Finds a declared field of a specific type in the target class. With a specific index.
+     * Finds a declared field of a specific method in the target class. With a specific index.
      *
      * @param target    the target class to retrieve the fields from
-     * @param fieldType the field type that you want to search for
+     * @param fieldType the field method that you want to search for
      * @param index     the field index starting in the specified order
      * @param reverse   whether you want to reverse the order of the fields
      * @return the field
@@ -52,10 +52,10 @@ public class ReflectionAPI {
     }
 
     /**
-     * Finds all the declared fields of a specific type in the target class.
+     * Finds all the declared fields of a specific method in the target class.
      *
      * @param target    the target class to retrieve the fields from
-     * @param fieldType the field type that you want to search for
+     * @param fieldType the field method that you want to search for
      * @return the fields
      */
     public static Field[] findFields(Class<?> target, Class<?> fieldType) {
@@ -63,10 +63,10 @@ public class ReflectionAPI {
     }
 
     /**
-     * Finds all the declared fields of a specific type in the target class.
+     * Finds all the declared fields of a specific method in the target class.
      *
      * @param target    the target class to retrieve the fields from
-     * @param fieldType the field type that you want to search for
+     * @param fieldType the field method that you want to search for
      * @param depth     the depth you want to check for underlying classes their fields
      * @return the fields
      */
@@ -88,11 +88,11 @@ public class ReflectionAPI {
     }
 
     /**
-     * Finds the objects of all declared fields with a specific type in the
+     * Finds the objects of all declared fields with a specific method in the
      * target class.
      *
      * @param target       the target class to retrieve the fields from
-     * @param fieldType    the field type that you want to search for
+     * @param fieldType    the field method that you want to search for
      * @param targetObject the target object you want to retrieve the object of
      * @return the objects
      */
@@ -101,11 +101,11 @@ public class ReflectionAPI {
     }
 
     /**
-     * Finds the objects of all declared fields with a specific type in the
+     * Finds the objects of all declared fields with a specific method in the
      * target class.
      *
      * @param target       the target class to retrieve the fields from
-     * @param fieldType    the field type that you want to search for
+     * @param fieldType    the field method that you want to search for
      * @param targetObject the target object you want to retrieve the object of
      * @param depth        the depth you want to check for underlying classes their fields
      * @return the objects

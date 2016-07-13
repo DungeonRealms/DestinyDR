@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.world.items.Item;
@@ -48,9 +48,9 @@ public class CommandCheck extends BasicCommand {
 
 		if (args.length == 1) {
 			if(args[0].equalsIgnoreCase("nbt")){
-				List<String> modifiers = API.getModifiers(inHand);
+				List<String> modifiers = GameAPI.getModifiers(inHand);
 
-				if (API.isWeapon(inHand)) {
+				if (GameAPI.isWeapon(inHand)) {
 					Item.WeaponAttributeType attributeType;
 					for (String mod : modifiers) {
 						attributeType = Item.WeaponAttributeType.getByNBTName(mod);
@@ -63,7 +63,7 @@ public class CommandCheck extends BasicCommand {
 						}
 					}
 				}
-				else if (API.isArmor(inHand)) {
+				else if (GameAPI.isArmor(inHand)) {
 					Item.ArmorAttributeType attributeType;
 					for (String mod : modifiers) {
 						attributeType = Item.ArmorAttributeType.getByNBTName(mod);
@@ -86,7 +86,7 @@ public class CommandCheck extends BasicCommand {
 		else if (args.length == 2) { // check player attributes
 			Player attributePlayer = Bukkit.getPlayer(args[1]);
 			if (args[0].equalsIgnoreCase("attributes") && attributePlayer != null) {
-				GamePlayer gp = API.getGamePlayer(attributePlayer);
+				GamePlayer gp = GameAPI.getGamePlayer(attributePlayer);
 				gp.getAttributes().entrySet().stream().forEach(entry -> {
 					player.sendMessage(entry.getKey() + ": " + entry.getValue()[0] + " - " + entry.getValue()[1]);
 				});

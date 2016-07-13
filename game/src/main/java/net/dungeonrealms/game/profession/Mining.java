@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.profession;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
@@ -69,8 +69,8 @@ public class Mining implements GenericMechanic {
     public static boolean isDRPickaxe(ItemStack stack) {
         if (stack.getType() == Material.WOOD_PICKAXE || stack.getType() == Material.STONE_PICKAXE || stack.getType() == Material.IRON_PICKAXE || stack.getType() == Material.GOLD_PICKAXE || stack.getType() == Material.DIAMOND_PICKAXE) {
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-            return !(nms == null || nms.getTag() == null) && nms.getTag().hasKey("type")
-                    && nms.getTag().getString("type").equalsIgnoreCase("pick");
+            return !(nms == null || nms.getTag() == null) && nms.getTag().hasKey("method")
+                    && nms.getTag().getString("method").equalsIgnoreCase("pick");
         }
         return false;
     }
@@ -101,7 +101,7 @@ public class Mining implements GenericMechanic {
      * Check amount of exp pick gets from block mined
      *
      * @param stackInHand
-     * @param type
+     * @param method
      * @return integer
      * @since 1.0
      */
@@ -137,7 +137,7 @@ public class Mining implements GenericMechanic {
         ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Pickaxe Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a pickaxe with special attributes."}).build();
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("type", "pickaxeenchant");
+        nms.getTag().setString("method", "pickaxeenchant");
         nms.getTag().setInt(enchant.name(), stat);
         return CraftItemStack.asBukkitCopy(nms);
     }
@@ -146,7 +146,7 @@ public class Mining implements GenericMechanic {
         String statBuff = ChatColor.RED + enchant.display + " " + percent + "%";
         ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Pickaxe Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a pickaxe with special attributes."}).build();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("type", "pickaxeenchant");
+        nms.getTag().setString("method", "pickaxeenchant");
         nms.getTag().setInt(enchant.name(), percent);
         return CraftItemStack.asBukkitCopy(nms);
 
@@ -298,7 +298,7 @@ public class Mining implements GenericMechanic {
         String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
                 + expBar.substring(display, expBar.length());
         int lvl = CraftItemStack.asNMSCopy(stackInHand).getTag().getInt("level");
-        lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+        lore.set(0, ChatColor.GRAY.toString() + "Level: " + GameAPI.getTierColor(tier) + lvl);
         lore.set(1, ChatColor.GRAY.toString() + currentXP + ChatColor.GRAY + " / " + ChatColor.GRAY + maxXP);
         lore.set(2, ChatColor.GRAY + "EXP: " + newexpBar);
 
@@ -386,7 +386,7 @@ public class Mining implements GenericMechanic {
             ItemMeta meta = pick.getItemMeta();
             List<String> lore = meta.getLore();
             String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-            lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+            lore.set(0, ChatColor.GRAY.toString() + "Level: " + GameAPI.getTierColor(tier) + lvl);
             lore.set(1, ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
             lore.set(2, ChatColor.GRAY.toString() + "EXP: " + expBar);
             String name = "Novice Pickaxe";
@@ -659,11 +659,11 @@ public class Mining implements GenericMechanic {
 
 
     private static void initializeOre() {
-        coalOre = new ItemBuilder().setItem(Material.COAL_ORE, (short) 0, API.getTierColor(1).toString() + "Coal Ore", new String[]{ChatColor.GRAY + "A chunk of coal ore."}).build();
-        emeraldOre = new ItemBuilder().setItem(Material.EMERALD_ORE, (short) 0, API.getTierColor(2).toString() + "Emerald Ore", new String[]{ChatColor.GRAY + "An unrefined piece of emerald ore."}).build();
-        ironOre = new ItemBuilder().setItem(Material.IRON_ORE, (short) 0, API.getTierColor(3).toString() + "Iron Ore", new String[]{ChatColor.GRAY + "A piece of raw iron."}).build();
-        diamondOre = new ItemBuilder().setItem(Material.DIAMOND_ORE, (short) 0, API.getTierColor(4).toString() + "Diamond Ore", new String[]{ChatColor.GRAY + "A sharp chunk of diamond ore."}).build();
-        goldOre = new ItemBuilder().setItem(Material.GOLD_ORE, (short) 0, API.getTierColor(5).toString() + "Gold Ore", new String[]{ChatColor.GRAY + "A sparking piece of gold ore"}).build();
+        coalOre = new ItemBuilder().setItem(Material.COAL_ORE, (short) 0, GameAPI.getTierColor(1).toString() + "Coal Ore", new String[]{ChatColor.GRAY + "A chunk of coal ore."}).build();
+        emeraldOre = new ItemBuilder().setItem(Material.EMERALD_ORE, (short) 0, GameAPI.getTierColor(2).toString() + "Emerald Ore", new String[]{ChatColor.GRAY + "An unrefined piece of emerald ore."}).build();
+        ironOre = new ItemBuilder().setItem(Material.IRON_ORE, (short) 0, GameAPI.getTierColor(3).toString() + "Iron Ore", new String[]{ChatColor.GRAY + "A piece of raw iron."}).build();
+        diamondOre = new ItemBuilder().setItem(Material.DIAMOND_ORE, (short) 0, GameAPI.getTierColor(4).toString() + "Diamond Ore", new String[]{ChatColor.GRAY + "A sharp chunk of diamond ore."}).build();
+        goldOre = new ItemBuilder().setItem(Material.GOLD_ORE, (short) 0, GameAPI.getTierColor(5).toString() + "Gold Ore", new String[]{ChatColor.GRAY + "A sparking piece of gold ore"}).build();
     }
 
     private HashMap<Location, Material> ORE_LOCATIONS = new HashMap<>();

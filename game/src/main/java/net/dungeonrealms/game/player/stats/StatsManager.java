@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.player.stats;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -42,7 +42,7 @@ public class StatsManager {
      * @return PlayerStats
      */
     public static PlayerStats getPlayerStats(Player p) {
-        return API.getGamePlayer(p).getStats();
+        return GameAPI.getGamePlayer(p).getStats();
     }
 
 }

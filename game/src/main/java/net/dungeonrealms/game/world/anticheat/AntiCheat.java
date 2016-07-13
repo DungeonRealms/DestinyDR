@@ -2,6 +2,8 @@ package net.dungeonrealms.game.world.anticheat;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -10,6 +12,7 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -40,6 +43,57 @@ public class AntiCheat {
     public void startInitialization() {
 //        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(this::checkPlayer), 0, 20);
     }
+
+    //TODO: Have a look at this
+    public void checkForDupedItems(Player player) {
+        if (Rank.isGM(player) || player.getGameMode() != GameMode.SURVIVAL) return;
+        List<ItemStack> registeredItems = new ArrayList<>();
+        for (ItemStack is : player.getInventory().getContents()) {
+            if (is == null || is.getType() == Material.AIR) continue;
+            if (!player.isOnline()) return;
+            if (!isRegistered(is)) continue;
+            registeredItems.add(is);
+        }
+        if (registeredItems.isEmpty()) return;
+        String toCheck;
+        int listIndex = -1;
+        int cloneIndex = -1;
+        for (ItemStack is : registeredItems) {
+            listIndex++;
+            toCheck = getUniqueEpochIdentifier(is);
+            for (ItemStack itemStack : registeredItems) {
+                cloneIndex++;
+                if (cloneIndex == listIndex) {
+                    continue;
+                }
+                if (toCheck.equals(getUniqueEpochIdentifier(itemStack))) {
+                    player.getInventory().remove(is);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.getInventory().addItem(is), 1L);
+                    System.out.println("Duplication : " + player.getName() + " removed item(s).");
+                    registeredItems.remove(cloneIndex);
+                }
+            }
+            cloneIndex = -1;
+        }
+    }
+
+    /*
+        public void checkForDupedItems(InventoryClickEvent event) {
+        ItemStack checkItem = event.getCurrentItem();
+        if (checkItem == null) return;
+        if (!isRegistered(checkItem)) return;
+        Player player = (Player) event.getWhoClicked();
+        if (Rank.isGM(player) || player.getGameMode() != GameMode.SURVIVAL) return;
+        final String checkAgainst = getUniqueEpochIdentifier(checkItem);
+        for (ItemStack is : player.getInventory().getContents()) {
+            if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM) continue;
+            if (!isRegistered(is)) continue;
+            if (checkAgainst.equals(getUniqueEpochIdentifier(is))) {
+                player.getInventory().remove(is);
+            }
+        }
+    }
+     */
 
     /**
      * Will be placed inside an eventlistener to make sure

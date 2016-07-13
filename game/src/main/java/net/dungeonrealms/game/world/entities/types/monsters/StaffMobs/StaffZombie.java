@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.StaffMobs;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRZombie;
@@ -37,7 +37,7 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
 
     @Override
     public void setWeapon(int tier) {
-        org.bukkit.inventory.ItemStack weapon = new ItemGenerator().setType(Item.ItemType.STAFF).setTier(Item.ItemTier.getByTier(tier)).setRarity(API.getItemRarity(false)).generateItem().getItem();
+        org.bukkit.inventory.ItemStack weapon = new ItemGenerator().setType(Item.ItemType.STAFF).setTier(Item.ItemTier.getByTier(tier)).setRarity(GameAPI.getItemRarity(false)).generateItem().getItem();
         this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         ((LivingEntity) this.getBukkitEntity()).getEquipment().setItemInMainHand(weapon);
     }

@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -24,13 +24,13 @@ public interface Boss {
 	void onBossHit(EntityDamageByEntityEvent event);
 	
 	default void say(Entity ent, String msg){
-		for (Player p : API.getNearbyPlayers(ent.getLocation(), 50)) {
+		for (Player p : GameAPI.getNearbyPlayers(ent.getLocation(), 50)) {
 			p.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + getEnumBoss().name() + ChatColor.WHITE + "] "
 					+ ChatColor.GREEN +  msg);
 		}
 	}
 	default void say(Entity ent, Location location, String msg){
-		for (Player p : API.getNearbyPlayers(location, 50)) {
+		for (Player p : GameAPI.getNearbyPlayers(location, 50)) {
 			p.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + getEnumBoss().name() + ChatColor.WHITE + "] "
 					+ ChatColor.GREEN +  msg);
 		}

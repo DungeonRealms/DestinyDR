@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.items.itemgenerator;
 
 import com.google.common.collect.Lists;
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
@@ -105,9 +105,9 @@ public class ItemGenerator {
     }
     
     /**
-     * Generates an item with the given tier, type, and rarity. If the 
-     * tier, type, and rarity instance variables do not have values, 
-     * this will generate an item with random tier, type, and rarity.
+     * Generates an item with the given tier, method, and rarity. If the
+     * tier, method, and rarity instance variables do not have values,
+     * this will generate an item with random tier, method, and rarity.
      * @return - an instance of the current ItemGenerator 
      * (call getItem() for the ItemStack)
      * @since 1.0
@@ -476,9 +476,9 @@ public class ItemGenerator {
         }
         
         if (type.getId() <= 4) {
-            tag.set("type",  new NBTTagString("weapon"));
+            tag.set("method",  new NBTTagString("weapon"));
         } else {
-            tag.set("type",  new NBTTagString("armor"));
+            tag.set("method",  new NBTTagString("armor"));
         }
         
         /*
@@ -489,7 +489,7 @@ public class ItemGenerator {
         
         NBTTagList modifiersList = new NBTTagList();
         if (isReroll) {
-            List<String> modifiers = API.getModifiers(origItem);
+            List<String> modifiers = GameAPI.getModifiers(origItem);
             if (Item.ItemType.isWeapon(origItem)) {
                 //Stats kept from weapon (Only Damage)
                 for (String string : modifiers) {
@@ -729,11 +729,11 @@ public class ItemGenerator {
         tag.set("AttributeModifiers", new NBTTagList());
         tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getTierId()));
         
-        // set item type
+        // set item method
         if (Item.ItemType.isWeapon(is)) {
-            tag.set("type", new NBTTagString("weapon"));
+            tag.set("method", new NBTTagString("weapon"));
         } else if (Item.ItemType.isArmor(is)) {
-            tag.set("type", new NBTTagString("armor"));
+            tag.set("method", new NBTTagString("armor"));
         }
         
         NBTTagList modifiersList = new NBTTagList();
@@ -764,10 +764,10 @@ public class ItemGenerator {
 	 * @return - An ItemStack array of the armor set.
 	 */
 	public ItemStack[] getArmorSet() {
-        return new ItemStack[] { this.setType(Item.ItemType.BOOTS).setRarity(rarity == null ? API.getItemRarity(false) : rarity).generateItem().getItem(),
-                this.setType(Item.ItemType.LEGGINGS).setRarity(rarity == null ? API.getItemRarity(false) : rarity).generateItem().getItem(),
-                this.setType(Item.ItemType.CHESTPLATE).setRarity(rarity == null ? API.getItemRarity(false) : rarity).generateItem().getItem(),
-                this.setType(Item.ItemType.HELMET).setRarity(rarity == null ? API.getItemRarity(false) : rarity).generateItem().getItem() };
+        return new ItemStack[] { this.setType(Item.ItemType.BOOTS).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem(),
+                this.setType(Item.ItemType.LEGGINGS).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem(),
+                this.setType(Item.ItemType.CHESTPLATE).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem(),
+                this.setType(Item.ItemType.HELMET).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem() };
 	}
 	
 	public static void loadModifiers(){

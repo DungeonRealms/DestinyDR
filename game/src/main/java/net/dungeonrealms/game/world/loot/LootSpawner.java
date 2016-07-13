@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.loot;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
@@ -64,11 +64,11 @@ public class LootSpawner {
 //					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("itemTier");
 //					stack = LootManager.generateRandomTierItem(tier);
                     continue;
-                } else if (API.isOrb(stack)) {
+                } else if (GameAPI.isOrb(stack)) {
                     stack = ItemManager.createOrbofAlteration();
                 } else if (ItemManager.isEnchantScroll(stack)) {
                     int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
-                    String type = CraftItemStack.asNMSCopy(stack).getTag().getString("type");
+                    String type = CraftItemStack.asNMSCopy(stack).getTag().getString("method");
                     if (type.equalsIgnoreCase("armorenchant"))
                         stack = ItemManager.createArmorEnchant(tier);
                     else
@@ -105,7 +105,7 @@ public class LootSpawner {
                 }
             }
         }
-        GamePlayer gamePlayer = API.getGamePlayer(player);
+        GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
         if (gamePlayer == null) return;
         gamePlayer.getPlayerStatistics().setLootChestsOpened(gamePlayer.getPlayerStatistics().getLootChestsOpened() + 1);
         for (int i = 0; i < 6; i++) {

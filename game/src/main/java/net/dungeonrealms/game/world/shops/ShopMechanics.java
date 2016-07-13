@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.world.shops;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import org.bukkit.Bukkit;
@@ -51,8 +51,8 @@ public class ShopMechanics implements GenericMechanic {
     }
 
     public static boolean isItemSellable(ItemStack i) {
-        if (!API.isItemTradeable(i)) return false;
-        if (!API.isItemDroppable(i)) return false;
+        if (!GameAPI.isItemTradeable(i)) return false;
+        if (!GameAPI.isItemDroppable(i)) return false;
         return true;
     }
 

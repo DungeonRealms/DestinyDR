@@ -1,18 +1,19 @@
 package net.dungeonrealms.game.listener.combat;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -30,11 +31,13 @@ public class PvPListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerMeleePlayer(EntityDamageByEntityEvent event) {
-        if (!API.isPlayer(event.getDamager())) return;
-        if (!API.isPlayer(event.getEntity())) return;
+        if (!GameAPI.isPlayer(event.getDamager())) return;
+        if (!GameAPI.isPlayer(event.getEntity())) return;
 
         Player damager = (Player) event.getDamager();
         Player receiver = (Player) event.getEntity();
+
+        if (receiver.getGameMode() != GameMode.SURVIVAL) return;
 
         event.setDamage(0);
 
@@ -46,7 +49,7 @@ public class PvPListener implements Listener {
 
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
 
-        if (!API.isWeapon(damager.getEquipment().getItemInMainHand())) {
+        if (!GameAPI.isWeapon(damager.getEquipment().getItemInMainHand())) {
             for (ItemStack i : receiver.getInventory().getArmorContents()) {
                 RepairAPI.subtractCustomDurability(receiver, i, 1);
             }
@@ -100,9 +103,9 @@ public class PvPListener implements Listener {
 
 
         double calculatedDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
-        if (API.getGamePlayer(receiver) != null && API.getGamePlayer(damager) != null) {
-            if (API.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                if (API.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+        if (GameAPI.getGamePlayer(receiver) != null && GameAPI.getGamePlayer(damager) != null) {
+            if (GameAPI.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                if (GameAPI.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
                         if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
                             event.setCancelled(true);
@@ -152,7 +155,7 @@ public class PvPListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerRangedPlayer(EntityDamageByEntityEvent event) {
         if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
-        if (!API.isPlayer(event.getEntity())) return;
+        if (!GameAPI.isPlayer(event.getEntity())) return;
         Projectile projectile = (Projectile) event.getDamager();
         if (!(projectile.getShooter() instanceof Player)) {
             return;
@@ -163,6 +166,7 @@ public class PvPListener implements Listener {
         Player damager = (Player) projectile.getShooter();
         Player receiver = (Player) event.getEntity();
 
+        if (receiver.getGameMode() != GameMode.SURVIVAL) return;
         if (CombatLog.isInCombat(damager)) {
             CombatLog.updateCombat(damager);
         } else {
@@ -170,9 +174,9 @@ public class PvPListener implements Listener {
         }
 
         double calculatedDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
-        if (API.getGamePlayer(receiver) != null && API.getGamePlayer(damager) != null) {
-            if (API.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                if (API.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+        if (GameAPI.getGamePlayer(receiver) != null && GameAPI.getGamePlayer(damager) != null) {
+            if (GameAPI.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                if (GameAPI.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
                         if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
                             event.setCancelled(true);

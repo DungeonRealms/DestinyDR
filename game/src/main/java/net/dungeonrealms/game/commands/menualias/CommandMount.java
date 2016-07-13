@@ -2,18 +2,19 @@ package net.dungeonrealms.game.commands.menualias;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.menus.player.Profile;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -51,6 +52,10 @@ public class CommandMount extends BasicCommand {
             }
             if (CombatLog.isInCombat(player)) {
                 player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
+                return true;
+            }
+            if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
+                player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
                 return true;
             }
             String mountType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());

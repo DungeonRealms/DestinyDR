@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mastery;
 
+import net.dungeonrealms.Constants;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class Utils {
 
-    public static Logger log = Logger.getLogger("DungeonRealms");
+    public static Logger log = Constants.log;
 
     /**
      * Get a players head.
@@ -160,8 +161,8 @@ public class Utils {
 
         String date = "";
 
-        String[] unitNames = { "week", "day", "hour", "minute", "second" };
-        int[] unitValues = { 604800, 86400, 3600, 60, 1 };
+        String[] unitNames = {"week", "day", "hour", "minute", "second"};
+        int[] unitValues = {604800, 86400, 3600, 60, 1};
 
         // Loop through all of the units.
         for (int i = 0; i < unitNames.length; i++) {

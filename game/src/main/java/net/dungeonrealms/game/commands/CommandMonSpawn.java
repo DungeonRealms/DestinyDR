@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -101,11 +101,11 @@ public class CommandMonSpawn extends BasicCommand {
             nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
             if (!customName.equals("")) {
-                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
+                entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
             } else {
-                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
+                entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
             }
             return true;
         }
@@ -144,7 +144,7 @@ public class CommandMonSpawn extends BasicCommand {
                             }
                         }
                         EnumMonster monsEnum = EnumMonster.getMonsterByString(args[1]);
-                        EnumEntityType type = EnumEntityType.HOSTILE_MOB;
+                        EnumEntityType method = EnumEntityType.HOSTILE_MOB;
                         Entity entity = SpawningMechanics.getMob(((CraftWorld) player.getWorld()).getHandle(), tier, monsEnum);
 
                         int level = Utils.getRandomFromTier(tier, lvlRange);
@@ -159,7 +159,7 @@ public class CommandMonSpawn extends BasicCommand {
                         String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
                         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
 
-                        entity.setCustomName(lvl + API.getTierColor(tier) + customName);
+                        entity.setCustomName(lvl + GameAPI.getTierColor(tier) + customName);
 
                         Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3), player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

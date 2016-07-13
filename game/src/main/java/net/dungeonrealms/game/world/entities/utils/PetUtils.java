@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.world.entities.utils;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.pets.*;
@@ -208,7 +208,7 @@ public class PetUtils implements GenericMechanic{
             return;
         }
         World world = ((CraftWorld) player.getWorld()).getHandle();
-        if (!API.isStringPet(petType)) {
+        if (!GameAPI.isStringPet(petType)) {
             player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [PetType]");
             return;
         }

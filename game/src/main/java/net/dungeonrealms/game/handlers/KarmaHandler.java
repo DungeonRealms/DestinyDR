@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.handlers;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -131,7 +131,7 @@ public class KarmaHandler implements GenericMechanic {
     /**
      * Handles players logging in,
      * sets their alignment based on
-     * their mongo document.
+     * their database document.
      *
      * @param player
      * @since 1.0
@@ -145,7 +145,7 @@ public class KarmaHandler implements GenericMechanic {
 
     /**
      * Handles players logging out,
-     * updates mongo document with
+     * updates database document with
      * their alignment.
      *
      * @param player
@@ -191,7 +191,7 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerAlignment(Player player, EnumPlayerAlignments alignmentTo, EnumPlayerAlignments alignmentFrom, boolean login) {
-        GamePlayer gamePlayer = API.getGamePlayer(player);
+        GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
         if (gamePlayer == null) {
             return;
         }
@@ -312,14 +312,14 @@ public class KarmaHandler implements GenericMechanic {
                 break;
         }
         Player killerPlayer;
-        if (API.isPlayer(leKiller)) {
+        if (GameAPI.isPlayer(leKiller)) {
             killerPlayer = (Player) leKiller;
-            GamePlayer deathGP = API.getGamePlayer(player);
+            GamePlayer deathGP = GameAPI.getGamePlayer(player);
             if (deathGP != null) {
                 deathGP.getPlayerStatistics().setDeaths(deathGP.getPlayerStatistics().getDeaths() + 1);
             }
             EnumPlayerAlignments alignmentPlayer = getPlayerRawAlignment(player);
-            GamePlayer killerGP = API.getGamePlayer(killerPlayer);
+            GamePlayer killerGP = GameAPI.getGamePlayer(killerPlayer);
             if (killerGP != null) {
                 if (killerGP.hasNewbieProtection()) {
                     ProtectionHandler.getInstance().removePlayerProtection(killerPlayer);
@@ -363,19 +363,19 @@ public class KarmaHandler implements GenericMechanic {
             PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.NONE);
             return;
         }
-        if (API.isInSafeRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.LAWFUL)) {
+        if (GameAPI.isInSafeRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.LAWFUL)) {
             player.sendMessage(ChatColor.GREEN + "                " + ChatColor.BOLD + "*** SAFE ZONE (DMG-OFF) ***");
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.25F, 0.30F);
             PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.LAWFUL);
             return;
         }
-        if (!API.isInSafeRegion(player.getLocation()) && API.isNonPvPRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.NEUTRAL)) {
+        if (!GameAPI.isInSafeRegion(player.getLocation()) && GameAPI.isNonPvPRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.NEUTRAL)) {
             player.sendMessage(ChatColor.YELLOW + "           " + ChatColor.BOLD + "*** WILDERNESS (MOBS-ON, PVP-OFF) ***");
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.25F, 0.30F);
             PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.NEUTRAL);
             return;
         }
-        if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.CHAOTIC)) {
+        if (!GameAPI.isInSafeRegion(player.getLocation()) && !GameAPI.isNonPvPRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.CHAOTIC)) {
             player.sendMessage(ChatColor.RED + "                " + ChatColor.BOLD + "*** CHAOTIC ZONE (PVP-ON) ***");
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.25F, 0.30F);
             PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.CHAOTIC);

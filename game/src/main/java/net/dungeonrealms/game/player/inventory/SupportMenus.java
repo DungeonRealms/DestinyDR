@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.player.inventory;
 
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
@@ -64,7 +64,7 @@ public class SupportMenus {
 
             Inventory inv = Bukkit.createInventory(null, 45, "Support Tools");
 
-            item = editItem(playerName, ChatColor.GREEN + playerName + ChatColor.WHITE + " (" + uuid + ")", new String[]{
+            item = editItem(playerName, ChatColor.GREEN + playerName + ChatColor.WHITE + " (" + uuid.toString() + ")", new String[]{
                     ChatColor.WHITE + "Rank: " + Rank.rankFromPrefix(playerRank),
                     ChatColor.WHITE + "Level: " + DatabaseAPI.getInstance().getData(EnumData.LEVEL, uuid),
                     ChatColor.WHITE + "Experience: " + DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, uuid),
@@ -72,7 +72,7 @@ public class SupportMenus {
                     ChatColor.WHITE + "Bank Balance: " + DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid),
                     ChatColor.WHITE + "Hearthstone Location: " + Utils.ucfirst((String) DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid)).replace("_", " "),
                     ChatColor.WHITE + "Alignment: " + Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid).toString()),
-                    ChatColor.WHITE + "Last Logout: " + Utils.formatTimeAgo((int) (System.currentTimeMillis() / 1000) - Integer.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid).toString())) + " ago",
+                    //ChatColor.WHITE + "Last Logout: " + Utils.formatTimeAgo((int) (System.currentTimeMillis() / 1000) - Integer.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid).toString())) + " ago", @todo: Fix a bug with this.
                     ChatColor.WHITE + "Join Date: " + Utils.getDate((Long) DatabaseAPI.getInstance().getData(EnumData.FIRST_LOGIN, uuid) * 1000)
             });
             inv.setItem(4, applySupportItemTags(item, playerName, uuid));

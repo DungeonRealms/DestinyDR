@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.miscellaneous;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.profession.Fishing;
@@ -37,40 +37,40 @@ public class TradeCalculator {
             }
 
             if (is.getType() == Material.POTION) {
-                if (API.isItemTradeable(is)) {
+                if (GameAPI.isItemTradeable(is)) {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
                     if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("itemTier")) {
                         switch (nmsStack.getTag().getInt("itemTier")) {
                             case 1:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                                     t1_pot += is.getAmount();
                                 } else {
                                     t1_Splash_pot += is.getAmount();
                                 }
                                 break;
                             case 2:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                                     t2_pot += is.getAmount();
                                 } else {
                                     t2_Splash_pot += is.getAmount();
                                 }
                                 break;
                             case 3:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                                     t3_pot += is.getAmount();
                                 } else {
                                     t3_Splash_pot += is.getAmount();
                                 }
                                 break;
                             case 4:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                                     t4_pot += is.getAmount();
                                 } else {
                                     t4_Splash_pot += is.getAmount();
                                 }
                                 break;
                             case 5:
-                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
                                     t5_pot += is.getAmount();
                                 } else {
                                     t5_Splash_pot += is.getAmount();
@@ -138,7 +138,7 @@ public class TradeCalculator {
             if (is == null || is.getType() == Material.AIR) {
                 continue;
             }
-            if (!API.isItemTradeable(is)) {
+            if (!GameAPI.isItemTradeable(is)) {
                 continue;
             }
             int tier = RepairAPI.getArmorOrWeaponTier(is);
@@ -146,8 +146,8 @@ public class TradeCalculator {
                 int payout = 0;
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
                 NBTTagCompound tag = nmsItem.getTag();
-                if (tag.hasKey("type") && API.isItemTradeable(is)) {
-                    if (API.isArmor(is)) {
+                if (tag.hasKey("method") && GameAPI.isItemTradeable(is)) {
+                    if (GameAPI.isArmor(is)) {
                         switch (tag.getInt("itemType")) {
                             case 5:
                                 payout = 1;
@@ -162,7 +162,7 @@ public class TradeCalculator {
                                 payout = 1;
                                 break;
                         }
-                    } else if (API.isWeapon(is)) {
+                    } else if (GameAPI.isWeapon(is)) {
                         payout = 2;
                     }
                     switch (tier) {
@@ -195,7 +195,7 @@ public class TradeCalculator {
                 }
             }
             if (is.getType() == Material.MAGMA_CREAM) {
-                if (API.isOrb(is)) {
+                if (GameAPI.isOrb(is)) {
                     int orbCount = is.getAmount();
                     int payout = 20 * orbCount;
                     while (payout > 64) {

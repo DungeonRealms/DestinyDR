@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.items.repairing;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.profession.Fishing;
@@ -22,7 +22,7 @@ public class RepairAPI {
 
     public static int getItemRepairCost(ItemStack i) {
         double repair_cost = 0;
-        if (API.isArmor(i)) { // It's a piece of armor.
+        if (GameAPI.isArmor(i)) { // It's a piece of armor.
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
             if (!nms.hasTag() && nms.getTag() != null && !nms.getTag().hasKey("itemTier")) return -1;
             int item_tier = nms.getTag().getInt("itemTier");
@@ -70,7 +70,7 @@ public class RepairAPI {
 
             repair_cost = repair_cost * global_multiplier;
 
-        } else if (API.isWeapon(i)) { // It's a weapon.
+        } else if (GameAPI.isWeapon(i)) { // It's a weapon.
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
             if (!nms.hasTag() && nms.getTag() != null && !nms.getTag().hasKey("itemTier")) return -1;
             int item_tier = nms.getTag().getInt("itemTier");
@@ -201,11 +201,11 @@ public class RepairAPI {
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0) return 0;
         double percentDurability = (Math.min(1, (itemStack.getType().getMaxDurability() - itemStack.getDurability())) / Math.min(1, itemStack.getType().getMaxDurability()));
-        if (tag.getString("type").equalsIgnoreCase("weapon")) {
+        if (tag.getString("method").equalsIgnoreCase("weapon")) {
             //Get the full durability, not sure why its lowballing.
             return Math.round(percentDurability * (1500 / 15));
         }
-        if (tag.getString("type").equalsIgnoreCase("armor")) {
+        if (tag.getString("method").equalsIgnoreCase("armor")) {
             return Math.round(percentDurability * (1500 / 15));
         }
         return 0;
@@ -261,11 +261,11 @@ public class RepairAPI {
                 return 0;
             }
             double durabilityPercent = 0;
-            if (tag.getString("type").equalsIgnoreCase("weapon")) {
+            if (tag.getString("method").equalsIgnoreCase("weapon")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
-            } else if (tag.getString("type").equalsIgnoreCase("armor")) {
+            } else if (tag.getString("method").equalsIgnoreCase("armor")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
@@ -285,12 +285,12 @@ public class RepairAPI {
             if (tag == null) return 0;
             if (tag.getInt("itemTier") == 0) return 0;
             double durabilityPercent = getItemDurabilityValue(itemStack);
-            if (tag.getString("type").equalsIgnoreCase("weapon")) {
+            if (tag.getString("method").equalsIgnoreCase("weapon")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
             }
-            if (tag.getString("type").equalsIgnoreCase("armor")) {
+            if (tag.getString("method").equalsIgnoreCase("armor")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
@@ -317,7 +317,7 @@ public class RepairAPI {
             return false;
         }
         NBTTagCompound tag = nmsItem.getTag();
-        return tag != null && tag.getString("type").equalsIgnoreCase("scrap");
+        return tag != null && tag.getString("method").equalsIgnoreCase("scrap");
     }
 
     /**
@@ -336,7 +336,7 @@ public class RepairAPI {
             return 0;
         }
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag != null && tag.getString("type").equalsIgnoreCase("scrap")) {
+        if (tag != null && tag.getString("method").equalsIgnoreCase("scrap")) {
             if (tag.getInt("itemTier") != 0) {
                 return tag.getInt("itemTier");
             }
@@ -381,10 +381,10 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return false;
         if (tag.getInt("itemTier") == 0) return false;
-        if (tag.getString("type").equalsIgnoreCase("weapon")) {
+        if (tag.getString("method").equalsIgnoreCase("weapon")) {
             return true;
         }
-        return tag.getString("type").equalsIgnoreCase("armor");
+        return tag.getString("method").equalsIgnoreCase("armor");
     }
 
     /**
@@ -407,7 +407,7 @@ public class RepairAPI {
                 return true;
         }
         if (tag.getInt("itemTier") == 0) return false;
-        if (tag.getString("type").equalsIgnoreCase("weapon") || tag.getString("type").equalsIgnoreCase("armor")) {
+        if (tag.getString("method").equalsIgnoreCase("weapon") || tag.getString("method").equalsIgnoreCase("armor")) {
             if (getCustomDurability(itemStack) < 1500) {
                 return true;
             }
@@ -481,7 +481,7 @@ public class RepairAPI {
         if (tag == null) return;
         if (tag.getInt("itemTier") == 0) return;
         double newItemDurability = (getCustomDurability(itemStack) - amountToSubtract);
-        switch (tag.getString("type")) {
+        switch (tag.getString("method")) {
             case "weapon":
                 if (newItemDurability <= 150D && newItemDurability >= 140D) {
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);

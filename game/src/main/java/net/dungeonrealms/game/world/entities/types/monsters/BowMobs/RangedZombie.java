@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.BowMobs;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -58,7 +58,7 @@ public class RangedZombie extends DRZombie implements IRangedEntity {
     }
 
     private ItemStack getTierWeapon(int tier) {
-        ItemStack item = new ItemGenerator().setType(Item.ItemType.BOW).setRarity(API.getItemRarity(false)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
+        ItemStack item = new ItemGenerator().setType(Item.ItemType.BOW).setRarity(GameAPI.getItemRarity(false)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.spawning;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -503,7 +503,7 @@ public class SpawningMechanics implements GenericMechanic {
         if (enumMonster.elementalChance > 0) {
             if (new Random().nextInt(100) < enumMonster.elementalChance) {
                 String element = enumMonster.getRandomElement();
-                API.setMobElement(ent, element);
+                GameAPI.setMobElement(ent, element);
             }
         }
     }

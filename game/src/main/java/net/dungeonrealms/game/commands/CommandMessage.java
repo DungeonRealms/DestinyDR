@@ -3,12 +3,12 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.FriendHandler;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.network.NetworkAPI;
-import net.dungeonrealms.game.player.rank.Rank;
-import net.dungeonrealms.game.punish.PunishUtils;
+import net.dungeonrealms.game.punishment.PunishAPI;
+import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -40,8 +40,8 @@ public class CommandMessage extends BasicCommand {
 
         Player player = (Player) sender;
 
-        if (PunishUtils.isMuted(player.getUniqueId())) {
-            player.sendMessage(PunishUtils.getMutedMessage(player.getUniqueId()));
+        if (PunishAPI.isMuted(player.getUniqueId())) {
+            player.sendMessage(PunishAPI.getMutedMessage(player.getUniqueId()));
             return true;
         }
 
@@ -72,7 +72,7 @@ public class CommandMessage extends BasicCommand {
                 theTargetPlayer.playSound(theTargetPlayer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
             });
         } else {
-            NetworkAPI.getInstance().sendPlayerMessage(playerName, net.md_5.bungee.api.ChatColor.GRAY.toString() + net.md_5.bungee.api.ChatColor.BOLD + "FROM: " + net.md_5.bungee.api.ChatColor.AQUA + "[" + DungeonRealms.getInstance().shardid + "] " + player.getName() + net.md_5.bungee.api.ChatColor.GRAY + ": " + net.md_5.bungee.api.ChatColor.WHITE + finalMessage);
+            BungeeUtils.sendPlayerMessage(playerName, net.md_5.bungee.api.ChatColor.GRAY.toString() + net.md_5.bungee.api.ChatColor.BOLD + "FROM: " + net.md_5.bungee.api.ChatColor.AQUA + "[" + DungeonRealms.getInstance().shardid + "] " + player.getName() + net.md_5.bungee.api.ChatColor.GRAY + ": " + net.md_5.bungee.api.ChatColor.WHITE + finalMessage);
         }
         return true;
     }

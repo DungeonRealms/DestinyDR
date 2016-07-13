@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.handlers;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -159,12 +159,12 @@ public class ScoreboardHandler implements GenericMechanic {
     }
 
     public void updateCurrentPlayerLevel(Player toSetFor, Scoreboard scoreboard) {
-       GamePlayer gamePlayer = API.getGamePlayer(toSetFor);
+       GamePlayer gamePlayer = GameAPI.getGamePlayer(toSetFor);
 
         int level = gamePlayer.getStats().getLevel();
 
         Team team = getPlayerTeam(scoreboard, toSetFor);
-        ChatColor chatColor = API.getGamePlayer(toSetFor).getPlayerAlignment().getAlignmentColor();
+        ChatColor chatColor = GameAPI.getGamePlayer(toSetFor).getPlayerAlignment().getAlignmentColor();
         if (Rank.isGM(toSetFor)) {
             chatColor = ChatColor.AQUA;
         }
@@ -189,14 +189,14 @@ public class ScoreboardHandler implements GenericMechanic {
 
     public void setCurrentPlayerLevels(Scoreboard scoreboard) {
         for (Player player1 : Bukkit.getOnlinePlayers()) {
-            GamePlayer gamePlayer = API.getGamePlayer(player1);
+            GamePlayer gamePlayer = GameAPI.getGamePlayer(player1);
             if (gamePlayer == null) {
                 continue;
             }
             int level = gamePlayer.getStats().getLevel();
 
             Team team = getPlayerTeam(scoreboard, player1);
-            ChatColor chatColor = API.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor();
+            ChatColor chatColor = GameAPI.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor();
             if (Rank.isGM(player1)) {
                 chatColor = ChatColor.AQUA;
             }

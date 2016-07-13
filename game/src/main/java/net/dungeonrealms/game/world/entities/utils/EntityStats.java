@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.entities.utils;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -161,12 +161,12 @@ public class EntityStats {
                     weaponType = Item.ItemType.getRandomWeapon();
                     break;
             }
-            Item.ItemRarity rarity = API.getItemRarity(true);
+            Item.ItemRarity rarity = GameAPI.getItemRarity(true);
             if (isDungeon) {
                 rarity = Item.ItemRarity.UNIQUE;
             }
             ItemStack[] armor = new ItemGenerator().setRarity(rarity).setTier(Item.ItemTier.getByTier(tier)).getArmorSet();
-            ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(API.getItemRarity(true)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
+            ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(GameAPI.getItemRarity(true)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
             for (ItemStack i : armor) {
                 if (i == null || i.getType() == Material.AIR) continue;
                 EnchantmentAPI.addGlow(i);

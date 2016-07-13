@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
 import lombok.Getter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -58,7 +58,7 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
     public abstract EnumMonster getEnum();
 
     public void setArmor(int tier) {
-        org.bukkit.inventory.ItemStack[] armor = API.getTierArmor(tier);
+        org.bukkit.inventory.ItemStack[] armor = GameAPI.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         EntityInsentient entityInsentient = this;
         LivingEntity livingEntity = (LivingEntity) entityInsentient.getBukkitEntity();

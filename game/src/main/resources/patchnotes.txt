@@ -1,6 +1,6 @@
 Patch <build>
 
 Bug Fixes
-- Fixed enchanting glitch.
-- Fixed bank upgrade glitch.
-- Prevent negative damage.
+- Fixes for lower tier weapons not receiving damage on enchants.
+- Dungeon Boss Invulnerability fixed.
+- Fixed block clipping issue while mounting.

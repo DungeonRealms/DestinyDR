@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.menus.player.ShardSelector;
-import net.dungeonrealms.game.network.NetworkAPI;
-import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.player.menu.ShardSwitcher;
+import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -28,17 +28,17 @@ public class CommandShard extends BasicCommand {
         Player player = (Player) sender;
 
         if (args.length == 0 || !Rank.isGM(player)) {
-            new ShardSelector(player).open(player);
+            new ShardSwitcher(player).open(player);
             return true;
         }
 
 
         if (args.length > 0) {
-            API.handleLogout(player.getUniqueId());
+            GameAPI.handleLogout(player.getUniqueId());
             player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> NetworkAPI.getInstance().sendToServer(player.getName(), args[0]), 10);
+                    () -> BungeeUtils.sendToServer(player.getName(), args[0]), 10);
         }
 
         return true;

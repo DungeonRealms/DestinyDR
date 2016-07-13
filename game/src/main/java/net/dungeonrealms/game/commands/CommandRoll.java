@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.ChatColor;
@@ -42,7 +42,7 @@ public class CommandRoll extends BasicCommand {
 
             String playerName = GameChat.getPreMessage(player, false, "local");
 
-            API.getNearbyPlayers(player.getLocation(), 20).stream().forEach(player1 -> player1.sendMessage(playerName.substring(0, playerName.length() - 4) +
+            GameAPI.getNearbyPlayers(player.getLocation(), 20).stream().forEach(player1 -> player1.sendMessage(playerName.substring(0, playerName.length() - 4) +
                     ChatColor.GRAY + " has rolled a " + ChatColor.UNDERLINE + ChatColor.BOLD + roll + ChatColor.GRAY + " out of " + ChatColor.UNDERLINE + ChatColor.BOLD + max + ChatColor.GRAY + "."));
         } catch (Exception ex) {
             sender.sendMessage(ChatColor.RED + "Incorrect syntax. /roll <1-10000>");

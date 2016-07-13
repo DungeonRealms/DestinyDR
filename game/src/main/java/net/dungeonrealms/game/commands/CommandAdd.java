@@ -1,19 +1,19 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
@@ -69,10 +69,10 @@ public class CommandAdd extends BasicCommand {
 //                    player.sendMessage("YOUR REALM EXIST? " + String.valueOf(RealmInstance.getInstance().doesRemoteRealmExist(player.getUniqueId().toString())));
                     break;
                 case "uuid":
-                    player.sendMessage(Bukkit.getPlayer(API.getUUIDFromName(player.getName())).getDisplayName());
+                    player.sendMessage(Bukkit.getPlayer(GameAPI.getUUIDFromName(player.getName())).getDisplayName());
                     break;
                 case "name":
-                    player.sendMessage(API.getNameFromUUID(player.getUniqueId()));
+                    player.sendMessage(GameAPI.getNameFromUUID(player.getUniqueId()));
                     break;
                 case "uploadrealm":
 //                    new RealmManager().uploadRealm(player.getUniqueId());
@@ -103,7 +103,7 @@ public class CommandAdd extends BasicCommand {
                                     new ItemGenerator().setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
                         }
                     } catch (NullPointerException ex) {
-                        player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
+                        player.sendMessage("Format: /ad weapon [tier] [method] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
                 case "armor":
@@ -128,7 +128,7 @@ public class CommandAdd extends BasicCommand {
                                     new ItemGenerator().setType(Item.ItemType.getRandomArmor()).generateItem().getItem());
                         }
                     } catch (NullPointerException ex) {
-                        player.sendMessage("Format: /ad armor [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
+                        player.sendMessage("Format: /ad armor [tier] [method] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
                 case "customitem":
@@ -142,7 +142,7 @@ public class CommandAdd extends BasicCommand {
                 case "bank":
                     net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(new ItemStack(Material.ENDER_CHEST));
                     NBTTagCompound Banktag = nmsBank.getTag() == null ? new NBTTagCompound() : nmsBank.getTag();
-                    Banktag.set("type", new NBTTagString("bank"));
+                    Banktag.set("method", new NBTTagString("bank"));
                     nmsBank.setTag(Banktag);
                     player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
                     break;
@@ -263,10 +263,10 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(BankMechanics.getInstance().createGemPouch(tier, 0));
                     break;
                 case "votemessage":
-                    if (API.getGamePlayer(player) == null) {
+                    if (GameAPI.getGamePlayer(player) == null) {
                         break;
                     }
-                    GamePlayer gamePlayer = API.getGamePlayer(player);
+                    GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
                     int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
                     int expToGive = expToLevel / 20;
                     expToGive += 100;
@@ -304,7 +304,7 @@ public class CommandAdd extends BasicCommand {
                             ChatColor.GRAY + "Display Item"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 7000).build());
                     break;
                 case "untradable":
-                    player.getInventory().addItem(API.makeItemUntradeable(new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
+                    player.getInventory().addItem(GameAPI.makeItemUntradeable(new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
                             ChatColor.RED + "Speed 140%",
                             ChatColor.RED + "Jump 110%",
                             ChatColor.GRAY.toString() + ChatColor.ITALIC + "A horse fit for a humble squire.",

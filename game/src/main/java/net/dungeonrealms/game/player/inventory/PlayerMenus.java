@@ -1,7 +1,10 @@
 package net.dungeonrealms.game.player.inventory;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.Utils;
@@ -9,9 +12,6 @@ import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
@@ -736,7 +736,7 @@ public class PlayerMenus {
         Inventory inv = Bukkit.createInventory(null, 9, "Game Master Toggles");
 
         // Invisible
-        isToggled = API._hiddenPlayers.contains(player);
+        isToggled = GameAPI._hiddenPlayers.contains(player);
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Invisible Mode", new String[]{
                 ChatColor.GRAY + "Toggling this will make you invisible to players and mobs.",
                 ChatColor.GRAY + "Display Item"}).build());

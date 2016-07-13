@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.mechanics;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.EnumParticle;
 import net.minecraft.server.v1_9_R2.Packet;
@@ -123,9 +123,9 @@ public class ParticleAPI {
             Utils.log.info("Something went wrong creating a packet");
         }
 
-        for (Player player : API.getNearbyPlayers(location, 25)) {
+        for (Player player : GameAPI.getNearbyPlayers(location, 25)) {
             try {
-                if (API.isPlayer(player)) {
+                if (GameAPI.isPlayer(player)) {
                     sendPacketToPlayer(player.getUniqueId(), packet);
                 }
             } catch (Exception e) {

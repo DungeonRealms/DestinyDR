@@ -1,9 +1,13 @@
 package net.dungeonrealms.game.listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
@@ -15,9 +19,6 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -25,11 +26,10 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.punish.PunishUtils;
+import net.dungeonrealms.game.punishment.PunishAPI;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
@@ -84,7 +84,7 @@ public class MainListener implements Listener {
 
             String rank = Rank.getInstance().getRank(player.getUniqueId());
 
-            GamePlayer gamePlayer = API.getGamePlayer(player);
+            GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
             int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
             int expToGive = expToLevel / 20;
             expToGive += 100;
@@ -96,7 +96,7 @@ public class MainListener implements Listener {
                 case "default":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                    if (API.getGamePlayer(player) == null) {
+                    if (GameAPI.getGamePlayer(player) == null) {
                         return;
                     }
                     gamePlayer.addExperience(expToGive, false, true);
@@ -109,7 +109,7 @@ public class MainListener implements Listener {
                 case "sub":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
-                    if (API.getGamePlayer(player) == null) {
+                    if (GameAPI.getGamePlayer(player) == null) {
                         return;
                     }
                     final JSONMessage normal2 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
@@ -122,7 +122,7 @@ public class MainListener implements Listener {
                 case "sub++":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
-                    if (API.getGamePlayer(player) == null) {
+                    if (GameAPI.getGamePlayer(player) == null) {
                         return;
                     }
                     gamePlayer.addExperience(expToGive, false, true);
@@ -135,7 +135,7 @@ public class MainListener implements Listener {
                 default:
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                    if (API.getGamePlayer(player) == null) {
+                    if (GameAPI.getGamePlayer(player) == null) {
                         return;
                     }
                     gamePlayer.addExperience(expToGive, false, true);
@@ -173,15 +173,15 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
-        if (API.getGamePlayer(event.getPlayer()) == null) { // server is restarting
+        if (GameAPI.getGamePlayer(event.getPlayer()) == null) { // server is restarting
             event.setCancelled(true);
             return;
         }
 
         Chat.getInstance().doMessageChatListener(event);
 
-        if (PunishUtils.isMuted(event.getPlayer().getUniqueId()) && !event.isCancelled()) {
-            event.getPlayer().sendMessage(PunishUtils.getMutedMessage(event.getPlayer().getUniqueId()));
+        if (PunishAPI.isMuted(event.getPlayer().getUniqueId()) && !event.isCancelled()) {
+            event.getPlayer().sendMessage(PunishAPI.getMutedMessage(event.getPlayer().getUniqueId()));
             event.setCancelled(true);
             return;
         }
@@ -192,7 +192,7 @@ public class MainListener implements Listener {
     }
 
     /**
-     * This event is used for the Database.
+     * This event is used for the DatabaseDriver.
      *
      * @param event the event.
      * @since 1.0
@@ -206,11 +206,11 @@ public class MainListener implements Listener {
 
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
 
-        if (PunishUtils.isBanned(event.getUniqueId())) {
+        if (PunishAPI.isBanned(event.getUniqueId())) {
             String name = DatabaseAPI.getInstance().getOfflineName(event.getUniqueId());
-            String bannedMessage = PunishUtils.getBannedMessage(event.getUniqueId());
+            String bannedMessage = PunishAPI.getBannedMessage(event.getUniqueId());
             event.setLoginResult(Result.KICK_BANNED);
-            PunishUtils.kick(name, bannedMessage);
+            PunishAPI.kick(name, bannedMessage, doBefore -> GameAPI.handleLogout(event.getUniqueId()));
             event.setKickMessage(bannedMessage);
         }
     }
@@ -247,7 +247,7 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
         CombatLog.checkCombatLog(player.getUniqueId());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 20L * 3);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> GameAPI.handleLogin(player.getUniqueId()), 20L * 3);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
                 if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, player.getUniqueId()).toString()))) {
@@ -263,11 +263,11 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDropEvent(PlayerDropItemEvent event) {
         Player p = event.getPlayer();
-        if (!API.getGamePlayer(p).isAbleToDrop()) {
+        if (!GameAPI.getGamePlayer(p).isAbleToDrop()) {
             event.setCancelled(true);
         }
     }
-    
+
     /**
      * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
      * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
@@ -291,15 +291,15 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMountDismount(VehicleExitEvent event) {
-        if (!(API.isPlayer(event.getExited()))) {
+        if (!(GameAPI.isPlayer(event.getExited()))) {
             if (event.getExited() instanceof EntityArmorStand) {
                 event.getExited().remove();
             }
             return;
         }
         if (EntityAPI.hasMountOut(event.getExited().getUniqueId())) {
-            if (event.getVehicle().hasMetadata("type")) {
-                String metaValue = event.getVehicle().getMetadata("type").get(0).asString();
+            if (event.getVehicle().hasMetadata("method")) {
+                String metaValue = event.getVehicle().getMetadata("method").get(0).asString();
                 if (metaValue.equalsIgnoreCase("mount")) {
                     event.getVehicle().remove();
                     EntityAPI.removePlayerMountList(event.getExited().getUniqueId());
@@ -323,7 +323,7 @@ public class MainListener implements Listener {
             if (DuelingMechanics.isDueling(player.getUniqueId())) {
                 DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
             }
-            API.handleLogout(player.getUniqueId());
+            GameAPI.handleLogout(player.getUniqueId());
 
             if (EntityAPI.hasPetOut(player.getUniqueId())) {
                 net.minecraft.server.v1_9_R2.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
@@ -389,7 +389,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (!API.isPlayer(event.getPlayer()))
+        if (!GameAPI.isPlayer(event.getPlayer()))
             return;
 
         if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
@@ -437,30 +437,31 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerMoveWhileChaotic(PlayerMoveEvent event) {
-        if (!API.isPlayer(event.getPlayer())) {
+        if (!GameAPI.isPlayer(event.getPlayer())) {
             return;
         }
         Player player = event.getPlayer();
-        if (API.getGamePlayer(player) == null) {
+        if (GameAPI.getGamePlayer(player) == null) {
             return;
         }
-        if (API.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+        if (GameAPI.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             return;
         }
         if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
             return;
         }
-        if (API.isInSafeRegion(event.getFrom()) || API.isNonPvPRegion(event.getFrom())) {
+        if (GameAPI.isInSafeRegion(event.getFrom()) || GameAPI.isNonPvPRegion(event.getFrom())) {
             player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
             player.sendMessage(ChatColor.RED + "The guards have kicked you of of this area due to your alignment");
             return;
         }
-        if (API.isInSafeRegion(event.getTo()) || API.isNonPvPRegion(event.getTo())) {
+        if (GameAPI.isInSafeRegion(event.getTo()) || GameAPI.isNonPvPRegion(event.getTo())) {
             event.setCancelled(true);
             player.teleport(new Location(player.getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), player.getLocation().getPitch() * -1, player.getLocation().getPitch() * -1));
             player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
         }
     }
+
     /**
      * Checks for player interacting with NPC Players, opens an inventory if
      * they have one.
@@ -472,7 +473,7 @@ public class MainListener implements Listener {
     public void playerInteractWithNPC(PlayerInteractEntityEvent event) {
         if (!(event.getRightClicked() instanceof Player))
             return;
-        if (API.isPlayer(event.getRightClicked()))
+        if (GameAPI.isPlayer(event.getRightClicked()))
             return;
 
         String npcNameStripped = ChatColor.stripColor(event.getRightClicked().getName());
@@ -525,7 +526,7 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
-            if (API.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {
+            if (GameAPI.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {
                 event.getPlayer().sendMessage("");
                 event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Are you ready to start ye adventure " + event.getPlayer().getName() + "?"); //+ " " + ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "Y " + ChatColor.GRAY.toString() + "/" + ChatColor.RED.toString() + ChatColor.BOLD.toString() + " N");
                 event.getPlayer().sendMessage(ChatColor.GRAY + "Type either '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' or '" + ChatColor.RED + "N" + ChatColor.GRAY + "' -- Yes or No; Once you leave this island you can never come back, your epic adventure in the lands of Andalucia will begin!");
@@ -618,7 +619,7 @@ public class MainListener implements Listener {
 
                     int exp = Fishing.getFishEXP(Fishing.getFishTier(fish));
                     Fishing.gainExp(pl.getEquipment().getItemInMainHand(), pl, exp);
-                    GamePlayer gamePlayer = API.getGamePlayer(pl);
+                    GamePlayer gamePlayer = GameAPI.getGamePlayer(pl);
                     if (gamePlayer == null) return;
                     gamePlayer.addExperience(exp / 8, false, true);
                     gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 1);
@@ -778,7 +779,7 @@ public class MainListener implements Listener {
             return;
         }
         Player player = (Player) event.getPlayer();
-        if (!API.isPlayer(player)) {
+        if (!GameAPI.isPlayer(player)) {
             return;
         }
         int slot_Variable = -1;
@@ -816,7 +817,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
         if (e.getCause() == DamageCause.PROJECTILE) return;
-        if (API.isPlayer(e.getEntity())) return;
+        if (GameAPI.isPlayer(e.getEntity())) return;
         if (e.getEntity() instanceof LivingEntity) {
             LivingEntity ent = (LivingEntity) e.getEntity();
             ent.setMaximumNoDamageTicks(0);
@@ -924,8 +925,8 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void playerAttemptTrade(PlayerDropItemEvent event) {
         if (event.isCancelled()) return;
-        if (!API.isItemDroppable(event.getItemDrop().getItemStack())) return;
-        if (!API.isItemTradeable(event.getItemDrop().getItemStack())) return;
+        if (!GameAPI.isItemDroppable(event.getItemDrop().getItemStack())) return;
+        if (!GameAPI.isItemTradeable(event.getItemDrop().getItemStack())) return;
 
         Player pl = event.getPlayer();
 
@@ -1093,7 +1094,7 @@ public class MainListener implements Listener {
         if (event.getTarget() != null) {
             if (!(event.getTarget() instanceof Player)) {
                 event.setCancelled(true);
-            } else if (API.isInSafeRegion(event.getTarget().getLocation())) {
+            } else if (GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
                 event.setCancelled(true);
             }
         }
@@ -1113,7 +1114,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void characterJournalPartyInvite(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            if (!API.isPlayer(event.getEntity())) return;
+            if (!GameAPI.isPlayer(event.getEntity())) return;
             if (((Player) event.getDamager()).getEquipment().getItemInMainHand() != null) {
                 ItemStack stack = ((Player) event.getDamager()).getEquipment().getItemInMainHand();
                 if (stack.getType() == Material.WRITTEN_BOOK) {

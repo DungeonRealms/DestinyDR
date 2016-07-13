@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.commands.punish;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.player.rank.Rank;
-import net.dungeonrealms.game.punish.PunishUtils;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.punishment.PunishAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -41,12 +41,12 @@ public class CommandUnmute extends BasicCommand {
 
         UUID p_uuid = p.getUniqueId();
 
-        if (!PunishUtils.isMuted(p_uuid)) {
+        if (!PunishAPI.isMuted(p_uuid)) {
             sender.sendMessage(ChatColor.RED + p_name + " is not muted.");
             return true;
         }
 
-        PunishUtils.unmute(p_uuid);
+        PunishAPI.unmute(p_uuid);
         sender.sendMessage(ChatColor.RED.toString() + "You have unmuted " + ChatColor.BOLD + p_name);
         return false;
     }

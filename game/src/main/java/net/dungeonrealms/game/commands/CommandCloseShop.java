@@ -2,14 +2,13 @@ package net.dungeonrealms.game.commands;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -67,7 +66,7 @@ public class CommandCloseShop extends BasicCommand {
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                API.updatePlayerData(uuid);
+                GameAPI.updatePlayerData(uuid);
                 BankMechanics.getInstance().getStorage(uuid).update();
             }, 20);
         }

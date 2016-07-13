@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.entities.powermoves;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.items.DamageAPI;
@@ -55,7 +55,7 @@ public class WhirlWind extends PowerMove {
                 entity.getWorld().playEffect(entity.getLocation(), Effect.EXPLOSION_LARGE, 1, 40);
                 step++;
                 if (step == 5) {
-                    API.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(p -> {
+                    GameAPI.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(p -> {
                         org.bukkit.util.Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
                         double e_y = entity.getLocation().getY();
                         double p_y = p.getLocation().getY();

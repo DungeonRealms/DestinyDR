@@ -1,15 +1,15 @@
 package net.dungeonrealms.game.profession;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -531,7 +531,7 @@ public class Fishing implements GenericMechanic {
      */
     public static boolean isDRFishingPole(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("rod") && stack.getType() == Material.FISHING_ROD;
+        return nms.hasTag() && nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("rod") && stack.getType() == Material.FISHING_ROD;
     }
 
 //    public static HashMap<UUID, String> fishBuffs = new HashMap<>();
@@ -573,7 +573,7 @@ public class Fishing implements GenericMechanic {
         String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
                 + expBar.substring(display, expBar.length());
         int lvl = CraftItemStack.asNMSCopy(stack).getTag().getInt("level");
-        lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+        lore.set(0, ChatColor.GRAY.toString() + "Level: " + GameAPI.getTierColor(tier) + lvl);
         lore.set(1, ChatColor.GRAY.toString() + currentXP + ChatColor.GRAY + " / " + ChatColor.GRAY + maxXP);
         lore.set(2, ChatColor.GRAY + "EXP: " + newexpBar);
 
@@ -813,7 +813,7 @@ public class Fishing implements GenericMechanic {
             ItemMeta meta = rod.getItemMeta();
             List<String> lore = meta.getLore();
             String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-            lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
+            lore.set(0, ChatColor.GRAY.toString() + "Level: " + GameAPI.getTierColor(tier) + lvl);
             lore.set(1, ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
             lore.set(2, ChatColor.GRAY.toString() + "EXP: " + expBar);
             String name = "Novice Fishingrod";
@@ -982,7 +982,7 @@ public class Fishing implements GenericMechanic {
         ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishingrod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishingrod with special attributes."}).build();
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("type", "fishingenchant");
+        nms.getTag().setString("method", "fishingenchant");
         nms.getTag().setInt(enchant.name(), stat);
         return CraftItemStack.asBukkitCopy(nms);
     }
@@ -991,7 +991,7 @@ public class Fishing implements GenericMechanic {
         String statBuff = ChatColor.RED + enchant.name + " " + percent + "%";
         ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishingrod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishingrod with special attributes."}).build();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("type", "fishingenchant");
+        nms.getTag().setString("method", "fishingenchant");
         nms.getTag().setInt(enchant.name(), percent);
         return CraftItemStack.asBukkitCopy(nms);
 

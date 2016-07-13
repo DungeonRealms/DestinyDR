@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.Item;
@@ -52,7 +52,7 @@ public interface DRMonster {
             return;
         }
         Random random = new Random();
-        GamePlayer gp = API.getGamePlayer(killer);
+        GamePlayer gp = GameAPI.getGamePlayer(killer);
         boolean toggleDebug = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId());
         double gold_drop_multiplier = (gp.getRangedAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + 100.) / 100.;
         int killerItemFind = gp.getRangedAttributeVal(Item.ArmorAttributeType.ITEM_FIND)[1];
@@ -158,7 +158,7 @@ public interface DRMonster {
             toDrop.add(stack);
         }
         if (!ent.hasMetadata("elite")) {
-            ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(API.getItemRarity(false)).generateItem().getItem();
+            ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(GameAPI.getItemRarity(false)).generateItem().getItem();
             AntiCheat.getInstance().applyAntiDupe(helmet);
             toDrop.add(helmet);
         }

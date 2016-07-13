@@ -1,17 +1,17 @@
 package net.dungeonrealms.game.mechanics;
 
 import lombok.Getter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -123,8 +123,8 @@ public class DungeonManager implements GenericMechanic {
                     if (toSpawn == null) {
                         return; //WTF?? UH OH BOYS WE GOT ISSUES
                     }
-                    toSpawn.setCustomName(newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno");
-                    toSpawn.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno"));
+                    toSpawn.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + "Spawn of Inferno");
+                    toSpawn.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + "Spawn of Inferno"));
                     Location toSpawnLoc = new Location(world.getWorld(), location.getX(), location.getY() + 2, location.getZ());
                     entity.setLocation(toSpawnLoc.getX(), toSpawnLoc.getY(), toSpawnLoc.getZ(), 1, 1);
                     world.addEntity(toSpawn, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -202,7 +202,7 @@ public class DungeonManager implements GenericMechanic {
                     dungeonObject.canSpawnBoss = true;
                     Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream().forEach(player -> {
                         if (player != null) {
-                            if (API.getGamePlayer(player).isInDungeon()) {
+                            if (GameAPI.getGamePlayer(player).isInDungeon()) {
                                 player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": Do you really wish to fight me?");
                             }
                         }
@@ -219,7 +219,7 @@ public class DungeonManager implements GenericMechanic {
                     Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
-                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
                                         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
                                                 + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
                                                 + "This instance has reached it's max threshold, it will now terminate in (10) minutes.");
@@ -232,7 +232,7 @@ public class DungeonManager implements GenericMechanic {
                     Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
-                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
                                         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
                                                 + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
                                                 + "This instance has reached (90) minute marker!");
@@ -245,7 +245,7 @@ public class DungeonManager implements GenericMechanic {
                     Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
-                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
                                         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
                                                 + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
                                                 + "This instance has reached (60) minute marker!");
@@ -258,7 +258,7 @@ public class DungeonManager implements GenericMechanic {
                     Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
-                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
                                         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
                                                 + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
                                                 + "This instance has reached (30) minute marker!");
@@ -271,7 +271,7 @@ public class DungeonManager implements GenericMechanic {
                     Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
-                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
                                         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
                                                 + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
                                                 + "This instance has reached (15) minute marker!");
@@ -299,8 +299,8 @@ public class DungeonManager implements GenericMechanic {
     private void updateDungeonBoard(DungeonObject dungeonObject) {
         Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
             if (player != null) {
-                if (API.getGamePlayer(player) != null) {
-                    if (API.getGamePlayer(player).isInDungeon()) {
+                if (GameAPI.getGamePlayer(player) != null) {
+                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
                         TitleAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD
                                 + String.valueOf(dungeonObject.getTime() / 60) + "/120" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
                                 + "/" + ChatColor.RED + dungeonObject.maxAlive);
@@ -320,8 +320,8 @@ public class DungeonManager implements GenericMechanic {
         Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
             if (player != null) {
                 if (Bukkit.getPlayer(player.getUniqueId()) != null) {
-                    if (API.getGamePlayer(player) != null) {
-                        if (API.getGamePlayer(player).isInDungeon()) {
+                    if (GameAPI.getGamePlayer(player) != null) {
+                        if (GameAPI.getGamePlayer(player).isInDungeon()) {
                             DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
                             player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
                             player.teleport(Teleportation.Cyrennica);
@@ -495,7 +495,7 @@ public class DungeonManager implements GenericMechanic {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (Bukkit.getWorld(worldName) == null) return;
                 Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(player -> {
-                    if (API.getGamePlayer(player) != null && API.getGamePlayer(player).isInDungeon()) {
+                    if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isInDungeon()) {
                         switch (getType()) {
                             case BANDIT_TROVE:
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.BANDIT_TROVE);
@@ -552,8 +552,8 @@ public class DungeonManager implements GenericMechanic {
             }
 
             for (Player p : Bukkit.getWorld(worldName).getPlayers()) {
-                p.sendMessage(API.getTierColor(tier) + "You have gained " + ChatColor.UNDERLINE + shardsToGive
-                        + " Portal Shards" + API.getTierColor(tier) + " for completing this Dungeon.");
+                p.sendMessage(GameAPI.getTierColor(tier) + "You have gained " + ChatColor.UNDERLINE + shardsToGive
+                        + " Portal Shards" + GameAPI.getTierColor(tier) + " for completing this Dungeon.");
                 switch (tier) {
                     case 1:
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1,
@@ -642,7 +642,7 @@ public class DungeonManager implements GenericMechanic {
                     for (Map.Entry<Entity, Location> entry : object.toSpawn.entrySet()) {
                         Location location = entry.getValue();
                         location.setWorld(w);
-                        if (!API.getNearbyPlayers(location, 50).isEmpty()) {
+                        if (!GameAPI.getNearbyPlayers(location, 50).isEmpty()) {
                             final Entity entity = entry.getKey();
                             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -675,7 +675,7 @@ public class DungeonManager implements GenericMechanic {
                 } else {
                     player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + ">" + ChatColor.GRAY + " "
                             + "Your party has started the " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + object.getType().name().replaceAll("_", " ") + ChatColor.RESET + ChatColor.GRAY + " Dungeon.");
-                    if (API.isInSafeRegion(player.getLocation())) {
+                    if (GameAPI.isInSafeRegion(player.getLocation())) {
                         player.sendMessage(ChatColor.GRAY + "Due to your location, you can join them instantly via" + ChatColor.GREEN + ChatColor.UNDERLINE + "/djoin");
                     }
                     //Player isn't nearby so shouldn't be teleported (BUT) can still enter the dungeon at a later date.
@@ -767,7 +767,7 @@ public class DungeonManager implements GenericMechanic {
     }
 
     /**
-     * Enum type of dungeons includes, zip locations & bossNames
+     * Enum method of dungeons includes, zip locations & bossNames
      *
      * @since 1.0
      */

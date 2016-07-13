@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.handlers;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import org.bukkit.Bukkit;
@@ -99,7 +99,7 @@ public class EnergyHandler implements GenericMechanic {
 
     private void regenerateFoodInSafezones() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!API.isInSafeRegion(player.getLocation())) {
+            if (!GameAPI.isInSafeRegion(player.getLocation())) {
                 continue;
             }
             if (player.getFoodLevel() >= 20) {
@@ -118,10 +118,10 @@ public class EnergyHandler implements GenericMechanic {
      */
     private void regenerateAllPlayerEnergy() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!API.isPlayer(player)) {
+            if (!GameAPI.isPlayer(player)) {
                 continue;
             }
-            GamePlayer gp = API.getGamePlayer(player);
+            GamePlayer gp = GameAPI.getGamePlayer(player);
             if (gp == null || !gp.isAttributesLoaded()) {
                 continue; // player data not yet loaded
             }
@@ -134,7 +134,7 @@ public class EnergyHandler implements GenericMechanic {
                 continue;
             }
             // get regenAmount, 10% base energy regen (calculated here because it's hidden)
-            float regenAmount = (((float) API.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN, player)) / 100.0F) + 0.10F;
+            float regenAmount = (((float) GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN, player)) / 100.0F) + 0.10F;
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.05F;
@@ -233,7 +233,7 @@ public class EnergyHandler implements GenericMechanic {
         Player player = Bukkit.getPlayer(uuid);
         if (Rank.isGM(player)) return;
         if (player.getGameMode() == GameMode.CREATIVE) return;
-        if (API.isInSafeRegion(player.getLocation())) return;
+        if (GameAPI.isInSafeRegion(player.getLocation())) return;
         if (player.hasMetadata("last_energy_remove")) {
             if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 100) {
                 return;

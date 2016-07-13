@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
@@ -75,12 +75,12 @@ public class CommandLocalChat extends BasicCommand {
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
 
-            API.getNearbyPlayers(player.getLocation(), 75).stream().forEach(normal::sendToPlayer);
+            GameAPI.getNearbyPlayers(player.getLocation(), 75).stream().forEach(normal::sendToPlayer);
             return true;
         }
 
-        if (API.getNearbyPlayers(player.getLocation(), 75).size() >= 2) {
-            API.getNearbyPlayers(player.getLocation(), 75).stream().forEach(otherPlayer -> otherPlayer.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat));
+        if (GameAPI.getNearbyPlayers(player.getLocation(), 75).size() >= 2) {
+            GameAPI.getNearbyPlayers(player.getLocation(), 75).stream().forEach(otherPlayer -> otherPlayer.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat));
         } else {
             player.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat);
             player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");

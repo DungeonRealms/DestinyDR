@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.world.entities.utils;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTItem;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -89,12 +89,12 @@ public class MountUtils {
             return;
         }
         World world = ((CraftWorld) player.getWorld()).getHandle();
-        if (!API.isStringMount(mountType)) {
+        if (!GameAPI.isStringMount(mountType)) {
             player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [MountType]");
             return;
         }
         int horseType = 0;
-        if (API.isStringMountSkin(mountSkin)) {
+        if (GameAPI.isStringMountSkin(mountSkin)) {
             switch (EnumMountSkins.getByName(mountSkin.toUpperCase())) {
                 case SKELETON_HORSE:
                     horseType = 4;

@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.spawning;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.Fishing;
@@ -50,16 +50,16 @@ public class BuffManager implements GenericMechanic {
     private void spawnSomeBuffs() {
         int MAX_BUFFS = (Bukkit.getOnlinePlayers().size() / 4) + 1;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!API.isPlayer(player)) {
+            if (!GameAPI.isPlayer(player)) {
                 continue;
             }
-            if (API.isInSafeRegion(player.getLocation())) {
+            if (GameAPI.isInSafeRegion(player.getLocation())) {
                 continue;
             }
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                 continue;
             }
-            if (API._hiddenPlayers.contains(player)) {
+            if (GameAPI._hiddenPlayers.contains(player)) {
                 continue;
             }
             if (player.getEquipment().getItemInMainHand().getType() != Material.AIR && player.getEquipment().getItemInMainHand() != null) {
@@ -70,7 +70,7 @@ public class BuffManager implements GenericMechanic {
             if (getNearbyBuffs(player, 15).size() >= 1) {
                 continue;
             }
-            if (API.getNearbyPlayers(player.getLocation(), 10).size() > 2) {
+            if (GameAPI.getNearbyPlayers(player.getLocation(), 10).size() > 2) {
                 continue;
             }
             if (new Random().nextInt(21) < 4) {
@@ -99,8 +99,8 @@ public class BuffManager implements GenericMechanic {
     private static Set<Entity> getNearbyBuffs(Player player, int radius) {
         Set<Entity> buffsNearby = new HashSet<>();
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-            if (entity.hasMetadata("type")) {
-                if (entity.getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
+            if (entity.hasMetadata("method")) {
+                if (entity.getMetadata("method").get(0).asString().equalsIgnoreCase("buff")) {
                     buffsNearby.add(entity);
                 }
             }

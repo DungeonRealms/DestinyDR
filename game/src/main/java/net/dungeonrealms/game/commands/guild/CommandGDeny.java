@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.commands.guild;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -52,7 +52,7 @@ public class CommandGDeny extends BasicCommand {
             Player owner = Bukkit.getPlayer(referrer);
             owner.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.");
         } else {
-            API.updatePlayerData(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(referrer)));
+            GameAPI.updatePlayerData(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(referrer)));
         }
 
         return false;

@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.handlers;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -60,7 +60,7 @@ public class MailHandler {
     /**
      * Checks of the item that is specified is a mail item containing NBT.
      *
-     * @param item specify if the item is of the serialized item type.
+     * @param item specify if the item is of the serialized item method.
      * @return boolean
      * @since 1.0
      */
@@ -79,7 +79,7 @@ public class MailHandler {
     public ItemStack setItemAsMail(ItemStack itemStack, String base64SerializedString) {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        tag.set("type", new NBTTagString("mail"));
+        tag.set("method", new NBTTagString("mail"));
         tag.set("item", new NBTTagString(base64SerializedString));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
@@ -93,7 +93,7 @@ public class MailHandler {
      */
     public boolean sendMail(Player player, String to, ItemStack itemStack) {
         UUID toUUID;
-        if (!API.isItemTradeable(itemStack)) {
+        if (!GameAPI.isItemTradeable(itemStack)) {
             player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
             return false;
         }
@@ -109,13 +109,13 @@ public class MailHandler {
 
         String mailIdentification = player.getName() + "," + (System.currentTimeMillis() / 1000L) + "," + serializedItem;
 
-        if (API.isOnline(toUUID)) {
+        if (GameAPI.isOnline(toUUID)) {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true);
             sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
         } else {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, false);
-            API.updatePlayerData(toUUID);
-            NetworkAPI.getInstance().sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
+            GameAPI.updatePlayerData(toUUID);
+            BungeeUtils.sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
         }
         sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " Mail.");
         return true;

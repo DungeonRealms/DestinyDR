@@ -71,7 +71,7 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--Spigot API-->
+        <!--Spigot GameAPI-->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
@@ -81,7 +81,7 @@
         </dependency>
 
 
-        <!--Bukkit API-->
+        <!--Bukkit GameAPI-->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>

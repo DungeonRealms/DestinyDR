@@ -37,7 +37,7 @@ public class ItemSerialization {
             return items;
         } catch (ClassNotFoundException e) {
             try {
-                throw new IOException("Unable to decode class type.", e);
+                throw new IOException("Unable to decode class method.", e);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

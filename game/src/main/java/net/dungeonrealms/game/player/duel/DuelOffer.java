@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.player.duel;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
@@ -87,8 +87,8 @@ public class DuelOffer {
                 winner.getInventory().addItem(current);
             }
         }
-        GamePlayer wGP = API.getGamePlayer(winner);
-        GamePlayer lGP = API.getGamePlayer(loser);
+        GamePlayer wGP = GameAPI.getGamePlayer(winner);
+        GamePlayer lGP = GameAPI.getGamePlayer(loser);
         if (wGP != null) {
             wGP.getPlayerStatistics().setDuelsWon(wGP.getPlayerStatistics().getDuelsWon() + 1);
         }
@@ -106,7 +106,7 @@ public class DuelOffer {
         }
         final String finalWinnerName = winnerName;
         final String finalLoserName = loserName;
-        API.getNearbyPlayers(winner.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalWinnerName + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + finalLoserName + ChatColor.GREEN + " in a duel!"));
+        GameAPI.getNearbyPlayers(winner.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalWinnerName + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + finalLoserName + ChatColor.GREEN + " in a duel!"));
         DuelingMechanics.removeOffer(this);
     }
 
@@ -357,7 +357,7 @@ public class DuelOffer {
                 }
 
             HealthHandler.getInstance().setPlayerMaxHPLive(pl, HealthHandler.getInstance().calculateMaxHPFromItems(pl));
-            HealthHandler.getInstance().setPlayerHPRegenLive(pl, API.getStaticAttributeVal(Item.ArmorAttributeType
+            HealthHandler.getInstance().setPlayerHPRegenLive(pl, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType
                     .HEALTH_REGEN, pl) + 5);
             if (HealthHandler.getInstance().getPlayerHPLive(pl) > HealthHandler.getInstance().getPlayerMaxHPLive(pl)) {
                 HealthHandler.getInstance().setPlayerHPLive(pl, HealthHandler.getInstance().getPlayerMaxHPLive(pl));
@@ -414,7 +414,7 @@ public class DuelOffer {
                 }
 
             HealthHandler.getInstance().setPlayerMaxHPLive(pl, HealthHandler.getInstance().calculateMaxHPFromItems(pl));
-            HealthHandler.getInstance().setPlayerHPRegenLive(pl, API.getStaticAttributeVal(Item.ArmorAttributeType
+            HealthHandler.getInstance().setPlayerHPRegenLive(pl, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType
                     .HEALTH_REGEN, pl) + 5);
             if (HealthHandler.getInstance().getPlayerHPLive(pl) > HealthHandler.getInstance().getPlayerMaxHPLive(pl)) {
                 HealthHandler.getInstance().setPlayerHPLive(pl, HealthHandler.getInstance().getPlayerMaxHPLive(pl));

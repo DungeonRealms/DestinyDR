@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.commands.menualias;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.menus.player.Profile;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;

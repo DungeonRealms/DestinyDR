@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.commands.guild;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -89,10 +89,10 @@ public class CommandGInvite extends BasicCommand {
 
         if (p != null) {
             p.sendMessage("");
-            p.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline");
+            p.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, method " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, method " + ChatColor.DARK_AQUA.toString() + "/gdecline");
             p.sendMessage("");
         } else {
-            API.updatePlayerData(p_uuid);
+            GameAPI.updatePlayerData(p_uuid);
         }
 
         return false;

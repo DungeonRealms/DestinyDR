@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.commands.toggles;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

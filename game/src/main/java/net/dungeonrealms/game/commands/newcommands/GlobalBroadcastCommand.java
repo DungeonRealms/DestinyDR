@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands.newcommands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.database.player.Rank;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

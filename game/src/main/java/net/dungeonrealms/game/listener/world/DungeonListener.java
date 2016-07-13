@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.listener.world;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.EnderCrystal;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -58,7 +58,7 @@ public class DungeonListener implements Listener {
                     } else {
                         event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation().add(0, 1, 0), key);
                     }
-                    for (Player player : API.getNearbyPlayers(event.getEntity().getLocation(), 30)) {
+                    for (Player player : GameAPI.getNearbyPlayers(event.getEntity().getLocation(), 30)) {
                         player.sendMessage(ChatColor.RED + event.getEntity().getMetadata("customname").get(0).asString() + ChatColor.WHITE + ": " + ChatColor.WHITE + "Talk about going out with a...blast.");
                     }
                 }
@@ -74,7 +74,7 @@ public class DungeonListener implements Listener {
         if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.VARENGLADE)
             return;
         DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
-        if (dungeonObject.keysDropped <= 10) {
+        if (dungeonObject.keysDropped <= 10 && !dungeonObject.hasBossSpawned) {
             if (event.getEntity().hasMetadata("customname")) {
                 String name = ChatColor.stripColor(event.getEntity().getMetadata("customname").get(0).asString());
                 if (name.equalsIgnoreCase("The Priest")) {
@@ -213,8 +213,8 @@ public class DungeonListener implements Listener {
         if (!event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
         if (event.getRegion().toLowerCase().startsWith("exit_instance")) {
             Player player = event.getPlayer();
-            if (player.isOnline() && API.getGamePlayer(player) != null) {
-                if (API.getGamePlayer(player).isInDungeon()) {
+            if (player.isOnline() && GameAPI.getGamePlayer(player) != null) {
+                if (GameAPI.getGamePlayer(player).isInDungeon()) {
                     if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
                         String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
                         player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
@@ -259,7 +259,7 @@ public class DungeonListener implements Listener {
                 mount.dead = true;
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
-            if (API.getGamePlayer(player) == null || API.getGamePlayer(player).getLevel() < 5) {
+            if (GameAPI.getGamePlayer(player) == null || GameAPI.getGamePlayer(player).getLevel() < 5) {
                 player.sendMessage(ChatColor.RED + "You need to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level 5 to enter a dungeon.");
                 return;
             }

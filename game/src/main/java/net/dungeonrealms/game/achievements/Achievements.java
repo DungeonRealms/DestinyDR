@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.achievements;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -72,7 +72,7 @@ public class Achievements {
             e.printStackTrace();
         }
         if (achievement.getReward() > 0) {
-            API.getGamePlayer(player).addExperience(achievement.getReward(), false, true);
+            GameAPI.getGamePlayer(player).addExperience(achievement.getReward(), false, true);
         }
         switch (((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid)).size()) {
             case 10:

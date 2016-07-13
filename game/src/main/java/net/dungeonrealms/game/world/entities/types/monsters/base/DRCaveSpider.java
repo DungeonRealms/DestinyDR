@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
 import lombok.Getter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -62,7 +62,7 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
     }
 
     public void setArmor(int tier) {
-        org.bukkit.inventory.ItemStack[] armor = API.getTierArmor(tier);
+        org.bukkit.inventory.ItemStack[] armor = GameAPI.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         org.bukkit.inventory.ItemStack weapon = getTierWeapon(tier);
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
@@ -105,7 +105,7 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
                 itemType = Item.ItemType.AXE;
                 break;
         }
-        org.bukkit.inventory.ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))
+        org.bukkit.inventory.ItemStack item = new ItemGenerator().setType(itemType).setRarity(GameAPI.getItemRarity(false))
                 .setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;

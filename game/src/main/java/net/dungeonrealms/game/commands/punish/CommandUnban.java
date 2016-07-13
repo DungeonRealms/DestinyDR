@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.commands.punish;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.player.rank.Rank;
-import net.dungeonrealms.game.punish.PunishUtils;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.punishment.PunishAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,12 +45,12 @@ public class CommandUnban extends BasicCommand {
 
         UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
 
-        if (!PunishUtils.isBanned(p_uuid)) {
+        if (!PunishAPI.isBanned(p_uuid)) {
             sender.sendMessage(ChatColor.RED + p_name + " is not banned.");
             return true;
         }
 
-        PunishUtils.unban(p_uuid);
+        PunishAPI.unban(p_uuid);
         sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name);
         return false;
     }

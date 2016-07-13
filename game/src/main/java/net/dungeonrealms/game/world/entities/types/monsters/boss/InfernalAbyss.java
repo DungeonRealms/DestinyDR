@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -143,8 +143,8 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
             if (entity == null) {
                 return; //WTF?? UH OH BOYS WE GOT ISSUES
             }
-            entity.setCustomName(newLevelName + API.getTierColor(3).toString() + "Demonic Spawn of Inferno");
-            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + "Demonic Spawn of Inferno"));
+            entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + "Demonic Spawn of Inferno");
+            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + "Demonic Spawn of Inferno"));
             Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -188,14 +188,13 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
         }
         if (!finalForm) {
             if (hasFiredGhast) {
-                if (this.ghast.isAlive()) {
-                    event.setDamage(0);
-                    event.setCancelled(true);
-                    return;
-                } else {
-                    en.setMaximumNoDamageTicks(0);
-                    en.setNoDamageTicks(0);
-                    en.removePotionEffect(PotionEffectType.INVISIBILITY);
+                if (!this.ghast.isAlive()) {
+                    if (en.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+                        en.removePotionEffect(PotionEffectType.INVISIBILITY);
+                    }
+                    if (DamageAPI.isInvulnerable(en)) {
+                        DamageAPI.removeInvulnerable(en);
+                    }
                 }
             }
         }
@@ -218,8 +217,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
             DamageAPI.setArmorBonus(ghast.getBukkitEntity(), 50);
             hasFiredGhast = true;
             en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
-            en.setMaximumNoDamageTicks(Integer.MAX_VALUE);
-            en.setNoDamageTicks(Integer.MAX_VALUE);
+            DamageAPI.setInvulnerable(en);
             DamageAPI.setArmorBonus(en, 50);
         }
 
@@ -247,8 +245,8 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
-                        entity.setCustomName(newLevelName + API.getTierColor(3).toString() + "Abyssal Demon");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + "Abyssal Demon"));
+                        entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + "Abyssal Demon");
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + "Abyssal Demon"));
                         Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -264,8 +262,8 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
-                        entity.setCustomName(newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno"));
+                        entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + "Spawn of Inferno");
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + "Spawn of Inferno"));
                         Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -283,8 +281,8 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
-                        entity.setCustomName(newLevelName + API.getTierColor(4).toString() + "Greater Abyssal Demon");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(4).toString() + "Greater Abyssal Demon"));
+                        entity.setCustomName(newLevelName + GameAPI.getTierColor(4).toString() + "Greater Abyssal Demon");
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(4).toString() + "Greater Abyssal Demon"));
                         Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -300,8 +298,8 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
                         if (entity == null) {
                             return; //WTF?? UH OH BOYS WE GOT ISSUES
                         }
-                        entity.setCustomName(newLevelName + API.getTierColor(4).toString() + "Demonic Spawn of Inferno");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(4).toString() + "Demonic Spawn of Inferno"));
+                        entity.setCustomName(newLevelName + GameAPI.getTierColor(4).toString() + "Demonic Spawn of Inferno");
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(4).toString() + "Demonic Spawn of Inferno"));
                         Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -315,7 +313,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
     private void doBossDrops() {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         for (Player pl : livingEntity.getWorld().getPlayers()) {
-            GamePlayer gp = API.getGamePlayer(pl);
+            GamePlayer gp = GameAPI.getGamePlayer(pl);
             if (gp != null) {
                 gp.getPlayerStatistics().setInfernalAbyssKills(gp.getPlayerStatistics().getInfernalAbyssKills() + 1);
             }
@@ -387,7 +385,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
             } else {
                 player.getInventory().addItem(banknote);
             }
-            API.getGamePlayer(player).addExperience(50000, false, true);
+            GameAPI.getGamePlayer(player).addExperience(50000, false, true);
         }
         final String adventurers = partyMembers;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

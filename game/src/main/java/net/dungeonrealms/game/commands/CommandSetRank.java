@@ -1,12 +1,12 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -60,9 +60,9 @@ public class CommandSetRank extends BasicCommand{
                 if (Bukkit.getPlayer(args[0]) != null) {
                     Player player = Bukkit.getPlayer(args[0]);
                     Rank.getInstance().setRank(uuid, rank);
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, GameAPI.getGamePlayer(player).getLevel());
                 } else {
-                    API.updatePlayerData(uuid);
+                    GameAPI.updatePlayerData(uuid);
                 }
 
                 // Always update the database with the new rank.

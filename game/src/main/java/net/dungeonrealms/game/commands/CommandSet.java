@@ -3,17 +3,17 @@
  */
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
@@ -60,7 +60,7 @@ public class CommandSet extends BasicCommand {
                             player.sendMessage(ChatColor.RED + "Invalid player level (1 - 100).");
                             break;
                         }
-                        API.getGamePlayer(p).updateLevel(lvl, false, true);
+                        GameAPI.getGamePlayer(p).updateLevel(lvl, false, true);
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
                         Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to: " + ChatColor.LIGHT_PURPLE +  lvl);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);

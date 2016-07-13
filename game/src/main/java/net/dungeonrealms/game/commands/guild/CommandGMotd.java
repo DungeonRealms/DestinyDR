@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands.guild;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -52,7 +52,7 @@ public class CommandGMotd extends BasicCommand {
             }
 
             GuildDatabaseAPI.get().setMotdOf(guildName, newMotd.toString());
-            API.updateGuildData(guildName);
+            GameAPI.updateGuildData(guildName);
 
             player.sendMessage(ChatColor.GRAY + "You have updated the guild " + ChatColor.BOLD.toString() + ChatColor.DARK_AQUA + "MOTD" + ChatColor.GRAY + " to:");
             GuildMechanics.getInstance().showMotd(player, guildName);

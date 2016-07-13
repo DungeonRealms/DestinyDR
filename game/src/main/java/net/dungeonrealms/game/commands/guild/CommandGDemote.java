@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.commands.guild;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -81,7 +81,7 @@ public class CommandGDemote extends BasicCommand {
         }
 
         GuildDatabaseAPI.get().demotePlayer(guildName, p_uuid);
-        API.updateGuildData(guildName);
+        GameAPI.updateGuildData(guildName);
 
         player.sendMessage(ChatColor.RED + "You have " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " " + p_name + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");
         GuildMechanics.getInstance().sendAlert(guildName, ChatColor.RED + " " + p_name + " has been " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");

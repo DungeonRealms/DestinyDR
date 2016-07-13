@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -55,7 +55,7 @@ public class MeleeSkeleton extends DRSkeleton {
                 itemType = Item.ItemType.SWORD;
                 break;
         }
-        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))
+        ItemStack item = new ItemGenerator().setType(itemType).setRarity(GameAPI.getItemRarity(false))
                 .setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;

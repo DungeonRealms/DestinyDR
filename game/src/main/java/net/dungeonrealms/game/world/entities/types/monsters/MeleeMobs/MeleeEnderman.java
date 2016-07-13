@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DREnderman;
@@ -36,7 +36,7 @@ public class MeleeEnderman extends DREnderman {
     }
 
     private ItemStack getTierWeapon(int tier) {
-        ItemStack item = new ItemGenerator().setType(Item.ItemType.SWORD).setRarity(API.getItemRarity(false)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
+        ItemStack item = new ItemGenerator().setType(Item.ItemType.SWORD).setRarity(GameAPI.getItemRarity(false)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

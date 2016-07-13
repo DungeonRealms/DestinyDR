@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
 import lombok.Getter;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -60,7 +60,7 @@ public class DRPigman extends EntityPigZombie implements DRMonster {
 	}
 
 	public void setArmor(int tier) {
-		ItemStack[] armor = API.getTierArmor(tier);
+		ItemStack[] armor = GameAPI.getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getTierWeapon(tier);
 		LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
@@ -105,7 +105,7 @@ public class DRPigman extends EntityPigZombie implements DRMonster {
 				itemType = Item.ItemType.AXE;
 				break;
 		}
-		ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))
+		ItemStack item = new ItemGenerator().setType(itemType).setRarity(GameAPI.getItemRarity(false))
 				.setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
 		AntiCheat.getInstance().applyAntiDupe(item);
 		return item;

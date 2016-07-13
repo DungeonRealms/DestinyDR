@@ -2,9 +2,12 @@ package net.dungeonrealms.proxy;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import net.dungeonrealms.Constants;
 import net.dungeonrealms.network.PingResponse;
 import net.dungeonrealms.network.ServerAddress;
+import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.ping.ServerPinger;
+import net.dungeonrealms.network.ping.method.BungeePingResponse;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
@@ -17,10 +20,8 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.net.InetSocketAddress;
+import java.util.*;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 5/31/2016
@@ -40,14 +41,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         return instance;
     }
 
-    private final String MOTD;
-    private final int MAX_PLAYERS;
-
-    public DungeonRealmsProxy() {
-        MOTD = "&6Dungeon Realms &8- &b&oCompletely re-coded v1.9+\n  &7Open Beta!     &8- &f&nwww.dungeonrealms.net &8-";
-        MAX_PLAYERS = 1300;
-    }
-
     @Override
     public void onEnable() {
         instance = this;
@@ -61,6 +54,13 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
+
+        // ADD DUNGEON REALM SHARDS //
+        Arrays.asList(ShardInfo.values()).stream().forEach(info -> {
+                    ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(info.getPseudoName(), new InetSocketAddress(info.getAddress().getAddress(), info.getAddress().getPort()), "", false);
+                    ProxyServer.getInstance().getServers().put(info.getPseudoName(), serverInfo);
+                }
+        );
     }
 
     @EventHandler
@@ -82,8 +82,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         int players = ping.getPlayers().getOnline();
         ServerPing.PlayerInfo[] sample = ping.getPlayers().getSample();
 
-        ping.setDescription(ChatColor.translateAlternateColorCodes('&', MOTD));
-        ping.setPlayers(new ServerPing.Players(MAX_PLAYERS, players, sample));
+        ping.setDescription(ChatColor.translateAlternateColorCodes('&', Constants.MOTD));
+        ping.setPlayers(new ServerPing.Players(Constants.PLAYER_SLOTS, players, sample));
     }
 
     public List<ServerInfo> getOptimalShards() {
@@ -100,7 +100,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         return servers;
     }
 
-    @EventHandler
+    // RIP LOAD BALANCER //
+    //@EventHandler
     public void onServerConnect(ServerConnectEvent event) {
         if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby")) {
             Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();

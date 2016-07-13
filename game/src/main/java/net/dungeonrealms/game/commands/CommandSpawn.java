@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import org.bukkit.Location;
 import org.bukkit.command.Command;

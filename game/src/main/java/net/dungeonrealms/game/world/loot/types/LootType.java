@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.loot.types;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -76,7 +76,7 @@ public enum LootType {
      *
      */
     private void loadItems() {
-    	File file = new File(API.getRemoteDataFolder() + "//loot//" + fileName);
+    	File file = new File(GameAPI.getRemoteDataFolder() + "//loot//" + fileName);
         if (!file.exists()){
         	Utils.log.info(file.getAbsolutePath() + " DOES NOT EXIST");
             return;

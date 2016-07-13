@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.commands.newcommands;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -21,7 +21,7 @@ public class KickAllCommand extends BasicCommand {
     		return false;
     	}
 		ShopMechanics.deleteAllShops(true);
-		API.logoutAllPlayers(true, true);
+		GameAPI.logoutAllPlayers(true, true);
     	return true;
     }
 

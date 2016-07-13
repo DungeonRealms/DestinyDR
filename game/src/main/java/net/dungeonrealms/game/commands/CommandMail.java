@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -35,7 +35,7 @@ public class CommandMail extends BasicCommand {
                 if (player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
                     if (!player.getName().equals(args[1])) {
                         if (BankMechanics.getInstance().getTotalGemsInInventory(player) >= 5) {
-                            if (API.isItemTradeable(player.getEquipment().getItemInMainHand())) {
+                            if (GameAPI.isItemTradeable(player.getEquipment().getItemInMainHand())) {
                                 if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
                                     player.getEquipment().setItemInMainHand(null);
                                     BankMechanics.getInstance().takeGemsFromInventory(5, player);

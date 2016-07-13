@@ -1,16 +1,16 @@
 package net.dungeonrealms.game.listener.mechanic;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
@@ -60,8 +60,8 @@ public class RestrictionListener implements Listener {
     }
 
     public static boolean canPlayerUseTier(Player p, int tier) {
-        if (API.getGamePlayer(p) == null) return true;
-        int level = API.getGamePlayer(p).getLevel();
+        if (GameAPI.getGamePlayer(p) == null) return true;
+        int level = GameAPI.getGamePlayer(p).getLevel();
         return tier == 1 || tier == 2 && level >= 10 || tier == 3 && level >= 20 || tier == 4 && level >= 30 || tier == 5 && level >= 40;
     }
 
@@ -114,8 +114,8 @@ public class RestrictionListener implements Listener {
         }
         if (hadIllegalArmor) {
             p.updateInventory();
-            HealthHandler.getInstance().setPlayerMaxHPLive(p, API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, p) + 50);
-            HealthHandler.getInstance().setPlayerHPRegenLive(p, API.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_REGEN, p) + 5);
+            HealthHandler.getInstance().setPlayerMaxHPLive(p, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, p) + 50);
+            HealthHandler.getInstance().setPlayerHPRegenLive(p, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_REGEN, p) + 5);
             if (HealthHandler.getInstance().getPlayerHPLive(p) > HealthHandler.getInstance().getPlayerMaxHPLive(p)) {
                 HealthHandler.getInstance().setPlayerHPLive(p, HealthHandler.getInstance().getPlayerMaxHPLive(p));
             }
@@ -130,7 +130,7 @@ public class RestrictionListener implements Listener {
         ItemStack i = p.getInventory().getItem(event.getNewSlot());
         if (i == null || i.getType() == Material.AIR) return;
 
-        if (API.isWeapon(i)) {
+        if (GameAPI.isWeapon(i)) {
             if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(i))) {
                 event.setCancelled(true);
                 p.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
@@ -159,7 +159,7 @@ public class RestrictionListener implements Listener {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             if (player.getEquipment().getItemInMainHand() != null) {
-                if (API.isWeapon(player.getEquipment().getItemInMainHand())) {
+                if (GameAPI.isWeapon(player.getEquipment().getItemInMainHand())) {
                     if (!canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand()))) {
                         player.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
                                 + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand())) + " to use this weapon.");
@@ -252,10 +252,10 @@ public class RestrictionListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player pl = event.getPlayer();
         Location from = event.getFrom();
-        if (API.getRegionName(from).equalsIgnoreCase("tutorial_island")) {
+        if (GameAPI.getRegionName(from).equalsIgnoreCase("tutorial_island")) {
             if (!Achievements.getInstance().hasAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CYRENNICA)) {
                 Location to = event.getTo();
-                if (!API.getRegionName(to).equalsIgnoreCase("tutorial_island") && !API.getRegionName(to).equalsIgnoreCase("cityofcyrennica")) {
+                if (!GameAPI.getRegionName(to).equalsIgnoreCase("tutorial_island") && !GameAPI.getRegionName(to).equalsIgnoreCase("cityofcyrennica")) {
                     event.setCancelled(true);
                     pl.teleport(from);
                     pl.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "must" + ChatColor.RED + " either finish the tutorial or skip it with /skip to get off tutorial island.");
@@ -266,8 +266,8 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {
-        if (!API.isPlayer(event.getTarget())) return;
-        GamePlayer gamePlayer = API.getGamePlayer((Player) event.getTarget());
+        if (!GameAPI.isPlayer(event.getTarget())) return;
+        GamePlayer gamePlayer = GameAPI.getGamePlayer((Player) event.getTarget());
         if (gamePlayer == null) return;
         if (gamePlayer.isTargettable()) return;
         event.setCancelled(true);
@@ -275,8 +275,8 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onInvulnerablePlayerDamage(EntityDamageEvent event) {
-        if (!API.isPlayer(event.getEntity())) return;
-        if (!API.getGamePlayer((Player) event.getEntity()).isInvulnerable()) return;
+        if (!GameAPI.isPlayer(event.getEntity())) return;
+        if (!GameAPI.getGamePlayer((Player) event.getEntity()).isInvulnerable()) return;
 
         event.setDamage(0);
         event.setCancelled(true);
@@ -291,10 +291,10 @@ public class RestrictionListener implements Listener {
     public void onAttemptAttackEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             if (event.getEntity() instanceof LivingEntity) {
-                if (!event.getEntity().hasMetadata("type")) return;
+                if (!event.getEntity().hasMetadata("method")) return;
             } else {
-                if (event.getEntity().hasMetadata("type")) {
-                    if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
+                if (event.getEntity().hasMetadata("method")) {
+                    if (event.getEntity().getMetadata("method").get(0).asString().equals("buff")) return;
                 } else {
                     return;
                 }
@@ -307,7 +307,7 @@ public class RestrictionListener implements Listener {
         Player pDamager = null;
         Player pReceiver = null;
 
-        if (API.isPlayer(damager)) {
+        if (GameAPI.isPlayer(damager)) {
             isAttackerPlayer = true;
             pDamager = (Player) event.getDamager();
         } else if ((damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Player && (DamageAPI.isStaffProjectile(damager) ||
@@ -316,7 +316,7 @@ public class RestrictionListener implements Listener {
             pDamager = (Player) ((Projectile) damager).getShooter();
         }
 
-        if (API.isPlayer(receiver)) {
+        if (GameAPI.isPlayer(receiver)) {
             isDefenderPlayer = true;
             pReceiver = (Player) event.getEntity();
         }
@@ -325,7 +325,7 @@ public class RestrictionListener implements Listener {
         }
 
         if (!isAttackerPlayer || !isDefenderPlayer) {
-            if (API.isInSafeRegion(damager.getLocation()) || API.isInSafeRegion(receiver.getLocation())) {
+            if (GameAPI.isInSafeRegion(damager.getLocation()) || GameAPI.isInSafeRegion(receiver.getLocation())) {
                 event.setCancelled(true);
                 return;
             }
@@ -356,7 +356,7 @@ public class RestrictionListener implements Listener {
         }
 
         if (isDefenderPlayer) {
-            if (API.getGamePlayer(pReceiver).isInvulnerable() || !API.getGamePlayer(pReceiver).isTargettable()) {
+            if (GameAPI.getGamePlayer(pReceiver).isInvulnerable() || !GameAPI.getGamePlayer(pReceiver).isTargettable()) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 return;
@@ -364,7 +364,7 @@ public class RestrictionListener implements Listener {
         }
 
         if (isAttackerPlayer && isDefenderPlayer) {
-            if (API.isNonPvPRegion(pDamager.getLocation()) || API.isNonPvPRegion(pReceiver.getLocation())) {
+            if (GameAPI.isNonPvPRegion(pDamager.getLocation()) || GameAPI.isNonPvPRegion(pReceiver.getLocation())) {
                 if (DuelingMechanics.isDueling(pDamager.getUniqueId())) { //TODO: Check if you can attack players that are dueling.
                     if (DuelingMechanics.isDueling(pReceiver.getUniqueId())) {
                         if (!DuelingMechanics.isDuelPartner(pDamager.getUniqueId(), pReceiver.getUniqueId())) {

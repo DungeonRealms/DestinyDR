@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.spawning;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.Utils;
@@ -69,7 +69,7 @@ public class EliteMobSpawner {
         this.maximumXZ = maximumXZ;
         World world = ((CraftWorld) location.getWorld()).getHandle();
         armorstand = new EntityArmorStand(world);
-        armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
+        armorstand.getBukkitEntity().setMetadata("method", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
         armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
         armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
         List<org.bukkit.entity.Entity> list = armorstand.getBukkitEntity().getNearbyEntities(1, 1, 1);
@@ -89,9 +89,9 @@ public class EliteMobSpawner {
     /**
      * Initialize spawner
      */
-    void init() {
+    /*void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            boolean playersNearby = !API.getNearbyPlayers(location, 24).isEmpty();
+            boolean playersNearby = !GameAPI.getNearbyPlayers(location, 24).isEmpty();
             if (playersNearby) {
                 if (timerID == -1) {
                     timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -108,34 +108,50 @@ public class EliteMobSpawner {
                 }
             }
         }, 0L, 40L);
+    }*/
+
+    void init() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            if (timerID == -1) {
+                timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                    if (isRemoved) {
+                        Bukkit.getScheduler().cancelTask(timerID);
+                    } else
+                        spawnIn();
+                }, 0L, 20L);
+            }
+        }, 0L, 40L);
     }
 
     private void spawnIn() {
-        if (!SPAWNED_MONSTERS.isEmpty()) {
-            for (Entity monster : SPAWNED_MONSTERS) {
-                LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
-                if (monster.isAlive()) {
-                    if (API.isInSafeRegion(livingEntity.getLocation())) {
-                        if (livingEntity instanceof Creature) {
-                            ((Creature) livingEntity).setTarget(null);
+        boolean playersNearby = !GameAPI.getNearbyPlayers(location, 24).isEmpty();
+        if (playersNearby) {
+            if (!SPAWNED_MONSTERS.isEmpty()) {
+                for (Entity monster : SPAWNED_MONSTERS) {
+                    LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
+                    if (monster.isAlive()) {
+                        if (GameAPI.isInSafeRegion(livingEntity.getLocation())) {
+                            if (livingEntity instanceof Creature) {
+                                ((Creature) livingEntity).setTarget(null);
+                            }
+                            monster.setPosition(location.getX(), location.getY(), location.getZ());
+                            return;
                         }
-                        monster.setPosition(location.getX(), location.getY(), location.getZ());
-                        return;
-                    }
-                    double num = livingEntity.getLocation().distanceSquared(location);
-                    if (num > 900) {
-                        if (livingEntity instanceof Creature) {
-                            ((Creature) livingEntity).setTarget(null);
+                        double num = livingEntity.getLocation().distanceSquared(location);
+                        if (num > 900) {
+                            if (livingEntity instanceof Creature) {
+                                ((Creature) livingEntity).setTarget(null);
+                            }
+                            monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
                         }
-                        monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
+                    } else {
+                        SPAWNED_MONSTERS.remove(monster);
                     }
-                } else {
-                    SPAWNED_MONSTERS.remove(monster);
                 }
             }
         }
         if (SPAWNED_MONSTERS.isEmpty()) {
-            if (!canMobsSpawn()) {
+            if (!canMobsSpawn(playersNearby)) {
                 //Mobs haven't passed their respawn timer yet.
                 return;
             }
@@ -151,7 +167,7 @@ public class EliteMobSpawner {
                     return;
                 }
             }
-            if (API.isInSafeRegion(toSpawn)) {
+            if (GameAPI.isInSafeRegion(toSpawn)) {
                 counter = respawnDelay;
                 return;
             }
@@ -208,12 +224,12 @@ public class EliteMobSpawner {
             SPAWNED_MONSTERS.add(entity);
             entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
             if (hasCustomName) {
-                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
-                entity.getBukkitEntity().setMetadata("namedElite", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
+                entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
+                entity.getBukkitEntity().setMetadata("namedElite", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
             } else {
-                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim()));
+                entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim()));
             }
         }
     }
@@ -342,7 +358,7 @@ public class EliteMobSpawner {
                     }
                 }
             }
-            API.calculateAllAttributes(livingEntity, ((DRMonster) entity).getAttributes());
+            GameAPI.calculateAllAttributes(livingEntity, ((DRMonster) entity).getAttributes());
             entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
             HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
         }
@@ -370,13 +386,19 @@ public class EliteMobSpawner {
     }
 
     //Checks whether mobs can spawn based on their delay set in config.
-    private boolean canMobsSpawn() {
+    private boolean canMobsSpawn(boolean playersNearby) {
         if (counter < respawnDelay) {
             counter++;
             return false;
+        } else {
+            if (playersNearby) {
+                counter = 0;
+                return true;
+            } else {
+                counter = respawnDelay;
+                return false;
+            }
         }
-        counter = 0;
-        return true;
     }
 
     private Location getRandomLocation(Location location, double xMin, double xMax, double zMin, double zMax) {

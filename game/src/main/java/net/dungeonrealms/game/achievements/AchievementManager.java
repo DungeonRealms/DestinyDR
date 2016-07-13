@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.achievements;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -52,7 +52,7 @@ public class AchievementManager implements GenericMechanic, Listener {
          * @since 1.0
          */
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> {
-            String region = API.getRegionName(player.getLocation());
+            String region = GameAPI.getRegionName(player.getLocation());
             if (REGION_TRACKER.containsKey(player.getUniqueId()))
                 if (REGION_TRACKER.get(player.getUniqueId()).equalsIgnoreCase(region))
                     return;

@@ -1,15 +1,12 @@
 package net.dungeonrealms.game.player.notice;
 
-import net.dungeonrealms.API;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.MailHandler;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * Created by Nick on 10/11/2015.

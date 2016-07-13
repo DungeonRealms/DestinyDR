@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -117,7 +117,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::doBossDrops, 5L);
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
-            GamePlayer gp = API.getGamePlayer(p);
+            GamePlayer gp = GameAPI.getGamePlayer(p);
             if (gp != null) {
                 gp.getPlayerStatistics().setMayelKills(gp.getPlayerStatistics().getMayelKills() + 1);
             }
@@ -147,8 +147,8 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
                     return; //WTF?? UH OH BOYS WE GOT ISSUES
                 }
                 entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                entity.setCustomName(newLevelName + API.getTierColor(1).toString() + ChatColor.BOLD + "Mayels Crew");
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(1).toString() + ChatColor.BOLD + "Mayels Crew"));
+                entity.setCustomName(newLevelName + GameAPI.getTierColor(1).toString() + ChatColor.BOLD + "Mayels Crew");
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(1).toString() + ChatColor.BOLD + "Mayels Crew"));
                 Location location = new Location(world.getWorld(), getBukkitEntity().getLocation().getX() + random.nextInt(3), getBukkitEntity().getLocation().getY(), getBukkitEntity().getLocation().getZ() + random.nextInt(3));
                 entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                 ((EntityInsentient) entity).persistent = true;
@@ -225,7 +225,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
             } else {
                 player.getInventory().addItem(banknote);
             }
-            API.getGamePlayer(player).addExperience(5000, false, true);
+            GameAPI.getGamePlayer(player).addExperience(5000, false, true);
         }
         final String adventurers = partyMembers;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

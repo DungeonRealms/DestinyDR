@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.spawning;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -73,7 +73,7 @@ public class BaseMobSpawner {
         this.maximumXZ = maximumXZ;
         World world = ((CraftWorld) location.getWorld()).getHandle();
         armorstand = new EntityArmorStand(world);
-        armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
+        armorstand.getBukkitEntity().setMetadata("method", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
         armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
         armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
         List<org.bukkit.entity.Entity> list = armorstand.getBukkitEntity().getNearbyEntities(loc.getX(), loc.getY(), loc.getZ());
@@ -98,7 +98,7 @@ public class BaseMobSpawner {
             for (Entity monster : SPAWNED_MONSTERS) {
                 if (monster.isAlive()) {
                     LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
-                    if (API.isInSafeRegion(livingEntity.getLocation())) {
+                    if (GameAPI.isInSafeRegion(livingEntity.getLocation())) {
                         if (livingEntity instanceof Creature) {
                             ((Creature) livingEntity).setTarget(null);
                         }
@@ -139,7 +139,7 @@ public class BaseMobSpawner {
                     return;
                 }
             }
-            if (API.isInSafeRegion(location)) {
+            if (GameAPI.isInSafeRegion(location)) {
                 counter = respawnDelay;
                 return;
             }
@@ -182,12 +182,12 @@ public class BaseMobSpawner {
                     mobName = monsterType.name.trim();
                 }
                 if (this.hasCustomName) {
-                    entity.setCustomName(lvlName + API.getTierColor(tier) + monsterCustomName.trim());
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
+                    entity.setCustomName(lvlName + GameAPI.getTierColor(tier) + monsterCustomName.trim());
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
 
                 } else {
-                    entity.setCustomName(lvlName + API.getTierColor(tier) + mobName.trim());
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + mobName.trim()));
+                    entity.setCustomName(lvlName + GameAPI.getTierColor(tier) + mobName.trim());
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + mobName.trim()));
                 }
             }
 
@@ -205,7 +205,7 @@ public class BaseMobSpawner {
                             return;
                         }
                     }
-                    if (API.isInSafeRegion(firstSpawn)) {
+                    if (GameAPI.isInSafeRegion(firstSpawn)) {
                         return;
                     }
                     if (newEntity == null) {
@@ -223,11 +223,11 @@ public class BaseMobSpawner {
                             newMobName = monsterType.name.trim();
                         }
                         if (this.hasCustomName) {
-                            newEntity.setCustomName(newLevelName + API.getTierColor(tier) + monsterCustomName.trim());
-                            newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
+                            newEntity.setCustomName(newLevelName + GameAPI.getTierColor(tier) + monsterCustomName.trim());
+                            newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
                         } else {
-                            newEntity.setCustomName(newLevelName + API.getTierColor(tier) + newMobName.trim());
-                            newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newMobName.trim()));
+                            newEntity.setCustomName(newLevelName + GameAPI.getTierColor(tier) + newMobName.trim());
+                            newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + newMobName.trim()));
                         }
                     }
                     newEntity.setLocation(firstSpawn.getX(), firstSpawn.getY(), firstSpawn.getZ(), 1, 1);
@@ -282,7 +282,7 @@ public class BaseMobSpawner {
      */
     void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            boolean playersNearby = !API.getNearbyPlayers(loc, 32).isEmpty();
+            boolean playersNearby = !GameAPI.getNearbyPlayers(loc, 32).isEmpty();
             if (playersNearby) {
                 if (timerID == -1) {
                     timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {

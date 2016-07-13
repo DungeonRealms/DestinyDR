@@ -1,12 +1,12 @@
 package net.dungeonrealms.game.listener.world;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.miscellaneous.Repair;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.profession.Fishing;
@@ -52,7 +52,7 @@ public class BlockListener implements Listener {
 
     /**
      * Disables the placement of core items that have NBTData of `important` in
-     * `type` field.
+     * `method` field.
      *
      * @param event
      * @since 1.0
@@ -132,7 +132,7 @@ public class BlockListener implements Listener {
                     return;
                 }
                 int experienceGain = Mining.getOreEXP(stackInHand, type);
-                GamePlayer gamePlayer = API.getGamePlayer(e.getPlayer());
+                GamePlayer gamePlayer = GameAPI.getGamePlayer(e.getPlayer());
                 if (gamePlayer == null) return;
                 gamePlayer.addExperience((experienceGain / 12), false, true);
                 int duraBuff = Mining.getDurabilityBuff(stackInHand);
@@ -300,7 +300,7 @@ public class BlockListener implements Listener {
             return;
         }
         ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
-        if (!API.isWeapon(item) && !API.isArmor(item) && !Mining.isDRPickaxe(item) && !Fishing.isDRFishingPole(item)) {
+        if (!GameAPI.isWeapon(item) && !GameAPI.isArmor(item) && !Mining.isDRPickaxe(item) && !Fishing.isDRFishingPole(item)) {
             event.setCancelled(true);
             return;
         }
@@ -374,7 +374,7 @@ public class BlockListener implements Listener {
 
             String name = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : StringUtils.capitaliseAllWords(item.getType().name().toLowerCase().replace("_", ""));
             player.sendMessage(ChatColor.YELLOW + "It will cost " + ChatColor.GREEN + ChatColor.BOLD.toString() + newCost + "G" + ChatColor.YELLOW + " to repair '" + name + ChatColor.YELLOW + "'");
-            player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Y" + ChatColor.GRAY + " to confirm this repair. Or type " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " to cancel.");
+            player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Y" + ChatColor.GRAY + " to confirm this repair. Or method " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " to cancel.");
             Chat.listenForMessage(player, chat -> {
                 if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
                     //Not enough? cya.
@@ -443,13 +443,13 @@ public class BlockListener implements Listener {
         Block block = e.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
-        if (API.isUUID(block.getWorld().getName())) return;
+        if (GameAPI.isUUID(block.getWorld().getName())) return;
         LootSpawner loot = LootManager.getSpawner(e.getClickedBlock().getLocation());
         if (loot == null) {
             e.setCancelled(true);
             return;
         }
-        Collection<Entity> list = API.getNearbyMonsters(loot.location, 10);
+        Collection<Entity> list = GameAPI.getNearbyMonsters(loot.location, 10);
         if (list.isEmpty()) {
             Action actionType = e.getAction();
             switch (actionType) {
@@ -523,7 +523,7 @@ public class BlockListener implements Listener {
             Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0, 1, 0));
             Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1, 1, 0));
             Player player = e.getPlayer();
-            if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())) {
+            if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && GameAPI.isInSafeRegion(e.getClickedBlock().getLocation())) {
 
                 if (ShopMechanics.ALLSHOPS.containsKey(player.getName())) {
                     Shop shop = ShopMechanics.getShop(player.getName());
@@ -531,8 +531,8 @@ public class BlockListener implements Listener {
                     player.sendMessage(ChatColor.GRAY + "Shop Location: " + (int) shop.block1.getLocation().getX() + ", " + (int) shop.block1.getLocation().getY() + ", " + (int) shop.block1.getLocation().getZ());
                     return;
                 }
-                if (API.isInSafeRegion(b1.getLocation()) && !API.isMaterialNearby(b1, 2, Material.CHEST) && !API.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
-                    if (!API.getGamePlayer(player).hasShopOpen()) {
+                if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
+                    if (!GameAPI.getGamePlayer(player).hasShopOpen()) {
                         if (BankMechanics.getInstance().getStorage(player.getUniqueId()).collection_bin != null) {
                             player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
                             player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");

@@ -1,14 +1,14 @@
 package net.dungeonrealms.game.player.chat;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.FriendHandler;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -120,7 +120,7 @@ public class Chat {
                     theTargetPlayer.playSound(theTargetPlayer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                 });
             } else {
-                NetworkAPI.getInstance().sendPlayerMessage(playerName, net.md_5.bungee.api.ChatColor.GRAY.toString() + net.md_5.bungee.api.ChatColor.BOLD + "FROM: " + net.md_5.bungee.api.ChatColor.AQUA + "[" + DungeonRealms.getInstance().shardid + "] " + event.getPlayer().getName() + net.md_5.bungee.api.ChatColor.GRAY + ": " + net.md_5.bungee.api.ChatColor.WHITE + tempFixedMessage);
+                BungeeUtils.sendPlayerMessage(playerName, net.md_5.bungee.api.ChatColor.GRAY.toString() + net.md_5.bungee.api.ChatColor.BOLD + "FROM: " + net.md_5.bungee.api.ChatColor.AQUA + "[" + DungeonRealms.getInstance().shardid + "] " + event.getPlayer().getName() + net.md_5.bungee.api.ChatColor.GRAY + ": " + net.md_5.bungee.api.ChatColor.WHITE + tempFixedMessage);
             }
             event.setCancelled(true);
             return;
@@ -184,7 +184,7 @@ public class Chat {
                 normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
                 normal.addText(after);
 
-                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
+                GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
             }
         }
@@ -202,8 +202,8 @@ public class Chat {
 
 
         // HANDLE LOCAL CHAT
-        if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
-            API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+        if (GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
+            GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
         } else {
             event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage);
             event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
