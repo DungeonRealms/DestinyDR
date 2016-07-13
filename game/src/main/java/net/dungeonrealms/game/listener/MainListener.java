@@ -46,6 +46,7 @@ import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -542,14 +543,37 @@ public class MainListener implements Listener {
         }
     }
 
+    /*
+    * Prevents fishing bug in Dungeons/Realms
+     */
+    @EventHandler
+    public void onPlayerInteractFishingRod(PlayerInteractEvent event) {
+        final Player pl = event.getPlayer();
+        if (!(Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()))) {
+            return; // Get out of here.
+        }
+        if (!pl.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            event.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
+            event.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
+            event.setCancelled(true);
+            event.setUseInteractedBlock(Event.Result.DENY);
+            event.setUseItemInHand(Event.Result.DENY);
+        }
+    }
+
 
     @EventHandler
     public void onPlayerFish(PlayerFishEvent e) {
         final Player pl = e.getPlayer();
+        if (!pl.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            e.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
+            e.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
+            e.setCancelled(true);
+            return;
+        }
+
         e.setExpToDrop(0);
 
-        if (e.getCaught() != null)
-            e.getCaught().remove();
         if (!(Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()))) {
             e.setCancelled(true);
             return; // Get out of here.
