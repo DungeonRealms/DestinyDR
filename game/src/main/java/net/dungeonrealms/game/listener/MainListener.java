@@ -549,6 +549,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerInteractFishingRod(PlayerInteractEvent event) {
         final Player pl = event.getPlayer();
+        if(pl.getEquipment().getItemInMainHand() != null)
         if (!(Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()))) {
             return; // Get out of here.
         }
