@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -35,6 +36,8 @@ public class PvPListener implements Listener {
 
         Player damager = (Player) event.getDamager();
         Player receiver = (Player) event.getEntity();
+
+        if (receiver.getGameMode() != GameMode.SURVIVAL) return;
 
         event.setDamage(0);
 
@@ -163,6 +166,7 @@ public class PvPListener implements Listener {
         Player damager = (Player) projectile.getShooter();
         Player receiver = (Player) event.getEntity();
 
+        if (receiver.getGameMode() != GameMode.SURVIVAL) return;
         if (CombatLog.isInCombat(damager)) {
             CombatLog.updateCombat(damager);
         } else {
