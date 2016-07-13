@@ -441,7 +441,12 @@ public class ItemGenerator {
         }
 
         // retain soulbound name
-        if (isReroll && isSoulbound) name = origItem.getItemMeta().getDisplayName();
+        if (isReroll && isSoulbound) {
+            name = origItem.getItemMeta().getDisplayName();
+            if (name.contains("[") && name.contains("]")) {
+                name = name.split("]")[1];
+            }
+        }
 
         if (isReroll && EnchantmentAPI.isItemProtected(origItem)) lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "PROTECTED");
 
