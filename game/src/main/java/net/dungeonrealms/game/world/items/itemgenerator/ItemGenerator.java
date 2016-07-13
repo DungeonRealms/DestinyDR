@@ -443,9 +443,6 @@ public class ItemGenerator {
         // retain soulbound name
         if (isReroll && isSoulbound) {
             name = origItem.getItemMeta().getDisplayName();
-            if (name.contains("[") && name.contains("]")) {
-                name = name.split("]")[1];
-            }
         }
 
         if (isReroll && EnchantmentAPI.isItemProtected(origItem)) lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "PROTECTED");
@@ -453,7 +450,7 @@ public class ItemGenerator {
 		// set the lore!
         meta.setLore(lore);
 
-        if (isReroll) {
+        if (isReroll && !isSoulbound) {
             int oldEnchantCount = EnchantmentAPI.getEnchantLvl(origItem);
             if (oldEnchantCount > 0) {
                 name = ChatColor.RED + "[+" + oldEnchantCount + "] " + ChatColor.RESET + name;
@@ -670,6 +667,17 @@ public class ItemGenerator {
         if (is == null) {
             Utils.log.warning("[ItemGenerator] Missing item id from item " + template_name + "!");
             return null;
+        }
+
+        boolean hasSoulboundTag = false;
+        for (String line : item_lore) {
+            if (line.contains("Soulbound")) {
+                hasSoulboundTag = true;
+                break;
+            }
+        }
+        if (!hasSoulboundTag) {
+            item_lore.add(ChatColor.DARK_RED + "Soulbound");
         }
         
         ItemMeta im = is.getItemMeta();
