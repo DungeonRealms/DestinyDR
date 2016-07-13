@@ -179,6 +179,58 @@ public class RealmInstance implements Realms {
     }
 
     @Override
+    public boolean canPlacePortal(Player player, Location location) {
+        if (CombatLog.isInCombat(player)) {
+            player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
+            return false;
+        }
+
+        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
+            return false;
+        }
+
+
+        if (LootManager.checkLocationForLootSpawner(location.clone())) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal this close to a Loot Spawning location");
+            return false;
+        }
+
+        if (location.clone().add(0, 1, 0).getBlock().getType() != Material.AIR || location.clone().add(0, 2, 0).getBlock().getType() != Material.AIR) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+            return false;
+        }
+
+        if (GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+            return false;
+        }
+
+        if (GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+            return false;
+        }
+
+        if (isPortalNearby(location.clone().add(0, 1, 0), 3) || GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.PORTAL)) {
+            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " open a realm portal so close to another.");
+            player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "REQ:" + ChatColor.GRAY + " >3 blocks away.");
+            return false;
+        }
+
+
+        for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
+            if (p.getName().equals(player.getName())) continue;
+            if (!p.getWorld().equals(player.getWorld())) continue;
+            if (p.getLocation().distance(player.getLocation()) <= 2) {
+                player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
     public void loadRealmAsync(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter) {
         Futures.addCallback(task, new FutureCallback<Boolean>() {
             @Override
@@ -233,47 +285,8 @@ public class RealmInstance implements Realms {
             return;
         }
 
-        if (CombatLog.isInCombat(player)) {
-            player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
+        if (!canPlacePortal(player, location))
             return;
-        }
-
-        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-            player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
-            return;
-        }
-
-
-        if (LootManager.checkLocationForLootSpawner(location.clone())) {
-            player.sendMessage(ChatColor.RED + "You cannot place a realm portal this close to a Loot Spawning location");
-            return;
-        }
-
-        if (location.clone().add(0, 1, 0).getBlock().getType() != Material.AIR || location.clone().add(0, 2, 0).getBlock().getType() != Material.AIR) {
-            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
-            return;
-        }
-
-        if (GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
-            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
-            return;
-        }
-
-        if (isPortalNearby(location.clone().add(0, 1, 0), 3) || GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.PORTAL)) {
-            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " open a realm portal so close to another.");
-            player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "REQ:" + ChatColor.GRAY + " >3 blocks away.");
-            return;
-        }
-
-
-        for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
-            if (p.getName().equals(player.getName())) continue;
-            if (!p.getWorld().equals(player.getWorld())) continue;
-            if (p.getLocation().distance(player.getLocation()) <= 2) {
-                player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
-                return;
-            }
-        }
 
         if (isRealmPortalOpen(realm.getOwner()))
             closeRealmPortal(player.getUniqueId(), false, null);
