@@ -74,7 +74,7 @@ public class DungeonListener implements Listener {
         if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.VARENGLADE)
             return;
         DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
-        if (dungeonObject.keysDropped <= 10) {
+        if (dungeonObject.keysDropped <= 10 && !dungeonObject.hasBossSpawned) {
             if (event.getEntity().hasMetadata("customname")) {
                 String name = ChatColor.stripColor(event.getEntity().getMetadata("customname").get(0).asString());
                 if (name.equalsIgnoreCase("The Priest")) {

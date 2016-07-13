@@ -127,26 +127,27 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
 
     @Override
     public void onBossHit(EntityDamageByEntityEvent event) {
-       for (Entity entity : spawnedMobs) {
-            if (!entity.isAlive()) {
-                spawnedMobs.remove(entity);
+        if (!spawnedMobs.isEmpty()) {
+            for (Entity entity : spawnedMobs) {
+                if (!entity.isAlive()) {
+                    spawnedMobs.remove(entity);
+                }
             }
         }
         LivingEntity en = (LivingEntity) event.getEntity();
-        if (spawnedMobs.size() > 0) {
-            event.setDamage(0);
-            event.setCancelled(true);
-            return;
-        } else {
+        if (spawnedMobs.isEmpty()) {
             if (!canAddsRespawn && !hasMessaged) {
                 for (Player pl : en.getWorld().getPlayers()) {
                     pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "Face me, pathetic creatures!");
                 }
                 hasMessaged = true;
             }
-            en.removePotionEffect(PotionEffectType.INVISIBILITY);
-            en.setMaximumNoDamageTicks(0);
-            en.setNoDamageTicks(0);
+            if (en.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+                en.removePotionEffect(PotionEffectType.INVISIBILITY);
+            }
+            if (DamageAPI.isInvulnerable(en)) {
+                DamageAPI.removeInvulnerable(en);
+            }
         }
         int health = HealthHandler.getInstance().getMonsterMaxHPLive(en);
         int hp = HealthHandler.getInstance().getMonsterHPLive(en);
@@ -160,8 +161,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     err.printStackTrace();
                 }
                 en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
-                en.setMaximumNoDamageTicks(Integer.MAX_VALUE);
-                en.setNoDamageTicks(Integer.MAX_VALUE);
+                DamageAPI.setInvulnerable(en);
                 for (Player pl : en.getWorld().getPlayers()) {
                     pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": "
                             + "To me, my undead brethren! Rip these Andalucians to pieces!");

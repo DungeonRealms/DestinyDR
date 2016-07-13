@@ -650,6 +650,10 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                         return;
                     }
+                    if (player.getEyeLocation().getBlock().getType() != Material.AIR) {
+                        player.sendMessage(ChatColor.RED + "You cannot summon a mount here!");
+                        return;
+                    }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
                         player.sendMessage(ChatColor.RED + "Uh oh... Something went wrong with your mount! Please inform a developer! [MS-NBT]");

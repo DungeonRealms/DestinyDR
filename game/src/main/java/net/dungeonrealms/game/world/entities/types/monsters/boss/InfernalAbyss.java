@@ -188,14 +188,13 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
         }
         if (!finalForm) {
             if (hasFiredGhast) {
-                if (this.ghast.isAlive()) {
-                    event.setDamage(0);
-                    event.setCancelled(true);
-                    return;
-                } else {
-                    en.setMaximumNoDamageTicks(0);
-                    en.setNoDamageTicks(0);
-                    en.removePotionEffect(PotionEffectType.INVISIBILITY);
+                if (!this.ghast.isAlive()) {
+                    if (en.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+                        en.removePotionEffect(PotionEffectType.INVISIBILITY);
+                    }
+                    if (DamageAPI.isInvulnerable(en)) {
+                        DamageAPI.removeInvulnerable(en);
+                    }
                 }
             }
         }
@@ -218,8 +217,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
             DamageAPI.setArmorBonus(ghast.getBukkitEntity(), 50);
             hasFiredGhast = true;
             en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
-            en.setMaximumNoDamageTicks(Integer.MAX_VALUE);
-            en.setNoDamageTicks(Integer.MAX_VALUE);
+            DamageAPI.setInvulnerable(en);
             DamageAPI.setArmorBonus(en, 50);
         }
 

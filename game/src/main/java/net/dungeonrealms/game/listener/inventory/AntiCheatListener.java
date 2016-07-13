@@ -1,25 +1,29 @@
 package net.dungeonrealms.game.listener.inventory;
 
-import net.dungeonrealms.game.mastery.NBTItem;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 
 /**
  * Created by Alan Lu (dartaran) on 06-Jul-16.
  */
 public class AntiCheatListener implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        AntiCheat.getInstance().checkForDupedItems((Player) event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onInventoryClose(InventoryCloseEvent event) {
+        AntiCheat.getInstance().checkForDupedItems((Player) event.getPlayer());
+    }
+
+    /*@EventHandler(priority = EventPriority.MONITOR)
     public void onItemPickup(PlayerPickupItemEvent event) {
         Utils.log.info(System.currentTimeMillis() + " Pick up item");
         ItemStack i = event.getItem().getItemStack();
@@ -78,7 +82,7 @@ public class AntiCheatListener implements Listener {
         Utils.log.info(System.currentTimeMillis() + "");
     }*/
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    /*@EventHandler(priority = EventPriority.MONITOR)
     public void onCombineItemStack(InventoryClickEvent event) {
         Utils.log.info(System.currentTimeMillis() + " Combining stack");
         if (event.getClick() == ClickType.SHIFT_LEFT || event.getAction() == InventoryAction.COLLECT_TO_CURSOR) { // check for available stacks
@@ -95,6 +99,6 @@ public class AntiCheatListener implements Listener {
             }
         }
         Utils.log.info(System.currentTimeMillis() + "");
-    }
+    }*/
 
 }

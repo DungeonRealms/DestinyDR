@@ -32,6 +32,7 @@ import net.dungeonrealms.game.listener.TabCompleteCommands;
 import net.dungeonrealms.game.listener.combat.DamageListener;
 import net.dungeonrealms.game.listener.combat.PvEListener;
 import net.dungeonrealms.game.listener.combat.PvPListener;
+import net.dungeonrealms.game.listener.inventory.AntiCheatListener;
 import net.dungeonrealms.game.listener.inventory.InventoryListener;
 import net.dungeonrealms.game.listener.inventory.ItemListener;
 import net.dungeonrealms.game.listener.inventory.ShopListener;
@@ -264,7 +265,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new BankListener(), this);
             pm.registerEvents(new EnergyListener(), this);
             pm.registerEvents(new TitleAPI(), this);
-            //pm.registerEvents(new AntiCheatListener(), this);
+            pm.registerEvents(new AntiCheatListener(), this);
             //TODO: Fix.
             pm.registerEvents(new ShopListener(), this);
             pm.registerEvents(new AchievementManager(), this);
@@ -287,7 +288,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new InventoryListener(), this);
             pm.registerEvents(new BlockListener(), this);
             pm.registerEvents(new EnergyListener(), this);
-            //pm.registerEvents(new AntiCheatListener(), this);
+            pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new AchievementManager(), this);
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new RestrictionListener(), this);

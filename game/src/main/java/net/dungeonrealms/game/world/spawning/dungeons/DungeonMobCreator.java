@@ -70,6 +70,8 @@ public class DungeonMobCreator {
                     }
                 } else if (customName.toLowerCase().contains("mountain")) {
                     monsterType = "frozenskeleton";
+                } else if (customName.toLowerCase().contains("bandit pyromancer")) {
+                    tier = 1;
                 }
             }
             enumMonster = EnumMonster.getMonsterByString(monsterType);

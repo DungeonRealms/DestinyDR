@@ -622,12 +622,6 @@ public class DamageAPI {
     public static double addSpecialDamage(LivingEntity attacker, double damage) {
         if (PowerMove.doingPowerMove(attacker.getUniqueId()))
             return damage;
-        // DUNGEON CALCULATION
-        if (attacker.hasMetadata("dungeon")) {
-            damage *= 2;
-        }
-
-
         // ELITE CALCULATION
         if (attacker.hasMetadata("elite") && attacker.hasMetadata("tier")) {
             switch (attacker.getMetadata("tier").get(0).asInt()) {
@@ -1185,5 +1179,17 @@ public class DamageAPI {
 
     public static void removeArmorBonus(Entity ent) {
         if (ent.hasMetadata("armorBonus")) ent.removeMetadata("armorBonus", DungeonRealms.getInstance());
+    }
+
+    public static void setInvulnerable(Entity ent) {
+        ent.setMetadata("invulnerable", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+    }
+
+    public static boolean isInvulnerable(Entity ent) {
+        return ent.hasMetadata("invulnerable");
+    }
+
+    public static void removeInvulnerable(Entity ent) {
+        if (ent.hasMetadata("invulnerable")) ent.removeMetadata("invulnerable", DungeonRealms.getInstance());
     }
 }
