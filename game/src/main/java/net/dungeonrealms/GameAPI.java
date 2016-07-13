@@ -961,7 +961,6 @@ public class GameAPI {
      * @param serverBungeeName Bungee name
      */
     public static void moveToShard(Player player, String serverBungeeName) {
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, true, false);
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
         GameAPI.handleLogout(player.getUniqueId());
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());

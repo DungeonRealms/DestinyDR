@@ -531,7 +531,7 @@ public class Fishing implements GenericMechanic {
      */
     public static boolean isDRFishingPole(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return nms.hasTag() && nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("rod") && stack.getType() == Material.FISHING_ROD;
+        return nms != null && nms.hasTag() && nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("rod") && stack.getType() == Material.FISHING_ROD;
     }
 
 //    public static HashMap<UUID, String> fishBuffs = new HashMap<>();
