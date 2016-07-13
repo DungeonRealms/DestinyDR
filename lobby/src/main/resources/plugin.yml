@@ -1,5 +1,5 @@
 name: DungeonRealmsLobby
-main: net.dungeonrealms.lobby.DungeonRealms
+main: net.dungeonrealms.lobby.Lobby
 version: ${project.parent.version}
 authors: [apollosoftware, Bradez1571, EtherealTemplar, iFamasssxD, Proxying, Xwaffle]
 website: http://www.dungeonrealms.net
