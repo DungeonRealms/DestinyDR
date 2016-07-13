@@ -190,7 +190,6 @@ public class DungeonRealms extends JavaPlugin {
         BungeeUtils.setPlugin(this);
 
         DatabaseDriver.getInstance().startInitialization(true);
-        NetworkChannelListener.getInstance().startInitialization();
         AntiCheat.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
