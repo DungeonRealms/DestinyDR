@@ -69,7 +69,7 @@ public class Lobby extends JavaPlugin implements Listener {
     private ItemStack getShardSelector() {
         ItemStack navigator = new ItemStack(Material.COMPASS);
         ItemMeta navigatorMeta = navigator.getItemMeta();
-        navigatorMeta.setDisplayName(ChatColor.GREEN + "Shard Navigator");
+        navigatorMeta.setDisplayName(ChatColor.GREEN + "Shard Selector");
         navigator.setItemMeta(navigatorMeta);
 
         return navigator;
