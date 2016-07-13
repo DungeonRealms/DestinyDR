@@ -431,6 +431,14 @@ public class ItemGenerator {
             lore.add(ChatColor.GRAY + "Permanently Untradeable");
         }
 
+        // add soulbound lore
+        if (isReroll && isSoulbound && origItem.hasItemMeta() && origItem.getItemMeta().hasLore()) {
+            for (String line : origItem.getItemMeta().getLore()) {
+                if (line.contains(ChatColor.GRAY.toString())) {
+                    lore.add(line);
+                }
+            }
+        }
         // add custom EC lore
         if (isReroll && origItem != null && origItem.hasItemMeta() && origItem.getItemMeta().hasLore()) {
             for (String line : origItem.getItemMeta().getLore()) {
