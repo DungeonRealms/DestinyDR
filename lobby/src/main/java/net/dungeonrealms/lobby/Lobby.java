@@ -1,6 +1,7 @@
 package net.dungeonrealms.lobby;
 
 import lombok.Getter;
+import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.DatabaseDriver;
 import net.dungeonrealms.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
@@ -33,7 +34,7 @@ public class Lobby extends JavaPlugin implements Listener {
 
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(this, 1L);
-        DatabaseDriver.getInstance().startInitialization(false);
+        DatabaseDriver.getInstance().startInitialization(true);
 
         Bukkit.getPluginManager().registerEvents(this, this);
     }
@@ -44,6 +45,7 @@ public class Lobby extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTask(this, () -> {
 
             Player player = event.getPlayer();
+            DatabaseAPI.getInstance().requestPlayer(event.getPlayer().getUniqueId());
 
             if (!hasItem(player.getInventory(), getShardSelector()))
                 player.getInventory().setItem(0, getShardSelector());
