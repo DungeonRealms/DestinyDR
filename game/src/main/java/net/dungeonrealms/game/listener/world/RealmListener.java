@@ -438,15 +438,17 @@ public class RealmListener implements Listener {
 
         if (realm == null) return;
 
-        if (event.hasBlock()) if (event.getClickedBlock().getType().equals(Material.ENCHANTMENT_TABLE)) {
-            event.setCancelled(true);
-            return;
-        }
+        if (event.hasBlock())
+            if (event.getClickedBlock().getType().equals(Material.ENCHANTMENT_TABLE)) {
+                event.setCancelled(true);
+                return;
+            }
 
-        if (event.getItem().getType().equals(Material.ITEM_FRAME)) {
-            event.setCancelled(true);
-            return;
-        }
+        if (event.hasItem())
+            if (event.getItem().getType().equals(Material.ITEM_FRAME)) {
+                event.setCancelled(true);
+                return;
+            }
 
         if (!realm.getOwner().equals(p.getUniqueId()) && !realm.getBuilders().contains(p.getUniqueId()) && !Rank.isGM(p)) {
             p.sendMessage(ChatColor.RED + "You aren't authorized to build in " + Bukkit.getPlayer(realm.getOwner()).getName() + "'s realm.");
