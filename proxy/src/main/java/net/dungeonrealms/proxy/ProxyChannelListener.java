@@ -8,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class ProxyChannelListener implements Listener {
 
@@ -38,7 +37,6 @@ public class ProxyChannelListener implements Listener {
         try {
             String subChannel = in.readUTF();
 
-
             // RELAY PACKET //
             if (subChannel.equals("Update")
                 //|| subChannel.equals("Ping") || subChannel.equals("Pinged")
@@ -57,11 +55,11 @@ public class ProxyChannelListener implements Listener {
                 String command = in.readUTF();
 
                 if (command.contains("message:")) {
-                    String[] commandArray = command.split(":");
-                    String[] filter = Arrays.copyOfRange(commandArray, 1, commandArray.length);
-
-                    String guildName = in.readUTF();
-                    String message = in.readUTF();
+//                    String[] commandArray = command.split(":");
+//                    String[] filter = Arrays.copyOfRange(commandArray, 1, commandArray.length);
+//
+//                    String guildName = in.readUTF();
+//                    String message = in.readUTF();
 
                     plugin.relayPacket("DungeonRealms", event.getData());
                     //plugin.sendMessageToGuild(guildName, message, filter);
@@ -70,8 +68,8 @@ public class ProxyChannelListener implements Listener {
 
                 switch (command) {
                     case "message": {
-                        String guildName = in.readUTF();
-                        String message = in.readUTF();
+//                        String guildName = in.readUTF();
+//                        String message = in.readUTF();
 
                         plugin.relayPacket("DungeonRealms", event.getData());
                         //  plugin.sendMessageToGuild(guildName, message);

@@ -1,7 +1,5 @@
 package net.dungeonrealms.proxy;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import net.dungeonrealms.Constants;
 import net.dungeonrealms.network.PingResponse;
 import net.dungeonrealms.network.ServerAddress;
@@ -18,7 +16,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
-import org.bson.Document;
 
 import java.net.InetSocketAddress;
 import java.util.*;
@@ -29,12 +26,6 @@ import java.util.*;
 
 public class DungeonRealmsProxy extends Plugin implements Listener {
 
-    private final String[] LOAD_BALANCED_SHARDS = new String[]{"us1", "us2", "us3", "us4", "us5"}; // @note: don't include special shards
-
-    public static com.mongodb.MongoClient mongoClient = null;
-    public static MongoClientURI mongoClientURI = null;
-    public static com.mongodb.client.MongoDatabase database = null;
-    public static com.mongodb.client.MongoCollection<Document> guilds = null;
     private static DungeonRealmsProxy instance;
 
     public static DungeonRealmsProxy getInstance() {
@@ -45,17 +36,10 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     public void onEnable() {
         instance = this;
         getLogger().info("DungeonRealmsProxy onEnable() ... STARTING UP");
-        getLogger().info("DungeonRealmsProxy Starting [MONGODB] Connection...");
-        mongoClientURI = new MongoClientURI("mongodb://dungeonuser:mwH47e552qxWPwxL@ds025224-a0.mlab.com:25224,ds025224-a1.mlab.com:25224/dungeonrealms?replicaSet=rs-ds025224");
-        mongoClient = new MongoClient(mongoClientURI);
-        database = mongoClient.getDatabase("dungeonrealms");
-        guilds = database.getCollection("guilds");
-        getLogger().info("DungeonRealmsProxy [MONGODB] has connected successfully!");
-
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
 
-        // ADD DUNGEON REALM SHARDS //
+        // REGISTER DUNGEON REALM SHARDS //
         Arrays.asList(ShardInfo.values()).stream().forEach(info -> {
                     ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(info.getPseudoName(), new InetSocketAddress(info.getAddress().getAddress(), info.getAddress().getPort()), "", false);
                     ProxyServer.getInstance().getServers().put(info.getPseudoName(), serverInfo);
@@ -89,14 +73,13 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     public List<ServerInfo> getOptimalShards() {
         List<ServerInfo> servers = new ArrayList<>();
 
-        for (String shardName : LOAD_BALANCED_SHARDS)
-            // We want to only put them on a US as they may fail the criteria for another shard.
-            // They are free to join another shard once connected.
-            if (shardName.startsWith("us") && !shardName.equalsIgnoreCase("us0"))
-                servers.add(getProxy().getServerInfo(shardName));
+//        for (String shardName : LOAD_BALANCED_SHARDS)
+//            // We want to only put them on a US as they may fail the criteria for another shard.
+//            // They are free to join another shard once connected.
+//            if (shardName.startsWith("us") && !shardName.equalsIgnoreCase("us0"))
+//                servers.add(getProxy().getServerInfo(shardName));
 
         Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
-
         return servers;
     }
 
