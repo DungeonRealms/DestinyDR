@@ -115,7 +115,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                                 return;
                             }
 
-                            player.sendMessage(ChatColor.RED + "Transferring shard ... " + net.md_5.bungee.api.ChatColor.BOLD + taskTimer[0] + "s");
+                            player.sendMessage(ChatColor.RED + "Transferring your character data ... " + net.md_5.bungee.api.ChatColor.BOLD + taskTimer[0] + "s");
                             taskTimer[0]--;
 
                             if (taskTimer[0] == 0) {

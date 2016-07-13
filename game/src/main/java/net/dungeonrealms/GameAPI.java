@@ -637,25 +637,7 @@ public class GameAPI {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
             return;
         } else if (player != null) {
-            long lastLogin = ((Long) DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid));
-
             //TODO: Remove this when the DatabaseDriver Wipes.
-            try {
-                if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid))
-                        && (lastLogin != 0 && (System.currentTimeMillis() - lastLogin) < 5000) && !Rank.isGM(player)) {
-                    String kickMessage = ChatColor.RED + "You must wait 5 seconds before logging into a shard!";
-
-                    BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), kickMessage);
-                    player.kickPlayer(ChatColor.RED + kickMessage);
-                    return;
-                }
-
-                if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid)))
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, false, true);
-            } catch (NullPointerException ignored) {
-
-            }
-
             player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
             if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {
