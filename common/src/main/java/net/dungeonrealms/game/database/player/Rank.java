@@ -30,6 +30,41 @@ public class Rank {
     }
 
     /**
+     * Less query intensive rank check
+     *
+     * @param player
+     * @return boolean
+     */
+    public static boolean isRank(OfflinePlayer player, String name) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId());
+
+        switch (name) {
+            case "dev":
+                return rank.equalsIgnoreCase("dev") && Arrays.asList(Constants.DEVELOPERS).contains(player.getName());
+
+            case "gm":
+                return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev") || player.isOp();
+
+            case "support":
+                return rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("dev");
+
+            case "pmod":
+                return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
+
+            case "youtube":
+                return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
+
+            case "subscriber":
+            case "sub":
+                return rank != null && !rank.equalsIgnoreCase("default");
+
+            default:
+                return rank != null && rank.equalsIgnoreCase("default");
+        }
+    }
+
+
+    /**
      * Returns true if user has the rank "dev".
      *
      * @param player
