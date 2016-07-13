@@ -155,13 +155,13 @@ public class TutorialIsland implements GenericMechanic, Listener {
                 pl.playSound(pl.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
             }, 90L);
             if (!(quest_map.containsKey(pl.getName()))) {
-                List<String> quests_left = new ArrayList<String>(Arrays.asList("Master Miner", "Master Fisherman",
+                List<String> quests_left = new ArrayList<>(Arrays.asList("Master Miner", "Master Fisherman",
                         "Equipment Master", "Interface Guide", "Item Enchanter", "Armor " +
                                 "Guide", "Alignment Guide", ChatColor.YELLOW.toString() + "Neutral Guide", ChatColor
                                 .RED.toString
                                         () + "Chaotic Guide", ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee"));
                 quest_map.put(pl.getName(), quests_left);
-                completion_delay.put(pl.getName(), new ArrayList<String>());
+                completion_delay.put(pl.getName(), new ArrayList<>());
             }
         }
     }

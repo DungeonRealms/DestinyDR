@@ -560,15 +560,12 @@ public class BankListener implements Listener {
                 player.sendMessage(ChatColor.GRAY + "This bank note is worth " + ChatColor.GREEN + noteWorth + " Gems." + ChatColor.GRAY + " Please enter the amount");
                 player.sendMessage(ChatColor.GRAY + "you'd like to sign an additional bank note for. Alternatively,");
                 player.sendMessage(ChatColor.GRAY + "type" + ChatColor.RED + " 'cancel' " + ChatColor.GRAY + "to stop this operation.");
-
-                String ePochTag = AntiCheat.getInstance().getUniqueEpochIdentifier(player.getInventory().getItemInMainHand());
-
-
                 ItemStack heldItem = interactEvent.getPlayer().getEquipment().getItemInMainHand().clone();
                 interactEvent.getPlayer().getInventory().setItemInMainHand(null);
 
                 Chat.listenForMessage(player, event -> {
                     if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("c")) {
+                        player.getInventory().addItem(heldItem);
                         player.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED");
                         return;
                     }
@@ -588,7 +585,10 @@ public class BankListener implements Listener {
                         player.getInventory().addItem(heldItem);
                     } else {
                         if (player.getInventory().firstEmpty() != -1) {
-                            if (number == noteWorth) return;
+                            if (number == noteWorth) {
+                                player.getInventory().addItem(heldItem);
+                                return;
+                            }
                             int newValue = noteWorth - number;
                             player.getInventory().addItem(BankMechanics.createBankNote(newValue));
                             player.getInventory().addItem(BankMechanics.createBankNote(number));

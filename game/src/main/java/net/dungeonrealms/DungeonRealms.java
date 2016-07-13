@@ -222,7 +222,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
-            mm.registerMechanic(TutorialIsland.getInstance());
+//            mm.registerMechanic(TutorialIsland.getInstance());
             mm.registerMechanic(PatchTools.getInstance());
         } else {
             mm.registerMechanic(PetUtils.getInstance());
@@ -280,7 +280,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new RestrictionListener(), this);
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
-            pm.registerEvents(new TutorialIsland(), this);
+//            pm.registerEvents(new TutorialIsland(), this);
         } else {
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
