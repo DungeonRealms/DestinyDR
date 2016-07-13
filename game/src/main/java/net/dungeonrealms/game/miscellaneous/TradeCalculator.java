@@ -215,7 +215,6 @@ public class TradeCalculator {
                     if (!line.contains("%"))
                         continue;
                     String enchantString = line.substring(2, line.indexOf("+")).trim();
-                    Bukkit.getServer().getLogger().info(enchantString);
                     Fishing.FishingRodEnchant enchant = Fishing.FishingRodEnchant.getEnchant(enchantString);
                     int percent = Integer.parseInt(line.substring(line.indexOf("+"), line.indexOf("%")));
                     ItemStack enchantItem = Fishing.getEnchant(tier, enchant, percent);
