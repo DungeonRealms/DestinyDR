@@ -561,6 +561,7 @@ public class MainListener implements Listener {
                 e.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
                 e.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
                 e.setCancelled(true);
+                return;
             }
         }
 

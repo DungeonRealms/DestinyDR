@@ -35,6 +35,14 @@ public class StaffWitherSkeleton extends DRSkeleton implements IRangedEntity {
 
     public StaffWitherSkeleton(World world) {
         super(world);
+        this.setSize(0.7F, 2.4F);
+        this.fireProof = true;
+        this.setSkeletonType(1);
+        clearGoalSelectors();
+        this.goalSelector.a(0, new PathfinderGoalRandomStroll(this, .6F));
+        this.goalSelector.a(1, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+        this.goalSelector.a(2, new PathfinderGoalRandomLookaround(this));
+        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
     }
 
     @Override
