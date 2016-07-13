@@ -128,6 +128,7 @@ public class RealmListener implements Listener {
         }
     }
 
+
     @EventHandler
     public void onBlock(BlockPhysicsEvent event) {
         if (event.getBlock().getWorld().equals(Bukkit.getWorlds().get(0))) return;

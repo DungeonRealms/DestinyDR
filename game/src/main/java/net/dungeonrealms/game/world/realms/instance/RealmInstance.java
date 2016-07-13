@@ -77,7 +77,6 @@ public class RealmInstance implements Realms {
     private File pluginFolder = null;
     private File rootFolder = null;
 
-
     public static RealmInstance getInstance() {
         if (instance == null) {
             instance = new RealmInstance();
@@ -118,16 +117,6 @@ public class RealmInstance implements Realms {
 
         Utils.log.info("DungeonRealms Finished Registering RealmsInstance() ... FINISHED!");
         Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
-
-        // CRAFTING RESTRICTIONS //
-        removeRecipe(Material.CHEST);
-        removeRecipe(Material.FURNACE);
-        removeRecipe(Material.ENDER_CHEST);
-        removeRecipe(Material.HOPPER);
-        removeRecipe(Material.ANVIL);
-        removeRecipe(Material.DROPPER);
-        removeRecipe(Material.DISPENSER);
-        removeRecipe(Material.TRAPPED_CHEST);
     }
 
 
@@ -170,7 +159,7 @@ public class RealmInstance implements Realms {
 
         player.sendMessage(ChatColor.YELLOW + "Please wait whilst your realm is being loaded...");
 
-        AsyncRealmLoadCallback(player, false, downloadRealm(player.getUniqueId()), callback -> {
+        loadRealmAsync(player, false, downloadRealm(player.getUniqueId()), callback -> {
             // RUN SYNC AGAIN //
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                 if (!callback) Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* REALM CREATED *");
@@ -189,7 +178,7 @@ public class RealmInstance implements Realms {
     }
 
     @Override
-    public void AsyncRealmLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter) {
+    public void loadRealmAsync(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter) {
         Futures.addCallback(task, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean success) {
@@ -212,7 +201,7 @@ public class RealmInstance implements Realms {
 
     private void loadRealm(Player player, boolean create, Runnable doAfter) {
         if (create) {
-            AsyncRealmLoadCallback(player, false, loadTemplate(player.getUniqueId()), callback -> {
+            loadRealmAsync(player, false, loadTemplate(player.getUniqueId()), callback -> {
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                             loadRealmWorld(player.getUniqueId());
                             if (doAfter != null)
@@ -566,7 +555,6 @@ public class RealmInstance implements Realms {
 
     private void uploadRealm(UUID uuid, Consumer<Boolean> doAfter) {
         Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
-
         InputStream inputStream = null;
 
         try {
@@ -594,6 +582,17 @@ public class RealmInstance implements Realms {
         } finally {
             Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
 
+            // PLAYER'S REALM IS STILL UPLOADING \\
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
+
+            // SEND PLAYER UPDATE PACKET IF THEY SWITCHED SHARDS //
+            GameAPI.updatePlayerData(uuid);
+
+            getRealm(uuid).setStatus(RealmStatus.CLOSED);
+
+            if (doAfter != null)
+                doAfter.accept(true);
+
             if (inputStream != null) {
                 try {
                     inputStream.close();
@@ -608,16 +607,6 @@ public class RealmInstance implements Realms {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // PLAYER'S REALM IS STILL UPLOADING \\
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
-
-            // SEND PLAYER UPDATE PACKET IF THEY SWITCHED SHARDS //
-            GameAPI.updatePlayerData(uuid);
-
-            getRealm(uuid).setStatus(RealmStatus.CLOSED);
-
-            if (doAfter != null)
-                doAfter.accept(true);
         }
     }
 

@@ -66,14 +66,13 @@ public class GuildMechanics {
 
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
-        if (!GuildDatabaseAPI.get().isGuildCached(guildName))
-            GuildDatabaseAPI.get().updateCache(guildName);
-
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
         // Checks if guild still exists
         checkPlayerGuild(player.getUniqueId());
+
+        GuildDatabaseAPI.get().updateCache(guildName);
 
         List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
 
@@ -240,7 +239,9 @@ public class GuildMechanics {
      * @param guildName Guild
      */
     public void showGuildInfo(Player player, String guildName, boolean showMotd) {
-        GameAPI.updateGuildData(guildName);
+
+        // UPDATE CACHED DATA INFO //
+        GuildDatabaseAPI.get().updateCache(guildName);
 
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
@@ -385,10 +386,7 @@ public class GuildMechanics {
 
             if (officers.size() > 0) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
 
-            // guild tags in scoreboard disabled
-            /*GamePlayer gp = GameAPI.getGamePlayer(player);
-            if (gp != null)
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());*/
+            GuildDatabaseAPI.get().updateCache(guildName);
 
             GameAPI.updateGuildData(guildName);
             GameAPI.updatePlayerData(player.getUniqueId());

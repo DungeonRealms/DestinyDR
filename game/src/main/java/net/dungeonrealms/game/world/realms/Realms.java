@@ -47,20 +47,6 @@ public interface Realms extends GenericMechanic {
     void stopInvocation();
 
 
-    boolean isApollosRealm(String worldName);
-
-
-    /**
-     * Async realm loader callback
-     *
-     * @param player          Owner of realm
-     * @param callOnException Should call callback if exception is caught
-     * @param task            Async task
-     * @param callback        Callback method?
-     */
-    void AsyncRealmLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> callback);
-
-
     /**
      * Opens the player's realm portal
      * Realm should be already cached before executing this command
@@ -120,6 +106,17 @@ public interface Realms extends GenericMechanic {
      * @param player Player who is logging out
      */
     void doLogout(Player player);
+
+    /**
+     * Async realm loader
+     *
+     * @param player          Owner of realm
+     * @param callOnException Should call callback if exception is caught
+     * @param task            Async task
+     * @param callback        Callback method?
+     */
+    void loadRealmAsync(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> callback);
+
 
     /**
      * This function downloads the player's realm from the realm FTP database if it exists
@@ -323,4 +320,7 @@ public interface Realms extends GenericMechanic {
      * @return Players realm.
      */
     RealmToken getRealm(World world);
+
+
+    boolean isApollosRealm(String worldName);
 }

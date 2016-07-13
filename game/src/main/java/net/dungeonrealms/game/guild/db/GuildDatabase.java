@@ -56,6 +56,11 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return CACHED_GUILD.containsKey(guildName);
     }
 
+    @Override
+    public Document getDocument(String guildName) {
+        return get(EnumGuildData.NAME, guildName);
+    }
+
     public void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback) {
         Document template = GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag, banner);
 
@@ -84,7 +89,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
         // GRABBED CACHED DATA
         if (CACHED_GUILD.containsKey(guildName)) doc = CACHED_GUILD.get(guildName);
-        else doc = (Document) get(EnumGuildData.NAME, guildName);
+        else doc = get(EnumGuildData.NAME, guildName);
 
         if (doc == null) return null;
 
@@ -92,7 +97,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
 
-    private Object get(EnumGuildData data, Object value) {
+    public Document get(EnumGuildData data, Object value) {
         Bson query = Filters.eq(data.getKey(), value);
         return DatabaseDriver.guilds.find(query).first();
     }

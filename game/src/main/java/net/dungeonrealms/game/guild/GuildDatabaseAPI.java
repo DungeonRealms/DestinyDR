@@ -48,6 +48,13 @@ public interface GuildDatabaseAPI {
                         .append("experience", 0));
     }
 
+    /**
+     * Returns guild document
+     *
+     * @param guildName
+     * @return
+     */
+    Document getDocument(String guildName);
 
     /**
      * @param guildName Guild Name.

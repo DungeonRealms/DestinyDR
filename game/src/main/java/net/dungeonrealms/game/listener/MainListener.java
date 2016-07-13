@@ -212,6 +212,8 @@ public class MainListener implements Listener {
             event.setLoginResult(Result.KICK_BANNED);
             PunishAPI.kick(name, bannedMessage, doBefore -> GameAPI.handleLogout(event.getUniqueId()));
             event.setKickMessage(bannedMessage);
+
+            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
         }
     }
 

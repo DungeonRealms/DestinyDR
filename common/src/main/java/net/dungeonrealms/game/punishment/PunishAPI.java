@@ -77,7 +77,6 @@ public class PunishAPI {
     }
 
     public static String getMutedMessage(UUID uuid) {
-        if (!isMuted(uuid)) return null;
 
         long muteTime = (long) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_TIME);
         String reason = (String) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_REASON);
@@ -92,7 +91,6 @@ public class PunishAPI {
      */
     public static void unban(UUID uuid) {
         if (uuid == null) return;
-        if (!isBanned(uuid)) return;
 
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, 0L, true);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, "", true);

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands.punish;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.player.Rank;
@@ -51,6 +52,8 @@ public class CommandUnban extends BasicCommand {
         }
 
         PunishAPI.unban(p_uuid);
+        GameAPI.updatePlayerData(p_uuid);
+
         sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name);
         return false;
     }
