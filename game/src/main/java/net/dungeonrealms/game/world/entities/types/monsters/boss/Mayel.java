@@ -22,6 +22,7 @@ import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -117,6 +118,9 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::doBossDrops, 5L);
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
+            if (p.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
             GamePlayer gp = GameAPI.getGamePlayer(p);
             if (gp != null) {
                 gp.getPlayerStatistics().setMayelKills(gp.getPlayerStatistics().getMayelKills() + 1);
@@ -208,7 +212,14 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
 
         int gemDrop = random.nextInt(250 - 100) + 100;
-        int perPlayerDrop = Math.round(gemDrop / livingEntity.getWorld().getPlayers().size());
+        int groupSize = 0;
+        for (Player player : livingEntity.getWorld().getPlayers()) {
+            if (player.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
+            groupSize++;
+        }
+        int perPlayerDrop = Math.round(gemDrop / groupSize);
         ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {
@@ -218,6 +229,9 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         }, 5L);
         String partyMembers = "";
         for (Player player : livingEntity.getWorld().getPlayers()) {
+            if (player.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
             partyMembers += player.getName() + ", ";
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), banknote);

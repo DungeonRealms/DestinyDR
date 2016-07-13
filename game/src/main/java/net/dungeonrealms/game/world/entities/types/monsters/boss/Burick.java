@@ -110,6 +110,9 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::doBossDrops, 5L);
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
+            if (p.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
             GamePlayer gp = GameAPI.getGamePlayer(p);
             if (gp != null) {
                 gp.getPlayerStatistics().setBurickKills(gp.getPlayerStatistics().getBurickKills() + 1);
@@ -326,7 +329,14 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
         }
         int gemDrop = random.nextInt(2500 - 1000) + 1000;
-        int perPlayerDrop = Math.round(gemDrop / livingEntity.getWorld().getPlayers().size());
+        int groupSize = 0;
+        for (Player player : livingEntity.getWorld().getPlayers()) {
+            if (player.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
+            groupSize++;
+        }
+        int perPlayerDrop = Math.round(gemDrop / groupSize);
         ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {
@@ -336,6 +346,9 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
         }, 5L);
         String partyMembers = "";
         for (Player player : livingEntity.getWorld().getPlayers()) {
+            if (player.getGameMode() != GameMode.SURVIVAL) {
+                continue;
+            }
             partyMembers += player.getName() + ", ";
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), banknote);
