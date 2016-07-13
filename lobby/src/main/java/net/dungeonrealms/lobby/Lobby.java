@@ -52,12 +52,10 @@ public class Lobby extends JavaPlugin implements Listener {
 
         try {
             loading_users.add(event.getUniqueId());
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> loading_users.remove(event.getUniqueId()), 60L);
         } catch (IndexOutOfBoundsException ignored) {
         }
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            loading_users.remove(event.getUniqueId());
-        }, 60L);
     }
 
     @EventHandler
