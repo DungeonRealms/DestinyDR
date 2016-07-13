@@ -125,6 +125,7 @@ public class RealmInstance implements Realms {
         // REMOVES ALL CACHED REALMS //
         Utils.log.info("[REALM] [SYNC] Uploading all player realms..");
         removeAllRealms(false);
+        Utils.log.info("[REALM] [SYNC] All realms uploaded.");
     }
 
     @Override
@@ -310,8 +311,7 @@ public class RealmInstance implements Realms {
 
     @Override
     public void loadRealmWorld(UUID uuid) {
-        Utils.log.info("[REALM] [SYNC] Loading world for " + uuid.toString());
-        Utils.log.info("[REALM] [SYNC] Server will halt during this process");
+        Utils.log.info("[REALM] [SYNC] Loading realm for " + uuid.toString());
 
         WorldCreator wc = new WorldCreator(uuid.toString());
         wc.generator(new RealmGenerator());
@@ -322,8 +322,8 @@ public class RealmInstance implements Realms {
 
         world.getEntities().stream().filter(e -> e instanceof Item).forEach(Entity::remove);
 
-        Utils.log.info("[REALM] [SYNC] World loaded for " + uuid.toString());
-        Utils.log.info("[REALM] [SYNC] Setting world region " + uuid.toString());
+        Utils.log.info("[REALM] [SYNC] Realm loaded for " + uuid.toString());
+        Utils.log.info("[REALM] [SYNC] Realm Setting world region " + uuid.toString());
 
         setRealmRegion(world, true);
     }
@@ -685,7 +685,7 @@ public class RealmInstance implements Realms {
         if (!Realms.getInstance().isRealmCached(uuid)) return;
 
         // UNLOAD WORLD
-        Utils.log.info("[REALM] [SYNC] Unloading realm world for " + uuid.toString());
+        Utils.log.info("[REALM] [SYNC] Unloading realm for " + uuid.toString());
 
         // REMOVED ITEMS
         getRealmWorld(uuid).getEntities().stream().filter(e -> e instanceof Item).forEach(Entity::remove);
