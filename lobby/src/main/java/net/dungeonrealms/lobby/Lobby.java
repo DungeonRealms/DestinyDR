@@ -2,8 +2,10 @@ package net.dungeonrealms.lobby;
 
 import lombok.Getter;
 import net.dungeonrealms.Constants;
+import net.dungeonrealms.game.commands.CommandManager;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.DatabaseDriver;
+import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
@@ -44,6 +46,11 @@ public class Lobby extends JavaPlugin implements Listener {
         DatabaseDriver.getInstance().startInitialization(true);
 
         Bukkit.getPluginManager().registerEvents(this, this);
+
+        CommandManager cm = new CommandManager();
+
+        // Commands always registered regardless of server.
+        cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command."));
     }
 
     @EventHandler

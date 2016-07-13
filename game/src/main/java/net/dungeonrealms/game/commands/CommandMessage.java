@@ -2,7 +2,6 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.database.type.EnumData;

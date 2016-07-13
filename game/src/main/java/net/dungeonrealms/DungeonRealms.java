@@ -8,7 +8,6 @@ import net.dungeonrealms.game.commands.friends.AcceptCommand;
 import net.dungeonrealms.game.commands.friends.AddCommand;
 import net.dungeonrealms.game.commands.friends.FriendsCommand;
 import net.dungeonrealms.game.commands.friends.RemoveCommand;
-import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.*;
 import net.dungeonrealms.game.commands.newcommands.GlobalBroadcastCommand;

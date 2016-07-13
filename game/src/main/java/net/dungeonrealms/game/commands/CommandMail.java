@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.player.banks.BankMechanics;

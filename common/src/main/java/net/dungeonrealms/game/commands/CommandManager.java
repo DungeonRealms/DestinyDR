@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.commands.generic;
+package net.dungeonrealms.game.commands;
 
 /**
  * Created by Nick on 10/24/2015.

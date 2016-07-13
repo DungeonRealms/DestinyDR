@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
