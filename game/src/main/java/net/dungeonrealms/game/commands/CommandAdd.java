@@ -103,7 +103,7 @@ public class CommandAdd extends BasicCommand {
                                     new ItemGenerator().setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
                         }
                     } catch (NullPointerException ex) {
-                        player.sendMessage("Format: /ad weapon [tier] [method] [rarity]. Leave parameter blank to generate a random value.");
+                        player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
                 case "armor":
@@ -128,7 +128,7 @@ public class CommandAdd extends BasicCommand {
                                     new ItemGenerator().setType(Item.ItemType.getRandomArmor()).generateItem().getItem());
                         }
                     } catch (NullPointerException ex) {
-                        player.sendMessage("Format: /ad armor [tier] [method] [rarity]. Leave parameter blank to generate a random value.");
+                        player.sendMessage("Format: /ad armor [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
                 case "customitem":

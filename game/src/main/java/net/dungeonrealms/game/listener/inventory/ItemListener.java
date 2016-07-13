@@ -662,7 +662,7 @@ public class ItemListener implements Listener {
         player.updateInventory();
         if (!EntityAPI.hasPetOut(player.getUniqueId())) return;
         if (EntityAPI.getPlayerPet(player.getUniqueId()).equals(((CraftEntity) event.getRightClicked()).getHandle())) {
-            player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or method " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
+            player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
             player.closeInventory();
             Chat.listenForMessage(player, newPetName -> {
                 if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {

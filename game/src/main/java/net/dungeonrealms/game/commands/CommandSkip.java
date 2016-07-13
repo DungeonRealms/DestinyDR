@@ -32,8 +32,8 @@ public class CommandSkip extends BasicCommand {
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED
                     + "If you skip this tutorial you will not recieve " + ChatColor.UNDERLINE + "ANY"
                     + ChatColor.RED + " of the item rewards for completing it.");
-            player.sendMessage(ChatColor.GRAY + "If you're sure you still want to skip it, method '" + ChatColor.GREEN
-                    + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to finish the tutorial. Otherwise, just method '"
+            player.sendMessage(ChatColor.GRAY + "If you're sure you still want to skip it, type '" + ChatColor.GREEN
+                    + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to finish the tutorial. Otherwise, just type '"
                     + ChatColor.RED + "cancel" + ChatColor.GRAY + "' to continue with the tutorial.");
 
             Chat.getInstance().listenForMessage(player, chat -> {

@@ -738,7 +738,7 @@ public class GameAPI {
              */
             player.teleport(new Location(Bukkit.getWorlds().get(0), 990, 32, -147, 72.9f, -3.3f));
             player.sendMessage(new String[]{
-                    ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or method /skip"
+                    ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });
 
         }

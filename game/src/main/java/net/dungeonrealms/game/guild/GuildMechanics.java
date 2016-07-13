@@ -163,7 +163,7 @@ public class GuildMechanics {
         } else {
             guildChat.add(player.getUniqueId());
             player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to <" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
-            player.sendMessage(ChatColor.GRAY + "To change back to default local, method " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
+            player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
         }
     }
 
@@ -560,7 +560,7 @@ public class GuildMechanics {
 
             // Prompts the user for requested Guild name
             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, please enter your " + ChatColor.UNDERLINE + "formal guild name" + ChatColor.WHITE + ", this should be your FULL GUILD NAME, you will enter a shorter 'tag' later.");
-            player.sendMessage(ChatColor.GRAY + "You may method 'cancel' at any time to stop this guild creation.");
+            player.sendMessage(ChatColor.GRAY + "You may type 'cancel' at any time to stop this guild creation.");
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Chat.listenForMessage(player, guildNameRequest -> {
 

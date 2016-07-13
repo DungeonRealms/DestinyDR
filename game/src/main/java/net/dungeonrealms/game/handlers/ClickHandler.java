@@ -581,7 +581,7 @@ public class ClickHandler {
                         if (nmsStack.getTag().getString("petName") != null) {
                             petName = nmsStack.getTag().getString("petName");
                         }
-                        player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or method " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
+                        player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
                         player.closeInventory();
                         String finalPetName = petName;
                         Chat.listenForMessage(player, newPetName -> {

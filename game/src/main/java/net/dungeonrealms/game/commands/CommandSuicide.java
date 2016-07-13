@@ -27,8 +27,8 @@ public class CommandSuicide extends BasicCommand {
 		}
 
 		p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.GRAY + "This " +
-				"command will KILL you, you will LOSE everything you are carrying. If you are sure, method '" +
-				ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + "', if not, method '" + ChatColor
+				"command will KILL you, you will LOSE everything you are carrying. If you are sure, type '" +
+				ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + "', if not, type '" + ChatColor
 				.RED.toString() + "cancel" + ChatColor.RED + "'.");
 
 		Chat.listenForMessage(p, event -> {
