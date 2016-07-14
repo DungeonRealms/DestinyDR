@@ -43,6 +43,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     public void updateCache(String guildName) {
         Document doc = DatabaseDriver.guilds.find(Filters.eq("info.name", guildName)).first();
+        if (doc == null) return;
         CACHED_GUILD.put(guildName, doc);
     }
 
@@ -165,6 +166,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         if (getGuildOf(uuid) == null) return;
 
         modifyRank(guildName, uuid, true);
+        updateCache(guildName);
     }
 
 
@@ -172,6 +174,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         if (getGuildOf(uuid) == null) return;
 
         modifyRank(guildName, uuid, false);
+        updateCache(guildName);
     }
 
     @Override
@@ -181,9 +184,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     private void modifyRank(String guildName, UUID uuid, boolean promote) {
-        List<String> officers = (List<String>) get(guildName, EnumGuildData.OFFICERS, ArrayList.class);
-
-        assert officers != null;
         if (promote) {
             //ADD TO OFFICERS
             update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PUSH, uuid.toString());
@@ -194,10 +194,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
             update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
             // ADD TO MEMBERS
             update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
-
         }
-
-        updateCache(guildName);
     }
 
 
