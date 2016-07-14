@@ -149,7 +149,7 @@ public interface DRMonster {
             }
         }
 
-        int armorRoll = random.nextInt(1000);
+        int dropRoll = random.nextInt(1000);
         List<ItemStack> toDrop = new ArrayList<>();
         for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
             if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL || stack.getType() == Material.SKULL_ITEM) {
@@ -162,21 +162,26 @@ public interface DRMonster {
             AntiCheat.getInstance().applyAntiDupe(helmet);
             toDrop.add(helmet);
         }
-        ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
-        if (weapon != null && weapon.getType() != Material.AIR) {
-            toDrop.add(weapon);
-        }
         //Random drop choice, as opposed dropping in the same order (boots>legs>chest>head)
         Collections.shuffle(toDrop);
-        if (armorRoll < chance + (chance * killerItemFind / 100)) {
-            if (armorRoll >= chance) {
+        if (dropRoll < chance + (chance * killerItemFind / 100)) {
+            if (dropRoll >= chance) {
                 if (toggleDebug) {
                     killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                 }
             }
-            ItemStack drop = toDrop.get(random.nextInt(toDrop.size()));
-            RepairAPI.setCustomItemDurability(drop, RandomHelper.getRandomNumberBetween(200, 1500));
+            ItemStack drop = null;
+            if (new Random().nextInt(2) == 0) { // 50% chance for weapon, 50% for armor
+                ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
+                if (weapon != null && weapon.getType() != Material.AIR) {
+                    drop = weapon;
+                }
+            }
+            else {
+                drop = toDrop.get(random.nextInt(toDrop.size()));
+            }
             if (drop != null && drop.getType() != Material.AIR) {
+                RepairAPI.setCustomItemDurability(drop, RandomHelper.getRandomNumberBetween(200, 1500));
                 EnchantmentAPI.removeGlow(drop);
                 world.getWorld().dropItem(loc.add(0, 1, 0), drop);
             }
