@@ -85,10 +85,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class DungeonRealms extends JavaPlugin {
 
@@ -452,9 +449,32 @@ public class DungeonRealms extends JavaPlugin {
 
         Bukkit.getServer().setWhitelist(false);
 
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
+                scheduleRestartTask();
+            }
+        }, 14400000);
+
+
+        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+            this.hasFinishedSetup = true;
+            Bukkit.getServer().setWhitelist(false);
+        }, 240L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1)));
+            GameAPI.GAMEPLAYERS.values().stream().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
+        }, 0L, 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, GameAPI::backupDatabase, 12000L, 12000L);
+    }
+
+    private void scheduleRestartTask() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
                 Bukkit.getScheduler().cancelAllTasks();
                 Bukkit.getServer().setWhitelist(true);
                 DungeonRealms.getInstance().setFinishedSetup(false);
@@ -470,18 +490,9 @@ public class DungeonRealms extends JavaPlugin {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), (20 * 60) * 4);
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200L);
-            }, 6000L);
-        }, 288000L);
-        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            this.hasFinishedSetup = true;
-            Bukkit.getServer().setWhitelist(false);
-        }, 240L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1)));
-            GameAPI.GAMEPLAYERS.values().stream().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
-        }, 0L, 20L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, GameAPI::backupDatabase, 12000L, 12000L);
+
+            }
+        }, 300000);
     }
 
     public void onDisable() {
