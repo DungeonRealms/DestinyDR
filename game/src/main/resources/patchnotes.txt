@@ -11,6 +11,7 @@ Bug Fixes
 - Fixed realm portal rune not updating when you reset your realm
 - Fixed crafting restrictions in realms
 - Fixed inventory duping
+- Fixed some of guild issues
 New Features ->
 - Readded the lobby
 - Added shard command in lobby
