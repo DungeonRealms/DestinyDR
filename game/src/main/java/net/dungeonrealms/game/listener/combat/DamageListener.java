@@ -361,7 +361,7 @@ public class DamageListener implements Listener {
                     p = (Player) event.getDamager();
                 } else if (event.getDamager() instanceof Projectile) {
                     if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
-                        p = (Player) ((Projectile) event.getDamager()).getShooter());
+                        p = (Player) ((Projectile) event.getDamager()).getShooter();
                     }
                 }
                 if (p == null) return;
