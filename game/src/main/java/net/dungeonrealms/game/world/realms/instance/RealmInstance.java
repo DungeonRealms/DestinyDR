@@ -40,7 +40,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Recipe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
@@ -832,6 +831,7 @@ public class RealmInstance implements Realms {
         RealmToken realm = getRealm(uuid);
 
         Hologram realmHologram = realm.getHologram();
+        if (Bukkit.getPlayer(uuid) == null) return;
 
         String name = Bukkit.getPlayer(uuid).getName();
 
@@ -899,15 +899,6 @@ public class RealmInstance implements Realms {
             zipFile.addFolder(targetFile, parameters);
         } else {
             System.out.println("ERROR ERROR, HOLY SHIT");
-        }
-    }
-
-    private void removeRecipe(Material m) {
-        Iterator<Recipe> it = Bukkit.getServer().recipeIterator();
-        Recipe recipe;
-        while (it.hasNext()) {
-            recipe = it.next();
-            if (recipe != null && recipe.getResult().getType() == m) it.remove();
         }
     }
 

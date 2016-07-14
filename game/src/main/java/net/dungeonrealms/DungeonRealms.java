@@ -26,7 +26,6 @@ import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.DatabaseDriver;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.guild.GuildChannelListener;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listener.MainListener;
 import net.dungeonrealms.game.listener.TabCompleteCommands;
@@ -297,8 +296,6 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
         }
-
-        new GuildChannelListener(this);
 
         //pm.registerEvents(new MainListener(), this);
         //pm.registerEvents(new DamageListener(), this);

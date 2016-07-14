@@ -362,10 +362,14 @@ public class GuildMechanics {
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
             sendAlert(guildName, player.getName() + " has left the guild.");
 
+            boolean setOwner = false;
+            boolean disbanded = false;
+
             if (isOwner) {
                 if (officers.size() > 0) {
                     UUID sucessor = officers.get(0);
                     sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
+                    setOwner = true;
                 } else {
                     // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");
@@ -376,15 +380,14 @@ public class GuildMechanics {
                     }
 
                     GuildDatabaseAPI.get().deleteGuild(guildName);
+                    disbanded = true;
                 }
             }
 
-            GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
-                        if (exists) GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
-                    }
-            );
+            if (!disbanded)
+                GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
 
-            if (officers.size() > 0) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
+            if (setOwner) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
 
             GuildDatabaseAPI.get().updateCache(guildName);
 
