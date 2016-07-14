@@ -141,7 +141,7 @@ public class CommandAdd extends BasicCommand {
                 case "bank":
                     net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(new ItemStack(Material.ENDER_CHEST));
                     NBTTagCompound Banktag = nmsBank.getTag() == null ? new NBTTagCompound() : nmsBank.getTag();
-                    Banktag.set("method", new NBTTagString("bank"));
+                    Banktag.set("type", new NBTTagString("bank"));
                     nmsBank.setTag(Banktag);
                     player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
                     break;

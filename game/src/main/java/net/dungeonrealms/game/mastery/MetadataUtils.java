@@ -31,21 +31,21 @@ public class MetadataUtils {
     public static void registerEntityMetadata(Entity entity, EnumEntityType entityType, int entityTier, int level) {
         switch (entityType) {
             case PET: {
-                entity.getBukkitEntity().setMetadata("method", new FixedMetadataValue(DungeonRealms.getInstance(), "pet"));
+                entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "pet"));
                 break;
             }
             case FRIENDLY_MOB: {
-                entity.getBukkitEntity().setMetadata("method", new FixedMetadataValue(DungeonRealms.getInstance(), "friendly"));
+                entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "friendly"));
                 entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), entityTier));
                 entity.getBukkitEntity().setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
                 break;
             }
             case MOUNT: {
-                entity.getBukkitEntity().setMetadata("method", new FixedMetadataValue(DungeonRealms.getInstance(), "mount"));
+                entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "mount"));
                 break;
             }
             case HOSTILE_MOB: {
-                entity.getBukkitEntity().setMetadata("method", new FixedMetadataValue(DungeonRealms.getInstance(), "hostile"));
+                entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "hostile"));
                 entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), entityTier));
                 entity.getBukkitEntity().setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
                 GameAPI.calculateAllAttributes((LivingEntity)entity.getBukkitEntity(), ((DRMonster) entity).getAttributes());
@@ -64,7 +64,7 @@ public class MetadataUtils {
      * @since 1.0
      */
     public static void registerBuffMetadata(Entity entity, PotionEffectType potionEffectType, int radius, int duration) {
-        entity.getBukkitEntity().setMetadata("method", new FixedMetadataValue(DungeonRealms.getInstance(), "buff"));
+        entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "buff"));
         entity.getBukkitEntity().setMetadata("effectType", new FixedMetadataValue(DungeonRealms.getInstance(), potionEffectType.getName()));
         entity.getBukkitEntity().setMetadata("radius", new FixedMetadataValue(DungeonRealms.getInstance(), radius));
         entity.getBukkitEntity().setMetadata("duration", new FixedMetadataValue(DungeonRealms.getInstance(), duration));

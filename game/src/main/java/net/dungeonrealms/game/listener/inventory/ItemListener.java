@@ -139,7 +139,7 @@ public class ItemListener implements Listener {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
-        if (tag.hasKey("method")) {
+        if (tag.hasKey("type")) {
             event.setCancelled(true);
         }
     }
@@ -366,8 +366,8 @@ public class ItemListener implements Listener {
                 }
             } else if (event.getItem().getType() == Material.ENDER_CHEST) {
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
-                if (nms.hasTag() && nms.getTag().hasKey("method")) {
-                    if (nms.getTag().getString("method").equalsIgnoreCase("upgrade")) {
+                if (nms.hasTag() && nms.getTag().hasKey("type")) {
+                    if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
                         Player player = event.getPlayer();
                         if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
                             player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
@@ -406,8 +406,8 @@ public class ItemListener implements Listener {
             potion = player.getInventory().getItemInOffHand();
             nmsItem = CraftItemStack.asNMSCopy(potion);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("method")) return;
-            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+            if (!nmsItem.getTag().hasKey("type")) return;
+            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                 event.setCancelled(true);
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);
@@ -426,8 +426,8 @@ public class ItemListener implements Listener {
             potion = player.getInventory().getItemInMainHand();
             nmsItem = CraftItemStack.asNMSCopy(potion);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("method")) return;
-            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+            if (!nmsItem.getTag().hasKey("type")) return;
+            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                 event.setCancelled(true);
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);
@@ -455,8 +455,8 @@ public class ItemListener implements Listener {
             if (AntiCheat.getInstance().getUniqueEpochIdentifier(itemUsed).equalsIgnoreCase(AntiCheat.getInstance().getUniqueEpochIdentifier(potion))) {
                 //Drinking their Mainhand potion
                 if (nmsItem == null || nmsItem.getTag() == null) return;
-                if (!nmsItem.getTag().hasKey("method")) return;
-                if (nmsItem.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+                if (!nmsItem.getTag().hasKey("type")) return;
+                if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                     event.setCancelled(true);
                     event.setUseItemInHand(Event.Result.DENY);
                     event.setUseInteractedBlock(Event.Result.DENY);
@@ -473,8 +473,8 @@ public class ItemListener implements Listener {
             } else {
                 //Drinking their Offhand potion
                 if (nmsOffhand == null || nmsOffhand.getTag() == null) return;
-                if (!nmsOffhand.getTag().hasKey("method")) return;
-                if (nmsOffhand.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+                if (!nmsOffhand.getTag().hasKey("type")) return;
+                if (nmsOffhand.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                     event.setCancelled(true);
                     event.setUseItemInHand(Event.Result.DENY);
                     event.setUseInteractedBlock(Event.Result.DENY);
@@ -505,8 +505,8 @@ public class ItemListener implements Listener {
                 continue;
             }
             nmsPot = CraftItemStack.asNMSCopy(stack);
-            if (nmsPot.hasTag() && nmsPot.getTag() != null && nmsPot.getTag().hasKey("method")) {
-                if (nmsPot.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+            if (nmsPot.hasTag() && nmsPot.getTag() != null && nmsPot.getTag().hasKey("type")) {
+                if (nmsPot.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                     nextPot = stack;
                     player.getInventory().setItem(slotCount, new ItemStack(Material.AIR));
                     break;
@@ -565,8 +565,8 @@ public class ItemListener implements Listener {
             foodItem = player.getInventory().getItemInOffHand();
             nmsItem = CraftItemStack.asNMSCopy(foodItem);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("method")) return;
-            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healingFood")) {
+            if (!nmsItem.getTag().hasKey("type")) return;
+            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
                 performPreFoodChecks(player);
                 event.setCancelled(true);
                 if (foodItem.getAmount() == 1) {
@@ -589,8 +589,8 @@ public class ItemListener implements Listener {
             foodItem = player.getInventory().getItemInMainHand();
             nmsItem = CraftItemStack.asNMSCopy(foodItem);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("method")) return;
-            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healingFood")) {
+            if (!nmsItem.getTag().hasKey("type")) return;
+            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
                 performPreFoodChecks(player);
                 event.setCancelled(true);
                 if (foodItem.getAmount() == 1) {
@@ -614,8 +614,8 @@ public class ItemListener implements Listener {
             foodItem = player.getInventory().getItemInMainHand();
             nmsItem = CraftItemStack.asNMSCopy(foodItem);
             if (nmsItem == null || nmsItem.getTag() == null) return;
-            if (!nmsItem.getTag().hasKey("method")) return;
-            if (nmsItem.getTag().getString("method").equalsIgnoreCase("healingFood")) {
+            if (!nmsItem.getTag().hasKey("type")) return;
+            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
                 performPreFoodChecks(player);
                 event.setCancelled(true);
                 if (foodItem.getAmount() == 1) {
@@ -640,7 +640,7 @@ public class ItemListener implements Listener {
     public void onPotionSplash(PotionSplashEvent event) {
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPotion().getItem()));
         if (nmsItem != null && nmsItem.getTag() != null) {
-            if (nmsItem.getTag().hasKey("method") && nmsItem.getTag().getString("method").equalsIgnoreCase("splashHealthPotion")) {
+            if (nmsItem.getTag().hasKey("type") && nmsItem.getTag().getString("type").equalsIgnoreCase("splashHealthPotion")) {
                 event.setCancelled(true);
                 for (LivingEntity entity : event.getAffectedEntities()) {
                     if (!GameAPI.isPlayer(entity)) {
@@ -971,7 +971,7 @@ public class ItemListener implements Listener {
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getEquipment().getItemInMainHand());
             NBTTagCompound tag = nmsStack.getTag();
             if (tag == null) return;
-            if (!(tag.getString("method").equalsIgnoreCase("important"))) return;
+            if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
             switch (tag.getString("usage")) {
                 case "mount":
                 case "mule":

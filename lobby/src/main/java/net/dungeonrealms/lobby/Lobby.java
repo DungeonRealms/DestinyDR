@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
@@ -75,6 +76,14 @@ public class Lobby extends JavaPlugin implements Listener {
             if (!hasItem(player.getInventory(), getShardSelector()))
                 player.getInventory().setItem(0, getShardSelector());
         });
+    }
+
+    @EventHandler
+    public void onItemClick(PlayerDropItemEvent e) {
+        if (e.getItemDrop().getItemStack().getType() == Material.COMPASS) {
+            e.setCancelled(true);
+            return;
+        }
     }
 
 

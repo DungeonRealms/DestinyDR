@@ -351,10 +351,10 @@ public class RestrictionListener implements Listener {
     public void onAttemptAttackEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             if (event.getEntity() instanceof LivingEntity) {
-                if (!event.getEntity().hasMetadata("method")) return;
+                if (!event.getEntity().hasMetadata("type")) return;
             } else {
-                if (event.getEntity().hasMetadata("method")) {
-                    if (event.getEntity().getMetadata("method").get(0).asString().equals("buff")) return;
+                if (event.getEntity().hasMetadata("type")) {
+                    if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
                 } else {
                     return;
                 }

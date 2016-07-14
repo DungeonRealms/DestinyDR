@@ -79,7 +79,7 @@ public class MailHandler {
     public ItemStack setItemAsMail(ItemStack itemStack, String base64SerializedString) {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        tag.set("method", new NBTTagString("mail"));
+        tag.set("type", new NBTTagString("mail"));
         tag.set("item", new NBTTagString(base64SerializedString));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);

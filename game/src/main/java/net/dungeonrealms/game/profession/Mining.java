@@ -69,8 +69,8 @@ public class Mining implements GenericMechanic {
     public static boolean isDRPickaxe(ItemStack stack) {
         if (stack.getType() == Material.WOOD_PICKAXE || stack.getType() == Material.STONE_PICKAXE || stack.getType() == Material.IRON_PICKAXE || stack.getType() == Material.GOLD_PICKAXE || stack.getType() == Material.DIAMOND_PICKAXE) {
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-            return !(nms == null || nms.getTag() == null) && nms.getTag().hasKey("method")
-                    && nms.getTag().getString("method").equalsIgnoreCase("pick");
+            return !(nms == null || nms.getTag() == null) && nms.getTag().hasKey("type")
+                    && nms.getTag().getString("type").equalsIgnoreCase("pick");
         }
         return false;
     }
@@ -137,7 +137,7 @@ public class Mining implements GenericMechanic {
         ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Pickaxe Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a pickaxe with special attributes."}).build();
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("method", "pickaxeenchant");
+        nms.getTag().setString("type", "pickaxeenchant");
         nms.getTag().setInt(enchant.name(), stat);
         return CraftItemStack.asBukkitCopy(nms);
     }
@@ -146,7 +146,7 @@ public class Mining implements GenericMechanic {
         String statBuff = ChatColor.RED + enchant.display + " " + percent + "%";
         ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Pickaxe Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a pickaxe with special attributes."}).build();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("method", "pickaxeenchant");
+        nms.getTag().setString("type", "pickaxeenchant");
         nms.getTag().setInt(enchant.name(), percent);
         return CraftItemStack.asBukkitCopy(nms);
 

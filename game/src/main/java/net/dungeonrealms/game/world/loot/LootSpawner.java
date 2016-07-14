@@ -68,7 +68,7 @@ public class LootSpawner {
                     stack = ItemManager.createOrbofAlteration();
                 } else if (ItemManager.isEnchantScroll(stack)) {
                     int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
-                    String type = CraftItemStack.asNMSCopy(stack).getTag().getString("method");
+                    String type = CraftItemStack.asNMSCopy(stack).getTag().getString("type");
                     if (type.equalsIgnoreCase("armorenchant"))
                         stack = ItemManager.createArmorEnchant(tier);
                     else
