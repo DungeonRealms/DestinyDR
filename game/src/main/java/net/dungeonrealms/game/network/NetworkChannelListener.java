@@ -78,8 +78,6 @@ public class NetworkChannelListener implements PluginMessageListener, GenericMec
     public void stopInvocation() {
         Utils.log.info("[NetworkChannelListener] Unregistering Outbound/Inbound BungeeCord channels...");
 
-        Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
-        Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
         Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
         Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
     }
