@@ -10,6 +10,7 @@ Bug Fixes
 - Fishing enchantments fixed.
 - Fixed realm portal rune not updating when you reset your realm
 - Fixed crafting restrictions in realms
+- Fixed inventory duping
 New Features ->
 - Readded the lobby
 - Added shard command in lobby
