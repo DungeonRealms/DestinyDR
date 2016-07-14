@@ -734,10 +734,12 @@ public class InventoryListener implements Listener {
             if (failed) {
                 event.setCancelled(true);
 
-                if (EnchantmentAPI.isItemProtected(slotItem)) {
-                    event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
-                    event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
-                    return;
+                if (amount <= 8) {
+                    if (EnchantmentAPI.isItemProtected(slotItem)) {
+                        event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
+                        event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+                        return;
+                    }
                 }
                 if (cursorItem.getAmount() == 1) {
                     event.setCursor(new ItemStack(Material.AIR));
@@ -891,10 +893,12 @@ public class InventoryListener implements Listener {
                     event.setCursor(newStack);
                 }
 
-                if (EnchantmentAPI.isItemProtected(slotItem)) {
-                    event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
-                    event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
-                    return;
+                if (amount <= 8) {
+                    if (EnchantmentAPI.isItemProtected(slotItem)) {
+                        event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
+                        event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+                        return;
+                    }
                 }
 
                 event.getWhoClicked().getWorld().playSound(event.getWhoClicked().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2.0F, 1.25F);

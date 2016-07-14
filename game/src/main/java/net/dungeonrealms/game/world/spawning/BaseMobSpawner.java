@@ -282,7 +282,7 @@ public class BaseMobSpawner {
      */
     void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            boolean playersNearby = !GameAPI.getNearbyPlayers(loc, 32).isEmpty();
+            boolean playersNearby = GameAPI.arePlayersNearby(loc, 32);
             if (playersNearby) {
                 if (timerID == -1) {
                     timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {

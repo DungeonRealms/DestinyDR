@@ -473,6 +473,19 @@ public class GameAPI {
         return playersNearby;
     }
 
+    public static boolean arePlayersNearby(Location location, int radius) {
+        for (Player player : location.getWorld().getPlayers()) {
+            if (!GameAPI.isPlayer(player) || GameAPI._hiddenPlayers.contains(player)) {
+                continue;
+            }
+            if (location.distanceSquared(player.getLocation()) <= radius * radius) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Safely logs out the player, updates their database inventories etc.
      *

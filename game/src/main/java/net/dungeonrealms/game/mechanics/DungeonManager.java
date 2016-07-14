@@ -642,7 +642,7 @@ public class DungeonManager implements GenericMechanic {
                     for (Map.Entry<Entity, Location> entry : object.toSpawn.entrySet()) {
                         Location location = entry.getValue();
                         location.setWorld(w);
-                        if (!GameAPI.getNearbyPlayers(location, 50).isEmpty()) {
+                        if (GameAPI.arePlayersNearby(location, 50)) {
                             final Entity entity = entry.getKey();
                             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
