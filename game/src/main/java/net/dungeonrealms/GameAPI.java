@@ -35,7 +35,6 @@ import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
-import net.dungeonrealms.game.punishment.PunishAPI;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -270,18 +269,19 @@ public class GameAPI {
 
         DungeonRealms.getInstance().getLogger().info("DRStop called.");
 
+        if (sendStopPacket)
+            BungeeUtils.sendNetworkMessage("DungeonRealms", "Stop", "");
+
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
         GameAPI.logoutAllPlayers(true, stopAll);
+
         ShopMechanics.deleteAllShops(true);
         DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
-
-        if (sendStopPacket)
-            BungeeUtils.sendNetworkMessage("DungeonRealms", "Stop", null);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             DungeonRealms.getInstance().mm.stopInvocation();
@@ -651,22 +651,23 @@ public class GameAPI {
     public static void logoutAllPlayers(boolean customStop, boolean stoppingAll) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
+
             if (CombatLog.isInCombat(player)) {
                 CombatLog.removeFromCombat(player);
             }
+
             if (stoppingAll) {
                 DungeonRealms.getInstance().getLoggingOut().add(player.getName());
                 DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                PunishAPI.kick(player.getName(), ChatColor.AQUA + "All DungeonRealm shards are restarting.", doBefore -> handleLogout(player.getUniqueId()));
+                BungeeUtils.sendToServer(player.getName(), "Lobby");
                 continue;
             }
+
             if (customStop) {
                 GameAPI.handleLogout(player.getUniqueId());
                 DungeonRealms.getInstance().getLoggingOut().add(player.getName());
                 DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    BungeeUtils.sendToServer(player.getName(), "Lobby");
-                }, 3L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BungeeUtils.sendToServer(player.getName(), "Lobby"), 3L);
             }
         }
     }
@@ -977,7 +978,7 @@ public class GameAPI {
             normal.addText(ChatColor.YELLOW + "*");
             normal.sendToPlayer(player);
 
-            player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
         }, 150);
 
 

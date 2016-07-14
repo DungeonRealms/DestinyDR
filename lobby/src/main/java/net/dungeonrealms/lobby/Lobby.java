@@ -8,17 +8,13 @@ import net.dungeonrealms.game.database.DatabaseDriver;
 import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -70,8 +66,8 @@ public class Lobby extends JavaPlugin implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Bukkit.getScheduler().runTask(this, () -> {
-
             Player player = event.getPlayer();
+            player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
 
             if (!hasItem(player.getInventory(), getShardSelector()))
                 player.getInventory().setItem(0, getShardSelector());
@@ -83,6 +79,25 @@ public class Lobby extends JavaPlugin implements Listener {
         if (e.getItemDrop().getItemStack().getType() == Material.COMPASS) {
             e.setCancelled(true);
             return;
+        }
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        if ((event.getPlayer().getGameMode() != GameMode.CREATIVE) && (event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR)) {
+            event.getPlayer().setAllowFlight(true);
+        }
+    }
+
+    @EventHandler
+    public void onFly(PlayerToggleFlightEvent event) {
+        Player player = event.getPlayer();
+        if (player.getGameMode() != GameMode.CREATIVE) {
+            event.setCancelled(true);
+            player.setAllowFlight(false);
+            player.setFlying(false);
+            player.setVelocity(player.getLocation().getDirection().multiply(2.7D).setY(0.4D));
+            player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 1.0F, 1.0F);
         }
     }
 

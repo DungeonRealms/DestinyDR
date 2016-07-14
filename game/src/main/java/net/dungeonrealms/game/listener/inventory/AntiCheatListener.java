@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.listener.inventory;
 
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,12 +15,12 @@ public class AntiCheatListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
-        //AntiCheat.getInstance().checkForDupedItems((Player) event.getPlayer());
+        AntiCheat.getInstance().checkForDupedItems((Player) event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
-        //AntiCheat.getInstance().checkForDupedItems((Player) event.getPlayer());
+        AntiCheat.getInstance().checkForDupedItems((Player) event.getPlayer());
     }
 
     /*@EventHandler(priority = EventPriority.MONITOR)

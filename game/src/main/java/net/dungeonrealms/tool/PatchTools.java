@@ -56,6 +56,9 @@ public class PatchTools implements GenericMechanic {
                 String text = ChatColor.translateAlternateColorCodes('&', str.replace("<build>", Constants.BUILD_NUMBER));
                 curCharacters += text.length();
 
+                if (str.trim().length() > 0)
+                    curCharacters += 20;
+
                 if (curCharacters >= 255) {
                     curCharacters = 0;
                     pages.add(builder.toString());
