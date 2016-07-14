@@ -474,7 +474,7 @@ public class DungeonRealms extends JavaPlugin {
         }, 0L, 1000);
 
 
-        new Timer().schedule(new TimerTask() {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 GameAPI.backupDatabase();
