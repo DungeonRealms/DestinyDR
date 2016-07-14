@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;

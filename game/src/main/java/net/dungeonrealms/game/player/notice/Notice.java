@@ -26,7 +26,7 @@ public class Notice {
     //TODO: Friends, Guilds and clickable acceptance.
 
     /**
-     * This method handles notices per player.
+     * This type handles notices per player.
      * E.g. A player logs in and has a guild invite,
      * or a player logs in and has pending friend request.
      *

@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.commands.generic;
+package net.dungeonrealms.game.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;

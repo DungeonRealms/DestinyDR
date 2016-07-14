@@ -48,12 +48,19 @@ public interface GuildDatabaseAPI {
                         .append("experience", 0));
     }
 
+    /**
+     * Returns guild document
+     *
+     * @param guildName
+     * @return
+     */
+    Document getDocument(String guildName);
 
     /**
      * @param guildName Guild Name.
      * @param tag       Clan Tag.
      * @param owner     owner UUID
-     * @param callback  Call back method
+     * @param callback  Call back type
      */
 
     void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback);

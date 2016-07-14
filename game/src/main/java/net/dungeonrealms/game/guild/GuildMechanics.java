@@ -66,14 +66,13 @@ public class GuildMechanics {
 
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
-        if (!GuildDatabaseAPI.get().isGuildCached(guildName))
-            GuildDatabaseAPI.get().updateCache(guildName);
-
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
         // Checks if guild still exists
         checkPlayerGuild(player.getUniqueId());
+
+        GuildDatabaseAPI.get().updateCache(guildName);
 
         List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
 
@@ -240,7 +239,9 @@ public class GuildMechanics {
      * @param guildName Guild
      */
     public void showGuildInfo(Player player, String guildName, boolean showMotd) {
-        GameAPI.updateGuildData(guildName);
+
+        // UPDATE CACHED DATA INFO //
+        GuildDatabaseAPI.get().updateCache(guildName);
 
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
@@ -361,10 +362,14 @@ public class GuildMechanics {
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
             sendAlert(guildName, player.getName() + " has left the guild.");
 
+            boolean setOwner = false;
+            boolean disbanded = false;
+
             if (isOwner) {
                 if (officers.size() > 0) {
                     UUID sucessor = officers.get(0);
                     sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
+                    setOwner = true;
                 } else {
                     // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");
@@ -375,20 +380,16 @@ public class GuildMechanics {
                     }
 
                     GuildDatabaseAPI.get().deleteGuild(guildName);
+                    disbanded = true;
                 }
             }
 
-            GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
-                        if (exists) GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
-                    }
-            );
+            if (!disbanded)
+                GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
 
-            if (officers.size() > 0) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
+            if (setOwner) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
 
-            // guild tags in scoreboard disabled
-            /*GamePlayer gp = GameAPI.getGamePlayer(player);
-            if (gp != null)
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());*/
+            GuildDatabaseAPI.get().updateCache(guildName);
 
             GameAPI.updateGuildData(guildName);
             GameAPI.updatePlayerData(player.getUniqueId());
@@ -519,7 +520,7 @@ public class GuildMechanics {
     }
 
     /**
-     * This single method is used for the dialogue of successfully
+     * This single type is used for the dialogue of successfully
      * creating a guild.
      *
      * @param player Player in dialogue interaction

@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands.newcommands;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.commands.BasicCommand;
 import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.command.Command;

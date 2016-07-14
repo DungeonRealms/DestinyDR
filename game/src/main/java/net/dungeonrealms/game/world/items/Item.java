@@ -490,7 +490,7 @@ public class Item {
 
     // UTILITY FUNCTIONS
     /**
-     * Returns ItemStack Material based on item method and tier.
+     * Returns ItemStack Material based on item type and tier.
      *
      * @param type
      * @param tier

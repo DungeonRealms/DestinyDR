@@ -8,9 +8,13 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.menu.item.GUIButton;
 import net.dungeonrealms.game.player.menu.ShardSwitcher;
 import net.dungeonrealms.game.punishment.PunishAPI;
@@ -34,6 +38,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,7 +46,7 @@ import java.util.UUID;
  * Created by Nick on 10/12/2015.
  */
 @SuppressWarnings("unchecked")
-public class NetworkChannelListener implements PluginMessageListener {
+public class NetworkChannelListener implements PluginMessageListener, GenericMechanic {
 
     static NetworkChannelListener instance = null;
 
@@ -50,6 +55,11 @@ public class NetworkChannelListener implements PluginMessageListener {
             instance = new NetworkChannelListener();
         }
         return instance;
+    }
+
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CARDINALS;
     }
 
     public void startInitialization() {
@@ -62,6 +72,16 @@ public class NetworkChannelListener implements PluginMessageListener {
 
         BungeeServerTracker.startTask(DungeonRealms.getInstance(), 1L);
         Utils.log.info("[NetworkChannelListener] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
+    }
+
+    @Override
+    public void stopInvocation() {
+        Utils.log.info("[NetworkChannelListener] Unregistering Outbound/Inbound BungeeCord channels...");
+
+        Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
+        Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
     }
 
     @Override
@@ -182,6 +202,40 @@ public class NetworkChannelListener implements PluginMessageListener {
                     String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
                     map.get(bungeeName).setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY + " (" + ping + " ms)");
                 }
+
+                if (subChannel.equals("Guilds")) {
+                    String command = in.readUTF();
+
+                    if (command.contains("message:")) {
+                        String[] commandArray = command.split(":");
+                        String[] filter = Arrays.copyOfRange(commandArray, 1, commandArray.length);
+
+                        String guildName = in.readUTF();
+                        String msg = in.readUTF();
+
+                        GuildMechanics.getInstance().sendMessageToGuild(guildName, msg, filter);
+                        return;
+                    }
+
+                    switch (command) {
+                        case "message": {
+                            String guildName = in.readUTF();
+                            String msg = in.readUTF();
+
+                            GuildMechanics.getInstance().sendMessageToGuild(guildName, msg);
+                            break;
+                        }
+
+                        case "update": {
+                            String guildName = in.readUTF();
+
+                            if (GuildDatabaseAPI.get().isGuildCached(guildName))
+                                GuildDatabaseAPI.get().updateCache(guildName);
+                            break;
+                        }
+                    }
+                }
+
 
             } else {
                 try {

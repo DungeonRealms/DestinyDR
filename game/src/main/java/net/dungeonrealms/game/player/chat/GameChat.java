@@ -57,7 +57,7 @@ public final class GameChat {
         // We're using global chat, append global prefix.
         boolean gChat =  isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
         if (gChat) {
-            // Determine which global method we should use, default is GLOBAL.
+            // Determine which global type we should use, default is GLOBAL.
             switch (globalType.toLowerCase()) {
                 case "local": // This allows us to do a cheap hack for "/l".
                     break;

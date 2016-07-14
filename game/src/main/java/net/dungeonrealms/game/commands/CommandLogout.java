@@ -2,7 +2,6 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;

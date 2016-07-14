@@ -1,10 +1,8 @@
 package net.dungeonrealms.game.commands.friends;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.commands.BasicCommand;
 import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.tool.PatchTools;
 import net.minecraft.server.v1_9_R2.EnumHand;
 import net.minecraft.server.v1_9_R2.PacketDataSerializer;
 import net.minecraft.server.v1_9_R2.PacketPlayOutCustomPayload;

@@ -2,7 +2,6 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
@@ -144,7 +143,7 @@ public class CommandMonSpawn extends BasicCommand {
                             }
                         }
                         EnumMonster monsEnum = EnumMonster.getMonsterByString(args[1]);
-                        EnumEntityType method = EnumEntityType.HOSTILE_MOB;
+                        EnumEntityType type = EnumEntityType.HOSTILE_MOB;
                         Entity entity = SpawningMechanics.getMob(((CraftWorld) player.getWorld()).getHandle(), tier, monsEnum);
 
                         int level = Utils.getRandomFromTier(tier, lvlRange);

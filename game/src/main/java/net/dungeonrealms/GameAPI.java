@@ -637,25 +637,7 @@ public class GameAPI {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
             return;
         } else if (player != null) {
-            long lastLogin = ((Long) DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid));
-
             //TODO: Remove this when the DatabaseDriver Wipes.
-            try {
-                if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid))
-                        && (lastLogin != 0 && (System.currentTimeMillis() - lastLogin) < 5000) && !Rank.isGM(player)) {
-                    String kickMessage = ChatColor.RED + "You must wait 5 seconds before logging into a shard!";
-
-                    BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), kickMessage);
-                    player.kickPlayer(ChatColor.RED + kickMessage);
-                    return;
-                }
-
-                if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_SWITCHING_SHARDS, uuid)))
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, false, true);
-            } catch (NullPointerException ignored) {
-
-            }
-
             player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
             if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {
@@ -979,7 +961,6 @@ public class GameAPI {
      * @param serverBungeeName Bungee name
      */
     public static void moveToShard(Player player, String serverBungeeName) {
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_SWITCHING_SHARDS, true, false);
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
         GameAPI.handleLogout(player.getUniqueId());
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
@@ -994,9 +975,9 @@ public class GameAPI {
 
 
     /**
-     * Utility method for calling async tasks with callbacks.
+     * Utility type for calling async tasks with callbacks.
      *
-     * @param callable Callable method
+     * @param callable Callable type
      * @param consumer Consumer task
      * @param <T>      Type of data
      */
@@ -1172,7 +1153,7 @@ public class GameAPI {
     }
 
     /**
-     * Returns a list of nearby monsters defined via their "method" metadata.
+     * Returns a list of nearby monsters defined via their "type" metadata.
      *
      * @param location
      * @param radius
@@ -1320,7 +1301,7 @@ public class GameAPI {
     /**
      * Given an attribute, gets the total value of the attribute from the player's
      * armor and weapon if applicable. Even if the AttributeType passed is an Armor
-     * or Weapon Attribute Type, the method will still try to calculate the total
+     * or Weapon Attribute Type, the type will still try to calculate the total
      * from the player's armor or weapon if applicable. For the attributes damage
      * and health, takes into account benefits given from stats (str, dex, vit, int).
      *
@@ -1332,7 +1313,7 @@ public class GameAPI {
      * @since 2.0
      */
     public static int[] calculateAttribute(Item.AttributeType type, Player p) {
-        if (type instanceof Item.ArmorAttributeType) { // armor method
+        if (type instanceof Item.ArmorAttributeType) { // armor type
             Item.ArmorAttributeType armorType = (Item.ArmorAttributeType) type;
             ItemStack[] armorSet = p.getInventory().getArmorContents();
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = null;
@@ -1436,7 +1417,7 @@ public class GameAPI {
      * Calculates the difference in attributes when a player switches weapons. To save processing
      * power, only called when the player attempts to attack a mob with a new weapon.
      * <p>
-     * NOTE: if attributes like str are added to weapons, this method will have to be called
+     * NOTE: if attributes like str are added to weapons, this type will have to be called
      * whenever a player switches weapons.
      *
      * @param p
@@ -1469,13 +1450,13 @@ public class GameAPI {
                 List<String> oldModifiers = GameAPI.getModifiers(oldWeapon);
                 net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldWeapon).getTag();
 
-                // tbh, the milliseconds saved by writing this method and handleArmorDifferences probably wasn't
+                // tbh, the milliseconds saved by writing this type and handleArmorDifferences probably wasn't
                 // worth the effort...
 
                 // get differences
                 if (newModifiers != null) {
                     newModifiers.stream().forEach(modifier -> {
-                        // get the attribute method to determine if we need a percentage or not and to get the
+                        // get the attribute type to determine if we need a percentage or not and to get the
                         // correct display name
                         Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
 
@@ -1504,7 +1485,7 @@ public class GameAPI {
                 }
             } else {
                 newModifiers.stream().forEach(modifier -> {
-                    // get the attribute method to determine if we need a percentage or not and to get the
+                    // get the attribute type to determine if we need a percentage or not and to get the
                     // correct display name
                     Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
                     // calculate new values
@@ -1628,7 +1609,7 @@ public class GameAPI {
     /**
      * Puts the attributes on an armorset in the given attributes map. Does not
      * necessarily update the gameplayer attributes field. Called in the
-     * calculateAllAttributes method.
+     * calculateAllAttributes type.
      *
      * @param attributes
      * @param armorSet
@@ -1668,7 +1649,7 @@ public class GameAPI {
     /**
      * Puts the attributes on a given weapon in the given attributes map. Does
      * not necessarily update the gameplayer attributes field. Called in the
-     * calculateAllAttributes method.
+     * calculateAllAttributes type.
      *
      * @param attributes
      * @param weapon

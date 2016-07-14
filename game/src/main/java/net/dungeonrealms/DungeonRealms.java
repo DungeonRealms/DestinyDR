@@ -8,7 +8,6 @@ import net.dungeonrealms.game.commands.friends.AcceptCommand;
 import net.dungeonrealms.game.commands.friends.AddCommand;
 import net.dungeonrealms.game.commands.friends.FriendsCommand;
 import net.dungeonrealms.game.commands.friends.RemoveCommand;
-import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.*;
 import net.dungeonrealms.game.commands.newcommands.GlobalBroadcastCommand;
@@ -27,7 +26,6 @@ import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.DatabaseDriver;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.guild.GuildChannelListener;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listener.MainListener;
 import net.dungeonrealms.game.listener.TabCompleteCommands;
@@ -191,7 +189,6 @@ public class DungeonRealms extends JavaPlugin {
         BungeeUtils.setPlugin(this);
 
         DatabaseDriver.getInstance().startInitialization(true);
-        NetworkChannelListener.getInstance().startInitialization();
         AntiCheat.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
@@ -211,6 +208,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(HealthHandler.getInstance());
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
+            mm.registerMechanic(NetworkChannelListener.getInstance());
             //mm.registerMechanic(DungeonManager.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
@@ -235,6 +233,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(new Entities());
+            mm.registerMechanic(NetworkChannelListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
@@ -297,8 +296,6 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
         }
-
-        new GuildChannelListener(this);
 
         //pm.registerEvents(new MainListener(), this);
         //pm.registerEvents(new DamageListener(), this);

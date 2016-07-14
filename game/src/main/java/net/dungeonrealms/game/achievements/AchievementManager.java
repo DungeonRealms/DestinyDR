@@ -86,7 +86,7 @@ public class AchievementManager implements GenericMechanic, Listener {
         BankMechanics.getInstance().checkBankAchievements(uuid, playerBankGems);
         if (!GuildDatabaseAPI.get().isGuildNull(uuid)) {
             Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.GUILD_MEMBER);
-            //TODO: Check if they are Officer when method is implemented.
+            //TODO: Check if they are Officer when type is implemented.
         }
         //TODO: Realm level/tier checks when they are implemented.
         for (Player player : Bukkit.getOnlinePlayers()) {

@@ -113,7 +113,7 @@ public class DRPigman extends EntityPigZombie implements DRMonster {
 
 	@Override
 	public void onMonsterAttack(Player p) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated type stub
 		
 	}
 

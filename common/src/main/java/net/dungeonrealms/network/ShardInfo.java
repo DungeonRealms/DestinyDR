@@ -12,7 +12,7 @@ import java.util.Optional;
 public enum ShardInfo {
 
     // DEVELOPMENT SHARD //
-    US0("US-0", "us0", new ServerAddress("131.153.25.2", 40007)),
+    US0("US-0", "us0", new ServerAddress("158.69.122.139", 40007)),
 
     // US1 SHARD //
     US1("US-1", "us1", new ServerAddress("131.153.25.2", 40007)),
@@ -27,7 +27,7 @@ public enum ShardInfo {
     US4("US-4", "us4", new ServerAddress("131.153.25.218", 40002)),
 
     // US5 SHARD //
-    US5("US-4", "us4", new ServerAddress("131.153.25.218", 40007)),
+    US5("US-5", "us5", new ServerAddress("131.153.25.114", 40007)),
 
     // BR 1 SHARD //
     BR1("BR-1", "br1", new ServerAddress("131.153.25.114", 40008)),

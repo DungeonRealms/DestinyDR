@@ -5,7 +5,7 @@ import net.dungeonrealms.network.PingResponse;
 import net.dungeonrealms.network.ServerAddress;
 import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.ping.ServerPinger;
-import net.dungeonrealms.network.ping.method.SpigotPingResponse;
+import net.dungeonrealms.network.ping.type.SpigotPingResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;

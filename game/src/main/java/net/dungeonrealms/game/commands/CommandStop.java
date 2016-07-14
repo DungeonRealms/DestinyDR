@@ -2,7 +2,6 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseDriver;
 import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.AsyncUtils;

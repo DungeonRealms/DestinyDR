@@ -850,7 +850,7 @@ public class DamageListener implements Listener {
                 continue;
             }
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("method") && nmsStack.getTag().getString("method").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                 continue;
             }
             location.getWorld().dropItemNaturally(location, itemStack);
@@ -860,7 +860,7 @@ public class DamageListener implements Listener {
                 continue;
             }
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("method") && nmsStack.getTag().getString("method").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                 continue;
             }
             location.getWorld().dropItemNaturally(location, itemStack);

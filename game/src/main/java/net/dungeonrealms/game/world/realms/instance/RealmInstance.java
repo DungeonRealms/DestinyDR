@@ -40,7 +40,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Recipe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
@@ -76,7 +75,6 @@ public class RealmInstance implements Realms {
     // IMPORTANT FOLDERS //
     private File pluginFolder = null;
     private File rootFolder = null;
-
 
     public static RealmInstance getInstance() {
         if (instance == null) {
@@ -118,16 +116,6 @@ public class RealmInstance implements Realms {
 
         Utils.log.info("DungeonRealms Finished Registering RealmsInstance() ... FINISHED!");
         Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
-
-        // CRAFTING RESTRICTIONS //
-        removeRecipe(Material.CHEST);
-        removeRecipe(Material.FURNACE);
-        removeRecipe(Material.ENDER_CHEST);
-        removeRecipe(Material.HOPPER);
-        removeRecipe(Material.ANVIL);
-        removeRecipe(Material.DROPPER);
-        removeRecipe(Material.DISPENSER);
-        removeRecipe(Material.TRAPPED_CHEST);
     }
 
 
@@ -136,6 +124,7 @@ public class RealmInstance implements Realms {
         // REMOVES ALL CACHED REALMS //
         Utils.log.info("[REALM] [SYNC] Uploading all player realms..");
         removeAllRealms(false);
+        Utils.log.info("[REALM] [SYNC] All realms uploaded.");
     }
 
     @Override
@@ -170,7 +159,7 @@ public class RealmInstance implements Realms {
 
         player.sendMessage(ChatColor.YELLOW + "Please wait whilst your realm is being loaded...");
 
-        AsyncRealmLoadCallback(player, false, downloadRealm(player.getUniqueId()), callback -> {
+        loadRealmAsync(player, false, downloadRealm(player.getUniqueId()), callback -> {
             // RUN SYNC AGAIN //
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                 if (!callback) Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* REALM CREATED *");
@@ -189,7 +178,59 @@ public class RealmInstance implements Realms {
     }
 
     @Override
-    public void AsyncRealmLoadCallback(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter) {
+    public boolean canPlacePortal(Player player, Location location) {
+        if (CombatLog.isInCombat(player)) {
+            player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
+            return false;
+        }
+
+        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
+            return false;
+        }
+
+
+        if (LootManager.checkLocationForLootSpawner(location.clone())) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal this close to a Loot Spawning location");
+            return false;
+        }
+
+        if (location.clone().add(0, 1, 0).getBlock().getType() != Material.AIR || location.clone().add(0, 2, 0).getBlock().getType() != Material.AIR) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+            return false;
+        }
+
+        if (GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+            return false;
+        }
+
+        if (GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
+            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+            return false;
+        }
+
+        if (isPortalNearby(location.clone().add(0, 1, 0), 3) || GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.PORTAL)) {
+            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " open a realm portal so close to another.");
+            player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "REQ:" + ChatColor.GRAY + " >3 blocks away.");
+            return false;
+        }
+
+
+        for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
+            if (p.getName().equals(player.getName())) continue;
+            if (!p.getWorld().equals(player.getWorld())) continue;
+            if (p.getLocation().distance(player.getLocation()) <= 2) {
+                player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void loadRealmAsync(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter) {
         Futures.addCallback(task, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean success) {
@@ -212,7 +253,7 @@ public class RealmInstance implements Realms {
 
     private void loadRealm(Player player, boolean create, Runnable doAfter) {
         if (create) {
-            AsyncRealmLoadCallback(player, false, loadTemplate(player.getUniqueId()), callback -> {
+            loadRealmAsync(player, false, loadTemplate(player.getUniqueId()), callback -> {
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                             loadRealmWorld(player.getUniqueId());
                             if (doAfter != null)
@@ -243,47 +284,8 @@ public class RealmInstance implements Realms {
             return;
         }
 
-        if (CombatLog.isInCombat(player)) {
-            player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
+        if (!canPlacePortal(player, location))
             return;
-        }
-
-        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-            player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
-            return;
-        }
-
-
-        if (LootManager.checkLocationForLootSpawner(location.clone())) {
-            player.sendMessage(ChatColor.RED + "You cannot place a realm portal this close to a Loot Spawning location");
-            return;
-        }
-
-        if (location.clone().add(0, 1, 0).getBlock().getType() != Material.AIR || location.clone().add(0, 2, 0).getBlock().getType() != Material.AIR) {
-            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
-            return;
-        }
-
-        if (GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(location.clone().getBlock(), 10, Material.ENDER_CHEST)) {
-            player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
-            return;
-        }
-
-        if (isPortalNearby(location.clone().add(0, 1, 0), 3) || GameAPI.isMaterialNearby(location.clone().getBlock(), 3, Material.PORTAL)) {
-            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " open a realm portal so close to another.");
-            player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "REQ:" + ChatColor.GRAY + " >3 blocks away.");
-            return;
-        }
-
-
-        for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
-            if (p.getName().equals(player.getName())) continue;
-            if (!p.getWorld().equals(player.getWorld())) continue;
-            if (p.getLocation().distance(player.getLocation()) <= 2) {
-                player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
-                return;
-            }
-        }
 
         if (isRealmPortalOpen(realm.getOwner()))
             closeRealmPortal(player.getUniqueId(), false, null);
@@ -321,8 +323,7 @@ public class RealmInstance implements Realms {
 
     @Override
     public void loadRealmWorld(UUID uuid) {
-        Utils.log.info("[REALM] [SYNC] Loading world for " + uuid.toString());
-        Utils.log.info("[REALM] [SYNC] Server will halt during this process");
+        Utils.log.info("[REALM] [SYNC] Loading realm for " + uuid.toString());
 
         WorldCreator wc = new WorldCreator(uuid.toString());
         wc.generator(new RealmGenerator());
@@ -333,8 +334,8 @@ public class RealmInstance implements Realms {
 
         world.getEntities().stream().filter(e -> e instanceof Item).forEach(Entity::remove);
 
-        Utils.log.info("[REALM] [SYNC] World loaded for " + uuid.toString());
-        Utils.log.info("[REALM] [SYNC] Setting world region " + uuid.toString());
+        Utils.log.info("[REALM] [SYNC] Realm loaded for " + uuid.toString());
+        Utils.log.info("[REALM] [SYNC] Realm Setting world region " + uuid.toString());
 
         setRealmRegion(world, true);
     }
@@ -357,6 +358,12 @@ public class RealmInstance implements Realms {
                     getRealm(player.getUniqueId()).setStatus(RealmStatus.CLOSED);
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
+
+                    // UDPATE REALM PORTAL RUNE //
+                    int slot = GameAPI.getItemSlot(player.getInventory(), "realmPortalRune");
+
+                    if (slot != -1)
+                        player.getInventory().setItem(slot, ItemManager.createRealmPortalRune(player.getUniqueId()));
                 }));
     }
 
@@ -566,7 +573,6 @@ public class RealmInstance implements Realms {
 
     private void uploadRealm(UUID uuid, Consumer<Boolean> doAfter) {
         Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
-
         InputStream inputStream = null;
 
         try {
@@ -594,6 +600,17 @@ public class RealmInstance implements Realms {
         } finally {
             Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
 
+            // PLAYER'S REALM IS STILL UPLOADING \\
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
+
+            // SEND PLAYER UPDATE PACKET IF THEY SWITCHED SHARDS //
+            GameAPI.updatePlayerData(uuid);
+
+            getRealm(uuid).setStatus(RealmStatus.CLOSED);
+
+            if (doAfter != null)
+                doAfter.accept(true);
+
             if (inputStream != null) {
                 try {
                     inputStream.close();
@@ -608,16 +625,6 @@ public class RealmInstance implements Realms {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // PLAYER'S REALM IS STILL UPLOADING \\
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
-
-            // SEND PLAYER UPDATE PACKET IF THEY SWITCHED SHARDS //
-            GameAPI.updatePlayerData(uuid);
-
-            getRealm(uuid).setStatus(RealmStatus.CLOSED);
-
-            if (doAfter != null)
-                doAfter.accept(true);
         }
     }
 
@@ -690,7 +697,7 @@ public class RealmInstance implements Realms {
         if (!Realms.getInstance().isRealmCached(uuid)) return;
 
         // UNLOAD WORLD
-        Utils.log.info("[REALM] [SYNC] Unloading realm world for " + uuid.toString());
+        Utils.log.info("[REALM] [SYNC] Unloading realm for " + uuid.toString());
 
         // REMOVED ITEMS
         getRealmWorld(uuid).getEntities().stream().filter(e -> e instanceof Item).forEach(Entity::remove);
@@ -824,6 +831,7 @@ public class RealmInstance implements Realms {
         RealmToken realm = getRealm(uuid);
 
         Hologram realmHologram = realm.getHologram();
+        if (Bukkit.getPlayer(uuid) == null) return;
 
         String name = Bukkit.getPlayer(uuid).getName();
 
@@ -891,15 +899,6 @@ public class RealmInstance implements Realms {
             zipFile.addFolder(targetFile, parameters);
         } else {
             System.out.println("ERROR ERROR, HOLY SHIT");
-        }
-    }
-
-    private void removeRecipe(Material m) {
-        Iterator<Recipe> it = Bukkit.getServer().recipeIterator();
-        Recipe recipe;
-        while (it.hasNext()) {
-            recipe = it.next();
-            if (recipe != null && recipe.getResult().getType() == m) it.remove();
         }
     }
 

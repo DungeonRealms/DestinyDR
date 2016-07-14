@@ -60,7 +60,7 @@ public class MailHandler {
     /**
      * Checks of the item that is specified is a mail item containing NBT.
      *
-     * @param item specify if the item is of the serialized item method.
+     * @param item specify if the item is of the serialized item type.
      * @return boolean
      * @since 1.0
      */

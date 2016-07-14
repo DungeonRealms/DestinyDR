@@ -1,4 +1,4 @@
-package net.dungeonrealms.network.ping.method;
+package net.dungeonrealms.network.ping.type;
 
 
 import net.dungeonrealms.network.PingResponse;

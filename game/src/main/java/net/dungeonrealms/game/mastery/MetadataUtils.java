@@ -20,7 +20,7 @@ import java.util.Map;
 public class MetadataUtils {
 
     /**
-     * This method is used to register metadata on entities.
+     * This type is used to register metadata on entities.
      *
      * @param entity
      * @param entityType
@@ -55,7 +55,7 @@ public class MetadataUtils {
     }
 
     /**
-     * This method is used to create buffs.
+     * This type is used to create buffs.
      *
      * @param entity
      * @param potionEffectType
@@ -71,7 +71,7 @@ public class MetadataUtils {
     }
 
     /**
-     * This method is used add metadata to projectiles based on their firing weapons nbt data.
+     * This type is used add metadata to projectiles based on their firing weapons nbt data.
      *
      * @param tag
      * @param projectile
@@ -80,7 +80,7 @@ public class MetadataUtils {
     public static void registerProjectileMetadata(Map<String, Integer[]> attributes, NBTTagCompound tag, Projectile projectile) {
         projectile.setMetadata("drProjectile", new FixedMetadataValue(DungeonRealms.getInstance(), true));
         // transfer only the weapon attributes. The armor attributes will be grabbed in the calculateProjectileDamage
-        // method.
+        // type.
         for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
             String modifier = type.getNBTName();
             if (type.isRange()) {

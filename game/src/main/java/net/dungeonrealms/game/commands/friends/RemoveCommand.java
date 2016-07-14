@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands.friends;
 
-import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.commands.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;

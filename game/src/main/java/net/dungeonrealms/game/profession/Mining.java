@@ -101,7 +101,7 @@ public class Mining implements GenericMechanic {
      * Check amount of exp pick gets from block mined
      *
      * @param stackInHand
-     * @param method
+     * @param type
      * @return integer
      * @since 1.0
      */

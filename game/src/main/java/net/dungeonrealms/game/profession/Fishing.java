@@ -531,7 +531,7 @@ public class Fishing implements GenericMechanic {
      */
     public static boolean isDRFishingPole(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return nms.hasTag() && nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("rod") && stack.getType() == Material.FISHING_ROD;
+        return nms != null && nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("type") && stack.getType() == Material.FISHING_ROD;
     }
 
 //    public static HashMap<UUID, String> fishBuffs = new HashMap<>();
@@ -983,7 +983,7 @@ public class Fishing implements GenericMechanic {
         ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishingrod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishingrod with special attributes."}).build();
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("method", "fishingenchant");
+        nms.getTag().setString("type", "fishingenchant");
         nms.getTag().setInt(enchant.name(), stat);
         return CraftItemStack.asBukkitCopy(nms);
     }
@@ -992,7 +992,7 @@ public class Fishing implements GenericMechanic {
         String statBuff = ChatColor.RED + enchant.name + " " + percent + "%";
         ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishingrod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishingrod with special attributes."}).build();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        nms.getTag().setString("method", "fishingenchant");
+        nms.getTag().setString("type", "fishingenchant");
         nms.getTag().setInt(enchant.name(), percent);
         return CraftItemStack.asBukkitCopy(nms);
 
