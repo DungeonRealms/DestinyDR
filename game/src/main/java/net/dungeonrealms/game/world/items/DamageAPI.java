@@ -345,7 +345,6 @@ public class DamageAPI {
                 receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
             }
         }, 1);
-
     }
 
     public static void applyBlind(LivingEntity receiver, int weaponTier) {
