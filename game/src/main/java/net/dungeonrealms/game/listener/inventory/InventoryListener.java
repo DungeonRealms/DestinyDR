@@ -652,6 +652,14 @@ public class InventoryListener implements Listener {
                 }
 
                 event.setCurrentItem(EnchantmentAPI.addItemProtection(event.getCurrentItem()));
+                event.getWhoClicked().sendMessage(ChatColor.GREEN + "Your " + event.getCurrentItem().getItemMeta().getDisplayName() + ChatColor.GREEN + " is now protected -- even if an enchant scroll fails, it will " + ChatColor.UNDERLINE + "NOT" + ChatColor.GREEN + " be destroyed up to +8 status.");
+                ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
+                Firework fw = (Firework) event.getWhoClicked().getWorld().spawnEntity(event.getWhoClicked().getLocation(), EntityType.FIREWORK);
+                FireworkMeta fwm = fw.getFireworkMeta();
+                FireworkEffect effect = FireworkEffect.builder().flicker(false).withColor(Color.GREEN).withFade(Color.GREEN).with(FireworkEffect.Type.STAR).trail(true).build();
+                fwm.addEffect(effect);
+                fwm.setPower(0);
+                fw.setFireworkMeta(fwm);
                 if (cursorItem.getAmount() == 1) {
                     event.setCursor(new ItemStack(Material.AIR));
                 } else {
@@ -735,7 +743,7 @@ public class InventoryListener implements Listener {
                 event.setCancelled(true);
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
-                        event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
+                        event.getWhoClicked().sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
                         ItemStack item = slotItem.clone();
                         ItemStack stack = EnchantmentAPI.removeItemProtection(item);
                         event.setCurrentItem(stack);
@@ -896,7 +904,7 @@ public class InventoryListener implements Listener {
 
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
-                        event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
+                        event.getWhoClicked().sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
                         ItemStack item = slotItem.clone();
                         ItemStack stack = EnchantmentAPI.removeItemProtection(item);
                         event.setCurrentItem(stack);
