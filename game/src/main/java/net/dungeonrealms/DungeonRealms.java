@@ -464,11 +464,22 @@ public class DungeonRealms extends JavaPlugin {
             this.hasFinishedSetup = true;
             Bukkit.getServer().setWhitelist(false);
         }, 240L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1)));
-            GameAPI.GAMEPLAYERS.values().stream().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
-        }, 0L, 20L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, GameAPI::backupDatabase, 12000L, 12000L);
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1)));
+                GameAPI.GAMEPLAYERS.values().stream().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
+            }
+        }, 0L, 1000);
+
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                GameAPI.backupDatabase();
+            }
+        }, 0L, 600000);
     }
 
     private void scheduleRestartTask() {
