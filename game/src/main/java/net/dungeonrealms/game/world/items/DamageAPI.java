@@ -256,7 +256,7 @@ public class DamageAPI {
             // recalculate all attributes as a failsafe
             if (!isAttackerPlayer) {
                 Utils.log.warning("[DamageAPI] Mob caused exception in calculateWeaponDamage.");
-                GameAPI.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity)attacker).getHandle()).getAttributes());
+                GameAPI.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
                 ex.printStackTrace();
                 Utils.log.info("Attacker: " + attacker.getName());
                 Utils.log.info("Defender: " + receiver.getName());
@@ -276,90 +276,126 @@ public class DamageAPI {
     }
 
     public static void applyPoisonDebuff(LivingEntity receiver, int weaponTier) {
-        receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-        receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8228);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8228);
 
-        switch (weaponTier) {
-            case 1:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
-                break;
-            case 2:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
-                break;
-            case 3:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
-                break;
-            case 4:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
-                break;
-            case 5:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
-                break;
-        }
+            switch (weaponTier) {
+                case 1:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
+                    break;
+                case 2:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
+                    break;
+                case 3:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
+                    break;
+                case 4:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
+                    break;
+                case 5:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
+                    break;
+            }
+        }, 1);
     }
 
     public static void applyFireDebuff(LivingEntity receiver, int weaponTier) {
-        try {
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
-                    new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, receiver.getLocation(),
-                    new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f, 10);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
-        switch (weaponTier) {
-            case 1:
-                receiver.setFireTicks(15);
-                break;
-            case 2:
-                receiver.setFireTicks(25);
-                break;
-            case 3:
-                receiver.setFireTicks(30);
-                break;
-            case 4:
-                receiver.setFireTicks(35);
-                break;
-            case 5:
-                receiver.setFireTicks(40);
-                break;
-        }
+            switch (weaponTier) {
+                case 1:
+                    receiver.setFireTicks(15);
+                    break;
+                case 2:
+                    receiver.setFireTicks(25);
+                    break;
+                case 3:
+                    receiver.setFireTicks(30);
+                    break;
+                case 4:
+                    receiver.setFireTicks(35);
+                    break;
+                case 5:
+                    receiver.setFireTicks(40);
+                    break;
+            }
+        }, 1);
+
     }
 
     public static void applySlow(LivingEntity receiver) {
-        if (receiver.hasMetadata("method")) {
-            final int MOB_TIER = receiver.getMetadata("tier").get(0).asInt();
-            if (MOB_TIER == 4 || MOB_TIER == 5)
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-            else
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            if (receiver.hasMetadata("method")) {
+                final int MOB_TIER = receiver.getMetadata("tier").get(0).asInt();
+                if (MOB_TIER == 4 || MOB_TIER == 5)
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
+                else
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
+            } else {
                 receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
-        } else {
-            receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
-        }
+            }
+        }, 1);
     }
 
     public static void applyBlind(LivingEntity receiver, int weaponTier) {
-        switch (weaponTier) {
-            case 1:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
-                break;
-            case 2:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
-                break;
-            case 3:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
-                break;
-            case 4:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
-                break;
-            case 5:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
-                break;
-            default:
-                break;
-        }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            switch (weaponTier) {
+                case 1:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
+                    break;
+                case 2:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
+                    break;
+                case 3:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
+                    break;
+                case 4:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                    break;
+                case 5:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                    break;
+                default:
+                    break;
+            }
+        }, 1);
+
+    }
+
+    public static void applyIceDebuff(LivingEntity receiver, int weaponTier) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8226);
+
+            switch (weaponTier) {
+                case 1:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
+                    break;
+                case 2:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
+                    break;
+                case 3:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
+                    break;
+                case 4:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
+                    break;
+                case 5:
+                    receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
+                    break;
+            }
+        }, 1);
     }
 
     //This makes mobs stronger when they hit you IF they are higher than you. Not if you are higher than them...
@@ -384,7 +420,7 @@ public class DamageAPI {
                     continue;
                 // let's not damage ourself
                 if (entity.equals(damager)) continue;
-                double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity)entity, damage, null);
+                double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
                 if (damage - armorCalculation[0] <= 0) continue;
                 if (entity != event.getEntity() && !(entity instanceof Player)) {
                     if (entity.hasMetadata("method") && entity.getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) {
@@ -593,7 +629,7 @@ public class DamageAPI {
             // recalculate all attributes as a failsafe
             if (!isAttackerPlayer) {
                 Utils.log.warning("[DamageAPI] Mob caused exception in calculateProjectileDamage.");
-                GameAPI.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity)attacker).getHandle()).getAttributes());
+                GameAPI.calculateAllAttributes(attacker, ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).getAttributes());
                 ex.printStackTrace();
                 Utils.log.info("Attacker: " + attacker.getName());
                 Utils.log.info("Defender: " + receiver.getName());
@@ -674,28 +710,6 @@ public class DamageAPI {
         return damage;
     }
 
-    public static void applyIceDebuff(LivingEntity receiver, int weaponTier) {
-        receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
-        receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8226);
-
-        switch (weaponTier) {
-            case 1:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
-                break;
-            case 2:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
-                break;
-            case 3:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
-                break;
-            case 4:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-                break;
-            case 5:
-                receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
-                break;
-        }
-    }
 
     /**
      * Calculates the new damage based on the armor of the defender and the previous damage
@@ -947,7 +961,7 @@ public class DamageAPI {
         return Math.round(totalStat);
     }
 
-    public static void  fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
+    public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
         RepairAPI.subtractCustomDurability(player, itemStack, 1);
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = null;
@@ -1090,8 +1104,7 @@ public class DamageAPI {
                     projectile = livingEntity.launchProjectile(Arrow.class);
                     break;
             }
-        }
-        else {
+        } else {
             projectile = livingEntity.launchProjectile(Arrow.class);
         }
         if (projectile == null) {
