@@ -1019,6 +1019,16 @@ public class MainListener implements Listener {
             }
         } else if (event.getWorld().getName().contains("DUNGEON")) {
             event.setCancelled(true);
+        } else {
+            if (event.getChunk().getEntities().length > 0) {
+                for (Entity entity : event.getChunk().getEntities()) {
+                    if (!(entity instanceof Player)) {
+                        if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
+                            entity.remove();
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1034,10 +1044,14 @@ public class MainListener implements Listener {
                     }
                 }
             }
-        } else if (event.getWorld().getName().contains("DUNGEON")) {
+        } else {
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity entity : event.getChunk().getEntities()) {
-                    entity.remove();
+                    if (!(entity instanceof Player)) {
+                        if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
+                            entity.remove();
+                        }
+                    }
                 }
             }
         }
