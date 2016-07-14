@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -23,6 +24,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
@@ -101,55 +104,69 @@ public class PvPListener implements Listener {
                 break;
         }
 
-
-        double calculatedDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
-        if (GameAPI.getGamePlayer(receiver) != null && GameAPI.getGamePlayer(damager) != null) {
-            if (GameAPI.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                if (GameAPI.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
-                        if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            damager.updateInventory();
-                            receiver.updateInventory();
-                            event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
-                            event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
-                            return;
+        GameAPI.runAsyncCallbackTask(() -> DamageAPI.calculateWeaponDamage(damager, receiver), consumer -> {
+            try {
+                final double[] calculatedDamage = {consumer.get()};
+                if (GameAPI.getGamePlayer(receiver) != null && GameAPI.getGamePlayer(damager) != null) {
+                    if (GameAPI.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                        if (GameAPI.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
+                                if (calculatedDamage[0] >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
+                                    event.setCancelled(true);
+                                    event.setDamage(0);
+                                    damager.updateInventory();
+                                    receiver.updateInventory();
+                                    event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
+                                    event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                                    return;
+                                }
+                            }
                         }
                     }
                 }
+                GameAPI.runAsyncCallbackTask(() -> DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage[0], null), armorConsumer -> {
+                    try {
+                        double[] armorCalculation = armorConsumer.get();
+                        double armorReducedDamage = armorCalculation[0];
+                        double finalDamage = calculatedDamage[0] - armorCalculation[0];
+                        if (armorReducedDamage == -1) {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + receiver.getName() + ChatColor.RED + ")");
+                                receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + damager.getName() + ChatColor.GREEN + ")");
+                                //The defender dodged the attack
+                                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
+                            }, 1L);
+                            finalDamage = 0;
+                        } else if (armorReducedDamage == -2) {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + receiver.getName() + ChatColor.RED + ")");
+                                receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + damager.getName() + ChatColor.DARK_GREEN + ")");
+                                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+                            }, 1L);
+                            finalDamage = 0;
+                        } else if (armorReducedDamage == -3) {
+                            //Reflect when its fixed. @TODO
+                        } else {
+                            finalDamage = finalDamage - armorCalculation[0];
+                            calculatedDamage[0] = calculatedDamage[0] - armorCalculation[0];
+                        }
+                        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
+
+                        DamageAPI.handlePolearmAOE(event, calculatedDamage[0] / 2, damager);
+
+                        // prevent crazy knockback
+                        if (receiver.hasMetadata("lastPvpHit") && System.currentTimeMillis() - receiver.getMetadata("lastPvpHit").get(0).asLong() < 200)
+                            event.setCancelled(true);
+                        receiver.setMetadata("lastPvpHit", new FixedMetadataValue(DungeonRealms.getInstance(), System
+                                .currentTimeMillis()));
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
-        }
-        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
-        double armorReducedDamage = armorCalculation[0];
-        double finalDamage = calculatedDamage;
-        if (armorReducedDamage == -1) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + receiver.getName() + ChatColor.RED + ")");
-            receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + damager.getName() + ChatColor.GREEN + ")");
-            //The defender dodged the attack
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
-            finalDamage = 0;
-        } else if (armorReducedDamage == -2) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + receiver.getName() + ChatColor.RED + ")");
-            receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + damager.getName() + ChatColor.DARK_GREEN + ")");
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-            finalDamage = 0;
-        } else if (armorReducedDamage == -3) {
-            //Reflect when its fixed. @TODO
-        } else {
-            finalDamage = finalDamage - armorCalculation[0];
-            calculatedDamage = calculatedDamage - armorCalculation[0];
-        }
-        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
-
-        DamageAPI.handlePolearmAOE(event, calculatedDamage / 2, damager);
-
-        // prevent crazy knockback
-        if (receiver.hasMetadata("lastPvpHit") && System.currentTimeMillis() - receiver.getMetadata("lastPvpHit").get(0).asLong() < 200)
-            event.setCancelled(true);
-        receiver.setMetadata("lastPvpHit", new FixedMetadataValue(DungeonRealms.getInstance(), System
-                .currentTimeMillis()));
-
+        });
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -173,45 +190,61 @@ public class PvPListener implements Listener {
             CombatLog.addToCombat(damager);
         }
 
-        double calculatedDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
-        if (GameAPI.getGamePlayer(receiver) != null && GameAPI.getGamePlayer(damager) != null) {
-            if (GameAPI.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                if (GameAPI.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
-                        if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            damager.updateInventory();
-                            receiver.updateInventory();
-                            event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
-                            event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
-                            return;
+        GameAPI.runAsyncCallbackTask(() -> DamageAPI.calculateProjectileDamage(damager, receiver, projectile), consumer -> {
+            try {
+                double calculatedDamage = consumer.get();
+                if (GameAPI.getGamePlayer(receiver) != null && GameAPI.getGamePlayer(damager) != null) {
+                    if (GameAPI.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                        if (GameAPI.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
+                                if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
+                                    event.setCancelled(true);
+                                    event.setDamage(0);
+                                    damager.updateInventory();
+                                    receiver.updateInventory();
+                                    event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + receiver.getName() + "!");
+                                    event.getEntity().sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                                    return;
+                                }
+                            }
                         }
                     }
                 }
+                GameAPI.runAsyncCallbackTask(() -> DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null), armorConsumer -> {
+                    try {
+                        double[] armorCalculation = armorConsumer.get();
+                        double finalDamage = calculatedDamage - armorCalculation[0];
+                        double armorReducedDamage = armorCalculation[0];
+                        String defenderName = receiver.getName();
+                        String attackerName = damager.getName();
+                        if (armorReducedDamage == -1) {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                        damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
+                                        receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + attackerName + ChatColor.GREEN + ")");
+                                        //The defender dodged the attack
+                                        receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
+                                    }, 1L);
+                            finalDamage = 0;
+                        } else if (armorReducedDamage == -2) {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                        damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
+                                        receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
+                                        receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+                                    }, 1L);
+                            finalDamage = 0;
+                        } else if (armorReducedDamage == -3) {
+                            //Reflect when its fixed. @TODO
+                        } else {
+                            finalDamage = finalDamage - armorCalculation[0];
+                        }
+                        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
-        }
-        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, projectile);
-        double finalDamage = calculatedDamage - armorCalculation[0];
-        double armorReducedDamage = armorCalculation[0];
-        String defenderName = receiver.getName();
-        String attackerName = damager.getName();
-        if (armorReducedDamage == -1) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
-            receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + attackerName + ChatColor.GREEN + ")");
-            //The defender dodged the attack
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
-            finalDamage = 0;
-        } else if (armorReducedDamage == -2) {
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
-            receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
-            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-            finalDamage = 0;
-        } else if (armorReducedDamage == -3) {
-            //Reflect when its fixed. @TODO
-        } else {
-            finalDamage = finalDamage - armorCalculation[0];
-        }
-        HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
+        });
     }
 }
