@@ -720,8 +720,8 @@ public class GameAPI {
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
             player.getInventory().setContents(items);
+            player.updateInventory();
         }
-
         List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
         int i = -1;
         ItemStack[] armorContents = new ItemStack[4];
@@ -745,6 +745,7 @@ public class GameAPI {
         player.getEquipment().setArmorContents(armorContents);
         player.getEquipment().setItemInOffHand(offHand);
 
+        player.updateInventory();
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
             Inventory inv = ItemSerialization.fromString(source);
