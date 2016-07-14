@@ -124,7 +124,7 @@ public class EliteMobSpawner {
     }
 
     private void spawnIn() {
-        boolean playersNearby = !GameAPI.getNearbyPlayers(location, 24).isEmpty();
+        boolean playersNearby = GameAPI.arePlayersNearby(location, 24);
         if (playersNearby) {
             if (!SPAWNED_MONSTERS.isEmpty()) {
                 for (Entity monster : SPAWNED_MONSTERS) {
