@@ -629,7 +629,7 @@ public class GameAPI {
                 DungeonRealms.getInstance().getLoggingOut().add(player.getName());
                 DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    BungeeUtils.sendNetworkMessage("BungeeCord", player.getName(), "Lobby");
+                    BungeeUtils.sendToServer(player.getName(), "Lobby");
                 }, 3L);
             }
         }
