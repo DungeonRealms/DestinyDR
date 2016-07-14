@@ -61,7 +61,7 @@ public class CommandSet extends BasicCommand {
                         }
                         GameAPI.getGamePlayer(p).updateLevel(lvl, false, true);
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
-                        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to: " + ChatColor.LIGHT_PURPLE +  lvl);
+                        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to: " + ChatColor.LIGHT_PURPLE + lvl);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                     }
                     break;
@@ -142,6 +142,8 @@ public class CommandSet extends BasicCommand {
                     p = Bukkit.getPlayer(playerName);
                     if (p != null)
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+
+                    p.sendMessage(ChatColor.GRAY + "Fixed your shop");
                     break;
                 case "shoplvl":
                     if (args.length < 2) {
