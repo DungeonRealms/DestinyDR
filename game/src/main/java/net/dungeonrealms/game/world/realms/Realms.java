@@ -74,6 +74,14 @@ public interface Realms extends GenericMechanic {
      */
     void loadRealm(Player player, Runnable doAfter);
 
+    /**
+     * Checks player can place realm portal
+     *
+     * @param player   Owner of realm
+     * @param location Desired location for portal
+     */
+    boolean canPlacePortal(Player player, Location location);
+
 
     /**
      * Sets up realm world guard region

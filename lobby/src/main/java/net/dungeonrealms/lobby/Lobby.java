@@ -44,6 +44,7 @@ public class Lobby extends JavaPlugin implements Listener {
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(this, 1L);
         DatabaseDriver.getInstance().startInitialization(true);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         Bukkit.getPluginManager().registerEvents(this, this);
 

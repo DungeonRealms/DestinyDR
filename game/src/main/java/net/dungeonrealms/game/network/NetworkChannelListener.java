@@ -8,6 +8,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
@@ -36,6 +38,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -73,9 +76,12 @@ public class NetworkChannelListener implements PluginMessageListener, GenericMec
 
     @Override
     public void stopInvocation() {
+        Utils.log.info("[NetworkChannelListener] Unregistering Outbound/Inbound BungeeCord channels...");
+
+        Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
+        Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
         Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
         Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
-        Utils.log.info("[NetworkChannelListener] Unregistering Outbound/Inbound BungeeCord channels...");
     }
 
     @Override
@@ -196,6 +202,40 @@ public class NetworkChannelListener implements PluginMessageListener, GenericMec
                     String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
                     map.get(bungeeName).setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID + ChatColor.GRAY + " (" + ping + " ms)");
                 }
+
+                if (subChannel.equals("Guilds")) {
+                    String command = in.readUTF();
+
+                    if (command.contains("message:")) {
+                        String[] commandArray = command.split(":");
+                        String[] filter = Arrays.copyOfRange(commandArray, 1, commandArray.length);
+
+                        String guildName = in.readUTF();
+                        String msg = in.readUTF();
+
+                        GuildMechanics.getInstance().sendMessageToGuild(guildName, msg, filter);
+                        return;
+                    }
+
+                    switch (command) {
+                        case "message": {
+                            String guildName = in.readUTF();
+                            String msg = in.readUTF();
+
+                            GuildMechanics.getInstance().sendMessageToGuild(guildName, msg);
+                            break;
+                        }
+
+                        case "update": {
+                            String guildName = in.readUTF();
+
+                            if (GuildDatabaseAPI.get().isGuildCached(guildName))
+                                GuildDatabaseAPI.get().updateCache(guildName);
+                            break;
+                        }
+                    }
+                }
+
 
             } else {
                 try {
