@@ -37,9 +37,8 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
@@ -290,6 +289,16 @@ public class RealmInstance implements Realms {
         if (isRealmPortalOpen(realm.getOwner()))
             closeRealmPortal(player.getUniqueId(), false, null);
 
+
+        if (isApollosRealm(realm.getWorld().getName())) {
+            Firework firework = (Firework) location.getWorld().spawnEntity(location.clone(), EntityType.FIREWORK);
+            FireworkMeta fireworkMeta = firework.getFireworkMeta();
+            FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(Color.WHITE).withFade(getRandomColor()).with(FireworkEffect.Type.BALL_LARGE).trail(true).build();
+            fireworkMeta.addEffect(effect);
+            fireworkMeta.setPower(1);
+            firework.setFireworkMeta(fireworkMeta);
+        }
+
         final Location portalLocation = location.clone().add(0, 1, 0);
         realm.setPortalLocation(portalLocation);
 
@@ -314,6 +323,15 @@ public class RealmInstance implements Realms {
         else
             player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Description: " + ChatColor.GRAY + getRealmTitle(player.getUniqueId()));
     }
+
+    private Color getRandomColor() {
+        int[] colors = new int[]{16711680, 16776960, 65280, 32768, 255, 16753920, 65535};
+        Random random = new Random();
+        int color = colors[random.nextInt(colors.length)];
+
+        return Color.fromRGB(color);
+    }
+
 
     @Override
     public void openRealmMaterialStore(Player player) {

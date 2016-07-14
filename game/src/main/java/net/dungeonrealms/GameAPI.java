@@ -12,6 +12,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.DatabaseDriver;
 import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.database.player.Subscription;
 import net.dungeonrealms.game.database.type.EnumData;
@@ -30,6 +31,7 @@ import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
@@ -43,6 +45,8 @@ import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -255,6 +259,38 @@ public class GameAPI {
         }
         return ChatColor.WHITE;
     }
+
+    /**
+     * Stops dr server
+     *
+     * @param stopAll Kick all players from shard
+     */
+    public static void stopServer(boolean stopAll, boolean sendStopPacket) {
+        if (Realms.getInstance().realmsAreUpgrading()) return;
+
+        DungeonRealms.getInstance().getLogger().info("DRStop called.");
+
+        Bukkit.getServer().setWhitelist(true);
+        DungeonRealms.getInstance().setFinishedSetup(false);
+        DungeonRealms.getInstance().saveConfig();
+        CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
+        Bukkit.getScheduler().cancelAllTasks();
+        GameAPI.logoutAllPlayers(true, stopAll);
+        ShopMechanics.deleteAllShops(true);
+        DungeonRealms.getInstance().mm.stopInvocation();
+        AsyncUtils.pool.shutdown();
+
+        if (sendStopPacket)
+            BungeeUtils.sendNetworkMessage("DungeonRealms", "Stop", null);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            DungeonRealms.getInstance().mm.stopInvocation();
+            Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
+            DatabaseDriver.mongoClient.close();
+        }, 200);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 15 * 20L);
+    }
+
 
     /**
      * @param pLevel

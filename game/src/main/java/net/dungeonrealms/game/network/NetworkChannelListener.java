@@ -168,6 +168,11 @@ public class NetworkChannelListener implements PluginMessageListener, GenericMec
                 }
 
 
+                if (subChannel.equals("Stop")) {
+                    GameAPI.stopServer(true, false);
+                    return;
+                }
+
                 if (subChannel.equals("Ping")) {
                     final long currentTime = System.currentTimeMillis();
                     String hostname = in.readUTF();
