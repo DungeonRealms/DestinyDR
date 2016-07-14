@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Nick on 10/1/2015.
@@ -47,7 +48,7 @@ public class AntiCheat {
     //TODO: Have a look at this
     public void checkForDupedItems(Player player) {
         if (Rank.isGM(player) || player.getGameMode() != GameMode.SURVIVAL) return;
-        List<ItemStack> registeredItems = new ArrayList<>();
+        CopyOnWriteArrayList<ItemStack> registeredItems = new CopyOnWriteArrayList<>();
         for (ItemStack is : player.getInventory().getContents()) {
             if (is == null || is.getType() == Material.AIR) continue;
             if (!player.isOnline()) return;
