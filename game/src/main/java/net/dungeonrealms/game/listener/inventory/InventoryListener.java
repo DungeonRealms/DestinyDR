@@ -733,11 +733,12 @@ public class InventoryListener implements Listener {
             }
             if (failed) {
                 event.setCancelled(true);
-
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
-                        event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+                        ItemStack item = slotItem.clone();
+                        ItemStack stack = EnchantmentAPI.removeItemProtection(item);
+                        event.setCurrentItem(stack);
                         return;
                     }
                 }
@@ -896,7 +897,9 @@ public class InventoryListener implements Listener {
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
-                        event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+                        ItemStack item = slotItem.clone();
+                        ItemStack stack = EnchantmentAPI.removeItemProtection(item);
+                        event.setCurrentItem(stack);
                         return;
                     }
                 }
