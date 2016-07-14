@@ -356,7 +356,15 @@ public class DamageListener implements Listener {
             case "mount":
                 event.setCancelled(true);
                 event.setDamage(0);
-                Player p = (Player) event.getDamager();
+                Player p = null;
+                if (event.getDamager() instanceof Player) {
+                    p = (Player) event.getDamager();
+                } else if (event.getDamager() instanceof Projectile) {
+                    if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
+                        p = (Player) ((Projectile) event.getDamager()).getShooter());
+                    }
+                }
+                if (p == null) return;
                 Horse horse = (Horse) event.getEntity();
                 if (!horse.getVariant().equals(Variant.MULE)) return;
                 if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
