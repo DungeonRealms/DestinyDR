@@ -8,6 +8,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -111,7 +112,7 @@ public class GuildMechanics {
             GuildDatabaseAPI.get().getAllOfGuild(guildName)
                     .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has left your shard.")));
 
-            if (getAllOnlineGuildMembers(guildName).size() >= 1) GuildDatabaseAPI.get().removeFromCache(guildName);
+            if (getAllOnlineGuildMembers(guildName).size() <= 1) GuildDatabaseAPI.get().removeFromCache(guildName);
         } catch (NullPointerException ignored) {
         }
     }
@@ -123,26 +124,17 @@ public class GuildMechanics {
      * @param uuid Target
      */
     public void checkPlayerGuild(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-
         if (!GuildDatabaseAPI.get().isGuildNull(uuid)) {
             String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid);
 
             // Checks if guild still exists
             GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
-                if (!guildExists)
+                if (!guildExists) {
+                    GuildDatabaseAPI.get().setGuild(uuid, "");
+                } else if (!GuildDatabase.getAPI().getAllGuildMembers(guildName).contains(uuid))
                     GuildDatabaseAPI.get().setGuild(uuid, "");
             });
         }
-
-
-        // UPDATE THEIR BOARD
-        // guild tags in scoreboard disabled
-        /*if (player != null) {
-            GamePlayer gp = GameAPI.getGamePlayer(player);
-            if (gp != null)
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
-        }*/
     }
 
 

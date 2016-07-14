@@ -227,6 +227,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     public void removeFromGuild(String guildName, UUID uuid) {
+        setGuild(uuid, "");
 
         try {
             switch (get(uuid, guildName)) {
@@ -245,7 +246,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
         } catch (NullPointerException ignored) {
         }
 
-        setGuild(uuid, "");
         updateCache(guildName);
     }
 
