@@ -10,12 +10,15 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.event.TabCompleteEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 import java.net.InetSocketAddress;
 import java.util.*;
@@ -46,6 +49,22 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                 }
         );
     }
+
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onTabComplete(TabCompleteEvent ev) {
+        if (!(ev.getCursor().startsWith("/") || ev.getCursor().startsWith("@")))
+            return;
+
+        String partialPlayerName = ev.getCursor().toLowerCase();
+
+        int lastSpaceIndex = partialPlayerName.lastIndexOf(' ');
+        if (lastSpaceIndex >= 0) partialPlayerName = partialPlayerName.substring(lastSpaceIndex + 1);
+
+        for (ProxiedPlayer p : getProxy().getPlayers())
+            if (p.getName().toLowerCase().startsWith(partialPlayerName)) ev.getSuggestions().add(p.getName());
+    }
+
 
     @EventHandler
     public void onProxyConnection(PreLoginEvent event) {
