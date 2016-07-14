@@ -522,7 +522,7 @@ public class InventoryListener implements Listener {
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
         net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
-        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || nmsCursor.getTag().hasKey("method") && !nmsCursor.getTag().getString("method").equalsIgnoreCase("orb"))
+        if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
             return;
         ItemStack slotItem = event.getCurrentItem();
         if (!GameAPI.isWeapon(slotItem) && !GameAPI.isArmor(slotItem)) return;
@@ -626,7 +626,7 @@ public class InventoryListener implements Listener {
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
         net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
-        if (cursorItem.getType() != Material.EMPTY_MAP || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method"))
+        if (cursorItem.getType() != Material.EMPTY_MAP || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type"))
             return;
         ItemStack slotItem = event.getCurrentItem();
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
@@ -637,7 +637,7 @@ public class InventoryListener implements Listener {
         if (gamePlayer == null) return;
 
 
-        if (nmsCursor.getTag().getString("method").equalsIgnoreCase("protection")) {
+        if (nmsCursor.getTag().getString("type").equalsIgnoreCase("protection")) {
             if (!EnchantmentAPI.isItemProtected(slotItem)) {
                 int tier = nmsCursor.getTag().getInt("tier");
                 int itemTier;
@@ -666,7 +666,7 @@ public class InventoryListener implements Listener {
         }
 
         if (GameAPI.isWeapon(slotItem)) {
-            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("weaponenchant")) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("weaponenchant")) {
                 return;
             }
 
@@ -818,7 +818,7 @@ public class InventoryListener implements Listener {
             fw.setFireworkMeta(fwm);
             gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (GameAPI.isArmor(slotItem)) {
-            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("armorenchant")) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")) {
                 return;
             }
             int tier = nmsCursor.getTag().getInt("tier");
@@ -996,7 +996,7 @@ public class InventoryListener implements Listener {
             fw.setFireworkMeta(fwm);
             gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (Fishing.isDRFishingPole(slotItem)) {
-            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("fishingenchant")) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("fishingenchant")) {
                 return;
             }
 
@@ -1060,7 +1060,7 @@ public class InventoryListener implements Listener {
             gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
 
         } else if (Mining.isDRPickaxe(slotItem)) {
-            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("pickaxeenchant")) {
+            if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("pickaxeenchant")) {
                 return;
             }
 
@@ -1139,9 +1139,9 @@ public class InventoryListener implements Listener {
         net.minecraft.server.v1_9_R2.ItemStack nmsSlot = CraftItemStack.asNMSCopy(slotItem);
         Player player = (Player) event.getWhoClicked();
         if (!nmsSlot.hasTag() || !nmsCursor.hasTag()) return;
-        if (!nmsSlot.getTag().hasKey("method") || !nmsSlot.getTag().getString("method").equalsIgnoreCase("money"))
+        if (!nmsSlot.getTag().hasKey("type") || !nmsSlot.getTag().getString("type").equalsIgnoreCase("money"))
             return;
-        if (!nmsCursor.getTag().hasKey("method") || !nmsCursor.getTag().getString("method").equalsIgnoreCase("money"))
+        if (!nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("money"))
             return;
 
         int amount = cursorItem.getAmount();
@@ -1609,7 +1609,7 @@ public class InventoryListener implements Listener {
                         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(clickedOn);
                         NBTTagCompound tag = nmsStack.getTag();
                         if (tag == null) return;
-                        if (!(tag.getString("method").equalsIgnoreCase("important"))) return;
+                        if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
                         event.setCancelled(true);
                     }
                 }
@@ -1628,7 +1628,7 @@ public class InventoryListener implements Listener {
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(onCursor);
                     NBTTagCompound tag = nmsStack.getTag();
                     if (tag == null) return;
-                    if (!(tag.getString("method").equalsIgnoreCase("important"))) return;
+                    if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
                     event.setCancelled(true);
                 }
             }
@@ -1644,7 +1644,7 @@ public class InventoryListener implements Listener {
                 net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(dragged);
                 NBTTagCompound tag = nmsStack.getTag();
                 if (tag == null) return;
-                if (!(tag.getString("method").equalsIgnoreCase("important"))) return;
+                if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
                 int inventorySize = event.getInventory().getSize();
                 for (int i : event.getRawSlots()) {
                     if (i < inventorySize) {

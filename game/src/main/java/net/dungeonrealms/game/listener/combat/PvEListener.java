@@ -44,10 +44,10 @@ public class PvEListener implements Listener {
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (event.getEntity() instanceof LivingEntity) {
-            if (!event.getEntity().hasMetadata("method")) return;
+            if (!event.getEntity().hasMetadata("type")) return;
         } else {
-            if (event.getEntity().hasMetadata("method")) {
-                if (event.getEntity().getMetadata("method").get(0).asString().equals("buff")) return;
+            if (event.getEntity().hasMetadata("type")) {
+                if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
             } else {
                 return;
             }
@@ -224,10 +224,10 @@ public class PvEListener implements Listener {
             return;
         }
         if (event.getEntity() instanceof LivingEntity) {
-            if (!event.getEntity().hasMetadata("method")) return;
+            if (!event.getEntity().hasMetadata("type")) return;
         } else {
-            if (event.getEntity().hasMetadata("method")) {
-                if (event.getEntity().getMetadata("method").get(0).asString().equals("buff")) return;
+            if (event.getEntity().hasMetadata("type")) {
+                if (event.getEntity().getMetadata("type").get(0).asString().equals("buff")) return;
             } else {
                 return;
             }
@@ -345,8 +345,8 @@ public class PvEListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMonsterDeath(EntityDeathEvent event) {
-        if (!event.getEntity().hasMetadata("method")) return;
-        if (!event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) return;
+        if (!event.getEntity().hasMetadata("type")) return;
+        if (!event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) return;
         if (event.getEntity().hasMetadata("uuid") || event.getEntity().hasMetadata("boss")) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         LivingEntity monster = event.getEntity();

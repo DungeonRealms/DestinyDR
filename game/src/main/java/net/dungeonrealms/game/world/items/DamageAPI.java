@@ -105,16 +105,16 @@ public class DamageAPI {
             // VS MONSTERS AND PLAYERS
             if (isDefenderPlayer) {
                 damage += ((((double) attackerAttributes.get("vsPlayers")[1]) / 100.) * damage);
-                if (attacker.hasMetadata("method")) {
-                    if (attacker.getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) {
+                if (attacker.hasMetadata("type")) {
+                    if (attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                         if (((CraftLivingEntity) attacker).getHandle() instanceof DRMonster) {
                             ((DRMonster) ((CraftLivingEntity) attacker).getHandle()).onMonsterAttack((Player) receiver);
                         }
                     }
                 }
             } else {
-                if (receiver.hasMetadata("method")) {
-                    if (receiver.getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) {
+                if (receiver.hasMetadata("type")) {
+                    if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                         damage += ((((double) attackerAttributes.get("vsMonsters")[1]) / 100.) * damage);
                     }
                 }
@@ -335,7 +335,7 @@ public class DamageAPI {
 
     public static void applySlow(LivingEntity receiver) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            if (receiver.hasMetadata("method")) {
+            if (receiver.hasMetadata("type")) {
                 final int MOB_TIER = receiver.getMetadata("tier").get(0).asInt();
                 if (MOB_TIER == 4 || MOB_TIER == 5)
                     receiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
@@ -409,7 +409,7 @@ public class DamageAPI {
         ItemStack attackerWeapon = damager.getEquipment().getItemInMainHand();
         if (GameAPI.isWeapon(attackerWeapon) && new Attribute(attackerWeapon).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(damager))) {
             DamageAPI.polearmAOEProcessing.add(damager);
-            boolean damagerIsMob = damager.hasMetadata("method");
+            boolean damagerIsMob = damager.hasMetadata("type");
             for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                 if (!(entity instanceof LivingEntity)) continue;
                 // mobs should only be able to damage players, not other mobs
@@ -423,7 +423,7 @@ public class DamageAPI {
                 double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
                 if (damage - armorCalculation[0] <= 0) continue;
                 if (entity != event.getEntity() && !(entity instanceof Player)) {
-                    if (entity.hasMetadata("method") && entity.getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) {
+                    if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                         HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, damager, damage - armorCalculation[0]);
                     }
                 } else if (GameAPI.isPlayer(entity)) {
@@ -488,7 +488,7 @@ public class DamageAPI {
                     damage += ((projectile.getMetadata("vsPlayers").get(0).asDouble() / 100) * damage);
                 }
             } else {
-                if (receiver.hasMetadata("method") && receiver.getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) {
+                if (receiver.hasMetadata("type") && receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
 
                     if (projectile.getMetadata("vsMonsters").get(0).asDouble() != 0) {
                         damage += ((projectile.getMetadata("vsMonsters").get(0).asDouble() / 100) * damage);

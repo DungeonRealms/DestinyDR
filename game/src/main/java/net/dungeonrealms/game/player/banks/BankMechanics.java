@@ -90,7 +90,7 @@ public class BankMechanics implements GenericMechanic {
         for (Map.Entry<Integer, ? extends ItemStack> entry : invItems.entrySet()) {
             ItemStack item = entry.getValue();
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-            if (!nms.hasTag() || !nms.getTag().hasKey("method") || !nms.getTag().getString("method").equalsIgnoreCase("money"))
+            if (!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
                 continue;
             int stackAmount = item.getAmount();
             found += stackAmount;
@@ -100,7 +100,7 @@ public class BankMechanics implements GenericMechanic {
         for (Map.Entry<Integer, ? extends ItemStack> entry : bank_notes.entrySet()) {
             ItemStack item = entry.getValue();
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-            if (!nms.hasTag() || !nms.getTag().hasKey("method") || !nms.getTag().getString("method").equalsIgnoreCase("money"))
+            if (!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
                 continue;
             int bank_note_val = getNoteValue(item);
             found += bank_note_val;
@@ -121,7 +121,7 @@ public class BankMechanics implements GenericMechanic {
             int index = entry.getKey();
             ItemStack item = entry.getValue();
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-            if (!nms.hasTag() || !nms.getTag().hasKey("method") || !nms.getTag().getString("method").equalsIgnoreCase("money"))
+            if (!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
                 continue;
             int stackAmount = item.getAmount();
 
@@ -147,7 +147,7 @@ public class BankMechanics implements GenericMechanic {
         for (Map.Entry<Integer, ? extends ItemStack> entry : bank_notes.entrySet()) {
             ItemStack item = entry.getValue();
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-            if (!nms.hasTag() || !nms.getTag().hasKey("method") || !nms.getTag().getString("method").equalsIgnoreCase("money"))
+            if (!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
                 continue;
             int bank_note_val = getNoteValue(item);
             int index = entry.getKey();
@@ -225,7 +225,7 @@ public class BankMechanics implements GenericMechanic {
         nms = CraftItemStack.asNMSCopy(stack);
 
         NBTTagCompound tag = nms.getTag();
-        tag.setString("method", "money");
+        tag.setString("type", "money");
         tag.setInt("worth", amount);
         tag.setInt("tier", type);
 //		nms.setTag(tag);
@@ -261,7 +261,7 @@ public class BankMechanics implements GenericMechanic {
         item.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nms.getTag() == null ? new NBTTagCompound() : nms.getTag();
-        tag.setString("method", "money");
+        tag.setString("type", "money");
         nms.setTag(tag);
         gem = CraftItemStack.asBukkitCopy(nms);
 
@@ -274,7 +274,7 @@ public class BankMechanics implements GenericMechanic {
         item2.setItemMeta(meta2);
         net.minecraft.server.v1_9_R2.ItemStack nms2 = CraftItemStack.asNMSCopy(item2);
         NBTTagCompound tag2 = nms2.getTag() == null ? new NBTTagCompound() : nms2.getTag();
-        tag2.setString("method", "money");
+        tag2.setString("type", "money");
         tag2.setInt("worth", 0);
         nms2.setTag(tag2);
         banknote = CraftItemStack.asBukkitCopy(nms2);
@@ -369,7 +369,7 @@ public class BankMechanics implements GenericMechanic {
      */
     public boolean isBankNote(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return stack.getType() == Material.PAPER && nms.getTag() != null && nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("money");
+        return stack.getType() == Material.PAPER && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money");
     }
 
     public void checkBankAchievements(UUID uuid, int bankGemAmount) {
@@ -402,15 +402,15 @@ public class BankMechanics implements GenericMechanic {
     public boolean isGem(ItemStack cursor) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(cursor);
         return cursor.getType() == Material.EMERALD &&
-                nms.getTag() != null && nms.getTag().hasKey("method") &&
-                nms.getTag().getString("method").equalsIgnoreCase("money");
+                nms.getTag() != null && nms.getTag().hasKey("type") &&
+                nms.getTag().getString("type").equalsIgnoreCase("money");
     }
 
     public boolean isGemPouch(ItemStack cursor) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(cursor);
         return cursor.getType() == Material.INK_SACK &&
-                nms.getTag() != null && nms.getTag().hasKey("method") &&
-                nms.getTag().getString("method").equalsIgnoreCase("money");
+                nms.getTag() != null && nms.getTag().hasKey("type") &&
+                nms.getTag().getString("type").equalsIgnoreCase("money");
 
     }
 

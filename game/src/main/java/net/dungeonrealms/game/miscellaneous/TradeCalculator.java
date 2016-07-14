@@ -7,7 +7,6 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
@@ -42,35 +41,35 @@ public class TradeCalculator {
                     if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("itemTier")) {
                         switch (nmsStack.getTag().getInt("itemTier")) {
                             case 1:
-                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                                     t1_pot += is.getAmount();
                                 } else {
                                     t1_Splash_pot += is.getAmount();
                                 }
                                 break;
                             case 2:
-                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                                     t2_pot += is.getAmount();
                                 } else {
                                     t2_Splash_pot += is.getAmount();
                                 }
                                 break;
                             case 3:
-                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                                     t3_pot += is.getAmount();
                                 } else {
                                     t3_Splash_pot += is.getAmount();
                                 }
                                 break;
                             case 4:
-                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                                     t4_pot += is.getAmount();
                                 } else {
                                     t4_Splash_pot += is.getAmount();
                                 }
                                 break;
                             case 5:
-                                if (nmsStack.getTag().getString("method").equalsIgnoreCase("healthPotion")) {
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
                                     t5_pot += is.getAmount();
                                 } else {
                                     t5_Splash_pot += is.getAmount();
@@ -146,7 +145,7 @@ public class TradeCalculator {
                 int payout = 0;
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
                 NBTTagCompound tag = nmsItem.getTag();
-                if (tag.hasKey("method") && GameAPI.isItemTradeable(is)) {
+                if (tag.hasKey("type") && GameAPI.isItemTradeable(is)) {
                     if (GameAPI.isArmor(is)) {
                         switch (tag.getInt("itemType")) {
                             case 5:

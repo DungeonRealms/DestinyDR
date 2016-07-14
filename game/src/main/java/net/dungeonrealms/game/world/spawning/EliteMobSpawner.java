@@ -69,7 +69,7 @@ public class EliteMobSpawner {
         this.maximumXZ = maximumXZ;
         World world = ((CraftWorld) location.getWorld()).getHandle();
         armorstand = new EntityArmorStand(world);
-        armorstand.getBukkitEntity().setMetadata("method", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
+        armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
         armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
         armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
         List<org.bukkit.entity.Entity> list = armorstand.getBukkitEntity().getNearbyEntities(1, 1, 1);

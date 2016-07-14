@@ -201,11 +201,11 @@ public class RepairAPI {
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0) return 0;
         double percentDurability = (Math.min(1, (itemStack.getType().getMaxDurability() - itemStack.getDurability())) / Math.min(1, itemStack.getType().getMaxDurability()));
-        if (tag.getString("method").equalsIgnoreCase("weapon")) {
+        if (tag.getString("type").equalsIgnoreCase("weapon")) {
             //Get the full durability, not sure why its lowballing.
             return Math.round(percentDurability * (1500 / 15));
         }
-        if (tag.getString("method").equalsIgnoreCase("armor")) {
+        if (tag.getString("type").equalsIgnoreCase("armor")) {
             return Math.round(percentDurability * (1500 / 15));
         }
         return 0;
@@ -261,11 +261,11 @@ public class RepairAPI {
                 return 0;
             }
             double durabilityPercent = 0;
-            if (tag.getString("method").equalsIgnoreCase("weapon")) {
+            if (tag.getString("type").equalsIgnoreCase("weapon")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
-            } else if (tag.getString("method").equalsIgnoreCase("armor")) {
+            } else if (tag.getString("type").equalsIgnoreCase("armor")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
@@ -285,12 +285,12 @@ public class RepairAPI {
             if (tag == null) return 0;
             if (tag.getInt("itemTier") == 0) return 0;
             double durabilityPercent = getItemDurabilityValue(itemStack);
-            if (tag.getString("method").equalsIgnoreCase("weapon")) {
+            if (tag.getString("type").equalsIgnoreCase("weapon")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
             }
-            if (tag.getString("method").equalsIgnoreCase("armor")) {
+            if (tag.getString("type").equalsIgnoreCase("armor")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
@@ -317,7 +317,7 @@ public class RepairAPI {
             return false;
         }
         NBTTagCompound tag = nmsItem.getTag();
-        return tag != null && tag.getString("method").equalsIgnoreCase("scrap");
+        return tag != null && tag.getString("type").equalsIgnoreCase("scrap");
     }
 
     /**
@@ -336,7 +336,7 @@ public class RepairAPI {
             return 0;
         }
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag != null && tag.getString("method").equalsIgnoreCase("scrap")) {
+        if (tag != null && tag.getString("type").equalsIgnoreCase("scrap")) {
             if (tag.getInt("itemTier") != 0) {
                 return tag.getInt("itemTier");
             }
@@ -381,10 +381,10 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return false;
         if (tag.getInt("itemTier") == 0) return false;
-        if (tag.getString("method").equalsIgnoreCase("weapon")) {
+        if (tag.getString("type").equalsIgnoreCase("weapon")) {
             return true;
         }
-        return tag.getString("method").equalsIgnoreCase("armor");
+        return tag.getString("type").equalsIgnoreCase("armor");
     }
 
     /**
@@ -407,7 +407,7 @@ public class RepairAPI {
                 return true;
         }
         if (tag.getInt("itemTier") == 0) return false;
-        if (tag.getString("method").equalsIgnoreCase("weapon") || tag.getString("method").equalsIgnoreCase("armor")) {
+        if (tag.getString("type").equalsIgnoreCase("weapon") || tag.getString("type").equalsIgnoreCase("armor")) {
             if (getCustomDurability(itemStack) < 1500) {
                 return true;
             }
@@ -481,7 +481,7 @@ public class RepairAPI {
         if (tag == null) return;
         if (tag.getInt("itemTier") == 0) return;
         double newItemDurability = (getCustomDurability(itemStack) - amountToSubtract);
-        switch (tag.getString("method")) {
+        switch (tag.getString("type")) {
             case "weapon":
                 if (newItemDurability <= 150D && newItemDurability >= 140D) {
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);

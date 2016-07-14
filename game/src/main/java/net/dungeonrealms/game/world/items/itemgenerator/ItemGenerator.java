@@ -487,9 +487,9 @@ public class ItemGenerator {
         }
         
         if (type.getId() <= 4) {
-            tag.set("method",  new NBTTagString("weapon"));
+            tag.set("type",  new NBTTagString("weapon"));
         } else {
-            tag.set("method",  new NBTTagString("armor"));
+            tag.set("type",  new NBTTagString("armor"));
         }
         
         /*
@@ -755,9 +755,9 @@ public class ItemGenerator {
         
         // set item type
         if (Item.ItemType.isWeapon(is)) {
-            tag.set("method", new NBTTagString("weapon"));
+            tag.set("type", new NBTTagString("weapon"));
         } else if (Item.ItemType.isArmor(is)) {
-            tag.set("method", new NBTTagString("armor"));
+            tag.set("type", new NBTTagString("armor"));
         }
         
         NBTTagList modifiersList = new NBTTagList();

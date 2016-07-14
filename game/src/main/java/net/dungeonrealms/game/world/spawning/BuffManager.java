@@ -99,8 +99,8 @@ public class BuffManager implements GenericMechanic {
     private static Set<Entity> getNearbyBuffs(Player player, int radius) {
         Set<Entity> buffsNearby = new HashSet<>();
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-            if (entity.hasMetadata("method")) {
-                if (entity.getMetadata("method").get(0).asString().equalsIgnoreCase("buff")) {
+            if (entity.hasMetadata("type")) {
+                if (entity.getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
                     buffsNearby.add(entity);
                 }
             }

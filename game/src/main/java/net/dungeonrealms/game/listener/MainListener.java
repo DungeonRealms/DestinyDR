@@ -301,8 +301,8 @@ public class MainListener implements Listener {
             return;
         }
         if (EntityAPI.hasMountOut(event.getExited().getUniqueId())) {
-            if (event.getVehicle().hasMetadata("method")) {
-                String metaValue = event.getVehicle().getMetadata("method").get(0).asString();
+            if (event.getVehicle().hasMetadata("type")) {
+                String metaValue = event.getVehicle().getMetadata("type").get(0).asString();
                 if (metaValue.equalsIgnoreCase("mount")) {
                     event.getVehicle().remove();
                     EntityAPI.removePlayerMountList(event.getExited().getUniqueId());

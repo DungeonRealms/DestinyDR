@@ -96,11 +96,11 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
         if (event.getEntity().getWorld().getName().contains("DUNGEON")) return;
-        if (!(event.getEntity().hasMetadata("method"))) return;
+        if (!(event.getEntity().hasMetadata("type"))) return;
         event.blockList().clear();
         event.setYield(0.0F);
         event.setCancelled(true);
-        if (event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("buff")) {
+        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
             event.blockList().clear();
             List<Player> toBuff = new ArrayList<>();
@@ -136,12 +136,12 @@ public class DamageListener implements Listener {
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
         //Armor Stand Spawner check.
         if (event.getEntity().getType() != EntityType.ARMOR_STAND) return;
-        if (!event.getEntity().hasMetadata("method")) {
+        if (!event.getEntity().hasMetadata("type")) {
             event.setCancelled(false);
             event.getEntity().remove();
             return;
         }
-        if (event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("spawner")) {
+        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")) {
             Player attacker = (Player) event.getDamager();
             if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
                 ArrayList<BaseMobSpawner> list = SpawningMechanics.getALLSPAWNERS();
@@ -237,7 +237,7 @@ public class DamageListener implements Listener {
         } else if (DamageAPI.isBowProjectile(event.getDamager())) {
             Projectile attackingArrow = (Projectile) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof CraftLivingEntity)) return;
-            if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("method")) {
+            if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
                 if (!(attackingArrow.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
                     attackingArrow.remove();
                     event.setCancelled(true);
@@ -254,7 +254,7 @@ public class DamageListener implements Listener {
         } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
             Projectile staffProjectile = (Projectile) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof CraftLivingEntity)) return;
-            if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("method")) {
+            if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("type")) {
                 if (!(staffProjectile.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
                     staffProjectile.remove();
                     event.setCancelled(true);
@@ -346,8 +346,8 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void petDamageListener(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity().hasMetadata("method"))) return;
-        String metaValue = event.getEntity().getMetadata("method").get(0).asString().toLowerCase();
+        if (!(event.getEntity().hasMetadata("type"))) return;
+        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
         switch (metaValue) {
             case "pet":
                 event.setCancelled(true);
@@ -378,8 +378,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
-        if (event.getEntity().hasMetadata("method")) {
-            String metaValue = event.getEntity().getMetadata("method").get(0).asString().toLowerCase();
+        if (event.getEntity().hasMetadata("type")) {
+            String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
             switch (metaValue) {
                 case "pet":
                     event.setCancelled(true);
@@ -633,7 +633,7 @@ public class DamageListener implements Listener {
             return;
 
         LivingEntity leShooter = (LivingEntity) event.getEntity().getShooter();
-        if (!(leShooter.hasMetadata("method"))) return;
+        if (!(leShooter.hasMetadata("type"))) return;
         if (!(GameAPI.isWeapon(leShooter.getEquipment().getItemInMainHand())) && entityType != EntityType.WITCH) return;
 
         if (entityType != EntityType.WITCH)
@@ -792,7 +792,7 @@ public class DamageListener implements Listener {
                         continue;
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("method") && nmsStack.getTag().getString("method").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                         continue;
                     }
                     location.getWorld().dropItemNaturally(location, itemStack);
@@ -804,7 +804,7 @@ public class DamageListener implements Listener {
                         continue;
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("method") && nmsStack.getTag().getString("method").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                         continue;
                     }
                     location.getWorld().dropItemNaturally(location, itemStack);
@@ -880,7 +880,7 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityHurtByNonCombat(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("method") && event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")))
+        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")))
             return;
         if (event.getDamage() <= 0) return;
         if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM)
@@ -961,7 +961,7 @@ public class DamageListener implements Listener {
         if (dmg > 0) {
             if (event.getEntity() instanceof Player) {
                 HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0, event.getCause());
-            } else if (event.getEntity().hasMetadata("method") && event.getEntity().getMetadata("method").get(0).asString().equalsIgnoreCase("hostile")) {
+            } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, dmg);
             }
         }

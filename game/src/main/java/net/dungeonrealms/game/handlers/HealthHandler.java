@@ -735,7 +735,7 @@ public class HealthHandler implements GenericMechanic {
         } else if (convHPToDisplay > (int) entity.getMaxHealth()) {
             convHPToDisplay = (int) entity.getMaxHealth();
         }
-        if (entity.hasMetadata("method") && entity.hasMetadata("level") && entity.hasMetadata("tier")) {
+        if (entity.hasMetadata("type") && entity.hasMetadata("level") && entity.hasMetadata("tier")) {
             int tier = entity.getMetadata("tier").get(0).asInt();
             boolean elite = entity.hasMetadata("elite");
             entity.setCustomName(Entities.getInstance().generateOverheadBar(entity, newHP, maxHP, tier, elite));
@@ -758,12 +758,12 @@ public class HealthHandler implements GenericMechanic {
     public int calculateMaxHPFromItems(LivingEntity entity) {
         int totalHP = 0; // base hp
 
-        if (entity.hasMetadata("method"))
+        if (entity.hasMetadata("type"))
             totalHP += ((DRMonster) ((CraftLivingEntity) entity).getHandle()).getAttributes().get("healthPoints")[1];
         else if (GameAPI.isPlayer(entity))
             totalHP += 50 + GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, (Player) entity);
 
-        if (entity.hasMetadata("method") && entity.getMetadata("method").get(0).asString().equals("hostile")) {
+        if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equals("hostile")) {
             switch (entity.getMetadata("tier").get(0).asInt()) {
                 case 1:
                     totalHP *= .9;

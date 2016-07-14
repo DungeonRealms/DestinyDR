@@ -968,7 +968,7 @@ public class GameAPI {
 
 
     /**
-     * Method used to switch shard
+     * type used to switch shard
      *
      * @param player           Player
      * @param serverBungeeName Bungee name
@@ -1175,8 +1175,8 @@ public class GameAPI {
      */
     public static List<Entity> getNearbyMonsters(Location location, int radius) {
         return location.getWorld().getEntities().stream()
-                .filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("method")
-                        && mons.getMetadata("method").get(0).asString().equalsIgnoreCase("hostile"))
+                .filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("type")
+                        && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile"))
                 .collect(Collectors.toList());
     }
 
@@ -1726,13 +1726,13 @@ public class GameAPI {
         if (stack == null || stack.getType() == Material.AIR) return false;
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         if (nms == null || nms.getTag() == null) return false;
-        return nms.hasTag() && nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("weapon");
+        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon");
     }
 
     public static boolean isArmor(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         if (nms == null || nms.getTag() == null) return false;
-        return nms.hasTag() && nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("armor");
+        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
     }
 
     /**
@@ -1742,13 +1742,13 @@ public class GameAPI {
     public static boolean isOrb(ItemStack is) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(is);
         if (nms == null || nms.getTag() == null) return false;
-        return is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("orb");
+        return is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
 
     public static boolean isItemTradeable(ItemStack itemStack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         if (nms != null && nms.getTag() != null) {
-            if (nms.getTag().hasKey("method") && nms.getTag().getString("method").equalsIgnoreCase("important")) {
+            if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
                 return false;
             }
             if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
