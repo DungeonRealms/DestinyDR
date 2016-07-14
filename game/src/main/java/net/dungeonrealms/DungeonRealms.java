@@ -151,7 +151,7 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onEnable() {
-        SERVER_START_TIME = System.currentTimeMillis() / 1000L;
+        SERVER_START_TIME = System.currentTimeMillis();
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
 
