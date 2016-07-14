@@ -12,6 +12,8 @@ Bug Fixes
 - Fixed crafting restrictions in realms
 - Fixed inventory duping
 - Fixed some of guild issues
+- Fixed /shard dupe
+
 New Features ->
 - Readded the lobby
 - Added shard command in lobby

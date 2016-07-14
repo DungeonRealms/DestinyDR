@@ -94,6 +94,8 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                     player.sendMessage("                     " + ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...");
                     player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
 
+                    GameAPI.getGamePlayer(player).setAbleToDrop(false);
+
                     final Location startingLocation = player.getLocation();
 
                     if (GameAPI.isInSafeRegion(startingLocation)) {
@@ -113,6 +115,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                             if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
                                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "/shard - CANCELLED");
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");
+                                GameAPI.getGamePlayer(player).setAbleToDrop(true);
                                 cancel();
                                 return;
                             }
