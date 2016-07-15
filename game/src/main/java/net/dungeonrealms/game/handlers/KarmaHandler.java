@@ -214,8 +214,8 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                PLAYER_ALIGNMENTS.put(player, alignmentTo);
                 if (alignmentPlayer != alignmentTo) {
+                    PLAYER_ALIGNMENTS.put(player, alignmentTo);
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, gamePlayer.getLevel());
                 }
                 break;
@@ -232,8 +232,8 @@ public class KarmaHandler implements GenericMechanic {
                     alignmentTime = 120;
                 }
                 PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
-                PLAYER_ALIGNMENTS.put(player, alignmentTo);
                 if (alignmentPlayer != alignmentTo) {
+                    PLAYER_ALIGNMENTS.put(player, alignmentTo);
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, gamePlayer.getLevel());
                 }
                 break;
@@ -250,8 +250,8 @@ public class KarmaHandler implements GenericMechanic {
                     alignmentTime = 1200;
                 }
                 PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
-                PLAYER_ALIGNMENTS.put(player, alignmentTo);
                 if (alignmentPlayer != alignmentTo) {
+                    PLAYER_ALIGNMENTS.put(player, alignmentTo);
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, gamePlayer.getLevel());
                 }
                 break;
