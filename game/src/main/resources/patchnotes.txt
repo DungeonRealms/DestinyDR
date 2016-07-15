@@ -2,6 +2,7 @@ Build <build>
 
 Bug Fixes
 - Rebooter fixed
+- Fixed PVP lag
 
 New Features
 - Added unique /friends book
