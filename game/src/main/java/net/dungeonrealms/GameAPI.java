@@ -274,6 +274,7 @@ public class GameAPI {
         GameAPI.logoutAllPlayers();
 
         ShopMechanics.deleteAllShops(true);
+        DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

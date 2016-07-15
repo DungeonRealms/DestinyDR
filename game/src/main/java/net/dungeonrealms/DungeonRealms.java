@@ -493,7 +493,7 @@ public class DungeonRealms extends JavaPlugin {
         ps.onDisable();
         hs.onDisable();
         tcc.onDisable();
-        mm.stopInvocation();
+        //mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
     }
 
