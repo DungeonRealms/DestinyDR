@@ -1,8 +1,7 @@
 Build <build>
 
 Bug Fixes
-- Fixed inventory duping
-- Fixed some of known guild issues
-- Fixed /shard dupe
-- Fixed rebooting
-- Fixed error when creating guilds
+- Rebooter fixed
+
+New Features
+- Added unique /friends book
