@@ -741,6 +741,13 @@ public class InventoryListener implements Listener {
             }
             if (failed) {
                 event.setCancelled(true);
+                if (cursorItem.getAmount() == 1) {
+                    event.setCursor(new ItemStack(Material.AIR));
+                } else {
+                    ItemStack newStack = cursorItem.clone();
+                    newStack.setAmount(newStack.getAmount() - 1);
+                    event.setCursor(newStack);
+                }
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
@@ -749,13 +756,6 @@ public class InventoryListener implements Listener {
                         event.setCurrentItem(stack);
                         return;
                     }
-                }
-                if (cursorItem.getAmount() == 1) {
-                    event.setCursor(new ItemStack(Material.AIR));
-                } else {
-                    ItemStack newStack = cursorItem.clone();
-                    newStack.setAmount(newStack.getAmount() - 1);
-                    event.setCursor(newStack);
                 }
                 event.getWhoClicked().getWorld().playSound(event.getWhoClicked().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 2.0F, 1.25F);
 
