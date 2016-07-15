@@ -214,6 +214,11 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, gamePlayer.getLevel());
+                /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
+                    Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
+                }*/
+                PLAYER_ALIGNMENTS.put(player, alignmentTo);
                 if (alignmentPlayer != alignmentTo) {
                     PLAYER_ALIGNMENTS.put(player, alignmentTo);
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, gamePlayer.getLevel());
@@ -343,11 +348,8 @@ public class KarmaHandler implements GenericMechanic {
         EnumPlayerAlignments alignmentPlayer = getPlayerRawAlignment(player);
         if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, alignmentPlayer, false);
-        } else if (alignmentPlayer == EnumPlayerAlignments.NEUTRAL) {
-            setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, alignmentPlayer, false);
         }
     }
-
 
     public void tellPlayerRegionInfo(Player player) {
         if (!PLAYER_LOCATIONS.containsKey(player)) {

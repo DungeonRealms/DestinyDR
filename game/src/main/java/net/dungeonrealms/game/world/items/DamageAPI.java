@@ -176,7 +176,6 @@ public class DamageAPI {
                     damage += attackerAttributes.get("iceDamage")[1];
                 } else if (attackerAttributes.get("poisonDamage")[1] != 0) {
                     applyPoisonDebuff(receiver, weaponTier);
-
                     damage += attackerAttributes.get("poisonDamage")[1];
                 }
             } else if (GameAPI.isMobElemental(attacker)) {

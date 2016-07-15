@@ -266,6 +266,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDropEvent(PlayerDropItemEvent event) {
         Player p = event.getPlayer();
+        if (GameAPI.getGamePlayer(p) == null) return;
         if (!GameAPI.getGamePlayer(p).isAbleToDrop()) {
             event.setCancelled(true);
         }
@@ -845,7 +846,6 @@ public class MainListener implements Listener {
     @EventHandler
     public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
         if (e.getCause() == DamageCause.PROJECTILE) return;
-        if (GameAPI.isPlayer(e.getEntity())) return;
         if (e.getEntity() instanceof LivingEntity) {
             LivingEntity ent = (LivingEntity) e.getEntity();
             ent.setMaximumNoDamageTicks(0);
