@@ -678,7 +678,7 @@ public class GameAPI {
     }
 
     public static void sendStopAllServersPacket() {
-        sendNetworkMessage("Stop", null);
+        sendNetworkMessage("Stop", "");
     }
 
     /**
