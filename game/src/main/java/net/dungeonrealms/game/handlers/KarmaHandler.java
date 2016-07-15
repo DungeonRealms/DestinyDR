@@ -219,8 +219,8 @@ public class KarmaHandler implements GenericMechanic {
                     Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
                 }*/
                 PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, 0, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.LAWFUL.name, true);
+                /*DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, 0, false);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.LAWFUL.name, true);*/
                 break;
             case NEUTRAL:
                 if ((alignmentPlayer != EnumPlayerAlignments.NEUTRAL) && !login) {
@@ -240,8 +240,8 @@ public class KarmaHandler implements GenericMechanic {
                 }
                 PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
                 PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.NEUTRAL.name, true);
+                /*DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, false);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.NEUTRAL.name, true);*/
                 break;
             case CHAOTIC:
                 if ((alignmentPlayer != EnumPlayerAlignments.CHAOTIC) && !login) {
@@ -261,8 +261,8 @@ public class KarmaHandler implements GenericMechanic {
                 }
                 PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
                 PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.CHAOTIC.name, true);
+                /*DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, false);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.CHAOTIC.name, true);*/
                 break;
             default:
                 Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
@@ -352,11 +352,8 @@ public class KarmaHandler implements GenericMechanic {
         EnumPlayerAlignments alignmentPlayer = getPlayerRawAlignment(player);
         if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, alignmentPlayer, false);
-        } else if (alignmentPlayer == EnumPlayerAlignments.NEUTRAL) {
-            setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, alignmentPlayer, false);
         }
     }
-
 
     public void tellPlayerRegionInfo(Player player) {
         if (!PLAYER_LOCATIONS.containsKey(player)) {
