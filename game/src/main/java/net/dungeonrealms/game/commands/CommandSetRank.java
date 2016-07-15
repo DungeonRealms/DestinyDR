@@ -20,7 +20,7 @@ import java.util.UUID;
 /**
  * Created by Brad on 09/06/2016.
  */
-public class CommandSetRank extends BasicCommand{
+public class CommandSetRank extends BasicCommand {
     public CommandSetRank(String command, String usage, String description) {
         super(command, usage, description);
     }

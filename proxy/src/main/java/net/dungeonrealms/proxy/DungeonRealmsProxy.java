@@ -151,9 +151,5 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         }
     }
 
-    public void relayPacket(String channel, byte[] data) {
-        for (ServerInfo server : ProxyServer.getInstance().getServers().values())
-            server.sendData(channel, data);
-    }
 
 }

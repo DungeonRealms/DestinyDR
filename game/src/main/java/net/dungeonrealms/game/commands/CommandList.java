@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by Nick on 9/11/2015.
  */
-public class CommandList extends BasicCommand  {
+public class CommandList extends BasicCommand {
 
     public CommandList(String command, String usage, String description) {
         super(command, usage, description);

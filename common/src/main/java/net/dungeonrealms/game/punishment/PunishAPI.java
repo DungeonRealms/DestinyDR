@@ -25,7 +25,6 @@ public class PunishAPI {
      */
     public static void ban(UUID uuid, String playerName, long duration, String reason, Consumer<UUID> doBefore) {
         if (uuid == null) return;
-        if (isBanned(uuid)) return;
 
         // KICK PLAYER //
         if (duration == -1)
@@ -48,8 +47,6 @@ public class PunishAPI {
      */
     public static void mute(UUID uuid, long duration, String reason, Consumer<UUID> doAfter) {
         if (uuid == null) return;
-        if (isMuted(uuid)) return;
-
         // MUTE PLAYER //
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, System.currentTimeMillis() + (duration * 1000), true);
 

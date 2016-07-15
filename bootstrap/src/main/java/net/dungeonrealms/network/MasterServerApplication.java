@@ -1,6 +1,10 @@
 package net.dungeonrealms.network;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.minlog.Log;
+import net.dungeonrealms.Constants;
+import net.dungeonrealms.network.packet.Packet;
+import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 
 import java.io.IOException;
 
@@ -17,20 +21,32 @@ import java.io.IOException;
 
 public class MasterServerApplication {
 
-    private static KryonetServer server;
+    private static Kryo kryo;
 
 
     public static void main(String[] args) {
-        Log.info(" ");
-        Log.info("[Launching master server application thread] ...");
-        Log.info(" ");
+
+
+        Log.info("");
+        Log.info("Master server initiated on " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER);
+        Log.info("Alright. let's do this boys...");
+        Log.info("Ready to sit back relax and relay packets");
 
         try {
-            server = new KryonetServer();
+            MasterServer server = new MasterServer();
+            Log.info("Listening on " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT);
+            kryo = server.getKryo();
+
+            Log.set(Log.LEVEL_TRACE);
+            registerClasses();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private static void registerClasses() {
+        kryo.register(Packet.class);
+        kryo.register(BasicMessagePacket.class);
+    }
 
 }
