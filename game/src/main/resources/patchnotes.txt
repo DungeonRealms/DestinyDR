@@ -5,3 +5,4 @@ Bug Fixes
 - Fixed some of known guild issues
 - Fixed /shard dupe
 - Fixed rebooting
+- Fixed error when creating guilds
