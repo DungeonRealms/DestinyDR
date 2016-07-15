@@ -42,7 +42,6 @@ import net.dungeonrealms.game.listener.mechanic.EnergyListener;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.listener.world.BlockListener;
 import net.dungeonrealms.game.listener.world.DungeonListener;
-import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
@@ -50,7 +49,6 @@ import net.dungeonrealms.game.network.NetworkChannelListener;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.menu.HearthStone;
 import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.profession.Fishing;
@@ -486,22 +484,7 @@ public class DungeonRealms extends JavaPlugin {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                Bukkit.getScheduler().cancelAllTasks();
-                Bukkit.getServer().setWhitelist(true);
-                DungeonRealms.getInstance().setFinishedSetup(false);
-                ShopMechanics.deleteAllShops(true);
-                GameAPI.logoutAllPlayers(true, false);
-                CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
-                AsyncUtils.pool.shutdown();
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    DungeonRealms.getInstance().mm.stopInvocation();
-                    Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-                    DatabaseDriver.mongoClient.close();
-                }, 200L);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), (20 * 60) * 4);
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200L);
-
+                GameAPI.stopGame();
             }
         }, 300000);
     }

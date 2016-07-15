@@ -14,7 +14,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,8 +42,9 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     public void updateCache(String guildName) {
         Document doc = DatabaseDriver.guilds.find(Filters.eq("info.name", guildName)).first();
-        if (doc == null) return;
-        CACHED_GUILD.put(guildName, doc);
+
+        if (doc != null)
+            CACHED_GUILD.put(guildName, doc);
     }
 
     @Override
@@ -259,6 +259,11 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return getList(guildName, EnumGuildData.OFFICERS).contains(uuid);
     }
 
+    @Override
+    public boolean isInGuild(UUID uuid, String guildName) {
+        return GuildDatabaseAPI.get().getAllGuildMembers(guildName).stream().filter(u -> u.toString().equals(uuid.toString())).findFirst().isPresent();
+    }
+
     public boolean isOwnerOfGuild(UUID player) {
         return get(EnumGuildData.OWNER, player) != null;
     }
@@ -292,7 +297,13 @@ public class GuildDatabase implements GuildDatabaseAPI {
     public List<UUID> getAllOfGuild(String guildName) {
         String owner = getOwnerOf(guildName);
 
-        List<UUID> all = owner != null && !owner.equals("") ? new ArrayList<>(Collections.singletonList(UUID.fromString(owner))) : new ArrayList<>();
+        List<UUID> all = new ArrayList<>();
+
+        if (owner != null && !owner.equals("")) {
+            all.add(UUID.fromString(owner));
+            System.out.println(owner);
+        }
+
         all.addAll(getAllGuildMembers(guildName));
         all.addAll(getGuildOfficers(guildName));
 

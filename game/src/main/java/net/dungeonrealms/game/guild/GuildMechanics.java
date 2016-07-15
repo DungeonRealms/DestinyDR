@@ -8,7 +8,6 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
-import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -64,16 +63,15 @@ public class GuildMechanics {
 
     public void doLogin(Player player) {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
-
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+
+        GuildDatabaseAPI.get().updateCache(guildName);
 
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
         // Checks if guild still exists
         checkPlayerGuild(player.getUniqueId());
-
-        GuildDatabaseAPI.get().updateCache(guildName);
 
         List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
 
@@ -131,8 +129,15 @@ public class GuildMechanics {
             GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
                 if (!guildExists) {
                     GuildDatabaseAPI.get().setGuild(uuid, "");
-                } else if (!GuildDatabase.getAPI().getAllGuildMembers(guildName).contains(uuid))
+
+                    if (Bukkit.getPlayer(uuid) == null)
+                        GameAPI.updatePlayerData(uuid);
+                } else if (guildExists && !GuildDatabaseAPI.get().isInGuild(uuid, guildName)) {
                     GuildDatabaseAPI.get().setGuild(uuid, "");
+
+                    if (Bukkit.getPlayer(uuid) == null)
+                        GameAPI.updatePlayerData(uuid);
+                }
             });
         }
     }

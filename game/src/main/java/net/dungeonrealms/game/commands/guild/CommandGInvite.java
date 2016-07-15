@@ -6,6 +6,7 @@ import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.game.guild.GuildMechanics;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -70,6 +71,8 @@ public class CommandGInvite extends BasicCommand {
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " already has a pending guild invitation.");
             return true;
         }
+
+        GuildMechanics.getInstance().checkPlayerGuild(p_uuid);
 
         if (!GuildDatabaseAPI.get().isGuildNull(p_uuid)) {
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is already in a guild.");

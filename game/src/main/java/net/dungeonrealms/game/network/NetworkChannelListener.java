@@ -167,9 +167,8 @@ public class NetworkChannelListener implements PluginMessageListener, GenericMec
                     }
                 }
 
-
                 if (subChannel.equals("Stop")) {
-                    GameAPI.stopServer(true, false);
+                    GameAPI.stopGame();
                     return;
                 }
 

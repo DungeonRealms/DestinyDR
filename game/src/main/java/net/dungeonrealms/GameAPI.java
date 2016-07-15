@@ -260,37 +260,29 @@ public class GameAPI {
     }
 
     /**
-     * Stops dr server
-     *
-     * @param stopAll Kick all players from shard
+     * Stops DungeonRealms server
      */
-    public static void stopServer(boolean stopAll, boolean sendStopPacket) {
+    public static void stopGame() {
         if (Realms.getInstance().realmsAreUpgrading()) return;
-
-        DungeonRealms.getInstance().getLogger().info("DRStop called.");
-
-        if (sendStopPacket)
-            BungeeUtils.sendNetworkMessage("DungeonRealms", "Stop", "");
+        DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
-        GameAPI.logoutAllPlayers(true, stopAll);
+        GameAPI.logoutAllPlayers();
 
         ShopMechanics.deleteAllShops(true);
-        DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            DungeonRealms.getInstance().mm.stopInvocation();
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
             DatabaseDriver.mongoClient.close();
         }, 200);
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 15 * 20L);
     }
-
 
     /**
      * @param pLevel
@@ -645,10 +637,9 @@ public class GameAPI {
     /**
      * Safely logs out all players when the server restarts
      *
-     * @param customStop
      * @since 1.0
      */
-    public static void logoutAllPlayers(boolean customStop, boolean stoppingAll) {
+    public static void logoutAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
 
@@ -656,20 +647,15 @@ public class GameAPI {
                 CombatLog.removeFromCombat(player);
             }
 
-            if (stoppingAll) {
-                DungeonRealms.getInstance().getLoggingOut().add(player.getName());
-                DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                BungeeUtils.sendToServer(player.getName(), "Lobby");
-                continue;
-            }
-
-            if (customStop) {
-                GameAPI.handleLogout(player.getUniqueId());
-                DungeonRealms.getInstance().getLoggingOut().add(player.getName());
-                DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BungeeUtils.sendToServer(player.getName(), "Lobby"), 3L);
-            }
+            GameAPI.handleLogout(player.getUniqueId());
+            DungeonRealms.getInstance().getLoggingOut().add(player.getName());
+            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BungeeUtils.sendToServer(player.getName(), "Lobby"), 3L);
         }
+    }
+
+    public static void sendStopAllServersPacket() {
+        BungeeUtils.sendNetworkMessage("DungeonRealms", "Stop", "");
     }
 
     /**
