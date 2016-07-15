@@ -468,7 +468,7 @@ public class DungeonRealms extends JavaPlugin {
 
 
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
-            if (System.currentTimeMillis() >= SERVER_START_TIME + 14400000) {
+            if (System.currentTimeMillis() >= (SERVER_START_TIME + 1434000)) {
                 scheduleRestartTask();
                 Bukkit.getScheduler().cancelTask(rebooterID);
             }
@@ -497,7 +497,7 @@ public class DungeonRealms extends JavaPlugin {
             public void run() {
                 GameAPI.backupDatabase();
             }
-        }, 0L, 600000);
+        }, 0L, 7200000);
     }
 
     private void scheduleRestartTask() {

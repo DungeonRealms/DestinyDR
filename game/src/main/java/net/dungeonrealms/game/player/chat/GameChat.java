@@ -103,6 +103,7 @@ public final class GameChat {
 
     public static String getName(Player player, String rank, boolean onlyName) {
         switch (rank.toLowerCase()) {
+            case "headgm":
             case "gm":
             case "dev":
                 return ChatColor.AQUA + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
@@ -133,6 +134,7 @@ public final class GameChat {
                 return BUILDER;
             case "dev":
                 return DEV;
+            case "headgm":
             case "gm":
                 return GM;
             case "support":

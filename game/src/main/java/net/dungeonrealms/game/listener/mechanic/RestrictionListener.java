@@ -338,6 +338,12 @@ public class RestrictionListener implements Listener {
         if (!GameAPI.isPlayer(event.getTarget())) return;
         GamePlayer gamePlayer = GameAPI.getGamePlayer((Player) event.getTarget());
         if (gamePlayer == null) return;
+        if (event.getEntity().hasMetadata("tier")) {
+            if (GameAPI.getTierFromLevel(gamePlayer.getLevel()) > (event.getEntity().getMetadata("tier").get(0).asInt() + 1)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
         if (gamePlayer.isTargettable()) return;
         event.setCancelled(true);
     }

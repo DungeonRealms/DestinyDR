@@ -181,20 +181,18 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
         if (event.getDamager() instanceof Player) {
             Player p_attacker = (Player) event.getDamager();
             if (p_attacker.getLocation().distanceSquared(en.getLocation()) <= 16) {
-                pushAwayPlayer(en, p_attacker, 2.5F);
+                pushAwayPlayer(en, p_attacker, 2.0F);
                 p_attacker.setFireTicks(80);
                 p_attacker.playSound(p_attacker.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 1F, 1F);
             }
         }
-        if (!finalForm) {
-            if (hasFiredGhast) {
-                if (!this.ghast.isAlive()) {
-                    if (en.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-                        en.removePotionEffect(PotionEffectType.INVISIBILITY);
-                    }
-                    if (DamageAPI.isInvulnerable(en)) {
-                        DamageAPI.removeInvulnerable(en);
-                    }
+        if (hasFiredGhast) {
+            if (!this.ghast.isAlive()) {
+                if (en.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+                    en.removePotionEffect(PotionEffectType.INVISIBILITY);
+                }
+                if (DamageAPI.isInvulnerable(en)) {
+                    DamageAPI.removeInvulnerable(en);
                 }
             }
         }
