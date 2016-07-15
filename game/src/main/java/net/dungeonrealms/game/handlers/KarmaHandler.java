@@ -214,13 +214,10 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, gamePlayer.getLevel());
-                /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                    Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
-                }*/
                 PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, 0, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.LAWFUL.name, true);
+                if (alignmentPlayer != alignmentTo) {
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, gamePlayer.getLevel());
+                }
                 break;
             case NEUTRAL:
                 if ((alignmentPlayer != EnumPlayerAlignments.NEUTRAL) && !login) {
@@ -231,17 +228,14 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, gamePlayer.getLevel());
-                /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                    Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.YELLOW + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
-                }*/
                 if (alignmentTime == 0) {
                     alignmentTime = 120;
                 }
                 PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
                 PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.NEUTRAL.name, true);
+                if (alignmentPlayer != alignmentTo) {
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, gamePlayer.getLevel());
+                }
                 break;
             case CHAOTIC:
                 if ((alignmentPlayer != EnumPlayerAlignments.CHAOTIC) && !login) {
@@ -252,17 +246,14 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, gamePlayer.getLevel());
-                /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                    Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.RED + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
-                }*/
                 if (alignmentTime == 0) {
                     alignmentTime = 1200;
                 }
                 PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
                 PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.CHAOTIC.name, true);
+                if (alignmentPlayer != alignmentTo) {
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, gamePlayer.getLevel());
+                }
                 break;
             default:
                 Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");

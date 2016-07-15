@@ -84,6 +84,7 @@ public class CombatLog implements GenericMechanic {
                     player.eject();
                     player.getVehicle().remove();
                 }
+                player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
             }
 
         }
