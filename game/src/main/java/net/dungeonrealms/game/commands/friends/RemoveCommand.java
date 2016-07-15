@@ -53,7 +53,7 @@ public class RemoveCommand extends BasicCommand {
 
     private boolean isOnline(String playerName) {
         String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-        return DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, UUID.fromString(uuid)).equals("none") ? false : true;
+        return (boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, UUID.fromString(uuid));
     }
 
     private boolean isPlayer(String player) {

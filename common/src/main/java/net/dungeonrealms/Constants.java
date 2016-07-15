@@ -17,14 +17,16 @@ public class Constants {
     public static final int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //
-    public static final int MASTER_SERVER_PORT = 69420;
+    public static final String MASTER_SERVER_IP = "158.69.122.139";
 
+    // BACKEND SERVER SERVER PORT //
+    public static final int MASTER_SERVER_PORT = 22964;
 
     // BUILD VERSION //
     public static final String BUILD_VERSION = "v5.0";
 
 
     // BUILD NUMBER //
-    public static final String BUILD_NUMBER = "#121";
+    public static final String BUILD_NUMBER = "#122";
 
 }

@@ -20,7 +20,7 @@ import java.util.UUID;
 /**
  * Created by Brad on 09/06/2016.
  */
-public class CommandSetRank extends BasicCommand{
+public class CommandSetRank extends BasicCommand {
     public CommandSetRank(String command, String usage, String description) {
         super(command, usage, description);
     }
@@ -29,15 +29,22 @@ public class CommandSetRank extends BasicCommand{
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (!(sender instanceof ConsoleCommandSender) && !(Rank.isGM((Player) sender))) return false;
 
-        String[] ranks = new String[] { "DEV", "GM", "PMOD", "SUPPORT", "YOUTUBE", "BUILDER", "SUB++", "SUB+", "SUB", "DEFAULT" };
+        String[] ranks = new String[] { "DEV", "HEADGM", "GM", "PMOD", "SUPPORT", "YOUTUBE", "BUILDER", "SUB++", "SUB+", "SUB", "DEFAULT" };
 
         // If the user isn't a dev and they're at this point, it means they're a GM.
         // We can't allow for SUB ranks because they need more technical execution & that's for a support agent.
         // We can, however, allow them to set new PMODs / remove them.
+        // @todo: Tidy this bit up, it's horribly done, but it works... FOR NOW!
         boolean isGM = false;
+        boolean isHeadGM = false;
         if (!(sender instanceof ConsoleCommandSender) && !(Rank.isDev((Player) sender))) {
-            ranks = new String[] { "PMOD", "BUILDER", "DEFAULT" };
-            isGM = true;
+            if (Rank.isHeadGM((Player) sender)) {
+                ranks = new String[] { "GM", "PMOD", "BUILDER", "DEFAULT" };
+                isHeadGM = true;
+            } else {
+                ranks = new String[] { "PMOD", "DEFAULT" };
+                isGM = true;
+            }
         }
 
         if (args.length >= 2 && Arrays.asList(ranks).contains(args[1].toUpperCase())) {
@@ -49,7 +56,7 @@ public class CommandSetRank extends BasicCommand{
                 // DEV | GM | SUPPORT | YOUTUBE
                 if (isGM) {
                     String currentRank = Rank.getInstance().getRank(uuid).toUpperCase();
-                    if (currentRank.equals("DEV") || currentRank.equals("GM") || currentRank.equals("SUPPORT") || currentRank.equals("YOUTUBE")) {
+                    if (currentRank.equals("DEV") || (currentRank.equals("GM") && !isHeadGM) || currentRank.equals("SUPPORT") || currentRank.equals("YOUTUBE")) {
                         sender.sendMessage(ChatColor.RED + "You can't change the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.RED + " as they're a " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank + ChatColor.RED + ".");
                         return false;
                     }

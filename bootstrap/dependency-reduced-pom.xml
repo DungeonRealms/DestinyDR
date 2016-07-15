@@ -35,6 +35,10 @@
                   <include>net.dungeonrealms:DungeonRealms-common</include>
                   <include>net.dungeonrealms:DungeonRealms-network</include>
                   <include>com.esotericsoftware:kryo-shaded</include>
+                  <include>com.esotericsoftware:kryonet</include>
+                  <include>com.esotericsoftware:minlog</include>
+                  <include>com.esotericsoftware.reflectasm:reflectasm</include>
+                  <include>org.objenesis:objenesis</include>
                 </includes>
               </artifactSet>
             </configuration>
@@ -54,12 +58,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>com.esotericsoftware</groupId>
-      <artifactId>kryonet</artifactId>
-      <version>2.22.0-RC1</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>

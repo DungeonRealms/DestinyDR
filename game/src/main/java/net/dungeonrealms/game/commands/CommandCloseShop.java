@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.commands;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
@@ -41,14 +39,9 @@ public class CommandCloseShop extends BasicCommand {
             }
 
             if (commandSender instanceof Player) {
-                Player player = (Player) commandSender;
-                ByteArrayDataOutput shopClose = ByteStreams.newDataOutput();
-                shopClose.writeUTF("Shop");
-                shopClose.writeUTF("close:" + " ," + playerName);
                 String uuidString = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-
                 UUID uuid = UUID.fromString(uuidString);
-                player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", shopClose.toByteArray());
+                GameAPI.sendNetworkMessage("Shop", "close:" + " ," + playerName);
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true);
 
             }
@@ -56,12 +49,9 @@ public class CommandCloseShop extends BasicCommand {
             return false;
         } else {
             Player player = (Player) commandSender;
-            ByteArrayDataOutput shopClose = ByteStreams.newDataOutput();
-            shopClose.writeUTF("Shop");
-            shopClose.writeUTF("close:" + " ," + player.getName());
+            GameAPI.sendNetworkMessage("Shop", "close:" + " ," + player.getName());
             String uuidString = DatabaseAPI.getInstance().getUUIDFromName(player.getName());
             UUID uuid = UUID.fromString(uuidString);
-            player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", shopClose.toByteArray());
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -74,7 +64,7 @@ public class CommandCloseShop extends BasicCommand {
 
     private boolean isPlayer(String player) {
         String uuid = DatabaseAPI.getInstance().getUUIDFromName(player);
-        return uuid.equals("") ? false : true;
+        return !uuid.equals("");
     }
 
 }

@@ -772,20 +772,6 @@ public class DamageListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void playerDMGOnHorse(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
-        if (event.getEntity().getVehicle() == null) return;
-        if (event.getDamage() <= 0) return;
-        if (event.isCancelled()) return;
-        if (EntityAPI.hasMountOut(event.getEntity().getUniqueId())) {
-            event.getEntity().getVehicle().setPassenger(null);
-            event.getEntity().getVehicle().remove();
-            EntityAPI.removePlayerMountList(event.getEntity().getUniqueId());
-            event.getEntity().sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
     public void handleCombatLoggerNPCDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player) return;
         if (!(event.getEntity() instanceof CraftLivingEntity)) return;
@@ -905,7 +891,7 @@ public class DamageListener implements Listener {
         event.getEntity().setMetadata("lastEnvironmentDamage", new FixedMetadataValue(DungeonRealms.getInstance(),
                 System.currentTimeMillis()));
 
-        int maxHP = 0;
+        int maxHP;
         if (GameAPI.isPlayer(event.getEntity())) {
             maxHP = GameAPI.getGamePlayer((Player) event.getEntity()).getPlayerMaxHP();
         } else {

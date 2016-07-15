@@ -361,7 +361,7 @@ public class ItemListener implements Listener {
                         out.writeUTF("Alert");
                         out.writeUTF(" \n" + ChatColor.GOLD.toString() + ChatColor.BOLD + ">>" + ChatColor.GOLD + " (" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(event.getPlayer()) + ChatColor.GOLD + fixedMessage + "\n ");
 
-                        event.getPlayer().sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", out.toByteArray());
+                        event.getPlayer().sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
                     }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                 }
             } else if (event.getItem().getType() == Material.ENDER_CHEST) {

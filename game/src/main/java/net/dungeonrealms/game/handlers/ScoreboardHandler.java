@@ -293,6 +293,7 @@ public class ScoreboardHandler implements GenericMechanic {
         switch (prefix.toLowerCase()) {
             case "dev":
                 return ChatColor.AQUA;
+            case "headgm":
             case "gm":
                 return ChatColor.AQUA;
             case "pmod":

@@ -903,7 +903,7 @@ public class ItemManager {
             UUID uuid = UUID.fromString(uuidString);
             String playerName = DatabaseAPI.getInstance().getOfflineName(uuid);
             String shard = DatabaseAPI.getInstance().getFormattedShardName(uuid);
-            boolean isOnline = !shard.contains("none");
+            boolean isOnline = Boolean.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid)));
             long currentTime = System.currentTimeMillis();
             long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid)));
             long millis = currentTime - endTime;

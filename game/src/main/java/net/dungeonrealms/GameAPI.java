@@ -47,6 +47,7 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
@@ -259,6 +260,10 @@ public class GameAPI {
         return ChatColor.WHITE;
     }
 
+    public static GameClient getClient() {
+        return DungeonRealms.getClient();
+    }
+
     /**
      * Stops DungeonRealms server
      */
@@ -330,8 +335,8 @@ public class GameAPI {
      * @param uuid Target
      */
     public static void updatePlayerData(UUID uuid) {
-        // SENDS PACKET ON MESSAGING CHANNEL //
-        BungeeUtils.sendNetworkMessage("DungeonRealms", "Update", uuid.toString());
+        // SENDS PACKET TO MASTER SERVER //
+        sendNetworkMessage("Update", uuid.toString());
     }
 
     /**
@@ -341,10 +346,28 @@ public class GameAPI {
      * @param guildName Target
      */
     public static void updateGuildData(String guildName) {
-        // SENDS PACKET ON MESSAGING CHANNEL //
-        BungeeUtils.sendNetworkMessage("DungeonRealms", "Guild", "Update", guildName);
+        // SENDS PACKET TO MASTER SERVER //
+        sendNetworkMessage("Guild", "Update", guildName);
     }
 
+
+    /**
+     * @param task     Packet job
+     * @param message  Message to send.
+     * @param contents More data?
+     * @since 1.0
+     */
+
+    public static void sendNetworkMessage(String task, String message, String... contents) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(task);
+        out.writeUTF(message);
+
+        for (String s : contents)
+            out.writeUTF(s);
+
+        getClient().sendTCP(out.toByteArray());
+    }
 
     /**
      * Gets players UUID from Name. ASYNC.
@@ -558,7 +581,6 @@ public class GameAPI {
                 }
             }
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, "none", true);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
@@ -605,7 +627,7 @@ public class GameAPI {
         } else {
             //Dungeon or realm, should already have their last main world location saved.
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, (System.currentTimeMillis() - 1000 * 10), false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis(), false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
@@ -656,7 +678,7 @@ public class GameAPI {
     }
 
     public static void sendStopAllServersPacket() {
-        BungeeUtils.sendNetworkMessage("DungeonRealms", "Stop", "");
+        sendNetworkMessage("Stop", "");
     }
 
     /**
@@ -899,11 +921,7 @@ public class GameAPI {
 
         player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
 
-        ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
-        friendsOut.writeUTF("Friends");
-        friendsOut.writeUTF("join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
-        player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
-
+        sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
 
         Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);

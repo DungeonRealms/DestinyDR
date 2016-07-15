@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.handlers;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
@@ -92,10 +90,7 @@ public class FriendHandler {
                 player.sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
 
                 UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
-                ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
-                friendsOut.writeUTF("Friends");
-                friendsOut.writeUTF("accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
-                player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
+                GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
                 FriendHandler.getInstance().acceptFriend(player.getUniqueId(), uuid, name);
 
                 DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId().toString(), true);
@@ -132,11 +127,7 @@ public class FriendHandler {
      * Send a friend request over network, NO CHECKS.
      */
     public void sendRequestOverNetwork(Player player, String uuid) {
-
-        ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
-        friendsOut.writeUTF("Friends");
-        friendsOut.writeUTF("request:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid);
-        player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
+        GameAPI.sendNetworkMessage("Friends", "request:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid);
         player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
     }
 
