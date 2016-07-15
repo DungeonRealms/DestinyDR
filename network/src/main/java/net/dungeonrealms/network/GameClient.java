@@ -1,5 +1,6 @@
 package net.dungeonrealms.network;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -22,6 +23,8 @@ public class GameClient
         this.client.addListener(this);
         this.client.setKeepAliveTCP(1000);
         this.client.start();
+
+        registerClasses(client.getKryo());
     }
 
     public void setReconnector(Runnable reconnector) {
@@ -71,6 +74,14 @@ public class GameClient
         packet.data = data;
         sendUDP(packet);
     }
+
+    private static void registerClasses(Kryo kryo) {
+        kryo.register(Packet.class);
+        kryo.register(byte.class);
+        kryo.register(byte[].class);
+        kryo.register(BasicMessagePacket.class);
+    }
+
 
     public void sendTCP(Packet packet) {
         this.client.sendTCP(packet);
