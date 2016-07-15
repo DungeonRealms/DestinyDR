@@ -470,53 +470,55 @@ public class GuildMechanics {
         player.sendMessage("");
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Chat.listenForMessage(player, confirmation -> {
-            // Cancels dialogue
-            if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Goodbye!");
-                return;
-            }
-
-
-            // Confirms purchase
-            if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
-                if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
-                    player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                // Cancels dialogue
+                if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
+                    player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Goodbye!");
                     return;
                 }
 
-                BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
-                meta.setLore(new ArrayList<>());
-                meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
-                meta.setLore(Collections.singletonList(ChatColor.RED + "Right click to equip"));
-                info.getCurrentBanner().setItemMeta(meta);
 
-                String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());
-
-                // Registers guild in database
-                GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), itemString, onComplete -> {
-                    if (!onComplete) {
-                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
+                // Confirms purchase
+                if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
+                    if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
+                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
                         return;
                     }
 
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
+                    BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
+                    meta.setLore(new ArrayList<>());
+                    meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
+                    meta.setLore(Collections.singletonList(ChatColor.RED + "Right click to equip"));
+                    info.getCurrentBanner().setItemMeta(meta);
 
-                    player.sendMessage("");
-                    player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + info.getDisplayName() + "' guild!");
-                    player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
-                    BankMechanics.getInstance().takeGemsFromInventory(5000, player);
+                    String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());
 
-                    // guild tags in scoreboard disabled
-                    GamePlayer gp = GameAPI.getGamePlayer(player);
-                    if (gp != null)
-                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                    // Registers guild in database
+                    GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), itemString, onComplete -> {
+                        if (!onComplete) {
+                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
+                            return;
+                        }
 
-                    player.getInventory().addItem(info.getCurrentBanner());
-                    GameAPI.updatePlayerData(player.getUniqueId());
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
 
-                });
+                        player.sendMessage("");
+                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + info.getDisplayName() + "' guild!");
+                        player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
+                        BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
-            }
+                        // guild tags in scoreboard disabled
+                        GamePlayer gp = GameAPI.getGamePlayer(player);
+                        if (gp != null)
+                            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+
+                        player.getInventory().addItem(info.getCurrentBanner());
+                        GameAPI.updatePlayerData(player.getUniqueId());
+
+                    });
+                }
+            });
+
         }, null), 1L);
     }
 
