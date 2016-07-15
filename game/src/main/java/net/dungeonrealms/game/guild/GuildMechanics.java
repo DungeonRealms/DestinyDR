@@ -14,7 +14,6 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -185,7 +184,7 @@ public class GuildMechanics {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA.toString() + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">" + ChatColor.GRAY + " " + player.getName() + ": " + ChatColor.GRAY;
 
-        BungeeUtils.sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        GameAPI.sendNetworkMessage("Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
     /**
@@ -197,7 +196,7 @@ public class GuildMechanics {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        BungeeUtils.sendNetworkMessage("DungeonRealms", "Guilds", "message:" + getFilters(filters).toString(), Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        GameAPI.sendNetworkMessage("Guilds", "message:" + getFilters(filters).toString(), Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
     private StringBuilder getFilters(String[] filters) {
@@ -217,7 +216,7 @@ public class GuildMechanics {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        BungeeUtils.sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        GameAPI.sendNetworkMessage("Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
     /**

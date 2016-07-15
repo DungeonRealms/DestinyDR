@@ -45,7 +45,8 @@ import net.dungeonrealms.game.listener.world.DungeonListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
-import net.dungeonrealms.game.network.NetworkChannelListener;
+import net.dungeonrealms.game.network.BungeeChannelListener;
+import net.dungeonrealms.game.network.NetworkClientListener;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -68,6 +69,7 @@ import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.tool.PatchTools;
@@ -91,6 +93,9 @@ public class DungeonRealms extends JavaPlugin {
 
     @Getter
     private static ShardInfo shard;
+
+    @Getter
+    private static GameClient client;
 
     private static DungeonRealms instance = null;
     private static HearthStone hs;
@@ -132,6 +137,8 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
         instance = this;
     }
+
+    public static int rebooterID;
 
     public List<String> getDevelopers() {
         return Arrays.asList(Constants.DEVELOPERS);
@@ -193,6 +200,16 @@ public class DungeonRealms extends JavaPlugin {
 
         ItemGenerator.loadModifiers();
 
+        Utils.log.info("Connecting to DungeonRealms master server...");
+        client = new GameClient();
+
+        try {
+            client.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         mm = new MechanicManager();
         if (!isInstanceServer) {
             mm.registerMechanic(PetUtils.getInstance());
@@ -203,7 +220,8 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(HealthHandler.getInstance());
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
-            mm.registerMechanic(NetworkChannelListener.getInstance());
+            mm.registerMechanic(BungeeChannelListener.getInstance());
+            mm.registerMechanic(NetworkClientListener.getInstance());
             //mm.registerMechanic(DungeonManager.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
@@ -228,7 +246,8 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(new Entities());
-            mm.registerMechanic(NetworkChannelListener.getInstance());
+            mm.registerMechanic(BungeeChannelListener.getInstance());
+            mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
@@ -448,13 +467,14 @@ public class DungeonRealms extends JavaPlugin {
         Bukkit.getServer().setWhitelist(false);
 
 
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
+        rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
+            if (System.currentTimeMillis() >= SERVER_START_TIME + 14400000) {
                 scheduleRestartTask();
+                Bukkit.getScheduler().cancelTask(rebooterID);
             }
-        }, 14400000);
+
+
+        }, 0, 20 * 60 * 5);
 
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
@@ -481,19 +501,16 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     private void scheduleRestartTask() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                GameAPI.stopGame();
-            }
-        }, 300000);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
+                Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, GameAPI::stopGame, 20 * 60 * 5);
     }
 
     public void onDisable() {
         ps.onDisable();
         hs.onDisable();
         tcc.onDisable();
-        //mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
     }
 

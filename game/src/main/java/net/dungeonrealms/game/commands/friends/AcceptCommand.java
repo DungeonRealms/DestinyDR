@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.commands.friends;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
@@ -49,10 +47,7 @@ public class AcceptCommand extends BasicCommand {
             return false;
         }
         UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
-        ByteArrayDataOutput friendsOut = ByteStreams.newDataOutput();
-        friendsOut.writeUTF("Friends");
-        friendsOut.writeUTF("accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
-        player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", friendsOut.toByteArray());
+        GameAPI.sendNetworkMessage("Friends", "accept:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + uuid.toString());
         FriendHandler.getInstance().acceptFriend(player.getUniqueId(), uuid, name);
         return false;
     }

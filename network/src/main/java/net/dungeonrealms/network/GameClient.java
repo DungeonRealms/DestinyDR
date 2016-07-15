@@ -3,34 +3,37 @@ package net.dungeonrealms.network;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.minlog.Log;
 import net.dungeonrealms.Constants;
 import net.dungeonrealms.network.packet.Packet;
+import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 
 import java.io.IOException;
 
-public class KryonetClient
+public class GameClient
         extends Listener {
 
     private Client client;
-    private Runnable reconnector;
-    private String server_ip;
+    private Runnable reconnected;
     private boolean isConnected = false;
 
-    public KryonetClient(String server_ip) {
-        this.server_ip = server_ip;
+    public GameClient() {
         this.client = new Client();
         this.client.addListener(this);
         this.client.setKeepAliveTCP(1000);
         this.client.start();
-        this.connect();
     }
 
     public void setReconnector(Runnable reconnector) {
-        this.reconnector = reconnector;
+        this.reconnected = reconnector;
     }
 
-    public void addListener(Listener listener) {
+    public void registerListener(Listener listener) {
         client.addListener(listener);
+    }
+
+    public void removeListener(Listener listener) {
+        client.removeListener(listener);
     }
 
     public Client getClient() {
@@ -41,19 +44,32 @@ public class KryonetClient
         return isConnected;
     }
 
-    public void connect() {
-        try {
-            this.client.connect(500000, server_ip, Constants.MASTER_SERVER_PORT);
-            isConnected = true;
-        } catch (IOException e) {
-            //Log.severe(Scope.CORE, "Oh no! Failed to connect to proxy server..");
-        }
+    public void connect() throws IOException {
+        Log.info("Connecting to " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT);
+        this.client.connect(500000, Constants.MASTER_SERVER_IP, Constants.MASTER_SERVER_PORT);
+        isConnected = true;
+
+        Log.info("Server connection established!");
     }
 
-    public void stop() {
+    public void kill() {
         if (this.client != null) {
             this.client.stop();
         }
+    }
+
+    public void sendTCP(byte[] data) {
+        BasicMessagePacket packet = new BasicMessagePacket();
+
+        packet.data = data;
+        sendTCP(packet);
+    }
+
+    public void sendUDP(byte[] data) {
+        BasicMessagePacket packet = new BasicMessagePacket();
+
+        packet.data = data;
+        sendUDP(packet);
     }
 
     public void sendTCP(Packet packet) {
@@ -64,11 +80,10 @@ public class KryonetClient
         this.client.sendUDP(packet);
     }
 
-
     public void disconnected(Connection c) {
-        //Log.info(Scope.CORE, "Oh no! Lost connection from kryonet proxy server!");
+        Log.warn("Connection lost between master server. Attempting to reestablish connection...");
         Runnable run = new DefaultReconnector();
-        if (reconnector != null) run = reconnector;
+        if (reconnected != null) run = reconnected;
         new Thread(run).start();
     }
 
@@ -78,10 +93,9 @@ public class KryonetClient
         }
 
         public void run() {
-            while (!KryonetClient.this.getClient().isConnected()) {
+            while (!GameClient.this.getClient().isConnected()) {
                 try {
-                  //  Log.info(Scope.CORE, "Retrying kryonet server connection....");
-                    KryonetClient.this.client.reconnect();
+                    GameClient.this.client.reconnect();
                 } catch (Exception ex) {
                     try {
                         Thread.sleep(5000L);
@@ -90,6 +104,10 @@ public class KryonetClient
                     }
                 }
             }
+
+            Log.info("Connection reestablished!");
         }
     }
+
+
 }
