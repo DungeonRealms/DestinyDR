@@ -8,6 +8,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -73,6 +74,8 @@ public class GuildMechanics {
         // Checks if guild still exists
         checkPlayerGuild(player.getUniqueId());
 
+        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
+
         List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
 
         GuildDatabaseAPI.get().getAllOfGuild(guildName)
@@ -126,19 +129,20 @@ public class GuildMechanics {
             String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid);
 
             // Checks if guild still exists
-            GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
-                if (!guildExists) {
-                    GuildDatabaseAPI.get().setGuild(uuid, "");
+            boolean guildExists = GuildDatabase.getAPI().doesGuildNameExist(guildName, null);
 
-                    if (Bukkit.getPlayer(uuid) == null)
-                        GameAPI.updatePlayerData(uuid);
-                } else if (guildExists && !GuildDatabaseAPI.get().isInGuild(uuid, guildName)) {
-                    GuildDatabaseAPI.get().setGuild(uuid, "");
+            if (!guildExists) {
+                GuildDatabaseAPI.get().setGuild(uuid, "");
 
-                    if (Bukkit.getPlayer(uuid) == null)
-                        GameAPI.updatePlayerData(uuid);
-                }
-            });
+                if (Bukkit.getPlayer(uuid) == null)
+                    GameAPI.updatePlayerData(uuid);
+            } else if (guildExists && !GuildDatabaseAPI.get().isInGuild(uuid, guildName)) {
+                System.out.print(GuildDatabaseAPI.get().isInGuild(uuid, guildName));
+                GuildDatabaseAPI.get().setGuild(uuid, "");
+
+                if (Bukkit.getPlayer(uuid) == null)
+                    GameAPI.updatePlayerData(uuid);
+            }
         }
     }
 

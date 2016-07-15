@@ -261,7 +261,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     @Override
     public boolean isInGuild(UUID uuid, String guildName) {
-        return GuildDatabaseAPI.get().getAllGuildMembers(guildName).stream().filter(u -> u.toString().equals(uuid.toString())).findFirst().isPresent();
+        return GuildDatabaseAPI.get().getAllOfGuild(guildName).stream().filter(u -> u.toString().equals(uuid.toString())).findAny().isPresent();
     }
 
     public boolean isOwnerOfGuild(UUID player) {
@@ -299,10 +299,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
         List<UUID> all = new ArrayList<>();
 
-        if (owner != null && !owner.equals("")) {
-            all.add(UUID.fromString(owner));
-            System.out.println(owner);
-        }
+        if (owner != null && !owner.equals("")) all.add(UUID.fromString(owner));
 
         all.addAll(getAllGuildMembers(guildName));
         all.addAll(getGuildOfficers(guildName));
