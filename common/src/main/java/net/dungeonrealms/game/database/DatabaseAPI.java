@@ -337,12 +337,14 @@ public class DatabaseAPI {
     }
 
     public String getFormattedShardName(UUID uuid) {
+        boolean isOnline = (boolean) getInstance().getData(EnumData.IS_PLAYING, uuid);
+        if (!isOnline) {
+            return "None";
+        }
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null)
             return "";
         String name = ((Document) doc.get("info")).get("current", String.class);
-        if (name.equalsIgnoreCase("none"))
-            return name;
         return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
     }
 
