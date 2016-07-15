@@ -288,7 +288,10 @@ public class RestrictionListener implements Listener {
     public void loggingOutOpenInventory(InventoryOpenEvent event) {
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
             event.setCancelled(true);
-            event.getPlayer().closeInventory();
+            try {
+                event.getPlayer().closeInventory();
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -296,7 +299,10 @@ public class RestrictionListener implements Listener {
     public void loggingOutDropItem(PlayerDropItemEvent event) {
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
             event.setCancelled(true);
-            event.getPlayer().closeInventory();
+            try {
+                event.getPlayer().closeInventory();
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -304,7 +310,10 @@ public class RestrictionListener implements Listener {
     public void loggingOutPickupItem(PlayerPickupItemEvent event) {
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
             event.setCancelled(true);
-            event.getPlayer().closeInventory();
+            try {
+                event.getPlayer().closeInventory();
+            } catch (Exception ignored) {
+            }
         }
     }
 
