@@ -46,6 +46,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
 import net.dungeonrealms.game.network.BungeeChannelListener;
+import net.dungeonrealms.game.network.NetworkClientListener;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -220,6 +221,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(BungeeChannelListener.getInstance());
+            mm.registerMechanic(NetworkClientListener.getInstance());
             //mm.registerMechanic(DungeonManager.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
@@ -245,6 +247,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(BungeeChannelListener.getInstance());
+            mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());

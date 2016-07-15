@@ -33,6 +33,15 @@ import java.util.UUID;
  */
 public class NetworkClientListener extends Listener implements GenericMechanic {
 
+    static NetworkClientListener instance = null;
+
+    public static NetworkClientListener getInstance() {
+        if (instance == null) {
+            instance = new NetworkClientListener();
+        }
+        return instance;
+    }
+
     @Override
     public void startInitialization() {
         if (GameAPI.getClient() == null) return;

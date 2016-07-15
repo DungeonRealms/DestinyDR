@@ -46,6 +46,7 @@ public class MasterServerApplication {
 
     private static void registerClasses() {
         kryo.register(Packet.class);
+        kryo.register(Byte.class);
         kryo.register(BasicMessagePacket.class);
     }
 
