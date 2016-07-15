@@ -497,7 +497,7 @@ public class DungeonRealms extends JavaPlugin {
             public void run() {
                 GameAPI.backupDatabase();
             }
-        }, 0L, 600000);
+        }, 0L, 7200000);
     }
 
     private void scheduleRestartTask() {
