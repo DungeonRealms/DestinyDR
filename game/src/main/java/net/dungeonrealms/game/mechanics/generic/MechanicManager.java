@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.mechanics.generic;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,9 @@ import java.util.List;
 public class MechanicManager {
 
     List<GenericMechanic> Mechanics = new ArrayList<>();
+
+    @Getter
+    private boolean isShutdown = false;
 
     public void registerMechanic(GenericMechanic genericMechanic) {
         Mechanics.add(genericMechanic);
@@ -40,6 +45,8 @@ public class MechanicManager {
         Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.BISHOPS).forEach(GenericMechanic::stopInvocation);
         Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.PRIESTS).forEach(GenericMechanic::stopInvocation);
         Mechanics.stream().filter(gm -> gm.startPriority() == EnumPriority.CATHOLICS).forEach(GenericMechanic::stopInvocation);
+
+        isShutdown = true;
     }
 
 }

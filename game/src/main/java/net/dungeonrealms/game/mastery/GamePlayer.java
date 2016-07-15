@@ -177,6 +177,10 @@ public class GamePlayer {
      * @since 1.0
      */
     public KarmaHandler.EnumPlayerAlignments getPlayerAlignment() {
+        return KarmaHandler.getInstance().getPlayerRawAlignment(T);
+    }
+
+    public KarmaHandler.EnumPlayerAlignments getPlayerAlignmentDB() {
         return KarmaHandler.EnumPlayerAlignments.getByName(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, T.getUniqueId())));
     }
 

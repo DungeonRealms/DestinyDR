@@ -1,5 +1,6 @@
 package net.dungeonrealms;
 
+import com.esotericsoftware.minlog.Log;
 import lombok.Getter;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
@@ -205,6 +206,7 @@ public class DungeonRealms extends JavaPlugin {
 
         try {
             client.connect();
+            Log.set(Log.LEVEL_INFO);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -468,7 +470,7 @@ public class DungeonRealms extends JavaPlugin {
 
 
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
-            if (System.currentTimeMillis() >= (SERVER_START_TIME + 1434000)) {
+            if (System.currentTimeMillis() >= (SERVER_START_TIME + 14400000L)) {
                 scheduleRestartTask();
                 Bukkit.getScheduler().cancelTask(rebooterID);
             }
@@ -511,6 +513,9 @@ public class DungeonRealms extends JavaPlugin {
         ps.onDisable();
         hs.onDisable();
         tcc.onDisable();
+        if(!mm.isShutdown())
+            mm.stopInvocation();
+
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
     }
 

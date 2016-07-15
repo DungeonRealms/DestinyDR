@@ -77,6 +77,17 @@ public class Rank {
     }
 
     /**
+     * Returns true if the user has the rank "dev" or "headgm".
+     *
+     * @param player
+     * @return boolean
+     */
+    public static boolean isHeadGM(OfflinePlayer player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId());
+        return rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+    }
+
+    /**
      * Returns true if the user has the rank "dev" or "gm". Opped players are also considered a GM.
      *
      * @param player
@@ -84,7 +95,7 @@ public class Rank {
      */
     public static boolean isGM(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev") || player.isOp();
+        return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev") || player.isOp();
     }
 
     /**
@@ -106,7 +117,7 @@ public class Rank {
      */
     public static boolean isPMOD(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
+        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
     /**
@@ -117,7 +128,7 @@ public class Rank {
      */
     public static boolean isYouTuber(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
+        return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
     /**
@@ -135,6 +146,8 @@ public class Rank {
         switch (prefix.toLowerCase()) {
             case "dev":
                 return ChatColor.DARK_AQUA + "Developer";
+            case "headgm":
+                return ChatColor.AQUA + "Head Game Master";
             case "gm":
                 return ChatColor.AQUA + "Game Master";
             case "pmod":
