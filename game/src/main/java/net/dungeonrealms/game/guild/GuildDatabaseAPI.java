@@ -162,6 +162,12 @@ public interface GuildDatabaseAPI {
     boolean isOfficer(UUID uuid, String guildName);
 
     /**
+     * @param uuid      Player
+     * @param guildName Name of guild
+     */
+    boolean isInGuild(UUID uuid, String guildName);
+
+    /**
      * @param guildName Name of guild.
      * @param motd      the motd
      */

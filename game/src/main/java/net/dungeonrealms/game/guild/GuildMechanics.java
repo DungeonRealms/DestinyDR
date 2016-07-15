@@ -8,6 +8,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -63,8 +64,9 @@ public class GuildMechanics {
 
     public void doLogin(Player player) {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
-
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+
+        GuildDatabaseAPI.get().updateCache(guildName);
 
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
@@ -72,7 +74,7 @@ public class GuildMechanics {
         // Checks if guild still exists
         checkPlayerGuild(player.getUniqueId());
 
-        GuildDatabaseAPI.get().updateCache(guildName);
+        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
 
         List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
 
@@ -111,7 +113,7 @@ public class GuildMechanics {
             GuildDatabaseAPI.get().getAllOfGuild(guildName)
                     .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has left your shard.")));
 
-            if (getAllOnlineGuildMembers(guildName).size() >= 1) GuildDatabaseAPI.get().removeFromCache(guildName);
+            if (getAllOnlineGuildMembers(guildName).size() <= 1) GuildDatabaseAPI.get().removeFromCache(guildName);
         } catch (NullPointerException ignored) {
         }
     }
@@ -123,26 +125,25 @@ public class GuildMechanics {
      * @param uuid Target
      */
     public void checkPlayerGuild(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-
         if (!GuildDatabaseAPI.get().isGuildNull(uuid)) {
             String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid);
 
             // Checks if guild still exists
-            GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
-                if (!guildExists)
-                    GuildDatabaseAPI.get().setGuild(uuid, "");
-            });
+            boolean guildExists = GuildDatabase.getAPI().doesGuildNameExist(guildName, null);
+
+            if (!guildExists) {
+                GuildDatabaseAPI.get().setGuild(uuid, "");
+
+                if (Bukkit.getPlayer(uuid) == null)
+                    GameAPI.updatePlayerData(uuid);
+            } else if (guildExists && !GuildDatabaseAPI.get().isInGuild(uuid, guildName)) {
+                System.out.print(GuildDatabaseAPI.get().isInGuild(uuid, guildName));
+                GuildDatabaseAPI.get().setGuild(uuid, "");
+
+                if (Bukkit.getPlayer(uuid) == null)
+                    GameAPI.updatePlayerData(uuid);
+            }
         }
-
-
-        // UPDATE THEIR BOARD
-        // guild tags in scoreboard disabled
-        /*if (player != null) {
-            GamePlayer gp = GameAPI.getGamePlayer(player);
-            if (gp != null)
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
-        }*/
     }
 
 
@@ -469,53 +470,55 @@ public class GuildMechanics {
         player.sendMessage("");
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Chat.listenForMessage(player, confirmation -> {
-            // Cancels dialogue
-            if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Goodbye!");
-                return;
-            }
-
-
-            // Confirms purchase
-            if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
-                if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
-                    player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                // Cancels dialogue
+                if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
+                    player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Goodbye!");
                     return;
                 }
 
-                BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
-                meta.setLore(new ArrayList<>());
-                meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
-                meta.setLore(Collections.singletonList(ChatColor.RED + "Right click to equip"));
-                info.getCurrentBanner().setItemMeta(meta);
 
-                String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());
-
-                // Registers guild in database
-                GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), itemString, onComplete -> {
-                    if (!onComplete) {
-                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
+                // Confirms purchase
+                if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
+                    if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
+                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
                         return;
                     }
 
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
+                    BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
+                    meta.setLore(new ArrayList<>());
+                    meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
+                    meta.setLore(Collections.singletonList(ChatColor.RED + "Right click to equip"));
+                    info.getCurrentBanner().setItemMeta(meta);
 
-                    player.sendMessage("");
-                    player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + info.getDisplayName() + "' guild!");
-                    player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
-                    BankMechanics.getInstance().takeGemsFromInventory(5000, player);
+                    String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());
 
-                    // guild tags in scoreboard disabled
-                    GamePlayer gp = GameAPI.getGamePlayer(player);
-                    if (gp != null)
-                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                    // Registers guild in database
+                    GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), itemString, onComplete -> {
+                        if (!onComplete) {
+                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
+                            return;
+                        }
 
-                    player.getInventory().addItem(info.getCurrentBanner());
-                    GameAPI.updatePlayerData(player.getUniqueId());
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
 
-                });
+                        player.sendMessage("");
+                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + info.getDisplayName() + "' guild!");
+                        player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
+                        BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
-            }
+                        // guild tags in scoreboard disabled
+                        GamePlayer gp = GameAPI.getGamePlayer(player);
+                        if (gp != null)
+                            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+
+                        player.getInventory().addItem(info.getCurrentBanner());
+                        GameAPI.updatePlayerData(player.getUniqueId());
+
+                    });
+                }
+            });
+
         }, null), 1L);
     }
 

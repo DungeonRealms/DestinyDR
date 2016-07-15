@@ -64,6 +64,8 @@ public class CommandGKick extends BasicCommand {
         Player p = Bukkit.getPlayer(p_name);
         UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
 
+        GuildMechanics.getInstance().checkPlayerGuild(p_uuid);
+
         if (!GuildDatabaseAPI.get().getGuildOf(p_uuid).equals(guildName)) {
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is not in your guild.");
             return true;

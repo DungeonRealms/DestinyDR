@@ -490,22 +490,7 @@ public class DungeonRealms extends JavaPlugin {
                 Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            Bukkit.getScheduler().cancelAllTasks();
-            Bukkit.getServer().setWhitelist(true);
-            DungeonRealms.getInstance().setFinishedSetup(false);
-            ShopMechanics.deleteAllShops(true);
-            GameAPI.logoutAllPlayers(true, false);
-            CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
-            AsyncUtils.pool.shutdown();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                DungeonRealms.getInstance().mm.stopInvocation();
-                Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-                DatabaseDriver.mongoClient.close();
-            }, 200L);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), (20 * 60) * 4);
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200L);
-
+            GameAPI.stopGame();
         }, 20 * 60 * 5);
     }
 
@@ -513,7 +498,6 @@ public class DungeonRealms extends JavaPlugin {
         ps.onDisable();
         hs.onDisable();
         tcc.onDisable();
-        mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
     }
 

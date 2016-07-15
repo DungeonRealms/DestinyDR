@@ -14,7 +14,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,8 +42,9 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     public void updateCache(String guildName) {
         Document doc = DatabaseDriver.guilds.find(Filters.eq("info.name", guildName)).first();
-        if (doc == null) return;
-        CACHED_GUILD.put(guildName, doc);
+
+        if (doc != null)
+            CACHED_GUILD.put(guildName, doc);
     }
 
     @Override
@@ -166,6 +166,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         if (getGuildOf(uuid) == null) return;
 
         modifyRank(guildName, uuid, true);
+        updateCache(guildName);
     }
 
 
@@ -173,6 +174,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         if (getGuildOf(uuid) == null) return;
 
         modifyRank(guildName, uuid, false);
+        updateCache(guildName);
     }
 
     @Override
@@ -182,9 +184,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     private void modifyRank(String guildName, UUID uuid, boolean promote) {
-        List<String> officers = (List<String>) get(guildName, EnumGuildData.OFFICERS, ArrayList.class);
-
-        assert officers != null;
         if (promote) {
             //ADD TO OFFICERS
             update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PUSH, uuid.toString());
@@ -195,10 +194,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
             update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
             // ADD TO MEMBERS
             update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
-
         }
-
-        updateCache(guildName);
     }
 
 
@@ -231,6 +227,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     public void removeFromGuild(String guildName, UUID uuid) {
+        setGuild(uuid, "");
 
         try {
             switch (get(uuid, guildName)) {
@@ -249,7 +246,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
         } catch (NullPointerException ignored) {
         }
 
-        setGuild(uuid, "");
         updateCache(guildName);
     }
 
@@ -261,6 +257,11 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     public boolean isOfficer(UUID uuid, String guildName) {
         return getList(guildName, EnumGuildData.OFFICERS).contains(uuid);
+    }
+
+    @Override
+    public boolean isInGuild(UUID uuid, String guildName) {
+        return GuildDatabaseAPI.get().getAllOfGuild(guildName).stream().filter(u -> u.toString().equals(uuid.toString())).findAny().isPresent();
     }
 
     public boolean isOwnerOfGuild(UUID player) {
@@ -296,7 +297,10 @@ public class GuildDatabase implements GuildDatabaseAPI {
     public List<UUID> getAllOfGuild(String guildName) {
         String owner = getOwnerOf(guildName);
 
-        List<UUID> all = owner != null && !owner.equals("") ? new ArrayList<>(Collections.singletonList(UUID.fromString(owner))) : new ArrayList<>();
+        List<UUID> all = new ArrayList<>();
+
+        if (owner != null && !owner.equals("")) all.add(UUID.fromString(owner));
+
         all.addAll(getAllGuildMembers(guildName));
         all.addAll(getGuildOfficers(guildName));
 

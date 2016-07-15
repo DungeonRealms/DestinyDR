@@ -30,9 +30,10 @@ public class CommandStop extends BasicCommand {
             return true;
         }
 
-        boolean stoppingAll = false;
-        if (args.length == 1) if (args[0].equalsIgnoreCase("all")) stoppingAll = true;
-        GameAPI.stopServer(stoppingAll, stoppingAll);
+        if (args.length == 1)
+            if (args[0].equalsIgnoreCase("all")) GameAPI.sendStopAllServersPacket();
+
+        GameAPI.stopGame();
         return false;
     }
 }
