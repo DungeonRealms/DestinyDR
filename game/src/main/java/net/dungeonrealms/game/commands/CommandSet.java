@@ -140,10 +140,10 @@ public class CommandSet extends BasicCommand {
                     }
                     playerName = args[1];
                     p = Bukkit.getPlayer(playerName);
-                    if (p != null)
-                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+                    DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
 
-                    p.sendMessage(ChatColor.GRAY + "Fixed your shop");
+                    if (p != null)
+                        p.sendMessage(ChatColor.GRAY + "Fixed your shop");
                     break;
                 case "shoplvl":
                     if (args.length < 2) {
