@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.punishment.PunishAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,6 +20,11 @@ public class TabbedChatListener implements Listener {
     @EventHandler
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
         final Player player = e.getPlayer();
+
+        if (PunishAPI.isMuted(e.getPlayer().getUniqueId())) {
+            e.getPlayer().sendMessage(PunishAPI.getMutedMessage(e.getPlayer().getUniqueId()));
+            return;
+        }
 
         player.closeInventory(); // Closes the chat after it grabs it!
 
