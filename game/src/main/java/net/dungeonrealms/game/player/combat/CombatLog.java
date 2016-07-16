@@ -25,6 +25,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -159,8 +160,7 @@ public class CombatLog implements GenericMechanic {
 
         MeleeZombie combatNMSNPC = new MeleeZombie(((CraftWorld) world).getHandle());
         combatNMSNPC.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-        //, CreatureSpawnEvent.SpawnReason.CUSTOM //Implement this when packet system is done @TODO
-        ((CraftWorld) world).getHandle().addEntity(combatNMSNPC);
+        ((CraftWorld) world).getHandle().addEntity(combatNMSNPC, CreatureSpawnEvent.SpawnReason.CUSTOM);
         Zombie combatNPC = (Zombie) combatNMSNPC.getBukkitEntity();
         NBTUtils.nullifyAI(combatNPC);
         combatNPC.getEquipment().setArmorContents(player.getEquipment().getArmorContents());
