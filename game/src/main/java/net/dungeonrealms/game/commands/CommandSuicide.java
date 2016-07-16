@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.inventivetalent.apihelper.API;
 
 import java.util.List;
 
@@ -29,6 +28,7 @@ public class CommandSuicide extends BasicCommand {
 
 		if (GameAPI.getGamePlayer(p) == null || !GameAPI.getGamePlayer(p).isAbleToDrop()) {
 			p.sendMessage(ChatColor.RED + "You cannot commit suicide at the moment.");
+			return true;
 		}
 
 		p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.GRAY + "This " +
@@ -39,6 +39,7 @@ public class CommandSuicide extends BasicCommand {
 		Chat.listenForMessage(p, event -> {
             if (GameAPI.getGamePlayer(p) == null || !GameAPI.getGamePlayer(p).isAbleToDrop()) {
                 p.sendMessage(ChatColor.RED + "You cannot commit suicide at the moment.");
+				return;
             }
 			if (event.getMessage().equalsIgnoreCase("y")) {
 				HealthHandler.getInstance().handlePlayerDeath(p, null);
