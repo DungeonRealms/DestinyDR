@@ -272,6 +272,8 @@ public class GameAPI {
         if (Realms.getInstance().realmsAreUpgrading()) return;
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
+        long restartTime = Bukkit.getOnlinePlayers().size() * 10 + 20 * 5; // half a second per player plus 5 seconds
+
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
@@ -287,9 +289,9 @@ public class GameAPI {
             AsyncUtils.pool.shutdown();
 
             DatabaseDriver.mongoClient.close();
-        }, 200);
+        }, restartTime);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 15 * 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, restartTime + 20 * 5);
     }
 
     /**

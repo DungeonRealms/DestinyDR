@@ -53,13 +53,13 @@ public class PatchTools implements GenericMechanic {
             StringBuilder builder = new StringBuilder();
 
             while ((str = in.readLine()) != null) {
+                curCharacters += 2; // line breaks count as 2 characters
                 String text = ChatColor.translateAlternateColorCodes('&', str.replace("<build>", Constants.BUILD_NUMBER));
-                curCharacters += text.length();
 
-                if (str.trim().length() > 0)
-                    curCharacters += 20;
+                if (text.trim().length() > 0)
+                    curCharacters += text.length();
 
-                if (curCharacters >= 255) {
+                if (curCharacters >= 256) {
                     curCharacters = 0;
                     pages.add(builder.toString());
                     builder = new StringBuilder();
@@ -69,7 +69,7 @@ public class PatchTools implements GenericMechanic {
                 builder.append(text).append("\n");
             }
 
-            if (curCharacters < 255)
+            if (curCharacters < 256)
                 pages.add(builder.toString());
 
             in.close();

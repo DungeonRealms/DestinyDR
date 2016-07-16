@@ -1,6 +1,6 @@
 Build <build>
 
-Bug Fixes
+&4Bug Fixes&0
 - Rebooter fixed again
 - Fixed PVP lag
 - Fixed muting
@@ -9,7 +9,11 @@ while combat logged
 - Mule upgrade realm chest fixed
 - Removed soulbound trading restrictions
 - Fixed 5 minute restart warning
+- Fixed some stat bonuses incorrectly applying
+(all stat bonuses are now working)
+- Fixed patch notes paging
+- Fixed critical duplication bug
 
-Features
+&2New Features&0
 - Added unique /friends book
 - Added realm chest
