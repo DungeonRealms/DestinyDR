@@ -19,8 +19,12 @@ public class Quests implements GenericMechanic {
 
     private static final CopyOnWriteArrayList<Quest> quests = new CopyOnWriteArrayList<Quest>();
 
-    public static void getQuest(String identifier) {
-
+    public static Quest getQuest(String identifier) {
+        for (Quest quest : quests) {
+            if (quest.uniqueIdentifier.equalsIgnoreCase(identifier))
+                return quest;
+        }
+        return null;
     }
 
 

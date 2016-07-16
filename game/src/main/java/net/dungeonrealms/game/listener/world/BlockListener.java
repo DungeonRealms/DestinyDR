@@ -14,6 +14,8 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
+import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -40,6 +42,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import sun.security.krb5.Realm;
 
 import java.util.*;
 
@@ -64,6 +67,35 @@ public class BlockListener implements Listener {
         if (event.getBlock().getWorld() == Bukkit.getWorlds().get(0) || event.getBlock().getWorld().getName().contains("DUNGEON")) {
             event.setCancelled(true);
         }
+    }
+
+    /**
+     * Disables the placement of Realm Chest.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void placeRealmChest(BlockPlaceEvent event) {
+        if (event.getItemInHand() == null) return;
+        if (event.getItemInHand().getType() != Material.CHEST)
+            return;
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemInHand());
+        if(nms.hasTag() && nms.getTag().hasKey("type"))
+            event.setCancelled(true);
+
+        RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
+        if (realm == null) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't place Realm Chests here.");
+            event.setCancelled(true);
+            return;
+        }
+        if (!realm.getBuilders().contains(event.getPlayer().getUniqueId()) && !realm.getOwner().equals(event.getPlayer().getUniqueId())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't place Realm Chests here.");
+            event.setCancelled(true);
+        }
+
     }
 
     /**

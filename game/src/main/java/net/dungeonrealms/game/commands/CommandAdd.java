@@ -257,6 +257,10 @@ public class CommandAdd extends BasicCommand {
                         player.getInventory().addItem(Mining.getEnchant(tier, enchantType));
                     }
                     break;
+                case "realmchest":
+                    ItemStack realmChest = ItemManager.createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
+                    player.getInventory().addItem(realmChest);
+                    break;
                 case "pouch":
                     tier = Integer.parseInt(args[1]);
                     player.getInventory().addItem(BankMechanics.getInstance().createGemPouch(tier, 0));
@@ -271,7 +275,7 @@ public class CommandAdd extends BasicCommand {
                     expToGive += 100;
                     gamePlayer.addExperience(expToGive, false, true);
                     final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA,"http://minecraftservers.org/vote/174212");
+                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
                     for (Player player1 : Bukkit.getOnlinePlayers()) {
                         normal.sendToPlayer(player1);
                     }
@@ -294,7 +298,7 @@ public class CommandAdd extends BasicCommand {
                     player.sendMessage(ChatColor.GREEN + "Successfully created a bank note worth " + NumberFormat.getIntegerInstance().format(quantity) + " gems.");
                     break;
                 case "displayitem":
-                    player.getInventory().addItem( new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
+                    player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
                             ChatColor.RED + "Speed 140%",
                             ChatColor.RED + "Jump 110%",
                             ChatColor.GRAY.toString() + ChatColor.ITALIC + "A horse fit for a humble squire.",

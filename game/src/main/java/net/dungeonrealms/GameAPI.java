@@ -280,11 +280,12 @@ public class GameAPI {
         GameAPI.logoutAllPlayers();
 
         ShopMechanics.deleteAllShops(true);
-        DungeonRealms.getInstance().mm.stopInvocation();
-        AsyncUtils.pool.shutdown();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
+            DungeonRealms.getInstance().mm.stopInvocation();
+            AsyncUtils.pool.shutdown();
+
             DatabaseDriver.mongoClient.close();
         }, 200);
 
