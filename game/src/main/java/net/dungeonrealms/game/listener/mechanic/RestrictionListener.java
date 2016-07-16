@@ -407,6 +407,12 @@ public class RestrictionListener implements Listener {
         }
 
         if (isAttackerPlayer) {
+            if (GameAPI.getGamePlayer(pDamager) == null) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                pDamager.updateInventory();
+                return;
+            }
             if (pDamager.hasMetadata("last_Attack")) {
                 if (System.currentTimeMillis() - pDamager.getMetadata("last_Attack").get(0).asLong() < 80) {
                     event.setCancelled(true);
@@ -431,6 +437,12 @@ public class RestrictionListener implements Listener {
         }
 
         if (isDefenderPlayer) {
+            if (GameAPI.getGamePlayer(pReceiver) == null) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                pReceiver.updateInventory();
+                return;
+            }
             if (GameAPI.getGamePlayer(pReceiver).isInvulnerable() || !GameAPI.getGamePlayer(pReceiver).isTargettable()) {
                 event.setCancelled(true);
                 event.setDamage(0);
