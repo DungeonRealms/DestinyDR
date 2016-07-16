@@ -980,14 +980,14 @@ public class DamageAPI {
                 projectile.setVelocity(projectile.getVelocity().multiply(1.75));
                 break;
             case 4:
-                projectile = player.launchProjectile(LargeFireball.class);
-                projectile.setVelocity(projectile.getVelocity().multiply(2));
-                ((LargeFireball) projectile).setYield(0);
-                ((LargeFireball) projectile).setIsIncendiary(false);
+                projectile = player.launchProjectile(WitherSkull.class);
+                projectile.setVelocity(projectile.getVelocity().multiply(2.25));
                 break;
             case 5:
-                projectile = player.launchProjectile(WitherSkull.class);
+                projectile = player.launchProjectile(LargeFireball.class);
                 projectile.setVelocity(projectile.getVelocity().multiply(2.5));
+                ((LargeFireball) projectile).setYield(0);
+                ((LargeFireball) projectile).setIsIncendiary(false);
                 break;
         }
         if (projectile == null) return;
@@ -1060,14 +1060,14 @@ public class DamageAPI {
                 vector.multiply(1.75);
                 break;
             case 4:
-                projectile = livingEntity.launchProjectile(LargeFireball.class);
-                vector.multiply(2);
-                ((LargeFireball) projectile).setYield(0);
-                ((LargeFireball) projectile).setIsIncendiary(false);
+                projectile = livingEntity.launchProjectile(WitherSkull.class);
+                vector.multiply(2.25);
                 break;
             case 5:
-                projectile = livingEntity.launchProjectile(WitherSkull.class);
+                projectile = livingEntity.launchProjectile(LargeFireball.class);
                 vector.multiply(2.5);
+                ((LargeFireball) projectile).setYield(0);
+                ((LargeFireball) projectile).setIsIncendiary(false);
                 break;
         }
         if (projectile == null) return;
