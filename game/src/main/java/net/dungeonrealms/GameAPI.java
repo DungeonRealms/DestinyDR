@@ -719,7 +719,7 @@ public class GameAPI {
             if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid))
                     && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
                 String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
-                player.kickPlayer(ChatColor.RED + "You have been combat logged please into Shard " + lastShard);
+                player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
                 return;
             }
         } catch (NullPointerException ignored) {
