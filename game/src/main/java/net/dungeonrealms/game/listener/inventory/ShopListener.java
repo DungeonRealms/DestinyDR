@@ -612,7 +612,7 @@ public class ShopListener implements Listener {
         if (shop == null) return;
         if (event.getPlayer().getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
             shop.deleteShop(false);
-        } else if (event.getPlayer().isOp()) {
+        } else if (event.getPlayer().isOp() || Rank.isGM(event.getPlayer())) {
             shop.deleteShop(false);
         }
     }
