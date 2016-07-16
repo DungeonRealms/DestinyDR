@@ -10,7 +10,7 @@ public class Constants {
 
     public static final Logger log = Logger.getLogger("DungeonRealms");
 
-    public static final String[] DEVELOPERS = new String[]{"Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle"};
+    public static final String[] DEVELOPERS = new String[]{"Proxying", "Atlas__", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle"};
 
     public static final String MOTD = "&6Dungeon Realms &8- &aThe Re-code v1.9+\n  &7Open Beta!     &8- &f&nwww.dungeonrealms.net &8-";
 

@@ -1,7 +1,7 @@
 name: DungeonRealmsLobby
 main: net.dungeonrealms.lobby.Lobby
 version: ${project.parent.version}
-authors: [apollosoftware, Bradez1571, EtherealTemplar, iFamasssxD, Proxying, Xwaffle]
+authors: [apollosoftware, Bradez1571, EtherealTemplar, Proxying, Xwaffle]
 website: http://www.dungeonrealms.net
 depend: [WorldGuard, BossBarAPI, ProtocolLib]
 description: The new and improved DungeonRealms!
