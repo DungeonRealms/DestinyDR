@@ -101,9 +101,7 @@ public class MailHandler {
         if (result.equals("")) {
             player.sendMessage(ChatColor.RED + "This player does not exist.");
             return false;
-        } else {
-            toUUID = UUID.fromString(result);
-        }
+        } else toUUID = UUID.fromString(result);
 
         String serializedItem = ItemSerialization.itemStackToBase64(itemStack);
 
