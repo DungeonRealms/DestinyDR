@@ -25,6 +25,7 @@ public class DatabaseDriver {
     public static com.mongodb.client.MongoDatabase database = null;
     public static com.mongodb.client.MongoCollection<Document> collection = null;
     public static com.mongodb.client.MongoCollection<Document> guilds = null;
+    public static com.mongodb.client.MongoCollection<Document> quests = null;
 
     protected boolean keepDataInMemory = true;
 
