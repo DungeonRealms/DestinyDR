@@ -75,21 +75,23 @@ public class BlockListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void placeRealmChest(BlockPlaceEvent event) {
         if (event.getItemInHand() == null) return;
         if (event.getItemInHand().getType() != Material.CHEST)
             return;
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemInHand());
+        if(nms.hasTag() && nms.getTag().hasKey("type"))
+            event.setCancelled(true);
+
         RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
         if (realm == null) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can't place Realm Chests here.");
             event.setCancelled(true);
             return;
         }
-        if (realm.getBuilders().contains(event.getPlayer().getUniqueId()) || realm.getOwner().equals(event.getPlayer().getUniqueId())) {
-            if (event.isCancelled())
-                event.setCancelled(false);
-        } else {
+        if (!realm.getBuilders().contains(event.getPlayer().getUniqueId()) && !realm.getOwner().equals(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can't place Realm Chests here.");
             event.setCancelled(true);
         }
