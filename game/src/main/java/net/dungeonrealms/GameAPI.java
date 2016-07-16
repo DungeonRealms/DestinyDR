@@ -989,9 +989,8 @@ public class GameAPI {
         }
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            final JSONMessage normal = new JSONMessage(ChatColor.YELLOW + "*" + ChatColor.GOLD + "Patch notes available! " + ChatColor.GRAY +
-                    "To view patch notes click ", ChatColor.WHITE);
-            normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
+            final JSONMessage normal = new JSONMessage(ChatColor.YELLOW + "*" + ChatColor.GOLD + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
+            normal.addRunCommand(ChatColor.YELLOW.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
             normal.addText(ChatColor.YELLOW + "*");
             normal.sendToPlayer(player);
 
@@ -1005,10 +1004,10 @@ public class GameAPI {
 
             //TODO: Re-Add this whenever we have a way to toggle it.
             //gp.setInvulnerable(true);
-            player.sendMessage(new String[]{
-                    "",
-                    ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",
-            });
+            player.sendMessage("");
+
+            Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY"
+            );
         }
 
         ScoreboardHandler.getInstance().matchMainScoreboard(player);
