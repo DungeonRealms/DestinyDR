@@ -812,8 +812,8 @@ public class ItemManager {
         String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
         GamePlayer gp = GameAPI.getGamePlayer(p);
         KarmaHandler.EnumPlayerAlignments playerAlignment = gp.getPlayerAlignment();
-        String pretty_align = playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
-                playerAlignment.getAlignmentColor() + ChatColor.UNDERLINE.toString() + playerAlignment.name();
+        String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
+                playerAlignment.getAlignmentColor()) + ChatColor.UNDERLINE.toString() + playerAlignment.name();
         DecimalFormat df = new DecimalFormat("#.##");
         PlayerStats stats = gp.getStats();
 

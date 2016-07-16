@@ -1567,19 +1567,19 @@ public class GameAPI {
     public static void applyStatBonuses(Map<String, Integer[]> attributes) {
         // STRENGTH BONUSES
         float strength = (float) attributes.getOrDefault("strength", new Integer[]{0, 0})[1];
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.ARMOR, strength * 0.03f);
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.BLOCK, strength * 0.017f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.ARMOR, strength * 0.03f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.BLOCK, strength * 0.017f);
 
         // DEXTERITY BONUSES
         float dexterity = (float) attributes.getOrDefault("dexterity", new Integer[]{0, 0})[1];
         changeAttributeValPercentage(attributes, Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
-        changeAttributeValPercentage(attributes, Item.WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
+        changeAttributeVal(attributes, Item.WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
 
         // INTELLECT BONUSES
         float intellect = (float) attributes.getOrDefault("intellect", new Integer[]{0, 0})[1];
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
-        changeAttributeValPercentage(attributes, Item.WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
+        changeAttributeVal(attributes, Item.WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
 
         // VITALITY BONUSES
         float vitality = (float) attributes.getOrDefault("vitality", new Integer[]{0, 0})[1];
@@ -1591,25 +1591,25 @@ public class GameAPI {
         Map<Item.AttributeType, Float> attributeBonusesFromStats = gp.getAttributeBonusesFromStats();
         // STRENGTH BONUSES
         float strength = (float) attributes.getOrDefault("strength", new Integer[]{0, 0})[1];
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.ARMOR, strength * 0.03f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.ARMOR, strength * 0.03f);
         attributeBonusesFromStats.put(Item.ArmorAttributeType.ARMOR, strength * 0.03f);
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.BLOCK, strength * 0.017f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.BLOCK, strength * 0.017f);
         attributeBonusesFromStats.put(Item.ArmorAttributeType.BLOCK, strength * 0.017f);
 
         // DEXTERITY BONUSES
         float dexterity = (float) attributes.getOrDefault("dexterity", new Integer[]{0, 0})[1];
         changeAttributeValPercentage(attributes, Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
         attributeBonusesFromStats.put(Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
         attributeBonusesFromStats.put(Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
-        changeAttributeValPercentage(attributes, Item.WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
+        changeAttributeVal(attributes, Item.WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
         attributeBonusesFromStats.put(Item.WeaponAttributeType.ARMOR_PENETRATION, dexterity * 0.02f);
 
         // INTELLECT BONUSES
         float intellect = (float) attributes.getOrDefault("intellect", new Integer[]{0, 0})[1];
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
         attributeBonusesFromStats.put(Item.ArmorAttributeType.ENERGY_REGEN, intellect * 0.015f);
-        changeAttributeValPercentage(attributes, Item.WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
+        changeAttributeVal(attributes, Item.WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
         attributeBonusesFromStats.put(Item.WeaponAttributeType.CRITICAL_HIT, intellect * 0.025f);
 
         // VITALITY BONUSES
