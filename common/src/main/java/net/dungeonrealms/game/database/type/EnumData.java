@@ -15,6 +15,7 @@ public enum EnumData {
     LEVEL("info.netLevel"),
     IP_ADDRESS("info.ipAddress"),
     IS_PLAYING("info.isPlaying"),
+    IS_COMBAT_LOGGED("info.isCombatLogged"),
     EXPERIENCE("info.experience"),
     GEMS("info.gems"),
     HEARTHSTONE("info.hearthstone"),

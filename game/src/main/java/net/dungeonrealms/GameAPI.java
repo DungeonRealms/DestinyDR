@@ -48,6 +48,7 @@ import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.network.GameClient;
+import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
@@ -279,11 +280,12 @@ public class GameAPI {
         GameAPI.logoutAllPlayers();
 
         ShopMechanics.deleteAllShops(true);
-        DungeonRealms.getInstance().mm.stopInvocation();
-        AsyncUtils.pool.shutdown();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
+            DungeonRealms.getInstance().mm.stopInvocation();
+            AsyncUtils.pool.shutdown();
+
             DatabaseDriver.mongoClient.close();
         }, 200);
 
@@ -714,8 +716,18 @@ public class GameAPI {
             return;
         }
 
+        try {
+            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid))
+                    && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
+                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
+                player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
+                return;
+            }
+        } catch (NullPointerException ignored) {
+        }
+
         // todo: finish anticheat system
-//        AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
+        //AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
 
         GamePlayer gp = new GamePlayer(player);
 
@@ -977,9 +989,8 @@ public class GameAPI {
         }
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            final JSONMessage normal = new JSONMessage(ChatColor.YELLOW + "*" + ChatColor.GOLD + "Patch notes available! " + ChatColor.GRAY +
-                    "To view patch notes click ", ChatColor.WHITE);
-            normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
+            final JSONMessage normal = new JSONMessage(ChatColor.YELLOW + "*" + ChatColor.GOLD + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
+            normal.addRunCommand(ChatColor.YELLOW.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
             normal.addText(ChatColor.YELLOW + "*");
             normal.sendToPlayer(player);
 
@@ -993,10 +1004,10 @@ public class GameAPI {
 
             //TODO: Re-Add this whenever we have a way to toggle it.
             //gp.setInvulnerable(true);
-            player.sendMessage(new String[]{
-                    "",
-                    ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",
-            });
+            player.sendMessage("");
+
+            Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY"
+            );
         }
 
         ScoreboardHandler.getInstance().matchMainScoreboard(player);

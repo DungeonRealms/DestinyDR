@@ -142,9 +142,7 @@ public class MainListener implements Listener {
                     gamePlayer.addExperience(expToGive, false, true);
                     final JSONMessage normal4 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
                     normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
-                    for (Player player1 : Bukkit.getOnlinePlayers()) {
-                        normal4.sendToPlayer(player1);
-                    }
+                    Bukkit.getOnlinePlayers().forEach(normal4::sendToPlayer);
                     break;
             }
         }

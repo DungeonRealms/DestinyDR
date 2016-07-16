@@ -3,6 +3,13 @@ Build <build>
 Bug Fixes
 - Rebooter fixed again
 - Fixed PVP lag
+- Fixed muting
+- You can no longer connect to other shards
+while combat logged
+- Mule upgrade realm chest fixed
+- Removed soulbound trading restrictions
+- Fixed 5 minute restart warning
 
-New Features
+Features
 - Added unique /friends book
+- Added realm chest

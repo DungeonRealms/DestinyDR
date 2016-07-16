@@ -8,7 +8,7 @@ DungeonRealms is a Premium, Action RPG, Minecraft Experience. Delve into a fasci
 
 
 Authors:
-apollosoftware, Bradez1571, EtherealTemplar, iFamasssxD, Proxying, Xwaffle
+apollosoftware, Bradez1571, EtherealTemplar, Proxying, Xwaffle
 
 
 © Keeling Systems LLC 

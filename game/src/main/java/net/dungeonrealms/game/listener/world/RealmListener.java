@@ -310,7 +310,7 @@ public class RealmListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerUseOrb(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player p = event.getPlayer();
@@ -335,6 +335,9 @@ public class RealmListener implements Listener {
                 p.sendMessage(ChatColor.RED + "You may only use an " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED + " in your OWN realm.");
             else if (tag.getString("orb").equalsIgnoreCase("peace"))
                 p.sendMessage(ChatColor.RED + "You may only use an " + ChatColor.UNDERLINE + "Orb of Peace" + ChatColor.RED + " in your OWN realm.");
+
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
             return;
         }
         RealmToken realm = REALMS.getRealm(p.getUniqueId());

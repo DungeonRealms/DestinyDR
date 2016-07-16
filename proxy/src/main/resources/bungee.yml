@@ -1,6 +1,6 @@
 name: DungeonRealmsProxy
 main: net.dungeonrealms.proxy.DungeonRealmsProxy
 version: ${project.parent.version}
-authors: [apollosoftware, Bradez1571, EtheralTemplar, iFamasssxD, Proxying, Xwaffle]
+authors: [apollosoftware, Bradez1571, EtheralTemplar, Proxying, Xwaffle]
 website: http://www.dungeonrealms.net
 description: The new dungeonrealms!

@@ -4,6 +4,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -76,9 +77,9 @@ public enum LootType {
      *
      */
     private void loadItems() {
-    	File file = new File(GameAPI.getRemoteDataFolder() + "//loot//" + fileName);
-        if (!file.exists()){
-        	Utils.log.info(file.getAbsolutePath() + " DOES NOT EXIST");
+        File file = new File(GameAPI.getRemoteDataFolder() + "//loot//" + fileName);
+        if (!file.exists()) {
+            Utils.log.info(file.getAbsolutePath() + " DOES NOT EXIST");
             return;
         }
 
@@ -187,45 +188,47 @@ public enum LootType {
                                     item = ItemManager.createRandomTeleportBook();
                                     break;
                                 case 11:
-                                	item = ItemManager.createWeaponEnchant(1);
-                                	break;
+                                    item = ItemManager.createWeaponEnchant(1);
+                                    break;
                                 case 12:
-                                	item = ItemManager.createWeaponEnchant(2);
-                                	break;
+                                    item = ItemManager.createWeaponEnchant(2);
+                                    break;
                                 case 13:
-                                	item = ItemManager.createWeaponEnchant(3);
-                                	break;
+                                    item = ItemManager.createWeaponEnchant(3);
+                                    break;
                                 case 14:
-                                	item = ItemManager.createWeaponEnchant(4);
-                                	break;
+                                    item = ItemManager.createWeaponEnchant(4);
+                                    break;
                                 case 15:
-                                	item = ItemManager.createWeaponEnchant(5);
-                                	break;
+                                    item = ItemManager.createWeaponEnchant(5);
+                                    break;
                                 case 21:
-                                	item = ItemManager.createArmorEnchant(1);
-                                	break;
+                                    item = ItemManager.createArmorEnchant(1);
+                                    break;
                                 case 22:
-                                	item = ItemManager.createArmorEnchant(2);
-                                	break;
+                                    item = ItemManager.createArmorEnchant(2);
+                                    break;
                                 case 23:
-                                	item = ItemManager.createArmorEnchant(3);
-                                	break;
+                                    item = ItemManager.createArmorEnchant(3);
+                                    break;
                                 case 24:
-                                	item = ItemManager.createArmorEnchant(4);
-                                	break;
+                                    item = ItemManager.createArmorEnchant(4);
+                                    break;
                                 case 25:
-                                	item = ItemManager.createArmorEnchant(5);
-                                	break;
+                                    item = ItemManager.createArmorEnchant(5);
+                                    break;
                                 default:
                                     continue;
                             }
                             break;
                         case SNOW_BALL:
                         case WATCH:
-                        case CHEST:
                             continue;
+                        case CHEST:
+                            item = ItemManager.createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
+                            break;
                         case MAGMA_CREAM:
-                        	item = ItemManager.createOrbofAlteration();
+                            item = ItemManager.createOrbofAlteration();
                             break;
                         case MELON_BLOCK:
                             item = new ItemStack(Material.MELON, 16);
@@ -241,8 +244,8 @@ public enum LootType {
                     loot.put(item, spawn_chance);
                 } else {
                     if (item_tier != -1) {
-                    	
-                    	//NO ARMOR AND WEAPONS IN LOOT CHESTS...
+
+                        //NO ARMOR AND WEAPONS IN LOOT CHESTS...
 //                        ItemStack stack = new ItemStack(Material.IRON_SWORD, 1);
 //                        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 //                        nms.setTag(new NBTTagCompound());

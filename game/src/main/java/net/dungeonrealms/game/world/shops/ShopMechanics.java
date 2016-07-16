@@ -47,7 +47,6 @@ public class ShopMechanics implements GenericMechanic {
         for (Shop shop : ALLSHOPS.values()) {
             shop.deleteShop(shutDown);
         }
-        Bukkit.getWorlds().get(0).save();
     }
 
     public static boolean isItemSellable(ItemStack i) {

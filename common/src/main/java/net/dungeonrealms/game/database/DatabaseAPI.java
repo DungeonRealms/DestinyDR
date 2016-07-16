@@ -81,6 +81,8 @@ public class DatabaseAPI {
                 return ((Document) doc.get("info")).get("health", Integer.class);
             case FIRST_LOGIN:
                 return ((Document) doc.get("info")).get("firstLogin", Long.class);
+            case IS_COMBAT_LOGGED:
+                return ((Document) doc.get("info")).get("isCombatLogged", Boolean.class);
             case LAST_LOGIN:
                 return ((Document) doc.get("info")).get("lastLogin", Long.class);
             case LAST_LOGOUT:
@@ -372,6 +374,7 @@ public class DatabaseAPI {
                                 .append("health", 50)
                                 .append("gems", 0)
                                 .append("ecash", 0)
+                                .append("isCombatLogged", false)
                                 .append("ipAddress", "")
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0L)

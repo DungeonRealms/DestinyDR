@@ -87,22 +87,29 @@ public class Shop {
      * @since 1.0
      */
     public void deleteShop(boolean shutDown) {
-        if (Bukkit.getPlayer(ownerUUID) != null) {
-            if (BankMechanics.shopPricing.containsKey(Bukkit.getPlayer(ownerUUID).getName())) {
-                Bukkit.getPlayer(ownerUUID).getInventory().addItem(BankMechanics.shopPricing.get(Bukkit.getPlayer(ownerUUID).getName()));
-                BankMechanics.shopPricing.remove(Bukkit.getPlayer(ownerUUID).getName());
+        if (shutDown) {
+            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false);
+            saveCollectionBin();
+            ShopMechanics.ALLSHOPS.remove(ownerName);
+            DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
+        } else {
+            if (Bukkit.getPlayer(ownerUUID) != null) {
+                if (BankMechanics.shopPricing.containsKey(Bukkit.getPlayer(ownerUUID).getName())) {
+                    Bukkit.getPlayer(ownerUUID).getInventory().addItem(BankMechanics.shopPricing.get(Bukkit.getPlayer(ownerUUID).getName()));
+                    BankMechanics.shopPricing.remove(Bukkit.getPlayer(ownerUUID).getName());
+                }
             }
+            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false);
+            uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
+            hologram.delete();
+            block1.setType(Material.AIR);
+            block2.setType(Material.AIR);
+            block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
+            uniqueViewers.clear();
+            viewCount = 0;
+            saveCollectionBin();
+            ShopMechanics.ALLSHOPS.remove(ownerName);
         }
-        DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false);
-        uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
-        hologram.delete();
-        block1.setType(Material.AIR);
-        block2.setType(Material.AIR);
-        block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
-        uniqueViewers.clear();
-        viewCount = 0;
-        saveCollectionBin();
-        ShopMechanics.ALLSHOPS.remove(ownerName);
     }
 
     /**
