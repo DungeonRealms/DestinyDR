@@ -1598,7 +1598,7 @@ public class GameAPI {
 
         // DEXTERITY BONUSES
         float dexterity = (float) attributes.getOrDefault("dexterity", new Integer[]{0, 0})[1];
-        changeAttributeValPercentage(attributes, Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
+        changeAttributeVal(attributes, Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
         attributeBonusesFromStats.put(Item.ArmorAttributeType.DAMAGE, dexterity * 0.03f);
         changeAttributeVal(attributes, Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
         attributeBonusesFromStats.put(Item.ArmorAttributeType.DODGE, dexterity * 0.017f);
@@ -1615,17 +1615,26 @@ public class GameAPI {
         // VITALITY BONUSES
         float vitality = (float) attributes.getOrDefault("vitality", new Integer[]{0, 0})[1];
         changeAttributeValPercentage(attributes, Item.ArmorAttributeType.HEALTH_POINTS, vitality * 0.034f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.ENERGY_REGEN, vitality * 0.034f);
+        attributeBonusesFromStats.put(Item.ArmorAttributeType.HEALTH_POINTS, vitality * 0.034f);
         changeAttributeVal(attributes, Item.ArmorAttributeType.HEALTH_REGEN, vitality * 0.03f);
-        attributeBonusesFromStats.put(Item.ArmorAttributeType.ENERGY_REGEN, vitality * 0.03f);
+        attributeBonusesFromStats.put(Item.ArmorAttributeType.HEALTH_REGEN, vitality * 0.03f);
     }
 
+    /**
+     * Recalculates the stat bonuses for a player by reading their attributesBonusesFromStats property in their GamePlayer.
+     *
+     * @param attributes
+     * @param attributeBonusesFromStats
+     * @param gp
+     */
     public static void recalculateStatBonuses(Map<String, Integer[]> attributes, Map<Item.AttributeType, Float> attributeBonusesFromStats, GamePlayer gp) {
         attributeBonusesFromStats.entrySet().stream().forEach(entry -> {
-            if (entry.getKey().equals(Item.ArmorAttributeType.HEALTH_REGEN)) {
-                changeAttributeVal(attributes, Item.ArmorAttributeType.HEALTH_REGEN, -entry.getValue());
+            if (entry.getKey().isPercentage() || entry.getKey().equals(Item.ArmorAttributeType.HEALTH_REGEN)) {
+                changeAttributeVal(attributes, Item.ArmorAttributeType.HEALTH_REGEN, -Math.round(entry.getValue()));
             }
-            gp.changeAttributeValPercentage(entry.getKey(), -entry.getValue());
+            else {
+                gp.changeAttributeValPercentage(entry.getKey(), -Math.round(entry.getValue()));
+            }
         });
         applyStatBonuses(attributes, gp);
     }
@@ -1773,6 +1782,7 @@ public class GameAPI {
     }
 
     public static boolean isArmor(ItemStack stack) {
+        if (stack == null || stack.getType() == Material.AIR) return false;
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         if (nms == null || nms.getTag() == null) return false;
         return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");

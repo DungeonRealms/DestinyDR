@@ -229,7 +229,6 @@ public class InventoryListener implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
             // KEEP THIS DELAY IT PREVENTS ARMOR STACKING
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                GameAPI.calculateAllAttributes(player);
                 handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
                 HealthHandler.getInstance().setPlayerMaxHPLive(player, GameAPI.getStaticAttributeVal(ArmorAttributeType.HEALTH_POINTS, player) + 50);
                 HealthHandler.getInstance().setPlayerHPRegenLive(player, GameAPI.getStaticAttributeVal(ArmorAttributeType.HEALTH_REGEN, player) + 5);
@@ -255,13 +254,19 @@ public class InventoryListener implements Listener {
      * @param p
      */
     private static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
+        if (!GameAPI.isArmor(newArmor) && !GameAPI.isArmor(oldArmor)) return;
+
+        // recalculate attributes
+        GameAPI.calculateAllAttributes(p);
+
         String oldArmorName = (oldArmor == null || oldArmor.getType() == Material.AIR) ? "NOTHING" : oldArmor.getItemMeta().getDisplayName();
         String newArmorName = (newArmor == null || newArmor.getType() == Material.AIR) ? "NOTHING" : newArmor.getItemMeta().getDisplayName();
         GamePlayer gp = GameAPI.getGamePlayer(p);
 
+        // display differences to player
         p.sendMessage(ChatColor.GRAY + "" + oldArmorName + "" + ChatColor.WHITE +
                 ChatColor.BOLD + " -> " + ChatColor.GRAY + "" + newArmorName + "");
-        if (newArmor == null || newArmor.getType() == Material.AIR) { // unequipping armor
+        if (!GameAPI.isArmor(newArmor)) { // unequipping armor
             List<String> oldModifiers = GameAPI.getModifiers(oldArmor);
             assert oldModifiers != null;
             net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
@@ -289,7 +294,7 @@ public class InventoryListener implements Listener {
             assert newModifiers != null;
             net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newArmor).getTag();
 
-            if (oldArmor != null && oldArmor.getType() != Material.AIR) { // switching armor
+            if (GameAPI.isArmor(oldArmor)) { // switching armor
                 List<String> oldModifiers = GameAPI.getModifiers(oldArmor);
                 net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
                 // get differences
@@ -363,7 +368,7 @@ public class InventoryListener implements Listener {
                 }
             }
         }
-        GameAPI.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
+//        GameAPI.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
     }
 
 

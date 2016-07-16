@@ -367,8 +367,9 @@ public class PlayerStats {
         this.vitPoints = 0;
         updateDatabase(false);
         // recalculate player attributes
-        GamePlayer gp = GameAPI.getGamePlayer(Bukkit.getPlayer(playerUUID));
-        GameAPI.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
+//        GamePlayer gp = GameAPI.getGamePlayer(Bukkit.getPlayer(playerUUID));
+        GameAPI.calculateAllAttributes(Bukkit.getPlayer(playerUUID));
+//        GameAPI.recalculateStatBonuses(gp.getAttributes(), gp.getAttributeBonusesFromStats(), gp);
     }
 
     /**
