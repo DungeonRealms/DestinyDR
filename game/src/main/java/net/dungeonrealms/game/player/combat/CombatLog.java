@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -153,6 +154,9 @@ public class CombatLog implements GenericMechanic {
                 armorToSave.add(stack);
             }
         }
+
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, false);
+
         MeleeZombie combatNMSNPC = new MeleeZombie(((CraftWorld) world).getHandle());
         combatNMSNPC.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
         //, CreatureSpawnEvent.SpawnReason.CUSTOM //Implement this when packet system is done @TODO
@@ -220,7 +224,10 @@ public class CombatLog implements GenericMechanic {
                 HealthHandler.getInstance().setPlayerHPLive(Bukkit.getPlayer(uuid), HealthHandler.getInstance().getMonsterHPLive(combatLogger.getLoggerNPC()));
                 combatLogger.handleTimeOut();
             }
+
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
         }
+
         /*if (CombatLog.LOGGER.containsKey(uuid)) {
             Zombie z = CombatLog.LOGGER.get(uuid);
             if (!z.isDead()) {

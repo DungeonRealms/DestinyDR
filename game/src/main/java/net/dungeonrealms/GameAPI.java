@@ -48,6 +48,7 @@ import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.network.GameClient;
+import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
@@ -714,8 +715,18 @@ public class GameAPI {
             return;
         }
 
+        try {
+            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid))
+                    && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
+                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
+                player.kickPlayer(ChatColor.RED + "You have been combat logged please into Shard " + lastShard);
+                return;
+            }
+        } catch (NullPointerException ignored) {
+        }
+
         // todo: finish anticheat system
-//        AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
+        //AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
 
         GamePlayer gp = new GamePlayer(player);
 
