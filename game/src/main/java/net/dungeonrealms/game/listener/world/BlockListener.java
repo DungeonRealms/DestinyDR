@@ -563,8 +563,9 @@ public class BlockListener implements Listener {
                     player.sendMessage(ChatColor.GRAY + "Shop Location: " + (int) shop.block1.getLocation().getX() + ", " + (int) shop.block1.getLocation().getY() + ", " + (int) shop.block1.getLocation().getZ());
                     return;
                 }
+                GamePlayer gp = GameAPI.getGamePlayer(player);
                 if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
-                    if (!GameAPI.getGamePlayer(player).hasShopOpen()) {
+                    if (gp != null && !gp.hasShopOpen()) {
                         if (BankMechanics.getInstance().getStorage(player.getUniqueId()).collection_bin != null) {
                             player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
                             player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");

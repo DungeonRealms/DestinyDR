@@ -811,6 +811,8 @@ public class ItemManager {
         String page4_string;
         String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
         GamePlayer gp = GameAPI.getGamePlayer(p);
+        if(gp == null)
+            return stack;
         KarmaHandler.EnumPlayerAlignments playerAlignment = gp.getPlayerAlignment();
         String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
                 playerAlignment.getAlignmentColor()) + ChatColor.UNDERLINE.toString() + playerAlignment.name();
