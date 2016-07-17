@@ -13,6 +13,7 @@ import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
@@ -164,6 +165,14 @@ public class CommandSet extends BasicCommand {
                     break;
                 case "g":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                    break;
+                case "combatoff":
+                    if (Bukkit.getPlayer(args[1]) != null) {
+                        CombatLog.removeFromCombat(Bukkit.getPlayer(args[1]));
+                    }
+                    else {
+                        player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
+                    }
                     break;
                 case "ecash":
                     int ecash = 0;
