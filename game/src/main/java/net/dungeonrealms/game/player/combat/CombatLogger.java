@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -33,7 +34,9 @@ public class CombatLogger {
         setRespawnLocation();
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, true, false);
         CombatLog.getInstance().getCOMBAT_LOGGERS().remove(playerUUID, this);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, false);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), false);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INVENTORY, "", true);
     }
 
     public void handleTimeOut() {
