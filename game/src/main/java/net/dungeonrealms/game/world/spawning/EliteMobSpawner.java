@@ -86,30 +86,6 @@ public class EliteMobSpawner {
         armorstand.setPosition(location.getX(), location.getY(), location.getZ());
     }
 
-    /**
-     * Initialize spawner
-     */
-    /*void init() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            boolean playersNearby = !GameAPI.getNearbyPlayers(location, 24).isEmpty();
-            if (playersNearby) {
-                if (timerID == -1) {
-                    timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-                        if (isRemoved) {
-                            Bukkit.getScheduler().cancelTask(timerID);
-                        } else
-                            spawnIn();
-                    }, 0L, 20L);
-                }
-            } else {
-                if (timerID != -1) {
-                    Bukkit.getScheduler().cancelTask(timerID);
-                    timerID = -1;
-                }
-            }
-        }, 0L, 40L);
-    }*/
-
     void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (timerID == -1) {
@@ -137,8 +113,7 @@ public class EliteMobSpawner {
                             monster.setPosition(location.getX(), location.getY(), location.getZ());
                             return;
                         }
-                        double num = livingEntity.getLocation().distanceSquared(location);
-                        if (num > 900) {
+                        if (livingEntity.getLocation().distance(location) >= 35) {
                             if (livingEntity instanceof Creature) {
                                 ((Creature) livingEntity).setTarget(null);
                             }

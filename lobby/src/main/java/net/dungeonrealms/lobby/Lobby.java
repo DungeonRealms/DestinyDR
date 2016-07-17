@@ -75,6 +75,19 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
     @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lobby.getInstance(), () -> {
+            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+                DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
+            }
+            if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(player.getUniqueId())) {
+                DatabaseAPI.getInstance().PLAYER_TIME.remove(player.getUniqueId());
+            }
+        }, 1L);
+    }
+
+    @EventHandler
     public void onItemClick(PlayerDropItemEvent e) {
         if (e.getItemDrop().getItemStack().getType() == Material.COMPASS) {
             e.setCancelled(true);

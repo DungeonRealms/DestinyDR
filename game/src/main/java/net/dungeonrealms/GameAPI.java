@@ -700,7 +700,6 @@ public class GameAPI {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
             return;
         } else if (player != null) {
-            //TODO: Remove this when the DatabaseDriver Wipes.
             player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
             if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {
@@ -726,7 +725,7 @@ public class GameAPI {
                     return;
                 } else {
                     if (!CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, false);
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
                         //Shard probably crashed, so they believe they combat logged, but the shard has no record of it.
                     }
                 }

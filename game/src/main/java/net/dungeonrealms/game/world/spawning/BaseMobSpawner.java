@@ -105,12 +105,11 @@ public class BaseMobSpawner {
                         monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                         continue;
                     }
-                    double num = livingEntity.getLocation().distanceSquared(loc);
-                    if (num > 700) {
-                        monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
+                    if (livingEntity.getLocation().distance(loc) >= 35) {
                         if (livingEntity instanceof Creature) {
                             ((Creature) livingEntity).setTarget(null);
                         }
+                        monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                     }
                 } else {
                     RESPAWN_TIMES.put(monster, respawnDelay + (new Random().nextInt(respawnDelay / 2) + 15));
