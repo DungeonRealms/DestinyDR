@@ -134,7 +134,7 @@ public class Shop {
                                 break;
                             }
                         }
-                    if (nms.getTag().hasKey("worth"))
+                    if (nms.hasTag() && nms.getTag().hasKey("worth"))
                         nms.getTag().remove("worth");
                     meta.setLore(lore);
                     stack.setItemMeta(meta);

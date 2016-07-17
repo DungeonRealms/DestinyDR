@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.quests.database;
 
+import net.dungeonrealms.game.quests.objects.Quest;
+import net.dungeonrealms.game.quests.objects.QuestInfo;
 import org.bson.Document;
 
 import java.util.UUID;
@@ -19,4 +21,14 @@ public class QuestDatabaseAPI {
         return instance;
     }
 
+    public boolean hasQuestInfo(UUID uuid, Quest quest) {
+        return false;
+    }
+
+    public void insertQuest(UUID uuid, Quest quest) {
+    }
+
+    public void updateQuestInfo(UUID uuid, QuestInfo quest) {
+
+    }
 }
