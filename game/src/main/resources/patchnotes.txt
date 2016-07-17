@@ -4,6 +4,8 @@ Build <build>
 - Fixed /gl avoiding mutes.
 - Fixed entities not targeting you if you enter combat.
 - Increased monster "whirlwind" attack radius.
+- Significantly reduced PvP knockback.
+- Mobs now have knockback resistance.
 
 &2New Features&0
 - Entities will now change their target to the highest damage dealer.
