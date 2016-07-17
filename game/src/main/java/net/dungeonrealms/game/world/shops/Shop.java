@@ -120,8 +120,8 @@ public class Shop {
         int count = 0;
         for (ItemStack stack : inventory) {
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-            if (stack != null && stack.getType() != Material.AIR) {
-                if (stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status"))
+            if (stack != null && stack.getType() != Material.AIR && nms != null) {
+                if (stack.getType() == Material.INK_SACK && nms.getTag().hasKey("status"))
                     continue;
                 ItemMeta meta = stack.getItemMeta();
                 if (meta != null) {
@@ -134,7 +134,7 @@ public class Shop {
                                 break;
                             }
                         }
-                    if (nms.getTag().hasKey("worth"))
+                    if (nms.getTag() != null && nms.hasTag() && nms.getTag().hasKey("worth"))
                         nms.getTag().remove("worth");
                     meta.setLore(lore);
                     stack.setItemMeta(meta);
