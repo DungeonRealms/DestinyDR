@@ -39,6 +39,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
     public DRWitch(World world, EnumMonster mon, int tier) {
         super(world);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
+        this.getAttributeInstance(GenericAttributes.c).setValue(1.00d);
         weapon = getTierWeapon(tier);
         setArmor(tier);
         monster = mon;

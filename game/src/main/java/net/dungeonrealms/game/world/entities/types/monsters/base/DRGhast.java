@@ -41,6 +41,7 @@ public class DRGhast extends EntityGhast implements DRMonster {
     public DRGhast(World world, EnumMonster mon, int tier) {
         super(world);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
+        this.getAttributeInstance(GenericAttributes.c).setValue(1.00d);
         setArmor(tier);
         monster = mon;
         String customName = mon.getPrefix() + " " + mon.name + " " + mon.getSuffix() + " ";

@@ -39,6 +39,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         this(world);
         this.tier  = tier;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
+        this.getAttributeInstance(GenericAttributes.c).setValue(1.00d);
         this.monsterType = monster;
         this.name = monster.name;
         this.mobHead = monster.mobHead;

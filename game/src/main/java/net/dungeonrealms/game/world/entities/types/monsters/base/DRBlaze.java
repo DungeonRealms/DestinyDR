@@ -36,6 +36,7 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
 	public DRBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
 		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
+		this.getAttributeInstance(GenericAttributes.c).setValue(1.00d);
 		this.monsterType = monster;
 		this.name = monster.name;
 		this.mobHead = monster.mobHead;
