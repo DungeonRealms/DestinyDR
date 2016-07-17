@@ -1,19 +1,9 @@
 Build <build>
 
 &4Bug Fixes&0
-- Rebooter fixed again
-- Fixed PVP lag
-- Fixed muting
-- You can no longer connect to other shards
-while combat logged
-- Mule upgrade realm chest fixed
-- Removed soulbound trading restrictions
-- Fixed 5 minute restart warning
-- Fixed some stat bonuses incorrectly applying
-(all stat bonuses are now working)
-- Fixed patch notes paging
-- Fixed critical duplication bug
+- Fixed /gl avoiding mutes.
+- Fixed entities not targeting you if you enter combat.
+- Increased monster "whirlwind" attack radius.
 
 &2New Features&0
-- Added unique /friends book
-- Added realm chest
+- Entities will now change their target to the highest damage dealer.
