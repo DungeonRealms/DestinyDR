@@ -39,7 +39,6 @@ import org.inventivetalent.bossbar.BossBarAPI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -659,21 +658,13 @@ public class HealthHandler implements GenericMechanic {
     private void checkForNewTarget(LivingEntity monster) {
         if (!(monster instanceof Creature)) return;
         if (monsterTrackers.containsKey(monster.getUniqueId())) {
-            //Not sure if it's worth doing this Sync or Async, it doesn't really matter about the speed that it gets called at, only that it does run. So Async might be better.
-            GameAPI.runAsyncCallbackTask(() -> monsterTrackers.get(monster.getUniqueId()).findHighestDamageDealer(), consumer -> {
-                try {
-                    if (consumer == null || consumer.get() == null) return;
-                    Player damageDealer = consumer.get();
-                    if (damageDealer == null || !damageDealer.isOnline()) return;
-                    for (Entity entity : monster.getNearbyEntities(10, 10, 10)) {
-                        if (!(entity instanceof Player)) continue;
-                        if (!entity.getName().equalsIgnoreCase(damageDealer.getName())) continue;
-                        ((EntityInsentient) ((CraftLivingEntity) monster).getHandle()).setGoalTarget(((CraftLivingEntity) entity).getHandle(), EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, false);
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-            });
+            Player damageDealer = monsterTrackers.get(monster.getUniqueId()).findHighestDamageDealer();
+            if (damageDealer == null || !damageDealer.isOnline()) return;
+            for (Entity entity : monster.getNearbyEntities(10, 10, 10)) {
+                if (!(entity instanceof Player)) continue;
+                if (!entity.getName().equalsIgnoreCase(damageDealer.getName())) continue;
+                ((EntityInsentient) ((CraftLivingEntity) monster).getHandle()).setGoalTarget(((CraftLivingEntity) entity).getHandle(), EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, false);
+            }
         }
     }
 
@@ -711,7 +702,7 @@ public class HealthHandler implements GenericMechanic {
         if (attacker != null) {
             if (GameAPI.isPlayer(attacker)) {
                 handleMonsterDamageTracker(entity.getUniqueId(), (Player) attacker, damage);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> checkForNewTarget(entity), 1L);
+                checkForNewTarget(entity);
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     if (!entity.hasMetadata("uuid")) {
                         String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
