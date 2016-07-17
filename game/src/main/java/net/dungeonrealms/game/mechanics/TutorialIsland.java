@@ -191,7 +191,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
         if (npc.getName().equalsIgnoreCase("Ship Captain")) {
             // Check to see if they're ready to head to the mainland.
             if (quest_map.containsKey(pl.getName()) && quest_map.get(pl.getName()).size() > 0) {
-                List<String> all_quests = new ArrayList<String>(Arrays.asList("Island Greeter", "Master Miner", "Master Fisherman", "Equipment Master", "Interface Guide", "Item Enchanter", "Armor Guide", "Alignment Guide", ChatColor.RED.toString() + "Chaotic Guide", ChatColor.YELLOW.toString() + "Neutral Guide", ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee"));
+                List<String> all_quests = new ArrayList<>(Arrays.asList("Island Greeter", "Master Miner", "Master Fisherman", "Equipment Master", "Interface Guide", "Item Enchanter", "Armor Guide", "Alignment Guide", ChatColor.RED.toString() + "Chaotic Guide", ChatColor.YELLOW.toString() + "Neutral Guide", ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee"));
                 List<String> quest_list = quest_map.get(pl.getName());
                 if (quest_list.size() > 0) {
                     pl.sendMessage("");
@@ -340,7 +340,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
                     lcd.add(npc.getName());
                     completion_delay.put(pl.getName(), lcd);
                 } else {
-                    completion_delay.put(pl.getName(), new ArrayList<>(Arrays.asList(npc.getName())));
+                    completion_delay.put(pl.getName(), new ArrayList<>(Collections.singletonList(npc.getName())));
                 }
 
                 quests_left.remove(npc.getName());

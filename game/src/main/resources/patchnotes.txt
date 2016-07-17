@@ -1,15 +1,7 @@
 Build <build>
 
-Bug Fixes
-- Rebooter fixed again
-- Fixed PVP lag
-- Fixed muting
-- You can no longer connect to other shards
-while combat logged
-- Mule upgrade realm chest fixed
-- Removed soulbound trading restrictions
-- Fixed 5 minute restart warning
+&4Bug Fixes&0
+- Slightly increased mob respawn time.
+- Fixed elite mob follow range.
 
-Features
-- Added unique /friends book
-- Added realm chest
+&2New Features&0

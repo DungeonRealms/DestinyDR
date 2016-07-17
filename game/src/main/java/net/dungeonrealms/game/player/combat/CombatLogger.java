@@ -31,15 +31,17 @@ public class CombatLogger {
 
     public void handleNPCDeath() {
         setRespawnLocation();
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, true, false);
         CombatLog.getInstance().getCOMBAT_LOGGERS().remove(playerUUID, this);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
     }
 
     public void handleTimeOut() {
         if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(playerUUID)) {
             loggerNPC.remove();
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, false, false);
             CombatLog.getInstance().getCOMBAT_LOGGERS().remove(playerUUID, this);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
         }
     }
 

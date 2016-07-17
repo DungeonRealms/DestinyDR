@@ -86,30 +86,6 @@ public class EliteMobSpawner {
         armorstand.setPosition(location.getX(), location.getY(), location.getZ());
     }
 
-    /**
-     * Initialize spawner
-     */
-    /*void init() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            boolean playersNearby = !GameAPI.getNearbyPlayers(location, 24).isEmpty();
-            if (playersNearby) {
-                if (timerID == -1) {
-                    timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-                        if (isRemoved) {
-                            Bukkit.getScheduler().cancelTask(timerID);
-                        } else
-                            spawnIn();
-                    }, 0L, 20L);
-                }
-            } else {
-                if (timerID != -1) {
-                    Bukkit.getScheduler().cancelTask(timerID);
-                    timerID = -1;
-                }
-            }
-        }, 0L, 40L);
-    }*/
-
     void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (timerID == -1) {
@@ -125,28 +101,25 @@ public class EliteMobSpawner {
 
     private void spawnIn() {
         boolean playersNearby = GameAPI.arePlayersNearby(location, 24);
-        if (playersNearby) {
-            if (!SPAWNED_MONSTERS.isEmpty()) {
-                for (Entity monster : SPAWNED_MONSTERS) {
-                    LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
-                    if (monster.isAlive()) {
-                        if (GameAPI.isInSafeRegion(livingEntity.getLocation())) {
-                            if (livingEntity instanceof Creature) {
-                                ((Creature) livingEntity).setTarget(null);
-                            }
-                            monster.setPosition(location.getX(), location.getY(), location.getZ());
-                            return;
+        if (!SPAWNED_MONSTERS.isEmpty()) {
+            for (Entity monster : SPAWNED_MONSTERS) {
+                LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
+                if (monster.isAlive()) {
+                    if (GameAPI.isInSafeRegion(livingEntity.getLocation())) {
+                        if (livingEntity instanceof Creature) {
+                            ((Creature) livingEntity).setTarget(null);
                         }
-                        double num = livingEntity.getLocation().distanceSquared(location);
-                        if (num > 900) {
-                            if (livingEntity instanceof Creature) {
-                                ((Creature) livingEntity).setTarget(null);
-                            }
-                            monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
-                        }
-                    } else {
-                        SPAWNED_MONSTERS.remove(monster);
+                        monster.setPosition(location.getX(), location.getY(), location.getZ());
+                        return;
                     }
+                    if (livingEntity.getLocation().distance(location) >= 35) {
+                        if (livingEntity instanceof Creature) {
+                            ((Creature) livingEntity).setTarget(null);
+                        }
+                        monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
+                    }
+                } else {
+                    SPAWNED_MONSTERS.remove(monster);
                 }
             }
         }

@@ -153,13 +153,13 @@ public class Chat {
                 normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
                 normal.addText(after);
 
-                Bukkit.getOnlinePlayers().stream().forEach(player -> normal.sendToPlayer(player));
+                Bukkit.getOnlinePlayers().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
                 return;
             }
             event.setCancelled(true);
             final String finalFixedMessage = fixedMessage;
-            Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, GameChat.getGlobalType(finalFixedMessage)) + finalFixedMessage));
+            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, GameChat.getGlobalType(finalFixedMessage)) + finalFixedMessage));
         } else {
             if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
                 final Player p = event.getPlayer();
@@ -184,7 +184,7 @@ public class Chat {
                 normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
                 normal.addText(after);
 
-                GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
+                GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).forEach(normal::sendToPlayer);
                 event.setCancelled(true);
             }
         }
@@ -203,7 +203,7 @@ public class Chat {
 
         // HANDLE LOCAL CHAT
         if (GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
-            GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+            GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 75).forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
         } else {
             event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage);
             event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");

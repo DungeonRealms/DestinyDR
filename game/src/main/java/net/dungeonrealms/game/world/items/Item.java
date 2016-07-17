@@ -272,11 +272,11 @@ public class Item {
     }
 
     public interface AttributeType {
-        public int getId();
-        public String getName();
-        public String getNBTName();
-        public boolean isPercentage();
-        public boolean isRange();
+        int getId();
+        String getName();
+        String getNBTName();
+        boolean isPercentage();
+        boolean isRange();
     }
 
     public enum WeaponAttributeType implements AttributeType {

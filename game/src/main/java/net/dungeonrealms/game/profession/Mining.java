@@ -475,7 +475,7 @@ public class Mining implements GenericMechanic {
         }
 
 
-        String clone = lore.get(lore.size() - 1).toString();
+        String clone = lore.get(lore.size() - 1);
         lore.remove(lore.size() - 1);
         int value = enchant.getBuff(pickTier);
         if (value == 0)
@@ -718,7 +718,7 @@ public class Mining implements GenericMechanic {
      * @since 1.0;
      */
     private void placeOre() {
-        ORE_LOCATIONS.keySet().stream().forEach(loc -> loc.getWorld().getBlockAt(loc).setType(ORE_LOCATIONS.get(loc)));
+        ORE_LOCATIONS.keySet().forEach(loc -> loc.getWorld().getBlockAt(loc).setType(ORE_LOCATIONS.get(loc)));
     }
 
     @Override

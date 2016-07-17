@@ -61,9 +61,7 @@ public class MountUtils {
 
     public static boolean isMount(ItemStack i) {
         NBTItem nbtItem = new NBTItem(i);
-        if (!CraftItemStack.asNMSCopy(i).hasTag())
-            return false;
-        return nbtItem.hasKey("mountType");
+        return CraftItemStack.asNMSCopy(i).hasTag() && nbtItem.hasKey("mountType");
     }
 
     public static boolean hasRequiredLevel(EnumMounts mountType, UUID player) {

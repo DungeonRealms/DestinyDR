@@ -50,7 +50,7 @@ public class Affair implements GenericMechanic {
 
     @Override
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> _parties.stream().forEach(party -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> _parties.forEach(party -> {
             if (party.getOwner() == null) {
                 removeParty(party);
             } else {
@@ -108,7 +108,7 @@ public class Affair implements GenericMechanic {
         allPlayers.add(party.getOwner());
         allPlayers.addAll(party.getMembers());
 
-        allPlayers.stream().forEach(player -> {
+        allPlayers.forEach(player -> {
             if (GameAPI.getGamePlayer(player) != null) {
                 if (GameAPI.getGamePlayer(player).isInDungeon()) {
                     DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(player.getWorld());

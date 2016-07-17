@@ -381,10 +381,7 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return false;
         if (tag.getInt("itemTier") == 0) return false;
-        if (tag.getString("type").equalsIgnoreCase("weapon")) {
-            return true;
-        }
-        return tag.getString("type").equalsIgnoreCase("armor");
+        return tag.getString("type").equalsIgnoreCase("weapon") || tag.getString("type").equalsIgnoreCase("armor");
     }
 
     /**

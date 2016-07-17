@@ -2,7 +2,9 @@ package net.dungeonrealms.lobby;
 
 
 import net.dungeonrealms.game.AbstractMenu;
+import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.menu.GUIButtonClickEvent;
 import net.dungeonrealms.game.menu.item.GUIButton;
 import net.dungeonrealms.network.ShardInfo;
@@ -65,6 +67,15 @@ public class ShardSelector extends AbstractMenu {
                     } else if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {
                         player.sendMessage(ChatColor.RED + "You are " + ChatColor.BOLD + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " authorized to connect to this shard.");
                         return;
+                    } else {
+                        try {
+                            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, player.getUniqueId())) && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId()).equals(ShardInfo.getByPseudoName(bungeeName).getPseudoName())) {
+                                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId())).getShardID();
+                                player.sendMessage(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
+                                return;
+                            }
+                        } catch (NullPointerException ignored) {
+                        }
                     }
 
                     BungeeUtils.sendToServer(player.getName(), info.getServerName());

@@ -170,7 +170,7 @@ public class FriendHandler {
     public boolean isPendingFrom(UUID uuid, String name) {
         ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, uuid);
         String friendUUID = DatabaseAPI.getInstance().getUUIDFromName(name);
-        long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(friendUUID.toString())).count();
+        long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(friendUUID)).count();
 
         return pendingRequests >= 1;
 

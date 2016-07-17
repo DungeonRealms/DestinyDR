@@ -608,8 +608,8 @@ public class DamageListener implements Listener {
             p.setGameMode(GameMode.SURVIVAL);
             GamePlayer gamePlayer = GameAPI.getGamePlayer(p);
             if (gamePlayer != null) {
-                gamePlayer.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
-                gamePlayer.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
+                gamePlayer.getAttributeBonusesFromStats().entrySet().forEach(entry -> entry.setValue(0f));
+                gamePlayer.getAttributes().entrySet().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
             }
 
             PlayerManager.checkInventory(p.getUniqueId());
@@ -786,7 +786,7 @@ public class DamageListener implements Listener {
                         continue;
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+                    if ((nmsStack.hasTag() && nmsStack.getTag() != null && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                         continue;
                     }
                     location.getWorld().dropItemNaturally(location, itemStack);
@@ -798,7 +798,7 @@ public class DamageListener implements Listener {
                         continue;
                     }
                     net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-                    if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+                    if ((nmsStack.hasTag() && nmsStack.getTag() != null && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                         continue;
                     }
                     location.getWorld().dropItemNaturally(location, itemStack);
@@ -806,8 +806,6 @@ public class DamageListener implements Listener {
             }
             ArrayList<String> armorContents = new ArrayList<>();
             String itemsToSave;
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", false);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), false);
             if (!combatLogger.getArmorToSave().isEmpty()) {
                 for (ItemStack itemStack : combatLogger.getArmorToSave()) {
                     if (itemStack.getType() == null || itemStack.getType() == Material.AIR || itemStack.getType() == Material.MELON) {
@@ -822,53 +820,13 @@ public class DamageListener implements Listener {
             }
             if (!combatLogger.getItemsToSave().isEmpty()) {
                 Inventory inventory = Bukkit.createInventory(null, 27, "LoggerInventory");
-                for (ItemStack stack : combatLogger.getItemsToSave()) {
-                    inventory.addItem(stack);
-                }
+                combatLogger.getItemsToSave().forEach(inventory::addItem);
                 itemsToSave = ItemSerialization.toString(inventory);
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, itemsToSave, false);
             } else {
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", false);
             }
             combatLogger.handleNPCDeath();
-
-        /*final Zombie loggerNPC = CombatLog.LOGGER.get(uuid);
-        final Location location = event.getEntity().getLocation();
-        Inventory inv = CombatLog.LOGGER_INVENTORY.get(uuid);
-        if (inv == null) {
-        	return;
-        }
-        Location loc =  KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
-        for (ItemStack itemStack : inv.getContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
-                continue;
-            }
-            location.getWorld().dropItemNaturally(location, itemStack);
-        }
-        for (ItemStack itemStack : loggerNPC.getEquipment().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
-                continue;
-            }
-            location.getWorld().dropItemNaturally(location, itemStack);
-        }
-        CombatLog.checkCombatLog(uuid);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", false);
-  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), false);
-  		if (loc != null) {
-  			String locString = loc.getBlockX() +"," + loc.getBlockY() + 5 + "," + loc.getBlockZ() + "," + "0,0";
-  			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locString, true);
-  		}
-  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
-        CombatLog.LOGGER_INVENTORY.remove(uuid);
-        */
         }
     }
 

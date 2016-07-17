@@ -175,7 +175,7 @@ public class Shop {
             if (inventory.getViewers().size() > 0) {
                 inventory.getViewers().forEach(viewers::add);
             }
-            viewers.stream().forEach(HumanEntity::closeInventory);
+            viewers.forEach(HumanEntity::closeInventory);
             viewers.clear();
             ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
             ItemMeta meta = button.getItemMeta();

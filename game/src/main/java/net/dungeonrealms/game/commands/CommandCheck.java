@@ -78,7 +78,7 @@ public class CommandCheck extends BasicCommand {
 				else {
 					player.sendMessage("Listing All NBT...");
 					// get all the nbt tags of the item
-					tag.c().stream().forEach(key -> player.sendMessage(key + ": " + tag.get(key).toString()));
+					tag.c().forEach(key -> player.sendMessage(key + ": " + tag.get(key).toString()));
 				}
 			}
 		}
@@ -86,9 +86,9 @@ public class CommandCheck extends BasicCommand {
 			Player attributePlayer = Bukkit.getPlayer(args[1]);
 			if (args[0].equalsIgnoreCase("attributes") && attributePlayer != null) {
 				GamePlayer gp = GameAPI.getGamePlayer(attributePlayer);
-				gp.getAttributes().entrySet().stream().forEach(entry -> {
-					player.sendMessage(entry.getKey() + ": " + entry.getValue()[0] + " - " + entry.getValue()[1]);
-				});
+				gp.getAttributes().entrySet().forEach(entry -> {
+                    player.sendMessage(entry.getKey() + ": " + entry.getValue()[0] + " - " + entry.getValue()[1]);
+                });
 				return true;
 			}
 		}

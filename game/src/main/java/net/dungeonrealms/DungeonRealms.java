@@ -441,12 +441,12 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcasts a global message across all shards!"));
 
             //FRIENDS
-            cm.registerCommand(new AddCommand("add", "/<command> [args]", "Send Friend request!", Arrays.asList("friend")));
-            cm.registerCommand(new RemoveCommand("unfriend", "/<command> [args]", "Remove friend from list!", Arrays.asList("rem")));
-            cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Arrays.asList("draccept")));
-            cm.registerCommand(new AcceptCommand("deny", "/<command> [args]", "Deny Friend request!", Arrays.asList("drdeny")));
+            cm.registerCommand(new AddCommand("add", "/<command> [args]", "Send Friend request!", Collections.singletonList("friend")));
+            cm.registerCommand(new RemoveCommand("unfriend", "/<command> [args]", "Remove friend from list!", Collections.singletonList("rem")));
+            cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Collections.singletonList("draccept")));
+            cm.registerCommand(new AcceptCommand("deny", "/<command> [args]", "Deny Friend request!", Collections.singletonList("drdeny")));
 
-            cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close Shop on all Shards!", Arrays.asList("shopclose")));
+            cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close Shop on all Shards!", Collections.singletonList("shopclose")));
 
 
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
@@ -488,8 +488,8 @@ public class DungeonRealms extends JavaPlugin {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1)));
-                GameAPI.GAMEPLAYERS.values().stream().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
+                DatabaseAPI.getInstance().PLAYER_TIME.entrySet().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1)));
+                GameAPI.GAMEPLAYERS.values().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
             }
         }, 0L, 1000);
 
@@ -504,7 +504,7 @@ public class DungeonRealms extends JavaPlugin {
 
     private void scheduleRestartTask() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
-                Bukkit.getOnlinePlayers().stream().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
+                Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, GameAPI::stopGame, 20 * 60 * 5);
     }

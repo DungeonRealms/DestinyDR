@@ -751,7 +751,7 @@ public class Fishing implements GenericMechanic {
         }
 
 
-        String clone = lore.get(lore.size() - 1).toString();
+        String clone = lore.get(lore.size() - 1);
         lore.remove(lore.size() - 1);
         lore.add(ChatColor.RED + enchant.name + " +" + enchant.getBuff(tier) + "%");
         lore.add(clone);

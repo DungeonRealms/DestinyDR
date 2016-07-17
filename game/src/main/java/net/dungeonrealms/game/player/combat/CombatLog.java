@@ -182,9 +182,7 @@ public class CombatLog implements GenericMechanic {
         CombatLog.getInstance().getCOMBAT_LOGGERS().put(player.getUniqueId(), combatLogger);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(player.getUniqueId())) {
-                if (player.isOnline()) {
-                    CombatLog.getInstance().getCOMBAT_LOGGERS().get(player.getUniqueId()).handleTimeOut();
-                }
+                CombatLog.getInstance().getCOMBAT_LOGGERS().get(player.getUniqueId()).handleTimeOut();
             }
         }, 250L);
     }
@@ -227,19 +225,5 @@ public class CombatLog implements GenericMechanic {
 
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
         }
-
-        /*if (CombatLog.LOGGER.containsKey(uuid)) {
-            Zombie z = CombatLog.LOGGER.get(uuid);
-            if (!z.isDead()) {
-                Player p = Bukkit.getPlayer(uuid);
-                HealthHandler.getInstance().setPlayerHPLive(p, HealthHandler.getInstance().getMonsterHPLive(z));
-                z.remove();
-            } else {
-                //TP TO CYRENN
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), false);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", false);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
-            }
-        }*/
     }
 }
