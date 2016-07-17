@@ -660,7 +660,9 @@ public class HealthHandler implements GenericMechanic {
     private void checkForNewTarget(LivingEntity monster) {
         if (!(monster instanceof Creature)) return;
         if (monsterTrackers.containsKey(monster.getUniqueId())) {
-            Player damageDealer = monsterTrackers.get(monster.getUniqueId()).findHighestDamageDealer();
+            DamageTracker tracker = monsterTrackers.get(monster.getUniqueId());
+            if (tracker == null) return;
+            Player damageDealer = tracker.findHighestDamageDealer();
             if (damageDealer == null || !damageDealer.isOnline()) return;
             for (Entity entity : monster.getNearbyEntities(10, 10, 10)) {
                 if (!(entity instanceof Player)) continue;
