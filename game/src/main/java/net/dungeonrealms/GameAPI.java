@@ -719,11 +719,17 @@ public class GameAPI {
         }
 
         try {
-            if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid))
-                    && !DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
-                String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
-                player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
-                return;
+            if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid)) {
+                if (!DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
+                    String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
+                    player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
+                    return;
+                } else {
+                    if (!CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, false);
+                        //Shard probably crashed, so they believe they combat logged, but the shard has no record of it.
+                    }
+                }
             }
         } catch (NullPointerException ignored) {
         }
@@ -917,7 +923,7 @@ public class GameAPI {
         int currentTime = (int) (System.currentTimeMillis() / 1000);
         if (currentTime - freeEcash >= 86400) {
             int ecashReward = Utils.randInt(10, 15);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), false);
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
             player.sendMessage(new String[]{
                     ChatColor.GOLD + "You have gained " + ChatColor.BOLD + ecashReward + "EC" + ChatColor.GOLD + " for logging into DungeonRealms today!",
@@ -927,7 +933,7 @@ public class GameAPI {
         }
 
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), false);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, false);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
