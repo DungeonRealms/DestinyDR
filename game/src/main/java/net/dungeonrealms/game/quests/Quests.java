@@ -55,7 +55,7 @@ public class Quests implements GenericMechanic {
 
     public static void handleLogout(UUID uuid) {
         questsProgress.get(uuid).stream().forEach(quest -> QuestDatabaseAPI.getInstance().updateQuestInfo(uuid, quest));
-    }9
+    }
 
     @Override
     public EnumPriority startPriority() {
