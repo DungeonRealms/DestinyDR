@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 /**
  * Created by chase on 6/30/2016.
@@ -55,8 +56,8 @@ public class WhirlWind extends PowerMove {
                 entity.getWorld().playEffect(entity.getLocation(), Effect.EXPLOSION_LARGE, 1, 40);
                 step++;
                 if (step == 5) {
-                    GameAPI.getNearbyPlayers(entity.getLocation(), 3).stream().forEach(p -> {
-                        org.bukkit.util.Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
+                    GameAPI.getNearbyPlayers(entity.getLocation(), 4).forEach(p -> {
+                        Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
                         double e_y = entity.getLocation().getY();
                         double p_y = p.getLocation().getY();
                         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
