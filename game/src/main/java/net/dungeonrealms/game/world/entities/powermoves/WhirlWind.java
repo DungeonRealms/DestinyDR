@@ -56,7 +56,7 @@ public class WhirlWind extends PowerMove {
                 entity.getWorld().playEffect(entity.getLocation(), Effect.EXPLOSION_LARGE, 1, 40);
                 step++;
                 if (step == 5) {
-                    GameAPI.getNearbyPlayers(entity.getLocation(), 4).forEach(p -> {
+                    GameAPI.getNearbyPlayers(entity.getLocation(), 8).forEach(p -> {
                         Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
                         double e_y = entity.getLocation().getY();
                         double p_y = p.getLocation().getY();
