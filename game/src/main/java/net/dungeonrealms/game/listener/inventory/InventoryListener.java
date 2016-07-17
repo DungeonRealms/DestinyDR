@@ -753,6 +753,7 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
+                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
@@ -771,7 +772,6 @@ public class InventoryListener implements Listener {
                 }
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
-                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 return;
             }
 
@@ -906,6 +906,7 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
+                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
 
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
@@ -926,7 +927,6 @@ public class InventoryListener implements Listener {
                 }
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
-                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 return;
             }
 
