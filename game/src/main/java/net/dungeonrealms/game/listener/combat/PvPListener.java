@@ -14,6 +14,7 @@ import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -40,6 +41,7 @@ public class PvPListener implements Listener {
         if (receiver.getGameMode() != GameMode.SURVIVAL) return;
 
         event.setDamage(0);
+        event.setCancelled(true);
 
         if (CombatLog.isInCombat(damager)) {
             CombatLog.updateCombat(damager);
@@ -48,6 +50,10 @@ public class PvPListener implements Listener {
         }
 
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
+
+        receiver.playEffect(EntityEffect.HURT);
+        DamageAPI.knockbackEntity(damager, receiver, 0.3);
+        receiver.setSprinting(false);
 
         if (!GameAPI.isWeapon(damager.getEquipment().getItemInMainHand())) {
             for (ItemStack i : receiver.getInventory().getArmorContents()) {
@@ -156,6 +162,7 @@ public class PvPListener implements Listener {
         }
 
         event.setDamage(0);
+        event.setCancelled(true);
 
         Player damager = (Player) projectile.getShooter();
         Player receiver = (Player) event.getEntity();
@@ -166,6 +173,10 @@ public class PvPListener implements Listener {
         } else {
             CombatLog.addToCombat(damager);
         }
+
+        receiver.playEffect(EntityEffect.HURT);
+        DamageAPI.knockbackEntity(damager, receiver, 0.3);
+        receiver.setSprinting(false);
 
         double calculatedDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
         if (GameAPI.getGamePlayer(receiver) != null && GameAPI.getGamePlayer(damager) != null) {
