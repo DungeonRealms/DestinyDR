@@ -34,7 +34,7 @@ public abstract class DRGolem extends EntityIronGolem implements DRMonster {
         this.monsterType = monsterType;
         this.name = monsterType.name;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.67d);
+        this.getAttributeInstance(GenericAttributes.c).setValue(1.00d);
         setArmor(tier);
         setStats();
         String customName = monsterType.getPrefix().trim() + " " + monsterType.name.trim() + " " + monsterType.getSuffix().trim() + " ";
