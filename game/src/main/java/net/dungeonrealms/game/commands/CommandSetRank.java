@@ -82,7 +82,7 @@ public class CommandSetRank extends BasicCommand {
 
         } else {
             sender.sendMessage(ChatColor.RED + "Invalid usage: /setrank <name> <rank>");
-            sender.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Ranks: " + ChatColor.GREEN + String.join(" | ", Arrays.asList(ranks)));;
+            sender.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Ranks: " + ChatColor.GREEN + String.join(" | ", Arrays.asList(ranks)));
         }
 
         return true;

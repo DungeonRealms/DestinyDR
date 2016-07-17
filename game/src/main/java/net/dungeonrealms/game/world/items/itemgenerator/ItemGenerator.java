@@ -327,91 +327,91 @@ public class ItemGenerator {
                 break;
             }
 		}
-		
-		for (int i = 0; i < bonuses.length; i++) {
-		    if (bonuses[i] == null) continue;
+
+        for (String bonus : bonuses) {
+            if (bonus == null) continue;
             // apply the prefixes/suffixes to item name
-            switch (bonuses[i]) {
-            // ARMOR PREFIXES
-            case "DODGE":
-                name += "Agile ";
-                break;
-            case "REFLECTION":
-                name += "Reflective ";
-                break;
-            case "HP REGEN":
-                name += "Mending ";
-                break;
-            case "BLOCK":
-                name += "Protective ";
-                break;
-            // WEAPON PREFIXES
-            case "PURE DMG":
-                name += "Pure ";
-                break;
-            case "ACCURACY":
-                name += "Accurate ";
-                break;
-            case "KNOCKBACK":
-                name += "Brute ";
-                break;
-            case "SLOW":
-                name += "Snaring ";
-                break;
-            case "LIFE STEAL":
-                name += "Vampyric ";
-                break;
-            case "CRITICAL HIT":
-                name += "Deadly ";
-                break;
-            case "ARMOR PENETRATION":
-                name += "Penetrating ";
-                break;
-            // ARMOR SUFFIXES
-            case "ENERGY REGEN":
-                name += (name.contains(type.getTierName(tier)) ? " of Fortitude" : type.getTierName(tier) + " of Fortitude");
-                break;
-            case "FIRE RESISTANCE":
-                name += (name.contains(type.getTierName(tier)) ? " and Fire Resist" : type.getTierName(tier) + " of Fire Resist");
-                break;
-            case "ICE RESISTANCE":
-                name += (name.contains(type.getTierName(tier)) ? " and Ice Resist" : type.getTierName(tier) + " of Ice Resist");
-                break;
-            case "POISON RESISTANCE":
-                name += (name.contains(type.getTierName(tier)) ? " and Poison Resist" : type.getTierName(tier) + " of Poison Resist");
-                break;
-            case "GEM FIND":
-                name += (name.contains(type.getTierName(tier)) ? " Golden" : type.getTierName(tier) + " of Pickpocketing");
-                break;
-            case "ITEM FIND":
-                name += (name.contains(type.getTierName(tier)) ? " Treasure" : type.getTierName(tier) + " of Treasure");
-                break;
-            case "THORNS":
-                name += (name.contains(type.getTierName(tier)) ? " Spikes" : type.getTierName(tier) + " of Thorns");
-                break;
-            // WEAPON SUFFIXES
-            case "BLIND":
-                name += type.getTierName(tier) + " of Blindness";
-                break;
-            case "vs. MONSTERS":
-                name += (name.contains(type.getTierName(tier)) ? " Slaying" : type.getTierName(tier) + " of Slaying");
-                break;
-            case "vs. PLAYERS":
-                name += (name.contains(type.getTierName(tier)) ? " Slaughter" : type.getTierName(tier) + " of Slaughter");
-                break;
-            case "FIRE DMG":
-                name += (name.contains(type.getTierName(tier)) ? " Fire" : type.getTierName(tier) + " of Fire");
-                break;
-            case "ICE DMG":
-                name += (name.contains(type.getTierName(tier)) ? " Ice" : type.getTierName(tier) + " of Ice");
-                break;
-            case "POISON DMG":
-                name += (name.contains(type.getTierName(tier)) ? " Poison" : type.getTierName(tier) + " of Poison");
-                break;
-            default:
-                break;
+            switch (bonus) {
+                // ARMOR PREFIXES
+                case "DODGE":
+                    name += "Agile ";
+                    break;
+                case "REFLECTION":
+                    name += "Reflective ";
+                    break;
+                case "HP REGEN":
+                    name += "Mending ";
+                    break;
+                case "BLOCK":
+                    name += "Protective ";
+                    break;
+                // WEAPON PREFIXES
+                case "PURE DMG":
+                    name += "Pure ";
+                    break;
+                case "ACCURACY":
+                    name += "Accurate ";
+                    break;
+                case "KNOCKBACK":
+                    name += "Brute ";
+                    break;
+                case "SLOW":
+                    name += "Snaring ";
+                    break;
+                case "LIFE STEAL":
+                    name += "Vampyric ";
+                    break;
+                case "CRITICAL HIT":
+                    name += "Deadly ";
+                    break;
+                case "ARMOR PENETRATION":
+                    name += "Penetrating ";
+                    break;
+                // ARMOR SUFFIXES
+                case "ENERGY REGEN":
+                    name += (name.contains(type.getTierName(tier)) ? " of Fortitude" : type.getTierName(tier) + " of Fortitude");
+                    break;
+                case "FIRE RESISTANCE":
+                    name += (name.contains(type.getTierName(tier)) ? " and Fire Resist" : type.getTierName(tier) + " of Fire Resist");
+                    break;
+                case "ICE RESISTANCE":
+                    name += (name.contains(type.getTierName(tier)) ? " and Ice Resist" : type.getTierName(tier) + " of Ice Resist");
+                    break;
+                case "POISON RESISTANCE":
+                    name += (name.contains(type.getTierName(tier)) ? " and Poison Resist" : type.getTierName(tier) + " of Poison Resist");
+                    break;
+                case "GEM FIND":
+                    name += (name.contains(type.getTierName(tier)) ? " Golden" : type.getTierName(tier) + " of Pickpocketing");
+                    break;
+                case "ITEM FIND":
+                    name += (name.contains(type.getTierName(tier)) ? " Treasure" : type.getTierName(tier) + " of Treasure");
+                    break;
+                case "THORNS":
+                    name += (name.contains(type.getTierName(tier)) ? " Spikes" : type.getTierName(tier) + " of Thorns");
+                    break;
+                // WEAPON SUFFIXES
+                case "BLIND":
+                    name += type.getTierName(tier) + " of Blindness";
+                    break;
+                case "vs. MONSTERS":
+                    name += (name.contains(type.getTierName(tier)) ? " Slaying" : type.getTierName(tier) + " of Slaying");
+                    break;
+                case "vs. PLAYERS":
+                    name += (name.contains(type.getTierName(tier)) ? " Slaughter" : type.getTierName(tier) + " of Slaughter");
+                    break;
+                case "FIRE DMG":
+                    name += (name.contains(type.getTierName(tier)) ? " Fire" : type.getTierName(tier) + " of Fire");
+                    break;
+                case "ICE DMG":
+                    name += (name.contains(type.getTierName(tier)) ? " Ice" : type.getTierName(tier) + " of Ice");
+                    break;
+                case "POISON DMG":
+                    name += (name.contains(type.getTierName(tier)) ? " Poison" : type.getTierName(tier) + " of Poison");
+                    break;
+                default:
+                    break;
             }
-		}
+        }
 		
 		// if no extra attributes, then make sure the item has the basic name
 	    if (!(name.contains(type.getTierName(tier)))) name += type.getTierName(tier);

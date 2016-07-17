@@ -24,7 +24,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
 
 /**
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.

@@ -76,10 +76,9 @@ public class ModifierCondition {
 		return this;
 	}
 	
-	public boolean doesConclude(Item.ItemTier tier, Item.ItemRarity rarity, ItemMeta meta){
-		if(this.tier != null && this.tier != tier) return false;
-		return !(this.rarity != null && this.rarity != rarity);
-	}
+	public boolean doesConclude(Item.ItemTier tier, Item.ItemRarity rarity, ItemMeta meta) {
+        return !(this.tier != null && this.tier != tier) && !(this.rarity != null && this.rarity != rarity);
+    }
 	
 	public ModifierRange getRange(){
 		return range;

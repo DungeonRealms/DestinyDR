@@ -68,11 +68,7 @@ public class EnchantmentAPI {
 	public static boolean isItemProtected(ItemStack itemStack) {
 		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
 		NBTTagCompound tag = nmsItem.getTag();
-		if (tag != null) {
-			return tag.getString("protected").equalsIgnoreCase("true");
-		} else {
-			return false;
-		}
+		return tag != null && tag.getString("protected").equalsIgnoreCase("true");
 	}
 
 	private static void registerEnchant() {

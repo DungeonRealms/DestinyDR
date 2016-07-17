@@ -39,7 +39,6 @@ import org.inventivetalent.bossbar.BossBarAPI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -471,7 +470,9 @@ public class HealthHandler implements GenericMechanic {
         if (leAttacker instanceof Player) {
             if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
                 DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
-                offer.endDuel((Player) leAttacker, player);
+                if (offer != null) {
+                    offer.endDuel((Player) leAttacker, player);
+                }
                 return;
             }
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
@@ -603,7 +604,7 @@ public class HealthHandler implements GenericMechanic {
                 }
                 final String finalDeadPlayerName = deadPlayerName;
                 final String finalKillerName = killerName;
-                GameAPI.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
+                GameAPI.getNearbyPlayers(player.getLocation(), 100).forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
                 final LivingEntity finalLeAttacker = leAttacker;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -630,7 +631,7 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
             final String finalKillerName = killerName;
-            GameAPI.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
+            GameAPI.getNearbyPlayers(player.getLocation(), 100).forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
             final LivingEntity finalLeAttacker = leAttacker;
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -659,20 +660,14 @@ public class HealthHandler implements GenericMechanic {
     private void checkForNewTarget(LivingEntity monster) {
         if (!(monster instanceof Creature)) return;
         if (monsterTrackers.containsKey(monster.getUniqueId())) {
-            //Not sure if it's worth doing this Sync or Async, it doesn't really matter about the speed that it gets called at, only that it does run. So Async might be better.
-            GameAPI.runAsyncCallbackTask(() -> monsterTrackers.get(monster.getUniqueId()).findHighestDamageDealer(), consumer -> {
-                try {
-                    Player damageDealer = consumer.get();
-                    if (damageDealer == null || !damageDealer.isOnline()) return;
-                    for (Entity entity : monster.getNearbyEntities(10, 10, 10)) {
-                        if (!(entity instanceof Player)) continue;
-                        if (!entity.getName().equalsIgnoreCase(damageDealer.getName())) continue;
-                        ((EntityInsentient) ((CraftLivingEntity) monster).getHandle()).setGoalTarget(((CraftLivingEntity) entity).getHandle(), EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, false);
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-            });
+            Player damageDealer = monsterTrackers.get(monster.getUniqueId()).findHighestDamageDealer();
+            if (damageDealer == null || !damageDealer.isOnline()) return;
+            for (Entity entity : monster.getNearbyEntities(10, 10, 10)) {
+                if (!(entity instanceof Player)) continue;
+                if (!entity.getName().equalsIgnoreCase(damageDealer.getName())) continue;
+                ((EntityInsentient) ((CraftLivingEntity) monster).getHandle()).setGoalTarget(((CraftLivingEntity) entity).getHandle(), EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, false);
+                break;
+            }
         }
     }
 
@@ -806,11 +801,6 @@ public class HealthHandler implements GenericMechanic {
                     break;
             }
         }
-
-        // commented out because dungeons already spawn with full unique
-        /*if (entity.hasMetadata("dungeon")) {
-            totalHP *= 2;
-        }*/
 
         if (entity.hasMetadata("elite")) {
             switch (entity.getMetadata("tier").get(0).asInt()) {

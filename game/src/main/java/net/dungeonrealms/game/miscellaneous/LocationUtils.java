@@ -8,7 +8,7 @@ import java.util.List;
 
 public class LocationUtils {
 	public static List<Entity> getNearbyEntities(Location where, int range) {
-		List<Entity> found = new ArrayList<Entity>();
+		List<Entity> found = new ArrayList<>();
 		 
 		for (Entity entity : where.getWorld().getEntities()) {
 			if (isInBorder(where, entity.getLocation(), range)) {

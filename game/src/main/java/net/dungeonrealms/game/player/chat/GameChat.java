@@ -8,6 +8,8 @@ import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
+
 /**
  * Created by Nick on 11/18/2015.
  */
@@ -74,8 +76,8 @@ public final class GameChat {
         }
 
         // The user is in a clan, append their clan tag.
-        if (clanTag != "") {
-            message.append(org.bukkit.ChatColor.WHITE + "[" + clanTag + "] " + org.bukkit.ChatColor.RESET);
+        if (!Objects.equals(clanTag, "")) {
+            message.append(org.bukkit.ChatColor.WHITE + "[").append(clanTag).append("] ").append(org.bukkit.ChatColor.RESET);
         }
 
         // The user has a rank, append their rank.

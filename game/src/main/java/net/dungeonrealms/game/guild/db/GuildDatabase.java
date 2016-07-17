@@ -120,7 +120,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         List<String> users = (List<String>) get(guildName, data, ArrayList.class);
         List<UUID> usersUUIDs = new ArrayList<>();
 
-        if (users != null) users.stream().forEach(u -> usersUUIDs
+        if (users != null) users.forEach(u -> usersUUIDs
                 .add(UUID.fromString(u)));
 
         return usersUUIDs;

@@ -608,8 +608,8 @@ public class DamageListener implements Listener {
             p.setGameMode(GameMode.SURVIVAL);
             GamePlayer gamePlayer = GameAPI.getGamePlayer(p);
             if (gamePlayer != null) {
-                gamePlayer.getAttributeBonusesFromStats().entrySet().stream().forEach(entry -> entry.setValue(0f));
-                gamePlayer.getAttributes().entrySet().stream().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
+                gamePlayer.getAttributeBonusesFromStats().entrySet().forEach(entry -> entry.setValue(0f));
+                gamePlayer.getAttributes().entrySet().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
             }
 
             PlayerManager.checkInventory(p.getUniqueId());

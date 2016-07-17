@@ -1035,7 +1035,7 @@ public class InventoryListener implements Listener {
             }
 
 
-            String clone = lore.get(lore.size() - 1).toString();
+            String clone = lore.get(lore.size() - 1);
             lore.remove(lore.size() - 1);
             lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
             lore.add(clone);
@@ -1099,7 +1099,7 @@ public class InventoryListener implements Listener {
             }
 
 
-            String clone = lore.get(lore.size() - 1).toString();
+            String clone = lore.get(lore.size() - 1);
             lore.remove(lore.size() - 1);
             lore.add(ChatColor.RED + enchant.display + " +" + value + "%");
             lore.add(clone);

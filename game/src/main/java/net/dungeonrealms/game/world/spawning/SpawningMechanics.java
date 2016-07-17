@@ -49,12 +49,12 @@ public class SpawningMechanics implements GenericMechanic {
     }
 
     private static void killAll() {
-        ALLSPAWNERS.stream().forEach(mobSpawner -> {
+        ALLSPAWNERS.forEach(mobSpawner -> {
             mobSpawner.kill();
             mobSpawner.getArmorstand().getBukkitEntity().remove();
             mobSpawner.getArmorstand().getWorld().removeEntity(mobSpawner.getArmorstand());
         });
-        ELITESPAWNERS.stream().forEach(eliteMobSpawner -> {
+        ELITESPAWNERS.forEach(eliteMobSpawner -> {
             eliteMobSpawner.kill();
             eliteMobSpawner.getArmorstand().getBukkitEntity().remove();
             eliteMobSpawner.getArmorstand().getWorld().removeEntity(eliteMobSpawner.getArmorstand());

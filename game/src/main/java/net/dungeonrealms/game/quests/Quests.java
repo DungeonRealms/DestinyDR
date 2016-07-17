@@ -17,7 +17,7 @@ public class Quests implements GenericMechanic {
     private static final File file = new File(DungeonRealms.getInstance().getDataFolder() + "//quests.yml");
     private static final YamlConfiguration yml = YamlConfiguration.loadConfiguration(file);
 
-    private static final CopyOnWriteArrayList<Quest> quests = new CopyOnWriteArrayList<Quest>();
+    private static final CopyOnWriteArrayList<Quest> quests = new CopyOnWriteArrayList<>();
 
     public static Quest getQuest(String identifier) {
         for (Quest quest : quests) {
