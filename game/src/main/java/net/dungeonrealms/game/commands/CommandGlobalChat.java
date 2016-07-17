@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.punishment.PunishAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -36,6 +37,13 @@ public class CommandGlobalChat extends BasicCommand {
             return true;
         }
 
+        Player player = (Player) sender;
+
+        if (PunishAPI.isMuted(player.getUniqueId())) {
+            player.sendMessage(PunishAPI.getMutedMessage(player.getUniqueId()));
+            return true;
+        }
+
         StringBuilder chatMessage = new StringBuilder();
 
         for (String arg : args) {
@@ -43,8 +51,6 @@ public class CommandGlobalChat extends BasicCommand {
         }
 
         String finalChat = Chat.getInstance().checkForBannedWords(chatMessage.toString());
-
-        Player player = (Player) sender;
 
         UUID uuid = player.getUniqueId();
 
