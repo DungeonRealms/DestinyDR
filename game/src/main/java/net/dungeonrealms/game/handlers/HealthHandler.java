@@ -662,6 +662,7 @@ public class HealthHandler implements GenericMechanic {
             //Not sure if it's worth doing this Sync or Async, it doesn't really matter about the speed that it gets called at, only that it does run. So Async might be better.
             GameAPI.runAsyncCallbackTask(() -> monsterTrackers.get(monster.getUniqueId()).findHighestDamageDealer(), consumer -> {
                 try {
+                    if (consumer == null || consumer.get() == null) return;
                     Player damageDealer = consumer.get();
                     if (damageDealer == null || !damageDealer.isOnline()) return;
                     for (Entity entity : monster.getNearbyEntities(10, 10, 10)) {
