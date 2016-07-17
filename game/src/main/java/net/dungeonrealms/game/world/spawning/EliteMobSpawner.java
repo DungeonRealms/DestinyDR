@@ -101,27 +101,25 @@ public class EliteMobSpawner {
 
     private void spawnIn() {
         boolean playersNearby = GameAPI.arePlayersNearby(location, 24);
-        if (playersNearby) {
-            if (!SPAWNED_MONSTERS.isEmpty()) {
-                for (Entity monster : SPAWNED_MONSTERS) {
-                    LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
-                    if (monster.isAlive()) {
-                        if (GameAPI.isInSafeRegion(livingEntity.getLocation())) {
-                            if (livingEntity instanceof Creature) {
-                                ((Creature) livingEntity).setTarget(null);
-                            }
-                            monster.setPosition(location.getX(), location.getY(), location.getZ());
-                            return;
+        if (!SPAWNED_MONSTERS.isEmpty()) {
+            for (Entity monster : SPAWNED_MONSTERS) {
+                LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
+                if (monster.isAlive()) {
+                    if (GameAPI.isInSafeRegion(livingEntity.getLocation())) {
+                        if (livingEntity instanceof Creature) {
+                            ((Creature) livingEntity).setTarget(null);
                         }
-                        if (livingEntity.getLocation().distance(location) >= 35) {
-                            if (livingEntity instanceof Creature) {
-                                ((Creature) livingEntity).setTarget(null);
-                            }
-                            monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
-                        }
-                    } else {
-                        SPAWNED_MONSTERS.remove(monster);
+                        monster.setPosition(location.getX(), location.getY(), location.getZ());
+                        return;
                     }
+                    if (livingEntity.getLocation().distance(location) >= 35) {
+                        if (livingEntity instanceof Creature) {
+                            ((Creature) livingEntity).setTarget(null);
+                        }
+                        monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
+                    }
+                } else {
+                    SPAWNED_MONSTERS.remove(monster);
                 }
             }
         }

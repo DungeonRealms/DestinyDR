@@ -33,7 +33,7 @@ public class CombatLogger {
         setRespawnLocation();
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOGGERDIED, true, false);
         CombatLog.getInstance().getCOMBAT_LOGGERS().remove(playerUUID, this);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, false);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
     }
 
     public void handleTimeOut() {
