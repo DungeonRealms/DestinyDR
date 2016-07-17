@@ -11,7 +11,7 @@ public class WhoisUpdateRecievePacket implements Serializable {
 	 */
 	private static final long serialVersionUID = 186210770612894514L;
 	public String bungeeName;
-	public List<String> players = new ArrayList<String>();
+	public List<String> players = new ArrayList<>();
 	
     public WhoisUpdateRecievePacket(String bungee, List<String> playernames) {
     	this.bungeeName = bungee;

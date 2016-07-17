@@ -209,7 +209,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         }
         final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The boss has dropped: ", ChatColor.DARK_PURPLE);
         normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
-        livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
+        livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
 
         int gemDrop = random.nextInt(250 - 100) + 100;
         int groupSize = 0;

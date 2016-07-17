@@ -845,7 +845,7 @@ public class ItemManager {
         }
         page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
-                + "          XP" + "\n" + ChatColor.BLACK + "       " + (int) gp.getExperience() + "/"
+                + "          XP" + "\n" + ChatColor.BLACK + "       " + gp.getExperience() + "/"
                 + gp.getEXPNeeded(gp.getLevel());
         page3_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) + " Strength"
                 + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Warrior'" + "\n"

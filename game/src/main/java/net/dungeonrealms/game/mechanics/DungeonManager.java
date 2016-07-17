@@ -91,7 +91,7 @@ public class DungeonManager implements GenericMechanic {
             }
         }, 100L, 20L);
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeon -> dungeon.aliveMonsters.stream().forEach(mob -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.forEach(dungeon -> dungeon.aliveMonsters.forEach(mob -> {
             if (mob != null) {
                 if (!mob.isAlive() || mob.dead) {
                     dungeon.aliveMonsters.remove(mob);
@@ -133,7 +133,7 @@ public class DungeonManager implements GenericMechanic {
             }
         }, 0L, 5L);
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.forEach(dungeonObject -> {
             if (dungeonObject.getTime() > 10) {
                 if (dungeonObject.getType() == DungeonType.THE_INFERNAL_ABYSS) {
                     for (Player player : Bukkit.getWorld(dungeonObject.worldName).getPlayers()) {
@@ -174,7 +174,7 @@ public class DungeonManager implements GenericMechanic {
             }
         }), 200L, 60L);
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.forEach(dungeonObject -> {
             int time = dungeonObject.getTime();
             dungeonObject.modifyTime(1);
             if (time < 10) {
@@ -200,7 +200,7 @@ public class DungeonManager implements GenericMechanic {
             if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0) {
                 if (monstersAlive <= (maxAlive * 0.2)) {
                     dungeonObject.canSpawnBoss = true;
-                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream().forEach(player -> {
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
                         if (player != null) {
                             if (GameAPI.getGamePlayer(player).isInDungeon()) {
                                 player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": Do you really wish to fight me?");
@@ -216,68 +216,63 @@ public class DungeonManager implements GenericMechanic {
                     break;
                 // 2h
                 case 7200:
-                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
-                            .forEach(player -> {
-                                if (player != null) {
-                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
-                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                                + "This instance has reached it's max threshold, it will now terminate in (10) minutes.");
-                                    }
-                                }
-                            });
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
+                        if (player != null) {
+                            if (GameAPI.getGamePlayer(player).isInDungeon()) {
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                        + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                        + "This instance has reached it's max threshold, it will now terminate in (10) minutes.");
+                            }
+                        }
+                    });
                     break;
                 // 1h30 minutes
                 case 5400:
-                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
-                            .forEach(player -> {
-                                if (player != null) {
-                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
-                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                                + "This instance has reached (90) minute marker!");
-                                    }
-                                }
-                            });
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
+                        if (player != null) {
+                            if (GameAPI.getGamePlayer(player).isInDungeon()) {
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                        + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                        + "This instance has reached (90) minute marker!");
+                            }
+                        }
+                    });
                     break;
                 // 1h
                 case 3600:
-                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
-                            .forEach(player -> {
-                                if (player != null) {
-                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
-                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                                + "This instance has reached (60) minute marker!");
-                                    }
-                                }
-                            });
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
+                        if (player != null) {
+                            if (GameAPI.getGamePlayer(player).isInDungeon()) {
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                        + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                        + "This instance has reached (60) minute marker!");
+                            }
+                        }
+                    });
                     break;
                 // 30 minutes
                 case 1800:
-                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
-                            .forEach(player -> {
-                                if (player != null) {
-                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
-                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                                + "This instance has reached (30) minute marker!");
-                                    }
-                                }
-                            });
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
+                        if (player != null) {
+                            if (GameAPI.getGamePlayer(player).isInDungeon()) {
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                        + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                        + "This instance has reached (30) minute marker!");
+                            }
+                        }
+                    });
                     break;
                 // 15 minutes
                 case 900:
-                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
-                            .forEach(player -> {
-                                if (player != null) {
-                                    if (GameAPI.getGamePlayer(player).isInDungeon()) {
-                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                                + "This instance has reached (15) minute marker!");
-                                    }
-                                }
-                            });
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
+                        if (player != null) {
+                            if (GameAPI.getGamePlayer(player).isInDungeon()) {
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                        + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                        + "This instance has reached (15) minute marker!");
+                            }
+                        }
+                    });
                     break;
             }
             updateDungeonBoard(dungeonObject);
@@ -657,7 +652,7 @@ public class DungeonManager implements GenericMechanic {
                 }, 0L, 10L);
             }, 60L);
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> playerList.keySet().stream().forEach(player -> {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> playerList.keySet().forEach(player -> {
                 if (playerList.get(player)) {
                     String locationAsString = "-367,86,390,0,0"; // Cyrennica
                     if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {

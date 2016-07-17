@@ -104,7 +104,7 @@ public class RealmInstance implements Realms {
         }
 
         // REMOVE ANY WORLD FILES THAT ARE STILL THE ROOT FOLDER FOR SOME REASON //
-        Arrays.asList(rootFolder.listFiles()).stream()
+        Arrays.stream(rootFolder.listFiles())
                 .filter(file -> GameAPI.isUUID(file.getName())).forEach(f -> {
             try {
                 FileUtils.forceDelete(f);
@@ -480,7 +480,7 @@ public class RealmInstance implements Realms {
     @Override
     public void removeAllRealms(boolean runAsync) {
         // CLOSE REMOVES AND UPLOADS ALL REALMS
-        CACHED_REALMS.values().stream().forEach(realm -> removeRealm(realm.getOwner(), runAsync));
+        CACHED_REALMS.values().forEach(realm -> removeRealm(realm.getOwner(), runAsync));
     }
 
     @Override

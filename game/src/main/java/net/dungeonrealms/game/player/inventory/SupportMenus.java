@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -36,7 +37,7 @@ public class SupportMenus {
     }
 
     private static ItemStack addNbtTag(ItemStack item, String tagId, String tagValue) {
-        if (tagId == null || tagValue == null || tagId == "" || tagValue == "") return item;
+        if (tagId == null || tagValue == null || Objects.equals(tagId, "") || Objects.equals(tagValue, "")) return item;
 
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();

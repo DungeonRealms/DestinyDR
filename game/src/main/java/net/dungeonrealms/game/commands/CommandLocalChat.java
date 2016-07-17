@@ -74,12 +74,12 @@ public class CommandLocalChat extends BasicCommand {
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
 
-            GameAPI.getNearbyPlayers(player.getLocation(), 75).stream().forEach(normal::sendToPlayer);
+            GameAPI.getNearbyPlayers(player.getLocation(), 75).forEach(normal::sendToPlayer);
             return true;
         }
 
         if (GameAPI.getNearbyPlayers(player.getLocation(), 75).size() >= 2) {
-            GameAPI.getNearbyPlayers(player.getLocation(), 75).stream().forEach(otherPlayer -> otherPlayer.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat));
+            GameAPI.getNearbyPlayers(player.getLocation(), 75).forEach(otherPlayer -> otherPlayer.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat));
         } else {
             player.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat);
             player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");

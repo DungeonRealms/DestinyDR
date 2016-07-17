@@ -106,7 +106,7 @@ public class DuelOffer {
         }
         final String finalWinnerName = winnerName;
         final String finalLoserName = loserName;
-        GameAPI.getNearbyPlayers(winner.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalWinnerName + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + finalLoserName + ChatColor.GREEN + " in a duel!"));
+        GameAPI.getNearbyPlayers(winner.getLocation(), 100).forEach(player1 -> player1.sendMessage(finalWinnerName + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + finalLoserName + ChatColor.GREEN + " in a duel!"));
         DuelingMechanics.removeOffer(this);
     }
 

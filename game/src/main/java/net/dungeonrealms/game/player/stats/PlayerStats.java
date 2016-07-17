@@ -4,7 +4,6 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

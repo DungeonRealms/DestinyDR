@@ -37,8 +37,8 @@ public class PacketHandler {
 		else if(obj instanceof WhoisUpdateSendPacket)
 		{
 			if(Bukkit.getOnlinePlayers().size() == 0) return; // Don't bother.. This server is empty.
-			List<String> playersSend = new ArrayList<String>();
-            Bukkit.getOnlinePlayers().stream().forEach(newPlayer ->{
+			List<String> playersSend = new ArrayList<>();
+            Bukkit.getOnlinePlayers().forEach(newPlayer -> {
                 playersSend.add(newPlayer.getName());
             });
 			//NetworkServer.getInstance().client.getServerConnection().sendTcp(new WhoisUpdateRecievePacket(DungeonRealms.getInstance().bungeeName, playersSend));

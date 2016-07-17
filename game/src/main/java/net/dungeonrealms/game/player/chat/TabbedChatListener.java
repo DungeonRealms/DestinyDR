@@ -56,11 +56,11 @@ public class TabbedChatListener implements Listener {
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
 
-            Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
+            Bukkit.getOnlinePlayers().forEach(normal::sendToPlayer);
             return;
         }
 
-        Bukkit.getOnlinePlayers().stream().forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
+        Bukkit.getOnlinePlayers().forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
     }
 
 }

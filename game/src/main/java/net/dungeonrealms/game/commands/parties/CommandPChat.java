@@ -75,13 +75,13 @@ public class CommandPChat extends BasicCommand {
                     normal.addText(before + "");
                     normal.addHoverText(hoveredChat, org.bukkit.ChatColor.BOLD + org.bukkit.ChatColor.UNDERLINE.toString() + "SHOW");
                     normal.addText(after);
-                    everyone.stream().forEach(normal::sendToPlayer);
+                    everyone.forEach(normal::sendToPlayer);
                     return true;
                 }
 
 
 
-                everyone.stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + ChatColor.GRAY + ": " + message.toString()));
+                everyone.forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + ChatColor.GRAY + ": " + message.toString()));
             } else {
                 player.sendMessage(ChatColor.RED + "Unfinished"); // @todo: toggle <P> chat!
             }

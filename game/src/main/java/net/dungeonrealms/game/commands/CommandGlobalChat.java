@@ -80,11 +80,11 @@ public class CommandGlobalChat extends BasicCommand {
             normal.addText(before + "");
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
-            Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
+            Bukkit.getOnlinePlayers().forEach(normal::sendToPlayer);
             return true;
         }
 
-        Bukkit.getOnlinePlayers().stream().forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
+        Bukkit.getOnlinePlayers().forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
         return true;
     }
 }

@@ -1502,7 +1502,7 @@ public class GameAPI {
             List<String> oldModifiers = GameAPI.getModifiers(oldWeapon);
             net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldWeapon).getTag();
             // iterate through to get decreases from stats not in the new armor
-            oldModifiers.stream().forEach(modifier -> {
+            oldModifiers.forEach(modifier -> {
                 Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
                 // calculate new values
                 Integer[] newTotalVal = type.isRange()
@@ -1524,7 +1524,7 @@ public class GameAPI {
 
                 // get differences
                 if (newModifiers != null) {
-                    newModifiers.stream().forEach(modifier -> {
+                    newModifiers.forEach(modifier -> {
                         // get the attribute type to determine if we need a percentage or not and to get the
                         // correct display name
                         Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
@@ -1543,7 +1543,7 @@ public class GameAPI {
                 if (oldModifiers != null) {
                     // iterate through to get decreases from stats not in the new armor
                     oldModifiers.removeAll(newModifiers);
-                    oldModifiers.stream().forEach(modifier -> {
+                    oldModifiers.forEach(modifier -> {
                         Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
                         Integer[] newTotalVal = type.isRange()
                                 ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
@@ -1553,7 +1553,7 @@ public class GameAPI {
                     });
                 }
             } else {
-                newModifiers.stream().forEach(modifier -> {
+                newModifiers.forEach(modifier -> {
                     // get the attribute type to determine if we need a percentage or not and to get the
                     // correct display name
                     Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
@@ -1641,11 +1641,10 @@ public class GameAPI {
      * @param gp
      */
     public static void recalculateStatBonuses(Map<String, Integer[]> attributes, Map<Item.AttributeType, Float> attributeBonusesFromStats, GamePlayer gp) {
-        attributeBonusesFromStats.entrySet().stream().forEach(entry -> {
+        attributeBonusesFromStats.entrySet().forEach(entry -> {
             if (entry.getKey().isPercentage() || entry.getKey().equals(Item.ArmorAttributeType.HEALTH_REGEN)) {
                 changeAttributeVal(attributes, Item.ArmorAttributeType.HEALTH_REGEN, -Math.round(entry.getValue()));
-            }
-            else {
+            } else {
                 gp.changeAttributeValPercentage(entry.getKey(), -Math.round(entry.getValue()));
             }
         });
@@ -1709,7 +1708,7 @@ public class GameAPI {
             NBTTagCompound tag = CraftItemStack.asNMSCopy(armor).getTag();
             assert tag != null;
 
-            modifiers.stream().forEach(modifier -> {
+            modifiers.forEach(modifier -> {
                 Item.ArmorAttributeType type = Item.ArmorAttributeType.getByNBTName(modifier);
                 assert type != null;
 
@@ -1747,7 +1746,7 @@ public class GameAPI {
             NBTTagCompound tag = CraftItemStack.asNMSCopy(weapon).getTag();
             assert tag != null;
 
-            modifiers.stream().forEach(modifier -> {
+            modifiers.forEach(modifier -> {
                 Item.WeaponAttributeType type = Item.WeaponAttributeType.getByNBTName(modifier);
                 assert type != null;
 
@@ -1772,7 +1771,7 @@ public class GameAPI {
      */
     public static List<String> getModifiers(ItemStack item) {
         if (item == null) return null;
-        List<String> modifiersList = new ArrayList<String>();
+        List<String> modifiersList = new ArrayList<>();
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         if (!nmsStack.hasTag()) return null;
         NBTTagCompound tag = nmsStack.getTag();
@@ -1790,15 +1789,13 @@ public class GameAPI {
     public static boolean isWeapon(ItemStack stack) {
         if (stack == null || stack.getType() == Material.AIR) return false;
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        if (nms == null || nms.getTag() == null) return false;
-        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon");
+        return !(nms == null || nms.getTag() == null) && nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon");
     }
 
     public static boolean isArmor(ItemStack stack) {
         if (stack == null || stack.getType() == Material.AIR) return false;
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        if (nms == null || nms.getTag() == null) return false;
-        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
+        return !(nms == null || nms.getTag() == null) && nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
     }
 
     /**
@@ -1807,8 +1804,7 @@ public class GameAPI {
      */
     public static boolean isOrb(ItemStack is) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(is);
-        if (nms == null || nms.getTag() == null) return false;
-        return is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
+        return !(nms == null || nms.getTag() == null) && is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
 
     public static boolean isItemTradeable(ItemStack itemStack) {
@@ -1845,16 +1841,14 @@ public class GameAPI {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (nms == null || nms.getTag() == null) return false;
         NBTTagCompound tag = nms.getTag();
-        if (!tag.hasKey("soulbound")) return false;
-        return tag.getInt("soulbound") == 1;
+        return tag.hasKey("soulbound") && tag.getInt("soulbound") == 1;
     }
 
     public static boolean isItemPermanentlyUntradeable(ItemStack item) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (nms == null || nms.getTag() == null) return false;
         NBTTagCompound tag = nms.getTag();
-        if (!tag.hasKey("untradeable")) return false;
-        return tag.getInt("untradeable") == 1;
+        return tag.hasKey("untradeable") && tag.getInt("untradeable") == 1;
     }
 
     /**

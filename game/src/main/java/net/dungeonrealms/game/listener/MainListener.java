@@ -345,7 +345,7 @@ public class MainListener implements Listener {
                 }
                 if (playerMount.isAlive()) { // Safety check
                     if (playerMount.passengers != null) {
-                        playerMount.passengers.stream().forEach(passenger -> passenger = null);
+                        playerMount.passengers.forEach(passenger -> passenger = null);
                     }
                     playerMount.dead = true;
                 }
@@ -1142,7 +1142,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void explosionDungeon(EntityExplodeEvent event) {
         if (event.getEntity().getWorld().getName().contains("DUNGEON")) {
-            event.blockList().stream().forEach(block -> block.setType(Material.AIR));
+            event.blockList().forEach(block -> block.setType(Material.AIR));
             event.setYield(0);
             event.blockList().clear();
             event.getEntity().remove();

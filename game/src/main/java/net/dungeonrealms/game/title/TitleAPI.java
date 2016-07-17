@@ -84,16 +84,16 @@ public class TitleAPI implements Listener {
                 title = ChatColor.translateAlternateColorCodes('&', title);
                 title = title.replaceAll("%player%", player.getDisplayName());
                 // Times packets
-                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get((Object) null);
-                chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke((Object) null, new Object[]{"{\"text\":\"" + title + "\"}"});
-                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[]{getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE});
-                titlePacket = subtitleConstructor.newInstance(new Object[]{e, chatTitle, fadeIn, stay, fadeOut});
+                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get(null);
+                chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke(null, "{\"text\":\"" + title + "\"}");
+                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE);
+                titlePacket = subtitleConstructor.newInstance(e, chatTitle, fadeIn, stay, fadeOut);
                 sendPacket(player, titlePacket);
 
-                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get((Object) null);
-                chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke((Object) null, new Object[]{"{\"text\":\"" + title + "\"}"});
-                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[]{getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent")});
-                titlePacket = subtitleConstructor.newInstance(new Object[]{e, chatTitle});
+                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null);
+                chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke(null, "{\"text\":\"" + title + "\"}");
+                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"));
+                titlePacket = subtitleConstructor.newInstance(e, chatTitle);
                 sendPacket(player, titlePacket);
             }
 
@@ -101,16 +101,16 @@ public class TitleAPI implements Listener {
                 subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
                 subtitle = subtitle.replaceAll("%player%", player.getDisplayName());
                 // Times packets
-                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get((Object) null);
-                chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke((Object) null, new Object[]{"{\"text\":\"" + title + "\"}"});
-                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[]{getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE});
-                subtitlePacket = subtitleConstructor.newInstance(new Object[]{e, chatSubtitle, fadeIn, stay, fadeOut});
+                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get(null);
+                chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke(null, "{\"text\":\"" + title + "\"}");
+                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE);
+                subtitlePacket = subtitleConstructor.newInstance(e, chatSubtitle, fadeIn, stay, fadeOut);
                 sendPacket(player, subtitlePacket);
 
-                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get((Object) null);
-                chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke((Object) null, new Object[]{"{\"text\":\"" + subtitle + "\"}"});
-                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[]{getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE});
-                subtitlePacket = subtitleConstructor.newInstance(new Object[]{e, chatSubtitle, fadeIn, stay, fadeOut});
+                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null);
+                chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke(null, "{\"text\":\"" + subtitle + "\"}");
+                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE);
+                subtitlePacket = subtitleConstructor.newInstance(e, chatSubtitle, fadeIn, stay, fadeOut);
                 sendPacket(player, subtitlePacket);
             }
         } catch (Exception var11) {
@@ -166,20 +166,20 @@ public class TitleAPI implements Listener {
             if (useOldMethods) {
                 Class<?> c2 = Class.forName("net.minecraft.server." + nmsver + ".ChatSerializer");
                 Class<?> c3 = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
-                Method m3 = c2.getDeclaredMethod("a", new Class<?>[]{String.class});
+                Method m3 = c2.getDeclaredMethod("a", String.class);
                 Object cbc = c3.cast(m3.invoke(c2, "{\"text\": \"" + message + "\"}"));
-                ppoc = c4.getConstructor(new Class<?>[]{c3, byte.class}).newInstance(new Object[]{cbc, (byte) 2});
+                ppoc = c4.getConstructor(new Class<?>[]{c3, byte.class}).newInstance(cbc, (byte) 2);
             } else {
                 Class<?> c2 = Class.forName("net.minecraft.server." + nmsver + ".ChatComponentText");
                 Class<?> c3 = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
-                Object o = c2.getConstructor(new Class<?>[]{String.class}).newInstance(new Object[]{message});
-                ppoc = c4.getConstructor(new Class<?>[]{c3, byte.class}).newInstance(new Object[]{o, (byte) 2});
+                Object o = c2.getConstructor(new Class<?>[]{String.class}).newInstance(message);
+                ppoc = c4.getConstructor(new Class<?>[]{c3, byte.class}).newInstance(o, (byte) 2);
             }
-            Method m1 = c1.getDeclaredMethod("getHandle", new Class<?>[]{});
+            Method m1 = c1.getDeclaredMethod("getHandle");
             Object h = m1.invoke(p);
             Field f1 = h.getClass().getDeclaredField("playerConnection");
             Object pc = f1.get(h);
-            Method m5 = pc.getClass().getDeclaredMethod("sendPacket", new Class<?>[]{c5});
+            Method m5 = pc.getClass().getDeclaredMethod("sendPacket", c5);
             m5.invoke(pc, ppoc);
         } catch (Exception ex) {
             ex.printStackTrace();

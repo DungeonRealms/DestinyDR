@@ -42,7 +42,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-import sun.security.krb5.Realm;
 
 import java.util.*;
 
@@ -590,7 +589,7 @@ public class BlockListener implements Listener {
         if (LootManager.getOpenChests().containsKey(event.getPlayer().getName())) {
             Inventory inventory = LootManager.getOpenChests().get(event.getPlayer().getName());
             if (inventory.equals(event.getInventory())) {
-                LootManager.LOOT_SPAWNERS.stream().forEach(lootSpawner1 -> {
+                LootManager.LOOT_SPAWNERS.forEach(lootSpawner1 -> {
                     if (lootSpawner1.inv.equals(inventory)) {
                         lootSpawner1.update((Player) event.getPlayer());
                         LootManager.getOpenChests().remove(event.getPlayer().getName());

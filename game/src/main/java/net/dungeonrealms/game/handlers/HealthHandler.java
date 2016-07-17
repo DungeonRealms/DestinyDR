@@ -470,7 +470,9 @@ public class HealthHandler implements GenericMechanic {
         if (leAttacker instanceof Player) {
             if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
                 DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
-                offer.endDuel((Player) leAttacker, player);
+                if (offer != null) {
+                    offer.endDuel((Player) leAttacker, player);
+                }
                 return;
             }
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
@@ -602,7 +604,7 @@ public class HealthHandler implements GenericMechanic {
                 }
                 final String finalDeadPlayerName = deadPlayerName;
                 final String finalKillerName = killerName;
-                GameAPI.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
+                GameAPI.getNearbyPlayers(player.getLocation(), 100).forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
                 final LivingEntity finalLeAttacker = leAttacker;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -629,7 +631,7 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
             final String finalKillerName = killerName;
-            GameAPI.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
+            GameAPI.getNearbyPlayers(player.getLocation(), 100).forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
             final LivingEntity finalLeAttacker = leAttacker;
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
@@ -664,6 +666,7 @@ public class HealthHandler implements GenericMechanic {
                 if (!(entity instanceof Player)) continue;
                 if (!entity.getName().equalsIgnoreCase(damageDealer.getName())) continue;
                 ((EntityInsentient) ((CraftLivingEntity) monster).getHandle()).setGoalTarget(((CraftLivingEntity) entity).getHandle(), EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, false);
+                break;
             }
         }
     }
@@ -798,11 +801,6 @@ public class HealthHandler implements GenericMechanic {
                     break;
             }
         }
-
-        // commented out because dungeons already spawn with full unique
-        /*if (entity.hasMetadata("dungeon")) {
-            totalHP *= 2;
-        }*/
 
         if (entity.hasMetadata("elite")) {
             switch (entity.getMetadata("tier").get(0).asInt()) {

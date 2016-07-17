@@ -51,7 +51,7 @@ public class AchievementManager implements GenericMechanic, Listener {
          *
          * @since 1.0
          */
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> {
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().forEach(player -> {
             String region = GameAPI.getRegionName(player.getLocation());
             if (REGION_TRACKER.containsKey(player.getUniqueId()))
                 if (REGION_TRACKER.get(player.getUniqueId()).equalsIgnoreCase(region))

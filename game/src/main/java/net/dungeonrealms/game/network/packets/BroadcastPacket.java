@@ -11,7 +11,7 @@ public class BroadcastPacket implements Serializable {
 	 * Server id (-1) for all shards
 	 */
 	private static final long serialVersionUID = -8185820884718187088L;
-	public List<String> serverid = new ArrayList<String>();
+	public List<String> serverid = new ArrayList<>();
 	public String message;
 
     public BroadcastPacket(List<String> id, String message) {
