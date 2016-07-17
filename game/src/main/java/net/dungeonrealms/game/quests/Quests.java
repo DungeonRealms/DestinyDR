@@ -28,6 +28,8 @@ public class Quests implements GenericMechanic {
     }
 
 
+
+
     @Override
     public EnumPriority startPriority() {
         return EnumPriority.CARDINALS;
