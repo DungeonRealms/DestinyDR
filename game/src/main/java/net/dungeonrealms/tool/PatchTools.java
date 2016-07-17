@@ -59,7 +59,7 @@ public class PatchTools implements GenericMechanic {
                 if (text.trim().length() > 0)
                     curCharacters += text.length();
 
-                if (curCharacters >= 256) {
+                if (curCharacters >= 245) {
                     curCharacters = 0;
                     pages.add(builder.toString());
                     builder = new StringBuilder();
@@ -69,7 +69,7 @@ public class PatchTools implements GenericMechanic {
                 builder.append(text).append("\n");
             }
 
-            if (curCharacters < 256)
+            if (curCharacters < 245)
                 pages.add(builder.toString());
 
             in.close();
