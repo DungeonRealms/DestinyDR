@@ -38,8 +38,6 @@ public class Quests implements GenericMechanic {
 
 
     public static void handleLogin(UUID uuid) {
-
-
         List questList = new ArrayList<QuestInfo>();
         for (Quest quest : allQuests) {
             if (!QuestDatabaseAPI.getInstance().hasQuestInfo(uuid, quest)) {
@@ -47,9 +45,9 @@ public class Quests implements GenericMechanic {
             }
 
             questList.add(new QuestInfo(uuid, quest));
-
         }
         questsProgress.put(uuid, questList);
+
     }
 
 

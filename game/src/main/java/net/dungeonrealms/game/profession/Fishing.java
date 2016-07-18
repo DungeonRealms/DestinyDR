@@ -377,7 +377,8 @@ public class Fishing implements GenericMechanic {
                     // Vampirism
                     buff_val = new Random().nextInt(2) + 4;
                     fish_name = "Albino " + ChatColor.LIGHT_PURPLE.toString() + fish_name;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFEESTEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
+                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFEESTEAL " +
+                            ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 80) {
                     // Nightvision for 60 seconds.
                     fish_name += " of Eagle Vision";

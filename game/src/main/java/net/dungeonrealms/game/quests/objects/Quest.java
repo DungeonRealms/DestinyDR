@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.quests.objects;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.quests.QuestType;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -16,9 +17,12 @@ public class Quest {
 
     public Reward reward;
     public String uniqueIdentifier;
+    public String[] preReqs;
+    public QuestType questType;
 
     public Quest(String questIdentifier) {
         this.uniqueIdentifier = questIdentifier;
+        questType = QuestType.getQuestTypeFromString(yml.getString("quest." + questIdentifier + ".type"));
         reward = new Reward(this);
     }
 }
