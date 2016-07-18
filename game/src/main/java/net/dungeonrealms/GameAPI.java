@@ -1,5 +1,7 @@
 package net.dungeonrealms;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
@@ -69,12 +71,15 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
@@ -85,6 +90,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_EFFECT;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -429,6 +436,7 @@ public class GameAPI {
                 break;
             case "poison":
                 name = ChatColor.DARK_GREEN + (splitName.length == 1 ? "Poison " + splitName[0] : splitName[0] + " Poison " + splitName[1]);
+                sendAddPotionEffect(ent, new PotionEffect(PotionEffectType.POISON, Integer.MAX_VALUE, 0));
                 break;
             default:
                 break;
@@ -437,6 +445,27 @@ public class GameAPI {
         ent.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), name.trim()));
         if (GameAPI.isWeapon(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand())) {
             EnchantmentAPI.addGlow(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand());
+        }
+    }
+
+    public static void sendAddPotionEffect(net.minecraft.server.v1_9_R2.Entity ent, PotionEffect effect) {
+        PacketContainer packet = new PacketContainer(ENTITY_EFFECT);
+        @SuppressWarnings("deprecation")
+        int effectID = effect.getType().getId();
+        int amplifier = effect.getAmplifier();
+        int duration = effect.getDuration();
+        int entityID = ent.getId();
+        packet.getIntegers().write(0, entityID);
+        packet.getBytes().write(0, (byte) effectID);
+        packet.getBytes().write(1, (byte) amplifier);
+        packet.getIntegers().write(1, duration);
+        // use this to hide particles in 1.8
+        packet.getBytes().write(2, (byte) 1);
+        //
+        try {
+            ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot send packet", e);
         }
     }
 
