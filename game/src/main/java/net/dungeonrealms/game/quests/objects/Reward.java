@@ -5,7 +5,6 @@ package net.dungeonrealms.game.quests.objects;
  */
 public class Reward {
 
-
     public Reward(Quest quest) {
 
     }

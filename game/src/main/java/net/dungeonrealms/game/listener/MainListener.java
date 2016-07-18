@@ -260,6 +260,14 @@ public class MainListener implements Listener {
         }, 20L * 5);
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoinWhitelistedShard(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() == Result.KICK_WHITELIST) {
+            event.setKickMessage(ChatColor.AQUA + "This DungeonRealms shard is on " + ChatColor.UNDERLINE +
+                    "maintenance" + ChatColor.AQUA + " mode. Only authorized users can join");
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDropEvent(PlayerDropItemEvent event) {
         Player p = event.getPlayer();

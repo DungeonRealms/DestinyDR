@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.quests.database;
 
+import net.dungeonrealms.game.database.DatabaseDriver;
 import net.dungeonrealms.game.quests.objects.Quest;
 import net.dungeonrealms.game.quests.objects.QuestInfo;
 import org.bson.Document;
@@ -26,6 +27,11 @@ public class QuestDatabaseAPI {
     }
 
     public void insertQuest(UUID uuid, Quest quest) {
+        DatabaseDriver.quests.insertOne(getQuestDocument(quest));
+    }
+
+    private Document getQuestDocument(Quest quest) {
+        return null;
     }
 
     public void updateQuestInfo(UUID uuid, QuestInfo quest) {
