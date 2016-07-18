@@ -7,10 +7,7 @@ import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.minecraft.server.v1_9_R2.EntityZombie;
-import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.GenericAttributes;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -96,9 +93,11 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
     }
 
     public void setWeapon(int tier) {
-
     }
-    
+
+    @Override
+    public void collide(Entity e) {}
+
 	@Override
 	public void onMonsterAttack(Player p) {
 	}

@@ -113,9 +113,10 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
 
     @Override
     public void onMonsterAttack(Player p) {
-
-
     }
+
+    @Override
+    public void collide(Entity e) {}
 
     @Override
     public void onMonsterDeath(Player killer) {

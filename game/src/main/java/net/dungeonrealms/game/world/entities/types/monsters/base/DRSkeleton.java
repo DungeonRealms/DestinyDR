@@ -97,6 +97,8 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         return this.name;
     }
 
+    @Override
+    public void collide(Entity e) {}
 
     @Override
 	public void onMonsterAttack(Player p) {
