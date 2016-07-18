@@ -503,8 +503,13 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     private void scheduleRestartTask() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
-                Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+            Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
+            Bukkit.getServer().setWhitelist(true);
+        });
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), 20 * 60 * 4);
+
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, GameAPI::stopGame, 20 * 60 * 5);
     }
