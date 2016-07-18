@@ -249,8 +249,8 @@ public class RestrictionListener implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (Bukkit.getWorlds().get(0).equals(player.getLocation().getWorld()))
-                if (event.getClickedBlock().getType() == Material.WATER_BUCKET || event.getClickedBlock().getType() == Material.WATER
-                        || event.getClickedBlock().getType() == Material.LAVA || event.getClickedBlock().getType() == Material.LAVA_BUCKET) {
+                if ((event.hasItem()) && (event.getItem().getType() == Material.WATER_BUCKET || event.getItem().getType() == Material.WATER
+                        || event.getItem().getType() == Material.LAVA || event.getItem().getType() == Material.LAVA_BUCKET)) {
                     event.setCancelled(true);
                     return;
                 }
