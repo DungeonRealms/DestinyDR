@@ -1,13 +1,10 @@
 Build <build>
 
 &4Bug Fixes&0
-- Slightly increased mob respawn time.
-- Fixed elite mob follow range.
-- Removed chance of no knockback on hit.
-- Fixed an occasional issue with the
-rebooter causing the restart to fail.
-- Minor typo fixes.
+- Implemented whitelist 5 minutes before restart.
+- Corrected loot respawn times.
+- Fixed mob arrows damaging other mobs.
+- Added extra dismount checks for horses.
+- Fixed Global Message item removing incorrectly.
 
 &2New Features&0
-- Mobs now take less knockback each hit,
-but take some knockback every hit.
