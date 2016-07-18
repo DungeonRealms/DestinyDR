@@ -223,6 +223,8 @@ public class PvEListener implements Listener {
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         Projectile projectile = (Projectile) event.getDamager();
         if (!(projectile.getShooter() instanceof Player)) {
+            event.setDamage(0);
+            event.setCancelled(true);
             return;
         }
         if (event.getEntity() instanceof LivingEntity) {
