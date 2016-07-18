@@ -341,18 +341,18 @@ public class ItemListener implements Listener {
                             return;
                         }
 
-                        if (event.getItem().getAmount() > 1) {
-                            event.getItem().setAmount(event.getItem().getAmount() - 1);
-                        } else {
-                            event.getPlayer().getInventory().remove(event.getItem());
-                        }
-
                         String msg = chat.getMessage();
                         if (msg.contains(".com") || msg.contains(".net") || msg.contains(".org") || msg.contains("http://") || msg.contains("www.")) {
                             if (!Rank.isDev(event.getPlayer())) {
                                 event.getPlayer().sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in your global messages please!");
                                 return;
                             }
+                        }
+
+                        if (event.getItem().getAmount() > 1) {
+                            event.getItem().setAmount(event.getItem().getAmount() - 1);
+                        } else {
+                            event.getPlayer().getInventory().remove(event.getItem());
                         }
 
 

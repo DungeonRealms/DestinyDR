@@ -354,6 +354,7 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onInvulnerablePlayerDamage(EntityDamageEvent event) {
         if (!GameAPI.isPlayer(event.getEntity())) return;
+        if (GameAPI.getGamePlayer((Player) event.getEntity()) == null) return;
         if (!GameAPI.getGamePlayer((Player) event.getEntity()).isInvulnerable()) return;
 
         event.setDamage(0);
