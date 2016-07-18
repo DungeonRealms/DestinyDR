@@ -26,11 +26,13 @@ public class Horse extends EntityHorse {
         this.horseType = horseType;
         this.horseSpeed = horseSpeed;
         this.getBukkitEntity().setCustomNameVisible(true);
+        this.setTame(true);
         this.canPickUpLoot = false;
         this.persistent = true;
         this.setType(EnumHorseType.a(horseType));
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(horseSpeed);
         this.setOwnerUUID(ownerUUID);
+        this.setTemper(100);
 
         MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
     }
