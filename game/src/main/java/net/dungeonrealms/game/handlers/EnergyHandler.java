@@ -69,7 +69,7 @@ public class EnergyHandler implements GenericMechanic {
         if (player.hasMetadata("sprinting")) {
             player.removeMetadata("sprinting", DungeonRealms.getInstance());
         }
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false, true);
     }
 
     /**

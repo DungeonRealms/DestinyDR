@@ -1,10 +1,8 @@
 Build <build>
 
-&4Bug Fixes&0
-- Implemented whitelist 5 minutes before restart.
-- Corrected loot respawn times.
-- Fixed mob arrows damaging other mobs.
-- Added extra dismount checks for horses.
-- Fixed Global Message item removing incorrectly.
+&8Changes&0
+- Removed level restrictions for equipment.
+- Increased drop rates on higher tiers.
 
-&2New Features&0
+&4Bug Fixes&0
+- Refactored player data saving to fix many lag issues.

@@ -181,7 +181,7 @@ public class DonationEffects implements GenericMechanic {
             GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
             if (gamePlayer == null) return false;
             gamePlayer.getPlayerStatistics().setEcashSpent(gamePlayer.getPlayerStatistics().getEcashSpent() + amount);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true, true);
             return true;
         } else {
             return false;

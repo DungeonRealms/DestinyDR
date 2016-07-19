@@ -90,9 +90,9 @@ public class ClickHandler {
                         if (MountUtils.hasRequiredLevel(mount, player.getUniqueId())) {
                             if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
                                 if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
+                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true, true);
                                     if (mount != EnumMounts.MULE) {
-                                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
+                                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true, true);
                                         Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
                                         if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mount")) {
                                             player.getInventory().addItem(ItemManager.getPlayerMountItem());
@@ -102,7 +102,7 @@ public class ClickHandler {
                                             Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
                                             if (muleTier == null) {
                                                 player.sendMessage(ChatColor.RED + "No mule data found.");
-                                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
+                                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true, true);
                                                 muleTier = 1;
                                             }
                                             MuleTier tier = MuleTier.getByTier((int) muleTier);
@@ -216,7 +216,7 @@ public class ClickHandler {
                         } else {
                             if (TeleportAPI.canSetHearthstoneLocation(player, nmsStack.getTag().getString("hearthstoneLocation"))) {
                                 if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player)) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true);
+                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true, true);
                                     player.sendMessage(ChatColor.GREEN + "Hearthstone set to " + nmsStack.getTag().getString("hearthstoneLocation") + ".");
                                     player.closeInventory();
                                     return;
@@ -567,7 +567,7 @@ public class ClickHandler {
                             petName = nmsStack.getTag().getString("petName");
                         }
                         String toStore = nmsStack.getTag().getString("petType") + "@" + petName;
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, toStore, true);
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, toStore, true, true);
                         PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), petName);
                     } else if (event.getClick() == ClickType.RIGHT) {
                         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
@@ -605,9 +605,9 @@ public class ClickHandler {
                             String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
 
                             String newPet = petType + "@" + checkedPetName;
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType, false);
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType + "@" + finalPetName, false);
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType, false, true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType + "@" + finalPetName, false, true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true, true);
                             player.sendMessage(ChatColor.GRAY + "Your pet's name has been changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName + ChatColor.GRAY + ".");
                         }, null);
                     }
@@ -660,7 +660,7 @@ public class ClickHandler {
                         player.closeInventory();
                         return;
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, nmsStack.getTag().getString("mountType"), true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, nmsStack.getTag().getString("mountType"), true, true);
                     player.sendMessage(ChatColor.GREEN + "Your mount is currently being summoned into this world...");
                     final int[] count = {0};
                     Location startingLocation = player.getLocation();
@@ -717,7 +717,7 @@ public class ClickHandler {
                         player.closeInventory();
                         return;
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, nmsStack.getTag().getString("playerTrailType"), true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, nmsStack.getTag().getString("playerTrailType"), true, true);
                     DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
                     player.sendMessage(ChatColor.GREEN + "The " + ChatColor.BOLD + ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")).getDisplayName().toLowerCase() + ChatColor.GREEN + " trail has been activated.");
                 }
@@ -927,7 +927,7 @@ public class ClickHandler {
                     } else {
                         player.sendMessage(ChatColor.GREEN + "Your mount skin has been removed.");
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, "", true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, "", true, true);
                     return;
                 }
                 if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
@@ -947,7 +947,7 @@ public class ClickHandler {
                         player.closeInventory();
                         return;
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, nmsStack.getTag().getString("skinType"), true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, nmsStack.getTag().getString("skinType"), true, true);
                     player.sendMessage(ChatColor.GREEN + "Your mount skin has been changed. Please re-summon your mount.");
                 }
                 break;
@@ -1121,7 +1121,7 @@ public class ClickHandler {
                 }
 
                 // Always update the database with the new rank.
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true, true);
 
                 if (Bukkit.getPlayer(playerName) != null) {
                     Rank.getInstance().setRank(uuid, newRank);
@@ -1352,7 +1352,7 @@ public class ClickHandler {
                 }
 
                 if (hearthstoneLocation != null) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, hearthstoneLocation.toUpperCase(), true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, hearthstoneLocation.toUpperCase(), true, true);
                     player.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(hearthstoneLocation).replace("_", " ") + ChatColor.GREEN + ".");
                     GameAPI.updatePlayerData(uuid);
                     SupportMenus.openMainMenu(player, playerName);
@@ -1420,12 +1420,13 @@ public class ClickHandler {
                 if (!playerTrails.isEmpty()) {
                     if (playerTrails.contains(trailName)) {
                         supportTrailLocked = true;
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PARTICLES, trailName, true);
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PARTICLES, trailName, true, true);
                     }
                 }
 
                 if (!supportTrailLocked)
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailName, true);
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailName, true,
+                            true);
 
                 player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + (supportTrailLocked ? "LOCKED" : "UNLOCKED") + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openCosmeticsMenu(player, playerName, uuid);
@@ -1486,12 +1487,12 @@ public class ClickHandler {
                 if (!playerSupportPets.isEmpty()) {
                     if (playerSupportPets.contains(petName)) {
                         supportPetLocked = true;
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PETS, petName, true);
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PETS, petName, true, true);
                     }
                 }
 
                 if (!supportPetLocked)
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petName, true);
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petName, true, true);
 
                 player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + (supportPetLocked ? "LOCKED" : "UNLOCKED") + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openCosmeticsMenu(player, playerName, uuid);
@@ -1563,8 +1564,8 @@ public class ClickHandler {
                 }
                 int eCashCost = nmsStack.getTag().getInt("eCash");
                 if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType, false);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType, false, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"pet")) {
                         player.getInventory().addItem(ItemManager.getPlayerPetItem());
@@ -1600,8 +1601,8 @@ public class ClickHandler {
                 }
                 eCashCost = nmsStack.getTag().getInt("eCash");
                 if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, effectType, false);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, effectType, false, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect.");
                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"trail")) {
                         player.getInventory().addItem(ItemManager.getPlayerTrailItem());
@@ -1641,8 +1642,8 @@ public class ClickHandler {
                 }
                 eCashCost = nmsStack.getTag().getInt("eCash");
                 if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, skinType, false);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, skinType, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, skinType, false, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, skinType, true, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + skin.getDisplayName() + " mount skin.");
                     player.closeInventory();
                 } else {

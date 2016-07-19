@@ -35,7 +35,6 @@ public class CommandShard extends BasicCommand {
 
 
         if (args.length > 0) {
-
             GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
             GameAPI.submitAsyncCallback(() -> handleLogout(player.getUniqueId()),
                     consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

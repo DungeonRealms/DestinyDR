@@ -311,7 +311,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public void setGuild(UUID uuid, String guildName) {
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, guildName, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, guildName, true, true);
     }
 
     public boolean areInSameGuild(UUID uuid1, UUID uuid2) {

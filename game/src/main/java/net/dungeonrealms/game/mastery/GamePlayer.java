@@ -297,8 +297,8 @@ public class GamePlayer {
      */
     public void updateLevel(int newLevel, boolean levelUp, boolean levelSet) {
         setPlayerEXP(0);
-        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, false);
-        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
+        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, false, true);
+        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true, true);
 
         if (levelUp) { // natural level up
             getStats().lvlUp();

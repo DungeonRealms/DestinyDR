@@ -61,7 +61,7 @@ public class CommandSet extends BasicCommand {
                             break;
                         }
                         GameAPI.getGamePlayer(p).updateLevel(lvl, false, true);
-                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true, true);
                         Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to: " + ChatColor.LIGHT_PURPLE + lvl);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                     }
@@ -72,7 +72,7 @@ public class CommandSet extends BasicCommand {
                         break;
                     }
                     int gems = Integer.parseInt(args[1]);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true, true);
                     s.sendMessage("Gems set to " + gems);
                     break;
                 case "invlevel":
@@ -81,14 +81,14 @@ public class CommandSet extends BasicCommand {
                         break;
                     }
                     int invlvl = Integer.parseInt(args[1]);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, true, true);
                     break;
                 case "portalKeys":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, 1500, false);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2, 1500, false);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3, 1500, false);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, 1500, false);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, 1500, false, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2, 1500, false, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3, 1500, false, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, 1500, false, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, true, true);
                     break;
                 case "spawner":
                     if (args.length < 4) {
@@ -141,7 +141,7 @@ public class CommandSet extends BasicCommand {
                     }
                     playerName = args[1];
                     p = Bukkit.getPlayer(playerName);
-                    DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+                    DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true, true);
 
                     if (p != null)
                         p.sendMessage(ChatColor.GRAY + "Fixed your shop");
@@ -152,7 +152,7 @@ public class CommandSet extends BasicCommand {
                         break;
                     }
                     invlvl = Integer.parseInt(args[1]);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, true, true);
                     break;
                 case "chaotic":
                     KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.CHAOTIC, null, false);
@@ -164,7 +164,7 @@ public class CommandSet extends BasicCommand {
                     KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
                     break;
                 case "g":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true, true);
                     break;
                 case "combatoff":
                     if (Bukkit.getPlayer(args[1]) != null) {
@@ -189,7 +189,7 @@ public class CommandSet extends BasicCommand {
                         }
                     }
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, true, true);
                     player.sendMessage(ChatColor.GREEN + "Successfully set your E-Cash value to: " + ecash + ".");
                     break;
                 case "hp":
@@ -223,7 +223,7 @@ public class CommandSet extends BasicCommand {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
                             }
                         } else {
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACHIEVEMENTS, new ArrayList<String>(), true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACHIEVEMENTS, new ArrayList<String>(), true, true);
                         }
                         player.sendMessage(ChatColor.GREEN + "Finished " + args[1].toLowerCase() + "ing all achievements.");
                     } else {
@@ -232,7 +232,7 @@ public class CommandSet extends BasicCommand {
                                 if (args[1].equalsIgnoreCase("unlock")) {
                                     Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
                                 } else {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.ACHIEVEMENTS, playerAchievements.getMongoName(), true);
+                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.ACHIEVEMENTS, playerAchievements.getMongoName(), true, true);
                                 }
                                 player.sendMessage(ChatColor.GREEN + "Successfully " + args[1].toLowerCase() + "ed the achievement: " + args[2].toLowerCase());
                                 return true;

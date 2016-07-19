@@ -60,7 +60,7 @@ public class Achievements {
      */
     public void giveAchievement(UUID uuid, EnumAchievements achievement) {
         if (hasAchievement(uuid, achievement)) return;
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.ACHIEVEMENTS, achievement.getMongoName(), true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.ACHIEVEMENTS, achievement.getMongoName(), true, true);
         if (Bukkit.getPlayer(uuid) == null) return;
         Player player = Bukkit.getPlayer(uuid);
         player.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD.toString() + ">> " + ChatColor.DARK_AQUA.toString() + "Achievement Unlocked:" + ChatColor.DARK_AQUA.toString() + " '" + ChatColor.GRAY + achievement.getName() + ChatColor.DARK_AQUA.toString() + "'!");

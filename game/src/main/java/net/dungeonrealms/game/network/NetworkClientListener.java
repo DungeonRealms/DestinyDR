@@ -136,7 +136,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
 
                                 if (Bukkit.getPlayer(uuid) != null) {
                                     Player friend = Bukkit.getPlayer(uuid);
-                                    DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, senderUuid, true);
+                                    DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, senderUuid, true, true);
                                     friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " sent you a friend request.");
                                     friend.sendMessage(ChatColor.GREEN + "Use /accept (player) to accept.");
 
@@ -150,8 +150,8 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
 
                                 if (Bukkit.getPlayer(uuid) != null) {
                                     Player friend = Bukkit.getPlayer(uuid);
-                                    DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, senderUuid, true);
-                                    DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, senderUuid, true);
+                                    DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, senderUuid, true, true);
+                                    DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, senderUuid, true, true);
                                     friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + senderName + ChatColor.GREEN + " accepted your friend request.");
                                 }
 

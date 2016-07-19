@@ -188,7 +188,7 @@ public class RealmListener implements Listener {
 
                     } else REALMS.removeRealm(entry.getKey(), true);
 
-                    DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true);
+                    DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true, true);
                     GameAPI.updatePlayerData(entry.getKey());
 
                     REALMS.getProcessingBlocks().remove(entry.getKey());
@@ -891,7 +891,7 @@ public class RealmListener implements Listener {
                 if (realm.getStatus() != RealmStatus.OPENED) return;
 
                 // SAVES THEIR LOCATION
-                DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, GameAPI.locationToString(event.getFrom()), true);
+                DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, GameAPI.locationToString(event.getFrom()), true, true);
                 event.setTo(REALMS.getRealmWorld(realm.getOwner()).getSpawnLocation().clone().add(0, 2, 0));
 
             } else {

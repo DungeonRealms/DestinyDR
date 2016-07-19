@@ -26,6 +26,7 @@ import net.dungeonrealms.game.commands.testcommands.CommandTestingHall;
 import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.DatabaseDriver;
+import net.dungeonrealms.game.database.MongoUpdateThread;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listener.MainListener;
@@ -267,6 +268,10 @@ public class DungeonRealms extends JavaPlugin {
 
         // START UPDATER TASK //
         new UpdateTask(this);
+
+        // START UPDATE THREAD //
+        new MongoUpdateThread().start();
+        Utils.log.info("DungeonRealms - MongoUpdateThread ... STARTED ...");
 
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");

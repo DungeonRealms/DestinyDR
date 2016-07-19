@@ -380,7 +380,7 @@ public class ItemListener implements Listener {
                             player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");
                             return;
                         }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true, true);
                         BankMechanics.getInstance().getStorage(player.getUniqueId()).update();
                         if (event.getPlayer().getEquipment().getItemInMainHand().getAmount() == 1) {
                             event.getPlayer().getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
@@ -693,14 +693,14 @@ public class ItemListener implements Listener {
                 String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
 
                 String activePet = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false, true);
                 if (activePet.contains("@")) {
                     activePet = activePet.split("@")[0];
                 }
                 String newPet = activePet + "@" + checkedPetName;
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, false);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, newPet, true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, activePet, false, true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, false, true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, newPet, true, true);
                 ChatColor prefix = ChatColor.WHITE;
                 if (Rank.isSubscriber(player)) {
                     String rank = Rank.getInstance().getRank(player.getUniqueId());

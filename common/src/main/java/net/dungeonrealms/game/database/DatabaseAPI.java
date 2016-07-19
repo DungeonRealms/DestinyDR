@@ -5,10 +5,10 @@ import net.dungeonrealms.Constants;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,13 +37,24 @@ public class DatabaseAPI {
      * @param variable
      * @param object
      * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
+     * @param async
      * @since 1.0
      */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew) {
-
-        DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, boolean async) {
+        if (async) {
+            MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object))));
+        }
         if (requestNew) {
-            requestPlayer(uuid);
+            if (async) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        requestPlayer(uuid);
+                    }
+                }.run();
+            } else {
+                requestPlayer(uuid);
+            }
         }
                 /*(result, exception) -> {
                     Utils.log.info("DatabaseAPI update() called ...");

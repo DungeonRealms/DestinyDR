@@ -331,14 +331,14 @@ public class PlayerStats {
      */
 
     public void updateDatabase(boolean logout) {
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, false);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, false);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, false);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, false);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, false);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, false);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, false);
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, false, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, false, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, false, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, false, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, false, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, false, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, false, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true, true);
     }
 
     /**
@@ -380,6 +380,6 @@ public class PlayerStats {
 
     public void addReset() {
         resetAmounts++;
-        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, 1, true);
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, 1, true, true);
     }
 }

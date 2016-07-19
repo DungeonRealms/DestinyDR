@@ -72,7 +72,7 @@ public class CommandSetRank extends BasicCommand {
                 }
 
                 // Always update the database with the new rank.
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank, true, true);
 
                 sender.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rank + ChatColor.GREEN + ".");
             } catch (IllegalArgumentException ex) {

@@ -88,7 +88,7 @@ public class Shop {
      */
     public void deleteShop(boolean shutDown) {
         if (shutDown) {
-            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false);
+            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false, true);
             saveCollectionBin();
             ShopMechanics.ALLSHOPS.remove(ownerName);
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
@@ -99,7 +99,7 @@ public class Shop {
                     BankMechanics.shopPricing.remove(Bukkit.getPlayer(ownerUUID).getName());
                 }
             }
-            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false);
+            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false, true);
             uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
             hologram.delete();
             block1.setType(Material.AIR);
@@ -151,9 +151,9 @@ public class Shop {
                 BankMechanics.getInstance().getStorage(ownerUUID).collection_bin = inv;
             }
             String invToString = ItemSerialization.toString(inv);
-            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
+            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true, true);
         } else {
-            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true);
         }
     }
 
@@ -277,7 +277,7 @@ public class Shop {
      * @param new_tier
      */
     private void upgradeShop(Player p, int new_tier) {
-        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, new_tier, true);
+        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, new_tier, true, true);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             ItemStack[] items = inventory.getContents();
             inventory = createNewInv(p.getUniqueId());
