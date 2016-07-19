@@ -1125,9 +1125,6 @@ public class GameAPI {
             );
         }
 
-        ScoreboardHandler.getInstance().matchMainScoreboard(player);
-        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignmentDB().getAlignmentColor(), gp.getLevel());
-
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             //Prevent weird scoreboard thing when sharding.
             ScoreboardHandler.getInstance().matchMainScoreboard(player);
