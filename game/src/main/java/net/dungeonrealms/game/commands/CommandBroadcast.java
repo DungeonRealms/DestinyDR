@@ -23,7 +23,7 @@ public class CommandBroadcast extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player && !Rank.isGM((Player) sender)) return true;
-        GameAPI.sendNetworkMessage("Broadcast", args[1]);
+        GameAPI.sendNetworkMessage("Broadcast", args[0]);
         return false;
     }
 }

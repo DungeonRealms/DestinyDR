@@ -172,7 +172,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         }
                         else if (task.equals("Broadcast")) {
                             String message = ChatColor.translateAlternateColorCodes('&', in.readUTF());
-                            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(ChatColor.AQUA + ">>> " + message));
+                            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
                         }
                         else if (task.equals("Stop")) {
 
