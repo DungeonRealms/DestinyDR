@@ -48,6 +48,11 @@
                                     <include>org.ini4j:ini4j</include>
                                     <include>org.mongodb:mongo-java-driver</include>
                                     <include>org.mongodb:bson</include>
+                                    <include>com.esotericsoftware:kryo-shaded</include>
+                                    <include>com.esotericsoftware:kryonet</include>
+                                    <include>com.esotericsoftware:minlog</include>
+                                    <include>com.esotericsoftware.reflectasm:reflectasm</include>
+                                    <include>org.objenesis:objenesis</include>
                                     <include>commons-net:commons-net</include>
                                     <include>net.lingala.zip4j:zip4j</include>
                                     <include>net.dungeonrealms:DungeonRealms-common</include>

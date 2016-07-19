@@ -57,7 +57,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
 
-
         getLogger().info("Connecting to DungeonRealms master server...");
         client = new GameClient();
 

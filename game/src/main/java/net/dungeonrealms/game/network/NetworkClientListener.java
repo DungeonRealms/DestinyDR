@@ -81,7 +81,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     String shard = in.readUTF();
 
                     if (!DungeonRealms.getShard().getPseudoName().equals(shard)) return;
-                    GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(uuid), after -> GameAPI.sendNetworkMessage("AcceptLoginToken", uuid.toString(), shard));
+                    GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(uuid), after -> {
+                        if (DungeonRealms.getInstance().hasFinishedSetup())
+                            GameAPI.sendNetworkMessage("AcceptLoginToken", uuid.toString(), shard);
+                    });
                     return;
                 }
 
