@@ -304,14 +304,8 @@ public class DatabaseAPI {
      */
     public boolean requestPlayer(UUID uuid) {
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
-        if (doc == null) {
-            addNewPlayer(uuid);
-
-
-        } else {
-            if (DatabaseDriver.getInstance().isKeepDataInMemory())
-                PLAYERS.put(uuid, doc);
-        }
+        if (doc == null) addNewPlayer(uuid);
+        else PLAYERS.put(uuid, doc);
 
         return true;
 

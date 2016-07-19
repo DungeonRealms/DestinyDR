@@ -98,17 +98,22 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             String msg = in.readUTF();
                             if (msg.contains("join:")) {
                                 String[] content = msg.split(",");
-                                String uuid = content[1];
+                                String uuidString = content[1];
                                 String name = content[2];
                                 String shard = content[3];
-                                ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, UUID.fromString(uuid));
-                                for (String uuidString : list) {
-                                    UUID friendUuid = UUID.fromString(uuidString);
-                                    Player friend = Bukkit.getPlayer(friendUuid);
+                                UUID uuid = UUID.fromString(uuidString);
 
-                                    if (friend != null && !friendUuid.toString().equalsIgnoreCase(uuid)) {
-                                        friend.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
-                                        friend.playSound(friend.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                                if (Bukkit.getPlayer(uuid) != null) {
+                                    ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+
+                                    for (String s : list) {
+                                        UUID friendUuid = UUID.fromString(s);
+                                        Player friend = Bukkit.getPlayer(friendUuid);
+
+                                        if (friend != null && !friendUuid.toString().equalsIgnoreCase(s)) {
+                                            friend.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
+                                            friend.playSound(friend.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                                        }
                                     }
                                 }
                             } else if (msg.contains("request:")) {
@@ -117,6 +122,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 String senderName = content[2];
                                 String friendUUID = content[3];
                                 UUID uuid = UUID.fromString(friendUUID);
+
                                 if (Bukkit.getPlayer(uuid) != null) {
                                     Player friend = Bukkit.getPlayer(uuid);
                                     DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, senderUuid, true);
@@ -130,6 +136,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 String senderName = content[2];
                                 String friendUUID = content[3];
                                 UUID uuid = UUID.fromString(friendUUID);
+
                                 if (Bukkit.getPlayer(uuid) != null) {
                                     Player friend = Bukkit.getPlayer(uuid);
                                     DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, senderUuid, true);
@@ -171,7 +178,8 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 String guildName = in.readUTF();
                                 String msg = in.readUTF();
 
-                                GuildMechanics.getInstance().sendMessageToGuild(guildName, msg, filter);
+                                if (GuildDatabaseAPI.get().isGuildCached(guildName))
+                                    GuildMechanics.getInstance().sendMessageToGuild(guildName, msg, filter);
                                 return;
                             }
 
@@ -180,7 +188,8 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     String guildName = in.readUTF();
                                     String msg = in.readUTF();
 
-                                    GuildMechanics.getInstance().sendMessageToGuild(guildName, msg);
+                                    if (GuildDatabaseAPI.get().isGuildCached(guildName))
+                                        GuildMechanics.getInstance().sendMessageToGuild(guildName, msg);
                                     break;
                                 }
 
@@ -188,7 +197,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     String guildName = in.readUTF();
 
                                     if (GuildDatabaseAPI.get().isGuildCached(guildName))
-                                        GuildDatabaseAPI.get().updateCache(guildName);
+                                        GameAPI.submitAsyncCallback(() -> GuildDatabaseAPI.get().updateCache(guildName), null);
                                     break;
                                 }
                             }

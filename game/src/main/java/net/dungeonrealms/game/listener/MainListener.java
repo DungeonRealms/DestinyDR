@@ -200,18 +200,7 @@ public class MainListener implements Listener {
             return;
         }
 
-
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
-
-        if (PunishAPI.isBanned(event.getUniqueId())) {
-            String name = DatabaseAPI.getInstance().getOfflineName(event.getUniqueId());
-            String bannedMessage = PunishAPI.getBannedMessage(event.getUniqueId());
-            event.setLoginResult(Result.KICK_BANNED);
-            PunishAPI.kick(name, bannedMessage, doBefore -> GameAPI.handleLogout(event.getUniqueId()));
-            event.setKickMessage(bannedMessage);
-
-            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -239,9 +228,7 @@ public class MainListener implements Listener {
         player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 255, 0, 0f, 0f));
         TitleAPI.sendTitle(player, 1, 20 * 3, 1, ChatColor.GREEN.toString() + "Loading character for '" + player.getName() + "' ...", ChatColor.GRAY.toString() + "Do not disconnect");
         ItemStack[] armor = player.getInventory().getArmorContents();
-        for (int i = 0; i < armor.length; i++) {
-            armor[i] = new ItemStack(Material.AIR);
-        }
+        for (int i = 0; i < armor.length; i++) armor[i] = new ItemStack(Material.AIR);
         player.getInventory().setArmorContents(armor);
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
@@ -332,7 +319,8 @@ public class MainListener implements Listener {
         }
 
         // HANDLE LOGOUT ASYNC //
-        GameAPI.submitAsyncCallback(() -> GameAPI.handleLogout(event.getPlayer().getUniqueId()), null);
+        GameAPI.submitAsyncCallback(
+                () -> GameAPI.handleLogout(event.getPlayer().getUniqueId()), null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -345,7 +333,8 @@ public class MainListener implements Listener {
         }
 
         // HANDLE LOGOUT ASYNC //
-        GameAPI.submitAsyncCallback(() -> GameAPI.handleLogout(event.getPlayer().getUniqueId()), null);
+        GameAPI.submitAsyncCallback(
+                () -> GameAPI.handleLogout(event.getPlayer().getUniqueId()), null);
     }
 
     /**

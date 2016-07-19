@@ -40,11 +40,13 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return instance;
     }
 
-    public void updateCache(String guildName) {
+    public boolean updateCache(String guildName) {
         Document doc = DatabaseDriver.guilds.find(Filters.eq("info.name", guildName)).first();
-
-        if (doc != null)
+        if (doc != null) {
             CACHED_GUILD.put(guildName, doc);
+            return true;
+        }
+        return false;
     }
 
     @Override

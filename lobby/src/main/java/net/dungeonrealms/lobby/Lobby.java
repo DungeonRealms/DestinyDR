@@ -1,10 +1,10 @@
 package net.dungeonrealms.lobby;
 
 import lombok.Getter;
-import net.dungeonrealms.Constants;
 import net.dungeonrealms.game.commands.CommandManager;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.DatabaseDriver;
+import net.dungeonrealms.game.punishment.PunishAPI;
 import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.network.bungeecord.BungeeUtils;
@@ -15,20 +15,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.function.Consumer;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/11/2016
@@ -37,8 +29,6 @@ public class Lobby extends JavaPlugin implements Listener {
 
     @Getter
     private static Lobby instance;
-
-    private List<UUID> LOADING_USERS = new ArrayList<>(Constants.PLAYER_SLOTS / 2);
 
     @Override
     public void onEnable() {
@@ -66,55 +56,27 @@ public class Lobby extends JavaPlugin implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-
         // REQUEST PLAYER'S DATA ASYNC //
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
+
+        if (PunishAPI.isBanned(event.getUniqueId())) {
+            String bannedMessage = PunishAPI.getBannedMessage(event.getUniqueId());
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+            event.setKickMessage(bannedMessage);
+
+            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
+        }
     }
 
-
-    /**
-     * Utility type for calling async tasks with callbacks.
-     *
-     * @param callable Callable type
-     * @param consumer Consumer task
-     * @param <T>      Type of data
-     * @author apollosoftware
-     */
-    public static <T> void submitAsyncCallback(Callable<T> callable, Consumer<Future<T>> consumer) {
-        // FUTURE TASK //
-        FutureTask<T> task = new FutureTask<>(callable);
-
-        // BUKKIT'S ASYNC SCHEDULE WORKER
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                // RUN FUTURE TASK ON THREAD //
-                task.run();
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        // ACCEPT CONSUMER //
-                        consumer.accept(task);
-                    }
-                }.runTask(Lobby.getInstance());
-            }
-        }.runTaskAsynchronously(Lobby.getInstance());
-    }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        LOADING_USERS.add(event.getPlayer().getUniqueId());
-
-        submitAsyncCallback(
-                () -> DatabaseAPI.getInstance().requestPlayer(event.getPlayer().getUniqueId()), s -> LOADING_USERS.remove(event.getPlayer().getUniqueId()));
-
-
         Bukkit.getScheduler().runTask(this, () -> {
             Player player = event.getPlayer();
             player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
 
-            if (!hasItem(player.getInventory(), getShardSelector()))
-                player.getInventory().setItem(0, getShardSelector());
+            player.getInventory().clear();
+            player.getInventory().setItem(0, getShardSelector());
         });
     }
 
@@ -131,9 +93,15 @@ public class Lobby extends JavaPlugin implements Listener {
         }, 1L);
     }
 
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onClick(InventoryClickEvent event) {
+        event.setCancelled(true);
+    }
+
     @EventHandler
-    public void onItemClick(PlayerDropItemEvent e) {
-        if (e.getItemDrop().getItemStack().getType() == Material.COMPASS) {
+    public void onItemDrop(PlayerDropItemEvent e) {
+        if (!e.getPlayer().isOp()) {
             e.setCancelled(true);
             return;
         }
@@ -165,9 +133,6 @@ public class Lobby extends JavaPlugin implements Listener {
 
             if (!e.hasItem()) return;
             if (e.getItem().getType() != Material.COMPASS) return;
-
-            if (LOADING_USERS.contains(p.getUniqueId()))
-                return;
 
             new ShardSelector(p).open(p);
         }
