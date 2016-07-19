@@ -590,7 +590,7 @@ public class GameAPI {
      *              different method.
      * @since 1.0
      */
-    public static boolean savePlayerData(UUID uuid, boolean async) {
+    public static boolean savePlayerData(UUID uuid, boolean async, boolean logout) {
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) {
@@ -660,10 +660,12 @@ public class GameAPI {
         }
 
         // MISC
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false, async);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), false, async);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player), false, async);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false, async);
+        if (!logout) {
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false, async);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), false, async);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player).name(), false, async);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false, async);
+        }
 
         return true;
     }
@@ -683,7 +685,7 @@ public class GameAPI {
         Realms.getInstance().doLogout(player);
 
         // save player data
-        savePlayerData(uuid, async);
+        savePlayerData(uuid, async, true);
 
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
@@ -903,11 +905,10 @@ public class GameAPI {
 
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7Welcome &6" + player.getName() + "&7to &6Dungeon Realms&7."));
             ItemManager.giveStarter(player);
-            player.teleport(new Location(Bukkit.getWorlds().get(0), -405 + .5, 32 + 1.5, -147 + .5, 90F, -3.8F));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), -405 + .5, 84 + 1.5, 376 + .5, 90F, -3.8F));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });
-
         }
 
         // Essentials
@@ -1145,8 +1146,7 @@ public class GameAPI {
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
         submitAsyncCallback(() -> {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true, true);
-            GameAPI.handleLogout(player.getUniqueId(), false);
-            return true;
+            return GameAPI.handleLogout(player.getUniqueId(), false);
         }, consumer -> {
             BungeeUtils.sendToServer(player.getName(), serverBungeeName);
             DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
@@ -1163,7 +1163,7 @@ public class GameAPI {
                             return;
                         }
                         UUID uuid = player.getUniqueId();
-                        savePlayerData(uuid, true);
+                        savePlayerData(uuid, true, false);
                         Utils.log.info("Backed up information for uuid: " + uuid.toString());
                     }
                     DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");

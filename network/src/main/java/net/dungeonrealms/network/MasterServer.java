@@ -53,9 +53,9 @@ public class MasterServer
 
     @Override
     public void received(Connection c, Object object) {
-        Log.info("Relaying packet connection: " + c.getRemoteAddressTCP().getAddress() + ":" + c.getRemoteAddressTCP().getPort());
-
-        if (object instanceof Packet)
+        if (object instanceof Packet) {
             relayPacketTCP((Packet) object);
+            Log.info("Relaying packet connection: " + c.getRemoteAddressTCP().getAddress() + ":" + c.getRemoteAddressTCP().getPort());
+        }
     }
 }
