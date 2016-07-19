@@ -259,10 +259,10 @@ public class DungeonListener implements Listener {
                 mount.dead = true;
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
-            if (GameAPI.getGamePlayer(player) == null || GameAPI.getGamePlayer(player).getLevel() < 5) {
-                player.sendMessage(ChatColor.RED + "You need to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level 5 to enter a dungeon.");
-                return;
-            }
+//            if (GameAPI.getGamePlayer(player) == null || GameAPI.getGamePlayer(player).getLevel() < 5) {
+//                player.sendMessage(ChatColor.RED + "You need to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level 5 to enter a dungeon.");
+//                return;
+//            }
             String dungeonName = event.getRegion().substring(event.getRegion().indexOf("_") + 1, event.getRegion().length());
             if (dungeonName.equalsIgnoreCase("dodungeon")) {
                 dungeonName = "DODungeon";
