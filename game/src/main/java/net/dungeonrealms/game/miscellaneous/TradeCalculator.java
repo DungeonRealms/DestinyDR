@@ -145,7 +145,7 @@ public class TradeCalculator {
                 int payout = 0;
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
                 NBTTagCompound tag = nmsItem.getTag();
-                if (tag.hasKey("type") && GameAPI.isItemTradeable(is)) {
+                if (tag.hasKey("type") && GameAPI.isItemTradeable(is) && !GameAPI.isItemSoulbound(is)) {
                     if (GameAPI.isArmor(is)) {
                         switch (tag.getInt("itemType")) {
                             case 5:
