@@ -324,12 +324,12 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
+        event.setLeaveMessage(null);
+
         if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
             GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
             return;
         }
-
-        event.setLeaveMessage(null);
 
         // HANDLE LOGOUT ASYNC //
         GameAPI.submitAsyncCallback(() -> GameAPI.handleLogout(event.getPlayer().getUniqueId()), null);
@@ -337,12 +337,13 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        event.setQuitMessage(null);
+
         if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
             GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
             return;
         }
 
-        event.setQuitMessage(null);
         // HANDLE LOGOUT ASYNC //
         GameAPI.submitAsyncCallback(() -> GameAPI.handleLogout(event.getPlayer().getUniqueId()), null);
     }
