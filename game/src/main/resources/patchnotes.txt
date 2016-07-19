@@ -4,6 +4,7 @@ Build <build>
 - Removed level restrictions for equipment.
 - Increased drop rates on higher tiers.
 - Removed tutorial island
+- Sub/Sub+/Sub++ Ranks now give an XP bonus.
 
 &4Bug Fixes&0
 - Refactored player data saving to fix many lag issues.
