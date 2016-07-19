@@ -62,19 +62,23 @@ public class CommandSetRank extends BasicCommand {
                     }
                 }
 
-                // Only update the server rank if the user is currently logged in.
-                if (Bukkit.getPlayer(args[0]) != null) {
-                    Player player = Bukkit.getPlayer(args[0]);
-                    Rank.getInstance().setRank(uuid, rank);
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, GameAPI.getGamePlayer(player).getLevel());
-                } else {
-                    GameAPI.updatePlayerData(uuid);
-                }
-
                 // Always update the database with the new rank.
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank, true, true);
+                GameAPI.submitAsyncCallback(() -> {
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank, true, false);
+                    return true;
+                }, result -> {
+                    // Only update the server rank if the user is currently logged in.
+                    if (Bukkit.getPlayer(args[0]) != null) {
+                        Player player = Bukkit.getPlayer(args[0]);
+                        Rank.getInstance().setRank(uuid, rank);
+                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, GameAPI.getGamePlayer(player).getLevel());
+                    }
+                    else {
+                        GameAPI.updatePlayerData(uuid);
+                    }
+                    sender.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rank + ChatColor.GREEN + ".");
+                });
 
-                sender.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rank + ChatColor.GREEN + ".");
             } catch (IllegalArgumentException ex) {
                 // This exception is thrown if the UUID doesn't exist in the database.
                 sender.sendMessage(ChatColor.RED + "Invalid player name: " + args[0] + "!");
