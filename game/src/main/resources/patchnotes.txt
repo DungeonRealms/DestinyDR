@@ -7,7 +7,7 @@ Build <build>
 - Sub/Sub+/Sub++ Ranks now give an XP bonus.
 
 &4Bug Fixes&0
-- Refactored player data saving to fix many lag issues.
+- Fixed many lag issues.
 - Fixed placing shops in peaceful realms
 - Furnaces are now restricted in realms
 - Remove Herobrine
