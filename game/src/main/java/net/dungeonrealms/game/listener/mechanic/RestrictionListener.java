@@ -192,30 +192,32 @@ public class RestrictionListener implements Listener {
         if (i == null || i.getType() == Material.AIR) return;
 
         if (GameAPI.isWeapon(i)) {
-            if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(i))) {
+            // Level restrictions on equipment removed on 7/18/16 Build#131
+            /*if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(i))) {
                 event.setCancelled(true);
                 p.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
                         + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(i)) + " to use this weapon.");
                 p.updateInventory();
                 return;
-            }
+            }*/
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
-        checkPlayersArmorIsValid((Player) event.getPlayer());
+//        checkPlayersArmorIsValid((Player) event.getPlayer());
         checkForIllegalItems((Player) event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
-        checkPlayersArmorIsValid((Player) event.getPlayer());
+//        checkPlayersArmorIsValid((Player) event.getPlayer());
         checkForIllegalItems((Player) event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    // Level restrictions on equipment removed on 7/18/16 Build#131
+    /*@EventHandler(priority = EventPriority.LOW)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
@@ -231,7 +233,7 @@ public class RestrictionListener implements Listener {
                 }
             }
         }
-    }
+    }*/
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void playerInteract(PlayerInteractEvent event) {
@@ -264,14 +266,14 @@ public class RestrictionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void playerJoinEventDelayed(PlayerJoinEvent event) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (event.getPlayer() != null && event.getPlayer().isOnline()) {
                 checkPlayersArmorIsValid(event.getPlayer());
             }
         }, 150L);
-    }
+    }*/
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerOpenEmptyMap(PlayerInteractEvent event) {

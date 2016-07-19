@@ -113,9 +113,11 @@ public class HealthHandler implements GenericMechanic {
      */
     public void handleLogoutEvents(Player player) {
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerHPLive(player), false);
-        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
-            player.removePotionEffect(potionEffect.getType());
-        }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+                player.removePotionEffect(potionEffect.getType());
+            }
+        });
     }
 
     //private void updatePlayerHPBars() {

@@ -730,7 +730,9 @@ public class GameAPI {
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
-        ScoreboardHandler.getInstance().removePlayerScoreboard(player);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            ScoreboardHandler.getInstance().removePlayerScoreboard(player);
+        });
         if (EntityAPI.hasPetOut(uuid)) {
             net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(uuid);
             pet.dead = true;
