@@ -587,7 +587,7 @@ public class GameAPI {
      *
      * @param uuid
      * @param async should always be true unless you need a callback from this method and are asyncing it via a
-     *              different method.
+     *              different method or you need to save a player data sync.
      * @since 1.0
      */
     public static boolean savePlayerData(UUID uuid, boolean async, boolean logout) {
@@ -684,10 +684,10 @@ public class GameAPI {
         GuildMechanics.getInstance().doLogout(player);
         Realms.getInstance().doLogout(player);
 
+        DungeonRealms.getInstance().getLoggingOut().add(player.getName());
+
         // save player data
         savePlayerData(uuid, async, true);
-
-        DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
         Chat.listenForMessage(player, null, null);
 
@@ -765,6 +765,7 @@ public class GameAPI {
         }
 
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+        DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
 
         return true;
@@ -899,10 +900,8 @@ public class GameAPI {
         } else {
 
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true, true);
-            /**
-             PLAYER IS NEW
-             */
 
+             /*PLAYER IS NEW*/
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7Welcome &6" + player.getName() + "&7to &6Dungeon Realms&7."));
             ItemManager.giveStarter(player);
             player.teleport(new Location(Bukkit.getWorlds().get(0), -405 + .5, 84 + 1.5, 376 + .5, 90F, -3.8F));
