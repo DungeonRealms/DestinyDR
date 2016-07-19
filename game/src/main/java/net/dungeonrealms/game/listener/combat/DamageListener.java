@@ -851,6 +851,7 @@ public class DamageListener implements Listener {
 
         int maxHP;
         if (GameAPI.isPlayer(event.getEntity())) {
+            if (GameAPI.getGamePlayer((Player)event.getEntity()) == null) return;
             maxHP = GameAPI.getGamePlayer((Player) event.getEntity()).getPlayerMaxHP();
         } else {
             maxHP = HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity());

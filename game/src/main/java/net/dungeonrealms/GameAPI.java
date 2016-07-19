@@ -917,7 +917,8 @@ public class GameAPI {
         for (int j = 0; j < 20; j++) {
             player.sendMessage("");
         }
-        player.setMaximumNoDamageTicks(15);
+        player.setMaximumNoDamageTicks(0);
+        player.setNoDamageTicks(0);
 
         Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(Constants.BUILD_VERSION) + " Build " + String.valueOf(Constants.BUILD_NUMBER));
         Utils.sendCenteredMessage(player, ChatColor.GRAY + "http://www.dungeonrealms.net/");
