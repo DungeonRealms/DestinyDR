@@ -14,6 +14,7 @@ import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
@@ -221,15 +222,6 @@ public class MainListener implements Listener {
         event.setJoinMessage(null);
         DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();
-        player.getInventory().clear();
-        player.setGameMode(GameMode.ADVENTURE);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));
-        player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 255, 0, 0f, 0f));
-        TitleAPI.sendTitle(player, 1, 20 * 3, 1, ChatColor.GREEN.toString() + "Loading character for '" + player.getName() + "' ...", ChatColor.GRAY.toString() + "Do not disconnect");
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        for (int i = 0; i < armor.length; i++) armor[i] = new ItemStack(Material.AIR);
-        player.getInventory().setArmorContents(armor);
-        player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
         CombatLog.checkCombatLog(player.getUniqueId());
         GameAPI.handleLogin(player.getUniqueId());
