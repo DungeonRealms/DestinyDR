@@ -3,8 +3,10 @@ Build <build>
 &8Changes&0
 - Removed level restrictions for equipment.
 - Increased drop rates on higher tiers.
+- Removed tutorial island
 
 &4Bug Fixes&0
 - Refactored player data saving to fix many lag issues.
 - Fixed placing shops in peaceful realms
 - Furnaces are now restricted in realms
+- Remove Herobrine
