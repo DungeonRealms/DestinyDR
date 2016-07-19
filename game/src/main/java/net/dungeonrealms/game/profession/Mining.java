@@ -480,8 +480,8 @@ public class Mining implements GenericMechanic {
         int value = enchant.getBuff(pickTier);
         if (value == 0)
             value = 1;
-        if (prevValue != -1)
-            value += prevValue;
+        if (prevValue != -1 && prevValue > value)
+            value = prevValue;
         lore.add(ChatColor.RED + enchant.display + " +" + value + "%");
         lore.add(clone);
         meta.setLore(lore);

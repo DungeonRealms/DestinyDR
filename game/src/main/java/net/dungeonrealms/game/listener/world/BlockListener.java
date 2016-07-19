@@ -81,7 +81,7 @@ public class BlockListener implements Listener {
             return;
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemInHand());
-        if(nms.hasTag() && nms.getTag().hasKey("type"))
+        if (nms.hasTag() && nms.getTag().hasKey("type"))
             event.setCancelled(true);
 
         RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
@@ -335,12 +335,17 @@ public class BlockListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        /*
-        int cost = RepairAPI.getItemRepairCost(item);
-        if(cost < 0){
-        	event.setCancelled(true);
-        	return;
-        } */
+
+
+        if (Mining.isDRPickaxe(item) || Fishing.isDRFishingPole(item)) {
+            int lvl = Mining.getLvl(item);
+            if (lvl >= 100) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "You can not repair this level 100 item.");
+                return;
+            }
+        }
+
         if (RepairAPI.canItemBeRepaired(item)) {
 
             if (item.getDurability() == (short) 0) {

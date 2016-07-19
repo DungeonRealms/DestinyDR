@@ -744,17 +744,25 @@ public class Fishing implements GenericMechanic {
         }
 
         Iterator<String> i = lore.iterator();
+        int prevValue = -1;
 
         while (i.hasNext()) {
             String line = i.next();
-            if (line.contains(enchant.name))
+            if (line.contains(enchant.name)) {
+                prevValue = Integer.valueOf(line.substring(line.indexOf("+"), line.indexOf("%")));
                 i.remove();
+            }
         }
 
 
         String clone = lore.get(lore.size() - 1);
+        int value = enchant.getBuff(tier);
+        if (value == 0)
+            value = 1;
+        if (prevValue != -1 && prevValue > value)
+            value = prevValue;
         lore.remove(lore.size() - 1);
-        lore.add(ChatColor.RED + enchant.name + " +" + enchant.getBuff(tier) + "%");
+        lore.add(ChatColor.RED + enchant.name + " +" + value + "%");
         lore.add(clone);
         meta.setLore(lore);
         stack.setItemMeta(meta);
