@@ -105,7 +105,6 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                 // Handle packet sync //
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                     try {
-
                         if (task.equals("Friends")) {
                             String msg = in.readUTF();
                             if (msg.contains("join:")) {
@@ -171,16 +170,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 }
                             }
                         }
-
-                        if (task.equals("Stop")) {
+                        else if (task.equals("Broadcast")) {
+                            String message = ChatColor.translateAlternateColorCodes('&', in.readUTF());
+                            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(ChatColor.AQUA + ">>> " + message));
+                        }
+                        else if (task.equals("Stop")) {
 
                             if (DungeonRealms.getInstance().hasFinishedSetup())
                                 GameAPI.stopGame();
 
                             return;
                         }
-
-                        if (task.equals("Guilds")) {
+                        else if (task.equals("Guilds")) {
                             String command = in.readUTF();
 
                             if (command.contains("message:")) {
