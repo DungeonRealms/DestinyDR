@@ -87,9 +87,6 @@ public class Lobby extends JavaPlugin implements Listener {
             if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
                 DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
             }
-            if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(player.getUniqueId())) {
-                DatabaseAPI.getInstance().PLAYER_TIME.remove(player.getUniqueId());
-            }
         }, 1L);
     }
 

@@ -94,7 +94,7 @@ public class ItemSerialization {
 
 
     /**
-     * Conerts String to an Inventory.
+     * Converts String to an Inventory.
      *
      * @param s
      * @return Inventory
@@ -119,21 +119,16 @@ public class ItemSerialization {
      * @return Inventory
      * @since 1.0
      */
-    public static void fromString(String s, int overrideSize, Consumer<Inventory> consumer) {
+    public static Inventory fromString(String s, int overrideSize) {
         YamlConfiguration configuration = new YamlConfiguration();
-        GameAPI.submitAsyncCallback(() -> Base64Coder.decodeString(s), result -> {
-            try {
-                configuration.loadFromString(result);
-                Inventory i = Bukkit.createInventory(null, overrideSize, configuration.getString("Title"));
-                ConfigurationSection contents = configuration.getConfigurationSection("Contents");
-                contents.getKeys(false).stream().filter(index -> contents.getItemStack(index) != null && Integer.parseInt(index) < overrideSize).forEach(index -> i.setItem(Integer.parseInt(index), contents.getItemStack(index)));
-
-                consumer.accept(i);
-            }
-            catch (InvalidConfigurationException e) {
-                consumer.accept(null);
-            }
-        });
-    });
+        try {
+            configuration.loadFromString(Base64Coder.decodeString(s));
+            Inventory i = Bukkit.createInventory(null, overrideSize, configuration.getString("Title"));
+            ConfigurationSection contents = configuration.getConfigurationSection("Contents");
+            contents.getKeys(false).stream().filter(index -> contents.getItemStack(index) != null && Integer.parseInt(index) < overrideSize).forEach(index -> i.setItem(Integer.parseInt(index), contents.getItemStack(index)));
+            return i;
+        } catch (InvalidConfigurationException e) {
+            return null;
+        }
     }
 }

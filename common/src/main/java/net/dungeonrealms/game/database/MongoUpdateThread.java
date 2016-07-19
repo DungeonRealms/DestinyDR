@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MongoUpdateThread extends Thread {
     public static Queue<List<Bson>> queries = new ConcurrentLinkedQueue<>();
+    public static boolean debug = false;
 
     @Override
     public void run() {
@@ -26,12 +27,16 @@ public class MongoUpdateThread extends Thread {
                 if (query == null) continue;
 
                 UpdateResult result = DatabaseDriver.collection.updateOne(query.get(0), query.get(1));
-                if (result.wasAcknowledged()) {
-                    Constants.log.warning("[Mongo] ASYNC Executed query: " + query.get(0).toString() + " " + query.get(1).toString());
+                if (debug) {
+                    if (result.wasAcknowledged()) {
+                        Constants.log.warning("[Mongo] ASYNC Executed query: " + query.get(0).toString() + " " + query.get(1).toString());
 
-                } else {
-                    Constants.log.warning("[Mongo] Update query failed: " + query.get(0).toString() + " " + query.get
-                            (1).toString());
+
+                    } else {
+                        Constants.log.warning("[Mongo] Update query failed: " + query.get(0).toString() + " " + query
+                                .get
+                                (1).toString());
+                    }
                 }
             }
         }

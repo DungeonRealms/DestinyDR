@@ -494,7 +494,6 @@ public class DungeonRealms extends JavaPlugin {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                DatabaseAPI.getInstance().PLAYER_TIME.entrySet().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1)));
                 GameAPI.GAMEPLAYERS.values().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
             }
         }, 0L, 1000);

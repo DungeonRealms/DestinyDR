@@ -220,7 +220,6 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
-        DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();
 
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
