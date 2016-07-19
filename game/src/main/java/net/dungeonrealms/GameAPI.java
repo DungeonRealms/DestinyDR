@@ -119,22 +119,17 @@ public class GameAPI {
     public static <T> void submitAsyncCallback(Callable<T> callable, Consumer<Future<T>> consumer) {
         // FUTURE TASK //
         FutureTask<T> task = new FutureTask<>(callable);
+        AsyncUtils.pool.submit(() -> {
+            task.run();
 
-        // BUKKIT'S ASYNC SCHEDULE WORKER
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                // RUN FUTURE TASK ON THREAD //
-                task.run();
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        // ACCEPT CONSUMER //
-                        consumer.accept(task);
-                    }
-                }.runTask(DungeonRealms.getInstance());
-            }
-        }.runTaskAsynchronously(DungeonRealms.getInstance());
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    // ACCEPT CONSUMER //
+                    consumer.accept(task);
+                }
+            }.runTask(DungeonRealms.getInstance());
+        });
     }
 
 
