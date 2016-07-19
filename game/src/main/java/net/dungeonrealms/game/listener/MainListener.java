@@ -12,9 +12,7 @@ import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.PlayerManager;
@@ -35,7 +33,6 @@ import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
-import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -319,75 +316,20 @@ public class MainListener implements Listener {
         }
     }
 
-    private void tryLogoutStuff(Player player) {
-        Chat.listenForMessage(player, null, null);
-        GuildMechanics.getInstance().doLogout(player);
-        Realms.getInstance().doLogout(player);
-        for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
-            tracker.removeDamager(player);
-        }
-
-        //Ensures the player has played at least 5 seconds before saving to the database.
-        if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(player.getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(player.getUniqueId()) > 5) {
-            // Player leaves while in duel
-            if (DuelingMechanics.isDueling(player.getUniqueId())) {
-                DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
-            }
-            GameAPI.handleLogout(player.getUniqueId());
-
-            if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                net.minecraft.server.v1_9_R2.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
-                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerPet)) {
-                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerPet);
-                }
-                if (playerPet.isAlive()) { // Safety check
-                    playerPet.dead = true;
-                }
-                // .damageEntity(DamageSource.GENERIC, 20);
-                EntityAPI.removePlayerPetList(player.getUniqueId());
-            }
-
-            if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                net.minecraft.server.v1_9_R2.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
-                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerMount)) {
-                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerMount);
-                }
-                if (playerMount.isAlive()) { // Safety check
-                    if (playerMount.passengers != null) {
-                        playerMount.passengers.forEach(passenger -> passenger = null);
-                    }
-                    playerMount.dead = true;
-                }
-                EntityAPI.removePlayerMountList(player.getUniqueId());
-            }
-        }
-        if (Affair.getInstance().isInParty(player)) {
-            Affair.getInstance().removeMember(player, false);
-        }
-    }
-
     /**
      * Handles player leaving the server
      *
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerKick(PlayerKickEvent event) {
-        event.setLeaveMessage(null);
-        tryLogoutStuff(event.getPlayer());
-    }
 
-    /**
-     * Handles player leaving the server
-     *
-     * @param event
-     * @since 1.0
-     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId()))
+            return;
+
         event.setQuitMessage(null);
-        tryLogoutStuff(event.getPlayer());
+        // HANDLE LOGOUT ASYNC //
     }
 
     /**

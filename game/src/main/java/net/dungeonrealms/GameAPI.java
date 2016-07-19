@@ -100,6 +100,9 @@ public class GameAPI {
     public static Set<Player> _hiddenPlayers = new HashSet<>();
 
 
+    public static List<UUID> IGNORE_QUIT_EVENT = new ArrayList<>();
+
+
     /**
      * Utility type for calling async tasks with callbacks.
      *
@@ -211,6 +214,10 @@ public class GameAPI {
         } else {
             return 5;
         }
+    }
+
+    public static void ignorePlayerQuit(UUID uuid) {
+        IGNORE_QUIT_EVENT.add(uuid);
     }
 
     /**
@@ -581,6 +588,9 @@ public class GameAPI {
      */
     public static boolean handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+
+        GuildMechanics.getInstance().doLogout(player);
+        Realms.getInstance().doLogout(player);
 
         if (!DatabaseAPI.getInstance().PLAYER_TIME.containsKey(uuid) || DatabaseAPI.getInstance().PLAYER_TIME.get(uuid) <= 5) {
             //Dont save.
