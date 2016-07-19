@@ -37,7 +37,7 @@ public class MasterServerApplication {
             Log.info("Listening on " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT);
             kryo = server.getKryo();
 
-            Log.set(Log.LEVEL_TRACE);
+            Log.set(Log.LEVEL_INFO);
             registerClasses();
         } catch (IOException e) {
             e.printStackTrace();
