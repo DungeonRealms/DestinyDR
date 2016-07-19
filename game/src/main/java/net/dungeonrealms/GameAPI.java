@@ -905,11 +905,10 @@ public class GameAPI {
 
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7Welcome &6" + player.getName() + "&7to &6Dungeon Realms&7."));
             ItemManager.giveStarter(player);
-            player.teleport(new Location(Bukkit.getWorlds().get(0), -601 + .5, 61 + 1.5, 473 + .5, 90F, -3.8F));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), -405 + .5, 84 + 1.5, 376 + .5, 90F, -3.8F));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });
-
         }
 
         // Essentials
