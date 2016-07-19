@@ -172,6 +172,35 @@ public class Rank {
         return null;
     }
 
+    public static ChatColor colorFromRank(String prefix) {
+        switch (prefix.toLowerCase()) {
+            case "dev":
+                return ChatColor.AQUA;
+            case "headgm":
+            case "gm":
+                return ChatColor.AQUA;
+            case "pmod":
+                return ChatColor.WHITE;
+            case "support":
+                return ChatColor.BLUE;
+            case "youtube":
+                return ChatColor.RED;
+            case "builder":
+                return ChatColor.DARK_AQUA;
+            case "sub++":
+                return ChatColor.DARK_AQUA;
+            case "sub+":
+                return ChatColor.GOLD;
+            case "sub":
+                return ChatColor.GREEN;
+            case "default":
+                return ChatColor.GRAY;
+        }
+
+        // Could not find rank.
+        return ChatColor.GRAY;
+    }
+
     /**
      * Gets the players rank.
      *

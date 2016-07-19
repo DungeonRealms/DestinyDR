@@ -33,6 +33,7 @@ public class Horse extends EntityHorse {
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(horseSpeed);
         this.setOwnerUUID(ownerUUID);
         this.setTemper(100);
+        this.jumpPower = this.jumpPower * 2;
 
         MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
     }

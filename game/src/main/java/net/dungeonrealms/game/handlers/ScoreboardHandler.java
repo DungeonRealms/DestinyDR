@@ -130,7 +130,7 @@ public class ScoreboardHandler implements GenericMechanic {
             }
             team.setPrefix(guild + chatColor);
             team.setSuffix(ChatColor.LIGHT_PURPLE + " [" + playerLevel + "]");
-            player.setPlayerListName(colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+            player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
             if (!team.hasEntry(player.getName())) {
                 team.addEntry(player.getName());
             }
@@ -152,7 +152,7 @@ public class ScoreboardHandler implements GenericMechanic {
         }
         team.setPrefix(guild + chatColor);
         team.setSuffix(ChatColor.LIGHT_PURPLE + " [" + playerLevel + "]");
-        player.setPlayerListName(colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+        player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
         if (!team.hasEntry(player.getName())) {
             team.addEntry(player.getName());
         }
@@ -175,7 +175,7 @@ public class ScoreboardHandler implements GenericMechanic {
         }
         team.setPrefix(guild + chatColor);
         team.setSuffix(ChatColor.LIGHT_PURPLE + " [" + level + "]");
-        toSetFor.setPlayerListName(colorFromRank(Rank.getInstance().getRank(toSetFor.getUniqueId())) + toSetFor.getName());
+        toSetFor.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(toSetFor.getUniqueId())) + toSetFor.getName());
         if (!team.hasEntry(toSetFor.getName())) {
             team.addEntry(toSetFor.getName());
         }
@@ -207,7 +207,7 @@ public class ScoreboardHandler implements GenericMechanic {
             }
             team.setPrefix(guild + chatColor);
             team.setSuffix(ChatColor.LIGHT_PURPLE + " [" + level + "]");
-            player1.setPlayerListName(colorFromRank(Rank.getInstance().getRank(player1.getUniqueId())) + player1.getName());
+            player1.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player1.getUniqueId())) + player1.getName());
             if (!team.hasEntry(player1.getName())) {
                 team.addEntry(player1.getName());
             }
@@ -287,34 +287,5 @@ public class ScoreboardHandler implements GenericMechanic {
         if (PLAYER_SCOREBOARDS.containsKey(player.getUniqueId())) {
             PLAYER_SCOREBOARDS.remove(player.getUniqueId());
         }
-    }
-
-    private ChatColor colorFromRank(String prefix) {
-        switch (prefix.toLowerCase()) {
-            case "dev":
-                return ChatColor.AQUA;
-            case "headgm":
-            case "gm":
-                return ChatColor.AQUA;
-            case "pmod":
-                return ChatColor.WHITE;
-            case "support":
-                return ChatColor.BLUE;
-            case "youtube":
-                return ChatColor.RED;
-            case "builder":
-                return ChatColor.DARK_AQUA;
-            case "sub++":
-                return ChatColor.DARK_AQUA;
-            case "sub+":
-                return ChatColor.GOLD;
-            case "sub":
-                return ChatColor.GREEN;
-            case "default":
-                return ChatColor.GRAY;
-        }
-
-        // Could not find rank.
-        return ChatColor.GRAY;
     }
 }

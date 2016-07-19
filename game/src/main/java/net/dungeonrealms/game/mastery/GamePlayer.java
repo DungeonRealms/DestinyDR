@@ -6,12 +6,14 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
@@ -269,8 +271,9 @@ public class GamePlayer {
         if (isParty) {
             expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
         }
-        int subBonus = 0;
-        int subPlusBonus = 0;
+        String rank = Rank.getInstance().getRank(T.getUniqueId()).toLowerCase();
+        int subBonus = (int) (rank.equals("sub") ? experienceToAdd * 0.05 : 0.0);
+        int subPlusBonus = (int) ((rank.equals("sub+") || rank.equals("sub++")) ? experienceToAdd * 0.1 : 0.0);
         int futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
@@ -282,6 +285,9 @@ public class GamePlayer {
             if (displayMessage) {
                 if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    if (rank.equals("sub") || rank.equals("sub+") || rank.equals("sub++")) {
+                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(rank) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+"  + ChatColor.YELLOW + Math.round(subBonus + subPlusBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    }
                 }
             }
         }
