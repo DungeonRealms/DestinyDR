@@ -76,23 +76,23 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
             try {
                 String task = in.readUTF();
 
+                if (task.equals("Update")) {
+                    UUID uuid = UUID.fromString(in.readUTF());
+                    Player player1 = Bukkit.getPlayer(uuid);
+
+                    if (player1 != null) {
+
+                        GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(uuid), consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            if (GameAPI.getGamePlayer(player1) != null)
+                                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player1, GameAPI.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor(), GameAPI.getGamePlayer(player1).getLevel());
+                        }));
+                    }
+                    return;
+                }
+
                 // Handle packet sync //
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                     try {
-                        if (task.equals("Update")) {
-                            UUID uuid = UUID.fromString(in.readUTF());
-                            Player player1 = Bukkit.getPlayer(uuid);
-
-                            if (player1 != null) {
-
-                                GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(uuid), consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                    if (GameAPI.getGamePlayer(player1) != null)
-                                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player1, GameAPI.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor(), GameAPI.getGamePlayer(player1).getLevel());
-                                }));
-                            }
-
-                            return;
-                        }
 
                         if (task.equals("Friends")) {
                             String msg = in.readUTF();
