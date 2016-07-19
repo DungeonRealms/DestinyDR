@@ -769,22 +769,18 @@ public class GameAPI {
     }
 
     /**
-     * Safely logs out all players when the server restarts
+     * Safely logs out all players when the server restarts. Saves their data async before.
      *
      * @since 1.0
      */
     public static void logoutAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
-
             if (CombatLog.isInCombat(player)) {
                 CombatLog.removeFromCombat(player);
             }
-
-            GameAPI.handleLogout(player.getUniqueId());
-            DungeonRealms.getInstance().getLoggingOut().add(player.getName());
             DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BungeeUtils.sendToServer(player.getName(), "Lobby"), 3L);
+            BungeeUtils.sendToServer(player.getName(), "Lobby");
         }
     }
 
@@ -1144,6 +1140,7 @@ public class GameAPI {
     public static void moveToShard(Player player, String serverBungeeName) {
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
 
+        GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
         submitAsyncCallback(() -> GameAPI.handleLogout(player.getUniqueId()), consumer -> {
             DungeonRealms.getInstance().getLoggingOut().add(player.getName());
             DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
