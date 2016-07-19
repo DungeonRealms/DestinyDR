@@ -109,6 +109,10 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
     	
     	
     }
+
+	@Override
+	public void collide(Entity e) {
+	}
     
 	@Override
 	public abstract EnumMonster getEnum();

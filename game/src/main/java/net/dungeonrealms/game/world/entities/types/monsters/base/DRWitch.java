@@ -94,6 +94,9 @@ public class DRWitch extends EntityWitch implements DRMonster {
     }
 
     @Override
+    public void collide(Entity e) {}
+
+    @Override
     public void onMonsterAttack(Player p) {
     }
 

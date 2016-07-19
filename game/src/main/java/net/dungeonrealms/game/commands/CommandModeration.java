@@ -3,7 +3,6 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.database.type.EnumData;
-import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import org.bukkit.Bukkit;
@@ -54,27 +53,8 @@ public class CommandModeration extends BasicCommand {
             case "invsee":
                 playerName = args[1];
 
-                if (Bukkit.getPlayer(playerName) != null) {
+                if (Bukkit.getPlayer(playerName) != null)
                     sender.openInventory(Bukkit.getPlayer(playerName).getInventory());
-                } else {
-
-                    if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {
-                        sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
-                        return true;
-                    }
-
-                    UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
-                    Inventory inventoryView = Bukkit.createInventory(null, 36, playerName + "'s Offline Inventory View");
-
-                    String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, p_uuid);
-                    if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-                        ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
-                        inventoryView.setContents(items);
-                    }
-
-                    offline_inv_watchers.put(sender.getUniqueId(), p_uuid);
-                    sender.openInventory(inventoryView);
-                }
                 break;
             case "armorsee":
                 playerName = args[1];

@@ -112,6 +112,8 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
         return this.enumMonster.name;
     }
 
+    @Override
+    public void collide(Entity e) {}
 
     @Override
     public void onMonsterAttack(Player p) {

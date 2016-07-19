@@ -97,6 +97,9 @@ public abstract class DRGolem extends EntityIronGolem implements DRMonster {
     }
 
     @Override
+    public void collide(Entity e) {}
+
+    @Override
     public void onMonsterDeath(Player killer) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
             this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
