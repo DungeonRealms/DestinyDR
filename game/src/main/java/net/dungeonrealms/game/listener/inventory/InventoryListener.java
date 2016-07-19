@@ -538,11 +538,6 @@ public class InventoryListener implements Listener {
         if (gp == null) {
             return;
         }
-        if (gp.getLevel() < 30) {
-            event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
-            return;
-        }
         if (player.hasMetadata("last_orb_use")) {
             if ((System.currentTimeMillis() - player.getMetadata("last_orb_use").get(0).asLong()) < (500)) {
                 event.setCancelled(true);
