@@ -275,9 +275,17 @@ public class GuildMechanics {
 
     private StringBuilder getPlayers(List<UUID> uuids) {
         StringBuilder players = new StringBuilder();
-        for (int i = 0; i < uuids.size(); i++)
+
+        for (int i = 0; i < uuids.size(); i++) {
+
+            if (i >= 3) {
+                players.append(" and ").append(uuids.size() - (i + 1)).append(" more.");
+                return players;
+            }
+
             if (i == 0) players.append(getPlayerName(uuids.get(i)));
             else players.append(", ").append(getPlayerName(uuids.get(i)));
+        }
         return players;
     }
 
