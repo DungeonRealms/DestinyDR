@@ -222,10 +222,6 @@ public class GameAPI {
         }
     }
 
-    public static void ignorePlayerQuit(UUID uuid) {
-        IGNORE_QUIT_EVENT.add(uuid);
-    }
-
     /**
      * @param player
      * @param kill

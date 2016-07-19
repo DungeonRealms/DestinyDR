@@ -34,6 +34,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -311,10 +312,21 @@ public class BlockListener implements Listener {
             if (block == null) return;
             if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
             Material mat = block.getType();
-            if (mat == Material.FURNACE || mat == Material.HOPPER || mat == Material.DISPENSER || mat == Material.HOPPER_MINECART || mat == Material.TRAPPED_CHEST)
+
+            if (mat == Material.HOPPER && mat == Material.DISPENSER
+                    && ((block.getWorld().equals(Bukkit.getWorlds().get(0)) || block.getWorld().getName().contains("DUNGEON")) && Realms.getInstance().getRealm(block.getWorld()) == null))
+                event.setCancelled(true);
+
+            if (mat == Material.FURNACE || mat == Material.HOPPER_MINECART || mat == Material.TRAPPED_CHEST)
                 event.setCancelled(true);
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void itemMove(InventoryMoveItemEvent event) {
+        if (event.getDestination().getName().equalsIgnoreCase("container.furnace")) event.setCancelled(true);
+    }
+
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event) {
@@ -559,7 +571,7 @@ public class BlockListener implements Listener {
             Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0, 1, 0));
             Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1, 1, 0));
             Player player = e.getPlayer();
-            if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && GameAPI.isInSafeRegion(e.getClickedBlock().getLocation())) {
+            if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && GameAPI.isInSafeRegion(e.getClickedBlock().getLocation()) && player.getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) {
 
                 if (ShopMechanics.ALLSHOPS.containsKey(player.getName())) {
                     Shop shop = ShopMechanics.getShop(player.getName());
