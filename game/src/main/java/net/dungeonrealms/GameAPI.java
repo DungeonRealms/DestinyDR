@@ -26,6 +26,7 @@ import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanics.DungeonManager;
+import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
@@ -849,11 +850,9 @@ public class GameAPI {
 
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-            GameAPI.submitAsyncCallback(() -> ItemSerialization.fromString(playerInv, 36), result -> {
-                ItemStack[] items = ((Inventory)result).getContents();
-                player.getInventory().setContents(items);
-                player.updateInventory();
-            });
+            ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
+            player.getInventory().setContents(items);
+            player.updateInventory();
         }
         List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
         int i = -1;
@@ -881,10 +880,9 @@ public class GameAPI {
         player.updateInventory();
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
-            GameAPI.submitAsyncCallback(() -> ItemSerialization.fromString(source), result -> {
-                Storage storageTemp = new Storage(uuid, (Inventory)result);
-                BankMechanics.storage.put(uuid, storageTemp);
-            });
+            Inventory inv = ItemSerialization.fromString(source);
+            Storage storageTemp = new Storage(uuid, inv);
+            BankMechanics.storage.put(uuid, storageTemp);
         } else {
             Storage storageTemp = new Storage(uuid);
             BankMechanics.storage.put(uuid, storageTemp);
@@ -902,7 +900,10 @@ public class GameAPI {
             /**
              PLAYER IS NEW
              */
-            player.teleport(new Location(Bukkit.getWorlds().get(0), 990, 32, -147, 72.9f, -3.3f));
+
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7Welcome &6" + player.getName() + "&7to &6Dungeon Realms&7."));
+            ItemManager.giveStarter(player);
+            player.teleport(new Location(Bukkit.getWorlds().get(0), -405 + .5, 32 + 1.5, -147 + .5, 90F, -3.8F));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });
