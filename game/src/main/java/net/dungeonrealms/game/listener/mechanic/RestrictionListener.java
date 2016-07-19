@@ -137,7 +137,7 @@ public class RestrictionListener implements Listener {
                 return;
             }
 
-        if (result.getType() == Material.WHEAT || result.getType() == Material.BREAD || result.getType() == Material.WOOD_SWORD
+        if (result.getType() == Material.WHEAT || result.getType() == Material.BREAD || result.getType() == Material.WOOD_SWORD || result.getType() == Material.FURNACE
                 || result.getType() == Material.ARMOR_STAND || result.getType() == Material.ENDER_CHEST || result.getType() == Material.SHIELD
                 || result.getType() == Material.STONE_SWORD || result.getType() == Material.IRON_SWORD || result.getType() == Material.DIAMOND_SWORD
                 || result.getType() == Material.GOLD_SWORD || result.getType() == Material.BOW || result.getType() == Material.WOOD_AXE

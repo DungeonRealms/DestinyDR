@@ -6,3 +6,5 @@ Build <build>
 
 &4Bug Fixes&0
 - Refactored player data saving to fix many lag issues.
+- Fixed placing shops in peaceful realms
+- Furnaces are now restricted in realms
