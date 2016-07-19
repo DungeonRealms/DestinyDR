@@ -12,9 +12,7 @@ import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.PlayerManager;
@@ -35,7 +33,6 @@ import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
-import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -331,16 +328,14 @@ public class MainListener implements Listener {
         GameAPI.handleLogout(event.getPlayer().getUniqueId());
     }
 
-    /**
-     * Handles player leaving the server
-     *
-     * @param event
-     * @since 1.0
-     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId()))
+            return;
+
         event.setQuitMessage(null);
         GameAPI.handleLogout(event.getPlayer().getUniqueId());
+        // HANDLE LOGOUT ASYNC //
     }
 
     /**

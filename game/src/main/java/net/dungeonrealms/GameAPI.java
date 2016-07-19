@@ -102,6 +102,11 @@ public class GameAPI {
     public static Map<String, GamePlayer> GAMEPLAYERS = new ConcurrentHashMap<>();
     public static Set<Player> _hiddenPlayers = new HashSet<>();
 
+    /**
+     * Used to avoid double saving player data
+     */
+    public static Set<UUID> IGNORE_QUIT_EVENT = new HashSet<>();
+
 
     /**
      * Utility type for calling async tasks with callbacks.
@@ -214,6 +219,10 @@ public class GameAPI {
         } else {
             return 5;
         }
+    }
+
+    public static void ignorePlayerQuit(UUID uuid) {
+        IGNORE_QUIT_EVENT.add(uuid);
     }
 
     /**
@@ -662,6 +671,9 @@ public class GameAPI {
      */
     public static boolean handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+
+        GuildMechanics.getInstance().doLogout(player);
+        Realms.getInstance().doLogout(player);
 
         if (!DatabaseAPI.getInstance().PLAYER_TIME.containsKey(uuid) || DatabaseAPI.getInstance().PLAYER_TIME.get(uuid) <= 5) {
             //Dont save.
