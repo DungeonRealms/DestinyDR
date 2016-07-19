@@ -19,7 +19,6 @@ public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
-    public volatile ConcurrentHashMap<UUID, Integer> PLAYER_TIME = new ConcurrentHashMap<>();
 
 
     public static DatabaseAPI getInstance() {
