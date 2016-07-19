@@ -8,10 +8,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.EntityMagmaCube;
-import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.GenericAttributes;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -101,8 +98,10 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 
 	@Override
 	public void onMonsterAttack(Player p) {
-		
 	}
+
+	@Override
+	public void collide(Entity e) {}
 
 	@Override
 	public void onMonsterDeath(Player killer) {

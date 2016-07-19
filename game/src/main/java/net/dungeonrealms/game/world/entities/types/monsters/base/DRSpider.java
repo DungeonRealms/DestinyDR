@@ -111,10 +111,11 @@ public abstract class DRSpider extends EntitySpider implements DRMonster {
 		return item;
 	}
 
+	@Override
+	public void collide(Entity e) {}
+
     @Override
 	public void onMonsterAttack(Player p) {
-    	
-    	
     }
     
 	@Override
