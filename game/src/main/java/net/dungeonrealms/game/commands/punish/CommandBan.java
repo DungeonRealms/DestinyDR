@@ -104,14 +104,14 @@ public class CommandBan extends BasicCommand {
             else
                 sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + reasonString);
 
-            PunishAPI.ban(p_uuid, p_name, duration, reasonString, doBefore -> GameAPI.handleLogout(p_uuid));
+            PunishAPI.ban(p_uuid, p_name, duration, reasonString, doBefore -> GameAPI.handleLogout(p_uuid, false));
         } else {
             if (duration != -1)
                 sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
             else
                 sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name);
 
-            PunishAPI.ban(p_uuid, p_name, duration, "", doBefore -> GameAPI.handleLogout(p_uuid));
+            PunishAPI.ban(p_uuid, p_name, duration, "", doBefore -> GameAPI.handleLogout(p_uuid, false));
         }
 
         return false;

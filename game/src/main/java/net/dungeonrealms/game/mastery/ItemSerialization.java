@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mastery;
 
+import net.dungeonrealms.GameAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,6 +15,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * Created by Nick on 9/24/2015.
@@ -117,16 +119,21 @@ public class ItemSerialization {
      * @return Inventory
      * @since 1.0
      */
-    public static Inventory fromString(String s, int overrideSize) {
+    public static void fromString(String s, int overrideSize, Consumer<Inventory> consumer) {
         YamlConfiguration configuration = new YamlConfiguration();
-        try {
-            configuration.loadFromString(Base64Coder.decodeString(s));
-            Inventory i = Bukkit.createInventory(null, overrideSize, configuration.getString("Title"));
-            ConfigurationSection contents = configuration.getConfigurationSection("Contents");
-            contents.getKeys(false).stream().filter(index -> contents.getItemStack(index) != null && Integer.parseInt(index) < overrideSize).forEach(index -> i.setItem(Integer.parseInt(index), contents.getItemStack(index)));
-            return i;
-        } catch (InvalidConfigurationException e) {
-            return null;
-        }
+        GameAPI.submitAsyncCallback(() -> Base64Coder.decodeString(s), result -> {
+            try {
+                configuration.loadFromString(result);
+                Inventory i = Bukkit.createInventory(null, overrideSize, configuration.getString("Title"));
+                ConfigurationSection contents = configuration.getConfigurationSection("Contents");
+                contents.getKeys(false).stream().filter(index -> contents.getItemStack(index) != null && Integer.parseInt(index) < overrideSize).forEach(index -> i.setItem(Integer.parseInt(index), contents.getItemStack(index)));
+
+                consumer.accept(i);
+            }
+            catch (InvalidConfigurationException e) {
+                consumer.accept(null);
+            }
+        });
+    });
     }
 }

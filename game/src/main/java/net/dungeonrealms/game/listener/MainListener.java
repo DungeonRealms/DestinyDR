@@ -223,6 +223,8 @@ public class MainListener implements Listener {
         DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();
 
+        TitleAPI.sendTitle(player, 0, 0, 0, "", "");
+
         CombatLog.checkCombatLog(player.getUniqueId());
         GameAPI.handleLogin(player.getUniqueId());
 
@@ -310,9 +312,7 @@ public class MainListener implements Listener {
             return;
         }
 
-        // HANDLE LOGOUT ASYNC //
-        GameAPI.submitAsyncCallback(
-                () -> GameAPI.handleLogout(event.getPlayer().getUniqueId()), null);
+        GameAPI.handleLogout(event.getPlayer().getUniqueId(), true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -320,13 +320,12 @@ public class MainListener implements Listener {
         event.setQuitMessage(null);
 
         if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
+            Utils.log.info("Ignored quit event for player " + event.getPlayer().getName());
             GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
             return;
         }
 
-        // HANDLE LOGOUT ASYNC //
-        GameAPI.submitAsyncCallback(
-                () -> GameAPI.handleLogout(event.getPlayer().getUniqueId()), null);
+        GameAPI.handleLogout(event.getPlayer().getUniqueId(), true);
     }
 
     /**

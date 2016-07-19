@@ -405,7 +405,6 @@ public class GameAPI {
      * @param contents More data?
      * @since 1.0
      */
-
     public static void sendNetworkMessage(String task, String message, String... contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(task);
@@ -586,7 +585,15 @@ public class GameAPI {
         return false;
     }
 
-    public static boolean savePlayerData(UUID uuid) {
+    /**
+     * Saves player data
+     *
+     * @param uuid
+     * @param async should always be true unless you need a callback from this method and are asyncing it via a
+     *              different method.
+     * @since 1.0
+     */
+    public static boolean savePlayerData(UUID uuid, boolean async) {
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) {
@@ -598,12 +605,12 @@ public class GameAPI {
             Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false, async);
             }
             inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false, async);
             }
         }
 
@@ -623,10 +630,10 @@ public class GameAPI {
         } else {
             armor.add(ItemSerialization.itemStackToBase64(offHand));
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false, async);
 
         String inventory = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false, async);
 
         // LOCATION
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
@@ -634,21 +641,21 @@ public class GameAPI {
             locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
                     + player.getLocation().getZ() + "," + player.getLocation().getYaw() + ","
                     + player.getLocation().getPitch();
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false, true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false, async);
         } else {
             //Dungeon or realm, should already have their last main world location saved.
         }
 
         // MULE INVENTORY
         if (MountUtils.inventories.containsKey(uuid)) {
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false, true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false, async);
         }
 
         // LEVEL AND STATISTICS
         if (GAMEPLAYERS.size() > 0) {
             GamePlayer gp = GameAPI.getGamePlayer(player);
             if (gp != null) {
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), false, true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), false, async);
                 gp.getPlayerStatistics().updatePlayerStatistics();
                 gp.getStats().updateDatabase(false);
                 GAMEPLAYERS.remove(player.getName());
@@ -656,10 +663,10 @@ public class GameAPI {
         }
 
         // MISC
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false, true);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), false, true);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player), false, true);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false, async);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), false, async);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player), false, async);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false, async);
 
         return true;
     }
@@ -668,23 +675,22 @@ public class GameAPI {
      * Safely logs out the player, updates their database inventories etc.
      *
      * @param uuid
+     * @param async should always be true unless you need a callback from this method and are asyncing it via a
+     *              different method.
      * @since 1.0
      */
-    public static boolean handleLogout(UUID uuid) {
+    public static boolean handleLogout(UUID uuid, boolean async) {
         Player player = Bukkit.getPlayer(uuid);
 
         GuildMechanics.getInstance().doLogout(player);
         Realms.getInstance().doLogout(player);
 
         // save player data
-        if (!DatabaseAPI.getInstance().PLAYER_TIME.containsKey(uuid) || DatabaseAPI.getInstance().PLAYER_TIME.get(uuid) <= 5) {
-            DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
-        } else savePlayerData(uuid);
+        savePlayerData(uuid, async);
 
         DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
 
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
-
 
         Chat.listenForMessage(player, null, null);
 
@@ -724,11 +730,11 @@ public class GameAPI {
                 }
             }
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false, async);
 
         MountUtils.inventories.remove(uuid);
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis(), false, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis(), false, async);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
@@ -1141,14 +1147,11 @@ public class GameAPI {
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
         submitAsyncCallback(() -> {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true, true);
-            GameAPI.handleLogout(player.getUniqueId());
+            GameAPI.handleLogout(player.getUniqueId(), false);
             return true;
         }, consumer -> {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                    () -> {
-                        BungeeUtils.sendToServer(player.getName(), serverBungeeName);
-                        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-                    }, 10);
+            BungeeUtils.sendToServer(player.getName(), serverBungeeName);
+            DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         });
     }
 
@@ -1162,7 +1165,7 @@ public class GameAPI {
                             return;
                         }
                         UUID uuid = player.getUniqueId();
-                        savePlayerData(uuid);
+                        savePlayerData(uuid, true);
                         Utils.log.info("Backed up information for uuid: " + uuid.toString());
                     }
                     DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");
