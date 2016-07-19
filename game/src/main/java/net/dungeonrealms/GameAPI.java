@@ -849,11 +849,9 @@ public class GameAPI {
 
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-            GameAPI.submitAsyncCallback(() -> ItemSerialization.fromString(playerInv, 36), result -> {
-                ItemStack[] items = ((Inventory)result).getContents();
-                player.getInventory().setContents(items);
-                player.updateInventory();
-            });
+            ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
+            player.getInventory().setContents(items);
+            player.updateInventory();
         }
         List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
         int i = -1;
@@ -881,10 +879,9 @@ public class GameAPI {
         player.updateInventory();
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
-            GameAPI.submitAsyncCallback(() -> ItemSerialization.fromString(source), result -> {
-                Storage storageTemp = new Storage(uuid, (Inventory)result);
-                BankMechanics.storage.put(uuid, storageTemp);
-            });
+            Inventory inv = ItemSerialization.fromString(source);
+            Storage storageTemp = new Storage(uuid, inv);
+            BankMechanics.storage.put(uuid, storageTemp);
         } else {
             Storage storageTemp = new Storage(uuid);
             BankMechanics.storage.put(uuid, storageTemp);
