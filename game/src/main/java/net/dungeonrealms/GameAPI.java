@@ -676,17 +676,15 @@ public class GameAPI {
         GuildMechanics.getInstance().doLogout(player);
         Realms.getInstance().doLogout(player);
 
+        // save player data
         if (!DatabaseAPI.getInstance().PLAYER_TIME.containsKey(uuid) || DatabaseAPI.getInstance().PLAYER_TIME.get(uuid) <= 5) {
-            //Dont save.
             DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
-            return false;
-        }
+        } else savePlayerData(uuid);
+
         DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
 
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
-        // save player data
-        savePlayerData(uuid);
 
         Chat.listenForMessage(player, null, null);
 
@@ -695,8 +693,6 @@ public class GameAPI {
             DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
         }
 
-        GuildMechanics.getInstance().doLogout(player);
-        Realms.getInstance().doLogout(player);
         for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
             tracker.removeDamager(player);
         }
