@@ -76,6 +76,15 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
             try {
                 String task = in.readUTF();
 
+                if (task.equals("LoginRequestToken")) {
+                    UUID uuid = UUID.fromString(in.readUTF());
+                    String shard = in.readUTF();
+
+                    if (!DungeonRealms.getShard().getPseudoName().equals(shard)) return;
+                    GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(uuid), after -> GameAPI.sendNetworkMessage("AcceptLoginToken", uuid.toString(), shard));
+                    return;
+                }
+
                 if (task.equals("Update")) {
                     UUID uuid = UUID.fromString(in.readUTF());
                     Player player1 = Bukkit.getPlayer(uuid);

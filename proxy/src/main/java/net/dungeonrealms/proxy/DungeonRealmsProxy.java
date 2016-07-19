@@ -30,6 +30,7 @@ import net.md_5.bungee.event.EventPriority;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 5/31/2016
@@ -45,6 +46,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     @Getter
     private static GameClient client;
+
+    public List<UUID> ACCEPTED_CONNECTIONS = new CopyOnWriteArrayList<>();
+
 
     @Override
     public void onEnable() {
@@ -72,6 +76,19 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                     ProxyServer.getInstance().getServers().put(info.getPseudoName(), serverInfo);
                 }
         );
+    }
+
+
+    @EventHandler
+    public void onShardConnect(ServerConnectEvent event) {
+        ShardInfo shard = ShardInfo.getByPseudoName(event.getTarget().getName());
+        if (shard == null) return;
+
+        if (ACCEPTED_CONNECTIONS.contains(event.getPlayer().getUniqueId())) return;
+        event.setCancelled(true);
+
+        // SEND REQUEST PLAYER'S DATA PACKET //
+        sendPacket("LoginRequestToken", event.getPlayer().getUniqueId().toString(), shard.getPseudoName());
     }
 
 

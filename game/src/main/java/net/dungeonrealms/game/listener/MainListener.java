@@ -218,7 +218,6 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onJoin(PlayerJoinEvent event) {
-
         event.setJoinMessage(null);
         DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();
@@ -233,7 +232,8 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
         CombatLog.checkCombatLog(player.getUniqueId());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> GameAPI.handleLogin(player.getUniqueId()), 20L * 3);
+        GameAPI.handleLogin(player.getUniqueId());
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
                 if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, player.getUniqueId()).toString()))) {

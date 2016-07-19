@@ -77,9 +77,10 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                                         try {
                                             Document existingDoc = consumer.get();
                                             if (existingDoc != null) {
+                                                long banTime = ((Document) existingDoc.get("punishments")).get("banned", Long.class);
                                                 UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
 
-                                                if (PunishAPI.isBanned(uuid)) {
+                                                if (banTime == -1 || banTime != 0 && System.currentTimeMillis() < banTime) {
                                                     String bannedMessage = PunishAPI.getBannedMessage(uuid);
                                                     PunishAPI.kick(player.getName(), bannedMessage, doBefore -> {
                                                     });
