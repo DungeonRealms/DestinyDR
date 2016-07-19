@@ -44,6 +44,9 @@ public class DatabaseAPI {
         if (async) {
             MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object))));
         }
+        else {
+            DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+        }
         if (requestNew) {
             if (async) {
                 new Thread() {
