@@ -1,5 +1,6 @@
-package net.dungeonrealms.proxy;
+package net.dungeonrealms.proxy.network;
 
+import net.dungeonrealms.proxy.DungeonRealmsProxy;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;

@@ -203,6 +203,7 @@ public class MainListener implements Listener {
             return;
         }
 
+
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
 
         if (PunishAPI.isBanned(event.getUniqueId())) {
@@ -557,10 +558,10 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerInteractFishingRod(PlayerInteractEvent event) {
         final Player pl = event.getPlayer();
-        if(pl.getEquipment().getItemInMainHand() != null)
-        if (!(Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()))) {
-            return; // Get out of here.
-        }
+        if (pl.getEquipment().getItemInMainHand() != null)
+            if (!(Fishing.isDRFishingPole(pl.getEquipment().getItemInMainHand()))) {
+                return; // Get out of here.
+            }
         if (!pl.getWorld().equals(Bukkit.getWorlds().get(0))) {
             event.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
             event.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");

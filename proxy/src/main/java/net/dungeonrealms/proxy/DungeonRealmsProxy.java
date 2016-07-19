@@ -1,11 +1,18 @@
 package net.dungeonrealms.proxy;
 
+import com.esotericsoftware.minlog.Log;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import lombok.Getter;
 import net.dungeonrealms.Constants;
+import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.PingResponse;
 import net.dungeonrealms.network.ServerAddress;
 import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.ping.ServerPinger;
 import net.dungeonrealms.network.ping.type.BungeePingResponse;
+import net.dungeonrealms.proxy.network.NetworkClientListener;
+import net.dungeonrealms.proxy.network.ProxyChannelListener;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
@@ -20,6 +27,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
 
@@ -35,6 +43,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         return instance;
     }
 
+    @Getter
+    private static GameClient client;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -42,12 +53,36 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
 
+
+        getLogger().info("Connecting to DungeonRealms master server...");
+        client = new GameClient();
+
+        try {
+            client.connect();
+            Log.set(Log.LEVEL_INFO);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        new NetworkClientListener().startInitialization(client);
+
         // REGISTER DUNGEON REALM SHARDS //
         Arrays.asList(ShardInfo.values()).stream().forEach(info -> {
                     ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(info.getPseudoName(), new InetSocketAddress(info.getAddress().getAddress(), info.getAddress().getPort()), "", false);
                     ProxyServer.getInstance().getServers().put(info.getPseudoName(), serverInfo);
                 }
         );
+    }
+
+
+    public static void sendPacket(String task, String... contents) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(task);
+
+        for (String s : contents)
+            out.writeUTF(s);
+
+        getClient().sendTCP(out.toByteArray());
     }
 
 
@@ -78,6 +113,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         });
     }
 
+
     @EventHandler
     public void onPing(ProxyPingEvent event) {
         ServerPing ping = event.getResponse();
@@ -89,18 +125,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         ping.setPlayers(new ServerPing.Players(Constants.PLAYER_SLOTS, players, sample));
     }
 
-    public List<ServerInfo> getOptimalShards() {
-        List<ServerInfo> servers = new ArrayList<>();
-
-//        for (String shardName : LOAD_BALANCED_SHARDS)
-//            // We want to only put them on a US as they may fail the criteria for another shard.
-//            // They are free to join another shard once connected.
-//            if (shardName.startsWith("us") && !shardName.equalsIgnoreCase("us0"))
-//                servers.add(getProxy().getServerInfo(shardName));
-
-        Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
-        return servers;
-    }
 
     // RIP LOAD BALANCER //
     //@EventHandler
@@ -151,5 +175,16 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         }
     }
 
+    public List<ServerInfo> getOptimalShards() {
+        List<ServerInfo> servers = new ArrayList<>();
 
+//        for (String shardName : LOAD_BALANCED_SHARDS)
+//            // We want to only put them on a US as they may fail the criteria for another shard.
+//            // They are free to join another shard once connected.
+//            if (shardName.startsWith("us") && !shardName.equalsIgnoreCase("us0"))
+//                servers.add(getProxy().getServerInfo(shardName));
+
+        Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
+        return servers;
+    }
 }

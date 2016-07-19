@@ -99,6 +99,37 @@ public class GameAPI {
     public static Map<String, GamePlayer> GAMEPLAYERS = new ConcurrentHashMap<>();
     public static Set<Player> _hiddenPlayers = new HashSet<>();
 
+
+    /**
+     * Utility type for calling async tasks with callbacks.
+     *
+     * @param callable Callable type
+     * @param consumer Consumer task
+     * @param <T>      Type of data
+     * @author apollosoftware
+     */
+    public static <T> void submitAsyncCallback(Callable<T> callable, Consumer<Future<T>> consumer) {
+        // FUTURE TASK //
+        FutureTask<T> task = new FutureTask<>(callable);
+
+        // BUKKIT'S ASYNC SCHEDULE WORKER
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // RUN FUTURE TASK ON THREAD //
+                task.run();
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        // ACCEPT CONSUMER //
+                        consumer.accept(task);
+                    }
+                }.runTask(DungeonRealms.getInstance());
+            }
+        }.runTaskAsynchronously(DungeonRealms.getInstance());
+    }
+
+
     /**
      * To get the players region.
      *
@@ -548,17 +579,17 @@ public class GameAPI {
      * @param uuid
      * @since 1.0
      */
-    public static void handleLogout(UUID uuid) {
+    public static boolean handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
 
         if (!DatabaseAPI.getInstance().PLAYER_TIME.containsKey(uuid) || DatabaseAPI.getInstance().PLAYER_TIME.get(uuid) <= 5) {
             //Dont save.
             DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
-            return;
+            return false;
         }
         DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
 
-        if (player == null) return;
+        if (player == null) return false;
         if (player.getWorld().getName().contains("DUNGEON")) {
             for (ItemStack stack : player.getInventory().getContents()) {
                 if (stack != null && stack.getType() != Material.AIR) {
@@ -576,7 +607,7 @@ public class GameAPI {
             GameAPI._hiddenPlayers.remove(player);
         }
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-            return;
+            return false;
         }
         if (CombatLog.isInCombat(player)) {
             if (!DuelingMechanics.isDueling(uuid)) {
@@ -659,6 +690,8 @@ public class GameAPI {
         }
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
+
+        return true;
     }
 
     /**
@@ -1036,43 +1069,19 @@ public class GameAPI {
      */
     public static void moveToShard(Player player, String serverBungeeName) {
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
-        GameAPI.handleLogout(player.getUniqueId());
-        DungeonRealms.getInstance().getLoggingOut().add(player.getName());
-        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                () -> {
-                    BungeeUtils.sendToServer(player.getName(), serverBungeeName);
-                    DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-                }, 10);
+        submitAsyncCallback(() -> GameAPI.handleLogout(player.getUniqueId()), consumer -> {
+            DungeonRealms.getInstance().getLoggingOut().add(player.getName());
+            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                    () -> {
+                        BungeeUtils.sendToServer(player.getName(), serverBungeeName);
+                        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+                    }, 10);
+        });
     }
 
-
-    /**
-     * Utility type for calling async tasks with callbacks.
-     *
-     * @param callable Callable type
-     * @param consumer Consumer task
-     * @param <T>      Type of data
-     */
-    public static <T> void runAsyncCallbackTask(Callable<T> callable, Consumer<Future<T>> consumer) {
-        FutureTask<T> task = new FutureTask<>(callable);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                task.run();
-
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        consumer.accept(task);
-                    }
-                }.runTask(DungeonRealms.getInstance());
-            }
-        }.runTaskAsynchronously(DungeonRealms.getInstance());
-    }
 
     static void backupDatabase() {
         if (Bukkit.getOnlinePlayers().size() == 0) return;

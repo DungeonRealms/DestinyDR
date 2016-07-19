@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.network;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
@@ -20,6 +21,7 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Nick on 10/12/2015.
@@ -70,20 +72,27 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                 if (subChannel.equals("IP")) {
                     String address = in.readUTF();
 
-                    Document existingDoc = DatabaseAPI.getInstance().getDocumentFromAddress(address);
+                    GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().getDocumentFromAddress(address),
+                            consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                        try {
+                                            Document existingDoc = consumer.get();
+                                            if (existingDoc != null) {
+                                                UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
 
-                    if (existingDoc != null) {
-                        UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
+                                                if (PunishAPI.isBanned(uuid)) {
+                                                    String bannedMessage = PunishAPI.getBannedMessage(uuid);
+                                                    PunishAPI.kick(player.getName(), bannedMessage, doBefore -> {
+                                                    });
 
-                        if (PunishAPI.isBanned(uuid)) {
-                            String bannedMessage = PunishAPI.getBannedMessage(uuid);
-                            PunishAPI.kick(player.getName(), bannedMessage, doBefore -> {
-                            });
-
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_TIME, DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME), true);
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_REASON, DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_REASON), true);
-                        }
-                    }
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_TIME, DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME), true);
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_REASON, DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_REASON), true);
+                                                }
+                                            }
+                                        } catch (InterruptedException | ExecutionException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                            ));
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
                     return;
@@ -106,7 +115,11 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                 // This should never happen.
                 e.printStackTrace();
             }
-        } catch (IOException e) {
+        } catch (
+                IOException e
+                )
+
+        {
             e.printStackTrace();
         }
     }

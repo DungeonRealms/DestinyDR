@@ -40,6 +40,7 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew) {
+
         DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
         if (requestNew) {
             requestPlayer(uuid);
@@ -301,14 +302,18 @@ public class DatabaseAPI {
      * @param uuid
      * @since 1.0
      */
-    public void requestPlayer(UUID uuid) {
+    public boolean requestPlayer(UUID uuid) {
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null) {
             addNewPlayer(uuid);
+
+
         } else {
             if (DatabaseDriver.getInstance().isKeepDataInMemory())
                 PLAYERS.put(uuid, doc);
         }
+
+        return true;
 
         //GuildMechanics.getInstance().checkPlayerGuild(uuid);
         /*DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document) -> {
