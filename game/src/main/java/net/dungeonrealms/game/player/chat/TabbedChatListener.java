@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.chat;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.punishment.PunishAPI;
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,10 @@ public class TabbedChatListener implements Listener {
 
         if (PunishAPI.isMuted(e.getPlayer().getUniqueId())) {
             e.getPlayer().sendMessage(PunishAPI.getMutedMessage(e.getPlayer().getUniqueId()));
+            return;
+        }
+
+        if (!Chat.checkGlobalCooldown(player)) {
             return;
         }
 

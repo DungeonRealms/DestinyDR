@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -129,6 +130,11 @@ public class Chat {
         boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
 
         if (gChat) {
+            if (!checkGlobalCooldown(event.getPlayer())) {
+                event.setMessage(null);
+                event.setCancelled(true);
+                return;
+            }
             if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
                 final Player p = event.getPlayer();
                 String aprefix = GameChat.getPreMessage(p);
@@ -241,5 +247,16 @@ public class Chat {
         return returnMessage;
     }
 
-
+    public static boolean checkGlobalCooldown(Player player) {
+        if (player.hasMetadata("lastGlobalChat") && (System.currentTimeMillis() - player.getMetadata
+                ("lastGlobalChat").get(0).asLong()) < 10000) {
+            int timeRemaining = ((int)(10000 - (System.currentTimeMillis() - player.getMetadata("lastGlobalChat").get(0)
+                    .asLong()))) / 1000;
+            player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.UNDERLINE + timeRemaining + " seconds" +
+                    ChatColor.RED + " before sending another global chat message.");
+            return false;
+        }
+        player.setMetadata("lastGlobalChat", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        return true;
+    }
 }
