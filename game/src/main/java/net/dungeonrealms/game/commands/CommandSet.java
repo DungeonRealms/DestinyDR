@@ -72,7 +72,7 @@ public class CommandSet extends BasicCommand {
                         break;
                     }
                     int gems = Integer.parseInt(args[1]);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true, false);
                     s.sendMessage("Gems set to " + gems);
                     break;
                 case "invlevel":
