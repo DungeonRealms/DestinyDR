@@ -9,5 +9,6 @@ Build <build>
 &4Bug Fixes&0
 - Fixed many lag issues.
 - Fixed placing shops in peaceful realms
+- Fixed typos
 - Furnaces are now restricted in realms
-- Remove Herobrine
+- Removed Herobrine
