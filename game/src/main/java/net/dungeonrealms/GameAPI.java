@@ -879,6 +879,7 @@ public class GameAPI {
         }
         player.getEquipment().setArmorContents(armorContents);
         player.getEquipment().setItemInOffHand(offHand);
+        PlayerManager.checkInventory(uuid);
 
         player.updateInventory();
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
@@ -1087,7 +1088,6 @@ public class GameAPI {
         // calculate attributes
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
             GameAPI.calculateAllAttributes(player);
-            PlayerManager.checkInventory(uuid);
         }, 5L);
 
         if (gp.getPlayer() != null) {
