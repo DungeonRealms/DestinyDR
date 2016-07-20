@@ -785,7 +785,7 @@ public class RealmListener implements Listener {
 
     public int getAvailableSlots(Inventory i) {
         int count = 0;
-        for (ItemStack is : i.getContents()) {
+        for (ItemStack is : i.getStorageContents()) {
             if (is == null || is.getType() == Material.AIR) {
                 count++;
             }
