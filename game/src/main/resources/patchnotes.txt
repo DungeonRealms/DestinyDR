@@ -6,7 +6,7 @@ Build <build>
 - Removed tutorial island
 - Sub/Sub+/Sub++ Ranks now give an XP bonus.
 - Disabled sharding in realms
-- You can no longer store gem in realm
+- You can no longer store gem in realms
 
 &4Bug Fixes&0
 - Fixed critical duplication glitch.
