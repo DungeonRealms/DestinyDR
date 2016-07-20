@@ -279,7 +279,7 @@ public class GuildMechanics {
         for (int i = 0; i < uuids.size(); i++) {
 
             if (i >= 3) {
-                players.append(" and ").append(uuids.size() - (i + 1)).append(" more.");
+                players.append(ChatColor.GRAY.toString()).append(" and ").append(uuids.size() - (i + 1)).append(" more....");
                 return players;
             }
 
