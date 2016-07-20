@@ -502,7 +502,7 @@ public class ShopListener implements Listener {
                         } else {
                             event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR));
                         }
-                        DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, true, true);
+                        DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, true, false);
                         if (shop.getOwner() != null) {
                             if (shop.hasCustomName(itemClicked)) {
                                 shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + quantity + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
@@ -562,7 +562,7 @@ public class ShopListener implements Listener {
                     }
                     meta.setLore(lore);
                     clickClone.setItemMeta(meta);
-                    DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, true, true);
+                    DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, true, false);
                     if (shop.getOwner() != null) {
                         if (shop.hasCustomName(itemClicked)) {
                             shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());

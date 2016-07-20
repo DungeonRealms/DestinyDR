@@ -421,7 +421,7 @@ public class InventoryListener implements Listener {
                 i++;
             }
             if (i == 0) {
-                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true);
+                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, false);
                 storage.collection_bin = null;
             }
         }
