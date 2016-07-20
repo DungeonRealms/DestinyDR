@@ -5,6 +5,7 @@ Build <build>
 - Increased drop rates on higher tiers.
 - Removed tutorial island
 - Sub/Sub+/Sub++ Ranks now give an XP bonus.
+- Disabled sharding in realms
 
 &4Bug Fixes&0
 - Fixed critical duplication glitch.
