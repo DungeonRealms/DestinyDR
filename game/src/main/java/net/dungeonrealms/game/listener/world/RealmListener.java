@@ -842,7 +842,7 @@ public class RealmListener implements Listener {
                 // They're placing an item into the chest.
                 ItemStack cursor = event.getCursor();
                 if (Item.ItemType.isArmor(cursor) || Item.ItemType.isWeapon(cursor) || cursor.getType() == Material.EMERALD
-                        || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor)) {
+                        || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) || BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)) {
                     event.setCancelled(true);
                     event.setCursor(cursor);
                     p.updateInventory();
