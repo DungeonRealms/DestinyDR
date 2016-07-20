@@ -81,14 +81,14 @@ public class CommandSet extends BasicCommand {
                         break;
                     }
                     int invlvl = Integer.parseInt(args[1]);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, true, false);
                     break;
                 case "portalKeys":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, 1500, false, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2, 1500, false, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3, 1500, false, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, 1500, false, true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, 1500, false, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2, 1500, false, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3, 1500, false, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, 1500, false, false);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, true, false);
                     break;
                 case "spawner":
                     if (args.length < 4) {
@@ -141,7 +141,7 @@ public class CommandSet extends BasicCommand {
                     }
                     playerName = args[1];
                     p = Bukkit.getPlayer(playerName);
-                    DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true, true);
+                    DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true, false);
 
                     if (p != null)
                         p.sendMessage(ChatColor.GRAY + "Fixed your shop");
@@ -152,7 +152,7 @@ public class CommandSet extends BasicCommand {
                         break;
                     }
                     invlvl = Integer.parseInt(args[1]);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, true, false);
                     break;
                 case "chaotic":
                     KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.CHAOTIC, null, false);
@@ -189,7 +189,7 @@ public class CommandSet extends BasicCommand {
                         }
                     }
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, true, false);
                     player.sendMessage(ChatColor.GREEN + "Successfully set your E-Cash value to: " + ecash + ".");
                     break;
                 case "hp":
