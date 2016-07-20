@@ -902,7 +902,7 @@ public class GameAPI {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true, true);
 
              /*PLAYER IS NEW*/
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7Welcome &6" + player.getName() + "&7to &6Dungeon Realms&7."));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &fWelcome &6" + player.getName() + " &fto &6Dungeon Realms&f."));
             ItemManager.giveStarter(player);
             player.teleport(new Location(Bukkit.getWorlds().get(0), -405 + .5, 84 + 1.5, 376 + .5, 90F, -3.8F));
             player.sendMessage(new String[]{
