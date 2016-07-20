@@ -352,7 +352,7 @@ public class BankListener implements Listener {
                         if (e.isLeftClick()) {
                             // Open Storage
                             player.openInventory(storage.inv);
-                        } else if (e.getClick() == ClickType.MIDDLE) {
+                        } else if (e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.RIGHT) {
                             Player p = (Player) e.getWhoClicked();
                             if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
                                 player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
