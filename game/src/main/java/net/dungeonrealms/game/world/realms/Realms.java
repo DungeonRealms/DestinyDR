@@ -328,7 +328,4 @@ public interface Realms extends GenericMechanic {
      * @return Players realm.
      */
     RealmToken getRealm(World world);
-
-
-    boolean isApollosRealm(String worldName);
 }
