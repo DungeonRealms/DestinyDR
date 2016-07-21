@@ -156,7 +156,7 @@ public class CombatLog implements GenericMechanic {
             }
         }
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, false, true);
 
         MeleeZombie combatNMSNPC = new MeleeZombie(((CraftWorld) world).getHandle());
         combatNMSNPC.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
@@ -224,7 +224,7 @@ public class CombatLog implements GenericMechanic {
             }
 
             GameAPI.submitAsyncCallback(() -> {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true, true);
                 return true;
             }, null);
         }

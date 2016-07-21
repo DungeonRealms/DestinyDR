@@ -64,7 +64,7 @@ public class CommandSetRank extends BasicCommand {
 
                 // Always update the database with the new rank.
                 GameAPI.submitAsyncCallback(() -> {
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank, false);
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank, true, false);
                     return true;
                 }, result -> {
                     // Only update the server rank if the user is currently logged in.

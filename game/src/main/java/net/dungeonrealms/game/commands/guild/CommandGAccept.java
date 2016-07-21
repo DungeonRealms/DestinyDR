@@ -39,7 +39,7 @@ public class CommandGAccept extends BasicCommand {
         String referrer = guildInvitation.getString("referrer");
         long time = guildInvitation.getLong("time");
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true, true);
 
         if ((System.currentTimeMillis() - time) > 300000L) {
             player.sendMessage(ChatColor.RED + "Your invitation has expired.");

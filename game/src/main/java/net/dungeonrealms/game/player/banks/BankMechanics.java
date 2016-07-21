@@ -317,7 +317,7 @@ public class BankMechanics implements GenericMechanic {
      * @param num
      */
     public void addGemsToPlayerBank(UUID uuid, int num) {
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.GEMS, num, false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.GEMS, num, true, false);
     }
 
     /**

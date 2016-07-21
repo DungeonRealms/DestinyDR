@@ -80,7 +80,7 @@ public class ShopMechanics implements GenericMechanic {
                     block2.setType(Material.CHEST);
                     b.setType(Material.CHEST);
                     Shop shop = new Shop(uniqueId, b.getLocation(), Chat.getInstance().checkForBannedWords(shopName));
-                    DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
+                    DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true, true);
                     ALLSHOPS.put(player.getName(), shop);
                     player.sendMessage(ChatColor.YELLOW + "Shop name assigned.");
                     player.sendMessage("");

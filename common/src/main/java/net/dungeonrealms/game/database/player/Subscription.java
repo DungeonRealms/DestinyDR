@@ -62,8 +62,8 @@ public class Subscription {
     }
 
     public void expireSubscription(Player player) {
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK, "DEFAULT", true);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, 0, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK, "DEFAULT", true, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, 0, true, true);
         player.sendMessage(ChatColor.RED + "Your subscription has expired!");
     }
 

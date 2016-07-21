@@ -23,7 +23,7 @@ public class RealmTestCommand extends BasicCommand {
         if (!Rank.isDev(p)) {
             return false;
         }
-        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.ENTERINGREALM, p.getUniqueId().toString(), true);
+        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.ENTERINGREALM, p.getUniqueId().toString(), true, true);
         GameAPI.handleLogout(p.getUniqueId(), true);
         BungeeUtils.sendToServer(p.getName(), "realms1");
         return true;

@@ -32,10 +32,10 @@ public class PunishAPI {
         else
             kick(playerName, ChatColor.RED + "You are banned until " + timeString((int) (duration / 60)) + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net", doBefore);
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, (duration != -1 ? System.currentTimeMillis() + (duration * 1000) : -1), false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, (duration != -1 ? System.currentTimeMillis() + (duration * 1000) : -1), true, false);
 
         if (!reason.equals(""))
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, reason, false);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, reason, true, false);
     }
 
     /**
@@ -48,10 +48,10 @@ public class PunishAPI {
     public static void mute(UUID uuid, long duration, String reason, Consumer<UUID> doAfter) {
         if (uuid == null) return;
         // MUTE PLAYER //
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, System.currentTimeMillis() + (duration * 1000), false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, System.currentTimeMillis() + (duration * 1000), true, false);
 
         if (!reason.equals(""))
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_REASON, reason, false);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_REASON, reason, true, false);
 
         doAfter.accept(uuid);
     }
@@ -88,8 +88,8 @@ public class PunishAPI {
     public static void unban(UUID uuid) {
         if (uuid == null) return;
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, 0L, true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, "", true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, 0L, true, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, "", true, true);
     }
 
     /**
@@ -101,8 +101,8 @@ public class PunishAPI {
         if (uuid == null) return;
         if (!isMuted(uuid)) return;
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, 0L, true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_REASON, "", true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, 0L, true, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_REASON, "", true, true);
     }
 
     /**
