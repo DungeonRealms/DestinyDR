@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -27,24 +28,20 @@ public class CommandCloseShop extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
 
-        if (args.length == 1) {
-            if (!commandSender.hasPermission("dungeonrealms.closeShops"))
-                return false;
+        if (args.length == 1 && (commandSender instanceof Player && Rank.isGM((Player) commandSender))) {
             String playerName = args[0];
             if (!isPlayer(playerName))
                 return false;
+
             boolean hasShop = (boolean) DatabaseAPI.getInstance().getData(EnumData.HASSHOP, UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName)));
             if (!hasShop) {
                 return false;
             }
 
-            if (commandSender instanceof Player) {
-                String uuidString = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-                UUID uuid = UUID.fromString(uuidString);
-                GameAPI.sendNetworkMessage("Shop", "close:" + " ," + playerName);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true, true);
-
-            }
+            String uuidString = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+            UUID uuid = UUID.fromString(uuidString);
+            GameAPI.sendNetworkMessage("Shop", "close:" + " ," + playerName);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true, true);
 
             return false;
         } else {
