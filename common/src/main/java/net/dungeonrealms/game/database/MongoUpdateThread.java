@@ -2,10 +2,12 @@ package net.dungeonrealms.game.database;
 
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.Constants;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.List;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -37,6 +39,10 @@ public class MongoUpdateThread extends Thread {
                                 .get
                                 (1).toString());
                     }
+                }
+                Document requestNewDoc = (Document) query.get(2);
+                if (requestNewDoc.get("requestNew", Boolean.class)) {
+                    DatabaseAPI.getInstance().requestPlayer(requestNewDoc.get("uuid", UUID.class));
                 }
             }
         }

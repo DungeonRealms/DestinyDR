@@ -86,15 +86,9 @@ public class RealmListener implements Listener {
             else
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have returned to " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
 
-            if (((realm.getBuilders().contains(player.getUniqueId()) || realm.getOwner().equals(player.getUniqueId()) || Realms.getInstance().isApollosRealm(to.getName())) && realm.getPropertyBoolean("flight"))) {
-                if (Realms.getInstance().isApollosRealm(to.getName())) {
-                    player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "FLYING ENABLED BECAUSE PIMPING AINT EZZ");
-                    player.setAllowFlight(true);
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-                } else {
+            if (((realm.getBuilders().contains(player.getUniqueId()) || realm.getOwner().equals(player.getUniqueId())) && realm.getPropertyBoolean("flight"))) {
                     player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
                     player.setAllowFlight(true);
-                }
             }
 
             if (!REALMS.getRealmTitle(realm.getOwner()).equals(""))
@@ -221,8 +215,6 @@ public class RealmListener implements Listener {
             if (realm.getWorld() == null) {
                 continue;
             }
-            if (REALMS.isApollosRealm(realm.getWorld().getName()))
-                REALMS.updateRealmHologram(realm.getOwner());
 
             for (RealmProperty<?> p : realm.getRealmProperties().values()) {
                 if (!(p.hasExpired() && p.isAcknowledgeExpiration())) continue;
@@ -357,22 +349,12 @@ public class RealmListener implements Listener {
             p.sendMessage(ChatColor.GRAY + "Only YOU and anyone you add to your build list will be able to fly in your realm.");
             p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
 
-            if (!Realms.getInstance().isApollosRealm(realm.getWorld().getName())) {
-                for (Player pl : realm.getWorld().getPlayers()) {
-                    if (pl == null || ((!realm.getBuilders().contains(pl.getUniqueId()) && !Realms.getInstance().isApollosRealm(realm.getWorld().getName())) && !realm.getOwner().equals(pl.getUniqueId())))
-                        continue;
-                    if (!realm.getOwner().equals(pl.getUniqueId()))
-                        pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
-                    pl.setAllowFlight(true);
-                }
-            } else {
-                for (Player pl : realm.getWorld().getPlayers()) {
-                    if (pl == null && !realm.getOwner().equals(pl.getUniqueId()))
-                        continue;
-                    pl.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "FLYING ENABLED BECAUSE PIMPING AINT EZZ");
-                    pl.setAllowFlight(true);
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-                }
+            for (Player pl : realm.getWorld().getPlayers()) {
+                if (pl == null || (!realm.getBuilders().contains(pl.getUniqueId()) && !realm.getOwner().equals(pl.getUniqueId())))
+                    continue;
+                if (!realm.getOwner().equals(pl.getUniqueId()))
+                    pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
+                pl.setAllowFlight(true);
             }
 
             RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
@@ -785,7 +767,7 @@ public class RealmListener implements Listener {
 
     public int getAvailableSlots(Inventory i) {
         int count = 0;
-        for (ItemStack is : i.getContents()) {
+        for (ItemStack is : i.getStorageContents()) {
             if (is == null || is.getType() == Material.AIR) {
                 count++;
             }
@@ -842,7 +824,7 @@ public class RealmListener implements Listener {
                 // They're placing an item into the chest.
                 ItemStack cursor = event.getCursor();
                 if (Item.ItemType.isArmor(cursor) || Item.ItemType.isWeapon(cursor) || cursor.getType() == Material.EMERALD
-                        || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor)) {
+                        || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) || BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)) {
                     event.setCancelled(true);
                     event.setCursor(cursor);
                     p.updateInventory();

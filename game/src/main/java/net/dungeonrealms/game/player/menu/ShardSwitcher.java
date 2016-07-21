@@ -13,6 +13,7 @@ import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.updater.Updater;
+import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.network.bungeecord.BungeeServerTracker;
@@ -250,6 +251,11 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
     public void open(Player player) {
         if (getSize() == 0) {
             player.sendMessage(ChatColor.RED + "Unable to find an available shard for you.");
+            return;
+        }
+
+        if (Realms.getInstance().getRealm(player.getWorld()) != null) {
+            player.sendMessage(ChatColor.RED + "You cannot shard in a realm.");
             return;
         }
 

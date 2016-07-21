@@ -1,13 +1,5 @@
 Build <build>
 
-&8Changes&0
-- Removed level restrictions for equipment.
-- Increased drop rates on higher tiers.
-- Removed tutorial island
-- Sub/Sub+/Sub++ Ranks now give an XP bonus.
-
 &4Bug Fixes&0
-- Refactored player data saving to fix many lag issues.
-- Fixed placing shops in peaceful realms
-- Furnaces are now restricted in realms
-- Remove Herobrine
+- Fixed many synchronization issues.
+- Fixed more lag issues.

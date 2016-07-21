@@ -41,29 +41,14 @@ public class DatabaseAPI {
      */
     public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, boolean async) {
         if (async) {
-            MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object))));
+            MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), new Document("requestNew", requestNew).append("uuid", uuid)));
         }
         else {
             DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
         }
-        if (requestNew) {
-            if (async) {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        requestPlayer(uuid);
-                    }
-                }.run();
-            } else {
-                requestPlayer(uuid);
-            }
+        if (requestNew && !async) {
+            requestPlayer(uuid);
         }
-                /*(result, exception) -> {
-                    Utils.log.info("DatabaseAPI update() called ...");
-                    if (exception == null && requestNew) {
-                        requestGuild(uuid);
-                    }
-                });*/
     }
 
     /**

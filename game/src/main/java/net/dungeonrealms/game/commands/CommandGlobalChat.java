@@ -44,6 +44,10 @@ public class CommandGlobalChat extends BasicCommand {
             return true;
         }
 
+        if (!Chat.checkGlobalCooldown(player)) {
+            return true;
+        }
+
         StringBuilder chatMessage = new StringBuilder();
 
         for (String arg : args) {
