@@ -116,7 +116,7 @@ public class PlayerManager {
         }
 
         public void setToggleState(Player player, boolean state) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, dbField, state, true, true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, dbField, state, true, false);
             player.sendMessage((state ? ChatColor.GREEN : ChatColor.RED) + friendlyName + " - " + ChatColor.BOLD + (state ? "ENABLED" : "DISABLED"));
         }
     }
