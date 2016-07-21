@@ -11,6 +11,7 @@ import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -87,8 +88,8 @@ public class RealmListener implements Listener {
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have returned to " + ChatColor.BOLD + "YOUR" + ChatColor.LIGHT_PURPLE + " realm.");
 
             if (((realm.getBuilders().contains(player.getUniqueId()) || realm.getOwner().equals(player.getUniqueId())) && realm.getPropertyBoolean("flight"))) {
-                    player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
-                    player.setAllowFlight(true);
+                player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "FLYING ENABLED");
+                player.setAllowFlight(true);
             }
 
             if (!REALMS.getRealmTitle(realm.getOwner()).equals(""))
@@ -693,6 +694,10 @@ public class RealmListener implements Listener {
 
         if (b.getType() == Material.PISTON_MOVING_PIECE || b.getType() == Material.PISTON_EXTENSION) {
             loot.setTypeId(0);
+        }
+
+        if (b.getType() == Material.CHEST) {
+            loot = ItemManager.createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
         }
 
         if (b.getType() == Material.PISTON_STICKY_BASE) {
