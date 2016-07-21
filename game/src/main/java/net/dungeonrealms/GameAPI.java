@@ -586,8 +586,6 @@ public class GameAPI {
      * Saves player data
      *
      * @param uuid
-     * @param async should always be true unless you need a callback from this method and are asyncing it via a
-     *              different method or you need to save a player data sync.
      * @since 1.0
      */
     public static boolean savePlayerData(UUID uuid, boolean logout) {
@@ -687,7 +685,7 @@ public class GameAPI {
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
         // save player data
-        savePlayerData(uuid, async, true);
+        savePlayerData(uuid, async);
 
         Chat.listenForMessage(player, null, null);
 
@@ -1159,7 +1157,7 @@ public class GameAPI {
                             return;
                         }
                         UUID uuid = player.getUniqueId();
-                        savePlayerData(uuid, true, false);
+                        savePlayerData(uuid, true);
                         Utils.log.info("Backed up information for uuid: " + uuid.toString());
                     }
                     DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");
