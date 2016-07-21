@@ -1,17 +1,5 @@
 Build <build>
 
-&8Changes&0
-- Removed level restrictions for equipment.
-- Increased drop rates on higher tiers.
-- Removed tutorial island
-- Sub/Sub+/Sub++ Ranks now give an XP bonus.
-- Disabled sharding in realms
-- You can no longer store gems in realms
-
 &4Bug Fixes&0
-- Fixed critical duplication glitch.
-- Fixed many lag issues.
-- Fixed placing shops in peaceful realms
-- Fixed typos
-- Furnaces are now restricted in realms
-- Removed Herobrine
+- Fixed many synchronization issues.
+- Fixed more lag issues.
