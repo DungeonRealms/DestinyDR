@@ -87,7 +87,6 @@ public class ClickHandler {
                         return;
                     } else {
                         EnumMounts mount = EnumMounts.getByName(nmsStack.getTag().getString("mountType"));
-                        if (MountUtils.hasRequiredLevel(mount, player.getUniqueId())) {
                             if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
                                 if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true, true);
@@ -123,9 +122,6 @@ public class ClickHandler {
                             } else {
                                 player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
                             }
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You do not meet the minimum level requirements to own this mount.");
-                        }
                     }
                 }
                 break;

@@ -64,22 +64,6 @@ public class MountUtils {
         return CraftItemStack.asNMSCopy(i).hasTag() && nbtItem.hasKey("mountType");
     }
 
-    public static boolean hasRequiredLevel(EnumMounts mountType, UUID player) {
-        int level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player);
-        switch (mountType) {
-            case TIER1_HORSE:
-                return true;
-            case TIER2_HORSE:
-                return level >= 20;
-            case TIER3_HORSE:
-                return level >= 30;
-            case TIER4_HORSE:
-                return level >= 40;
-            default:
-                return true;
-        }
-    }
-
     public static void spawnMount(UUID uuid, String mountType, String mountSkin) {
         Player player = Bukkit.getPlayer(uuid);
         if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
