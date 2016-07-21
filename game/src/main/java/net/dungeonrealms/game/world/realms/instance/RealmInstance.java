@@ -127,11 +127,6 @@ public class RealmInstance implements Realms {
     }
 
     @Override
-    public boolean isApollosRealm(String world) {
-        return world.equals("c7f83b31-2eeb-4b0b-baa3-bb2a330726d7") || world.equals("4fc64a66-c54e-4f99-833c-a5b3e2de79d6");
-    }
-
-    @Override
     public void loadRealm(Player player, Runnable doAfter) {
         if (isRealmCached(player.getUniqueId())) {
             if (doAfter != null)
@@ -288,16 +283,6 @@ public class RealmInstance implements Realms {
 
         if (isRealmPortalOpen(realm.getOwner()))
             closeRealmPortal(player.getUniqueId(), false, null);
-
-
-        if (isApollosRealm(realm.getWorld().getName())) {
-            Firework firework = (Firework) location.getWorld().spawnEntity(location.clone(), EntityType.FIREWORK);
-            FireworkMeta fireworkMeta = firework.getFireworkMeta();
-            FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(Color.WHITE).withFade(getRandomColor()).with(FireworkEffect.Type.BALL_LARGE).trail(true).build();
-            fireworkMeta.addEffect(effect);
-            fireworkMeta.setPower(1);
-            firework.setFireworkMeta(fireworkMeta);
-        }
 
         final Location portalLocation = location.clone().add(0, 1, 0);
         realm.setPortalLocation(portalLocation);
@@ -857,10 +842,7 @@ public class RealmInstance implements Realms {
 
         realmHologram.clearLines();
 
-        ChatColor[] pimpColoursM8 = new ChatColor[]{ChatColor.BLUE, ChatColor.RED, ChatColor.YELLOW, ChatColor.GOLD, ChatColor.AQUA, ChatColor.GREEN, ChatColor.LIGHT_PURPLE};
-        int rnd = new Random().nextInt(pimpColoursM8.length);
-
-        realmHologram.insertTextLine(0, !isApollosRealm(uuid.toString()) ? ChatColor.WHITE.toString() + ChatColor.BOLD + name : pimpColoursM8[rnd].toString() + ChatColor.BOLD + "APOLLO'S REALM [PIMPS ONLY]");
+        realmHologram.insertTextLine(0, ChatColor.WHITE.toString() + ChatColor.BOLD + name);
         realmHologram.insertTextLine(1, realm.getPropertyBoolean("peaceful") ? ChatColor.AQUA + "Peaceful" : ChatColor.RED + "Chaotic");
     }
 
