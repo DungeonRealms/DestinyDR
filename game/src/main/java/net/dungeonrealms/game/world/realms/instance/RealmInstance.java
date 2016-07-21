@@ -37,8 +37,9 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
-import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
@@ -563,7 +564,7 @@ public class RealmInstance implements Realms {
         realm.setStatus(RealmStatus.UPLOADING);
 
         // PLAYER'S REALM IS STILL UPLOADING \\
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, true, true, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, true, false, false);
 
         if (runAsync) {
             // SUBMIT THREAD INTO ASYNC POOL //
@@ -604,7 +605,7 @@ public class RealmInstance implements Realms {
             Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
 
             // PLAYER'S REALM IS STILL UPLOADING \\
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true, true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, false, false);
 
             // SEND PLAYER UPDATE PACKET IF THEY SWITCHED SHARDS //
             GameAPI.updatePlayerData(uuid);

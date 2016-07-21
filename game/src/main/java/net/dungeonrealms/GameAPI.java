@@ -1139,7 +1139,7 @@ public class GameAPI {
     public static void moveToShard(Player player, String serverBungeeName) {
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
         submitAsyncCallback(() -> {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true, true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true, false);
             return GameAPI.handleLogout(player.getUniqueId(), false);
         }, consumer -> {
             BungeeUtils.sendToServer(player.getName(), serverBungeeName);
