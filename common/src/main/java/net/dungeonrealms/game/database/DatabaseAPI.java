@@ -38,7 +38,8 @@ public class DatabaseAPI {
      */
     public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async) {
         Document updatedDoc = new Document(EO.getUO(), new Document(variable.getKey(), object));
-        PLAYERS.put(uuid, updatedDoc);
+        if (PLAYERS.containsKey(uuid))
+            PLAYERS.put(uuid, updatedDoc);
         if (async) {
             MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), updatedDoc));
         }
