@@ -225,7 +225,7 @@ public class Rank {
 
         if (newRank == null) return; // @todo: Remove RAW_RANKS, replace with the fixed list.
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, sRank, true, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, sRank, true);
         Player player = Bukkit.getPlayer(uuid);
 
         player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank);

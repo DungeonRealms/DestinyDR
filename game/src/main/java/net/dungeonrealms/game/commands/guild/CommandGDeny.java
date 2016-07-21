@@ -43,7 +43,7 @@ public class CommandGDeny extends BasicCommand {
         String referrer = guildInvitation.getString("referrer");
 
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true);
 
         player.sendMessage("");
         player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + guildDisplayName + "'" + ChatColor.RED + "s guild.");

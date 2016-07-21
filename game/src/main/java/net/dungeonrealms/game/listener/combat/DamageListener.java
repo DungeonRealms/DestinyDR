@@ -12,7 +12,6 @@ import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -814,17 +813,17 @@ public class DamageListener implements Listener {
                         armorContents.add(ItemSerialization.itemStackToBase64(itemStack));
                     }
                 }
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armorContents, false, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armorContents, true);
             } else {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), false, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
             }
             if (!combatLogger.getItemsToSave().isEmpty()) {
                 Inventory inventory = Bukkit.createInventory(null, 27, "LoggerInventory");
                 combatLogger.getItemsToSave().forEach(inventory::addItem);
                 itemsToSave = ItemSerialization.toString(inventory);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, itemsToSave, false, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, itemsToSave, true);
             } else {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", false, true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
             }
             combatLogger.handleNPCDeath();
         }

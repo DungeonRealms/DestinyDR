@@ -43,9 +43,9 @@ public class RemoveCommand extends BasicCommand {
         }
 
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, uuid.toString(), true, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, uuid.toString(), true);
         player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " from your friends list!");
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
 
 
         return false;

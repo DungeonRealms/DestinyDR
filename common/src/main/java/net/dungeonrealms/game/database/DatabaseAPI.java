@@ -5,8 +5,6 @@ import net.dungeonrealms.Constants;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,35 +33,18 @@ public class DatabaseAPI {
      * @param EO
      * @param variable
      * @param object
-     * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
      * @param async
      * @since 1.0
      */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, boolean async) {
+    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async) {
+        Document updatedDoc = new Document(EO.getUO(), new Document(variable.getKey(), object));
+        PLAYERS.put(uuid, updatedDoc);
         if (async) {
-            MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object))));
+            MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), updatedDoc));
         }
         else {
-            DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+            DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), updatedDoc);
         }
-        if (requestNew) {
-            if (async) {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        requestPlayer(uuid);
-                    }
-                }.run();
-            } else {
-                requestPlayer(uuid);
-            }
-        }
-                /*(result, exception) -> {
-                    Utils.log.info("DatabaseAPI update() called ...");
-                    if (exception == null && requestNew) {
-                        requestGuild(uuid);
-                    }
-                });*/
     }
 
     /**

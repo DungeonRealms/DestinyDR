@@ -364,7 +364,7 @@ public class RealmInstance implements Realms {
         if (isRealmPortalOpen(player.getUniqueId()))
             closeRealmPortal(player.getUniqueId(), true, ChatColor.RED + player.getName() + " is resetting this realm...");
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_LAST_RESET, System.currentTimeMillis(), true, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_LAST_RESET, System.currentTimeMillis(), true);
         getRealm(player.getUniqueId()).setStatus(RealmStatus.RESETTING);
 
         // UNLOAD WORLD
@@ -375,7 +375,7 @@ public class RealmInstance implements Realms {
                     setRealmTitle(player.getUniqueId(), "");
                     getRealm(player.getUniqueId()).setStatus(RealmStatus.CLOSED);
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, 1, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
 
                     // UDPATE REALM PORTAL RUNE //
                     int slot = GameAPI.getItemSlot(player.getInventory(), "realmPortalRune");
@@ -465,8 +465,8 @@ public class RealmInstance implements Realms {
 
 
         // UPDATE REALM TIER DATA
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, nextTier, true, true);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_UPGRADE, true, true, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, nextTier, true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_UPGRADE, true, true);
 
         // UPGRADE REALM PORTAL RUNE //
         int slot = GameAPI.getItemSlot(player.getInventory(), "realmPortalRune");
@@ -578,7 +578,7 @@ public class RealmInstance implements Realms {
         realm.setStatus(RealmStatus.UPLOADING);
 
         // PLAYER'S REALM IS STILL UPLOADING \\
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, true, true, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, true, true);
 
         if (runAsync) {
             // SUBMIT THREAD INTO ASYNC POOL //
@@ -619,7 +619,7 @@ public class RealmInstance implements Realms {
             Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
 
             // PLAYER'S REALM IS STILL UPLOADING \\
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true, true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
 
             // SEND PLAYER UPDATE PACKET IF THEY SWITCHED SHARDS //
             GameAPI.updatePlayerData(uuid);
@@ -797,7 +797,7 @@ public class RealmInstance implements Realms {
 
     @Override
     public void setRealmTitle(UUID uuid, String title) {
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_TITLE, title, true, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_TITLE, title, true);
     }
 
     @Override

@@ -163,7 +163,7 @@ public class InventoryListener implements Listener {
         UUID target = CommandModeration.offline_inv_watchers.get(event.getPlayer().getUniqueId());
 
         String inventory = ItemSerialization.toString(event.getInventory());
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, false, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true);
         GameAPI.updatePlayerData(target);
 
         CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
@@ -421,7 +421,7 @@ public class InventoryListener implements Listener {
                 i++;
             }
             if (i == 0) {
-                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, false);
+                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", false);
                 storage.collection_bin = null;
             }
         }
@@ -1713,7 +1713,7 @@ public class InventoryListener implements Listener {
                             }
                             pl.sendMessage(ChatColor.GREEN + "Mule upgraded to " + newTier.getName() + "!");
 
-                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), false, true);
+                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), true);
 
                             if (MountUtils.inventories.containsKey(pl.getUniqueId())) {
                                 Inventory inv = MountUtils.inventories.get(pl.getUniqueId());

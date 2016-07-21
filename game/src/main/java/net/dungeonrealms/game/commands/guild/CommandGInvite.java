@@ -86,7 +86,7 @@ public class CommandGInvite extends BasicCommand {
         invitation.put("time", System.currentTimeMillis());
 
 
-        DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.GUILD_INVITATION, invitation, true, true);
+        DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.GUILD_INVITATION, invitation, true);
 
         player.sendMessage(ChatColor.GRAY + "You have invited " + ChatColor.BOLD.toString() + ChatColor.DARK_AQUA + p_name + ChatColor.GRAY + " to join your guild.");
 
