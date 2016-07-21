@@ -590,7 +590,7 @@ public class GameAPI {
      *              different method or you need to save a player data sync.
      * @since 1.0
      */
-    public static boolean savePlayerData(UUID uuid, boolean async, boolean logout) {
+    public static boolean savePlayerData(UUID uuid, boolean logout) {
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) {
@@ -602,12 +602,12 @@ public class GameAPI {
             Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false, async);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false, false);
             }
             inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false, async);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false, false);
             }
         }
 
@@ -627,10 +627,10 @@ public class GameAPI {
         } else {
             armor.add(ItemSerialization.itemStackToBase64(offHand));
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false, async);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false, false);
 
         String inventory = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false, async);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false, false);
 
         // LOCATION
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
@@ -638,21 +638,21 @@ public class GameAPI {
             locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
                     + player.getLocation().getZ() + "," + player.getLocation().getYaw() + ","
                     + player.getLocation().getPitch();
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false, async);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false, false);
         } else {
             //Dungeon or realm, should already have their last main world location saved.
         }
 
         // MULE INVENTORY
         if (MountUtils.inventories.containsKey(uuid)) {
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false, async);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false, false);
         }
 
         // LEVEL AND STATISTICS
         if (GAMEPLAYERS.size() > 0) {
             GamePlayer gp = GameAPI.getGamePlayer(player);
             if (gp != null) {
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), false, async);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), false, false);
                 gp.getPlayerStatistics().updatePlayerStatistics();
                 gp.getStats().updateDatabase(false);
                 GAMEPLAYERS.remove(player.getName());
@@ -661,10 +661,10 @@ public class GameAPI {
 
         // MISC
         if (!logout) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false, async);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), false, async);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player).name(), false, async);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false, async);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false, false);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), false, false);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player).name(), false, false);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false, false);
         }
 
         return true;
