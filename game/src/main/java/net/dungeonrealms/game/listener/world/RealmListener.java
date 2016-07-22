@@ -797,7 +797,7 @@ public class RealmListener implements Listener {
         if (!(event.getInventory().getName().contains("Realm Chest") || event.getInventory().getName()
                 .equalsIgnoreCase("container.dropper") || event.getInventory().getName().equalsIgnoreCase("container" +
                 ".hopper")))
-        return;
+            return;
         for (ItemStack i : event.getInventory().getContents()) {
             if (i == null) continue;
             if (i.getType() == Material.AIR) continue;
@@ -813,7 +813,7 @@ public class RealmListener implements Listener {
     public void onInventoryClickEvent(InventoryClickEvent event) {
         Player p = (Player) event.getWhoClicked();
 
-        if (!event.getInventory().getName().equalsIgnoreCase("container.chest") && !event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
+        if (!event.getInventory().getName().equalsIgnoreCase("container.chest") && !event.getInventory().getName().contains("Realm Chest") && !event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
                 && !(event.getInventory().getName().equalsIgnoreCase("container.minecart"))
                 && !(event.getInventory().getName().equalsIgnoreCase("container.dispenser")) && !(event.getInventory().getName().equalsIgnoreCase("container.hopper"))
                 && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
