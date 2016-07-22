@@ -683,7 +683,7 @@ public class GameAPI {
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
         if (player == null) {
-            savePlayerData(uuid, async);
+            savePlayerData(uuid, false, async);
             return true;
         }
 
