@@ -116,7 +116,8 @@ public class PunishAPI {
         UUID uuid = !uuidString.equals("") ? UUID.fromString(uuidString) : null;
 
         // HANDLE LOG OUT //
-        doBefore.accept(uuid);
+        if (doBefore != null)
+            doBefore.accept(uuid);
 
         //SEND BUNGEE MESSAGE TO KICK PLAYER FROM PROXY //
         BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", playerName, kickMessage);

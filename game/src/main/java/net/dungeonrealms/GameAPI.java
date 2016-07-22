@@ -679,6 +679,11 @@ public class GameAPI {
     public static boolean handleLogout(UUID uuid, boolean async) {
         Player player = Bukkit.getPlayer(uuid);
 
+        if (player == null) {
+            savePlayerData(uuid, async);
+            return true;
+        }
+
         GuildMechanics.getInstance().doLogout(player);
         Realms.getInstance().doLogout(player);
 

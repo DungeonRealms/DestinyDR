@@ -580,7 +580,7 @@ public class BlockListener implements Listener {
                     return;
                 }
                 GamePlayer gp = GameAPI.getGamePlayer(player);
-                if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
+                if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST) && !GameAPI.isMaterialNearby(b1, 3, Material.PORTAL)) {
                     if (gp != null && !gp.hasShopOpen()) {
                         if (BankMechanics.getInstance().getStorage(player.getUniqueId()).collection_bin != null) {
                             player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
