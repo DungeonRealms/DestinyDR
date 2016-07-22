@@ -42,6 +42,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -788,6 +789,19 @@ public class RealmListener implements Listener {
             }
         }
         return count;
+    }
+
+    @EventHandler
+    public void onRealmChestClose(InventoryCloseEvent event) {
+        if (!(event.getInventory().getName().contains("Realm Chest") || event.getInventory().getName().equalsIgnoreCase("container.dropper"))) return;
+        for (ItemStack i : event.getInventory().getContents()) {
+            if (i == null) continue;
+            if (i.getType() == Material.AIR) continue;
+            if (GameAPI.isArmor(i) || GameAPI.isWeapon(i) || BankMechanics.getInstance().isBankNote(i) || BankMechanics.getInstance().isGem(i)) {
+                event.getInventory().remove(i);
+                event.getInventory().getViewers().get(0).getInventory().addItem(i);
+            }
+        }
     }
 
     @SuppressWarnings("deprecation")

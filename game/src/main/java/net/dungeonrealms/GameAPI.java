@@ -678,6 +678,7 @@ public class GameAPI {
      */
     public static boolean handleLogout(UUID uuid, boolean async) {
         Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return false;
 
         GuildMechanics.getInstance().doLogout(player);
         Realms.getInstance().doLogout(player);
@@ -698,7 +699,6 @@ public class GameAPI {
             tracker.removeDamager(player);
         }
 
-        if (player == null) return false;
         if (player.getWorld().getName().contains("DUNGEON")) {
             for (ItemStack stack : player.getInventory().getContents()) {
                 if (stack != null && stack.getType() != Material.AIR) {
