@@ -5,10 +5,11 @@ import net.dungeonrealms.Constants;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,8 +43,7 @@ public class DatabaseAPI {
     public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, boolean async) {
         if (async) {
             MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), new Document("requestNew", requestNew).append("uuid", uuid)));
-        }
-        else {
+        } else {
             DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
         }
         if (requestNew && !async) {
@@ -60,13 +60,13 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public Object getData(EnumData data, UUID uuid) {
-
         Document doc;
 
         if (PLAYERS.containsKey(uuid)) {
             // GRABBED CACHED DATA
             doc = PLAYERS.get(uuid);
         } else {
+            Constants.log.warning("Retrieving player's offline data..");
             doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         }
 
