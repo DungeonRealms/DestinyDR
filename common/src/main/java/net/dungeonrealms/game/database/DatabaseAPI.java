@@ -357,6 +357,7 @@ public class DatabaseAPI {
     }
 
     public String getUUIDFromName(String playerName) {
+        Constants.log.warning("Retrieving " + playerName + "'s UUID from name..");
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.username", playerName.toLowerCase())).first();
         if (doc == null) return "";
         return ((Document) doc.get("info")).get("uuid", String.class);
@@ -379,6 +380,7 @@ public class DatabaseAPI {
     }
 
     public String getOfflineName(UUID uuid) {
+        Constants.log.warning("Retrieving " + uuid.toString() + "'s name..");
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null) {
             return "";

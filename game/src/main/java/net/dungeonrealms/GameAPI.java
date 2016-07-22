@@ -109,6 +109,23 @@ public class GameAPI {
     public static Set<UUID> IGNORE_QUIT_EVENT = new HashSet<>();
 
 
+    private static class PlayerLogoutWatchdog extends BukkitRunnable {
+        private Player player;
+
+        PlayerLogoutWatchdog(Player player) {
+            this.runTaskLater(DungeonRealms.getInstance(), 5 * 20);
+            this.player = player;
+        }
+
+        @Override
+        public void run() {
+            if (player.isOnline()) {
+                BungeeUtils.sendToServer(player.getName(), "Lobby");
+                BungeeUtils.sendPlayerMessage(player.getName(), ChatColor.RED + "Unable to send you to designated server.");
+            }
+        }
+    }
+
     /**
      * Utility type for calling async tasks with callbacks.
      *
@@ -1142,6 +1159,9 @@ public class GameAPI {
      */
     public static void moveToShard(Player player, String serverBungeeName) {
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
+
+        new PlayerLogoutWatchdog(player);
+
         submitAsyncCallback(() -> {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true, false);
             return GameAPI.handleLogout(player.getUniqueId(), false);
