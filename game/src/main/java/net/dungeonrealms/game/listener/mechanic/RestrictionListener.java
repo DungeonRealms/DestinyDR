@@ -320,6 +320,20 @@ public class RestrictionListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void shardingExtraSafetyCheckDrop(PlayerDropItemEvent event) {
+        if (event.getPlayer().hasMetadata("sharding")) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void shardingExtraSafetyCheckDrop(PlayerPickupItemEvent event) {
+        if (event.getPlayer().hasMetadata("sharding")) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player pl = event.getPlayer();
