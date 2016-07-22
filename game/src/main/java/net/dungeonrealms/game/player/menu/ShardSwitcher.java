@@ -23,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
@@ -96,6 +97,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                     player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
 
                     GameAPI.getGamePlayer(player).setAbleToDrop(false);
+                    player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
 
                     final Location startingLocation = player.getLocation();
 
@@ -117,6 +119,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "/shard - CANCELLED");
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");
                                 GameAPI.getGamePlayer(player).setAbleToDrop(true);
+                                player.removeMetadata("sharding", DungeonRealms.getInstance());
                                 cancel();
                                 return;
                             }
