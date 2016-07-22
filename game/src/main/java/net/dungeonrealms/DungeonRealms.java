@@ -24,9 +24,7 @@ import net.dungeonrealms.game.commands.support.CommandSupport;
 import net.dungeonrealms.game.commands.testcommands.CommandTestRank;
 import net.dungeonrealms.game.commands.testcommands.CommandTestingHall;
 import net.dungeonrealms.game.commands.toggles.*;
-import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.DatabaseDriver;
-import net.dungeonrealms.game.database.MongoUpdateThread;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listener.MainListener;
@@ -270,8 +268,8 @@ public class DungeonRealms extends JavaPlugin {
         new UpdateTask(this);
 
         // START UPDATE THREAD //
-        new MongoUpdateThread().start();
-        Utils.log.info("DungeonRealms - MongoUpdateThread ... STARTED ...");
+//        new MongoUpdateThread().start();
+//        Utils.log.info("DungeonRealms - MongoUpdateThread ... STARTED ...");
 
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
@@ -523,7 +521,7 @@ public class DungeonRealms extends JavaPlugin {
         ps.onDisable();
         hs.onDisable();
         tcc.onDisable();
-        if(!mm.isShutdown())
+        if (!mm.isShutdown())
             mm.stopInvocation();
 
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");

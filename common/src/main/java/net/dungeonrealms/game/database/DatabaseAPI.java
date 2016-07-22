@@ -1,16 +1,24 @@
 package net.dungeonrealms.game.database;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.Constants;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import org.bson.Document;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -20,6 +28,8 @@ public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+
+    private ExecutorService pool = Executors.newCachedThreadPool();
 
 
     public static DatabaseAPI getInstance() {
@@ -41,14 +51,35 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, boolean async) {
-        if (async) {
-            MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), new Document("requestNew", requestNew).append("uuid", uuid)));
-        } else {
+
+        if (async) Futures.addCallback(update(uuid, EO, variable, object), new FutureCallback<UpdateResult>() {
+            @Override
+            public void onSuccess(@Nullable UpdateResult result) {
+                Constants.log.info("[ASYNC] Successfully updated " + variable.name() + " data for " + uuid.toString());
+
+                if (result.wasAcknowledged() && requestNew)
+                    pool.submit(() -> requestPlayer(uuid));
+            }
+
+            @ParametersAreNonnullByDefault
+            @Override
+            public void onFailure(Throwable throwable) {
+                Constants.log.warning("[ASYNC] Failed to update player data for " + uuid.toString());
+            }
+        });
+        else {
             DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+            if (requestNew)
+                requestPlayer(uuid);
         }
-        if (requestNew && !async) {
-            requestPlayer(uuid);
-        }
+
+        // MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), new Document("requestNew", requestNew).append("uuid", uuid)));
+    }
+
+
+    private ListenableFuture<UpdateResult> update(UUID uuid, EnumOperators EO, EnumData variable, Object object) {
+        return MoreExecutors.listeningDecorator(pool).submit(() -> DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)))
+        );
     }
 
     /**
@@ -66,7 +97,7 @@ public class DatabaseAPI {
             // GRABBED CACHED DATA
             doc = PLAYERS.get(uuid);
         } else {
-            Constants.log.warning("Retrieving player's offline data..");
+            Constants.log.warning("Retrieving " + uuid.toString() + "'s offline data..");
             doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         }
 

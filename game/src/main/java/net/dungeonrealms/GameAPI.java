@@ -1145,9 +1145,7 @@ public class GameAPI {
         submitAsyncCallback(() -> {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true, false);
             return GameAPI.handleLogout(player.getUniqueId(), false);
-        }, consumer -> {
-            BungeeUtils.sendToServer(player.getName(), serverBungeeName);
-        });
+        }, consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName));
     }
 
     static void backupDatabase() {
