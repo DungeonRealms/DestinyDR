@@ -793,7 +793,11 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void onRealmChestClose(InventoryCloseEvent event) {
-        if (!(event.getInventory().getName().contains("Realm Chest") || event.getInventory().getName().equalsIgnoreCase("container.dropper"))) return;
+        if (event.getPlayer().getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+        if (!(event.getInventory().getName().contains("Realm Chest") || event.getInventory().getName()
+                .equalsIgnoreCase("container.dropper") || event.getInventory().getName().equalsIgnoreCase("container" +
+                ".hopper")))
+        return;
         for (ItemStack i : event.getInventory().getContents()) {
             if (i == null) continue;
             if (i.getType() == Material.AIR) continue;
