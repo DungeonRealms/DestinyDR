@@ -88,16 +88,13 @@ public class CommandGInvite extends BasicCommand {
 
 
         DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.GUILD_INVITATION, invitation, true, doAfter -> {
-            BungeeUtils.sendPlayerMessage(p_name, ChatColor.GRAY + "You have invited " + ChatColor.BOLD.toString() +
+            player.sendMessage(ChatColor.GRAY + "You have invited " + ChatColor.BOLD.toString() +
                     ChatColor.DARK_AQUA + p_name + ChatColor.GRAY + " to join your guild.");
 
-            if (p != null) {
-                BungeeUtils.sendPlayerMessage(p_name, "");
-                BungeeUtils.sendPlayerMessage(p_name, ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline");
-                BungeeUtils.sendPlayerMessage(p_name, "");
-            } else {
-                GameAPI.updatePlayerData(p_uuid);
-            }
+            BungeeUtils.sendPlayerMessage(p_name, "");
+            BungeeUtils.sendPlayerMessage(p_name, ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline");
+            BungeeUtils.sendPlayerMessage(p_name, "");
+            GameAPI.updatePlayerData(p_uuid);
         });
 
         return false;

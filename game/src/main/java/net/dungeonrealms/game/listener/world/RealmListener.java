@@ -49,6 +49,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -636,6 +637,10 @@ public class RealmListener implements Listener {
             }
 
             c_inv.clear();
+        }
+
+        if (b instanceof InventoryHolder) {
+            deleteIllegalItemsInInventory((InventoryHolder) b).getInventory(), p);
         }
 
         if (b.getType() == Material.ITEM_FRAME) {
