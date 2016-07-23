@@ -119,6 +119,8 @@ public class AntiCheat implements GenericMechanic {
     }
 
     public static void checkForDuplicatedEquipment(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
+        if (Rank.isGM(p)) return;
+
         List<String> gearUids = new ArrayList<>();
 
         for (Inventory inv : INVENTORIES_TO_CHECK) {
