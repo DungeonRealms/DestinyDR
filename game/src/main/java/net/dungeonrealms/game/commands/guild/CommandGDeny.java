@@ -6,6 +6,7 @@ import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,18 +43,14 @@ public class CommandGDeny extends BasicCommand {
         String guildDisplayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         String referrer = guildInvitation.getString("referrer");
 
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true, doAfter -> {
+            player.sendMessage("");
+            player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + guildDisplayName + "'" + ChatColor.RED + "s guild.");
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true);
-
-        player.sendMessage("");
-        player.sendMessage(ChatColor.RED + "Declined invitation to '" + ChatColor.BOLD + guildDisplayName + "'" + ChatColor.RED + "s guild.");
-
-        if (Bukkit.getPlayer(referrer) != null) {
             Player owner = Bukkit.getPlayer(referrer);
-            owner.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.");
-        } else {
+            BungeeUtils.sendPlayerMessage(owner.getName(), ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + ChatColor.RED.toString() + " has DECLINED your guild invitation.");
             GameAPI.updatePlayerData(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(referrer)));
-        }
+        });
 
         return false;
     }

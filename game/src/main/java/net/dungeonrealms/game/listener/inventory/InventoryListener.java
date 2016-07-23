@@ -163,8 +163,9 @@ public class InventoryListener implements Listener {
         UUID target = CommandModeration.offline_inv_watchers.get(event.getPlayer().getUniqueId());
 
         String inventory = ItemSerialization.toString(event.getInventory());
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true);
-        GameAPI.updatePlayerData(target);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true, doAfter -> {
+            GameAPI.updatePlayerData(target);
+        });
 
         CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
     }

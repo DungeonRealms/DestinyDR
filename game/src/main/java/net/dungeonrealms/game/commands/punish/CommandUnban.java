@@ -52,7 +52,6 @@ public class CommandUnban extends BasicCommand {
         }
 
         PunishAPI.unban(p_uuid);
-        GameAPI.updatePlayerData(p_uuid);
 
         sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name);
         return false;

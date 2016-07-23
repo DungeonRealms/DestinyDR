@@ -1118,13 +1118,13 @@ public class ClickHandler {
                 }
 
                 // Always update the database with the new rank.
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true);
-
-                if (Bukkit.getPlayer(playerName) != null) {
-                    Rank.getInstance().setRank(uuid, newRank);
-                } else {
-                    GameAPI.updatePlayerData(uuid);
-                }
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true, doAfter -> {
+                    if (Bukkit.getPlayer(playerName) != null) {
+                        Rank.getInstance().setRank(uuid, newRank);
+                    } else {
+                        GameAPI.updatePlayerData(uuid);
+                    }
+                });
 
                 player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
@@ -1349,9 +1349,11 @@ public class ClickHandler {
                 }
 
                 if (hearthstoneLocation != null) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, hearthstoneLocation.toUpperCase(), true);
-                    player.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(hearthstoneLocation).replace("_", " ") + ChatColor.GREEN + ".");
-                    GameAPI.updatePlayerData(uuid);
+                    String finalLocation = hearthstoneLocation;
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, hearthstoneLocation.toUpperCase(), true, doAfter -> {
+                        player.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(finalLocation).replace("_", " ") + ChatColor.GREEN + ".");
+                        GameAPI.updatePlayerData(uuid);
+                    });
                     SupportMenus.openMainMenu(player, playerName);
                 }
                 break;
@@ -1417,17 +1419,21 @@ public class ClickHandler {
                 if (!playerTrails.isEmpty()) {
                     if (playerTrails.contains(trailName)) {
                         supportTrailLocked = true;
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PARTICLES, trailName, true);
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PARTICLES, trailName, true, doAfter -> {
+                            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "LOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                            GameAPI.updatePlayerData(uuid);
+                        });
                     }
                 }
 
                 if (!supportTrailLocked)
                     DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailName,
-                            true);
+                            true, doAfter -> {
+                                player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                GameAPI.updatePlayerData(uuid);
+                            });
 
-                player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + (supportTrailLocked ? "LOCKED" : "UNLOCKED") + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportEffect.getDisplayName() + ChatColor.GREEN + " trail for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openCosmeticsMenu(player, playerName, uuid);
-                GameAPI.updatePlayerData(uuid);
                 break;
             case "Support Tools (Mounts)":
                 event.setCancelled(true);
@@ -1484,16 +1490,20 @@ public class ClickHandler {
                 if (!playerSupportPets.isEmpty()) {
                     if (playerSupportPets.contains(petName)) {
                         supportPetLocked = true;
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PETS, petName, true);
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.PETS, petName, true, doAfter -> {
+                            player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "LOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                            GameAPI.updatePlayerData(uuid);
+                        });
                     }
                 }
 
                 if (!supportPetLocked)
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petName, true);
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petName, true, doAfter -> {
+                        player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + "UNLOCKED" + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                        GameAPI.updatePlayerData(uuid);
+                    });
 
-                player.sendMessage(ChatColor.GREEN + "You have " + ChatColor.BOLD + ChatColor.UNDERLINE + (supportPetLocked ? "LOCKED" : "UNLOCKED") + ChatColor.GREEN + " the " + ChatColor.BOLD + ChatColor.UNDERLINE + supportPets.getDisplayName() + ChatColor.GREEN + " pet for " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                 SupportMenus.openCosmeticsMenu(player, playerName, uuid);
-                GameAPI.updatePlayerData(uuid);
                 break;
             case "Game Master Toggles":
                 event.setCancelled(true);

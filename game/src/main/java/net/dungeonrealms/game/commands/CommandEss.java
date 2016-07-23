@@ -53,9 +53,10 @@ public class CommandEss extends BasicCommand {
                                 commandSender.sendMessage(ChatColor.RED + "The hearthstone location " + ChatColor.BOLD + ChatColor.UNDERLINE + locationFriendly + ChatColor.RED + " does not exist.");
                                 return false;
                             }
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HEARTHSTONE, locationName, true);
-                            commandSender.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + locationFriendly + ChatColor.GREEN + ".");
-                            GameAPI.updatePlayerData(uuid);
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HEARTHSTONE, locationName, true, doAfter -> {
+                                commandSender.sendMessage(ChatColor.GREEN + "Successfully set the hearthstone of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + locationFriendly + ChatColor.GREEN + ".");
+                                GameAPI.updatePlayerData(uuid);
+                            });
                         } catch (IllegalArgumentException ex) {
                             commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
@@ -89,10 +90,14 @@ public class CommandEss extends BasicCommand {
                                     }
                                 }
                             }
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petType.toUpperCase(), true);
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_PET, petType.toUpperCase(), true);
-                            commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                            GameAPI.updatePlayerData(uuid);
+                            GameAPI.submitAsyncCallback(() -> {
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PETS, petType.toUpperCase(), false);
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_PET, petType.toUpperCase(), false);
+                                return true;
+                            }, result -> {
+                                commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + petNameFriendly + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                GameAPI.updatePlayerData(uuid);
+                            });
                         } catch (IllegalArgumentException ex) {
                             commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
@@ -120,10 +125,14 @@ public class CommandEss extends BasicCommand {
                                     return false;
                                 }
                             }
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.MOUNTS, mountType.toUpperCase(), true);
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mountType.toUpperCase(), true);
-                            commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                            GameAPI.updatePlayerData(uuid);
+                            GameAPI.submitAsyncCallback(() -> {
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.MOUNTS, mountType.toUpperCase(), false);
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mountType.toUpperCase(), false);
+                                return true;
+                            }, result -> {
+                                commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.GREEN + " mount to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                GameAPI.updatePlayerData(uuid);
+                            });
                         } catch (IllegalArgumentException ex) {
                             commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
@@ -155,10 +164,14 @@ public class CommandEss extends BasicCommand {
                                     return false;
                                 }
                             }
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailType.toUpperCase(), true);
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_TRAIL, trailType.toUpperCase(), true);
-                            commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
-                            GameAPI.updatePlayerData(uuid);
+                            GameAPI.submitAsyncCallback(() -> {
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailType.toUpperCase(), false);
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_TRAIL, trailType.toUpperCase(), false);
+                                    return true;
+                            }, result -> {
+                                commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                GameAPI.updatePlayerData(uuid);
+                            });
                         } catch (IllegalArgumentException ex) {
                             commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
@@ -177,23 +190,27 @@ public class CommandEss extends BasicCommand {
 
                             switch (args[2]) {
                                 case "add":
-                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, amount, true);
-
-                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, amount, true, doAfter -> {
+                                        commandSender.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                        GameAPI.updatePlayerData(uuid);
+                                    });
                                     break;
                                 case "set":
-                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ECASH, amount, true);
-                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully set the E-Cash of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + ".");
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ECASH, amount, true, doAfter -> {
+                                        commandSender.sendMessage(ChatColor.GREEN + "Successfully set the E-Cash of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + ".");
+                                        GameAPI.updatePlayerData(uuid);
+                                    });
                                     break;
                                 case "remove":
-                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);
-                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash from " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, (amount * -1), true, doAfter -> {
+                                        commandSender.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash from " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                        GameAPI.updatePlayerData(uuid);
+                                    });
                                     break;
                                 default:
                                     commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
                                     return false;
                             }
-                            GameAPI.updatePlayerData(uuid);
                         } catch (IllegalArgumentException ex) {
                             commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + ChatColor.BOLD + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ", maybe they've not played Dungeon Realms before?");
                             return false;
@@ -232,10 +249,15 @@ public class CommandEss extends BasicCommand {
                                     commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
                                     return false;
                                 }
-                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true);
-                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, subscriptionLength, true);
-                                GameAPI.updatePlayerData(uuid);
-                                commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                int finalSubLength = subscriptionLength;
+                                GameAPI.submitAsyncCallback(() -> {
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, false);
+                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, finalSubLength, false);
+                                    return true;
+                                }, result -> {
+                                    GameAPI.updatePlayerData(uuid);
+                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+                                });
                             } else {
                                 commandSender.sendMessage(ChatColor.RED + "Invalid rank, please use: SUB | SUB+");
                                 return false;
@@ -262,13 +284,14 @@ public class CommandEss extends BasicCommand {
                                     String currentRank = DatabaseAPI.getInstance().getData(EnumData.RANK, uuid).toString().toUpperCase();
                                     if (currentRank.equals("DEFAULT") || currentRank.startsWith("SUB")) {
                                         if (rankName.equalsIgnoreCase("SUB++")) {
-                                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true);
                                             if (Bukkit.getPlayer(playerName) != null) {
                                                 Rank.getInstance().setRank(uuid, rankName);
                                             } else {
-                                                GameAPI.updatePlayerData(uuid);
+                                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true, doAfter -> {
+                                                    GameAPI.updatePlayerData(uuid);
+                                                    commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rankName + ChatColor.GREEN + ".");
+                                                });
                                             }
-                                            commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rankName + ChatColor.GREEN + ".");
                                         } else {
                                             commandSender.sendMessage(ChatColor.RED + "The rank " + ChatColor.BOLD + ChatColor.UNDERLINE + type + ChatColor.RED + " is invalid or unsupported through this command.");
                                             return false;

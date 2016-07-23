@@ -3,6 +3,7 @@ package net.dungeonrealms.game.guild.db;
 import com.mongodb.client.model.Filters;
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.DatabaseDriver;
 import net.dungeonrealms.game.database.type.EnumData;
@@ -311,7 +312,10 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public void setGuild(UUID uuid, String guildName) {
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, guildName, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, guildName, true, doAfter -> {
+            GameAPI.updatePlayerData(uuid);
+            GameAPI.updateGuildData(guildName);
+        });
     }
 
     public boolean areInSameGuild(UUID uuid1, UUID uuid2) {

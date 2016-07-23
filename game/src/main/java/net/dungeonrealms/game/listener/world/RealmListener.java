@@ -184,8 +184,9 @@ public class RealmListener implements Listener {
 
                     } else REALMS.removeRealm(entry.getKey(), true);
 
-                    DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true);
-                    GameAPI.updatePlayerData(entry.getKey());
+                    DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true, doAfter -> {
+                        GameAPI.updatePlayerData(entry.getKey());
+                    });
 
                     REALMS.getProcessingBlocks().remove(entry.getKey());
                     realm.setUpgradeProgress(0);

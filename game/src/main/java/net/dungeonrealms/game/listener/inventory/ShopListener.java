@@ -520,8 +520,9 @@ public class ShopListener implements Listener {
                             } else {
                                 BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             }
-                            DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS_EARNED, totalPrice, true);
-                            GameAPI.updatePlayerData(shop.ownerUUID);
+                            DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS_EARNED, totalPrice, true, doAfter -> {
+                                GameAPI.updatePlayerData(shop.ownerUUID);
+                            });
                         }
                         int itemsLeft = 0;
                         for (ItemStack itemStack : event.getInventory().getContents()) {
