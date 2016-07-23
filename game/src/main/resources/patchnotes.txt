@@ -1,5 +1,10 @@
 Build <build>
 
+The server has been rolled back to July 14th. For more information please see the website.
+
+&8Changes&0
+- Raised T4 and T5 drop rates significantly.
+
 &4Bug Fixes&0
 - Fixed many synchronization issues.
 - Fixed more lag issues.
