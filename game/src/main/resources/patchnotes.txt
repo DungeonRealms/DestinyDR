@@ -7,4 +7,4 @@ Build <build>
 - Fixed /shard rollbacks
 - Fixed shard dropping dupe at last second
 - Fixed banning
-- Fixed placing restricted items in realm ches
+- Fixed placing restricted items in realm chest
