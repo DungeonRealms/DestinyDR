@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.world.items.Item;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -32,7 +33,7 @@ public class CommandCheck extends BasicCommand {
 
 		Player player = (Player) sender;
 
-		if (!player.isOp()) {
+		if (!Rank.isGM(player)) {
 			return true;
 		}
 

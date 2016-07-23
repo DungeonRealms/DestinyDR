@@ -182,6 +182,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         } else if (task.equals("Broadcast")) {
                             String message = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                             Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
+                        } else if (task.equals("BroadcastSound")) {
+                            String name = in.readUTF();
+                            Sound sound = null;
+                            for (Sound s : Sound.values()) {
+                                if (Sound.valueOf(name).equals(s)) {
+                                    sound = s;
+                                }
+                            }
+                            if (sound != null)
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    p.playSound(p.getLocation(), sound, 10, 1);
+                                }
                         } else if (task.equals("Stop")) {
 
                             if (DungeonRealms.getInstance().hasFinishedSetup())

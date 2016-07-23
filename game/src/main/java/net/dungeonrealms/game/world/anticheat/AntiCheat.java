@@ -18,13 +18,10 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.punishment.PunishAPI;
 import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
-import net.dungeonrealms.game.world.entities.utils.MountUtils;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -121,9 +118,31 @@ public class AntiCheat implements GenericMechanic {
         }
     }
 
+    public static void checkForDuplicatedEquipment(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
+        List<String> gearUids = new ArrayList<>();
+
+        for (Inventory inv : INVENTORIES_TO_CHECK) {
+            if (inv == null) continue;
+
+            for (ItemStack i : inv.getContents()) {
+                if (RepairAPI.isItemArmorOrWeapon(i)) {
+                    String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
+                    if (uniqueEpochIdentifier != null)
+                        gearUids.add(uniqueEpochIdentifier);
+                }
+            }
+        }
+
+        Set<String> duplicates = Utils.findDuplicates(gearUids);
+        if (!duplicates.isEmpty()) { // caught red handed
+            banAndBroadcast(p, duplicates.size());
+        }
+    }
+
     public static void checkForSuspiciousDupedItems(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
         if (Rank.isGM(p)) return;
 
+        List<String> gearUids = new ArrayList<>();
         int orbCount = 0;
         int enchantCount = 0;
         int protectCount = 0;
@@ -132,6 +151,13 @@ public class AntiCheat implements GenericMechanic {
             if (inv == null) continue;
 
             for (ItemStack i : inv.getContents()) {
+                if (RepairAPI.isItemArmorOrWeapon(i)) {
+                    String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
+                    if (uniqueEpochIdentifier != null)
+                        gearUids.add(uniqueEpochIdentifier);
+
+                    continue;
+                }
                 if (GameAPI.isOrb(i))
                     orbCount += i.getAmount();
                 else if (BankMechanics.getInstance().isBankNote(i))
@@ -143,17 +169,46 @@ public class AntiCheat implements GenericMechanic {
             }
         }
 
-        if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 300000 && GameAPI.getGamePlayer(p).getLevel() < 20) { // IP BAN
-            PunishAPI.ban(p.getUniqueId(), p.getName(), -1, "Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "NOTICE: Banned player " + p.getName() + " for possession of " + orbCount + " orbs, " +
+        Set<String> duplicates = Utils.findDuplicates(gearUids);
+        if (!duplicates.isEmpty()) { // caught red handed
+            banAndBroadcast(p, duplicates.size());
+            return;
+        }
+
+        if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 350000) {
+            banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
+        }
+        else if (GameAPI.getGamePlayer(p).getLevel() < 20 && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 300000) { // IP BAN
+            banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
+            /*GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "NOTICE: Banned player " + p.getName() + " for possession of " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
-                    "gems at level " + GameAPI.getGamePlayer(p).getLevel());
+                    "gems at level " + GameAPI.getGamePlayer(p).getLevel());*/
         }
         else if (orbCount > 32 || enchantCount > 32 || protectCount > 32 || gemCount > 100000) { // WARN
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: Player " + p.getName() + " has " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
                     "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
         }
+    }
+
+    private static void banAndBroadcast(Player p, int i) {
+        PunishAPI.ban(p.getUniqueId(), p.getName(), -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
+        GameAPI.sendNetworkMessage("Broadcast", "");
+        GameAPI.sendNetworkMessage("Broadcast", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
+                "PERMANENTLY IP BANNED" + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);
+        //todo: add system for broadcasting SHOW of duped items
+        GameAPI.sendNetworkMessage("Broadcast", "");
+        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
+    }
+
+    private static void banAndBroadcast(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
+        PunishAPI.ban(p.getUniqueId(), p.getName(), -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
+        GameAPI.sendNetworkMessage("Broadcast", "");
+        GameAPI.sendNetworkMessage("Broadcast", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
+                "PERMANENTLY IP BANNED" + ChatColor.RED + " player " + p.getName() + " for possession of " + orbCount + " orbs, " + enchantCount +
+                " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + "gems on shard " + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+        GameAPI.sendNetworkMessage("Broadcast", "");
+        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
     }
 
     /*

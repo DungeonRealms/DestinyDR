@@ -8,9 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -49,6 +47,19 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    public static <T> Set<T> findDuplicates(Collection<T> list) {
+        Set<T> duplicates = new HashSet<T>();
+        Set<T> uniques = new HashSet<T>();
+
+        for(T t : list) {
+            if(!uniques.add(t)) {
+                duplicates.add(t);
+            }
+        }
+
+        return duplicates;
     }
 
 
