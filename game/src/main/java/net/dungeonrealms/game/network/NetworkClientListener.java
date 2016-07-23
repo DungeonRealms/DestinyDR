@@ -85,7 +85,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         if (DungeonRealms.getInstance().hasFinishedSetup())
                             GameAPI.sendNetworkMessage("AcceptLoginToken", uuid.toString(), shard);
                         else
-                            GameAPI.sendNetworkMessage("RefuseLoginToken", uuid.toString(), "This server is still setting up..");
+                            GameAPI.sendNetworkMessage("RefuseLoginToken", uuid.toString(), ChatColor.RED + "This server is still setting up..");
                     });
                     return;
                 }
