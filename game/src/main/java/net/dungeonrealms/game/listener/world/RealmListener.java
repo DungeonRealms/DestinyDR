@@ -899,6 +899,9 @@ public class RealmListener implements Listener {
             else if (event.getAction() == InventoryAction.HOTBAR_SWAP){
                 item = event.getInventory().getItem(event.getHotbarButton());
             }
+            else {
+                return;
+            }
             if (Item.ItemType.isArmor(item) || Item.ItemType.isWeapon(item) || item.getType() == Material
                     .EMERALD
                     || item.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(item) ||
