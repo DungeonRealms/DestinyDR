@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.Listener;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.database.type.EnumOperators;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
@@ -89,8 +90,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     });
                     return;
                 }
-
-                if (task.equals("Update")) {
+                else if (task.equals("Update")) {
                     UUID uuid = UUID.fromString(in.readUTF());
                     Player player1 = Bukkit.getPlayer(uuid);
 
@@ -102,6 +102,14 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         }));
                     }
                     return;
+                }
+                else if (task.equals("GMMessage")) {
+                    String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
+                    Bukkit.getOnlinePlayers().forEach(p -> {
+                        if (Rank.isGM(p)) {
+                            p.sendMessage(msg);
+                        }
+                    });
                 }
 
                 // Handle packet sync //

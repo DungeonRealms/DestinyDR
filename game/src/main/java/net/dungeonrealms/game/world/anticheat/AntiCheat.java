@@ -3,11 +3,22 @@ package net.dungeonrealms.game.world.anticheat;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.punishment.PunishAPI;
+import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -27,7 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by Nick on 10/1/2015.
  */
-public class AntiCheat {
+public class AntiCheat implements GenericMechanic {
 
     static AntiCheat instance = null;
     @Getter
@@ -41,8 +52,40 @@ public class AntiCheat {
         return instance;
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CATHOLICS;
+    }
+
+    @Override
     public void startInitialization() {
 //        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(this::checkPlayer), 0, 20);
+
+    }
+
+    @Override
+    public void stopInvocation() {
+
+    }
+
+    public void handleLogin(Player p) {
+        // todo: cache inventory when loading mule, currently it's written in a very stupid way
+        String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, p.getUniqueId());
+        int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, p.getUniqueId());
+        if (muleLevel > 3) {
+            muleLevel = 3;
+        }
+        MuleTier tier = MuleTier.getByTier(muleLevel);
+        Inventory muleInv = null;
+        if (tier != null) {
+            muleInv = Bukkit.createInventory(p, tier.getSize(), "Mule Storage");
+            if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
+                //Make sure the inventory is as big as we need
+                muleInv = ItemSerialization.fromString(invString, tier.getSize());
+            }
+        }
+        Storage storage = BankMechanics.getInstance().getStorage(p.getUniqueId());
+        checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv)));
     }
 
     //TODO: Have a look at this
@@ -75,6 +118,41 @@ public class AntiCheat {
                 }
             }
             cloneIndex = -1;
+        }
+    }
+
+    public static void checkForSuspiciousDupedItems(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
+        if (Rank.isGM(p)) return;
+
+        int orbCount = 0;
+        int enchantCount = 0;
+        int protectCount = 0;
+        int gemCount = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, p.getUniqueId());
+        for (Inventory inv : INVENTORIES_TO_CHECK) {
+            if (inv == null) continue;
+
+            for (ItemStack i : inv.getContents()) {
+                if (GameAPI.isOrb(i))
+                    orbCount += i.getAmount();
+                else if (BankMechanics.getInstance().isBankNote(i))
+                    gemCount += BankMechanics.getInstance().getNoteValue(i);
+                else if (ItemManager.isEnchantScroll(i))
+                    enchantCount += i.getAmount();
+                else if (ItemManager.isProtectScroll(i))
+                    protectCount += i.getAmount();
+            }
+        }
+
+        if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 300000 && GameAPI.getGamePlayer(p).getLevel() < 20) { // IP BAN
+            PunishAPI.ban(p.getUniqueId(), p.getName(), -1, "Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "NOTICE: Banned player " + p.getName() + " for possession of " + orbCount + " orbs, " +
+                    enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
+                    "gems at level " + GameAPI.getGamePlayer(p).getLevel());
+        }
+        else if (orbCount > 32 || enchantCount > 32 || protectCount > 32 || gemCount > 100000) { // WARN
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: Player " + p.getName() + " has " + orbCount + " orbs, " +
+                    enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
+                    "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
         }
     }
 

@@ -39,6 +39,7 @@ import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -934,7 +935,6 @@ public class GameAPI {
                     Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]),
                     Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
         } else {
-
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
 
              /*PLAYER IS NEW*/
@@ -1054,6 +1054,9 @@ public class GameAPI {
 
         // Notices
         Notice.getInstance().doLogin(player);
+
+        // Anticheat
+        AntiCheat.getInstance().handleLogin(player);
 
 
         // Newbie Protection
