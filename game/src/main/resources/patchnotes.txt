@@ -4,3 +4,4 @@ Build <build>
 - Fixed many synchronization issues.
 - Fixed more lag issues.
 - Fixed realm chest giving you a normal chest
+- Fixed /shard rollbacks
