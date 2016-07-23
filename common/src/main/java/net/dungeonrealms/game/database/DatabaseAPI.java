@@ -65,10 +65,32 @@ public class DatabaseAPI {
                     rootDoc.put(key[1], object);
                     break;
                 case $INC:
-                    rootDoc.put(key[1], ((Number) object).doubleValue() + ((Number) data).doubleValue());
+                    if (data instanceof Integer) {
+                        rootDoc.put(key[1], ((Integer) object) + ((Integer) data));
+                    }
+                    else if (data instanceof Double) {
+                        rootDoc.put(key[1], ((Double) object) + ((Double) data));
+                    }
+                    else if (data instanceof Float) {
+                        rootDoc.put(key[1], ((Float) object) + ((Float) data));
+                    }
+                    else if (data instanceof Long) {
+                        rootDoc.put(key[1], ((Long) object) + ((Long) data));
+                    }
                     break;
                 case $MUL:
-                    rootDoc.put(key[1], ((Number) object).doubleValue() * ((Number) data).doubleValue());
+                    if (data instanceof Integer) {
+                        rootDoc.put(key[1], ((Integer) object) * ((Integer) data));
+                    }
+                    else if (data instanceof Double) {
+                        rootDoc.put(key[1], ((Double) object) * ((Double) data));
+                    }
+                    else if (data instanceof Float) {
+                        rootDoc.put(key[1], ((Float) object) * ((Float) data));
+                    }
+                    else if (data instanceof Long) {
+                        rootDoc.put(key[1], ((Long) object) * ((Long) data));
+                    }
                     break;
                 case $PUSH:
                     ((ArrayList) data).add(object);
