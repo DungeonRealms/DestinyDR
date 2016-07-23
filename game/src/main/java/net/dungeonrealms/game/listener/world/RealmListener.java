@@ -618,10 +618,10 @@ public class RealmListener implements Listener {
             return;
         }
 
-
         if (b.getType() == Material.CHEST) {
             Chest c = (Chest) b.getState();
             Inventory c_inv = c.getInventory();
+            deleteIllegalItemsInInventory(c_inv, p);
             int in_chest = getUsedSlots(c_inv);
             int available_on_player = getAvailableSlots(p.getInventory());
             if (in_chest > available_on_player) {
@@ -804,9 +804,7 @@ public class RealmListener implements Listener {
                 && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
             return;
         }
-        int deletedItems = deleteIllegalItemsInInventory(event.getInventory());
-        event.getPlayer().sendMessage(ChatColor.RED + "Removed " + ChatColor.BOLD + deletedItems + " illegal items" +
-                ChatColor.RED + " from your realm container.");
+        deleteIllegalItemsInInventory(event.getInventory(), (Player)event.getPlayer());
     }
 
     @EventHandler
@@ -820,20 +818,24 @@ public class RealmListener implements Listener {
                 && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
             return;
         }
-        int deletedItems = deleteIllegalItemsInInventory(event.getInventory());
-        event.getPlayer().sendMessage(ChatColor.RED + "Removed " + ChatColor.BOLD + deletedItems + " illegal items" +
-                ChatColor.RED + " from your realm container.");
+        deleteIllegalItemsInInventory(event.getInventory(), (Player)event.getPlayer());
     }
 
-    private static int deleteIllegalItemsInInventory(Inventory inv) {
+    private static int deleteIllegalItemsInInventory(Inventory inv, Player p) {
         int deletedItems = 0;
         for (ItemStack i : inv.getContents()) {
             if (i == null) continue;
             if (i.getType() == Material.AIR) continue;
-            if (GameAPI.isArmor(i) || GameAPI.isWeapon(i) || BankMechanics.getInstance().isBankNote(i) || BankMechanics.getInstance().isGem(i)) {
+            if (GameAPI.isArmor(i) || GameAPI.isWeapon(i) || BankMechanics.getInstance().isBankNote(i) ||
+                    BankMechanics.getInstance().isGem(i) || ItemManager.isEnchantScroll(i) || ItemManager
+                    .isProtectScroll(i)) {
                 inv.remove(i);
                 deletedItems++;
             }
+        }
+        if (deletedItems > 0) {
+            p.sendMessage(ChatColor.RED + "Removed " + ChatColor.BOLD + deletedItems + " illegal items" +
+                    ChatColor.RED + " from your realm container.");
         }
         return deletedItems;
     }
@@ -876,8 +878,12 @@ public class RealmListener implements Listener {
             if (event.getCursor() != null) {
                 // They're placing an item into the chest.
                 ItemStack cursor = event.getCursor();
-                if (Item.ItemType.isArmor(cursor) || Item.ItemType.isWeapon(cursor) || cursor.getType() == Material.EMERALD
-                        || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) || BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)) {
+                if (Item.ItemType.isArmor(cursor) || Item.ItemType.isWeapon(cursor) || cursor.getType() == Material
+                        .EMERALD
+                        || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) ||
+                        BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)
+                        || ItemManager.isEnchantScroll(cursor) || ItemManager
+                        .isProtectScroll(cursor)) {
                     event.setCancelled(true);
                     event.setCursor(cursor);
                     p.updateInventory();
