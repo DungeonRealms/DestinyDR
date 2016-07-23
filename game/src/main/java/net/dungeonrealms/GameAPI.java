@@ -402,7 +402,7 @@ public class GameAPI {
         if (Bukkit.getPlayer(uuid) != null) return; // their player data has already been updated in PLAYERS
 
         // SENDS PACKET TO MASTER SERVER //
-         sendNetworkMessage("Update", uuid.toString());
+        sendNetworkMessage("Update", uuid.toString());
     }
 
     /**
@@ -712,7 +712,10 @@ public class GameAPI {
         }
 
         GuildMechanics.getInstance().doLogout(player);
-        Realms.getInstance().doLogout(player);
+
+        // HANDLE REALM LOGOUT SYNC //
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(),
+                () -> Realms.getInstance().doLogout(player));
 
         // save player data
         savePlayerData(uuid, true, async);

@@ -215,7 +215,7 @@ public class RealmInstance implements Realms {
         for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
             if (p.getName().equals(player.getName())) continue;
             if (!p.getWorld().equals(player.getWorld())) continue;
-            if (p.getLocation().distance(player.getLocation()) <= 2) {
+            if (p.getLocation().distance(location.clone()) <= 2) {
                 player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
                 return false;
             }
