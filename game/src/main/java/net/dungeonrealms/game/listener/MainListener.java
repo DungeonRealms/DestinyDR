@@ -288,6 +288,8 @@ public class MainListener implements Listener {
     public void onPlayerKick(PlayerKickEvent event) {
         event.setLeaveMessage(null);
 
+        if (event.getPlayer().hasMetadata("sharding")) event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
+
         if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
             GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
             return;
@@ -299,6 +301,8 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
+
+        if (event.getPlayer().hasMetadata("sharding")) event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
 
         if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
             Utils.log.info("Ignored quit event for player " + event.getPlayer().getName());

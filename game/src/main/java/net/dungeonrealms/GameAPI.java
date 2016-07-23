@@ -869,6 +869,8 @@ public class GameAPI {
         } catch (NullPointerException ignored) {
         }
 
+        if (player.hasMetadata("sharding")) player.removeMetadata("sharding", DungeonRealms.getInstance());
+
         // todo: finish anticheat system
         //AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
 
