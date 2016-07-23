@@ -137,7 +137,7 @@ public class RestrictionListener implements Listener {
                 return;
             }
 
-        if (result.getType() == Material.WHEAT || result.getType() == Material.BREAD || result.getType() == Material.WOOD_SWORD || result.getType() == Material.FURNACE
+        if (result.getType() == Material.WHEAT || result.getType() == Material.BREAD || result.getType() == Material.WOOD_SWORD || result.getType() == Material.BUCKET || result.getType() == Material.FURNACE
                 || result.getType() == Material.ARMOR_STAND || result.getType() == Material.ENDER_CHEST || result.getType() == Material.SHIELD
                 || result.getType() == Material.STONE_SWORD || result.getType() == Material.IRON_SWORD || result.getType() == Material.DIAMOND_SWORD
                 || result.getType() == Material.GOLD_SWORD || result.getType() == Material.BOW || result.getType() == Material.WOOD_AXE
@@ -241,6 +241,15 @@ public class RestrictionListener implements Listener {
         if (player.getGameMode() == GameMode.CREATIVE) {
             return;
         }
+
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if ((event.hasItem()) && (event.getItem().getType() == Material.WATER_BUCKET || event.getItem().getType() == Material.WATER
+                    || event.getItem().getType() == Material.LAVA || event.getItem().getType() == Material.LAVA_BUCKET)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (event.getClickedBlock().getType() == Material.FIRE) {
                 event.setCancelled(true);
@@ -249,14 +258,6 @@ public class RestrictionListener implements Listener {
             }
         }
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (Bukkit.getWorlds().get(0).equals(player.getLocation().getWorld()))
-                if ((event.hasItem()) && (event.getItem().getType() == Material.WATER_BUCKET || event.getItem().getType() == Material.WATER
-                        || event.getItem().getType() == Material.LAVA || event.getItem().getType() == Material.LAVA_BUCKET)) {
-                    event.setCancelled(true);
-                    return;
-                }
-        }
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.hasBlock() && event.getClickedBlock().getType() == Material.CAKE_BLOCK) {
