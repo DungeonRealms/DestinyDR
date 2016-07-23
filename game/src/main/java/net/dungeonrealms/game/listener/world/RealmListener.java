@@ -43,6 +43,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -794,19 +795,47 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void onRealmChestClose(InventoryCloseEvent event) {
-        if (event.getPlayer().getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) return;
-        if (!(event.getInventory().getName().contains("Realm Chest") || event.getInventory().getName()
-                .equalsIgnoreCase("container.dropper") || event.getInventory().getName().equalsIgnoreCase("container" +
-                ".hopper")))
+        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0)) || event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+        if (!event.getInventory().getName().contains("container.chest") && !event.getInventory().getName().contains
+                ("Realm Chest") && !event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
+                && !(event.getInventory().getName().equalsIgnoreCase("container.minecart"))
+                && !(event.getInventory().getName().equalsIgnoreCase("container.dispenser")) && !(event.getInventory
+                ().getName().equalsIgnoreCase("container.hopper"))
+                && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
             return;
-        for (ItemStack i : event.getInventory().getContents()) {
+        }
+        int deletedItems = deleteIllegalItemsInInventory(event.getInventory());
+        event.getPlayer().sendMessage(ChatColor.RED + "Removed " + ChatColor.BOLD + deletedItems + " illegal items" +
+                ChatColor.RED + " from your realm container.");
+    }
+
+    @EventHandler
+    public void onRealmContainerOpen(InventoryOpenEvent event) {
+        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0)) || event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+        if (!event.getInventory().getName().contains("container.chest") && !event.getInventory().getName().contains
+                ("Realm Chest") && !event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
+                && !(event.getInventory().getName().equalsIgnoreCase("container.minecart"))
+                && !(event.getInventory().getName().equalsIgnoreCase("container.dispenser")) && !(event.getInventory
+                ().getName().equalsIgnoreCase("container.hopper"))
+                && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
+            return;
+        }
+        int deletedItems = deleteIllegalItemsInInventory(event.getInventory());
+        event.getPlayer().sendMessage(ChatColor.RED + "Removed " + ChatColor.BOLD + deletedItems + " illegal items" +
+                ChatColor.RED + " from your realm container.");
+    }
+
+    private static int deleteIllegalItemsInInventory(Inventory inv) {
+        int deletedItems = 0;
+        for (ItemStack i : inv.getContents()) {
             if (i == null) continue;
             if (i.getType() == Material.AIR) continue;
             if (GameAPI.isArmor(i) || GameAPI.isWeapon(i) || BankMechanics.getInstance().isBankNote(i) || BankMechanics.getInstance().isGem(i)) {
-                event.getInventory().remove(i);
-                event.getInventory().getViewers().get(0).getInventory().addItem(i);
+                inv.remove(i);
+                deletedItems++;
             }
         }
+        return deletedItems;
     }
 
     @SuppressWarnings("deprecation")
