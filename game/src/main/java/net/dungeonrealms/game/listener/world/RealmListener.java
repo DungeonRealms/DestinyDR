@@ -21,6 +21,7 @@ import net.dungeonrealms.game.updater.UpdateType;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
@@ -583,14 +584,7 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void onDispense(ProjectileLaunchEvent event) {
-        if (event.getEntity().getShooter() instanceof BlockProjectileSource) {
-            World world = ((BlockProjectileSource) event.getEntity().getShooter()).getBlock().getWorld();
-            if (world.equals(Bukkit.getWorlds().get(0)) || world.getName().contains("DUNGEON")) return;
-            if (((BlockProjectileSource) event.getEntity().getShooter()).getBlock().getType() == Material.DISPENSER) {
-                deleteIllegalItemsInInventory(((InventoryHolder) ((BlockProjectileSource) event.getEntity()
-                        .getShooter()).getBlock().getState()).getInventory(), null);
-            }
-        }
+        if (event.getEntity())
     }
 
     @SuppressWarnings("deprecation")
@@ -847,7 +841,7 @@ public class RealmListener implements Listener {
             if (i.getType() == Material.AIR) continue;
             if (GameAPI.isArmor(i) || GameAPI.isWeapon(i) || BankMechanics.getInstance().isBankNote(i) ||
                     BankMechanics.getInstance().isGem(i) || ItemManager.isEnchantScroll(i) || ItemManager
-                    .isProtectScroll(i)) {
+                    .isProtectScroll(i) || GameAPI.isOrb(i) || RepairAPI.isItemArmorScrap(i)) {
                 inv.remove(i);
                 deletedItems++;
             }
@@ -901,7 +895,7 @@ public class RealmListener implements Listener {
                         .EMERALD
                         || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) ||
                         BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)
-                        || ItemManager.isEnchantScroll(cursor) || ItemManager.isProtectScroll(cursor)) {
+                        || ItemManager.isEnchantScroll(cursor) || ItemManager.isProtectScroll(cursor) || GameAPI.isOrb(i) || RepairAPI.isItemArmorScrap(i))) {
                     event.setCancelled(true);
                     event.setCursor(cursor);
                     p.updateInventory();
@@ -925,7 +919,7 @@ public class RealmListener implements Listener {
                     .EMERALD
                     || item.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(item) ||
                     BankMechanics.getInstance().isGem(item) || BankMechanics.getInstance().isBankNote(item)
-                    || ItemManager.isEnchantScroll(item) || ItemManager.isProtectScroll(item)) {
+                    || ItemManager.isEnchantScroll(item) || ItemManager.isProtectScroll(item) || GameAPI.isOrb(i) || RepairAPI.isItemArmorScrap(i))) {
                 event.setCancelled(true);
                 event.setCurrentItem(item);
                 p.updateInventory();
