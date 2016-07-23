@@ -61,8 +61,8 @@ public class Chat {
     }
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
-            "dick", "clit", "homo", "fag", "queer", "nigger", "nigga", "dike", "dyke", "retard", " motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
-            "cunt", "titty", "anus", " faggot", "gay", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "titanrift", "fucked"));
+            "dick", "clit", "homo", "fag", "faggot", "queer", "nigger", "nigga", "dike", "dyke", "retard", " motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
+            "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "gay", "minecade", "unowild", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "kys", "jigga", "jiggaboo", "hitler", "jews", "ass", "titanrift", "fucked"));
 
     /**
      * Listens for chat event listener
@@ -251,7 +251,7 @@ public class Chat {
         if (Rank.isPMOD(player)) return true;
         if (player.hasMetadata("lastGlobalChat") && (System.currentTimeMillis() - player.getMetadata
                 ("lastGlobalChat").get(0).asLong()) < 10000) {
-            int timeRemaining = ((int)(10000 - (System.currentTimeMillis() - player.getMetadata("lastGlobalChat").get(0)
+            int timeRemaining = ((int) (10000 - (System.currentTimeMillis() - player.getMetadata("lastGlobalChat").get(0)
                     .asLong()))) / 1000;
             player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.UNDERLINE + timeRemaining + " seconds" +
                     ChatColor.RED + " before sending another global chat message.");

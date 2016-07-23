@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.commands.punish;
 
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.commands.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.player.Rank;
@@ -25,7 +24,10 @@ public class CommandUnban extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if ((sender instanceof Player) && !Rank.isGM((Player) sender)) return true;
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (!Rank.isPMOD(player)) return false;
+        }
 
         if (args.length == 0) {
             sender.sendMessage(usage);

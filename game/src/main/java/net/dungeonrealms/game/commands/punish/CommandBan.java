@@ -27,7 +27,10 @@ public class CommandBan extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if ((sender instanceof Player) && !Rank.isPMOD((Player) sender)) return true;
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (!Rank.isPMOD(player)) return false;
+        }
 
         if (args.length < 2) {
             sender.sendMessage(usage);
