@@ -568,7 +568,10 @@ public class RealmInstance implements Realms {
 
         if (runAsync) {
             // SUBMIT THREAD INTO ASYNC POOL //
-            AsyncUtils.pool.submit(() -> uploadRealm(uuid, doAfter));
+            GameAPI.submitAsyncCallback(() -> {
+                uploadRealm(uuid, doAfter);
+                return true;
+            }, null);
         } else {
             // EXECUTE ON MAIN THREAD //
             uploadRealm(uuid, doAfter);
