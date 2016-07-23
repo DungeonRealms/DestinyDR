@@ -40,6 +40,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -51,6 +52,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.BlockProjectileSource;
 
 import java.util.HashMap;
 import java.util.List;
@@ -579,6 +581,18 @@ public class RealmListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onDispense(ProjectileLaunchEvent event) {
+        if (event.getEntity().getShooter() instanceof BlockProjectileSource) {
+            World world = ((BlockProjectileSource) event.getEntity().getShooter()).getBlock().getWorld();
+            if (world.equals(Bukkit.getWorlds().get(0)) || world.getName().contains("DUNGEON")) return;
+            if (((BlockProjectileSource) event.getEntity().getShooter()).getBlock().getType() == Material.DISPENSER) {
+                deleteIllegalItemsInInventory(((InventoryHolder) ((BlockProjectileSource) event.getEntity()
+                        .getShooter()).getBlock().getState()).getInventory(), null);
+            }
+        }
+    }
+
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerCreativeBlockBreak(PlayerInteractEvent e) {
@@ -838,7 +852,7 @@ public class RealmListener implements Listener {
                 deletedItems++;
             }
         }
-        if (deletedItems > 0) {
+        if (deletedItems > 0 && p != null) {
             p.sendMessage(ChatColor.RED + "Removed " + ChatColor.BOLD + deletedItems + " illegal item" +
                     (deletedItems > 1 ? "s" : "") + ChatColor.RED + " from your realm container.");
         }
