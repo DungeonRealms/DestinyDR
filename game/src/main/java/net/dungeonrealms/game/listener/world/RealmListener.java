@@ -834,8 +834,8 @@ public class RealmListener implements Listener {
             }
         }
         if (deletedItems > 0) {
-            p.sendMessage(ChatColor.RED + "Removed " + ChatColor.BOLD + deletedItems + " illegal items" +
-                    ChatColor.RED + " from your realm container.");
+            p.sendMessage(ChatColor.RED + "Removed " + ChatColor.BOLD + deletedItems + " illegal item" +
+                    (deletedItems > 1 ? "s" : "") + ChatColor.RED + " from your realm container.");
         }
         return deletedItems;
     }
@@ -882,8 +882,7 @@ public class RealmListener implements Listener {
                         .EMERALD
                         || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) ||
                         BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)
-                        || ItemManager.isEnchantScroll(cursor) || ItemManager
-                        .isProtectScroll(cursor)) {
+                        || ItemManager.isEnchantScroll(cursor) || ItemManager.isProtectScroll(cursor)) {
                     event.setCancelled(true);
                     event.setCursor(cursor);
                     p.updateInventory();
@@ -893,16 +892,23 @@ public class RealmListener implements Listener {
             }
         } else if (slot_num >= event.getInventory().getSize()) {
             // Clicking in own inventory.
+            ItemStack item = null;
             if (event.isShiftClick()) {
-                ItemStack in_slot = event.getCurrentItem();
-                if (Item.ItemType.isArmor(in_slot) || Item.ItemType.isWeapon(in_slot) || in_slot.getType() == Material.EMERALD
-                        || in_slot.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(in_slot)) {
-                    event.setCancelled(true);
-                    event.setCurrentItem(in_slot);
-                    p.updateInventory();
-                    p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " deposit weapons, armor, or gems in realm blocks.");
-                    p.sendMessage(ChatColor.GRAY + "Deposit those items in your BANK CHEST.");
-                }
+                item = event.getCurrentItem();
+            }
+            else if (event.getAction() == InventoryAction.HOTBAR_SWAP){
+                item = event.getInventory().getItem(event.getHotbarButton());
+            }
+            if (Item.ItemType.isArmor(item) || Item.ItemType.isWeapon(item) || item.getType() == Material
+                    .EMERALD
+                    || item.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(item) ||
+                    BankMechanics.getInstance().isGem(item) || BankMechanics.getInstance().isBankNote(item)
+                    || ItemManager.isEnchantScroll(item) || ItemManager.isProtectScroll(item)) {
+                event.setCancelled(true);
+                event.setCurrentItem(item);
+                p.updateInventory();
+                p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " deposit weapons, armor, or gems in realm blocks.");
+                p.sendMessage(ChatColor.GRAY + "Deposit those items in your BANK CHEST.");
             }
         }
     }
