@@ -31,7 +31,7 @@ public class Support {
      * @param type
      */
     public static void modifyEcash(Player player, String playerName, UUID uuid, int amount, String type) {
-        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.ECASH, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true, true);
+        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.ECASH, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true);
         GameAPI.updatePlayerData(uuid);
         player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " E-Cash to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);
@@ -52,7 +52,7 @@ public class Support {
             return;
         }
 
-        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.LEVEL, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true, true);
+        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.LEVEL, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true);
         GameAPI.updatePlayerData(uuid);
         player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " level to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);
@@ -68,7 +68,7 @@ public class Support {
      * @param type
      */
     public static void modifyExp(Player player, String playerName, UUID uuid, int amount, String type) {
-        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.EXPERIENCE, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true, true);
+        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.EXPERIENCE, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true);
         GameAPI.updatePlayerData(uuid);
         player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " experience to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);
@@ -84,7 +84,7 @@ public class Support {
      * @param type
      */
     public static void modifyGems(Player player, String playerName, UUID uuid, int amount, String type) {
-        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.GEMS, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true, true);
+        DatabaseAPI.getInstance().update(uuid, (!Objects.equals(type, "set") ? EnumOperators.$INC : EnumOperators.$SET), EnumData.GEMS, (!Objects.equals(type, "remove") ? amount : (amount*-1)), true);
         GameAPI.updatePlayerData(uuid);
         player.sendMessage(ChatColor.GREEN + "Successfully " + type + (Objects.equals(type, "add") ? "ed" : (Objects.equals(type, "remove") ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " gems to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);

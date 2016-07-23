@@ -41,7 +41,7 @@ public class CommandCloseShop extends BasicCommand {
             String uuidString = DatabaseAPI.getInstance().getUUIDFromName(playerName);
             UUID uuid = UUID.fromString(uuidString);
             GameAPI.sendNetworkMessage("Shop", "close:" + " ," + playerName);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true, true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true);
 
             return false;
         } else {
@@ -49,7 +49,7 @@ public class CommandCloseShop extends BasicCommand {
             GameAPI.sendNetworkMessage("Shop", "close:" + " ," + player.getName());
             String uuidString = DatabaseAPI.getInstance().getUUIDFromName(player.getName());
             UUID uuid = UUID.fromString(uuidString);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true, true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 GameAPI.updatePlayerData(uuid);

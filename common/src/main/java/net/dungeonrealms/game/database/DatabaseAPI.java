@@ -36,18 +36,45 @@ public class DatabaseAPI {
      * @param EO
      * @param variable
      * @param object
-     * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
      * @param async
      * @since 1.0
      */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, boolean async) {
-        if (async) {
-            MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), new Document("requestNew", requestNew).append("uuid", uuid)));
+    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async) {
+        if (PLAYERS.containsKey(uuid)) { // update local data
+            Document localDoc = PLAYERS.get(uuid);
+            String[] key = variable.getKey().split("\\.");
+            Document rootDoc = (Document)localDoc.get(key[0]);
+            Object data = rootDoc.get(key[1]);
+            switch (EO) {
+                case $SET:
+                    rootDoc.put(key[1], object);
+                    Constants.log.info(object.toString());
+                    Constants.log.info(getData(variable, uuid).toString());
+                    break;
+                case $INC:
+                    rootDoc.put(key[1], ((Number) object).doubleValue() + ((Number) data).doubleValue());
+                    Constants.log.info(String.valueOf((((Number) object).doubleValue() + ((Number) data).doubleValue())));
+                    Constants.log.info(getData(variable, uuid).toString());
+                    break;
+                case $MUL:
+                    rootDoc.put(key[1], ((Number) object).doubleValue() * ((Number) data).doubleValue());
+                    Constants.log.info(String.valueOf((((Number) object).doubleValue() * ((Number) data).doubleValue())));
+                    Constants.log.info(getData(variable, uuid).toString());
+                    break;
+                case $PUSH:
+                    ((ArrayList)data).add(object);
+                    break;
+                case $PULL:
+                    ((ArrayList)data).remove(object);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (async) { // update database data
+            MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object))));
         } else {
             DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
-        }
-        if (requestNew && !async) {
-            requestPlayer(uuid);
         }
     }
 
@@ -77,8 +104,6 @@ public class DatabaseAPI {
         Object dataObj = rootDoc.get(key[1]);
         Class<? extends Object> clazz = dataObj.getClass();
 
-        Constants.log.info(clazz.toString());
-
         return rootDoc.get(key[1], clazz);
     }
 
@@ -91,6 +116,8 @@ public class DatabaseAPI {
      */
     public boolean requestPlayer(UUID uuid) {
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        Constants.log.info("New playerdata requested for " + uuid + " from the database.");
+        Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
         if (doc == null) addNewPlayer(uuid);
         else PLAYERS.put(uuid, doc);
 

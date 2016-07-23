@@ -380,8 +380,11 @@ public class GameAPI {
      * @param uuid Target
      */
     public static void updatePlayerData(UUID uuid) {
+        // CHECK IF LOCAL //
+        if (Bukkit.getPlayer(uuid) != null) return; // their player data has already been updated in PLAYERS
+
         // SENDS PACKET TO MASTER SERVER //
-        sendNetworkMessage("Update", uuid.toString());
+         sendNetworkMessage("Update", uuid.toString());
     }
 
     /**
@@ -600,12 +603,12 @@ public class GameAPI {
             Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false, async);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, async);
             }
             inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false, async);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, async);
             }
         }
 
@@ -625,10 +628,10 @@ public class GameAPI {
         } else {
             armor.add(ItemSerialization.itemStackToBase64(offHand));
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false, async);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, async);
 
         String inventory = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false, async);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, async);
 
         // LOCATION
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
@@ -636,21 +639,21 @@ public class GameAPI {
             locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
                     + player.getLocation().getZ() + "," + player.getLocation().getYaw() + ","
                     + player.getLocation().getPitch();
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false, async);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, async);
         } else {
             //Dungeon or realm, should already have their last main world location saved.
         }
 
         // MULE INVENTORY
         if (MountUtils.inventories.containsKey(uuid)) {
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false, async);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), async);
         }
 
         // LEVEL AND STATISTICS
         if (GAMEPLAYERS.size() > 0) {
             GamePlayer gp = GameAPI.getGamePlayer(player);
             if (gp != null) {
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), false, async);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), async);
                 gp.getPlayerStatistics().updatePlayerStatistics();
                 gp.getStats().updateDatabase(false);
                 GAMEPLAYERS.remove(player.getName());
@@ -659,10 +662,11 @@ public class GameAPI {
 
         // MISC
         if (!logout) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false, async);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), false, async);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player).name(), false, async);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false, async);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), async);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), async);
+
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player).name(), async);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), async);
         }
 
         return true;
@@ -730,11 +734,11 @@ public class GameAPI {
                 }
             }
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false, async);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, async);
 
         MountUtils.inventories.remove(uuid);
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis(), false, async);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis(), async);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
@@ -834,7 +838,7 @@ public class GameAPI {
                     return;
                 } else {
                     if (!CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true, true);
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
                         //Shard probably crashed, so they believe they combat logged, but the shard has no record of it.
                     }
                 }
@@ -903,7 +907,7 @@ public class GameAPI {
                     Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
         } else {
 
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true, true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
 
              /*PLAYER IS NEW*/
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &fWelcome &6" + player.getName() + " &fto &6Dungeon Realms&f."));
@@ -1033,8 +1037,8 @@ public class GameAPI {
         int currentTime = (int) (System.currentTimeMillis() / 1000);
         if (currentTime - freeEcash >= 86400) {
             int ecashReward = Utils.randInt(10, 15);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), false, true);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, ecashReward, true, true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
             player.sendMessage(new String[]{
                     ChatColor.GOLD + "You have gained " + ChatColor.BOLD + ecashReward + "EC" + ChatColor.GOLD + " for logging into DungeonRealms today!",
                     ChatColor.GRAY + "Use /ecash to spend your EC, you can obtain more e-cash by logging in daily or by visiting " + ChatColor.GOLD + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
@@ -1042,9 +1046,9 @@ public class GameAPI {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
         }
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), false, true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, false, true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("IP");
@@ -1143,7 +1147,7 @@ public class GameAPI {
     public static void moveToShard(Player player, String serverBungeeName) {
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
         submitAsyncCallback(() -> {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true, false);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), false);
             return GameAPI.handleLogout(player.getUniqueId(), false);
         }, consumer -> {
             BungeeUtils.sendToServer(player.getName(), serverBungeeName);
@@ -1339,7 +1343,7 @@ public class GameAPI {
         }
         if (playerPortalKeyShards - amount >= 0) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, dataToCheck, (amount * -1),
-                    true, true);
+                    true);
             return true;
         } else {
             return false;

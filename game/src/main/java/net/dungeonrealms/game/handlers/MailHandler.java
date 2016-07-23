@@ -50,7 +50,7 @@ public class MailHandler {
             ItemStack actualItem = ItemSerialization.itemStackFromBase64(rawItem);
 
 
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.MAILBOX, from + "," + String.valueOf(unix) + "," + rawItem, true, true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.MAILBOX, from + "," + String.valueOf(unix) + "," + rawItem, true);
             player.getInventory().addItem(actualItem);
             sendMailMessage(player, ChatColor.GREEN + "You opened mail from " + ChatColor.AQUA + from + ChatColor.GREEN + ".");
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1f, 63f);
@@ -108,11 +108,11 @@ public class MailHandler {
         String mailIdentification = player.getName() + "," + (System.currentTimeMillis() / 1000L) + "," + serializedItem;
 
         if (GameAPI.isOnline(toUUID)) {
-            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true,
+            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification,
                     true);
             sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
         } else {
-            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, false, true);
+            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true);
             GameAPI.updatePlayerData(toUUID);
             BungeeUtils.sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
         }
