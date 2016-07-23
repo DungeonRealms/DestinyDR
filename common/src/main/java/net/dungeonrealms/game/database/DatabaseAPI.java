@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.database;
 
+import com.avaje.ebean.Update;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -15,10 +16,12 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -46,19 +49,45 @@ public class DatabaseAPI {
      * @param EO
      * @param variable
      * @param object
-     * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
      * @param async
+     * @param doAfterOptional an optional parameter allowing you to specify extra actions after the update query is
+     *                        completed. doAfterOptional is executed async or sync based on the previous async parameter.
      * @since 1.0
      */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, boolean async) {
-
+    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async, Consumer<UpdateResult> doAfterOptional) {
+        if (PLAYERS.containsKey(uuid)) { // update local data
+            Document localDoc = PLAYERS.get(uuid);
+            String[] key = variable.getKey().split("\\.");
+            Document rootDoc = (Document) localDoc.get(key[0]);
+            Object data = rootDoc.get(key[1]);
+            switch (EO) {
+                case $SET:
+                    rootDoc.put(key[1], object);
+                    break;
+                case $INC:
+                    rootDoc.put(key[1], ((Number) object).doubleValue() + ((Number) data).doubleValue());
+                    break;
+                case $MUL:
+                    rootDoc.put(key[1], ((Number) object).doubleValue() * ((Number) data).doubleValue());
+                    break;
+                case $PUSH:
+                    ((ArrayList) data).add(object);
+                    break;
+                case $PULL:
+                    ((ArrayList) data).remove(object);
+                    break;
+                default:
+                    break;
+            }
+        }
         if (async) Futures.addCallback(update(uuid, EO, variable, object), new FutureCallback<UpdateResult>() {
             @Override
             public void onSuccess(@Nullable UpdateResult result) {
-                Constants.log.info("[ASYNC] Successfully updated " + variable.name() + " data for " + uuid.toString());
+                if (Constants.debug)
+                    Constants.log.info("[ASYNC] Successfully updated " + variable.name() + " data for " + uuid.toString());
 
-                if (result.wasAcknowledged() && requestNew)
-                    pool.submit(() -> requestPlayer(uuid));
+                if (result.wasAcknowledged() && doAfterOptional != null)
+                    pool.submit(() -> doAfterOptional.accept(result));
             }
 
             @ParametersAreNonnullByDefault
@@ -68,12 +97,17 @@ public class DatabaseAPI {
             }
         });
         else {
-            DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
-            if (requestNew)
-                requestPlayer(uuid);
+            UpdateResult result = DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+            if (doAfterOptional != null)
+                doAfterOptional.accept(result);
         }
+    }
 
-        // MongoUpdateThread.queries.add(Arrays.asList(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), new Document("requestNew", requestNew).append("uuid", uuid)));
+    /**
+     * {@link #update(UUID, EnumOperators, EnumData, Object, boolean, Consumer)}
+     */
+    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async) {
+        update(uuid, EO, variable, object, async, null);
     }
 
 
@@ -97,231 +131,18 @@ public class DatabaseAPI {
             // GRABBED CACHED DATA
             doc = PLAYERS.get(uuid);
         } else {
-            Constants.log.warning("Retrieving " + uuid.toString() + "'s offline data..");
+            Constants.log.warning("Retrieving " + uuid.toString() + "'s offline data...");
             doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         }
 
-        switch (data) {
-            /*
-            Player Variables Main Document().
-             */
-            case USERNAME:
-                return ((Document) doc.get("info")).get("username", String.class);
-            case HEALTH:
-                return ((Document) doc.get("info")).get("health", Integer.class);
-            case FIRST_LOGIN:
-                return ((Document) doc.get("info")).get("firstLogin", Long.class);
-            case IS_COMBAT_LOGGED:
-                return ((Document) doc.get("info")).get("isCombatLogged", Boolean.class);
-            case LAST_LOGIN:
-                return ((Document) doc.get("info")).get("lastLogin", Long.class);
-            case LAST_LOGOUT:
-                return ((Document) doc.get("info")).get("lastLogout", Long.class);
-            case FREE_ECASH:
-                return ((Document) doc.get("info")).get("freeEcash", Long.class);
-            case LAST_SHARD_TRANSFER:
-                return ((Document) doc.get("info")).get("lastShardTransfer", Long.class);
-            case IP_ADDRESS:
-                return ((Document) doc.get("info")).get("ipAddress", String.class);
-            case IS_PLAYING:
-                return ((Document) doc.get("info")).get("isPlaying", Boolean.class);
-            case LEVEL:
-                return ((Document) doc.get("info")).get("netLevel", Integer.class);
-            case EXPERIENCE:
-                return ((Document) doc.get("info")).get("experience", Integer.class);
-            case GEMS:
-                return ((Document) doc.get("info")).get("gems", Integer.class);
-            case HEARTHSTONE:
-                return ((Document) doc.get("info")).get("hearthstone", String.class);
-            case ECASH:
-                return ((Document) doc.get("info")).get("ecash", Integer.class);
-            case FRIENDS:
-                return ((Document) doc.get("info")).get("friends", ArrayList.class);
-            case GUILD:
-                return ((Document) doc.get("info")).get("guild", String.class);
-            case GUILD_INVITATION:
-                return ((Document) doc.get("notices")).get("guildInvitation", Document.class);
-            case FRIEND_REQUSTS:
-                return ((Document) doc.get("notices")).get("friendRequest", ArrayList.class);
-            case MAILBOX:
-                return ((Document) doc.get("notices")).get("mailbox", ArrayList.class);
-            case ALIGNMENT:
-                return ((Document) doc.get("info")).get("alignment", String.class);
-            case ALIGNMENT_TIME:
-                return ((Document) doc.get("info")).get("alignmentTime", Integer.class);
-            case CURRENT_LOCATION:
-                return ((Document) doc.get("info")).get("currentLocation", String.class);
-            case CURRENT_FOOD:
-                return ((Document) doc.get("info")).get("foodLevel", Integer.class);
-            case SHOPLEVEL:
-                return ((Document) doc.get("info")).get("shopLevel", Integer.class);
-            case MULELEVEL:
-                return ((Document) doc.get("info")).get("muleLevel", Integer.class);
-            case LOGGERDIED:
-                return ((Document) doc.get("info")).get("loggerdied", Boolean.class);
-            case CURRENTSERVER:
-                return ((Document) doc.get("info")).get("current", String.class);
-            case ENTERINGREALM:
-                return ((Document) doc.get("info")).get("enteringrealm", String.class);
-            case ACTIVE_MOUNT:
-                return ((Document) doc.get("info")).get("activemount", String.class);
-            case ACTIVE_PET:
-                return ((Document) doc.get("info")).get("activepet", String.class);
-            case ACTIVE_TRAIL:
-                return ((Document) doc.get("info")).get("activetrail", String.class);
-            case ACTIVE_MOUNT_SKIN:
-                return ((Document) doc.get("info")).get("activemountskin", String.class);
-            /*
-            Rank Things. Different Sub-Document().
-             */
-            case RANK:
-                return ((Document) doc.get("rank")).get("rank", String.class);
-            case RANK_SUB_EXPIRATION:
-                return ((Document) doc.get("rank")).get("expiration_date", Integer.class);
-            case PURCHASE_HISTORY:
-                return ((Document) doc.get("rank")).get("purchaseHistory", ArrayList.class);
-            /*
-            Player Attribute Variables
-             */
-            case STRENGTH:
-                return ((Document) doc.get("attributes")).get("strength", Integer.class);
-            case DEXTERITY:
-                return ((Document) doc.get("attributes")).get("dexterity", Integer.class);
-            case INTELLECT:
-                return ((Document) doc.get("attributes")).get("intellect", Integer.class);
-            case VITALITY:
-                return ((Document) doc.get("attributes")).get("vitality", Integer.class);
-            case BUFFER_POINTS:
-                return ((Document) doc.get("attributes")).get("bufferPoints", Integer.class);
-            case RESETS:
-                return ((Document) doc.get("attributes")).get("resets", Integer.class);
-            case FREERESETS:
-                return ((Document) doc.get("attributes")).get("freeresets", Integer.class);
-            /*
-              PUNISH
-             */
-            case BANNED_TIME:
-                return ((Document) doc.get("punishments")).get("banned", Long.class);
-            case MUTE_TIME:
-                return ((Document) doc.get("punishments")).get("muted", Long.class);
-            case BANNED_REASON:
-                return ((Document) doc.get("punishments")).get("banReason", String.class);
-            case MUTE_REASON:
-                return ((Document) doc.get("punishments")).get("muteReason", String.class);
-            /*
-              REALMS
-             */
-            case REALM_TITLE:
-                return ((Document) doc.get("realm")).get("title", String.class);
-            case REALM_UPLOAD:
-                return ((Document) doc.get("realm")).get("uploading", Boolean.class);
-            case REALM_UPGRADE:
-                return ((Document) doc.get("realm")).get("upgrading", Boolean.class);
-            case REALM_LAST_RESET:
-                return ((Document) doc.get("realm")).get("lastReset", Long.class);
-            case REALM_TIER:
-                return ((Document) doc.get("realm")).get("tier", Integer.class);
-            /*
-            Player Storage
-             */
-            case INVENTORY_LEVEL:
-                return ((Document) doc.get("inventory")).get("level", Integer.class);
-            case INVENTORY_COLLECTION_BIN:
-                return ((Document) doc.get("inventory")).get("collection_bin", String.class);
-            case INVENTORY_MULE:
-                return ((Document) doc.get("inventory")).get("mule", String.class);
-            case INVENTORY_STORAGE:
-                return ((Document) doc.get("inventory")).get("storage", String.class);
-            case INVENTORY:
-                return ((Document) doc.get("inventory")).get("player", String.class);
-            case HASSHOP:
-                return ((Document) doc.get("info")).get("shopOpen", Boolean.class);
-            case ARMOR:
-                return ((Document) doc.get("inventory")).get("armor", ArrayList.class);
-            case ITEMUIDS:
-                return ((Document) doc.get("inventory")).get("itemuids", HashSet.class);
-            /*
-            Toggles
-             */
-            case TOGGLE_DEBUG:
-                return ((Document) doc.get("toggles")).get("debug", Boolean.class);
-            case TOGGLE_TRADE:
-                return ((Document) doc.get("toggles")).get("trade", Boolean.class);
-            case TOGGLE_TRADE_CHAT:
-                return ((Document) doc.get("toggles")).get("tradeChat", Boolean.class);
-            case TOGGLE_GLOBAL_CHAT:
-                return ((Document) doc.get("toggles")).get("globalChat", Boolean.class);
-            case TOGGLE_RECEIVE_MESSAGE:
-                return ((Document) doc.get("toggles")).get("receiveMessage", Boolean.class);
-            case TOGGLE_PVP:
-                return ((Document) doc.get("toggles")).get("pvp", Boolean.class);
-            case TOGGLE_DUEL:
-                return ((Document) doc.get("toggles")).get("duel", Boolean.class);
-            case TOGGLE_CHAOTIC_PREVENTION:
-                return ((Document) doc.get("toggles")).get("chaoticPrevention", Boolean.class);
-            case TOGGLE_TIPS:
-                return ((Document) doc.get("toggles")).get("tips", Boolean.class);
-            /*
-            Portal Key Shards
-             */
-            case PORTAL_SHARDS_T1:
-                return ((Document) doc.get("portalKeyShards")).get("tier1", Integer.class);
-            case PORTAL_SHARDS_T2:
-                return ((Document) doc.get("portalKeyShards")).get("tier2", Integer.class);
-            case PORTAL_SHARDS_T3:
-                return ((Document) doc.get("portalKeyShards")).get("tier3", Integer.class);
-            case PORTAL_SHARDS_T4:
-                return ((Document) doc.get("portalKeyShards")).get("tier4", Integer.class);
-            case PORTAL_SHARDS_T5:
-                return ((Document) doc.get("portalKeyShards")).get("tier5", Integer.class);
-            /*
-            Player Collectibles
-             */
-            case MOUNTS:
-                return ((Document) doc.get("collectibles")).get("mounts", ArrayList.class);
-            case PETS:
-                return ((Document) doc.get("collectibles")).get("pets", ArrayList.class);
-            case PARTICLES:
-                return ((Document) doc.get("collectibles")).get("particles", ArrayList.class);
-            case ACHIEVEMENTS:
-                return ((Document) doc.get("collectibles")).get("achievements", ArrayList.class);
-            case MOUNT_SKINS:
-                return ((Document) doc.get("collectibles")).get("mountskins", ArrayList.class);
-            /*
-            Player Statistics
-             */
-            case PLAYER_KILLS:
-            case LAWFUL_KILLS:
-            case UNLAWFUL_KILLS:
-            case DEATHS:
-            case T1_MOB_KILLS:
-            case T2_MOB_KILLS:
-            case T3_MOB_KILLS:
-            case T4_MOB_KILLS:
-            case T5_MOB_KILLS:
-            case BOSS_KILLS_MAYEL:
-            case BOSS_KILLS_BURICK:
-            case BOSS_KILLS_INFERNALABYSS:
-            case LOOT_OPENED:
-            case DUELS_WON:
-            case DUELS_LOST:
-            case ORE_MINED:
-            case ORBS_USED:
-            case FISH_CAUGHT:
-            case TIME_PLAYED:
-            case SUCCESSFUL_ENCHANTS:
-            case FAILED_ENCHANTS:
-            case ECASH_SPENT:
-            case GEMS_EARNED:
-            case GEMS_SPENT:
-                String data_key = data.getKey();
-                if (data_key.contains(".")) {
-                    data_key = data.getKey().substring(data.getKey().lastIndexOf(".") + 1, data.getKey().length());
-                }
-                return ((Document) doc.get("stats")).get(data_key, Integer.class);
-            default:
-        }
-        return null;
+        String[] key = data.getKey().split("\\.");
+        Document rootDoc = (Document)doc.get(key[0]);
+        if (rootDoc == null) return null;
+
+        Object dataObj = rootDoc.get(key[1]);
+        Class<? extends Object> clazz = dataObj.getClass();
+
+        return rootDoc.get(key[1], clazz);
     }
 
     /**
@@ -333,6 +154,8 @@ public class DatabaseAPI {
      */
     public boolean requestPlayer(UUID uuid) {
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        Constants.log.info("New playerdata requested for " + uuid + " from the database.");
+        Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
         if (doc == null) addNewPlayer(uuid);
         else PLAYERS.put(uuid, doc);
 

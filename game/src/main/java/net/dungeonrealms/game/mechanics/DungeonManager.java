@@ -552,27 +552,27 @@ public class DungeonManager implements GenericMechanic {
                 switch (tier) {
                     case 1:
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1,
-                                shardsToGive, true, true);
+                                shardsToGive, true);
                         break;
                     case 2:
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2,
-                                shardsToGive, true, true);
+                                shardsToGive, true);
                         break;
                     case 3:
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3,
-                                shardsToGive, true, true);
+                                shardsToGive, true);
                         break;
                     case 4:
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4,
-                                shardsToGive, true, true);
+                                shardsToGive, true);
                         break;
                     case 5:
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5,
-                                shardsToGive, true, true);
+                                shardsToGive, true);
                         break;
                     default:
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1,
-                                shardsToGive, true, true);
+                                shardsToGive, true);
                         break;
 
                 }
@@ -658,7 +658,7 @@ public class DungeonManager implements GenericMechanic {
                     if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                         locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
                     }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
                     player.teleport(w.getSpawnLocation());
                     player.setFallDistance(0F);
                     if (object.getType() == DungeonType.THE_INFERNAL_ABYSS) {

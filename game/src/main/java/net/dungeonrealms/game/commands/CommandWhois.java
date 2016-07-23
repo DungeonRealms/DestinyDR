@@ -34,7 +34,6 @@ public class CommandWhois extends BasicCommand {
             return false;
         }
         UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(p_name));
-        GameAPI.updatePlayerData(uuid);
         boolean isPlaying = (boolean)DatabaseAPI.getInstance().getValue(uuid, EnumData.IS_PLAYING);
         String server = DatabaseAPI.getInstance().getFormattedShardName(uuid);
 

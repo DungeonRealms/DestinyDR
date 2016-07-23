@@ -133,15 +133,9 @@ public class GuildMechanics {
 
             if (!guildExists) {
                 GuildDatabaseAPI.get().setGuild(uuid, "");
-
-                if (Bukkit.getPlayer(uuid) == null)
-                    GameAPI.updatePlayerData(uuid);
             } else if (guildExists && !GuildDatabaseAPI.get().isInGuild(uuid, guildName)) {
                 System.out.print(GuildDatabaseAPI.get().isInGuild(uuid, guildName));
                 GuildDatabaseAPI.get().setGuild(uuid, "");
-
-                if (Bukkit.getPlayer(uuid) == null)
-                    GameAPI.updatePlayerData(uuid);
             }
         }
     }
@@ -384,7 +378,6 @@ public class GuildMechanics {
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");
 
                     for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
-                        GameAPI.updatePlayerData(uuid);
                         GuildDatabaseAPI.get().removeFromGuild(guildName, uuid);
                     }
 

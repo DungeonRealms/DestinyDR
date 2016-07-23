@@ -40,10 +40,6 @@ public class MongoUpdateThread extends Thread {
                                 (1).toString());
                     }
                 }
-                Document requestNewDoc = (Document) query.get(2);
-                if (requestNewDoc.get("requestNew", Boolean.class)) {
-                    DatabaseAPI.getInstance().requestPlayer(requestNewDoc.get("uuid", UUID.class));
-                }
             }
         }
     }

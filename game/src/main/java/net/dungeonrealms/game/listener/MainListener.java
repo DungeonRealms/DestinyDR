@@ -91,7 +91,7 @@ public class MainListener implements Listener {
 
             switch (rank.toLowerCase()) {
                 case "default":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
                     if (GameAPI.getGamePlayer(player) == null) {
                         return;
@@ -104,7 +104,7 @@ public class MainListener implements Listener {
                     }
                     break;
                 case "sub":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
                     if (GameAPI.getGamePlayer(player) == null) {
                         return;
@@ -117,7 +117,7 @@ public class MainListener implements Listener {
                     break;
                 case "sub+":
                 case "sub++":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
                     if (GameAPI.getGamePlayer(player) == null) {
                         return;
@@ -130,7 +130,7 @@ public class MainListener implements Listener {
                     }
                     break;
                 default:
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
                     if (GameAPI.getGamePlayer(player) == null) {
                         return;
@@ -213,7 +213,7 @@ public class MainListener implements Listener {
             if (player.isOnline()) {
                 if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, player.getUniqueId()).toString()))) {
                     player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You logged out while in combat, you're doppelganger was killed and alas your items are gone.");
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGGERDIED, false, true, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
                     ItemManager.giveStarter(player);
                 }
             }

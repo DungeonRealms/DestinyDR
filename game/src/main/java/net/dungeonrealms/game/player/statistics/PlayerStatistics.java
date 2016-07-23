@@ -117,83 +117,83 @@ public class PlayerStatistics {
 
     public void updatePlayerStatistics() {
         if (playerKills > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.PLAYER_KILLS, playerKills, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.PLAYER_KILLS, playerKills, true);
         }
         if (lawfulKills > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LAWFUL_KILLS, lawfulKills, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LAWFUL_KILLS, lawfulKills, true);
         }
         if (unlawfulKills > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.UNLAWFUL_KILLS, unlawfulKills, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.UNLAWFUL_KILLS, unlawfulKills, true);
         }
         if (deaths > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEATHS, deaths, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEATHS, deaths, true);
         }
         if (t1MobsKilled > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T1_MOB_KILLS, t1MobsKilled, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T1_MOB_KILLS, t1MobsKilled, true);
         }
         if (t2MobsKilled > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T2_MOB_KILLS, t2MobsKilled, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T2_MOB_KILLS, t2MobsKilled, true);
         }
         if (t3MobsKilled > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T3_MOB_KILLS, t3MobsKilled, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T3_MOB_KILLS, t3MobsKilled, true);
         }
         if (t4MobsKilled > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T4_MOB_KILLS, t4MobsKilled, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T4_MOB_KILLS, t4MobsKilled, true);
         }
         if (t5MobsKilled > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T5_MOB_KILLS, t5MobsKilled, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.T5_MOB_KILLS, t5MobsKilled, true);
         }
         if (mayelKills > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BOSS_KILLS_MAYEL, mayelKills, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BOSS_KILLS_MAYEL, mayelKills, true);
         }
         if (burickKills > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BOSS_KILLS_BURICK, burickKills, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BOSS_KILLS_BURICK, burickKills, true);
         }
         if (infernalAbyssKills > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BOSS_KILLS_INFERNALABYSS, infernalAbyssKills, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BOSS_KILLS_INFERNALABYSS, infernalAbyssKills, true);
         }
         if (lootChestsOpened > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOOT_OPENED, lootChestsOpened, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LOOT_OPENED, lootChestsOpened, true);
         }
         if (duelsWon > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DUELS_WON, duelsWon, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DUELS_WON, duelsWon, true);
         }
         if (duelsLost > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DUELS_LOST, duelsLost, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DUELS_LOST, duelsLost, true);
         }
         if (oreMined > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.ORE_MINED, oreMined, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.ORE_MINED, oreMined, true);
         }
         if (fishCaught > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FISH_CAUGHT, fishCaught, false,
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FISH_CAUGHT, fishCaught,
                     true);
         }
         if (orbsUsed > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.ORBS_USED, orbsUsed, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.ORBS_USED, orbsUsed, true);
         }
         //Leave this seperate I think.?
         if (timePlayed > 0) {
             //stored in seconds, lets convert it to minutes for easier database storage.
             int timeInMins = Math.round(timePlayed / 60);
             if (timeInMins > 0) {
-                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.TIME_PLAYED, timeInMins, false, true);
+                DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.TIME_PLAYED, timeInMins, true);
             }
             timePlayed = 0;
         }
         if (successfulEnchants > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.SUCCESSFUL_ENCHANTS, successfulEnchants, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.SUCCESSFUL_ENCHANTS, successfulEnchants, true);
         }
         if (failedEnchants > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FAILED_ENCHANTS, failedEnchants, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FAILED_ENCHANTS, failedEnchants, true);
         }
         if (ecashSpent > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.ECASH_SPENT, ecashSpent, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.ECASH_SPENT, ecashSpent, true);
         }
         if (gemsEarned > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.GEMS_EARNED, gemsEarned, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.GEMS_EARNED, gemsEarned, true);
         }
         if (gemsSpent > 0) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.GEMS_SPENT, gemsSpent, false, true);
+            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.GEMS_SPENT, gemsSpent, true);
         }
     }
 
