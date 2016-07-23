@@ -154,8 +154,10 @@ public class DatabaseAPI {
      */
     public boolean requestPlayer(UUID uuid) {
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
-        Constants.log.info("New playerdata requested for " + uuid + " from the database.");
-        Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
+        if (Constants.debug) {
+            Constants.log.info("New playerdata requested for " + uuid + " from the database.");
+            Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
+        }
         if (doc == null) addNewPlayer(uuid);
         else PLAYERS.put(uuid, doc);
 

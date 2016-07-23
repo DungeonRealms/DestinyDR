@@ -333,6 +333,8 @@ public class DungeonRealms extends JavaPlugin {
         CommandManager cm = new CommandManager();
 
         // Commands always registered regardless of server.
+        cm.registerCommand(new CommandDevDebug("devdebug", "/<command> [args]", "Toggle on and off debug."));
+
         cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));
         cm.registerCommand(new CommandEss("dr", "/<command> [args]", "Developer command with the core essentials."));
