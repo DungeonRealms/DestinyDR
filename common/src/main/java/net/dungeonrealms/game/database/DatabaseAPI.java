@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.database;
 
-import com.avaje.ebean.Update;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -16,7 +15,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -108,6 +106,7 @@ public class DatabaseAPI {
             @Override
             public void onFailure(Throwable throwable) {
                 Constants.log.warning("[ASYNC] Failed to update player data for " + uuid.toString());
+                throwable.printStackTrace();
             }
         });
         else {
@@ -150,7 +149,7 @@ public class DatabaseAPI {
         }
 
         String[] key = data.getKey().split("\\.");
-        Document rootDoc = (Document)doc.get(key[0]);
+        Document rootDoc = (Document) doc.get(key[0]);
         if (rootDoc == null) return null;
 
         Object dataObj = rootDoc.get(key[1]);
