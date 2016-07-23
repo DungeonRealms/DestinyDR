@@ -1,15 +1,19 @@
 package net.dungeonrealms.game.commands.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.BasicCommand;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
@@ -22,12 +26,20 @@ public class CommandGInfo extends BasicCommand {
         super(command, usage, description);
     }
 
+    private List<UUID> cooldown = new CopyOnWriteArrayList<>();
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
         UUID target = player.getUniqueId();
+
+
+        if (cooldown.contains(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "You must wait 30 seconds to use " + ChatColor.BOLD + "GUILD INFO.");
+            return true;
+        }
 
 
         if (args.length > 0) {
@@ -50,6 +62,10 @@ public class CommandGInfo extends BasicCommand {
                 return true;
             }
         }
+
+        cooldown.add(player.getUniqueId());
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> cooldown.remove(player.getUniqueId()), 30 * 20L);
 
         String guildName = GuildDatabaseAPI.get().getGuildOf(target);
         GuildMechanics.getInstance().showGuildInfo(player, guildName, target.equals(player.getUniqueId()));

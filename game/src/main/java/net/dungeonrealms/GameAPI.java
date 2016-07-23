@@ -38,6 +38,7 @@ import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
+import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -121,8 +122,11 @@ public class GameAPI {
         public void run() {
             if (player.isOnline()) {
                 IGNORE_QUIT_EVENT.remove(player.getUniqueId());
+                TitleAPI.sendTitle(player, 0, 0, 0, "", "");
                 BungeeUtils.sendToServer(player.getName(), "Lobby");
-                BungeeUtils.sendPlayerMessage(player.getName(), ChatColor.RED + "Unable to send you to requested server. We have sent you to the lobby as a safety measure.");
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                        () -> BungeeUtils.sendPlayerMessage(player.getName(), ChatColor.RED + "Unable to send you to requested server. We have sent you to the lobby as a safety measure."), 3 * 20L);
             }
         }
     }
