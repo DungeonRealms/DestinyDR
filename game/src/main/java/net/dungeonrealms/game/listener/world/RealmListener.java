@@ -32,6 +32,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -277,6 +278,13 @@ public class RealmListener implements Listener {
             //loc.subtract(.5D, 1.5D, .5D);
             if (realm.getPropertyBoolean("flight"))
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
+        }
+    }
+
+    @EventHandler
+    public void onIllegalItemDispense(ProjectileLaunchEvent event) {
+        if (event.getEntityType() == EntityType.DROPPED_ITEM) {
+            event.setCancelled(true);
         }
     }
 
@@ -580,11 +588,6 @@ public class RealmListener implements Listener {
                 target.setAllowFlight(false);
 
         }
-    }
-
-    @EventHandler
-    public void onDispense(ProjectileLaunchEvent event) {
-        if (event.getEntity())
     }
 
     @SuppressWarnings("deprecation")
@@ -895,7 +898,7 @@ public class RealmListener implements Listener {
                         .EMERALD
                         || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) ||
                         BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)
-                        || ItemManager.isEnchantScroll(cursor) || ItemManager.isProtectScroll(cursor) || GameAPI.isOrb(i) || RepairAPI.isItemArmorScrap(i))) {
+                        || ItemManager.isEnchantScroll(cursor) || ItemManager.isProtectScroll(cursor) || GameAPI.isOrb(cursor) || RepairAPI.isItemArmorScrap(cursor)) {
                     event.setCancelled(true);
                     event.setCursor(cursor);
                     p.updateInventory();
@@ -919,7 +922,7 @@ public class RealmListener implements Listener {
                     .EMERALD
                     || item.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(item) ||
                     BankMechanics.getInstance().isGem(item) || BankMechanics.getInstance().isBankNote(item)
-                    || ItemManager.isEnchantScroll(item) || ItemManager.isProtectScroll(item) || GameAPI.isOrb(i) || RepairAPI.isItemArmorScrap(i))) {
+                    || ItemManager.isEnchantScroll(item) || ItemManager.isProtectScroll(item) || GameAPI.isOrb(item) || RepairAPI.isItemArmorScrap(item)) {
                 event.setCancelled(true);
                 event.setCurrentItem(item);
                 p.updateInventory();
