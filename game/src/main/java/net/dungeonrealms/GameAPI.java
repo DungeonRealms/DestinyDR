@@ -113,15 +113,16 @@ public class GameAPI {
         private Player player;
 
         PlayerLogoutWatchdog(Player player) {
-            this.runTaskLater(DungeonRealms.getInstance(), 5 * 20);
+            this.runTaskLater(DungeonRealms.getInstance(), 8 * 20);
             this.player = player;
         }
 
         @Override
         public void run() {
             if (player.isOnline()) {
+                IGNORE_QUIT_EVENT.remove(player.getUniqueId());
                 BungeeUtils.sendToServer(player.getName(), "Lobby");
-                BungeeUtils.sendPlayerMessage(player.getName(), ChatColor.RED + "Unable to send you to designated server.");
+                BungeeUtils.sendPlayerMessage(player.getName(), ChatColor.RED + "Unable to send you to requested server. We have sent you to the lobby as a safety measure.");
             }
         }
     }
@@ -698,6 +699,8 @@ public class GameAPI {
      * @since 1.0
      */
     public static boolean handleLogout(UUID uuid, boolean async) {
+        Utils.log.info("Handling logout for " + uuid.toString());
+
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return false;
 
@@ -705,7 +708,7 @@ public class GameAPI {
 
         if (player == null) {
             savePlayerData(uuid, false, async);
-            return true;
+            return false;
         }
 
         GuildMechanics.getInstance().doLogout(player);

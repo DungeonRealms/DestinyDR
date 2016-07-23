@@ -186,22 +186,6 @@ public class MainListener implements Listener {
         Chat.getInstance().doLocalChat(event);
     }
 
-    /**
-     * This event is used for the DatabaseDriver.
-     *
-     * @param event the event.
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        if (!DungeonRealms.getInstance().hasFinishedSetup() && !DungeonRealms.getInstance().getDevelopers().contains(event.getName())) {
-            event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
-            return;
-        }
-
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void worldInit(org.bukkit.event.world.WorldInitEvent e) {
         e.getWorld().setKeepSpawnInMemory(false);

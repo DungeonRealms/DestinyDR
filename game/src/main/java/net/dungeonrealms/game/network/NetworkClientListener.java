@@ -84,6 +84,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(uuid), after -> {
                         if (DungeonRealms.getInstance().hasFinishedSetup())
                             GameAPI.sendNetworkMessage("AcceptLoginToken", uuid.toString(), shard);
+                        else GameAPI.sendNetworkMessage("RefuseLoginToken", "This server is still setting up..");
                     });
                     return;
                 }
@@ -169,19 +170,16 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     BungeeUtils.sendPlayerMessage(playerName, ChatColor.YELLOW + "Shop found and removed.");
                                 }
                             }
-                        }
-                        else if (task.equals("Broadcast")) {
+                        } else if (task.equals("Broadcast")) {
                             String message = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                             Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
-                        }
-                        else if (task.equals("Stop")) {
+                        } else if (task.equals("Stop")) {
 
                             if (DungeonRealms.getInstance().hasFinishedSetup())
                                 GameAPI.stopGame();
 
                             return;
-                        }
-                        else if (task.equals("Guilds")) {
+                        } else if (task.equals("Guilds")) {
                             String command = in.readUTF();
 
                             if (command.contains("message:")) {
