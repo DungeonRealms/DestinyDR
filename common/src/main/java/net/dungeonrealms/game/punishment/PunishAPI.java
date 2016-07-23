@@ -202,7 +202,7 @@ public class PunishAPI {
             timeStr = "less than a minute";
         }
 
-        return Character.toUpperCase(timeStr.charAt(0)) + timeStr.substring(1).toLowerCase();
+        return timeStr.toLowerCase();
     }
 
 }

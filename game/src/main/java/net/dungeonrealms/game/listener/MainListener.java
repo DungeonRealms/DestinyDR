@@ -66,8 +66,6 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 
@@ -186,22 +184,6 @@ public class MainListener implements Listener {
         Chat.getInstance().doChat(event);
         GuildMechanics.getInstance().doChat(event);
         Chat.getInstance().doLocalChat(event);
-    }
-
-    /**
-     * This event is used for the DatabaseDriver.
-     *
-     * @param event the event.
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        if (!DungeonRealms.getInstance().hasFinishedSetup() && !DungeonRealms.getInstance().getDevelopers().contains(event.getName())) {
-            event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
-            return;
-        }
-
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

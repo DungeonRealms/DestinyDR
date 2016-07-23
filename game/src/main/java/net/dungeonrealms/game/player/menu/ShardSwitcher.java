@@ -115,6 +115,11 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                                 return;
                             }
 
+                            if (!player.isOnline()) {
+                                cancel();
+                                return;
+                            }
+
                             if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
                                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "/shard - CANCELLED");
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");

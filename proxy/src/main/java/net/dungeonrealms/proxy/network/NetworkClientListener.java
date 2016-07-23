@@ -3,6 +3,7 @@ package net.dungeonrealms.proxy.network;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import net.dungeonrealms.network.GameClient;
+import net.dungeonrealms.network.ShardInfo;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.proxy.DungeonRealmsProxy;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -57,6 +58,19 @@ public class NetworkClientListener extends Listener {
                     player.connect(DungeonRealmsProxy.getInstance().getProxy().getServerInfo(shard),
                             (success, throwable) -> DungeonRealmsProxy.getInstance().ACCEPTED_CONNECTIONS.remove(player.getUniqueId()));
                     return;
+                }
+
+
+                if (task.equals("RefuseLoginToken")) {
+                    UUID uuid = UUID.fromString(in.readUTF());
+                    ProxiedPlayer player = DungeonRealmsProxy.getInstance().getProxy().getPlayer(uuid);
+
+                    if (player != null && in.available() > 0) {
+                        String message = in.readUTF();
+
+                        if (message.contains("setting up") && ShardInfo.getByPseudoName(player.getServer().getInfo().getName()) == null)
+                            player.sendMessage(message);
+                    }
                 }
 
             } catch (IOException e) {
