@@ -639,8 +639,8 @@ public class RealmListener implements Listener {
             c_inv.clear();
         }
 
-        if (b instanceof InventoryHolder) {
-            deleteIllegalItemsInInventory((InventoryHolder) b).getInventory(), p);
+        if (b.getState() instanceof InventoryHolder) {
+            deleteIllegalItemsInInventory(((InventoryHolder) b.getState()).getInventory(), p);
         }
 
         if (b.getType() == Material.ITEM_FRAME) {
