@@ -5,3 +5,6 @@ Build <build>
 - Fixed more lag issues.
 - Fixed realm chest giving you a normal chest
 - Fixed /shard rollbacks
+- Fixed shard dropping dupe at last second
+- Fixed banning
+- Fixed placing restricted items in realm ches
