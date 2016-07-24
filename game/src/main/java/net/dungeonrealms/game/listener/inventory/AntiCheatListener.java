@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,6 +20,13 @@ public class AntiCheatListener implements Listener {
     public void onInventoryOpenGearCheck(InventoryOpenEvent event) {
         AntiCheat.checkForDuplicatedEquipment((Player)event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer().getInventory(), event.getPlayer().getOpenInventory().getTopInventory())));
     }
+
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPickup(PlayerPickupItemEvent event) {
+        AntiCheat.checkForDuplicatedEquipment(event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer().getInventory(), event.getPlayer().getOpenInventory().getTopInventory())));
+    }
+
 
     //THIS IS DISABLED WHILE I FIGURE OUT HOW TO BEST REMOVE ALL THE GLITCHED "method" ITEMS. PLEASE DON'T ENABLE AGAIN.
     /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

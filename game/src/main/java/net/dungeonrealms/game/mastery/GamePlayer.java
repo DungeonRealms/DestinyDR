@@ -77,6 +77,10 @@ public class GamePlayer {
     @Setter
     private boolean ableToDrop;
 
+    @Getter
+    @Setter
+    private boolean ableToSuicide;
+
     public GamePlayer(Player player) {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());
@@ -286,7 +290,7 @@ public class GamePlayer {
                 if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - subBonus - subPlusBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     if (rank.equals("sub") || rank.equals("sub+") || rank.equals("sub++")) {
-                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(rank) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+"  + ChatColor.YELLOW + Math.round(subBonus + subPlusBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(rank) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(subBonus + subPlusBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     }
                 }
             }

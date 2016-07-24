@@ -882,8 +882,10 @@ public class GameAPI {
         GamePlayer gp = new GamePlayer(player);
 
         gp.setAbleToDrop(false);
+        gp.setAbleToSuicide(false);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToDrop(true), 20L * 10L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
 
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.
