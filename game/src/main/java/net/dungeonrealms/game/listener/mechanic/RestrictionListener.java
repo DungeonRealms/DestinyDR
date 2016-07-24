@@ -335,6 +335,14 @@ public class RestrictionListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPickup(PlayerPickupItemEvent event) {
+        GamePlayer gp = GameAPI.getGamePlayer(event.getPlayer());
+        if (gp != null && !gp.isAbleToPickup()) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player pl = event.getPlayer();

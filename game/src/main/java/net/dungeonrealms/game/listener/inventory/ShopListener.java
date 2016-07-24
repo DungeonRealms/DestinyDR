@@ -31,6 +31,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ public class ShopListener implements Listener {
         if (event.getPlayer().isSneaking()) return;
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
+        if (event.getPlayer().hasMetadata("pricing")) return;
         if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
             event.getPlayer().openInventory(shop.getInventory());
         } else {
@@ -436,9 +438,11 @@ public class ShopListener implements Listener {
 
             if (!event.isShiftClick()) {
                 clicker.closeInventory();
+                clicker.setMetadata("pricing", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                 clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "QUANTITY" + ChatColor.GREEN + " you'd like to purchase.");
                 clicker.sendMessage(ChatColor.GRAY + "MAX: " + itemClicked.getAmount() + "X (" + itemPrice * itemClicked.getAmount() + "g), OR " + itemPrice + "g/each.");
                 Chat.listenForMessage(clicker, chat -> {
+                    clicker.removeMetadata("pricing", DungeonRealms.getInstance());
                     if (chat.getMessage().equalsIgnoreCase("cancel") || chat.getMessage().equalsIgnoreCase("c")) {
                         clicker.sendMessage(ChatColor.RED + "Purchase of item " + ChatColor.BOLD + "CANCELLED");
                         return;
@@ -447,13 +451,17 @@ public class ShopListener implements Listener {
                         clicker.sendMessage(ChatColor.RED + "No space available in inventory. Type 'cancel' or clear some room.");
                         return;
                     }
-                    if (!shop.isopen) {
+                    if (!ShopMechanics.ALLSHOPS.containsKey(clicker.getName()) || !shop.isopen) {
                         clicker.sendMessage(ChatColor.RED + "The shop is no longer available.");
                         clicker.closeInventory();
                         return;
                     }
                     if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
                         clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], purchase of item CANCELLED.");
+                        return;
+                    }
+                    if (!shop.getInventory().contains(itemClicked, 1)) {
+                        clicker.sendMessage(ChatColor.RED + "That item is no longer available.");
                         return;
                     }
                     int quantity = 0;
@@ -496,9 +504,7 @@ public class ShopListener implements Listener {
                         clicker.updateInventory();
                         int remainingStock = itemClicked.getAmount() - quantity;
                         if (remainingStock > 0) {
-                            ItemStack cloneClicked = itemClicked.clone();
-                            cloneClicked.setAmount(remainingStock);
-                            event.getInventory().setItem(event.getRawSlot(), cloneClicked);
+                            itemClicked.setAmount(quantity);
                         } else {
                             event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR));
                         }

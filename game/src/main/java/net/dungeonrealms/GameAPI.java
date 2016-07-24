@@ -679,7 +679,6 @@ public class GameAPI {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, gp.getPlayerEXP(), async);
                 gp.getPlayerStatistics().updatePlayerStatistics();
                 gp.getStats().updateDatabase(false);
-                GAMEPLAYERS.remove(player.getName());
             }
         }
 
@@ -801,6 +800,7 @@ public class GameAPI {
 
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
+        GAMEPLAYERS.remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
 
         return true;
@@ -1181,12 +1181,33 @@ public class GameAPI {
     public static void moveToShard(Player player, String serverBungeeName) {
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
-        new PlayerLogoutWatchdog(player);
+        // prevent any interaction while the data is being uploaded
+        Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
+        player.setInvulnerable(true);
+        player.setNoDamageTicks(10);
 
+        GamePlayer gp = GameAPI.getGamePlayer(player);
+        gp.setAbleToSuicide(false);
+        gp.setAbleToDrop(false);
+
+        // upload data and send to server
         submitAsyncCallback(() -> {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), false);
             return GameAPI.handleLogout(player.getUniqueId(), false);
         }, consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName));
+
+        // check if they're still here (server failed to accept them for some reason)
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+            if (player.isOnline()) {
+                GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(player.getUniqueId()), consumer -> {
+                    TitleAPI.clearTitle(player);
+                    GameAPI.handleLogin(player.getUniqueId());
+                    player.setInvulnerable(false);
+                    player.setNoDamageTicks(0);
+                    Bukkit.getOnlinePlayers().forEach(p -> p.showPlayer(player));
+                });
+            }
+        }, 3 * 20L);
     }
 
     static void backupDatabase() {
