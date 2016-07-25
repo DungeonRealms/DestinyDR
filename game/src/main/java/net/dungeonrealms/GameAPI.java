@@ -945,7 +945,7 @@ public class GameAPI {
                 muleInv = ItemSerialization.fromString(invString, tier.getSize());
             }
         }
-        if (muleInv != null) MountUtils.inventories.put(player.getUniqueId(), muleInv);
+        if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null) MountUtils.inventories.put(player.getUniqueId(), muleInv);
         TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
         if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
             String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid))
