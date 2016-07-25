@@ -31,8 +31,8 @@ public class MaintenanceCommand extends Command {
         }
 
         if (args[0].equalsIgnoreCase("on")) {
-            ProxyServer.getInstance().broadcast(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis about to go going under maintenance..."));
-            ProxyServer.getInstance().broadcast(ChatColor.translateAlternateColorCodes('&', "&cPlease &nwww.dungeonrealms.net&c for status updates"));
+            ProxyServer.getInstance().broadcast(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis about to go under maintenance..."));
+            ProxyServer.getInstance().broadcast(ChatColor.translateAlternateColorCodes('&', "&cPlease visit &nwww.dungeonrealms.net&c for status updates"));
 
             ProxyServer.getInstance().getScheduler().schedule(DungeonRealmsProxy.getInstance(), () -> {
                 // ACTIVATE MAINTENANCE MODE //
