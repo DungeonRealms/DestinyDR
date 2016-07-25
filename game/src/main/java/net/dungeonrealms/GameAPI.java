@@ -46,6 +46,7 @@ import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -930,6 +931,21 @@ public class GameAPI {
             Storage storageTemp = new Storage(uuid);
             BankMechanics.storage.put(uuid, storageTemp);
         }
+        String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
+        int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+        if (muleLevel > 3) {
+            muleLevel = 3;
+        }
+        MuleTier tier = MuleTier.getByTier(muleLevel);
+        Inventory muleInv = null;
+        if (tier != null) {
+            muleInv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");
+            if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
+                //Make sure the inventory is as big as we need
+                muleInv = ItemSerialization.fromString(invString, tier.getSize());
+            }
+        }
+        if (muleInv != null) MountUtils.inventories.put(player.getUniqueId(), muleInv);
         TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
         if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
             String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid))

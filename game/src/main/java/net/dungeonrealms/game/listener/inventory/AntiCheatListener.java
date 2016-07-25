@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.listener.inventory;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,13 +20,16 @@ public class AntiCheatListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpenGearCheck(InventoryOpenEvent event) {
-        AntiCheat.checkForDuplicatedEquipment((Player)event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer().getInventory(), event.getPlayer().getOpenInventory().getTopInventory())));
-    }
+        Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> AntiCheat
+                .checkForDuplicatedEquipment((Player)event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer()
+                        .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))));    }
 
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
-        AntiCheat.checkForDuplicatedEquipment(event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer().getInventory(), event.getPlayer().getOpenInventory().getTopInventory())));
+        Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> AntiCheat
+                .checkForDuplicatedEquipment(event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer()
+                        .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))), 1L);
     }
 
 
