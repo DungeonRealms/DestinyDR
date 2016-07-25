@@ -7,6 +7,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.database.DatabaseAPI;
 import net.dungeonrealms.game.database.player.Rank;
 import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.mastery.Utils;
@@ -18,6 +19,7 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.punishment.PunishAPI;
 import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
@@ -66,23 +68,11 @@ public class AntiCheat implements GenericMechanic {
     }
 
     public void handleLogin(Player p) {
-        // todo: cache inventory when loading mule, currently it's written in a very stupid way
-        String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, p.getUniqueId());
-        int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, p.getUniqueId());
-        if (muleLevel > 3) {
-            muleLevel = 3;
-        }
-        MuleTier tier = MuleTier.getByTier(muleLevel);
-        Inventory muleInv = null;
-        if (tier != null) {
-            muleInv = Bukkit.createInventory(p, tier.getSize(), "Mule Storage");
-            if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
-                //Make sure the inventory is as big as we need
-                muleInv = ItemSerialization.fromString(invString, tier.getSize());
-            }
-        }
+        Inventory muleInv = MountUtils.inventories.get(p.getUniqueId());
         Storage storage = BankMechanics.getInstance().getStorage(p.getUniqueId());
-        checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv)));
+        AsyncUtils.pool.submit(() -> {
+            checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv)));
+        });
     }
 
     //TODO: Have a look at this
@@ -153,7 +143,7 @@ public class AntiCheat implements GenericMechanic {
     public static void checkForSuspiciousDupedItems(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
         if (Rank.isGM(p)) return;
 
-        Map<ItemStack, String> gearUids = new HashMap<>();
+        Map<String, ItemStack> gearUids = new HashMap<>();
 
         int orbCount = 0;
         int enchantCount = 0;
@@ -169,7 +159,7 @@ public class AntiCheat implements GenericMechanic {
                 if (RepairAPI.isItemArmorOrWeapon(i)) {
                     String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
                     if (uniqueEpochIdentifier != null)
-                        gearUids.put(i, uniqueEpochIdentifier);
+                        gearUids.put(uniqueEpochIdentifier, i);
 
                     continue;
                 }
@@ -184,12 +174,11 @@ public class AntiCheat implements GenericMechanic {
             }
         }
 
-        Set<String> duplicates = Utils.findDuplicates(gearUids.values());
-        for (ItemStack i : gearUids.keySet()) {
-            String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
-
-            if (duplicates.contains(uniqueEpochIdentifier))
-                i.setType(Material.AIR);
+        Set<String> duplicates = Utils.findDuplicates(gearUids.keySet());
+        for (String s : duplicates) {
+            ItemStack itemStack = gearUids.get(s);
+            if (itemStack != null)
+                itemStack.setType(Material.AIR);
         }
 
         if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 350000) {
