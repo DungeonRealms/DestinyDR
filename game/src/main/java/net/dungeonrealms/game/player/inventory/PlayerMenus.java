@@ -152,6 +152,12 @@ public class PlayerMenus {
     public static void openPlayerPetMenu(Player player) {
         UUID uuid = player.getUniqueId();
 
+        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
+            Inventory jailed = Bukkit.createInventory(null, 0, ChatColor.RED + "You are jailed");
+            player.openInventory(jailed);
+            return;
+        }
+
         List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
 
         if (playerPets.size() <= 0) {
@@ -199,6 +205,12 @@ public class PlayerMenus {
 
     public static void openPlayerMountMenu(Player player) {
         UUID uuid = player.getUniqueId();
+
+        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
+            Inventory jailed = Bukkit.createInventory(null, 0, ChatColor.RED + "You are jailed");
+            player.openInventory(jailed);
+            return;
+        }
 
         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
         int count = 0;

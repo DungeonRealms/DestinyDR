@@ -93,6 +93,12 @@ public class ItemListener implements Listener {
         Player player = event.getPlayer();
         if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() != Material.BOOK)
             return;
+
+        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
+            player.sendMessage(ChatColor.RED + "You have been jailed.");
+            return;
+        }
+
         ItemStack itemStack = player.getEquipment().getItemInMainHand();
         if (!(CombatLog.isInCombat(event.getPlayer()))) {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {

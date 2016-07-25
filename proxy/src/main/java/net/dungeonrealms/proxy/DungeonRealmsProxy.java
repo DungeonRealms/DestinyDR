@@ -121,7 +121,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     @EventHandler
     public void onConnect(ServerConnectEvent event) {
-        if (MAINTENANCE_MODE && !WHITELIST.contains(event.getPlayer().getName())) {
+        if (MAINTENANCE_MODE && !WHITELIST.contains(event.getPlayer().getName().toLowerCase())) {
             event.getPlayer().disconnect(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
             event.setCancelled(true);
             return;

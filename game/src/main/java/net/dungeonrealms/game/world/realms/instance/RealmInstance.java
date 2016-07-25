@@ -174,6 +174,13 @@ public class RealmInstance implements Realms {
 
     @Override
     public boolean canPlacePortal(Player player, Location location) {
+
+        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
+            player.sendMessage(ChatColor.RED + "You have been jailed.");
+            return false;
+        }
+
+
         if (CombatLog.isInCombat(player)) {
             player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
             return false;

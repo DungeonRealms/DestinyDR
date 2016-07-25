@@ -29,7 +29,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -73,6 +72,10 @@ public class GamePlayer {
     @Getter
     @Setter
     private boolean isTargettable;
+
+    @Getter
+    @Setter
+    private boolean isJailed;
 
     @Getter
     @Setter
