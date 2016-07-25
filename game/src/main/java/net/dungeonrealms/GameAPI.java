@@ -164,6 +164,31 @@ public class GameAPI {
         }.runTaskAsynchronously(DungeonRealms.getInstance());
     }
 
+    /**
+     * Utility type for calling async tasks with callbacks.
+     *
+     * @param callable Callable type
+     * @param consumer Consumer task
+     * @param <T>      Type of data
+     * @author apollosoftware
+     */
+    public static <T> void submitAsyncWithAsyncCallback(Callable<T> callable, Consumer<Future<T>> consumer) {
+        // FUTURE TASK //
+        FutureTask<T> task = new FutureTask<>(callable);
+
+        // BUKKIT'S ASYNC SCHEDULE WORKER
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // RUN FUTURE TASK ON THREAD //
+                task.run();
+                // ACCEPT CONSUMER //
+                if (consumer != null)
+                    consumer.accept(task);
+            }
+        }.runTaskAsynchronously(DungeonRealms.getInstance());
+    }
+
 
     /**
      * To get the players region.
@@ -1202,6 +1227,7 @@ public class GameAPI {
         Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
         player.setInvulnerable(true);
         player.setNoDamageTicks(10);
+        player.closeInventory();
 
         GamePlayer gp = GameAPI.getGamePlayer(player);
         gp.setAbleToSuicide(false);

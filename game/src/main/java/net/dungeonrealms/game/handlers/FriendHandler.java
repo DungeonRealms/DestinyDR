@@ -2,13 +2,16 @@ package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
+import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -16,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Nick on 10/22/2015.
@@ -165,6 +169,57 @@ public class FriendHandler {
         long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(uuid.toString())).count();
 
         return pendingRequests >= 1;
+    }
+
+    public static void sendMessageToFriend(Player player, String playerName, String finalMessage) {
+        GameAPI.submitAsyncWithAsyncCallback(() -> {
+            String testUUID = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+            if (testUUID.equals("")) {
+                player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
+                return "";
+            }
+            UUID uuid = UUID.fromString(testUUID);
+            if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.getInstance().isGM(Bukkit.getOfflinePlayer(uuid))) {
+                if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, uuid)) {
+                    player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
+                    return "";
+                }
+            }
+            if (!((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid))) {
+                player.sendMessage(ChatColor.RED +"That user is not currently online.");
+                return "";
+            }
+            try {
+                return DatabaseAPI.getInstance().getFormattedShardName(uuid);
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return "";
+        }, result -> {
+            String receivingShard = null;
+            try {
+                receivingShard = result.get();
+                if (receivingShard.equals("")) {
+                    return;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            String toPlayerRank = Rank.getInstance().getRank(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName)));
+            String fromPlayerRank = Rank.getInstance().getRank(player.getUniqueId());
+            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getRankPrefix
+                    (toPlayerRank) + GameChat.getName(playerName, toPlayerRank, true) + ChatColor.GRAY + " [" +
+                    ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " + ChatColor.WHITE + finalMessage);
+
+            GameAPI.sendNetworkMessage("FriendMessage", player.getName(), playerName, (ChatColor.GRAY.toString() +
+                    ChatColor.BOLD + "FROM " + GameChat.getRankPrefix(fromPlayerRank) + GameChat.getName(player, fromPlayerRank, true) +
+                    ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " + ChatColor
+                    .WHITE + finalMessage));
+            GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_EGG_THROW.toString(), "2f", "1.2f");
+        });
     }
 
     public boolean isPendingFrom(UUID uuid, String name) {

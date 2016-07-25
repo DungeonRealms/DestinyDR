@@ -29,6 +29,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -85,6 +86,10 @@ public class GamePlayer {
     @Setter
     private boolean ableToPickup;
 
+    @Getter
+    @Setter
+    private String lastMessager;
+
     public GamePlayer(Player player) {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());
@@ -95,6 +100,7 @@ public class GamePlayer {
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
         this.isTargettable = true;
         this.ableToPickup = true;
+        this.lastMessager = null;
     }
 
     /**

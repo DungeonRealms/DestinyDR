@@ -9,6 +9,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Created by Nick on 11/18/2015.
@@ -101,6 +102,26 @@ public final class GameChat {
 
     public static String getName(Player player, boolean onlyName) {
         return getName(player, Rank.getInstance().getRank(player.getUniqueId()), onlyName);
+    }
+
+    public static String getName(String name, String rank, boolean onlyName) {
+        switch (rank.toLowerCase()) {
+            case "headgm":
+            case "gm":
+            case "dev":
+                return ChatColor.AQUA + name + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
+            case "default":
+            case "sub":
+            case "sub+":
+            case "sub++":
+            case "builder":
+            case "support":
+            case "youtube":
+            case "pmod":
+            default:
+                String alignmentName = (String)DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name)));
+                return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + name + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
+        }
     }
 
     public static String getName(Player player, String rank, boolean onlyName) {

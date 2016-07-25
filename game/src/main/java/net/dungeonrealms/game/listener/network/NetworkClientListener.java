@@ -12,6 +12,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -168,6 +169,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             }
 
                             return;
+                        } else if (task.equals("FriendMessage")) {
+                            String fromPlayer = in.readUTF();
+                            String playerName = in.readUTF();
+                            String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
+                            Player player = Bukkit.getPlayer(playerName);
+                            if (player != null) {
+                                GamePlayer gp = GameAPI.getGamePlayer(player);
+                                if (gp != null) {
+                                    gp.setLastMessager(fromPlayer);
+                                }
+                                player.sendMessage(msg);
+                            }
                         } else if (task.equals("Shop")) {
                             String msg = in.readUTF();
                             if (msg.contains("close:")) {
@@ -184,6 +197,14 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
                         } else if (task.equals("BroadcastSound")) {
                             String name = in.readUTF();
+                            Float volume = 10f;
+                            Float pitch = 1f;
+                            if (in.available() > 0) {
+                                volume = Float.valueOf(in.readUTF());
+                            }
+                            if (in.available() > 0) {
+                                pitch = Float.valueOf(in.readUTF());
+                            }
                             Sound sound = null;
                             for (Sound s : Sound.values()) {
                                 if (Sound.valueOf(name).equals(s)) {

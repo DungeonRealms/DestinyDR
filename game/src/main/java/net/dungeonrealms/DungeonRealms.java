@@ -343,7 +343,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandInterface("interface", "/<command> [args]", "Development command for accessing interfaces."));
         cm.registerCommand(new CommandTell("tell", "/<command> [args]", "Send a private message to a player."));
         cm.registerCommand(new CommandISay("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
-        cm.registerCommand(new CommandModeration("moderation", "/<command> [args]", "Moderation command for Dungeon Realms staff."));
+        cm.registerCommand(new CommandModeration("moderation", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mod")));
         cm.registerCommand(new CommandStaffChat("staffchat", "/<command> [args]", "Send a message to the staff chat.", Collections.singletonList("sc")));
         cm.registerCommand(new CommandBroadcast("broadcast", "/<command> [args]", "Send a formatted broadcast to all shards..", Collections.singletonList("sayall")));
         cm.registerCommand(new CommandGm("gm", "/<command> [args]", "Displays the Game Master toggles."));
@@ -384,7 +384,8 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new DungeonJoin("djoin", "/<command>", "Dungeon Join command"));
         cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
         cm.registerCommand(new DebuffCrystal("debuffcrystal", "/<command>", "Spawns a debuff crystal"));
-        cm.registerCommand(new CommandMessage("message", "/<command>", "Messages a player", Arrays.asList("msg", "tell")));
+        cm.registerCommand(new CommandMessage("message", "/<command>", "Messages a player", Arrays.asList("msg", "tell", "t", "whisper", "w", "m")));
+        cm.registerCommand(new CommandReply("reply", "/<command>", "Messages a player", Collections.singletonList("r")));
         cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {

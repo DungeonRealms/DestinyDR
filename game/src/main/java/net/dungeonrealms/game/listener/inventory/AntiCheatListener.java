@@ -22,14 +22,15 @@ public class AntiCheatListener implements Listener {
     public void onInventoryOpenGearCheck(InventoryOpenEvent event) {
         Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> AntiCheat
                 .checkForDuplicatedEquipment((Player)event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer()
-                        .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))));    }
+                        .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))));
+    }
 
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
         Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> AntiCheat
                 .checkForDuplicatedEquipment(event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer()
-                        .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))), 1L);
+                        .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))), 5L);
     }
 
 

@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -19,6 +20,7 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Kieran Quigley (Proxying) on 01-Jul-16.
@@ -52,28 +54,9 @@ public class CommandMessage extends BasicCommand {
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PM_DEV);
         }
         String finalMessage = message;
-        String testUUID = DatabaseAPI.getInstance().getUUIDFromName(playerName);
-        if (testUUID.equals("")) {
-            player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
-            return true;
-        }
-        UUID uuid = UUID.fromString(testUUID);
-        if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.getInstance().isGM(Bukkit.getOfflinePlayer(uuid))) {
 
-            if (!(boolean) DatabaseAPI.getInstance().getValue(uuid, EnumData.TOGGLE_RECEIVE_MESSAGE)) {
-                player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
-                return true;
-            }
-        }
-        player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO: " + ChatColor.AQUA + playerName + ChatColor.GRAY + ": " + ChatColor.WHITE + finalMessage);
-        if (Bukkit.getPlayer(playerName) != null) {
-            Bukkit.getOnlinePlayers().stream().filter(player1 -> player1.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {
-                theTargetPlayer.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "FROM: " + ChatColor.AQUA + player.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + finalMessage);
-                theTargetPlayer.playSound(theTargetPlayer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-            });
-        } else {
-            BungeeUtils.sendPlayerMessage(playerName, net.md_5.bungee.api.ChatColor.GRAY.toString() + net.md_5.bungee.api.ChatColor.BOLD + "FROM: " + net.md_5.bungee.api.ChatColor.AQUA + "[" + DungeonRealms.getInstance().shardid + "] " + player.getName() + net.md_5.bungee.api.ChatColor.GRAY + ": " + net.md_5.bungee.api.ChatColor.WHITE + finalMessage);
-        }
+        FriendHandler.sendMessageToFriend(player, playerName, finalMessage);
         return true;
     }
+
 }

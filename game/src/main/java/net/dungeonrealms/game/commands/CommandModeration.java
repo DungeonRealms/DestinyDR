@@ -16,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,8 +24,8 @@ import java.util.UUID;
  * Created by Chase on Nov 11, 2015
  */
 public class CommandModeration extends BasicCommand {
-    public CommandModeration(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandModeration(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     public static Map<UUID, UUID> offline_inv_watchers = new HashMap<>();
