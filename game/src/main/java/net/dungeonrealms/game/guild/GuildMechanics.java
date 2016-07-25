@@ -260,8 +260,10 @@ public class GuildMechanics {
                         player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
 
                 } catch (InterruptedException | ExecutionException e) {
+                    player.sendMessage(ChatColor.RED + "Unable to load guild information");
                     e.printStackTrace();
                 }
+
             });
         });
     }
