@@ -11,7 +11,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ping.ServerPinger;
 import net.dungeonrealms.common.network.ping.type.BungeePingResponse;
 import net.dungeonrealms.network.GameClient;
-import net.dungeonrealms.proxy.command.MaintenanceModeCommand;
+import net.dungeonrealms.proxy.command.MaintenanceCommand;
 import net.dungeonrealms.proxy.listener.NetworkClientListener;
 import net.dungeonrealms.proxy.listener.ProxyChannelListener;
 import net.md_5.bungee.api.ChatColor;
@@ -67,7 +67,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
 
-        this.getProxy().getPluginManager().registerCommand(this, new MaintenanceModeCommand("maintenancemode", null, "mm"));
+        this.getProxy().getPluginManager().registerCommand(this, new MaintenanceCommand("maintenancemode", null, "mm"));
 
         try {
             // SET DEFAULT

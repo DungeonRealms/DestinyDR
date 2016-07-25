@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/25/2016
  */
-public class MaintenanceModeCommand extends Command {
+public class MaintenanceCommand extends Command {
 
 
-    public MaintenanceModeCommand(String name, String permission, String... aliases) {
+    public MaintenanceCommand(String name, String permission, String... aliases) {
         super(name, permission, aliases);
     }
 
