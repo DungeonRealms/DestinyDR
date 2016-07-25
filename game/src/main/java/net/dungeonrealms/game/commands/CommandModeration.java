@@ -64,6 +64,7 @@ public class CommandModeration extends BasicCommand {
                     Inventory inv = Bukkit.createInventory(null, 9, player.getName() + " Armor");
                     for (int i = 0; i < 4; i++) {
                         ItemStack stack = player.getInventory().getArmorContents()[i];
+                        if (stack == null) continue;
                         inv.addItem(stack);
                     }
                     inv.setItem(8, player.getEquipment().getItemInMainHand());

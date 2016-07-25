@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.trade;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -47,6 +48,8 @@ public class Trade {
         }
         Bukkit.getPlayer(p1.getUniqueId()).closeInventory();
         Bukkit.getPlayer(p2.getUniqueId()).closeInventory();
+        GameAPI.getGamePlayer(p1).setAbleToPickup(false);
+        GameAPI.getGamePlayer(p2).setAbleToPickup(false);
         ItemStack separator = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, " ", null, (short) 0);
         ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP",
                 null, DyeColor.GRAY.getDyeData());
@@ -129,6 +132,8 @@ public class Trade {
             p2.getInventory().addItem(item);
 
         }
+        GameAPI.getGamePlayer(p1).setAbleToPickup(true);
+        GameAPI.getGamePlayer(p2).setAbleToPickup(true);
         remove();
         p1.closeInventory();
         p2.closeInventory();
@@ -173,6 +178,8 @@ public class Trade {
                 p1.getInventory().addItem(item);
             }
         }
+        GameAPI.getGamePlayer(p1).setAbleToPickup(true);
+        GameAPI.getGamePlayer(p2).setAbleToPickup(true);
         p1.sendMessage(ChatColor.GREEN + "Trade successful.");
         p2.sendMessage(ChatColor.GREEN + "Trade successful.");
         remove();

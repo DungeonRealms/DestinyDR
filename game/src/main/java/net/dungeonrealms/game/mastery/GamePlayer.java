@@ -81,6 +81,10 @@ public class GamePlayer {
     @Setter
     private boolean ableToSuicide;
 
+    @Getter
+    @Setter
+    private boolean ableToPickup;
+
     public GamePlayer(Player player) {
         T = player;
         this.playerStats = new PlayerStats(player.getUniqueId());
@@ -90,6 +94,7 @@ public class GamePlayer {
         this.lastArmorEquip = System.currentTimeMillis();
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
         this.isTargettable = true;
+        this.ableToPickup = true;
     }
 
     /**
