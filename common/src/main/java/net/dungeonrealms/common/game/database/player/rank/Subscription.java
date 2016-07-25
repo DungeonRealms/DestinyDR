@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.database.player;
+package net.dungeonrealms.common.game.database.player.rank;
 
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.type.EnumData;

@@ -1,7 +1,7 @@
 package net.dungeonrealms.lobby.commands;
 
 import net.dungeonrealms.common.game.commands.BasicCommand;
-import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.Lobby;
 import net.dungeonrealms.lobby.ShardSelector;

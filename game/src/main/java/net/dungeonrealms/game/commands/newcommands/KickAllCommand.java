@@ -2,7 +2,7 @@ package net.dungeonrealms.game.commands.newcommands;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
-import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

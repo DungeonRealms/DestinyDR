@@ -153,6 +153,8 @@ public class DatabaseAPI {
         if (rootDoc == null) return null;
 
         Object dataObj = rootDoc.get(key[1]);
+
+        if (dataObj == null) return null;
         Class<? extends Object> clazz = dataObj.getClass();
 
         return rootDoc.get(key[1], clazz);
