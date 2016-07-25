@@ -434,7 +434,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handlePlayerDeath(PlayerDeathEvent event) {
         event.setDeathMessage("");
-        Player p = event.getEntity();
+        final Player p = event.getEntity();
         final Location deathLocation = p.getEyeLocation();
         p.setExp(0F);
         p.setLevel(0);
@@ -535,28 +535,10 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (MountUtils.inventories.containsKey(p.getUniqueId())) {
-            boolean hasMuleOut = false;
-            if (EntityAPI.hasMountOut(p.getUniqueId())) {
-                net.minecraft.server.v1_9_R2.Entity entity = EntityAPI.getPlayerMount(p.getUniqueId());
-                if (entity.getBukkitEntity() instanceof Horse) {
-                    Horse horse = (Horse) entity.getBukkitEntity();
-                    if (horse.getVariant() == Variant.MULE) {
-                        hasMuleOut = true;
-                    }
-                }
-            }
-
-            if (hasMuleOut) {
-                for (ItemStack stack : MountUtils.inventories.get(p.getUniqueId()).getContents()) {
-                    event.getDrops().add(stack);
-                }
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    if (Bukkit.getPlayer(p.getUniqueId()) != null) {
-                        MountUtils.inventories.remove(p.getUniqueId());
-                    }
-                });
+        Inventory mountInventory = MountUtils.inventories.get(p.getUniqueId());
+        if (MountUtils.inventories.containsKey(p.getUniqueId()) && mountInventory != null) {
+            for (ItemStack stack : MountUtils.inventories.get(p.getUniqueId()).getContents()) {
+                event.getDrops().add(stack);
             }
         }
 
@@ -574,6 +556,7 @@ public class DamageListener implements Listener {
 
         List<ItemStack> toDrop = new ArrayList<>();
         for (ItemStack stack : event.getDrops()) {
+            if (stack == null) continue;
             if (stack.getType() != Material.SKULL_ITEM) {
                 toDrop.add(stack);
             }
@@ -594,7 +577,6 @@ public class DamageListener implements Listener {
         }
         p.setCanPickupItems(false);
         p.setHealth(20);
-        p.setCanPickupItems(false);
         event.getDrops().clear();
         p.setGameMode(GameMode.SPECTATOR);
         p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 40, 1));

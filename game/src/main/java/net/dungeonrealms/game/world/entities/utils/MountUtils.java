@@ -97,6 +97,8 @@ public class MountUtils {
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
+                mountHorse.setCustomName(player.getName());
+                mountHorse.setCustomNameVisible(true);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
                 horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
@@ -113,6 +115,8 @@ public class MountUtils {
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
+                mountHorse.setCustomName(player.getName());
+                mountHorse.setCustomNameVisible(true);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
                 horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
                 horse.setColor(color);
@@ -130,6 +134,8 @@ public class MountUtils {
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
+                mountHorse.setCustomName(player.getName());
+                mountHorse.setCustomNameVisible(true);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
                 horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
                 horse.setColor(color);
@@ -147,6 +153,8 @@ public class MountUtils {
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
+                mountHorse.setCustomName(player.getName());
+                mountHorse.setCustomNameVisible(true);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
                 horse.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3));
                 horse.setColor(color);
