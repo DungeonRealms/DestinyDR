@@ -42,7 +42,12 @@ public class CommandReply extends BasicCommand {
             return true;
         }
 
-        FriendHandler.sendMessageToFriend(player, gp.getLastMessager(), args[0]);
+        String msg = args[0];
+        for (int i = 1; i < args.length; i++) {
+            msg += " " + args[i];
+        }
+
+        FriendHandler.sendMessageToFriend(player, gp.getLastMessager(), msg);
 
         return true;
     }
