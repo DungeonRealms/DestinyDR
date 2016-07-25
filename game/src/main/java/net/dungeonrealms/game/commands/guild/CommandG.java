@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands.guild;
 
-import net.dungeonrealms.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import org.bukkit.ChatColor;

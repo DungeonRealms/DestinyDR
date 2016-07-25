@@ -15,7 +15,7 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-    <finalName>DungeonRealmsProxy</finalName>
+    <finalName>Proxy</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

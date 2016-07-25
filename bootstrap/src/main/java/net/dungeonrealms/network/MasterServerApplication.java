@@ -2,7 +2,7 @@ package net.dungeonrealms.network;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.minlog.Log;
-import net.dungeonrealms.Constants;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.network.packet.Packet;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 
@@ -25,7 +25,6 @@ public class MasterServerApplication {
 
 
     public static void main(String[] args) {
-
 
         Log.info("");
         Log.info("Master server initiated on " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER);

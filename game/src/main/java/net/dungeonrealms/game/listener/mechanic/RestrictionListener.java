@@ -2,9 +2,9 @@ package net.dungeonrealms.game.listener.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -235,6 +235,14 @@ public class RestrictionListener implements Listener {
         }
     }*/
 
+    @EventHandler
+    public void onBucket(PlayerBucketEmptyEvent event) {
+        if ((event.getBucket() == Material.WATER_BUCKET || event.getBucket() == Material.WATER
+                || event.getBucket() == Material.LAVA || event.getBucket() == Material.LAVA_BUCKET)) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void playerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -242,12 +250,10 @@ public class RestrictionListener implements Listener {
             return;
         }
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if ((event.hasItem()) && (event.getItem().getType() == Material.WATER_BUCKET || event.getItem().getType() == Material.WATER
-                    || event.getItem().getType() == Material.LAVA || event.getItem().getType() == Material.LAVA_BUCKET)) {
-                event.setCancelled(true);
-                return;
-            }
+        if (event.getItem().getType() == Material.WATER
+                || event.getItem().getType() == Material.LAVA || event.getItem().getType() == Material.LAVA_BUCKET) {
+            event.setCancelled(true);
+            return;
         }
 
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {

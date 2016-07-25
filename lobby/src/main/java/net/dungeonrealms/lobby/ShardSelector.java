@@ -1,16 +1,16 @@
 package net.dungeonrealms.lobby;
 
 
-import net.dungeonrealms.game.AbstractMenu;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.player.Rank;
-import net.dungeonrealms.game.database.type.EnumData;
-import net.dungeonrealms.game.menu.GUIButtonClickEvent;
-import net.dungeonrealms.game.menu.item.GUIButton;
-import net.dungeonrealms.network.ShardInfo;
-import net.dungeonrealms.network.bungeecord.BungeeServerInfo;
-import net.dungeonrealms.network.bungeecord.BungeeServerTracker;
-import net.dungeonrealms.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.game.AbstractMenu;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.game.menu.GUIButtonClickEvent;
+import net.dungeonrealms.common.game.menu.item.GUIButton;
+import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
+import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

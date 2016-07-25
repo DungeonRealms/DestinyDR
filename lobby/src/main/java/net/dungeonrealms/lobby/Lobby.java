@@ -1,13 +1,13 @@
 package net.dungeonrealms.lobby;
 
 import lombok.Getter;
-import net.dungeonrealms.game.commands.CommandManager;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.DatabaseDriver;
-import net.dungeonrealms.game.punishment.PunishAPI;
+import net.dungeonrealms.common.game.commands.CommandManager;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.DatabaseDriver;
+import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.commands.CommandShard;
-import net.dungeonrealms.network.bungeecord.BungeeServerTracker;
-import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;

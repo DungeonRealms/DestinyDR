@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import io.netty.buffer.Unpooled;
+import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.tool.PatchTools;
 import net.minecraft.server.v1_9_R2.EnumHand;
 import net.minecraft.server.v1_9_R2.PacketDataSerializer;

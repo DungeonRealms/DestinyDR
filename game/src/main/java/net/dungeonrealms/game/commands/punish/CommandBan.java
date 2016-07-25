@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.commands.punish;
 
-import net.dungeonrealms.game.commands.BasicCommand;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.game.punishment.TimeFormat;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.punishment.PunishAPI;
-import net.dungeonrealms.game.punishment.TimeFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

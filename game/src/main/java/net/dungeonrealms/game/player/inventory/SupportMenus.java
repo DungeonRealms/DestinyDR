@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.player.inventory;
 
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.player.Rank;
-import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;

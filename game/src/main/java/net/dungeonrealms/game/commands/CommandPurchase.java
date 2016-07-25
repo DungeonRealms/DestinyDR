@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.common.game.commands.BasicCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.mastery;
 
-import net.dungeonrealms.Constants;
+import net.dungeonrealms.common.Constants;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

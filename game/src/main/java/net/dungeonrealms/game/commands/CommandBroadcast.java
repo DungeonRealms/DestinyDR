@@ -1,10 +1,8 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.player.Rank;
-import net.dungeonrealms.game.database.type.EnumData;
-import org.bukkit.ChatColor;
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.player.Rank;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

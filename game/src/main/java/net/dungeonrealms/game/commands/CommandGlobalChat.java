@@ -1,9 +1,10 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.punishment.PunishAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

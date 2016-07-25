@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.commands.guild;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.BasicCommand;
-import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import org.bukkit.Bukkit;

@@ -1,8 +1,8 @@
 package net.dungeonrealms.tool;
 
 import lombok.Getter;
-import net.dungeonrealms.Constants;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;

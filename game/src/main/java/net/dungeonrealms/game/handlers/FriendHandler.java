@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.type.EnumData;
-import net.dungeonrealms.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.game.database.type.EnumOperators;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;

@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands.dungeonhelpers;
 
-import net.dungeonrealms.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
