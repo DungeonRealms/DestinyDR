@@ -1,6 +1,6 @@
 Build <build>
 
-The server has been rolled back to July 14th. For more information please see the website.
+The network has been completely wiped. For more information please see the website.
 
 &2New Features&0
 - Added /reply (aliases: /r).
@@ -13,6 +13,7 @@ The server has been rolled back to July 14th. For more information please see th
 
 &4Bug Fixes&0
 - Fixed issues with guild commands.
+- Fixed realm portal griefing
 - /ginfo once again shows all members.
 - Fixed many synchronization issues.
 - Fixed some critical duplication glitches.
