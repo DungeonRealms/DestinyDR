@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.guild;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -9,6 +8,8 @@ import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
+import net.dungeonrealms.game.guild.token.GuildCreateToken;
+import net.dungeonrealms.game.guild.token.GuildInfoToken;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -16,15 +17,15 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
@@ -40,25 +41,11 @@ public class GuildMechanics {
         return instance;
     }
 
-    public class GuildCreateInfo {
-        @Getter
-        @Setter
-        private UUID owner;
-
-        @Getter
-        @Setter
-        private String guildName, displayName, tag;
-
-        @Getter
-        @Setter
-        private ItemStack currentBanner = new ItemStack(Material.BANNER, 1, (byte) 15);
-    }
+    @Getter
+    private final Map<UUID, GuildCreateToken> GUILD_CREATE_TOKENS = new WeakHashMap<>();
 
     @Getter
-    private final Map<UUID, GuildCreateInfo> guildCreateInfo = new WeakHashMap<>();
-
-    @Getter
-    private final List<UUID> guildChat = new ArrayList<>();
+    private final List<UUID> GUILD_CHAT = new ArrayList<>();
 
 
     public void doLogin(Player player) {
@@ -95,7 +82,7 @@ public class GuildMechanics {
         Player player = event.getPlayer();
         String message = event.getMessage();
 
-        if (guildChat.contains(player.getUniqueId())) {
+        if (GUILD_CHAT.contains(player.getUniqueId())) {
             String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
             sendChat(guildName, player, message);
             event.setCancelled(true);
@@ -105,7 +92,7 @@ public class GuildMechanics {
 
     public void doLogout(Player player) {
         try {
-            guildChat.remove(player.getUniqueId());
+            GUILD_CHAT.remove(player.getUniqueId());
             String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
             String tag = GuildDatabaseAPI.get().getTagOf(guildName);
             String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
@@ -151,11 +138,11 @@ public class GuildMechanics {
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
 
-        if (guildChat.contains(player.getUniqueId())) {
-            guildChat.remove(player.getUniqueId());
+        if (GUILD_CHAT.contains(player.getUniqueId())) {
+            GUILD_CHAT.remove(player.getUniqueId());
             player.sendMessage(ChatColor.GRAY + "Messages will now be default sent to local chat.");
         } else {
-            guildChat.add(player.getUniqueId());
+            GUILD_CHAT.add(player.getUniqueId());
             player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to <" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
             player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
         }
@@ -234,31 +221,49 @@ public class GuildMechanics {
      * @param guildName Guild
      */
     public void showGuildInfo(Player player, String guildName, boolean showMotd) {
+        player.sendMessage(ChatColor.GRAY + "Loading guild information...");
 
         // UPDATE CACHED DATA INFO //
-        GuildDatabaseAPI.get().updateCache(guildName);
+        GameAPI.submitAsyncCallback(() -> GuildDatabaseAPI.get().updateCache(guildName), consumer -> {
+            GameAPI.submitAsyncCallback(() -> {
+                GuildInfoToken token = new GuildInfoToken();
 
-        String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
-        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
-        String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
+                token.setOwner(getPlayerName(UUID.fromString(GuildDatabaseAPI.get().getOwnerOf(guildName))));
+                token.getMember().addAll(getPlayerNames(GuildDatabaseAPI.get().getAllGuildMembers(guildName)));
+                token.getOfficers().addAll(getPlayerNames(GuildDatabaseAPI.get().getGuildOfficers(guildName)));
 
-        StringBuilder members = getPlayers(GuildDatabaseAPI.get().getAllGuildMembers(guildName));
-        StringBuilder officers = getPlayers(GuildDatabaseAPI.get().getGuildOfficers(guildName));
+                return token;
+            }, tokenFuture -> {
+                try {
+                    GuildInfoToken token = tokenFuture.get();
 
-        player.sendMessage(ChatColor.GRAY + "              *** " + ChatColor.DARK_AQUA + ChatColor.BOLD + "Guild Info" + ChatColor.GRAY + " ***");
-        player.sendMessage(" ");
-        player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
-        player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
-        player.sendMessage(ChatColor.GRAY + "Guild Owner: " + getPlayerName(UUID.fromString(GuildDatabaseAPI.get().getOwnerOf(guildName))));
-        player.sendMessage(" ");
+                    String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
+                    String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+                    String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
 
-        player.sendMessage(ChatColor.GRAY + "Guild Officers: " + ChatColor.WHITE + (officers.length() == 0 ? "None" : officers));
-        player.sendMessage(ChatColor.GRAY + "Guild Members: " + ChatColor.WHITE + (members.length() == 0 ? "None" : members));
+                    StringBuilder members = getPlayers(token.getMember());
+                    StringBuilder officers = getPlayers(token.getOfficers());
 
-        player.sendMessage(" ");
+                    player.sendMessage(ChatColor.GRAY + "              *** " + ChatColor.DARK_AQUA + ChatColor.BOLD + "Guild Info" + ChatColor.GRAY + " ***");
+                    player.sendMessage(" ");
+                    player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
+                    player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
+                    player.sendMessage(ChatColor.GRAY + "Guild Owner: " + token.getOwner());
+                    player.sendMessage(" ");
 
-        if (showMotd)
-            player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
+                    player.sendMessage(ChatColor.GRAY + "Guild Officers: " + ChatColor.WHITE + (officers.length() == 0 ? "None" : officers));
+                    player.sendMessage(ChatColor.GRAY + "Guild Members: " + ChatColor.WHITE + (members.length() == 0 ? "None" : members));
+
+                    player.sendMessage(" ");
+
+                    if (showMotd)
+                        player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
+
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 
     private String getPlayerName(UUID uuid) {
@@ -266,19 +271,16 @@ public class GuildMechanics {
         return Bukkit.getPlayer(uuid) != null ? ChatColor.GREEN + name : ChatColor.GRAY + name;
     }
 
+    private Set<String> getPlayerNames(List<UUID> uuids) {
+        return uuids.stream().map(this::getPlayerName).collect(Collectors.toSet());
+    }
 
-    private StringBuilder getPlayers(List<UUID> uuids) {
+    private StringBuilder getPlayers(List<String> names) {
         StringBuilder players = new StringBuilder();
 
-        for (int i = 0; i < uuids.size(); i++) {
-
-            if (i >= 3) {
-                players.append(ChatColor.GRAY.toString()).append(" and ").append(uuids.size() - (i + 1)).append(" more...");
-                return players;
-            }
-
-            if (i == 0) players.append(getPlayerName(uuids.get(i)));
-            else players.append(", ").append(getPlayerName(uuids.get(i)));
+        for (int i = 0; i < names.size(); i++) {
+            if (i == 0) players.append(names.get(i));
+            else players.append(", ").append(names.get(i));
         }
         return players;
     }
@@ -404,7 +406,7 @@ public class GuildMechanics {
      * @param player Player
      */
     public void openGuildBannerCreator(Player player) {
-        GuildCreateInfo guildInfo = grabCurrentCreateInfo(player);
+        GuildCreateToken guildInfo = grabCurrentCreateInfo(player);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> new BannerCreatorMenu(player, guildInfo).open(player));
     }
 
@@ -414,11 +416,11 @@ public class GuildMechanics {
      *
      * @param player Get's the players create information
      */
-    public GuildCreateInfo grabCurrentCreateInfo(Player player) {
-        if (guildCreateInfo.containsKey(player.getUniqueId())) return guildCreateInfo.get(player.getUniqueId());
+    public GuildCreateToken grabCurrentCreateInfo(Player player) {
+        if (GUILD_CREATE_TOKENS.containsKey(player.getUniqueId())) return GUILD_CREATE_TOKENS.get(player.getUniqueId());
 
-        GuildCreateInfo info = new GuildCreateInfo();
-        guildCreateInfo.put(player.getUniqueId(), info);
+        GuildCreateToken info = new GuildCreateToken();
+        GUILD_CREATE_TOKENS.put(player.getUniqueId(), info);
         return info;
     }
 
@@ -450,8 +452,8 @@ public class GuildMechanics {
      * @param player Player
      * @param info   Create information
      */
-    public void createGuild(Player player, GuildCreateInfo info) {
-        guildCreateInfo.remove(player.getUniqueId());
+    public void createGuild(Player player, GuildCreateToken info) {
+        GUILD_CREATE_TOKENS.remove(player.getUniqueId());
 
         player.closeInventory();
 
@@ -643,8 +645,8 @@ public class GuildMechanics {
 
                                             GuildDatabaseAPI.get().doesTagExist(tag, guildTagExists -> {
                                                 if (!guildTagExists) {
-                                                    guildCreateInfo.remove(player.getUniqueId());
-                                                    GuildCreateInfo info = grabCurrentCreateInfo(player);
+                                                    GUILD_CREATE_TOKENS.remove(player.getUniqueId());
+                                                    GuildCreateToken info = grabCurrentCreateInfo(player);
 
                                                     info.setGuildName(guildName);
                                                     info.setTag(tag);
