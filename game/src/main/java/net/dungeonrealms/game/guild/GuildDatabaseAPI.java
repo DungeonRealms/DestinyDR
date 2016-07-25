@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.guild;
 
-import net.dungeonrealms.game.guild.db.GuildDatabase;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import org.bson.Document;
 
 import java.util.ArrayList;

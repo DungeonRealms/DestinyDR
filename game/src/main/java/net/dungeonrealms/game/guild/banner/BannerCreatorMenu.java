@@ -8,6 +8,7 @@ import net.dungeonrealms.common.game.menu.item.GUIDisplayer;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.banner.selectors.ColorSelectorMenu;
 import net.dungeonrealms.game.guild.banner.selectors.PatternSelectorMenu;
+import net.dungeonrealms.game.guild.token.GuildCreateToken;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -25,7 +26,7 @@ import java.util.Collections;
 public class BannerCreatorMenu extends AbstractMenu {
 
 
-    public BannerCreatorMenu(Player player, GuildMechanics.GuildCreateInfo info) {
+    public BannerCreatorMenu(Player player, GuildCreateToken info) {
         super(DungeonRealms.getInstance(), "Create a banner for your guild!", 45, player.getUniqueId());
         setDestroyOnExit(true);
 
