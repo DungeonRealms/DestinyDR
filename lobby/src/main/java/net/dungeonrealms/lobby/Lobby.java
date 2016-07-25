@@ -74,9 +74,9 @@ public class Lobby extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTask(this, () -> {
             Player player = event.getPlayer();
             player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
-
-            player.getInventory().clear();
             player.getInventory().setItem(0, getShardSelector());
+            if (!player.isOp())
+                player.getInventory().clear();
         });
     }
 

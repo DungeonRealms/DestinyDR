@@ -11,6 +11,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ping.ServerPinger;
 import net.dungeonrealms.common.network.ping.type.BungeePingResponse;
 import net.dungeonrealms.network.GameClient;
+import net.dungeonrealms.proxy.command.MaintenanceModeCommand;
 import net.dungeonrealms.proxy.listener.NetworkClientListener;
 import net.dungeonrealms.proxy.listener.ProxyChannelListener;
 import net.md_5.bungee.api.ChatColor;
@@ -24,9 +25,13 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.TabCompleteEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
@@ -49,6 +54,11 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     public List<UUID> ACCEPTED_CONNECTIONS = new CopyOnWriteArrayList<>();
 
+    private boolean MAINTENANCE_MODE = false;
+
+    private final File BUNGEE_CONFIG_FILE = new File(new File(System.getProperty("user.dir")), "config.yml");
+
+    private Set<String> WHITELIST = new HashSet<>(Arrays.asList(Constants.DEVELOPERS));
 
     @Override
     public void onEnable() {
@@ -56,6 +66,20 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         getLogger().info("DungeonRealmsProxy onEnable() ... STARTING UP");
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
+
+        this.getProxy().getPluginManager().registerCommand(this, new MaintenanceModeCommand("maintenancemode", null, "mm"));
+
+        try {
+            // SET DEFAULT
+            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(BUNGEE_CONFIG_FILE);
+
+            if (!configuration.getKeys().contains("MAINTENANCE_MODE"))
+                setMaintenanceMode(MAINTENANCE_MODE);
+            else MAINTENANCE_MODE = configuration.getBoolean("MAINTENANCE_MODE");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         getLogger().info("Connecting to DungeonRealms master server...");
         client = new GameClient();
@@ -78,8 +102,31 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     }
 
 
+    public Set<String> getWhitelist() {
+        return WHITELIST;
+    }
+
+    public void setMaintenanceMode(boolean value) {
+        MAINTENANCE_MODE = value;
+
+        try {
+            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(BUNGEE_CONFIG_FILE);
+            configuration.set("MAINTENANCE_MODE", MAINTENANCE_MODE);
+
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, BUNGEE_CONFIG_FILE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @EventHandler
-    public void onShardConnect(ServerConnectEvent event) {
+    public void onConnect(ServerConnectEvent event) {
+        if (MAINTENANCE_MODE && !WHITELIST.contains(event.getPlayer().getName())) {
+            event.getPlayer().disconnect(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
+            event.setCancelled(true);
+            return;
+        }
+
         ShardInfo shard = ShardInfo.getByPseudoName(event.getTarget().getName());
         if (shard == null) return;
 
@@ -91,7 +138,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     }
 
 
-    public static void sendPacket(String task, String... contents) {
+    public void sendPacket(String task, String... contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(task);
 
@@ -119,6 +166,12 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     @EventHandler
     public void onProxyConnection(PreLoginEvent event) {
+
+        if (MAINTENANCE_MODE && !WHITELIST.contains(event.getConnection().getName())) {
+            event.setCancelReason(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
+            event.setCancelled(true);
+        }
+
         // DUPE GLITCH FIX //
         getProxy().getPlayers().stream().filter(p -> p.getUniqueId().equals(event.getConnection().getUniqueId())).forEach(p -> {
             if (p != null)
@@ -137,7 +190,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         int players = ping.getPlayers().getOnline();
         ServerPing.PlayerInfo[] sample = ping.getPlayers().getSample();
 
-        ping.setDescription(ChatColor.translateAlternateColorCodes('&', Constants.MOTD));
+        ping.setDescription(ChatColor.translateAlternateColorCodes('&', !MAINTENANCE_MODE ? Constants.MOTD : Constants.MAINTENANCE_MOTD));
         ping.setPlayers(new ServerPing.Players(Constants.PLAYER_SLOTS, players, sample));
     }
 

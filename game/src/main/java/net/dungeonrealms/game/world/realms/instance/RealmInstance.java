@@ -190,7 +190,7 @@ public class RealmInstance implements Realms {
             return false;
         }
 
-        if (location.clone().add(0, 1, 0).getBlock().getType() != Material.AIR || location.clone().add(0, 2, 0).getBlock().getType() != Material.AIR) {
+        if (location.clone().add(0, 1, 0).getBlock().getType() != Material.AIR || location.clone().add(0, 2, 0).getBlock().getType() != Material.AIR || location.clone().add(0, 3, 0).getBlock().getType() != Material.AIR) {
             player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
             return false;
         }
