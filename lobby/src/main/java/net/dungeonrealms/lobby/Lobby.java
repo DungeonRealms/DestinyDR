@@ -93,15 +93,15 @@ public class Lobby extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClick(InventoryClickEvent event) {
-        event.setCancelled(true);
+        if (!event.getWhoClicked().isOp())
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
-        if (!e.getPlayer().isOp()) {
+        if (!e.getPlayer().isOp())
             e.setCancelled(true);
-            return;
-        }
+
     }
 
     @EventHandler
