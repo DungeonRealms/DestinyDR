@@ -38,6 +38,10 @@ public class MaintenanceModeCommand extends Command {
                 DungeonRealmsProxy.getInstance().setMaintenanceMode(true);
                 // STOP ALL DUNGEON REALM SERVERS //
                 DungeonRealmsProxy.getInstance().sendPacket("Stop");
+                // KICK PLAYERS IN LOBBY
+                DungeonRealmsProxy.getInstance().getProxy().getPlayers().stream().filter(player -> player.getServer().getInfo().getName().contains("Lobby")).forEach(player -> {
+                    player.disconnect(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
+                });
             }, 5, TimeUnit.SECONDS);
 
         } else if (args[0].equalsIgnoreCase("off")) {
