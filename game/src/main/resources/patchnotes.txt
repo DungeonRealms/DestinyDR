@@ -5,6 +5,7 @@ The network has been completely wiped. For more information please see the websi
 &2New Features&0
 - Added /reply (aliases: /r).
 - Implemented DR Anticheat system.
+- Added jailing
 
 &8Changes&0
 - Raised T4 and T5 drop rates significantly.
