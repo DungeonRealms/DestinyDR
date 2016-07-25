@@ -1,6 +1,7 @@
 package net.dungeonrealms.proxy.command;
 
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.proxy.DungeonRealmsProxy;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -36,12 +37,13 @@ public class MaintenanceCommand extends Command {
             ProxyServer.getInstance().getScheduler().schedule(DungeonRealmsProxy.getInstance(), () -> {
                 // ACTIVATE MAINTENANCE MODE //
                 DungeonRealmsProxy.getInstance().setMaintenanceMode(true);
+                // KICK PLAYERS THAT ARE NOT IN A SHARD
+                DungeonRealmsProxy.getInstance().getProxy().getPlayers().stream().filter(player -> ShardInfo.getByPseudoName(player.getServer().getInfo().getName()) == null).forEach(player -> {
+                    if (!Arrays.asList(Constants.DEVELOPERS).contains(player.getName()))
+                        player.disconnect(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
+                });
                 // STOP ALL DUNGEON REALM SERVERS //
                 DungeonRealmsProxy.getInstance().sendPacket("Stop");
-                // KICK PLAYERS IN LOBBY
-                DungeonRealmsProxy.getInstance().getProxy().getPlayers().stream().filter(player -> player.getServer().getInfo().getName().contains("Lobby")).forEach(player -> {
-                    player.disconnect(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
-                });
             }, 5, TimeUnit.SECONDS);
 
         } else if (args[0].equalsIgnoreCase("off")) {
