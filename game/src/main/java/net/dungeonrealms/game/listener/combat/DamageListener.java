@@ -537,8 +537,19 @@ public class DamageListener implements Listener {
 
         Inventory mountInventory = MountUtils.inventories.get(p.getUniqueId());
         if (MountUtils.inventories.containsKey(p.getUniqueId()) && mountInventory != null) {
-            for (ItemStack stack : MountUtils.inventories.get(p.getUniqueId()).getContents()) {
+            for (ItemStack stack : mountInventory.getContents()) {
+                mountInventory.remove(stack);
                 event.getDrops().add(stack);
+            }
+            if (EntityAPI.hasMountOut(p.getUniqueId())) {
+                net.minecraft.server.v1_9_R2.Entity entity = EntityAPI.getPlayerMount(p.getUniqueId());
+                if (entity.getBukkitEntity() instanceof Horse) {
+                    Horse horse = (Horse) entity.getBukkitEntity();
+                    if (horse.getVariant() == Variant.MULE) {
+                        horse.remove();
+                        EntityAPI.removePlayerMountList(p.getUniqueId());
+                    }
+                }
             }
         }
 
