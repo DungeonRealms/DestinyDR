@@ -2,14 +2,17 @@ Build <build>
 
 The server has been rolled back to July 14th. For more information please see the website.
 
+&2New Features&0
+- Added /reply (aliases: /r).
+- Implemented DR Anticheat system.
+
 &8Changes&0
 - Raised T4 and T5 drop rates significantly.
+- You are now dismounted when your horse is damaged by another entity.
+- Added better formatting to friend messaging.
 
 &4Bug Fixes&0
+- Fixed issues with guild commands.
+- /ginfo once again shows all members.
 - Fixed many synchronization issues.
-- Fixed more lag issues.
-- Fixed realm chest giving you a normal chest
-- Fixed /shard rollbacks
-- Fixed shard dropping dupe at last second
-- Fixed banning
-- Fixed placing restricted items in realm chest
+- Fixed some critical duplication glitches.

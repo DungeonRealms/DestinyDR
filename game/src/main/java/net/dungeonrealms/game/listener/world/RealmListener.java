@@ -43,10 +43,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -283,6 +280,22 @@ public class RealmListener implements Listener {
     @EventHandler
     public void onIllegalItemDispense(ProjectileLaunchEvent event) {
         if (event.getEntityType() == EntityType.DROPPED_ITEM) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHopperMove(InventoryMoveItemEvent event) {
+        RealmToken realm = REALMS.getRealm(event.getSource().getLocation().getWorld());
+
+        if (realm == null) return;
+        ItemStack i = event.getItem();
+        if (i == null) return;
+        if (i.getType() == Material.AIR) return;
+        if (GameAPI.isArmor(i) || GameAPI.isWeapon(i) || BankMechanics.getInstance().isBankNote(i) ||
+                BankMechanics.getInstance().isGem(i) || ItemManager.isEnchantScroll(i) || ItemManager
+                .isProtectScroll(i) || GameAPI.isOrb(i) || RepairAPI.isItemArmorScrap(i)) {
+            i.setType(Material.AIR);
             event.setCancelled(true);
         }
     }
