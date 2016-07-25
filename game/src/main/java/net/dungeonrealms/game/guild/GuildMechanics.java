@@ -7,7 +7,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
-import net.dungeonrealms.game.guild.db.GuildDatabase;
+import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.guild.token.GuildCreateToken;
 import net.dungeonrealms.game.guild.token.GuildInfoToken;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;

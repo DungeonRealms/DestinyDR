@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.guild.db;
+package net.dungeonrealms.game.guild.database;
 
 import com.mongodb.client.model.Filters;
 import lombok.Getter;
