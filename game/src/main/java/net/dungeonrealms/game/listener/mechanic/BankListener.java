@@ -2,9 +2,9 @@ package net.dungeonrealms.game.listener.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.type.EnumData;
-import net.dungeonrealms.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;

@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands.parties;
 
+import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.commands.BasicCommand;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

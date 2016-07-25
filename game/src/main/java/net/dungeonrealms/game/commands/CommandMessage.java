@@ -1,13 +1,14 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.player.Rank;
-import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.FriendHandler;
-import net.dungeonrealms.game.punishment.PunishAPI;
-import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

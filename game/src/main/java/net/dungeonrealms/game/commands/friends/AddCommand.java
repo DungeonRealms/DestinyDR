@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.commands.friends;
 
-import net.dungeonrealms.game.commands.BasicCommand;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.type.EnumData;
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

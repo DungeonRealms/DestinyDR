@@ -2,9 +2,10 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

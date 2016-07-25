@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.achievements;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.type.EnumData;
-import net.dungeonrealms.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.game.database.type.EnumOperators;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

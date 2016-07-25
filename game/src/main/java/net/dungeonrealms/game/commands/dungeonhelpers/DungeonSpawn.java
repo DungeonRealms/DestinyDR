@@ -2,8 +2,8 @@ package net.dungeonrealms.game.commands.dungeonhelpers;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.commands.BasicCommand;
-import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.player.Rank;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkeleton;

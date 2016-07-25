@@ -2,13 +2,13 @@ package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.player.Rank;
-import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

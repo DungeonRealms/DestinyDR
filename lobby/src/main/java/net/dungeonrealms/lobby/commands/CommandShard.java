@@ -1,10 +1,10 @@
 package net.dungeonrealms.lobby.commands;
 
-import net.dungeonrealms.game.commands.BasicCommand;
-import net.dungeonrealms.game.database.player.Rank;
+import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.player.Rank;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.Lobby;
 import net.dungeonrealms.lobby.ShardSelector;
-import net.dungeonrealms.network.bungeecord.BungeeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

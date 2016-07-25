@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.guild.banner;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.AbstractMenu;
+import net.dungeonrealms.common.game.AbstractMenu;
+import net.dungeonrealms.common.game.menu.GUIButtonClickEvent;
+import net.dungeonrealms.common.game.menu.item.GUIButton;
+import net.dungeonrealms.common.game.menu.item.GUIDisplayer;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.banner.selectors.ColorSelectorMenu;
 import net.dungeonrealms.game.guild.banner.selectors.PatternSelectorMenu;
-import net.dungeonrealms.game.menu.GUIButtonClickEvent;
-import net.dungeonrealms.game.menu.item.GUIButton;
-import net.dungeonrealms.game.menu.item.GUIDisplayer;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;

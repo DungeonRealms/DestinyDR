@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.world.teleportation;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.database.DatabaseAPI;
-import net.dungeonrealms.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.TutorialIsland;

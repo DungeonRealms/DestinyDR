@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.commands.menualias;
 
-import net.dungeonrealms.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
