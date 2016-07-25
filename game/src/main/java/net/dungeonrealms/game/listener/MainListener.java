@@ -272,7 +272,7 @@ public class MainListener implements Listener {
                 if (metaValue.equalsIgnoreCase("mount")) {
                     event.getVehicle().remove();
                     EntityAPI.removePlayerMountList(event.getExited().getUniqueId());
-                    event.getExited().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For it's own safety, your mount has returned to the stable.");
+                    event.getExited().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "For its own safety, your mount has returned to the stable.");
                 }
             }
         }

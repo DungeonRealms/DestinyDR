@@ -71,6 +71,8 @@ public class CommandModeration extends BasicCommand {
                     sender.openInventory(inv);
                 }
                 break;
+            case "mulesee":
+                break;
             case "hide":
                 sender.sendMessage(ChatColor.YELLOW + "Please use " + ChatColor.BOLD + ChatColor.UNDERLINE + "/gm" + ChatColor.YELLOW + ".");
                 // @todo: remove this later on.
