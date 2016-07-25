@@ -248,12 +248,6 @@ public class RestrictionListener implements Listener {
             return;
         }
 
-        if (event.getItem() != null && event.getItem().getType() == Material.WATER
-                || event.getItem().getType() == Material.LAVA || event.getItem().getType() == Material.LAVA_BUCKET) {
-            event.setCancelled(true);
-            return;
-        }
-
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (event.getClickedBlock().getType() == Material.FIRE) {
                 event.setCancelled(true);
