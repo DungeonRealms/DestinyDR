@@ -343,14 +343,13 @@ public class DungeonManager implements GenericMechanic {
         GameAPI.submitAsyncCallback(() -> {
             deleteFolder(new File(dungeonObject.worldName));
             deleteFolder(new File("plugins/WorldGuard/worlds/" + dungeonObject.worldName));
-
+            return true;
+        }, consumer -> {
             if (Dungeons.contains(dungeonObject)) {
                 dungeonObject.cleanup();
                 Dungeons.remove(dungeonObject);
             }
-            return true;
-        }, consumer -> {
-            Utils.log.info("[DUNGEONS] Removing WorldGuard: " + dungeonObject.getWorldName() + " final stage.");
+
             Utils.log.info("[DUNGEONS] Deleted world: " + dungeonObject.getWorldName() + " final stage.");
         });
     }
