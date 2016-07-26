@@ -11,13 +11,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/13/2016
  */
 public class CommandShard extends BasicCommand {
 
-    public CommandShard(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandShard(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     @Override

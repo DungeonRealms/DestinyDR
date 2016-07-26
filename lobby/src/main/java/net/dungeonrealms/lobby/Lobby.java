@@ -1,7 +1,6 @@
 package net.dungeonrealms.lobby;
 
 import lombok.Getter;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.commands.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
@@ -22,6 +21,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Collections;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/11/2016
@@ -45,7 +46,7 @@ public class Lobby extends JavaPlugin implements Listener {
         CommandManager cm = new CommandManager();
 
         // Commands always registered regardless of server.
-        cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command."));
+        cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command.", Collections.singletonList("connect")));
     }
 
 

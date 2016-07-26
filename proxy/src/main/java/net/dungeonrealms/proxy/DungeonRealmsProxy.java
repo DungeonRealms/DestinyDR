@@ -5,11 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.network.PingResponse;
-import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.ping.ServerPinger;
-import net.dungeonrealms.common.network.ping.type.BungeePingResponse;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.proxy.command.MaintenanceCommand;
 import net.dungeonrealms.proxy.listener.NetworkClientListener;
@@ -36,6 +32,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 5/31/2016
@@ -142,13 +139,14 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     }
 
     @EventHandler
-    public void onConnect(ServerConnectEvent event) {
+    public void onServerConnect(ServerConnectEvent event) {
         if (MAINTENANCE_MODE && !isWhitelisted(event.getPlayer().getName())) {
             event.getPlayer().disconnect(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
             event.setCancelled(true);
             return;
         }
 
+        // CHECK IF SERVER IS A SHARD //
         ShardInfo shard = ShardInfo.getByPseudoName(event.getTarget().getName());
         if (shard == null) return;
 
@@ -159,6 +157,30 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         sendPacket("LoginRequestToken", event.getPlayer().getUniqueId().toString(), shard.getPseudoName());
     }
 
+    @EventHandler
+    public void onLobbyConnect(ServerConnectEvent event) {
+        if ((event.getPlayer().getServer() == null) || event.getTarget().getName().contains("Lobby")) {
+            Iterator<ServerInfo> optimalLobbies = getOptimalLobbies().iterator();
+
+            while (optimalLobbies.hasNext()) {
+                ServerInfo target = optimalLobbies.next();
+
+                if (!(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target))) {
+                    try {
+                        event.setTarget(target);
+                    } catch (Exception e) {
+                        if (!optimalLobbies.hasNext())
+                            event.getPlayer().disconnect(ChatColor.RED + "Could not find a lobby for you.");
+                    }
+
+                    break;
+                } else if (!optimalLobbies.hasNext()) {
+                    event.getPlayer().disconnect(ChatColor.RED + "Could not find a lobby for you.");
+                    return;
+                }
+            }
+        }
+    }
 
     public void sendPacket(String task, String... contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -188,7 +210,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     @EventHandler
     public void onProxyConnection(PreLoginEvent event) {
-
         if (MAINTENANCE_MODE && !isWhitelisted(event.getConnection().getName())) {
             event.setCancelReason(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
             event.setCancelled(true);
@@ -216,66 +237,11 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         ping.setPlayers(new ServerPing.Players(Constants.PLAYER_SLOTS, players, sample));
     }
 
-
-    // RIP LOAD BALANCER //
-    //@EventHandler
-    public void onServerConnect(ServerConnectEvent event) {
-        if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby")) {
-            Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
-            event.getPlayer().sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Finding an available shard for you...");
-
-            while (optimalShardFinder.hasNext()) {
-                ServerInfo target = optimalShardFinder.next();
-
-                try {
-                    PingResponse data = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 700));
-                    if (!data.isOnline() || data.getMotd().equals("offline")) {
-
-                        if (!optimalShardFinder.hasNext()) {
-                            event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
-                            return;
-                        }
-
-                        continue;
-                    }
-                } catch (Exception e) {
-
-                    if (!optimalShardFinder.hasNext()) {
-                        event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
-                        return;
-                    }
-
-                    continue;
-                }
-
-                if (target.canAccess(event.getPlayer()) && !(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target))) {
-                    try {
-                        event.setTarget(target);
-
-                    } catch (Exception e) {
-                        if (!optimalShardFinder.hasNext())
-                            event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
-                    }
-
-                    break;
-                } else if (!optimalShardFinder.hasNext()) {
-                    event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
-                    return;
-                }
-            }
-        }
-    }
-
-    public List<ServerInfo> getOptimalShards() {
-        List<ServerInfo> servers = new ArrayList<>();
-
-//        for (String shardName : LOAD_BALANCED_SHARDS)
-//            // We want to only put them on a US as they may fail the criteria for another shard.
-//            // They are free to join another shard once connected.
-//            if (shardName.startsWith("us") && !shardName.equalsIgnoreCase("us0"))
-//                servers.add(getProxy().getServerInfo(shardName));
-
+    public List<ServerInfo> getOptimalLobbies() {
+        List<ServerInfo> servers = getProxy().getServers().values().stream().filter(server -> server.getName().contains("Lobby")).collect(Collectors.toList());
         Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
         return servers;
     }
+
+
 }
