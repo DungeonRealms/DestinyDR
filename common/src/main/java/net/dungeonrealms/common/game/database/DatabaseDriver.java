@@ -24,6 +24,7 @@ public class DatabaseDriver {
     public static MongoClientURI mongoClientURI = null;
     public static com.mongodb.client.MongoDatabase database = null;
     public static com.mongodb.client.MongoCollection<Document> collection = null;
+    public static com.mongodb.client.MongoCollection<Document> bans = null;
     public static com.mongodb.client.MongoCollection<Document> guilds = null;
     public static com.mongodb.client.MongoCollection<Document> quests = null;
 
@@ -37,6 +38,7 @@ public class DatabaseDriver {
         mongoClient = new MongoClient(mongoClientURI);
         database = mongoClient.getDatabase("dungeonrealms");
         collection = database.getCollection("player_data");
+        bans = database.getCollection("bans");
         guilds = database.getCollection("guilds");
         quests = database.getCollection("quests");
 

@@ -1,10 +1,15 @@
 package net.dungeonrealms.common.game.punishment;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOptions;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.DatabaseDriver;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.md_5.bungee.api.ChatColor;
+import org.bson.Document;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -16,14 +21,15 @@ import java.util.function.Consumer;
 public class PunishAPI {
 
     /**
-     * Method to ban players
+     * Method to ban players asynchronously.
      *
      * @param uuid       UUID
      * @param playerName Target
+     * @param sourceThatBanned
      * @param duration   Set as -1 for permanent ban
      * @param reason     Leave empty for no reason
      */
-    public static void ban(UUID uuid, String playerName, long duration, String reason, Consumer<UUID> doBefore) {
+    public static void ban(UUID uuid, String playerName, String sourceThatBanned, long duration, String reason, Consumer<UUID> doBefore) {
         if (uuid == null) return;
 
         // KICK PLAYER //
@@ -32,10 +38,18 @@ public class PunishAPI {
         else
             kick(playerName, ChatColor.RED + "You are banned until " + timeString((int) (duration / 60)) + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net", doBefore);
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, (duration != -1 ? System.currentTimeMillis() + (duration * 1000) : -1), false);
+        DatabaseAPI.getInstance().getPool().submit(() -> {
+            UpdateOptions uo = new UpdateOptions();
+            uo.upsert(true);
 
-        if (!reason.equals(""))
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, reason, false);
+            DatabaseDriver.bans.updateMany(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET.getUO
+                    (), new Document("bans.bannedUntil", (duration != -1 ? System.currentTimeMillis() + (duration *
+                    1000) : -1)).append("bans.bannedBy", sourceThatBanned)), uo);
+
+            if (!reason.equals(""))
+                DatabaseDriver.bans.updateOne(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET.getUO
+                        (), new Document("bans.reason", reason)));
+        });
     }
 
     /**
@@ -73,7 +87,6 @@ public class PunishAPI {
     }
 
     public static String getMutedMessage(UUID uuid) {
-
         long muteTime = (long) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_TIME);
         String reason = (String) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_REASON);
 
@@ -81,15 +94,20 @@ public class PunishAPI {
     }
 
     /**
-     * Method to unban players
+     * Method to unban players asynchronously (no callback).
      *
      * @param uuid Target
      */
     public static void unban(UUID uuid) {
         if (uuid == null) return;
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_TIME, 0L, true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.BANNED_REASON, "", true);
+        DatabaseAPI.getInstance().getPool().submit(() -> {
+            UpdateOptions uo = new UpdateOptions();
+            uo.upsert(true);
+
+            DatabaseDriver.bans.updateMany(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET
+                    .getUO(), new Document("bans.bannedUntil", 0L).append("bans.reason", "")), uo);
+        });
     }
 
     /**
@@ -123,10 +141,18 @@ public class PunishAPI {
         BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", playerName, kickMessage);
     }
 
-
+    /**
+     * Method to check if a player is banned (sync).
+     *
+     * @param uuid
+     * @return
+     */
     public static boolean isBanned(UUID uuid) {
         try {
-            long banTime = ((Long) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME));
+            Document bansDoc = DatabaseDriver.bans.find(Filters.eq("bans.uuid", uuid.toString())).first();
+            if (bansDoc == null) return false;
+            Long banTime = ((Document)bansDoc.get("bans")).getLong("bannedUntil");
+            Constants.log.info(String.valueOf(banTime == -1 || banTime != 0 && System.currentTimeMillis() < banTime) + "");
             return banTime == -1 || banTime != 0 && System.currentTimeMillis() < banTime;
         } catch (NullPointerException ignored) {
             return false;

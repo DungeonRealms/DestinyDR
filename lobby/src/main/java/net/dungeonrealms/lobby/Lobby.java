@@ -1,6 +1,7 @@
 package net.dungeonrealms.lobby;
 
 import lombok.Getter;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.commands.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
@@ -56,16 +57,17 @@ public class Lobby extends JavaPlugin implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
-
         if (PunishAPI.isBanned(event.getUniqueId())) {
             String bannedMessage = PunishAPI.getBannedMessage(event.getUniqueId());
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.setKickMessage(bannedMessage);
 
             DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
+            return;
         }
+
+        // REQUEST PLAYER'S DATA ASYNC //
+        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
 
 

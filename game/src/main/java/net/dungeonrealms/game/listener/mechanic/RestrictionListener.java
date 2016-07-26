@@ -28,6 +28,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
@@ -263,6 +264,11 @@ public class RestrictionListener implements Listener {
                 event.setUseInteractedBlock(Event.Result.DENY);
             }
         }
+    }
+
+    @EventHandler
+    public void playerClickHorse(InventoryClickEvent event) {
+
     }
 
     /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

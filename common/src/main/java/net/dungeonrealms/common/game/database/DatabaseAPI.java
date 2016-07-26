@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
+import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
@@ -30,6 +31,7 @@ public class DatabaseAPI {
     private static DatabaseAPI instance = null;
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
 
+    @Getter
     private ExecutorService pool = Executors.newCachedThreadPool();
 
 

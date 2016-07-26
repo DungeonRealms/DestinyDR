@@ -194,7 +194,7 @@ public class AntiCheat implements GenericMechanic {
     }
 
     private static void banAndBroadcast(Player p, int i) {
-        PunishAPI.ban(p.getUniqueId(), p.getName(), -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
+        PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
         GameAPI.sendNetworkMessage("Broadcast", "");
         GameAPI.sendNetworkMessage("Broadcast", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
                 "PERMANENTLY IP BANNED" + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);
@@ -204,7 +204,7 @@ public class AntiCheat implements GenericMechanic {
     }
 
     private static void banAndBroadcast(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
-        PunishAPI.ban(p.getUniqueId(), p.getName(), -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
+        PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
         GameAPI.sendNetworkMessage("Broadcast", "");
         GameAPI.sendNetworkMessage("Broadcast", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
                 "PERMANENTLY IP BANNED" + ChatColor.RED + " player " + p.getName() + " for possession of " + orbCount + " orbs, " + enchantCount +
