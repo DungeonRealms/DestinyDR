@@ -1,17 +1,12 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.common.game.commands.BasicCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 /**
  * Created by Alan on 7/25/2016.
