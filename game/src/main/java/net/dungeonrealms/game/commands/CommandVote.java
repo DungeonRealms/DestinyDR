@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.common.game.commands.BasicCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,10 +17,11 @@ public class CommandVote extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender instanceof Player && !Rank.isGM((Player) sender)) return true;
+        if (!(sender instanceof Player)) return true;
         final JSONMessage normal = new JSONMessage(ChatColor.AQUA + "To vote for 15 ECASH and 5% EXP click ");
         normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
         normal.addText(ChatColor.AQUA + ". You can vote each day to get the rewards!");
+        normal.sendToPlayer((Player)sender);
         return true;
     }
 }
