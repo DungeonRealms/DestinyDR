@@ -1,4 +1,4 @@
-![DungeonRealms](http://192.99.200.110/wp-content/uploads/2016/05/drlogo.png)
+![DungeonRealms](http://i.imgur.com/HSCayEW.png)
 
 Dungeon Realms
 ==========
