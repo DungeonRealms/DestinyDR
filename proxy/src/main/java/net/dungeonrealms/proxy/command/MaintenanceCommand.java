@@ -50,10 +50,10 @@ public class MaintenanceCommand extends Command {
             DungeonRealmsProxy.getInstance().setMaintenanceMode(false);
             sender.sendMessage(ChatColor.GRAY + "Maintenance mode disabled.");
         } else if (args[0].equalsIgnoreCase("add")) {
-            DungeonRealmsProxy.getInstance().getWhitelist().add(args[1].toLowerCase());
+            DungeonRealmsProxy.getInstance().getWhitelist().add(args[1]);
             sender.sendMessage(ChatColor.GRAY + args[1] + " has been added to whitelist.");
         } else if (args[0].equalsIgnoreCase("remove")) {
-            DungeonRealmsProxy.getInstance().getWhitelist().remove(args[1].toLowerCase());
+            DungeonRealmsProxy.getInstance().getWhitelist().remove(args[1]);
             sender.sendMessage(ChatColor.GRAY + args[1] + " has been removed from whitelist.");
         } else sender.sendMessage(ChatColor.RED + "/mm on/off/add/remove");
 

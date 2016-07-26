@@ -58,12 +58,13 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     private final File BUNGEE_CONFIG_FILE = new File(new File(System.getProperty("user.dir")), "config.yml");
 
-    private Set<String> WHITELIST = new HashSet<>(Arrays.asList(Constants.DEVELOPERS));
+    private List<String> WHITELIST = new ArrayList<>();
 
     @Override
     public void onEnable() {
         instance = this;
         getLogger().info("DungeonRealmsProxy onEnable() ... STARTING UP");
+
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
 
@@ -76,6 +77,10 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
             if (!configuration.getKeys().contains("MAINTENANCE_MODE"))
                 setMaintenanceMode(MAINTENANCE_MODE);
             else MAINTENANCE_MODE = configuration.getBoolean("MAINTENANCE_MODE");
+
+
+            if (configuration.getKeys().contains("WHITELIST"))
+                WHITELIST = (List<String>) configuration.getList("WHITELIST");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,8 +107,25 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     }
 
 
-    public Set<String> getWhitelist() {
+    public void onDisable() {
+        try {
+            // SAVE WHITELIST //
+            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(BUNGEE_CONFIG_FILE);
+            configuration.set("WHITELIST", WHITELIST);
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, BUNGEE_CONFIG_FILE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public List<String> getWhitelist() {
         return WHITELIST;
+    }
+
+
+    private boolean isWhitelisted(String name) {
+        return WHITELIST.contains(name) || Arrays.asList(Constants.DEVELOPERS).contains(name);
     }
 
     public void setMaintenanceMode(boolean value) {
@@ -121,7 +143,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     @EventHandler
     public void onConnect(ServerConnectEvent event) {
-        if (MAINTENANCE_MODE && !WHITELIST.contains(event.getPlayer().getName().toLowerCase())) {
+        if (MAINTENANCE_MODE && !isWhitelisted(event.getPlayer().getName())) {
             event.getPlayer().disconnect(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
             event.setCancelled(true);
             return;
@@ -167,7 +189,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     @EventHandler
     public void onProxyConnection(PreLoginEvent event) {
 
-        if (MAINTENANCE_MODE && !WHITELIST.contains(event.getConnection().getName())) {
+        if (MAINTENANCE_MODE && !isWhitelisted(event.getConnection().getName())) {
             event.setCancelReason(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
             event.setCancelled(true);
         }
