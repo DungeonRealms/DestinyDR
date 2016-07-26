@@ -244,11 +244,20 @@ public class DungeonListener implements Listener {
         if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         if (event.getRegion().toLowerCase().startsWith("instance_")) {
             Player player = event.getPlayer();
+
+            String dungeonName = event.getRegion().substring(event.getRegion().indexOf("_") + 1, event.getRegion().length());
+
             if (DungeonManager.getInstance().getPlayers_Entering_Dungeon().containsKey(player.getName())) {
                 player.sendMessage(ChatColor.GRAY + "You currently have a Dungeon cooldown timer, please wait " + ChatColor.RED + ChatColor.UNDERLINE
                         + DungeonManager.getInstance().getPlayers_Entering_Dungeon().get(player.getName()) + "s" + ChatColor.RESET + ChatColor.RED + " before entering.");
                 return;
             }
+
+            if (dungeonName.equalsIgnoreCase("fireydungeon")) {
+                player.sendMessage(ChatColor.RED + "The Infernal Abyss dungeon is temporarily disabled");
+                return;
+            }
+
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
                 net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
@@ -263,13 +272,14 @@ public class DungeonListener implements Listener {
 //                player.sendMessage(ChatColor.RED + "You need to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level 5 to enter a dungeon.");
 //                return;
 //            }
-            String dungeonName = event.getRegion().substring(event.getRegion().indexOf("_") + 1, event.getRegion().length());
+
             if (dungeonName.equalsIgnoreCase("dodungeon")) {
                 dungeonName = "DODungeon";
             }
             if (dungeonName.equalsIgnoreCase("t1dungeon")) {
                 dungeonName = "T1Dungeon";
             }
+
 
             boolean isPartyInInstance = false;
 

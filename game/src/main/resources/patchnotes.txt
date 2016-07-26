@@ -4,7 +4,9 @@ The network has been completely wiped. For more information please see the websi
 
 &2New Features&0
 - Added /reply (aliases: /r).
-- Implemented DR Anticheat system.
+- Major website overhaul
+- Implemented Anticheat system.
+- Leaderboard on website
 - Added jailing.
 - Added PvP tagging system that tags you for 10s if you attack a player.
 - Added spoofed forcefields to non-Chaotic borders when PvP tagged or Chaotic.
@@ -13,6 +15,7 @@ The network has been completely wiped. For more information please see the websi
 - Raised T4 and T5 drop rates significantly.
 - You are now dismounted when your horse is damaged by another entity.
 - Added better formatting to friend messaging.
+- The Infernal Abyss dungeon is temporarily disabled
 
 &4Bug Fixes&0
 - Fixed issues with guild commands.

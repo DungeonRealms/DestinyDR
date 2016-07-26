@@ -159,7 +159,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     @EventHandler
     public void onLobbyConnect(ServerConnectEvent event) {
-        if ((event.getPlayer().getServer() == null) || event.getTarget().getName().contains("Lobby")) {
+        if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby")) {
             Iterator<ServerInfo> optimalLobbies = getOptimalLobbies().iterator();
 
             while (optimalLobbies.hasNext()) {
