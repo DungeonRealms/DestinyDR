@@ -73,6 +73,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -442,11 +443,10 @@ public class DamageListener implements Listener {
         if (Rank.isGM(p))
             event.getDrops().clear();
 
-        for (ItemStack itemStack : new ArrayList<>(event.getDrops())) {
-            if (!GameAPI.isItemDroppable(itemStack) || GameAPI.isItemUntradeable(itemStack)) {
-                event.getDrops().remove(itemStack);
-            }
-        }
+        new ArrayList<>(event.getDrops()).stream().filter(itemStack -> !GameAPI.isItemDroppable(itemStack) || GameAPI.isItemUntradeable(itemStack)).forEach(itemStack -> {
+            event.getDrops().remove(itemStack);
+        });
+
         List<ItemStack> gearToSave = new ArrayList<>();
         KarmaHandler.EnumPlayerAlignments alignment = KarmaHandler.getInstance().getPlayerRawAlignment(p);
 
@@ -515,15 +515,13 @@ public class DamageListener implements Listener {
 
             List<ItemStack> drop_copy = new ArrayList<>(event.getDrops());
 
-            for (ItemStack is : drop_copy) {
-                if (Mining.isDRPickaxe(is) || Fishing.isDRFishingPole(is)) {
-                    event.getDrops().remove(is);
-                    if ((RepairAPI.getCustomDurability(is) - w_durability_to_take) > 0.1D) {
-                        RepairAPI.subtractCustomDurability(p, is, w_durability_to_take);
-                        gearToSave.add(is);
-                    }
+            drop_copy.stream().filter(is -> Mining.isDRPickaxe(is) || Fishing.isDRFishingPole(is)).forEach(is -> {
+                event.getDrops().remove(is);
+                if ((RepairAPI.getCustomDurability(is) - w_durability_to_take) > 0.1D) {
+                    RepairAPI.subtractCustomDurability(p, is, w_durability_to_take);
+                    gearToSave.add(is);
                 }
-            }
+            });
 
             ItemStack weapon_slot = p.getInventory().getItem(0);
             if (!neutral_weapon && GameAPI.isWeapon(weapon_slot)) {
@@ -553,17 +551,11 @@ public class DamageListener implements Listener {
             }
         }
 
-        for (ItemStack stack : event.getDrops()) {
-            if (GameAPI.isItemPermanentlyUntradeable(stack)) {
-                gearToSave.add(stack);
-            }
-        }
+        gearToSave.addAll(event.getDrops().stream().filter(GameAPI::isItemPermanentlyUntradeable).collect(Collectors.toList()));
 
-        for (ItemStack stack : gearToSave) {
-            if (event.getDrops().contains(stack)) {
-                event.getDrops().remove(stack);
-            }
-        }
+        gearToSave.stream().filter(stack -> event.getDrops().contains(stack)).forEach(stack -> {
+            event.getDrops().remove(stack);
+        });
 
         List<ItemStack> toDrop = new ArrayList<>();
         for (ItemStack stack : event.getDrops()) {
@@ -594,6 +586,8 @@ public class DamageListener implements Listener {
         p.teleport(respawnLocation);
         p.setFireTicks(0);
         p.setFallDistance(0);
+        p.setVelocity(p.getVelocity().zero());
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             event.getDrops().clear();
             p.setCanPickupItems(true);
@@ -843,7 +837,7 @@ public class DamageListener implements Listener {
 
         int maxHP;
         if (GameAPI.isPlayer(event.getEntity())) {
-            if (GameAPI.getGamePlayer((Player)event.getEntity()) == null) return;
+            if (GameAPI.getGamePlayer((Player) event.getEntity()) == null) return;
             maxHP = GameAPI.getGamePlayer((Player) event.getEntity()).getPlayerMaxHP();
         } else {
             maxHP = HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity());

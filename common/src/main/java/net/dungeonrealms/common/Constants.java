@@ -16,7 +16,7 @@ public class Constants {
 
     public static final String MOTD = "&6Dungeon Realms &8- &aThe Re-code v1.9+\n  &7Open Beta!     &8- &f&nwww.dungeonrealms.net &8-";
 
-    public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
+    public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n               &8- &f&nwww.dungeonrealms.net &8-";
 
     public static final int PLAYER_SLOTS = 1300;
 
