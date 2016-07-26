@@ -68,6 +68,12 @@ public class ForceField implements Listener, GenericMechanic {
 
         final Player player = event.getPlayer();
 
+        GamePlayer gp = GameAPI.getGamePlayer(player);
+        if (gp == null) return;
+
+        // check if we have to send blocks or remove them
+        if (!gp.isPvPTagged() && !previousUpdates.containsKey(player.getUniqueId())) return;
+
         // Asynchronously send block changes around player
         executorService.submit(() -> {
             // Stop processing if player has logged off
@@ -84,7 +90,7 @@ public class ForceField implements Listener, GenericMechanic {
 
             Set<Location> removeBlocks;
             if (previousUpdates.containsKey(uuid)) {
-                removeBlocks = previousUpdates.get(uuid);
+                removeBlocks = previousUpdates.remove(uuid);
             } else {
                 removeBlocks = new HashSet<>();
             }
