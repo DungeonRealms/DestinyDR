@@ -268,7 +268,14 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void playerClickHorse(InventoryClickEvent event) {
+        final Player p = (Player)event.getWhoClicked();
 
+        if (!p.isInsideVehicle()) return;
+        if (!(p.getVehicle() instanceof Horse)) return;
+
+            event.setCancelled(true);
+            event.setResult(Event.Result.DENY);
+        }
     }
 
     /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
