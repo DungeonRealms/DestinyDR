@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.RequiredArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -58,6 +59,16 @@ public class ForceField implements Listener, GenericMechanic {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void updateViewedBlocks(PlayerMoveEvent event) {
+        final Player player = event.getPlayer();
+
+        GamePlayer gp = GameAPI.getGamePlayer(player);
+        if (gp == null) return;
+
+        // check if we have to send blocks or remove them
+        if (!gp.isPvPTagged() && gp.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC &&
+                !previousUpdates.containsKey(player.getUniqueId()))
+            return;
+
         // Do nothing if player hasn't moved over a whole block
         Location t = event.getTo();
         Location f = event.getFrom();
@@ -65,14 +76,6 @@ public class ForceField implements Listener, GenericMechanic {
                 t.getBlockZ() == f.getBlockZ()) {
             return;
         }
-
-        final Player player = event.getPlayer();
-
-        GamePlayer gp = GameAPI.getGamePlayer(player);
-        if (gp == null) return;
-
-        // check if we have to send blocks or remove them
-        if (!gp.isPvPTagged() && !previousUpdates.containsKey(player.getUniqueId())) return;
 
         // Asynchronously send block changes around player
         executorService.submit(() -> {
@@ -116,8 +119,8 @@ public class ForceField implements Listener, GenericMechanic {
         GamePlayer gp = GameAPI.getGamePlayer(player);
         if (gp == null) return locations;
 
-        // Do nothing if player is not tagged
-        if (!gp.isPvPTagged()) return locations;
+        // Do nothing if player is not tagged or chaotic
+        if (!gp.isPvPTagged() && gp.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) return locations;
 
         // Find the radius around the player
         int r = 10;
@@ -141,10 +144,12 @@ public class ForceField implements Listener, GenericMechanic {
                 // Check if PvP is enabled in a location surrounding this
                 if (!isPvpSurrounding(location)) continue;
 
+                // Add circular locations
                 for (int i = -r; i < r; i++) {
                     Location loc = new Location(location.getWorld(), location.getX(), location.getY(), location.getZ());
-
                     loc.setY(loc.getY() + i);
+
+                    if (l.distanceSquared(loc) > 80) continue;
 
                     // Do nothing if the block at the location is not air
                     if (!loc.getBlock().getType().equals(Material.AIR)) continue;
