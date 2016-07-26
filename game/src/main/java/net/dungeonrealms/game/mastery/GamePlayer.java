@@ -27,71 +27,45 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by Nick on 10/19/2015.
  */
+@Getter
+@Setter
 public class GamePlayer {
 
     private Player T;
+
     private PlayerStats playerStats;
-    @Getter
     private PlayerStatistics playerStatistics;
 
     /**
      * Attribute values and their values
      */
-    @Setter
-    @Getter
     private Map<String, Integer[]> attributes;
-    @Getter
-    @Setter
     private Map<AttributeType, Float> attributeBonusesFromStats;
-    @Setter
-    @Getter
     private boolean attributesLoaded;
-    @Setter
-    @Getter
     private String currentWeapon; // used so we only reload weapon stats when we need to.
-    @Setter
-    @Getter
-    private long lastArmorEquip;
 
-    @Setter
-    @Getter
-    private String reply;
-
-    @Getter
-    @Setter
     private int playerEXP;
 
-    @Getter
     private boolean isInvulnerable;
-    @Getter
-    @Setter
     private boolean isTargettable;
 
-    @Getter
-    @Setter
     private boolean isJailed;
 
-    @Getter
-    @Setter
     private boolean ableToDrop;
-
-    @Getter
-    @Setter
     private boolean ableToSuicide;
-
-    @Getter
-    @Setter
     private boolean ableToPickup;
 
-    @Getter
-    @Setter
     private String lastMessager;
+
+    // for forcefield
+    private long pvpTaggedUntil;
 
     public GamePlayer(Player player) {
         T = player;
@@ -99,11 +73,11 @@ public class GamePlayer {
         this.playerStatistics = new PlayerStatistics(player.getUniqueId());
         GameAPI.GAMEPLAYERS.put(player.getName(), this);
         this.attributeBonusesFromStats = new HashMap<>();
-        this.lastArmorEquip = System.currentTimeMillis();
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
         this.isTargettable = true;
         this.ableToPickup = true;
         this.lastMessager = null;
+        this.pvpTaggedUntil = 0;
     }
 
     /**
@@ -477,5 +451,9 @@ public class GamePlayer {
     public void setInvulnerable(boolean flag) {
         if (CombatLog.isInCombat(T)) CombatLog.removeFromCombat(T);
         isInvulnerable = flag;
+    }
+
+    public boolean isPvPTagged() {
+        return pvpTaggedUntil > 0 && pvpTaggedUntil > System.currentTimeMillis();
     }
 }

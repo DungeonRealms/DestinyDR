@@ -61,6 +61,7 @@ import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.PowerMove;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.player.combat.ForceField;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.party.Affair;
@@ -222,6 +223,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
+            mm.registerMechanic(new ForceField());
             //mm.registerMechanic(DungeonManager.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());

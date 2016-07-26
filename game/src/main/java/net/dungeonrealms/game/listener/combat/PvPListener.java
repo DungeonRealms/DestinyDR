@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
@@ -179,9 +180,12 @@ public class PvPListener implements Listener {
         receiver.setSprinting(false);
 
         double calculatedDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
-        if (GameAPI.getGamePlayer(receiver) != null && GameAPI.getGamePlayer(damager) != null) {
-            if (GameAPI.getGamePlayer(receiver).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                if (GameAPI.getGamePlayer(damager).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+        GamePlayer damagerGP = GameAPI.getGamePlayer(damager);
+        GamePlayer receiverGP = GameAPI.getGamePlayer(receiver);
+        if (receiverGP != null && damagerGP != null) {
+            damagerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+            if (receiverGP.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                if (damagerGP.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                     if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
                         if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
                             event.setCancelled(true);
