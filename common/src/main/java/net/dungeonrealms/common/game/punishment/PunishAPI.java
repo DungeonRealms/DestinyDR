@@ -73,8 +73,10 @@ public class PunishAPI {
     public static String getBannedMessage(UUID uuid) {
         if (!isBanned(uuid)) return null;
 
-        long banTime = (long) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_TIME);
-        String reason = (String) DatabaseAPI.getInstance().getValue(uuid, EnumData.BANNED_REASON);
+        Document bansDoc = DatabaseDriver.bans.find(Filters.eq("bans.uuid", uuid.toString())).first().get("bans", Document.class);
+
+        long banTime = bansDoc.getLong("bannedUntil");
+        String reason = bansDoc.getString("reason");
 
         String message;
 
