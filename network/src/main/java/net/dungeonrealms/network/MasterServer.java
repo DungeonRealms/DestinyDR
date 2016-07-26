@@ -7,7 +7,10 @@ import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.network.packet.Packet;
+import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 
 public class MasterServer
@@ -54,6 +57,19 @@ public class MasterServer
     @Override
     public void received(Connection c, Object object) {
         if (object instanceof Packet) {
+
+            if (object instanceof BasicMessagePacket) {
+                byte[] data = ((BasicMessagePacket) object).data;
+                DataInputStream in = new DataInputStream(new ByteArrayInputStream(data));
+
+                try {
+                    String task = in.readUTF();
+                    if (task.equals("BroadcastSound")) return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             relayPacketTCP((Packet) object);
             Log.info("Relaying packet connection: " + c.getRemoteAddressTCP().getAddress() + ":" + c.getRemoteAddressTCP().getPort());
         }
