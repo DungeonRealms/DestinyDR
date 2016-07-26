@@ -5,7 +5,9 @@ The network has been completely wiped. For more information please see the websi
 &2New Features&0
 - Added /reply (aliases: /r).
 - Implemented DR Anticheat system.
-- Added jailing
+- Added jailing.
+- Added PvP tagging system that tags you for 10s if you attack a player.
+- Added spoofed forcefields to non-Chaotic borders when PvP tagged or Chaotic.
 
 &8Changes&0
 - Raised T4 and T5 drop rates significantly.

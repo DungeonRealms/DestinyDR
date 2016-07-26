@@ -5,9 +5,11 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -268,7 +270,15 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void playerClickHorse(InventoryClickEvent event) {
+        final Player p = (Player)event.getWhoClicked();
 
+        if (!p.isInsideVehicle()) return;
+        if (!(p.getVehicle() instanceof Horse)) return;
+
+        if (event.getCurrentItem().getType().toString().contains("BARDING") || event.getCurrentItem().getType() == Material.SADDLE) {
+            event.setCancelled(true);
+            event.setResult(Event.Result.DENY);
+        }
     }
 
     /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
