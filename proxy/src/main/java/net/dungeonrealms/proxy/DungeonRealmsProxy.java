@@ -122,7 +122,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     @EventHandler
     public void onConnect(ServerConnectEvent event) {
         if (MAINTENANCE_MODE && !WHITELIST.contains(event.getPlayer().getName().toLowerCase())) {
-            event.getPlayer().disconnect(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
+            event.getPlayer().disconnect(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
             event.setCancelled(true);
             return;
         }
@@ -168,7 +168,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     public void onProxyConnection(PreLoginEvent event) {
 
         if (MAINTENANCE_MODE && !WHITELIST.contains(event.getConnection().getName())) {
-            event.setCancelReason(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
+            event.setCancelReason(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
             event.setCancelled(true);
         }
 

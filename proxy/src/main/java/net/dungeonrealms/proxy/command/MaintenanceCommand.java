@@ -40,7 +40,7 @@ public class MaintenanceCommand extends Command {
                 // KICK PLAYERS THAT ARE NOT IN A SHARD
                 DungeonRealmsProxy.getInstance().getProxy().getPlayers().stream().filter(player -> ShardInfo.getByPseudoName(player.getServer().getInfo().getName()) == null).forEach(player -> {
                     if (!Arrays.asList(Constants.DEVELOPERS).contains(player.getName()))
-                        player.disconnect(ChatColor.RED + "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates");
+                        player.disconnect(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
                 });
                 // STOP ALL DUNGEON REALM SERVERS //
                 DungeonRealmsProxy.getInstance().sendPacket("Stop");
