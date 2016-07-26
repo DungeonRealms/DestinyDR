@@ -76,6 +76,17 @@ public class DungeonManager implements GenericMechanic {
     @Override
     public void startInitialization() {
         Utils.log.info("[DUNGEONS] Loading Dungeon Mechanics ... STARTING");
+
+        File rootFolder = new File(System.getProperty("user.dir"));
+        Arrays.stream(rootFolder.listFiles())
+                .filter(file -> file.getName().contains("DUNGEON")).forEach(f -> {
+            try {
+                FileUtils.forceDelete(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
         try {
             FileUtils.forceMkdir(new File(DungeonRealms.getInstance().getDataFolder() + File.separator + "/dungeons/"));
         } catch (IOException e) {
@@ -313,39 +324,34 @@ public class DungeonManager implements GenericMechanic {
      */
     public void removeInstance(DungeonObject dungeonObject) {
         Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
-            if (player != null) {
-                if (Bukkit.getPlayer(player.getUniqueId()) != null) {
-                    if (GameAPI.getGamePlayer(player) != null) {
-                        if (GameAPI.getGamePlayer(player).isInDungeon()) {
-                            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
-                            player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
-                            player.teleport(Teleportation.Cyrennica);
-                            for (ItemStack stack : player.getInventory().getContents()) {
-                                if (stack != null && stack.getType() != Material.AIR) {
-                                    if (isDungeonItem(stack)) {
-                                        player.getInventory().remove(stack);
-                                    }
-                                }
-                            }
-                        }
-                    }
+            if (player != null) if (Bukkit.getPlayer(player.getUniqueId()) != null)
+                if (GameAPI.getGamePlayer(player) != null) if (GameAPI.getGamePlayer(player).isInDungeon()) {
+                    DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
+                    player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
+                    player.teleport(Teleportation.Cyrennica);
+                    for (ItemStack stack : player.getInventory().getContents())
+                        if (stack != null && stack.getType() != Material.AIR) if (isDungeonItem(stack))
+                            player.getInventory().remove(stack);
                 }
-            }
         });
         Bukkit.getWorlds().remove(Bukkit.getWorld(dungeonObject.getWorldName()));
         Utils.log.info("[DUNGEONS] Removing world: " + dungeonObject.getWorldName() + " from worldList().");
         Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
         Utils.log.info("[DUNGEONS] Unloading world: " + dungeonObject.getWorldName() + " in preparation for deletion!");
         Bukkit.getScheduler().cancelTask(dungeonObject.spawningTaskID);
-        AsyncUtils.pool.submit(() -> {
+
+        GameAPI.submitAsyncCallback(() -> {
             deleteFolder(new File(dungeonObject.worldName));
-            Utils.log.info("[DUNGEONS] Deleted world: " + dungeonObject.getWorldName() + " final stage.");
             deleteFolder(new File("plugins/WorldGuard/worlds/" + dungeonObject.worldName));
-            Utils.log.info("[DUNGEONS] Removing WorldGuard: " + dungeonObject.getWorldName() + " final stage.");
+
             if (Dungeons.contains(dungeonObject)) {
                 dungeonObject.cleanup();
                 Dungeons.remove(dungeonObject);
             }
+            return true;
+        }, consumer -> {
+            Utils.log.info("[DUNGEONS] Removing WorldGuard: " + dungeonObject.getWorldName() + " final stage.");
+            Utils.log.info("[DUNGEONS] Deleted world: " + dungeonObject.getWorldName() + " final stage.");
         });
     }
 
@@ -736,17 +742,11 @@ public class DungeonManager implements GenericMechanic {
 
 
     private void deleteFolder(File folder) {
-        File[] files = folder.listFiles();
-        if (files != null) { // some JVMs return null for empty dirs
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    deleteFolder(f);
-                } else {
-                    f.delete();
-                }
-            }
+        try {
+            FileUtils.forceDelete(folder);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        folder.delete();
     }
 
     public boolean isDungeonItem(ItemStack stack) {
