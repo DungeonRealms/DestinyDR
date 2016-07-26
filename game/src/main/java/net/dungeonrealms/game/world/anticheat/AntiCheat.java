@@ -131,7 +131,7 @@ public class AntiCheat implements GenericMechanic {
                 String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
 
                 if (duplicates.contains(uniqueEpochIdentifier))
-                    i.setType(Material.AIR);
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> i.setType(Material.AIR));
             }
 
             banAndBroadcast(p, duplicates.size());
