@@ -128,6 +128,21 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
     private boolean canAddsRespawn = true;
     private boolean hasMessaged = false;
 
+    public void startEnragedMode(LivingEntity en) {
+        for (Player pl : en.getWorld().getPlayers()) {
+            pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "Burick The Fanatic: " + ChatColor.WHITE
+                    + "Pain. Sufferring. Agony. These are the emotions you will be feeling for the rest of eternity!");
+            pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "Burick The Fanatic " + ChatColor.GOLD + "has become ENRAGED"
+                    + ChatColor.GOLD + " 2.5X DMG, +80% ARMOR, 2x SPEED!");
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 0.8F, 0.5F);
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1.2F, 0.2F);
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 0.8F, 1.2F);
+        }
+        DamageAPI.setDamageBonus(en, 150);
+        DamageAPI.setArmorBonus(en, 80);
+        en.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+    }
+
     @Override
     public void onBossHit(EntityDamageByEntityEvent event) {
         if (!spawnedMobs.isEmpty()) {
@@ -194,12 +209,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     }
                 } else if (!thirdHeal) {
                     thirdHeal = true;
-                    DamageAPI.setDamageBonus(en, 50);
-                    DamageAPI.setArmorBonus(en, 50);
-                    for (Player pl : en.getWorld().getPlayers()) {
-                        pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "As long as you breathe, I still have purpose, and you cannot kill a creature with purpose!");
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1F, 0.5F);
-                    }
+                    startEnragedMode(en);
                 }
             }
         }
