@@ -337,6 +337,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));
         cm.registerCommand(new CommandEss("dr", "/<command> [args]", "Developer command with the core essentials."));
+        cm.registerCommand(new CommandVote("vote", "/<command> [args]", "Gives the link to vote for rewards."));
         cm.registerCommand(new CommandInterface("interface", "/<command> [args]", "Development command for accessing interfaces."));
         cm.registerCommand(new CommandTell("tell", "/<command> [args]", "Send a private message to a player."));
         cm.registerCommand(new CommandISay("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
