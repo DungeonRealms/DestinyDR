@@ -11,6 +11,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +20,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 /**
@@ -62,6 +64,57 @@ public class Chat {
             "dick", "clit", "homo", "fag", "faggot", "queer", "nigger", "nigga", "dike", "dyke", "retard", " motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "gay", "minecade", "unowild", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "kys", "jigga", "jiggaboo", "hitler", "jews", "titanrift", "fucked"));
 
+    public static void sendPrivateMessage(Player player, String playerName, String finalMessage) {
+        GameAPI.submitAsyncWithAsyncCallback(() -> {
+            String testUUID = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+            if (testUUID.equals("")) {
+                player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
+                return "";
+            }
+            UUID uuid = UUID.fromString(testUUID);
+            if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.getInstance().isGM(Bukkit.getOfflinePlayer(uuid))) {
+                if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, uuid)) {
+                    player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
+                    return "";
+                }
+            }
+            if (!((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid))) {
+                player.sendMessage(ChatColor.RED +"That user is not currently online.");
+                return "";
+            }
+            try {
+                return DatabaseAPI.getInstance().getFormattedShardName(uuid);
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return "";
+        }, result -> {
+            String receivingShard = null;
+            try {
+                receivingShard = result.get();
+                if (receivingShard.equals("")) {
+                    return;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            String toPlayerRank = Rank.getInstance().getRank(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName)));
+            String fromPlayerRank = Rank.getInstance().getRank(player.getUniqueId());
+            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getRankPrefix
+                    (toPlayerRank) + GameChat.getName(playerName, toPlayerRank, true) + ChatColor.GRAY + " [" +
+                    ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " + ChatColor.WHITE + finalMessage);
+
+            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.GRAY.toString() +
+                    ChatColor.BOLD + "FROM " + GameChat.getRankPrefix(fromPlayerRank) + GameChat.getName(player, fromPlayerRank, true) +
+                    ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " + ChatColor
+                    .WHITE + finalMessage));
+            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", player.getName(), Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
+        });
+    }
+
     /**
      * Listens for chat event listener
      *
@@ -96,7 +149,7 @@ public class Chat {
                 Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PM_DEV);
             }
             fixedMessage = fixedMessage.replace("@" + playerName, "");
-            FriendHandler.sendMessageToFriend(event.getPlayer(), playerName, fixedMessage);
+            sendPrivateMessage(event.getPlayer(), playerName, fixedMessage);
             event.setCancelled(true);
             return;
         }

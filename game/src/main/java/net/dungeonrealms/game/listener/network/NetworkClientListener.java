@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -169,7 +170,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             }
 
                             return;
-                        } else if (task.equals("FriendMessage")) {
+                        } else if (task.equals("PrivateMessage")) {
                             String fromPlayer = in.readUTF();
                             String playerName = in.readUTF();
                             String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
@@ -200,10 +201,20 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             Float volume = 10f;
                             Float pitch = 1f;
                             if (in.available() > 0) {
-                                volume = Float.valueOf(in.readUTF());
+                                try {
+                                    volume = Float.valueOf(in.readUTF());
+                                }
+                                catch (NumberFormatException e) {
+                                    volume = 10f;
+                                }
                             }
                             if (in.available() > 0) {
-                                pitch = Float.valueOf(in.readUTF());
+                                try {
+                                    pitch = Float.valueOf(in.readUTF());
+                                }
+                                catch (NumberFormatException e) {
+                                    pitch = 1f;
+                                }
                             }
                             Sound sound = null;
                             for (Sound s : Sound.values()) {
@@ -213,10 +224,40 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             }
                             if (sound != null)
                                 for (Player p : Bukkit.getOnlinePlayers()) {
-                                    p.playSound(p.getLocation(), sound, 10, 1);
+                                    p.playSound(p.getLocation(), sound, volume, pitch);
                                 }
+                        } else if (task.equals("BroadcastSoundPlayer")) {
+                            String playerName = in.readUTF();
+                            Player player = Bukkit.getPlayer(playerName);
+                            if (player == null) return;
+                            String name = in.readUTF();
+                            Float volume = 10f;
+                            Float pitch = 1f;
+                            if (in.available() > 0) {
+                                try {
+                                    volume = Float.valueOf(in.readUTF());
+                                }
+                                catch (NumberFormatException e) {
+                                    volume = 10f;
+                                }
+                            }
+                            if (in.available() > 0) {
+                                try {
+                                    pitch = Float.valueOf(in.readUTF());
+                                }
+                                catch (NumberFormatException e) {
+                                    pitch = 1f;
+                                }
+                            }
+                            Sound sound = null;
+                            for (Sound s : Sound.values()) {
+                                if (Sound.valueOf(name).equals(s)) {
+                                    sound = s;
+                                }
+                            }
+                            if (sound != null)
+                                player.playSound(player.getLocation(), sound, volume, pitch);
                         } else if (task.equals("Stop")) {
-
                             if (DungeonRealms.getInstance().hasFinishedSetup())
                                 GameAPI.stopGame();
 

@@ -3,8 +3,8 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
-import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -47,7 +47,7 @@ public class CommandReply extends BasicCommand {
             msg += " " + args[i];
         }
 
-        FriendHandler.sendMessageToFriend(player, gp.getLastMessager(), msg);
+        Chat.sendPrivateMessage(player, gp.getLastMessager(), msg);
 
         return true;
     }
