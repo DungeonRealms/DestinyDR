@@ -10,9 +10,11 @@ import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumGuildData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.common.game.utils.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,10 +131,56 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return usersUUIDs;
     }
 
-    private void update(String guildName, EnumGuildData data, EnumOperators EO, Object value) {
-
-        // INSTANTLY UPDATES THE MONGODB SERVER //
-        DatabaseDriver.guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
+    private void update(String guildName, EnumGuildData data, EnumOperators EO, Object value, boolean async) {
+        if (CACHED_GUILD.containsKey(guildName)) { // update local data
+            Document localDoc = CACHED_GUILD.get(guildName);
+            String[] key = data.getKey().split("\\.");
+            Document rootDoc = (Document) localDoc.get(key[0]);
+            Object dataObj = rootDoc.get(key[1]);
+            switch (EO) {
+                case $SET:
+                    rootDoc.put(key[1], value);
+                    break;
+                case $INC:
+                    if (dataObj instanceof Integer)
+                        rootDoc.put(key[1], ((Integer) value) + ((Integer) dataObj));
+                    else if (dataObj instanceof Double)
+                        rootDoc.put(key[1], ((Double) value) + ((Double) dataObj));
+                    else if (dataObj instanceof Float)
+                        rootDoc.put(key[1], ((Float) value) + ((Float) dataObj));
+                    else if (dataObj instanceof Long)
+                        rootDoc.put(key[1], ((Long) value) + ((Long) dataObj));
+                    break;
+                case $MUL:
+                    if (dataObj instanceof Integer)
+                        rootDoc.put(key[1], ((Integer) value) * ((Integer) dataObj));
+                    else if (dataObj instanceof Double)
+                        rootDoc.put(key[1], ((Double) value) * ((Double) dataObj));
+                    else if (dataObj instanceof Float)
+                        rootDoc.put(key[1], ((Float) value) * ((Float) dataObj));
+                    else if (dataObj instanceof Long)
+                        rootDoc.put(key[1], ((Long) value) * ((Long) dataObj));
+                    break;
+                case $PUSH:
+                    ((ArrayList) dataObj).add(value);
+                    break;
+                case $PULL:
+                    ((ArrayList) dataObj).remove(value);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (async) {
+            AsyncUtils.pool.submit(() -> {
+                DatabaseDriver.guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
+                updateCache(guildName);
+                return true;
+            });
+        }
+        else { // INSTANTLY UPDATES THE MONGODB SERVER //
+            DatabaseDriver.guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
+        }
     }
 
     public boolean doesTagExist(String tag, Consumer<Boolean> action) {
@@ -182,21 +230,21 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     @Override
     public void addPlayer(String guildName, UUID uuid) {
-        update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
+        update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString(), Bukkit.isPrimaryThread());
         setGuild(uuid, guildName);
     }
 
     private void modifyRank(String guildName, UUID uuid, boolean promote) {
         if (promote) {
             //ADD TO OFFICERS
-            update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PUSH, uuid.toString());
+            update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PUSH, uuid.toString(), Bukkit.isPrimaryThread());
             // REMOVE FROM MEMBERS
-            update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString());
+            update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString(), Bukkit.isPrimaryThread());
         } else {
             //REMOVE FROM OFFICERS
-            update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+            update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString(), Bukkit.isPrimaryThread());
             // ADD TO MEMBERS
-            update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
+            update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString(), Bukkit.isPrimaryThread());
         }
     }
 
@@ -214,18 +262,18 @@ public class GuildDatabase implements GuildDatabaseAPI {
     public void setOwner(String guildName, UUID uuid) {
         switch (get(uuid, guildName)) {
             case OFFICERS:
-                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString(), Bukkit.isPrimaryThread());
 
             case MEMBERS:
-                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString(), Bukkit.isPrimaryThread());
         }
-        update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, uuid.toString());
+        update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, uuid.toString(), Bukkit.isPrimaryThread());
         updateCache(guildName);
     }
 
 
     public void setMotdOf(String guildName, String motd) {
-        update(guildName, EnumGuildData.MOTD, EnumOperators.$SET, motd);
+        update(guildName, EnumGuildData.MOTD, EnumOperators.$SET, motd, Bukkit.isPrimaryThread());
         updateCache(guildName);
     }
 
@@ -235,15 +283,15 @@ public class GuildDatabase implements GuildDatabaseAPI {
         try {
             switch (get(uuid, guildName)) {
                 case MEMBERS:
-                    update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString());
+                    update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString(), Bukkit.isPrimaryThread());
                     break;
 
                 case OFFICERS:
-                    update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+                    update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString(), Bukkit.isPrimaryThread());
                     break;
 
                 case OWNER:
-                    update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, "");
+                    update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, "", Bukkit.isPrimaryThread());
                     break;
             }
         } catch (NullPointerException ignored) {

@@ -16,6 +16,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.player.rank.Subscription;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.utils.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
@@ -761,7 +762,6 @@ public class GameAPI {
         for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
             tracker.removeDamager(player);
         }
-
         if (player.getWorld().getName().contains("DUNGEON")) {
             for (ItemStack stack : player.getInventory().getContents()) {
                 if (stack != null && stack.getType() != Material.AIR) {
@@ -791,7 +791,6 @@ public class GameAPI {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, async);
 
         MountUtils.inventories.remove(uuid);
-
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis(), async);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
@@ -829,7 +828,6 @@ public class GameAPI {
         DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
         GAMEPLAYERS.remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
-
         return true;
     }
 
@@ -1228,6 +1226,7 @@ public class GameAPI {
         player.setInvulnerable(true);
         player.setNoDamageTicks(10);
         player.closeInventory();
+        player.setCanPickupItems(false);
 
         GamePlayer gp = GameAPI.getGamePlayer(player);
         gp.setAbleToSuicide(false);
@@ -1247,6 +1246,7 @@ public class GameAPI {
                     GameAPI.handleLogin(player.getUniqueId());
                     player.setInvulnerable(false);
                     player.setNoDamageTicks(0);
+                    player.setCanPickupItems(true);
                     Bukkit.getOnlinePlayers().forEach(p -> p.showPlayer(player));
                 });
             }
@@ -1255,19 +1255,16 @@ public class GameAPI {
 
     static void backupDatabase() {
         if (Bukkit.getOnlinePlayers().size() == 0) return;
-        AsyncUtils.pool.submit(() -> {
-                    DungeonRealms.getInstance().getLogger().info("Beginning Mongo Database Backup");
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-                            return;
-                        }
-                        UUID uuid = player.getUniqueId();
-                        savePlayerData(uuid, false, false);
-                        Utils.log.info("Backed up information for uuid: " + uuid.toString());
-                    }
-                    DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");
-                }
-        );
+        DungeonRealms.getInstance().getLogger().info("Beginning Mongo Database Backup");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+                return;
+            }
+            UUID uuid = player.getUniqueId();
+            savePlayerData(uuid, false, false);
+            Utils.log.info("Backed up information for uuid: " + uuid.toString());
+        }
+        DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");
     }
 
     public static String locationToString(Location location) {

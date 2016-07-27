@@ -507,12 +507,8 @@ public class DungeonRealms extends JavaPlugin {
         }, 0L, 1000);
 
 
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                GameAPI.backupDatabase();
-            }
-        }, 0L, 7200000);
+        // run backup every ten minutes
+        Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);
     }
 
     private void scheduleRestartTask() {

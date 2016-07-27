@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.utils.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.Document;
@@ -38,7 +39,7 @@ public class PunishAPI {
         else
             kick(playerName, ChatColor.RED + "You are banned until " + timeString((int) (duration / 60)) + (!reason.equals("") ? " for " + reason : "") + "\n\n Appeal at: www.dungeonrealms.net", doBefore);
 
-        DatabaseAPI.getInstance().getPool().submit(() -> {
+        AsyncUtils.pool.submit(() -> {
             UpdateOptions uo = new UpdateOptions();
             uo.upsert(true);
 
@@ -103,7 +104,7 @@ public class PunishAPI {
     public static void unban(UUID uuid) {
         if (uuid == null) return;
 
-        DatabaseAPI.getInstance().getPool().submit(() -> {
+        AsyncUtils.pool.submit(() -> {
             UpdateOptions uo = new UpdateOptions();
             uo.upsert(true);
 
