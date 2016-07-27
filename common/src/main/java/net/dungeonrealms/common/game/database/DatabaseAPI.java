@@ -12,6 +12,7 @@ import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
 import net.dungeonrealms.common.game.utils.AsyncUtils;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -143,7 +144,12 @@ public class DatabaseAPI {
             // GRABBED CACHED DATA
             doc = PLAYERS.get(uuid);
         } else {
-            Constants.log.warning("Retrieving " + uuid.toString() + "'s offline data...");
+            // we should never be getting offline data sync.
+            if (Constants.debug && Bukkit.isPrimaryThread()) {
+                Constants.log.warning("Retrieving " + uuid.toString() + "'s offline data on the main thread...");
+                StackTraceElement ste = new Exception().getStackTrace()[1];
+                Constants.log.warning(ste.getClassName() + " " + ste.getMethodName() + " " + ste.getLineNumber());
+            }
             doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         }
 
