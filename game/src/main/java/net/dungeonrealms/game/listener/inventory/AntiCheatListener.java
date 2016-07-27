@@ -25,14 +25,12 @@ public class AntiCheatListener implements Listener {
                         .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))));
     }
 
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPickup(PlayerPickupItemEvent event) {
         Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> AntiCheat
                 .checkForDuplicatedEquipment(event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer()
-                        .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))), 5L);
+                        .getInventory()))), 5L);
     }
-
 
     //THIS IS DISABLED WHILE I FIGURE OUT HOW TO BEST REMOVE ALL THE GLITCHED "method" ITEMS. PLEASE DON'T ENABLE AGAIN.
     /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

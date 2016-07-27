@@ -10,6 +10,7 @@ import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.utils.AsyncUtils;
 import org.bson.Document;
 
 import javax.annotation.Nullable;
@@ -30,10 +31,6 @@ public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
-
-    @Getter
-    private ExecutorService pool = Executors.newCachedThreadPool();
-
 
     public static DatabaseAPI getInstance() {
         if (instance == null) {
@@ -101,7 +98,7 @@ public class DatabaseAPI {
                     Constants.log.info("[ASYNC] Successfully updated " + variable.name() + " data for " + uuid.toString());
 
                 if (result.wasAcknowledged() && doAfterOptional != null)
-                    pool.submit(() -> doAfterOptional.accept(result));
+                    AsyncUtils.pool.submit(() -> doAfterOptional.accept(result));
             }
 
             @ParametersAreNonnullByDefault
@@ -127,7 +124,7 @@ public class DatabaseAPI {
 
 
     private ListenableFuture<UpdateResult> update(UUID uuid, EnumOperators EO, EnumData variable, Object object) {
-        return MoreExecutors.listeningDecorator(pool).submit(() -> DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)))
+        return MoreExecutors.listeningDecorator(AsyncUtils.pool).submit(() -> DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)))
         );
     }
 

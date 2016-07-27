@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.mastery;
+package net.dungeonrealms.common.game.utils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

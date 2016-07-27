@@ -19,7 +19,7 @@ import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.listener.world.RealmListener;
-import net.dungeonrealms.game.mastery.AsyncUtils;
+import net.dungeonrealms.common.game.utils.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
