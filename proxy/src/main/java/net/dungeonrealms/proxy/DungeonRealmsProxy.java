@@ -171,6 +171,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                     } catch (Exception e) {
                         if (!optimalLobbies.hasNext())
                             event.getPlayer().disconnect(ChatColor.RED + "Could not find a lobby for you.");
+                        else continue;
                     }
 
                     break;

@@ -78,14 +78,13 @@ public class Chat {
                     return "";
                 }
             }
-            if (!((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid))) {
-                player.sendMessage(ChatColor.RED +"That user is not currently online.");
+            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid))) {
+                player.sendMessage(ChatColor.RED + "That user is not currently online.");
                 return "";
             }
             try {
                 return DatabaseAPI.getInstance().getFormattedShardName(uuid);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             return "";
