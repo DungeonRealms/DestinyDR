@@ -195,22 +195,22 @@ public class AntiCheat implements GenericMechanic {
 
     private static void banAndBroadcast(Player p, int i) {
         PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
-        GameAPI.sendNetworkMessage("Broadcast", "");
-        GameAPI.sendNetworkMessage("Broadcast", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
+        GameAPI.sendNetworkMessage("GMMessage", "");
+        GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
                 "PERMANENTLY IP BANNED" + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);
         //todo: add system for broadcasting SHOW of duped items
-        GameAPI.sendNetworkMessage("Broadcast", "");
-        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
+        GameAPI.sendNetworkMessage("GMMessage", "");
+//        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
     }
 
     private static void banAndBroadcast(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
         PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
-        GameAPI.sendNetworkMessage("Broadcast", "");
-        GameAPI.sendNetworkMessage("Broadcast", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
+        GameAPI.sendNetworkMessage("GMMessage", "");
+        GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
                 "PERMANENTLY IP BANNED" + ChatColor.RED + " player " + p.getName() + " for possession of " + orbCount + " orbs, " + enchantCount +
                 " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " gems on shard " + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
-        GameAPI.sendNetworkMessage("Broadcast", "");
-        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
+        GameAPI.sendNetworkMessage("GMMessage", "");
+//        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
     }
 
     /*
