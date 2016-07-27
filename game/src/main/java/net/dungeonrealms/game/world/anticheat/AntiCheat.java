@@ -30,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -41,6 +42,9 @@ public class AntiCheat implements GenericMechanic {
     @Getter
     @Setter
     private Set<String> uids = new HashSet<>(2000);
+    // don't check players in this list for duped items (used for when they're pricing items in a shop or if they're
+    // testing a dupe etc.)
+    public static Set<UUID> antiDupeExclusions = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 
     public static AntiCheat getInstance() {
         if (instance == null) {
@@ -108,6 +112,7 @@ public class AntiCheat implements GenericMechanic {
 
     public static void checkForDuplicatedEquipment(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
         if (Rank.isGM(p)) return;
+        if (antiDupeExclusions.contains(p.getUniqueId())) return;
 
         Map<ItemStack, String> gearUids = new HashMap<>();
 
@@ -140,6 +145,7 @@ public class AntiCheat implements GenericMechanic {
 
     public static void checkForSuspiciousDupedItems(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
         if (Rank.isGM(p)) return;
+        if (antiDupeExclusions.contains(p.getUniqueId())) return;
 
         Map<String, ItemStack> gearUids = new HashMap<>();
 
@@ -195,6 +201,12 @@ public class AntiCheat implements GenericMechanic {
 
     private static void banAndBroadcast(Player p, int i) {
         PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
+        GameAPI.sendNetworkMessage("Broadcast", "");
+        GameAPI.sendNetworkMessage("Broadcast", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
+                "PERMANENTLY IP BANNED" + ChatColor.RED + " a player on " + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid + ChatColor.RED + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);
+        //todo: add system for broadcasting SHOW of duped items
+        GameAPI.sendNetworkMessage("Broadcast", "");
+
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
                 "PERMANENTLY IP BANNED" + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);

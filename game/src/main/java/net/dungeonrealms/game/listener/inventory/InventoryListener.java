@@ -164,9 +164,66 @@ public class InventoryListener implements Listener {
         UUID target = CommandModeration.offline_inv_watchers.get(event.getPlayer().getUniqueId());
 
         String inventory = ItemSerialization.toString(event.getInventory());
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true);
 
         CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onArmorSeeClose(InventoryCloseEvent event) {
+        if (!CommandModeration.offline_armor_watchers.containsKey(event.getPlayer().getUniqueId())) return;
+
+        UUID target = CommandModeration.offline_armor_watchers.get(event.getPlayer().getUniqueId());
+
+        ArrayList<String> armor = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            ItemStack stack = event.getInventory().getContents()[i];
+            if (stack == null || stack.getType() == Material.AIR) {
+                armor.add("");
+            } else {
+                armor.add(ItemSerialization.itemStackToBase64(stack));
+            }
+        }
+        ItemStack offHand = event.getInventory().getContents()[4];
+        if (offHand == null || offHand.getType() == Material.AIR) {
+            armor.add("");
+        } else {
+            armor.add(ItemSerialization.itemStackToBase64(offHand));
+        }
+
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.ARMOR, armor, true);
+
+        CommandModeration.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onBankSeeClose(InventoryCloseEvent event) {
+        if (!(CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
+
+        UUID target = CommandModeration.offline_bank_watchers.get(event.getPlayer().getUniqueId());
+
+        Inventory inv = event.getInventory();
+        if (inv == null) return;
+
+        String serializedInv = ItemSerialization.toString(inv);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, true);
+
+        CommandModeration.offline_bank_watchers.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onBinSeeClose(InventoryCloseEvent event) {
+        if (!(CommandModeration.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
+
+        UUID target = CommandModeration.offline_bin_watchers.get(event.getPlayer().getUniqueId());
+
+        Inventory inv = event.getInventory();
+        if (inv == null) return;
+
+        String serializedInv = ItemSerialization.toString(inv);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, true);
+
+        CommandModeration.offline_bin_watchers.remove(event.getPlayer().getUniqueId());
     }
 
     /**
