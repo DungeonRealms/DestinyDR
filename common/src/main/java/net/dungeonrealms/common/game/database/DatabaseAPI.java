@@ -16,9 +16,7 @@ import org.bukkit.Bukkit;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +30,7 @@ public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+    private volatile Map<String, String> cachedUUIDS = new ConcurrentHashMap<>();
 
     public static DatabaseAPI getInstance() {
         if (instance == null) {
@@ -145,7 +144,7 @@ public class DatabaseAPI {
             doc = PLAYERS.get(uuid);
         } else {
             // we should never be getting offline data sync.
-            if (Constants.debug && Bukkit.isPrimaryThread()) {
+            if (Constants.debug) {
                 Constants.log.warning("Retrieving " + uuid.toString() + "'s offline data on the main thread...");
                 StackTraceElement ste = new Exception().getStackTrace()[1];
                 Constants.log.warning(ste.getClassName() + " " + ste.getMethodName() + " " + ste.getLineNumber());
@@ -202,10 +201,19 @@ public class DatabaseAPI {
     }
 
     public String getUUIDFromName(String playerName) {
+        if (cachedUUIDS.containsKey(playerName)) return cachedUUIDS.get(playerName);
         Constants.log.warning("Retrieving " + playerName + "'s UUID from name..");
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.username", playerName.toLowerCase())).first();
         if (doc == null) return "";
-        return ((Document) doc.get("info")).get("uuid", String.class);
+        String uuidString = ((Document) doc.get("info")).get("uuid", String.class);
+        cachedUUIDS.put(playerName, uuidString);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                cachedUUIDS.remove(playerName);
+            }
+        }, 500);
+        return uuidString;
     }
 
     public Document getDocumentFromAddress(String ipAddress) {
