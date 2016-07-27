@@ -52,7 +52,7 @@ public class GameClient
         this.client.connect(500000, Constants.MASTER_SERVER_IP, Constants.MASTER_SERVER_PORT);
         isConnected = true;
 
-        Log.info("Server connection established!");
+        Log.info("Master server connection established!");
     }
 
     public void kill() {
