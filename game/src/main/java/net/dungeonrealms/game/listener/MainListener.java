@@ -1076,6 +1076,11 @@ public class MainListener implements Listener {
                 event.setCancelled(true);
             } else if (GameAPI.isInSafeRegion(event.getTarget().getLocation())) {
                 event.setCancelled(true);
+            } else {
+                GamePlayer gp = GameAPI.getGamePlayer((Player) event.getTarget());
+                if (gp != null && !gp.isTargettable()) {
+                    event.setCancelled(true);
+                }
             }
         }
     }

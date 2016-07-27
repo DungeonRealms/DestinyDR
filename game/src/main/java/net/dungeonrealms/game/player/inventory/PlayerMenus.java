@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.MailHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
@@ -746,6 +747,8 @@ public class PlayerMenus {
         boolean isToggled = false;
 
         Inventory inv = Bukkit.createInventory(null, 9, "Game Master Toggles");
+        GamePlayer gp = GameAPI.getGamePlayer(player);
+        if (gp == null) return;
 
         // Invisible
         isToggled = GameAPI._hiddenPlayers.contains(player);
@@ -754,7 +757,7 @@ public class PlayerMenus {
                 ChatColor.GRAY + "Display Item"}).build());
 
         // Allow Fight
-        isToggled = false; // @todo: Alan - change this to check if they've got fight enabled.
+        isToggled = !gp.isInvulnerable() && gp.isTargettable();
         inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Allow Combat", new String[]{
                 ChatColor.GRAY + "Toggling this will make you vulnerable to attacks but also allow outgoing damage.",
                 ChatColor.GRAY + "Display Item"}).build());

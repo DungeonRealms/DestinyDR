@@ -79,6 +79,11 @@ public class GamePlayer {
         this.ableToPickup = true;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
+
+        if (Rank.isGM(player)) {
+            isInvulnerable = true;
+            isTargettable = false;
+        }
     }
 
     /**

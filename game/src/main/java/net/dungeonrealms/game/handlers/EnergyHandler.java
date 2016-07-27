@@ -231,11 +231,15 @@ public class EnergyHandler implements GenericMechanic {
      */
     public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove) {
         Player player = Bukkit.getPlayer(uuid);
-        if (Rank.isGM(player)) return;
+        if (Rank.isGM(player)) {
+            GamePlayer gp = GameAPI.getGamePlayer(player);
+            // check if they have allow fight on
+            if (gp != null && gp.isInvulnerable() && !gp.isTargettable()) return;
+        }
         if (player.getGameMode() == GameMode.CREATIVE) return;
         if (GameAPI.isInSafeRegion(player.getLocation())) return;
         if (player.hasMetadata("last_energy_remove")) {
-            if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 100) {
+            if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 80) {
                 return;
             }
         }

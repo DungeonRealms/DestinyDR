@@ -1533,8 +1533,20 @@ public class ClickHandler {
                         }
                         break;
 
-                    case 1:
-                        player.sendMessage(ChatColor.RED + "Coming soon."); // @todo: Alan - change this to toggle fight enabled mode.
+                    case 1: // Allow Fight
+                        gp = GameAPI.getGamePlayer(player);
+                        if (gp == null) break;
+                        // invert invulnerable flag
+                        gp.setInvulnerable(!gp.isInvulnerable());
+                        // targettable should always be the opposite of invulnerable for allowfight
+                        gp.setTargettable(!gp.isInvulnerable());
+
+                        if (!gp.isTargettable())
+                            EntityAPI.untargetEntity(player, 20);
+
+                        Utils.sendCenteredMessage(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "GM " +
+                                "INVINCIBILITY - " + (gp.isInvulnerable() ? ChatColor.GREEN.toString() + ChatColor
+                                .BOLD + "ENABLED" : ChatColor.RED.toString() + ChatColor.BOLD + "DISABLED"));
                         break;
 
                     default:
