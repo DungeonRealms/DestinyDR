@@ -44,7 +44,7 @@ public class EnergyHandler implements GenericMechanic {
 
     @Override
 	public void startInitialization() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 3L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 1L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 10L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateFoodInSafezones, 40, 40L);
@@ -139,7 +139,7 @@ public class EnergyHandler implements GenericMechanic {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.05F;
                 }
-                regenAmount = regenAmount / 6.3F;
+                regenAmount = regenAmount / 18.9F;
                 if (gp == null || gp.getStats() == null) return;
                 regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
                 addEnergyToPlayerAndUpdate(player, regenAmount);
