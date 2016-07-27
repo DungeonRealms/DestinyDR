@@ -1,25 +1,17 @@
 package net.dungeonrealms.common.game.database;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
-import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
 import net.dungeonrealms.common.game.utils.AsyncUtils;
 import org.bson.Document;
-import org.bukkit.Bukkit;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -91,23 +83,9 @@ public class DatabaseAPI {
                     break;
             }
         }
-        if (async) Futures.addCallback(update(uuid, EO, variable, object), new FutureCallback<UpdateResult>() {
-            @Override
-            public void onSuccess(@Nullable UpdateResult result) {
-                if (Constants.debug)
-                    Constants.log.info("[ASYNC] Successfully updated " + variable.name() + " data for " + uuid.toString());
 
-                if (result.wasAcknowledged() && doAfterOptional != null)
-                    AsyncUtils.pool.submit(() -> doAfterOptional.accept(result));
-            }
-
-            @ParametersAreNonnullByDefault
-            @Override
-            public void onFailure(Throwable throwable) {
-                Constants.log.warning("[ASYNC] Failed to update player data for " + uuid.toString());
-                throwable.printStackTrace();
-            }
-        });
+        if (async)
+            MongoUpdateThread.queries.add(new UpdateQuery<>(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), doAfterOptional));
         else {
             UpdateResult result = DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
             if (doAfterOptional != null)
@@ -202,7 +180,12 @@ public class DatabaseAPI {
 
     public String getUUIDFromName(String playerName) {
         if (cachedUUIDS.containsKey(playerName)) return cachedUUIDS.get(playerName);
-        Constants.log.warning("Retrieving " + playerName + "'s UUID from name..");
+
+        if (Constants.debug) {
+            Constants.log.info("Retrieving for " + playerName + " 's UUID from name.");
+            Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
+        }
+
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.username", playerName.toLowerCase())).first();
         if (doc == null) return "";
         String uuidString = ((Document) doc.get("info")).get("uuid", String.class);
@@ -233,7 +216,11 @@ public class DatabaseAPI {
     }
 
     public String getOfflineName(UUID uuid) {
-        Constants.log.warning("Retrieving " + uuid.toString() + "'s name..");
+        if (Constants.debug) {
+            Constants.log.info("Retrieving for " + uuid.toString() + "'s name..");
+            Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
+        }
+
         Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null) {
             return "";

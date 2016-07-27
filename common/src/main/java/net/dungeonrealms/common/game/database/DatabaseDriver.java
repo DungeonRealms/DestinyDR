@@ -42,6 +42,7 @@ public class DatabaseDriver {
         guilds = database.getCollection("guilds");
         quests = database.getCollection("quests");
 
+
         Constants.log.info("DungeonRealms [MONGODB] has connected successfully!");
     }
 

@@ -10,7 +10,7 @@ public class Constants {
 
     public static final Logger log = Logger.getLogger("DungeonRealms");
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     public static final String[] DEVELOPERS = new String[]{"Proxying", "Atlas__", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle"};
 

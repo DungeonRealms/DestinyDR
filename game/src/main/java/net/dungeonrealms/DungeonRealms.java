@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.commands.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
+import net.dungeonrealms.common.game.database.MongoUpdateThread;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
@@ -269,8 +270,8 @@ public class DungeonRealms extends JavaPlugin {
         new UpdateTask(this);
 
         // START UPDATE THREAD //
-//        new MongoUpdateThread().start();
-//        Utils.log.info("DungeonRealms - MongoUpdateThread ... STARTED ...");
+        new MongoUpdateThread().start();
+        Utils.log.info("DungeonRealms - MongoUpdateThread ... STARTED ...");
 
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
@@ -481,7 +482,7 @@ public class DungeonRealms extends JavaPlugin {
         }
 
         Bukkit.getServer().setWhitelist(false);
-        
+
 
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
             if (System.currentTimeMillis() >= (SERVER_START_TIME + 14100000L)) {
