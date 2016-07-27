@@ -17,6 +17,7 @@ import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
+import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.AttributeType;
@@ -453,7 +454,17 @@ public class GamePlayer {
         isInvulnerable = flag;
     }
 
+    public void setPvpTaggedUntil(long time) {
+        if (!isPvPTagged())
+            TitleAPI.sendActionBar(T, ChatColor.RED + "PvP Tagged - " + ChatColor.BOLD + "10s", 4 * 20);
+        this.pvpTaggedUntil = time;
+    }
+
     public boolean isPvPTagged() {
         return pvpTaggedUntil > 0 && pvpTaggedUntil > System.currentTimeMillis();
+    }
+
+    public int secsPvPTaggedLeft() {
+        return isPvPTagged() ? 0 : (int)(pvpTaggedUntil - System.currentTimeMillis()) / 1000;
     }
 }
