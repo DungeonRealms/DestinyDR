@@ -108,7 +108,7 @@ public class Chat {
 
             GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.GRAY.toString() +
                     ChatColor.BOLD + "FROM " + GameChat.getRankPrefix(fromPlayerRank) + GameChat.getName(player, fromPlayerRank, true) +
-                    ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " + ChatColor
+                    ChatColor.GRAY + " [" + ChatColor.AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor
                     .WHITE + finalMessage));
             GameAPI.sendNetworkMessage("BroadcastSoundPlayer", playerName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
         });
