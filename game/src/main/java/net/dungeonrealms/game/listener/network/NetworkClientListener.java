@@ -27,7 +27,6 @@ import org.bukkit.entity.Player;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -91,8 +90,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             GameAPI.sendNetworkMessage("RefuseLoginToken", uuid.toString(), ChatColor.RED + "This server is still setting up..");
                     });
                     return;
-                }
-                else if (task.equals("Update")) {
+                } else if (task.equals("Update")) {
                     UUID uuid = UUID.fromString(in.readUTF());
                     Player player1 = Bukkit.getPlayer(uuid);
 
@@ -104,8 +102,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         }));
                     }
                     return;
-                }
-                else if (task.equals("GMMessage")) {
+                } else if (task.equals("GMMessage")) {
                     String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         if (Rank.isGM(p)) {
@@ -203,16 +200,14 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             if (in.available() > 0) {
                                 try {
                                     volume = Float.valueOf(in.readUTF());
-                                }
-                                catch (NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     volume = 10f;
                                 }
                             }
                             if (in.available() > 0) {
                                 try {
                                     pitch = Float.valueOf(in.readUTF());
-                                }
-                                catch (NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     pitch = 1f;
                                 }
                             }
@@ -236,16 +231,14 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             if (in.available() > 0) {
                                 try {
                                     volume = Float.valueOf(in.readUTF());
-                                }
-                                catch (NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     volume = 10f;
                                 }
                             }
                             if (in.available() > 0) {
                                 try {
                                     pitch = Float.valueOf(in.readUTF());
-                                }
-                                catch (NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     pitch = 1f;
                                 }
                             }

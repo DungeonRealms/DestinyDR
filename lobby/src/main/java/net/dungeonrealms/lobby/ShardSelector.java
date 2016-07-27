@@ -94,6 +94,8 @@ public class ShardSelector extends AbstractMenu {
             lore.add(ChatColor.WHITE + "Click here to load your");
             lore.add(ChatColor.WHITE + "character onto this shard.");
             lore.add(" ");
+            if (info.getMotd1().contains(","))
+                lore.add(ChatColor.GRAY + "Load: " + info.getMotd1().split(",")[1].replace("}", "").replace("\"", ""));
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
             button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
@@ -159,7 +161,7 @@ public class ShardSelector extends AbstractMenu {
             if (ShardInfo.getByPseudoName(bungeeName) == null) continue;
             BungeeServerInfo info = e.getValue();
 
-            if (!info.isOnline() || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().equals("offline"))
+            if (!info.isOnline() || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().contains("offline"))
                 continue;
 
             filteredServers.put(bungeeName, info);

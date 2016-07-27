@@ -23,7 +23,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
@@ -150,6 +149,10 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             lore.add(ChatColor.WHITE + "Click here to load your");
             lore.add(ChatColor.WHITE + "character onto this shard.");
             lore.add(" ");
+
+            if (info.getMotd1().contains(","))
+                lore.add(ChatColor.GRAY + "Load: " + info.getMotd1().split(",")[1].replace("}", "").replace("\"", ""));
+
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
             button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
@@ -234,7 +237,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
 
-            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().equals("offline"))
+            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().contains("offline"))
                 continue;
 
             filteredServers.put(bungeeName, info);

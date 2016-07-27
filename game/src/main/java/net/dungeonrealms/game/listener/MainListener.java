@@ -157,7 +157,7 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPing(ServerListPingEvent event) {
         if (!DungeonRealms.getInstance().hasFinishedSetup()) event.setMotd("offline");
-        else event.setMotd(DungeonRealms.getInstance().shardid);
+        else event.setMotd(DungeonRealms.getInstance().shardid + "," + GameAPI.getServerLoad());
     }
 
     /**
@@ -288,7 +288,8 @@ public class MainListener implements Listener {
     public void onPlayerKick(PlayerKickEvent event) {
         event.setLeaveMessage(null);
 
-        if (event.getPlayer().hasMetadata("sharding")) event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
+        if (event.getPlayer().hasMetadata("sharding"))
+            event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
 
         if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
             GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
@@ -302,7 +303,8 @@ public class MainListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
 
-        if (event.getPlayer().hasMetadata("sharding")) event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
+        if (event.getPlayer().hasMetadata("sharding"))
+            event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
 
         if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
             Utils.log.info("Ignored quit event for player " + event.getPlayer().getName());

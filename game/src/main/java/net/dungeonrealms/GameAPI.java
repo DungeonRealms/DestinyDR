@@ -59,6 +59,7 @@ import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.network.GameClient;
+import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import org.bukkit.*;
@@ -421,6 +422,12 @@ public class GameAPI {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    public static String getServerLoad() {
+        double tps = MinecraftServer.getServer().recentTps[0];
+        return ((tps > 19.0) ? ChatColor.GREEN + "Low" : (tps > 15.0) ? ChatColor.YELLOW + "Medium" : ChatColor.RED + "High");
     }
 
 
@@ -968,7 +975,8 @@ public class GameAPI {
                 muleInv = ItemSerialization.fromString(invString, tier.getSize());
             }
         }
-        if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null) MountUtils.inventories.put(player.getUniqueId(), muleInv);
+        if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
+            MountUtils.inventories.put(player.getUniqueId(), muleInv);
         TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
         if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
             String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid))

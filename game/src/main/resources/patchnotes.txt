@@ -3,6 +3,7 @@ Build <build>
 The network has been completely wiped. For more information please see the website.
 
 &2New Features&0
+- Shard menu now displays server load
 - Added /reply (aliases: /r).
 - Major website overhaul
 - Implemented Anticheat system.

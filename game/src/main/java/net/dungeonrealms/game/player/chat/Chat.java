@@ -64,27 +64,28 @@ public class Chat {
             "dick", "clit", "homo", "fag", "faggot", "queer", "nigger", "nigga", "dike", "dyke", "retard", " motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "gay", "minecade", "unowild", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "kys", "jigga", "jiggaboo", "hitler", "jews", "titanrift", "fucked"));
 
-    public static void sendPrivateMessage(Player sender, String playerName, String finalMessage) {
+    public static void sendPrivateMessage(Player player, String playerName, String finalMessage) {
         GameAPI.submitAsyncWithAsyncCallback(() -> {
             String testUUID = DatabaseAPI.getInstance().getUUIDFromName(playerName);
             if (testUUID.equals("")) {
-                sender.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
+                player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
                 return "";
             }
             UUID uuid = UUID.fromString(testUUID);
-            if (!FriendHandler.getInstance().areFriends(sender, uuid) && !Rank.isGM(Bukkit.getOfflinePlayer(uuid))) {
+            if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.getInstance().isGM(Bukkit.getOfflinePlayer(uuid))) {
                 if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, uuid)) {
-                    sender.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
+                    player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
                     return "";
                 }
             }
-            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid))) {
-                sender.sendMessage(ChatColor.RED + "That user is not currently online.");
+            if (!((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid))) {
+                player.sendMessage(ChatColor.RED +"That user is not currently online.");
                 return "";
             }
             try {
                 return DatabaseAPI.getInstance().getFormattedShardName(uuid);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 ex.printStackTrace();
             }
             return "";
@@ -92,21 +93,25 @@ public class Chat {
             String receivingShard = null;
             try {
                 receivingShard = result.get();
-                if (receivingShard.equals("")) return;
-            } catch (InterruptedException | ExecutionException e) {
+                if (receivingShard.equals("")) {
+                    return;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
                 e.printStackTrace();
             }
             String toPlayerRank = Rank.getInstance().getRank(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName)));
-            String fromPlayerRank = Rank.getInstance().getRank(sender.getUniqueId());
-            sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getRankPrefix
+            String fromPlayerRank = Rank.getInstance().getRank(player.getUniqueId());
+            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getRankPrefix
                     (toPlayerRank) + GameChat.getName(playerName, toPlayerRank, true) + ChatColor.GRAY + " [" +
                     ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " + ChatColor.WHITE + finalMessage);
 
-            GameAPI.sendNetworkMessage("PrivateMessage", sender.getName(), playerName, (ChatColor.GRAY.toString() +
-                    ChatColor.BOLD + "FROM " + GameChat.getRankPrefix(fromPlayerRank) + GameChat.getName(sender, fromPlayerRank, true) +
+            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.GRAY.toString() +
+                    ChatColor.BOLD + "FROM " + GameChat.getRankPrefix(fromPlayerRank) + GameChat.getName(player, fromPlayerRank, true) +
                     ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " + ChatColor
                     .WHITE + finalMessage));
-            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", sender.getName(), Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
+            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", playerName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
         });
     }
 

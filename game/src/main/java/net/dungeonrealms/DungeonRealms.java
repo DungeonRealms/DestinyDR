@@ -481,7 +481,7 @@ public class DungeonRealms extends JavaPlugin {
         }
 
         Bukkit.getServer().setWhitelist(false);
-
+        
 
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
             if (System.currentTimeMillis() >= (SERVER_START_TIME + 14100000L)) {
