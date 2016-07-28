@@ -14,10 +14,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Created by Kieran on 11/5/2015.
@@ -51,37 +51,21 @@ public class BuffManager implements GenericMechanic {
     private void spawnSomeBuffs() {
         int MAX_BUFFS = (Bukkit.getOnlinePlayers().size() / 4) + 1;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!GameAPI.isPlayer(player)) {
-                continue;
-            }
-            if (GameAPI.isInSafeRegion(player.getLocation())) {
-                continue;
-            }
-            if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-                continue;
-            }
-            if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                continue;
-            }
-            if (GameAPI._hiddenPlayers.contains(player)) {
-                continue;
-            }
-            if (player.getEquipment().getItemInMainHand().getType() != Material.AIR && player.getEquipment().getItemInMainHand() != null) {
-                if (Mining.isDRPickaxe(player.getEquipment().getItemInMainHand()) || Fishing.isDRFishingPole(player.getEquipment().getItemInMainHand())) {
+            if (!GameAPI.isPlayer(player)) continue;
+            if (GameAPI.isInSafeRegion(player.getLocation())) continue;
+            if (player.getGameMode().equals(GameMode.SPECTATOR)) continue;
+            if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) continue;
+            if (GameAPI._hiddenPlayers.contains(player)) continue;
+            if (player.getEquipment().getItemInMainHand().getType() != Material.AIR && player.getEquipment().getItemInMainHand() != null)
+                if (Mining.isDRPickaxe(player.getEquipment().getItemInMainHand()) || Fishing.isDRFishingPole(player.getEquipment().getItemInMainHand()))
                     continue;
-                }
-            }
-            if (getNearbyBuffs(player, 15).size() >= 1) {
-                continue;
-            }
-            if (GameAPI.getNearbyPlayers(player.getLocation(), 10).size() > 2) {
-                continue;
-            }
+            if (getNearbyBuffs(player, 15).size() >= 1) continue;
+            if (GameAPI.getNearbyPlayers(player.getLocation(), 10).size() > 2) continue;
             if (new Random().nextInt(21) < 4) {
                 if (!CURRENT_BUFFS.isEmpty()) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         try {
-                            EnderCrystal enderCrystal = CURRENT_BUFFS.get(new Random().nextInt(CURRENT_BUFFS.size()));
+                            EnderCrystal enderCrystal = CURRENT_BUFFS.get(Math.min(0, new Random().nextInt(CURRENT_BUFFS.size())));
                             CURRENT_BUFFS.remove(enderCrystal);
                             enderCrystal.dead = true;
                         } catch (NullPointerException ignored) {
@@ -89,26 +73,14 @@ public class BuffManager implements GenericMechanic {
                     }, 0L);
                 }
             }
-            if (CURRENT_BUFFS.size() >= MAX_BUFFS) {
-                continue;
-            }
-            if (new Random().nextInt(21) < 6) {
-                if (CURRENT_BUFFS.size() < MAX_BUFFS) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> CURRENT_BUFFS.add(BuffUtils.spawnBuff(player.getUniqueId())), 0L);
-                }
-            }
+            if (CURRENT_BUFFS.size() >= MAX_BUFFS) continue;
+            if (new Random().nextInt(21) < 6) if (CURRENT_BUFFS.size() < MAX_BUFFS)
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> CURRENT_BUFFS.add(BuffUtils.spawnBuff(player.getUniqueId())), 0L);
         }
     }
 
     private static Set<Entity> getNearbyBuffs(Player player, int radius) {
-        Set<Entity> buffsNearby = new HashSet<>();
-        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-            if (entity.hasMetadata("type")) {
-                if (entity.getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
-                    buffsNearby.add(entity);
-                }
-            }
-        }
-        return buffsNearby;
+        return player.getNearbyEntities(radius, radius, radius)
+                .stream().filter(entity -> entity.hasMetadata("type")).filter(entity -> entity.getMetadata("type").get(0).asString().equalsIgnoreCase("buff")).collect(Collectors.toSet());
     }
 }

@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.menu;
+package net.dungeonrealms.common.game.menu.gui;
 
 
 import lombok.Getter;

@@ -19,7 +19,7 @@ public class UpdateThread extends Thread {
     public void run() {
         while (true) {
             try {
-                // ALLOW THREAD TO SLEEP FOR 20ms BEFORE CONTINUING QUEUE //
+                // ALLOW THREAD TO SLEEP FOR 250ms BEFORE CONTINUING QUEUE //
                 Thread.sleep(250L);
             } catch (InterruptedException ignored) {
             }

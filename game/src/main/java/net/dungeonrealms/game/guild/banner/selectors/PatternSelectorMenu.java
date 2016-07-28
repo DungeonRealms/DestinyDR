@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.guild.banner.selectors;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.AbstractMenu;
-import net.dungeonrealms.common.game.menu.GUIButtonClickEvent;
+import net.dungeonrealms.common.game.menu.AbstractMenu;
+import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
