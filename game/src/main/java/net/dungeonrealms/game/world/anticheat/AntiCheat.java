@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -34,6 +35,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 10/1/2015.
@@ -116,7 +118,7 @@ public class AntiCheat implements GenericMechanic {
         if (Rank.isGM(p)) return;
         if (antiDupeExclusions.contains(p.getUniqueId())) return;
 
-        Map<ItemStack, String> gearUids = new HashMap<>();
+        Map<Inventory, Tuple<ItemStack, String>> gearUids = new HashMap<>();
 
         for (Inventory inv : INVENTORIES_TO_CHECK) {
             if (inv == null) continue;
@@ -126,19 +128,21 @@ public class AntiCheat implements GenericMechanic {
                 if (RepairAPI.isItemArmorOrWeapon(i)) {
                     String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
                     if (uniqueEpochIdentifier != null)
-                        gearUids.put(i, uniqueEpochIdentifier);
+                        gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
                 }
             }
         }
 
-        Set<String> duplicates = Utils.findDuplicates(gearUids.values());
+        List<String> uids = gearUids.values().stream().map(Tuple::b).collect(Collectors.toList());
+
+        Set<String> duplicates = Utils.findDuplicates(uids);
         if (!duplicates.isEmpty()) { // caught red handed
 
-            for (ItemStack i : gearUids.keySet()) {
-                String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
+            for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : gearUids.entrySet()) {
+                String uniqueEpochIdentifier = e.getValue().b();
 
                 if (duplicates.contains(uniqueEpochIdentifier))
-                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> i.setType(Material.AIR));
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> e.getKey().remove(e.getValue().a()));
             }
 
             banAndBroadcast(p, duplicates.size());
@@ -149,42 +153,49 @@ public class AntiCheat implements GenericMechanic {
         if (Rank.isGM(p)) return;
         if (antiDupeExclusions.contains(p.getUniqueId())) return;
 
-        Map<String, ItemStack> gearUids = new HashMap<>();
 
         int orbCount = 0;
         int enchantCount = 0;
         int protectCount = 0;
         int gemCount = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, p.getUniqueId());
+
+        Map<Inventory, Tuple<ItemStack, String>> gearUids = new HashMap<>();
+
         for (Inventory inv : INVENTORIES_TO_CHECK) {
             if (inv == null) continue;
 
             for (ItemStack i : inv.getContents()) {
-
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
-
                 if (RepairAPI.isItemArmorOrWeapon(i)) {
                     String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
                     if (uniqueEpochIdentifier != null)
-                        gearUids.put(uniqueEpochIdentifier, i);
+                        gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
 
-                    continue;
+                    if (GameAPI.isOrb(i))
+                        orbCount += i.getAmount();
+                    else if (BankMechanics.getInstance().isBankNote(i))
+                        gemCount += BankMechanics.getInstance().getNoteValue(i);
+                    else if (ItemManager.isEnchantScroll(i))
+                        enchantCount += i.getAmount();
+                    else if (ItemManager.isProtectScroll(i))
+                        protectCount += i.getAmount();
                 }
-                if (GameAPI.isOrb(i))
-                    orbCount += i.getAmount();
-                else if (BankMechanics.getInstance().isBankNote(i))
-                    gemCount += BankMechanics.getInstance().getNoteValue(i);
-                else if (ItemManager.isEnchantScroll(i))
-                    enchantCount += i.getAmount();
-                else if (ItemManager.isProtectScroll(i))
-                    protectCount += i.getAmount();
             }
         }
 
-        Set<String> duplicates = Utils.findDuplicates(gearUids.keySet());
-        for (String s : duplicates) {
-            ItemStack itemStack = gearUids.get(s);
-            if (itemStack != null)
-                itemStack.setType(Material.AIR);
+        List<String> uids = gearUids.values().stream().map(Tuple::b).collect(Collectors.toList());
+
+        Set<String> duplicates = Utils.findDuplicates(uids);
+        if (!duplicates.isEmpty()) { // caught red handed
+
+            for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : gearUids.entrySet()) {
+                String uniqueEpochIdentifier = e.getValue().b();
+
+                if (duplicates.contains(uniqueEpochIdentifier))
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> e.getKey().remove(e.getValue().a()));
+            }
+
+            banAndBroadcast(p, duplicates.size());
         }
 
         if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 350000) {
