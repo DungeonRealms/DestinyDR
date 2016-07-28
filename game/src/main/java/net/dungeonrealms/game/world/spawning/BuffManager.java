@@ -9,6 +9,7 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entities.types.EnderCrystal;
 import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -38,7 +39,7 @@ public class BuffManager implements GenericMechanic {
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::spawnSomeBuffs, 40L, 1800L);
     }
 
@@ -54,6 +55,9 @@ public class BuffManager implements GenericMechanic {
                 continue;
             }
             if (GameAPI.isInSafeRegion(player.getLocation())) {
+                continue;
+            }
+            if (player.getGameMode().equals(GameMode.SPECTATOR)) {
                 continue;
             }
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
