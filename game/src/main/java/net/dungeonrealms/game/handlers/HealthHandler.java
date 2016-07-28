@@ -22,10 +22,7 @@ import net.dungeonrealms.game.world.items.Item;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.EntityEffect;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
@@ -453,6 +450,9 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, EntityDamageEvent.DamageCause cause) {
+        final GamePlayer gp = GameAPI.getGamePlayer(player);
+        if (player.getGameMode().equals(GameMode.SPECTATOR) || gp == null || gp.isInvulnerable()) return;
+
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
