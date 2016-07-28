@@ -202,13 +202,7 @@ public class AntiCheat implements GenericMechanic {
     }
 
     private static void banAndBroadcast(Player p, int i) {
-        // PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
-        GameAPI.sendNetworkMessage("Broadcast", "");
-        GameAPI.sendNetworkMessage("Broadcast", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
-                "Flagged" + ChatColor.RED + " a player on " + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid + ChatColor.RED + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);
-        //todo: add system for broadcasting SHOW of duped items
-        GameAPI.sendNetworkMessage("Broadcast", "");
-
+        // @note: Please don't announce things to the public, everything should be a GM alert or silently logged.
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
                 "Flagged" + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);

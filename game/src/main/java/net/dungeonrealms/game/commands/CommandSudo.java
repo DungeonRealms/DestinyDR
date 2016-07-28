@@ -20,7 +20,7 @@ public class CommandSudo extends BasicCommand {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (!Rank.isGM(player)) return false;
+            if (!Rank.isDev(player)) return false;
         }
 
         if (args.length == 0) {
