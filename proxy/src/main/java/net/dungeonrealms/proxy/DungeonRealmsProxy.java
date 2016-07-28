@@ -106,6 +106,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     public void onDisable() {
         try {
+            client.kill();
             // SAVE WHITELIST //
             Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(BUNGEE_CONFIG_FILE);
             configuration.set("WHITELIST", WHITELIST);
