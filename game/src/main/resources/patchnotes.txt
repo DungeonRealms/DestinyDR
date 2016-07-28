@@ -2,6 +2,11 @@ Build <build>
 
 The network has been completely wiped. For more information please see the website.
 
+&2New Features&0
+- Subscribers can now bypass the global chat delay.
+- Energy regen now updates 3x faster for a smoother look.
+- Shard menu now displays server load
+
 &4Bug Fixes&0
 - Fixed lag spikes
 - Fixed occasional bug preventing you from picking up items.

@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.menu;
+package net.dungeonrealms.common.game.menu.gui;
 
 import net.dungeonrealms.common.game.menu.item.GUIButton;
 import org.bukkit.entity.Player;

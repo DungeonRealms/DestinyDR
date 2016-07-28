@@ -3,8 +3,8 @@ package net.dungeonrealms.game.player.chat;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -274,7 +274,7 @@ public class Chat {
     }
 
     public static boolean checkGlobalCooldown(Player player) {
-        if (Rank.isPMOD(player)) return true;
+        if (Rank.isPMOD(player) || Rank.isSubscriber(player)) return true;
         if (player.hasMetadata("lastGlobalChat") && (System.currentTimeMillis() - player.getMetadata
                 ("lastGlobalChat").get(0).asLong()) < 10000) {
             int timeRemaining = ((int) (10000 - (System.currentTimeMillis() - player.getMetadata("lastGlobalChat").get(0)

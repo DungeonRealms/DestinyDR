@@ -2,7 +2,7 @@ package net.dungeonrealms.common.game.menu.item;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.common.game.menu.GUI;
+import net.dungeonrealms.common.game.menu.gui.GUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

@@ -2,12 +2,12 @@ package net.dungeonrealms.game.player.menu;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.AbstractMenu;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.type.EnumData;
-import net.dungeonrealms.common.game.menu.GUIButtonClickEvent;
-import net.dungeonrealms.common.game.menu.VolatileGUI;
+import net.dungeonrealms.common.game.menu.AbstractMenu;
+import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
+import net.dungeonrealms.common.game.menu.gui.VolatileGUI;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
 import net.dungeonrealms.common.game.updater.Updater;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -80,7 +80,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                     if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
                         player.sendMessage(new String[]{
                                 ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + "SUBSCRIBER ONLY" + ChatColor.RED + " shard!",
-                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
+                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://shop.dungeonrealms.net"
                         });
                         return;
                     } else if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {

@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.utils;
+package net.dungeonrealms.common.game.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

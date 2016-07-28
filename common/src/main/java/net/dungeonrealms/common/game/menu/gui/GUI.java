@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.menu;
+package net.dungeonrealms.common.game.menu.gui;
 
 
 import lombok.Getter;
@@ -29,7 +29,6 @@ import java.util.UUID;
 public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener {
 
     protected Inventory inventory;
-    //private static Map<UUID, List<GUI>> activeGUIs = new WeakHashMap<UUID, List<GUI>>();
     private boolean moveable = false;
     private UUID holder;
 
@@ -37,57 +36,20 @@ public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener 
     @Setter
     private boolean destroyOnExit = false;
 
-
     public GUI(String name, int size) {
-        super(new HashMap<Integer, GUIItem>());
+        super(new HashMap<>());
         this.inventory = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', name));
     }
 
     public GUI(String name, int size, UUID holder) {
-        super(new HashMap<Integer, GUIItem>());
+        super(new HashMap<>());
         this.inventory = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', name));
         this.holder = holder;
     }
 
-    //public static void clearCached(UUID uuid, GUI newShop) {
-
-    //  List<GUI> inventories;
-    //if (activeGUIs.containsKey(uuid)) {
-    //  inventories = activeGUIs.get(uuid);
-
-    // Clears any active inventory with the same title
-    //  for (int i = 0; i < inventories.size(); i++) {
-    //    GUI oldShop = inventories.get(i);
-    //   if (oldShop.getInventory()
-    //          .getTitle().equalsIgnoreCase(newShop.getInventory().getTitle())) {
-    //     oldShop.remove();
-    //    inventories.remove(i);
-    // }
-    //}
-
-    //} else {
-    //   inventories = new ArrayList<GUI>();
-    //}
-    //        inventories.add(newShop);
-    //      activeGUIs.put(uuid, inventories);
-
-    //}
-
-
-    // public static boolean isActive(UUID uuid, Inventory inventory) {
-    //    if (!activeGUIs.containsKey(uuid)) return false;
-
-    //   for (GUI i : activeGUIs.get(uuid))
-    //       if (i.getInventory().getTitle().equalsIgnoreCase(inventory.getTitle())) return true;
-    //   return false;
-    // }
-
-    // public static boolean isActive(UUID uuid) {
-    //     return activeGUIs.containsKey(uuid);
-    //  }
 
     public GUI(JavaPlugin plugin, String name, int size, int destroy) {
-        super(new HashMap<Integer, GUIItem>());
+        super(new HashMap<>());
         this.inventory = Bukkit.createInventory(null, size, name);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DestroyTask(this), destroy * 20);

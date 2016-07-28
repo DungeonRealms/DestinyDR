@@ -2,7 +2,7 @@ package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -611,10 +611,10 @@ public class ItemManager {
             player.getInventory().addItem(ItemGenerator.getNamedItem("training_axe"));
         }
 
-        player.getInventory().addItem(ItemGenerator.getNamedItem("traininghelm"));
-        player.getInventory().addItem(ItemGenerator.getNamedItem("trainingchest"));
-        player.getInventory().addItem(ItemGenerator.getNamedItem("traininglegs"));
-        player.getInventory().addItem(ItemGenerator.getNamedItem("trainingboots"));
+        player.getInventory().setHelmet(ItemGenerator.getNamedItem("traininghelm"));
+        player.getInventory().setChestplate(ItemGenerator.getNamedItem("trainingchest"));
+        player.getInventory().setLeggings(ItemGenerator.getNamedItem("traininglegs"));
+        player.getInventory().setBoots(ItemGenerator.getNamedItem("trainingboots"));
     }
 
 

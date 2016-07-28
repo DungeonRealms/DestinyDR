@@ -1,7 +1,7 @@
-package net.dungeonrealms.common.game;
+package net.dungeonrealms.common.game.menu;
 
 
-import net.dungeonrealms.common.game.menu.GUI;
+import net.dungeonrealms.common.game.menu.gui.GUI;
 import net.dungeonrealms.common.game.menu.item.GUIDisplayer;
 import net.dungeonrealms.common.game.menu.item.GUIItem;
 import org.bukkit.Material;

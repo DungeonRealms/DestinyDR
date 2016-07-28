@@ -2,7 +2,7 @@ package net.dungeonrealms.game.world.entities.types.monsters;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;

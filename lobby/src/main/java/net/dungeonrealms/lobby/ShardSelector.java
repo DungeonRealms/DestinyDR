@@ -1,11 +1,11 @@
 package net.dungeonrealms.lobby;
 
 
-import net.dungeonrealms.common.game.AbstractMenu;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.type.EnumData;
-import net.dungeonrealms.common.game.menu.GUIButtonClickEvent;
+import net.dungeonrealms.common.game.menu.AbstractMenu;
+import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
@@ -61,7 +61,7 @@ public class ShardSelector extends AbstractMenu {
                     if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
                         player.sendMessage(new String[]{
                                 ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + "SUBSCRIBER ONLY" + ChatColor.RED + " shard!",
-                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
+                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://shop.dungeonrealms.net"
                         });
                         return;
                     } else if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player))) {

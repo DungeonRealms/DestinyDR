@@ -34,6 +34,11 @@ public class CommandReply extends BasicCommand {
             return true;
         }
 
+        if (args.length == 0) {
+            player.sendMessage(ChatColor.RED + "/r <message>");
+            return true;
+        }
+
         GamePlayer gp = GameAPI.getGamePlayer(player);
         if (gp == null) return true;
 

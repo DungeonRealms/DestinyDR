@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.player.combat;
 
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.type.EnumData;
-import net.dungeonrealms.common.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import org.bukkit.Location;
 import org.bukkit.entity.Zombie;

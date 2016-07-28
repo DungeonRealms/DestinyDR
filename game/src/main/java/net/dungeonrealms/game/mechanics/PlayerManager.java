@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.type.EnumData;
-import net.dungeonrealms.common.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,11 +30,13 @@ public class PlayerManager {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null || !player.isOnline()) return;
 
-        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 7))
+        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 8)) {
             player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
+        }
 
-        if (!hasItem(player.getInventory(), "journal") && isSlotFree(player.getInventory(), 8))
+        if (!hasItem(player.getInventory(), "journal") && isSlotFree(player.getInventory(), 8)) {
             player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
+        }
     }
 
     public static boolean isSlotFree(PlayerInventory inv, int slot) {

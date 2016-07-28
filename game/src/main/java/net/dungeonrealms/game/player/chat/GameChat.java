@@ -2,8 +2,8 @@ package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
