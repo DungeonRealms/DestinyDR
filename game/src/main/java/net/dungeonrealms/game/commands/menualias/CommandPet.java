@@ -2,7 +2,7 @@ package net.dungeonrealms.game.commands.menualias;
 
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.type.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.menu.Profile;

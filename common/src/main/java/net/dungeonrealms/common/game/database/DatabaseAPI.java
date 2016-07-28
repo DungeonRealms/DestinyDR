@@ -1,13 +1,12 @@
 package net.dungeonrealms.common.game.database;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.type.EnumData;
-import net.dungeonrealms.common.game.database.type.EnumOperators;
-import net.dungeonrealms.common.game.utils.AsyncUtils;
+import net.dungeonrealms.common.game.database.concurrent.SingleUpdateQuery;
+import net.dungeonrealms.common.game.database.concurrent.UpdateThread;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import org.bson.Document;
 
 import java.util.*;
@@ -22,7 +21,7 @@ public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
-    private volatile Map<String, String> cachedUUIDS = new ConcurrentHashMap<>();
+    private volatile Map<String, String> CACHED_UUIDS = new ConcurrentHashMap<>();
 
     public static DatabaseAPI getInstance() {
         if (instance == null) {
@@ -85,9 +84,9 @@ public class DatabaseAPI {
         }
 
         if (async)
-            MongoUpdateThread.queries.add(new UpdateQuery<>(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), doAfterOptional));
+            UpdateThread.CONCURRENT_QUERIES.add(new SingleUpdateQuery<>(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), doAfterOptional));
         else {
-            UpdateResult result = DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+            UpdateResult result = DatabaseDriver.playerData.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
             if (doAfterOptional != null)
                 doAfterOptional.accept(result);
         }
@@ -100,11 +99,6 @@ public class DatabaseAPI {
         update(uuid, EO, variable, object, async, null);
     }
 
-
-    private ListenableFuture<UpdateResult> update(UUID uuid, EnumOperators EO, EnumData variable, Object object) {
-        return MoreExecutors.listeningDecorator(AsyncUtils.pool).submit(() -> DatabaseDriver.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)))
-        );
-    }
 
     /**
      * Returns the object that's requested.
@@ -123,11 +117,11 @@ public class DatabaseAPI {
         } else {
             // we should never be getting offline data sync.
             if (Constants.debug) {
-                Constants.log.warning("Retrieving " + uuid.toString() + "'s offline data on the main thread...");
+                Constants.log.warning("[Database] Retrieving " + uuid.toString() + "'s offline data on the main thread...");
                 StackTraceElement ste = new Exception().getStackTrace()[1];
                 Constants.log.warning(ste.getClassName() + " " + ste.getMethodName() + " " + ste.getLineNumber());
             }
-            doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+            doc = DatabaseDriver.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
         }
 
         String[] key = data.getKey().split("\\.");
@@ -142,6 +136,14 @@ public class DatabaseAPI {
         return rootDoc.get(key[1], clazz);
     }
 
+    private void printTrace() {
+        StackTraceElement trace = new Exception().getStackTrace()[1];
+
+        Constants.log.info("[Database] Class: " + trace.getClassName());
+        Constants.log.info("[Database] Method: " + trace.getMethodName());
+        Constants.log.info("[Database] Line: " + trace.getLineNumber());
+    }
+
     /**
      * Is fired to grab a player from Mongo
      * if they don't exist. Fire addNewPlayer() creation.
@@ -150,57 +152,48 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public boolean requestPlayer(UUID uuid) {
-        Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        Document doc = DatabaseDriver.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
+
         if (Constants.debug) {
-            Constants.log.info("New playerdata requested for " + uuid + " from the database.");
-            Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
+            Constants.log.info("[Database] New playerdata requested for " + uuid + " from the database.");
+            printTrace();
         }
+
         if (doc == null) addNewPlayer(uuid);
         else PLAYERS.put(uuid, doc);
-
         return true;
-
-        //GuildMechanics.getInstance().checkPlayerGuild(uuid);
-        /*DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document) -> {
-            if (document != null) {
-                Utils.log.info("Fetched information for uuid: " + uuid.toString());
-                PLAYERS.put(uuid, document);
-            } else {
-                addNewPlayer(uuid);
-            }
-        });*/
     }
 
-    public Object getValue(UUID uuid, EnumData data) {
-        Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+    public Object retrieveElement(UUID uuid, EnumData data) {
+        Document doc = DatabaseDriver.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null) return null;
         String[] key = data.getKey().split("\\.");
         return ((Document) doc.get(key[0])).get(key[1]);
     }
 
     public String getUUIDFromName(String playerName) {
-        if (cachedUUIDS.containsKey(playerName)) return cachedUUIDS.get(playerName);
+        if (CACHED_UUIDS.containsKey(playerName)) return CACHED_UUIDS.get(playerName);
 
         if (Constants.debug) {
-            Constants.log.info("Retrieving for " + playerName + " 's UUID from name.");
-            Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
+            Constants.log.info("[Database] Retrieving for " + playerName + " 's UUID from name.");
+            printTrace();
         }
 
-        Document doc = DatabaseDriver.collection.find(Filters.eq("info.username", playerName.toLowerCase())).first();
+        Document doc = DatabaseDriver.playerData.find(Filters.eq("info.username", playerName.toLowerCase())).first();
         if (doc == null) return "";
         String uuidString = ((Document) doc.get("info")).get("uuid", String.class);
-        cachedUUIDS.put(playerName, uuidString);
+        CACHED_UUIDS.put(playerName, uuidString);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                cachedUUIDS.remove(playerName);
+                CACHED_UUIDS.remove(playerName);
             }
         }, 500);
         return uuidString;
     }
 
     public Document getDocumentFromAddress(String ipAddress) {
-        return DatabaseDriver.collection.find(Filters.eq("info.ipAddress", ipAddress)).first();
+        return DatabaseDriver.playerData.find(Filters.eq("info.ipAddress", ipAddress)).first();
     }
 
     public String getFormattedShardName(UUID uuid) {
@@ -208,7 +201,7 @@ public class DatabaseAPI {
         if (!isOnline) {
             return "None";
         }
-        Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        Document doc = DatabaseDriver.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null)
             return "";
         String name = ((Document) doc.get("info")).get("current", String.class);
@@ -218,10 +211,10 @@ public class DatabaseAPI {
     public String getOfflineName(UUID uuid) {
         if (Constants.debug) {
             Constants.log.info("Retrieving for " + uuid.toString() + "'s name..");
-            Constants.log.info(new Exception().getStackTrace()[1].getClassName() + " " + new Exception().getStackTrace()[1].getLineNumber());
+            printTrace();
         }
 
-        Document doc = DatabaseDriver.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        Document doc = DatabaseDriver.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
         if (doc == null) {
             return "";
         } else {
@@ -351,9 +344,9 @@ public class DatabaseAPI {
                                         .append("ecash_spent", 0)
                                         .append("gems_earned", 0)
                                         .append("gems_spent", 0));
-        DatabaseDriver.collection.insertOne(newPlayerDocument);
+        DatabaseDriver.playerData.insertOne(newPlayerDocument);
         requestPlayer(uuid);
-        Constants.log.info("Requesting new data for : " + uuid);
+        Constants.log.info("[Database] Requesting new data for : " + uuid);
     }
 
 

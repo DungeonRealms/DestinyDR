@@ -5,9 +5,9 @@ import com.mongodb.client.model.UpdateOptions;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
-import net.dungeonrealms.common.game.database.type.EnumData;
-import net.dungeonrealms.common.game.database.type.EnumOperators;
-import net.dungeonrealms.common.game.utils.AsyncUtils;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.Document;
@@ -90,8 +90,8 @@ public class PunishAPI {
     }
 
     public static String getMutedMessage(UUID uuid) {
-        long muteTime = (long) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_TIME);
-        String reason = (String) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_REASON);
+        long muteTime = (long) DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.MUTE_TIME);
+        String reason = (String) DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.MUTE_REASON);
 
         return ChatColor.RED + "You will be unmuted until " + timeString((int) ((muteTime - System.currentTimeMillis()) / 60000)) + (reason != null ? " for " + reason : "");
     }
@@ -163,7 +163,7 @@ public class PunishAPI {
     }
 
     public static boolean isMuted(UUID uuid) {
-        long muteTime = ((Long) DatabaseAPI.getInstance().getValue(uuid, EnumData.MUTE_TIME));
+        long muteTime = ((Long) DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.MUTE_TIME));
         return (muteTime != 0 && System.currentTimeMillis() < muteTime);
     }
 

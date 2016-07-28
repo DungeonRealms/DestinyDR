@@ -5,7 +5,6 @@ import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.commands.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
-import net.dungeonrealms.common.game.database.MongoUpdateThread;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
@@ -225,10 +224,8 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(new ForceField());
-            //mm.registerMechanic(DungeonManager.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
-            //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
             mm.registerMechanic(Mining.getInstance());
             mm.registerMechanic(RealmInstance.getInstance());
@@ -238,7 +235,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
-//            mm.registerMechanic(TutorialIsland.getInstance());
             mm.registerMechanic(PatchTools.getInstance());
         } else {
             mm.registerMechanic(PetUtils.getInstance());
@@ -252,7 +248,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());
-            //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
             mm.registerMechanic(PatchTools.getInstance());
             mm.registerMechanic(Mining.getInstance());
@@ -268,10 +263,6 @@ public class DungeonRealms extends JavaPlugin {
 
         // START UPDATER TASK //
         new UpdateTask(this);
-
-        // START UPDATE THREAD //
-        new MongoUpdateThread().start();
-        Utils.log.info("DungeonRealms - MongoUpdateThread ... STARTED ...");
 
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
@@ -301,7 +292,6 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new RestrictionListener(), this);
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
-//            pm.registerEvents(new TutorialIsland(), this);
         } else {
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
@@ -318,18 +308,6 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new PvEListener(), this);
         }
 
-        //pm.registerEvents(new MainListener(), this);
-        //pm.registerEvents(new DamageListener(), this);
-        //pm.registerEvents(new ItemListener(), this);
-        //pm.registerEvents(new InventoryListener(), this);
-        //pm.registerEvents(new BlockListener(), this);
-        //pm.registerEvents(new BankListener(), this);
-        //pm.registerEvents(new EnergyListener(), this);
-        //pm.registerEvents(new AntiCheatListener(), this);
-        //pm.registerEvents(new BossListener(), this);
-        //pm.registerEvents(new ShopListener(), this);
-        //pm.registerEvents(new AchievementManager(), this);
-        //pm.registerEvents(Instance.getInstance(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         CommandManager cm = new CommandManager();
@@ -483,18 +461,16 @@ public class DungeonRealms extends JavaPlugin {
 
         Bukkit.getServer().setWhitelist(false);
 
-
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
             if (System.currentTimeMillis() >= (SERVER_START_TIME + 14100000L)) {
                 scheduleRestartTask();
                 Bukkit.getScheduler().cancelTask(rebooterID);
             }
-
-
         }, 0, 20 * 60 * 5);
 
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             this.hasFinishedSetup = true;
             Bukkit.getServer().setWhitelist(false);
@@ -519,8 +495,6 @@ public class DungeonRealms extends JavaPlugin {
         });
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), 20 * 60 * 4);
-
-
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, GameAPI::stopGame, 20 * 60 * 5);
     }
 

@@ -2,8 +2,8 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.database.type.EnumData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -34,7 +34,7 @@ public class CommandWhois extends BasicCommand {
             return false;
         }
         UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(p_name));
-        boolean isPlaying = (boolean)DatabaseAPI.getInstance().getValue(uuid, EnumData.IS_PLAYING);
+        boolean isPlaying = (boolean)DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.IS_PLAYING);
         String server = DatabaseAPI.getInstance().getFormattedShardName(uuid);
 
         if(!isPlaying) {

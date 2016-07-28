@@ -1,8 +1,8 @@
 package net.dungeonrealms.common.game.database.player.rank;
 
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.type.EnumData;
-import net.dungeonrealms.common.game.database.type.EnumOperators;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

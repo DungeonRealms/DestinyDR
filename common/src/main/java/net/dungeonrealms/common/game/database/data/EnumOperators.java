@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.database.type;
+package net.dungeonrealms.common.game.database.data;
 
 /**
  * Created by Nick on 8/30/2015.

@@ -2,7 +2,10 @@ package net.dungeonrealms.common.game.database;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.concurrent.UpdateThread;
 import org.bson.Document;
 
 /**
@@ -20,33 +23,38 @@ public class DatabaseDriver {
         return instance;
     }
 
-    public static com.mongodb.MongoClient mongoClient = null;
+    public static MongoClient mongoClient = null;
     public static MongoClientURI mongoClientURI = null;
-    public static com.mongodb.client.MongoDatabase database = null;
-    public static com.mongodb.client.MongoCollection<Document> collection = null;
-    public static com.mongodb.client.MongoCollection<Document> bans = null;
-    public static com.mongodb.client.MongoCollection<Document> guilds = null;
-    public static com.mongodb.client.MongoCollection<Document> quests = null;
+    public static MongoDatabase database = null;
 
-    protected boolean keepDataInMemory = true;
+    public static MongoCollection<Document> playerData = null;
+    public static MongoCollection<Document> bans = null;
+    public static MongoCollection<Document> guilds = null;
+    public static MongoCollection<Document> quests = null;
 
-    public void startInitialization(boolean keepDataInMemory) {
-        this.keepDataInMemory = keepDataInMemory;
+    protected boolean cacheData = true;
 
-        Constants.log.info("DungeonRealms Starting [MONGODB] Connection...");
-        mongoClientURI = new MongoClientURI("mongodb://dungeonuser:mwH47e552qxWPwxL@ds025224-a0.mlab.com:25224,ds025224-a1.mlab.com:25224/dungeonrealms?replicaSet=rs-ds025224");
+    public void startInitialization(boolean cacheData) {
+        this.cacheData = cacheData;
+
+        Constants.log.info("DungeonRealms Starting [DATABASE] Connection...");
+        mongoClientURI = new MongoClientURI(Constants.DATABASE_URI);
+
+        // START UPDATE THREAD //
+        new UpdateThread().start();
+        Constants.log.info("DungeonRealms - MongoUpdateThread ... STARTED ...");
+
         mongoClient = new MongoClient(mongoClientURI);
         database = mongoClient.getDatabase("dungeonrealms");
-        collection = database.getCollection("player_data");
+        playerData = database.getCollection("player_data");
         bans = database.getCollection("bans");
         guilds = database.getCollection("guilds");
         quests = database.getCollection("quests");
 
-
-        Constants.log.info("DungeonRealms [MONGODB] has connected successfully!");
+        Constants.log.info("DungeonRealms [DATABASE] has connected successfully!");
     }
 
-    protected boolean isKeepDataInMemory() {
-        return keepDataInMemory;
+    protected boolean isCacheData() {
+        return cacheData;
     }
 }
