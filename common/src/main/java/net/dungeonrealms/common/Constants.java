@@ -16,7 +16,7 @@ public class Constants {
 
     public static final String[] DEVELOPERS = new String[]{"Proxying", "Atlas__", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle"};
 
-    public static final String MOTD = "&6Dungeon Realms &8- &a• The Best Minecraft MMORPG • &ePatch v5.0 &8- &f&nwww.dungeonrealms.net &8-";
+    public static final String MOTD = "&6Dungeon Realms &8- &a• The Best Minecraft MMORPG •\n   &ePatch v5.0          &8- &f&nwww.dungeonrealms.net &8-";
 
     public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
 
@@ -32,6 +32,6 @@ public class Constants {
     public static final String BUILD_VERSION = "v5.0";
 
     // BUILD NUMBER //
-    public static final String BUILD_NUMBER = "#143";
+    public static final String BUILD_NUMBER = "#144";
 
 }
