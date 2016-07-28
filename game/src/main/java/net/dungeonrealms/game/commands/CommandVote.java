@@ -1,7 +1,14 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,10 +25,29 @@ public class CommandVote extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) return true;
-        final JSONMessage normal = new JSONMessage(ChatColor.AQUA + "To vote for 15 ECASH and 5% EXP click ");
-        normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
-        normal.addText(ChatColor.AQUA + ". You can vote each day to get the rewards!");
-        normal.sendToPlayer((Player)sender);
+        Player player = (Player) sender;
+
+        String rank = Rank.getInstance().getRank(player.getUniqueId());
+
+        String preMessage = "";
+        switch (rank.toLowerCase()) {
+            case "default":
+                preMessage = ChatColor.AQUA + "To vote for 15 ECASH & 5% EXP, click ";
+                break;
+            case "sub":
+                preMessage = ChatColor.AQUA + "To vote for 25 ECASH & 5% EXP, click ";
+                break;
+            case "sub+":
+            case "sub++":
+                preMessage = ChatColor.AQUA + "To vote for 25 ECASH & 5% EXP, click ";
+                break;
+            default:
+                preMessage = ChatColor.AQUA + "To vote for 15 ECASH & 5% EXP, click ";
+                break;
+        }
+        final JSONMessage message = new JSONMessage(preMessage, ChatColor.AQUA);
+        message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
+        message.sendToPlayer(player);
         return true;
     }
 }

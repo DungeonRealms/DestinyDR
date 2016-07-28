@@ -27,6 +27,7 @@ public class JSONMessage {
 
     public JSONMessage(String text) {
         initiateData();
+        json.addProperty("text", text);
     }
 
     public JSONMessage(String text, ChatColor color) {

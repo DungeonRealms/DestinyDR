@@ -77,7 +77,7 @@ public interface DRMonster {
                 break;
             case 4:
                 gemChance = 20;
-                chance = ent.hasMetadata("elite") ? 25 : 10; // 2.5%, 1%
+                chance = ent.hasMetadata("elite") ? 30 : 15; // 3%, 1.5%
                 break;
             case 5:
                 gemChance = 35;
