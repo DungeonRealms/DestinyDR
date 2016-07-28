@@ -30,19 +30,11 @@ public class PlayerManager {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null || !player.isOnline()) return;
 
-        if (!hasItem(player.getInventory(), "realmPortalRune")) {
-
-            // MOVE ITEM IF SLOT IS TAKEN //
-            if (player.getInventory().firstEmpty() != -1 && !isSlotFree(player.getInventory(), 7))
-                player.getInventory().setItem(player.getInventory().firstEmpty(), player.getInventory().getItem(7));
+        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 8)) {
             player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
         }
 
-        if (!hasItem(player.getInventory(), "journal")) {
-
-            // MOVE ITEM IF SLOT IS TAKEN //
-            if (player.getInventory().firstEmpty() != -1 && !isSlotFree(player.getInventory(), 8))
-                player.getInventory().setItem(player.getInventory().firstEmpty(), player.getInventory().getItem(8));
+        if (!hasItem(player.getInventory(), "journal") && isSlotFree(player.getInventory(), 8)) {
             player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
         }
     }
