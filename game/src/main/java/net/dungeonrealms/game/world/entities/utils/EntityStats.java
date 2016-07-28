@@ -13,6 +13,7 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -223,11 +224,17 @@ public class EntityStats {
 	 * @param tier
 	 */
 	public static void setBossRandomStats(Entity entity, int level, int tier) {
-		entity.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
-        entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
-        entity.getBukkitEntity().setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
-        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
+        final CraftEntity bukkitEntity = entity.getBukkitEntity();
+        bukkitEntity.setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+        bukkitEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) bukkitEntity)));
+        bukkitEntity.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
+        bukkitEntity.setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
+        for (ItemStack i : ((LivingEntity) bukkitEntity).getEquipment().getArmorContents()) {
+            EnchantmentAPI.addGlow(i);
+        }
+        EnchantmentAPI.addGlow(((LivingEntity) bukkitEntity).getEquipment().getItemInMainHand());
+        ((LivingEntity) bukkitEntity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true));
+        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) bukkitEntity, HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) bukkitEntity));
 	}
 
 }

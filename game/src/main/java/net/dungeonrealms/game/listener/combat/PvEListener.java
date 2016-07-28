@@ -80,7 +80,8 @@ public class PvEListener implements Listener {
 
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
 
-        DamageAPI.knockbackEntity(damager, receiver, 0.4);
+        if (!receiver.hasMetadata("boss"))
+            DamageAPI.knockbackEntity(damager, receiver, 0.4);
 
         if (!GameAPI.isWeapon(damager.getEquipment().getItemInMainHand())) {
             HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, 1);
@@ -262,7 +263,8 @@ public class PvEListener implements Listener {
             CombatLog.addToCombat(damager);
         }
 
-        DamageAPI.knockbackEntity(damager, receiver, 0.4);
+        if (!receiver.hasMetadata("boss"))
+            DamageAPI.knockbackEntity(damager, receiver, 0.4);
 
         finalDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
