@@ -29,9 +29,10 @@ public class UpdateThread extends Thread {
                 if (query == null) continue;
 
                 UpdateResult result = DatabaseDriver.playerData.updateOne(query.getSearchQuery(), query.getNewDocument());
-                if (Constants.debug) if (result.wasAcknowledged()) {
-                    Constants.log.info("[Database] ASYNC Executed query: " + query.getSearchQuery().toString() + " " + query.getNewDocument().toString());
 
+                if (result.wasAcknowledged()) {
+                    if (Constants.debug)
+                        Constants.log.info("[Database] ASYNC Executed query: " + query.getSearchQuery().toString() + " " + query.getNewDocument().toString());
                     if (query.getDoAfterOptional() != null)
                         query.getDoAfterOptional().accept(result);
                 } else
