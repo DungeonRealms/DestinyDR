@@ -3,9 +3,15 @@ Build <build>
 The network has been completely wiped. For more information please see the website.
 
 &2New Features&0
+- Added /vote command.
 - Subscribers can now bypass the global chat delay.
 - Energy regen now updates 3x faster for a smoother look.
 - Shard menu now displays server load
+
+&8Changes&0
+- T4 drop rates increased further.
+- Burick the Fanatic now poses a greater threat to challengers.
+- The Energy Regen on Burick's gear has been randomized.
 
 &4Bug Fixes&0
 - Fixed lag spikes
