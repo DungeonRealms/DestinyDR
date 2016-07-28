@@ -811,7 +811,7 @@ public class ItemManager {
         String page4_string;
         String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
         GamePlayer gp = GameAPI.getGamePlayer(p);
-        if(gp == null)
+        if (gp == null)
             return stack;
         KarmaHandler.EnumPlayerAlignments playerAlignment = gp.getPlayerAlignment();
         String pretty_align = (playerAlignment == KarmaHandler.EnumPlayerAlignments.LAWFUL ? ChatColor.DARK_GREEN.toString() :
@@ -898,49 +898,50 @@ public class ItemManager {
         pages.add(page4_string);
         pages.add(page5_string);
         pages.add(page6_string);
-        int count = 0;
-        String nextLine = "\n";
-        String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
-        for (String uuidString : friendsList) {
-            UUID uuid = UUID.fromString(uuidString);
-            String playerName = DatabaseAPI.getInstance().getOfflineName(uuid);
-            String shard = DatabaseAPI.getInstance().getFormattedShardName(uuid);
-            boolean isOnline = Boolean.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid)));
-            long currentTime = System.currentTimeMillis();
-            long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid)));
-            long millis = currentTime - endTime;
-            long second = (millis / 1000) % 60;
-            long minute = (millis / (1000 * 60)) % 60;
-            long hour = (millis / (1000 * 60 * 60)) % 24;
-            String time = "";
-
-            if (hour > 0) {
-                time += hour + "h " + minute + "m " + second + "s ";
-            } else if (minute > 0) {
-                time += minute + "m " + second + "s ";
-
-            } else {
-                time += second + "s ";
-            }
-            if (hour > 99)
-                time = "Many moons.";
-            time += nextLine;
-
-            if (playerName.length() >= 15)
-                playerName = playerName.substring(0, 15);
-            friendsPage_string += (isOnline ? ChatColor.GREEN + ChatColor.BOLD.toString() + "O" : ChatColor.DARK_RED + ChatColor.BOLD.toString() + "O") + ChatColor.BLACK + ChatColor.BOLD.toString() + " " + playerName + nextLine;
-            friendsPage_string += (isOnline ? ChatColor.BLACK + "Shard: " + ChatColor.BOLD + shard + nextLine : ChatColor.BLACK + "Last On: " + time);
-
-
-            count++;
-            if (count == 5 || uuidString.equalsIgnoreCase(friendsList.get(friendsList.size() - 1))) {
-                count = 0;
-                pages.add(friendsPage_string);
-                friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
-                if (uuidString.equalsIgnoreCase(friendsList.get(friendsList.size() - 1)))
-                    break;
-            }
-        }
+//        int count = 0;
+//        String nextLine = "\n";
+////        String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
+////
+////        for (String uuidString : friendsList) {
+////            UUID uuid = UUID.fromString(uuidString);
+////            String playerName = DatabaseAPI.getInstance().getOfflineName(uuid);
+////            String shard = DatabaseAPI.getInstance().getFormattedShardName(uuid);
+////            boolean isOnline = Boolean.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid)));
+////            long currentTime = System.currentTimeMillis();
+////            long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid)));
+////            long millis = currentTime - endTime;
+////            long second = (millis / 1000) % 60;
+////            long minute = (millis / (1000 * 60)) % 60;
+////            long hour = (millis / (1000 * 60 * 60)) % 24;
+////            String time = "";
+////
+////            if (hour > 0) {
+////                time += hour + "h " + minute + "m " + second + "s ";
+////            } else if (minute > 0) {
+////                time += minute + "m " + second + "s ";
+////
+////            } else {
+////                time += second + "s ";
+////            }
+////            if (hour > 99)
+////                time = "Many moons.";
+////            time += nextLine;
+////
+////            if (playerName.length() >= 15)
+////                playerName = playerName.substring(0, 15);
+////            friendsPage_string += (isOnline ? ChatColor.GREEN + ChatColor.BOLD.toString() + "O" : ChatColor.DARK_RED + ChatColor.BOLD.toString() + "O") + ChatColor.BLACK + ChatColor.BOLD.toString() + " " + playerName + nextLine;
+////            friendsPage_string += (isOnline ? ChatColor.BLACK + "Shard: " + ChatColor.BOLD + shard + nextLine : ChatColor.BLACK + "Last On: " + time);
+////
+////
+////            count++;
+////            if (count == 5 || uuidString.equalsIgnoreCase(friendsList.get(friendsList.size() - 1))) {
+////                count = 0;
+////                pages.add(friendsPage_string);
+////                friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
+////                if (uuidString.equalsIgnoreCase(friendsList.get(friendsList.size() - 1)))
+////                    break;
+////            }
+////        }
 
 
         bm.setPages(pages);

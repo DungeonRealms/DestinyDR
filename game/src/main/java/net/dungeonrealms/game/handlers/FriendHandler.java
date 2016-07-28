@@ -2,16 +2,13 @@ package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.type.EnumData;
 import net.dungeonrealms.common.game.database.type.EnumOperators;
-import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -19,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Nick on 10/22/2015.

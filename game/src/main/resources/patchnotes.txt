@@ -20,6 +20,7 @@ The network has been completely wiped. For more information please see the websi
 - The Infernal Abyss dungeon is temporarily disabled
 
 &4Bug Fixes&0
+- Fixed lag spikes
 - Fixed issues with guild commands.
 - Fixed realm portal griefing
 - /ginfo once again shows all members.

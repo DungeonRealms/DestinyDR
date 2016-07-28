@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands.friends;
 
 import io.netty.buffer.Unpooled;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.type.EnumData;
@@ -21,6 +22,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by chase on 7/7/2016.
@@ -35,13 +37,22 @@ public class FriendsCommand extends BasicCommand {
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
-        ItemStack book = getFriendsBook(player);
-        final ItemStack savedItem = player.getInventory().getItemInMainHand();
-        player.getInventory().setItemInMainHand(book);
-        PacketDataSerializer packetdataserializer = new PacketDataSerializer(Unpooled.buffer());
-        packetdataserializer.a(EnumHand.MAIN_HAND);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
-        player.getInventory().setItemInMainHand(savedItem);
+
+
+        GameAPI.submitAsyncCallback(() -> getFriendsBook(player), book -> {
+            try {
+                final ItemStack savedItem = player.getInventory().getItemInMainHand();
+                player.getInventory().setItemInMainHand(book.get());
+
+                PacketDataSerializer packetdataserializer = new PacketDataSerializer(Unpooled.buffer());
+                packetdataserializer.a(EnumHand.MAIN_HAND);
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
+                player.getInventory().setItemInMainHand(savedItem);
+
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
         return false;
     }
 
