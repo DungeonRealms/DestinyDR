@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
@@ -122,6 +123,15 @@ public class RestrictionListener implements Listener {
             }
             p.sendMessage(ChatColor.RED + "You were found with armor that is not wearable at your level.");
         }
+    }
+
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        String command = event.getMessage();
+
+        if (command.equalsIgnoreCase("me") && Rank.isDev(event.getPlayer()))
+            event.setCancelled(true);
     }
 
 
@@ -268,7 +278,7 @@ public class RestrictionListener implements Listener {
 
     @EventHandler
     public void playerClickHorse(InventoryClickEvent event) {
-        final Player p = (Player)event.getWhoClicked();
+        final Player p = (Player) event.getWhoClicked();
 
         if (!p.isInsideVehicle()) return;
         if (!(p.getVehicle() instanceof Horse)) return;
@@ -402,7 +412,7 @@ public class RestrictionListener implements Listener {
     public void onAttackHorse(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Horse)) return;
         Horse horse = (Horse) event.getEntity();
-        LivingEntity passenger = (LivingEntity)horse.getPassenger();
+        LivingEntity passenger = (LivingEntity) horse.getPassenger();
         horse.eject();
         if (passenger != null) Bukkit.getServer().getPluginManager().callEvent(new VehicleExitEvent(horse, passenger));
     }
