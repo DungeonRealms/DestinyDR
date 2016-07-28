@@ -45,6 +45,8 @@ public class CommandRealmFix extends BasicCommand {
         DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, false);
         DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, false);
 
+        player.sendMessage(ChatColor.GRAY.toString() + "Realm fix");
+
         GameAPI.updatePlayerData(p_uuid);
         return true;
     }
