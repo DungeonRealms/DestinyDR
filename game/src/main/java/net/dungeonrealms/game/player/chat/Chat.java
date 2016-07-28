@@ -274,7 +274,7 @@ public class Chat {
     }
 
     public static boolean checkGlobalCooldown(Player player) {
-        if (Rank.isPMOD(player)) return true;
+        if (Rank.isPMOD(player) || Rank.isSubscriber(player)) return true;
         if (player.hasMetadata("lastGlobalChat") && (System.currentTimeMillis() - player.getMetadata
                 ("lastGlobalChat").get(0).asLong()) < 10000) {
             int timeRemaining = ((int) (10000 - (System.currentTimeMillis() - player.getMetadata("lastGlobalChat").get(0)

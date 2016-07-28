@@ -36,22 +36,21 @@ public class DatabaseDriver {
 
     public void startInitialization(boolean cacheData) {
         this.cacheData = cacheData;
-
-        Constants.log.info("DungeonRealms Starting [DATABASE] Connection...");
         mongoClientURI = new MongoClientURI(Constants.DATABASE_URI);
 
-        // START UPDATE THREAD //
-        new UpdateThread().start();
-        Constants.log.info("DungeonRealms - MongoUpdateThread ... STARTED ...");
-
+        Constants.log.info("DungeonRealms Database connection pool is being created...");
         mongoClient = new MongoClient(mongoClientURI);
+
         database = mongoClient.getDatabase("dungeonrealms");
         playerData = database.getCollection("player_data");
         bans = database.getCollection("bans");
         guilds = database.getCollection("guilds");
         quests = database.getCollection("quests");
 
-        Constants.log.info("DungeonRealms [DATABASE] has connected successfully!");
+        Constants.log.info("DungeonRealms Database has connected successfully!");
+
+        new UpdateThread().start();
+        Constants.log.info("DungeonRealms Database UpdateThread ... STARTED ...");
     }
 
     protected boolean isCacheData() {

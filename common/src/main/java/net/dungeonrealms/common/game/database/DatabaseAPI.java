@@ -89,6 +89,11 @@ public class DatabaseAPI {
             UpdateResult result = DatabaseDriver.playerData.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
             if (doAfterOptional != null)
                 doAfterOptional.accept(result);
+
+            if (Constants.debug) {
+                Constants.log.warning("[Database] Updating " + uuid.toString() + "'s player data on the main thread");
+                printTrace();
+            }
         }
     }
 
@@ -210,7 +215,7 @@ public class DatabaseAPI {
 
     public String getOfflineName(UUID uuid) {
         if (Constants.debug) {
-            Constants.log.info("Retrieving for " + uuid.toString() + "'s name..");
+            Constants.log.info("[Database] Retrieving for " + uuid.toString() + "'s name..");
             printTrace();
         }
 
@@ -344,6 +349,7 @@ public class DatabaseAPI {
                                         .append("ecash_spent", 0)
                                         .append("gems_earned", 0)
                                         .append("gems_spent", 0));
+
         DatabaseDriver.playerData.insertOne(newPlayerDocument);
         requestPlayer(uuid);
         Constants.log.info("[Database] Requesting new data for : " + uuid);
