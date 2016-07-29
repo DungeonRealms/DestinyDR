@@ -47,6 +47,10 @@
             <url>http://repo.codingforcookies.com/content/repositories/releases/</url>
         </repository>
         <repository>
+            <id>codecrafter47-repo</id>
+            <url>http://nexus.codecrafter47.dyndns.eu/content/repositories/public/</url>
+        </repository>
+        <repository>
             <id>sonatype-snapshots</id>
             <name>sonatype snapshots repo</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>

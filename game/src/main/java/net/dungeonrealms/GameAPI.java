@@ -692,8 +692,7 @@ public class GameAPI {
 
         // LOCATION
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-            String locationAsString = "-367,86,390,0,0"; // Cyrennica
-            locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
+            String locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY()) + ","
                     + player.getLocation().getZ() + "," + player.getLocation().getYaw() + ","
                     + player.getLocation().getPitch();
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, async);
@@ -845,9 +844,7 @@ public class GameAPI {
     public static void logoutAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.removeFromCombat(player);
-            }
+            if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
             DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
             BungeeUtils.sendToServer(player.getName(), "Lobby");
         }

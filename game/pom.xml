@@ -67,12 +67,26 @@
     </build>
 
 
+    <repositories>
+        <repository>
+            <id>codecrafter47-repo</id>
+            <url>http://nexus.codecrafter47.dyndns.eu/content/repositories/public/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>net.dungeonrealms</groupId>
             <artifactId>DungeonRealms-network</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>codecrafter47.bungeetablistplus</groupId>
+            <artifactId>bungeetablistplus-api-bukkit</artifactId>
+            <version>2.5.3</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--Spigot GameAPI-->
@@ -118,6 +132,7 @@
             <artifactId>bson</artifactId>
             <version>3.2.2</version>
         </dependency>
+
 
         <dependency>
             <groupId>commons-net</groupId>

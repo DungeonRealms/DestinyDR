@@ -5,9 +5,14 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.network.PingResponse;
+import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.ping.ServerPinger;
+import net.dungeonrealms.common.network.ping.type.BungeePingResponse;
 import net.dungeonrealms.network.GameClient;
-import net.dungeonrealms.proxy.command.MaintenanceCommand;
+import net.dungeonrealms.proxy.command.CommandAlert;
+import net.dungeonrealms.proxy.command.CommandMaintenance;
 import net.dungeonrealms.proxy.listener.NetworkClientListener;
 import net.dungeonrealms.proxy.listener.ProxyChannelListener;
 import net.md_5.bungee.api.ChatColor;
@@ -65,19 +70,20 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
 
-        this.getProxy().getPluginManager().registerCommand(this, new MaintenanceCommand("maintenancemode", null, "mm"));
+        this.getProxy().getPluginManager().registerCommand(this, new CommandMaintenance());
+        this.getProxy().getPluginManager().registerCommand(this, new CommandAlert());
 
         try {
             // SET DEFAULT
             Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(BUNGEE_CONFIG_FILE);
 
-            if (!configuration.getKeys().contains("MAINTENANCE_MODE"))
+            if (!configuration.getKeys().contains("maintenance_mode"))
                 setMaintenanceMode(MAINTENANCE_MODE);
-            else MAINTENANCE_MODE = configuration.getBoolean("MAINTENANCE_MODE");
+            else MAINTENANCE_MODE = configuration.getBoolean("maintenance_mode");
 
 
-            if (configuration.getKeys().contains("WHITELIST"))
-                WHITELIST = (List<String>) configuration.getList("WHITELIST");
+            if (configuration.getKeys().contains("whitelist"))
+                WHITELIST = (List<String>) configuration.getList("whitelist");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -106,10 +112,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     public void onDisable() {
         try {
-            client.kill();
             // SAVE WHITELIST //
             Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(BUNGEE_CONFIG_FILE);
-            configuration.set("WHITELIST", WHITELIST);
+            configuration.set("whitelist", WHITELIST);
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, BUNGEE_CONFIG_FILE);
         } catch (IOException e) {
             e.printStackTrace();
@@ -131,22 +136,24 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
         try {
             Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(BUNGEE_CONFIG_FILE);
-            configuration.set("MAINTENANCE_MODE", MAINTENANCE_MODE);
-
+            configuration.set("maintenance_mode", MAINTENANCE_MODE);
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, BUNGEE_CONFIG_FILE);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @EventHandler
-    public void onServerConnect(ServerConnectEvent event) {
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onMaintenanceMode(ServerConnectEvent event) {
         if (MAINTENANCE_MODE && !isWhitelisted(event.getPlayer().getName())) {
             event.getPlayer().disconnect(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
             event.setCancelled(true);
             return;
         }
+    }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onServerConnect(ServerConnectEvent event) {
         // CHECK IF SERVER IS A SHARD //
         ShardInfo shard = ShardInfo.getByPseudoName(event.getTarget().getName());
         if (shard == null) return;
@@ -155,15 +162,82 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         event.setCancelled(true);
 
         // SEND REQUEST PLAYER'S DATA PACKET //
-        sendPacket("LoginRequestToken", event.getPlayer().getUniqueId().toString(), shard.getPseudoName());
+        sendNetworkPacket("LoginRequestToken", event.getPlayer().getUniqueId().toString(), shard.getPseudoName());
     }
 
-    @EventHandler
+
+    /**
+     * This is used for seamless shard moving when
+     * server restarts
+     *
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onServerFallback(ServerConnectEvent event) {
+        if ((event.getPlayer().getServer() != null) &&
+                // THIS IS CONSIDERED THE FALLBACK SERVER //
+                event.getTarget().getName().contains("Lobby2")
+                ) {
+
+            Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
+            event.getPlayer().sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Moving your current session...");
+
+            while (optimalShardFinder.hasNext()) {
+                ServerInfo target = optimalShardFinder.next();
+
+                try {
+                    PingResponse data = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 500));
+                    if (!data.isOnline() || data.getMotd().contains("offline")) {
+
+                        if (!optimalShardFinder.hasNext()) {
+                            // CONNECT THEM TO LOBBY LOAD BALANCER //
+                            event.setTarget(getProxy().getServerInfo("Lobby"));
+                            return;
+                        }
+
+                        continue;
+                    }
+                } catch (Exception e) {
+
+                    if (!optimalShardFinder.hasNext()) {
+                        // CONNECT THEM TO LOBBY LOAD BALANCER //
+                        event.setTarget(getProxy().getServerInfo("Lobby"));
+                        return;
+                    }
+
+                    continue;
+                }
+
+                if (target.canAccess(event.getPlayer()) && !(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target))) {
+                    try {
+                        event.setTarget(target);
+                    } catch (Exception e) {
+                        if (!optimalShardFinder.hasNext())
+                            // CONNECT THEM TO LOBBY LOAD BALANCER //
+                            event.setTarget(getProxy().getServerInfo("Lobby"));
+                        else continue;
+                    }
+
+                    break;
+                } else if (!optimalShardFinder.hasNext()) {
+                    // CONNECT THEM TO LOBBY LOAD BALANCER //
+                    event.setTarget(getProxy().getServerInfo("Lobby"));
+                    return;
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onLobbyConnect(ServerConnectEvent event) {
-        if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby")) {
+        if ((event.getPlayer().getServer() == null) ||
+                // THIS IS CONSIDERED THE LOBBY LOAD BALANCE SERVER //
+                event.getTarget().getName().equals("Lobby")
+                ) {
             Iterator<ServerInfo> optimalLobbies = getOptimalLobbies().iterator();
 
             while (optimalLobbies.hasNext()) {
+
                 ServerInfo target = optimalLobbies.next();
 
                 if (!(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target))) {
@@ -180,20 +254,10 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                     event.getPlayer().disconnect(ChatColor.RED + "Could not find a lobby for you.");
                     return;
                 }
+
             }
         }
     }
-
-    public void sendPacket(String task, String... contents) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(task);
-
-        for (String s : contents)
-            out.writeUTF(s);
-
-        getClient().sendTCP(out.toByteArray());
-    }
-
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTabComplete(TabCompleteEvent ev) {
@@ -206,7 +270,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         if (lastSpaceIndex >= 0) partialPlayerName = partialPlayerName.substring(lastSpaceIndex + 1);
 
         for (ProxiedPlayer p : getProxy().getPlayers())
-            if (p.getName().toLowerCase().startsWith(partialPlayerName)) ev.getSuggestions().add(p.getName());
+            if (p.getName().toLowerCase().startsWith(partialPlayerName))
+                ev.getSuggestions().add(ChatColor.GREEN + p.getName());
     }
 
 
@@ -239,11 +304,36 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         ping.setPlayers(new ServerPing.Players(Constants.PLAYER_SLOTS, players, sample));
     }
 
+    public List<ServerInfo> getOptimalShards() {
+        List<ServerInfo> servers = new ArrayList<>();
+
+        for (ShardInfo shardInfo : ShardInfo.values()) {
+            // We want to only put them on a US as they may fail the criteria for another shard.
+            // They are free to join another shard once connected.
+
+            String name = shardInfo.getPseudoName();
+            if (name.startsWith("us") && !name.equalsIgnoreCase("us0"))
+                servers.add(getProxy().getServerInfo(name));
+        }
+
+        Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
+        return servers;
+    }
+
     public List<ServerInfo> getOptimalLobbies() {
         List<ServerInfo> servers = getProxy().getServers().values().stream().filter(server -> server.getName().contains("Lobby")).collect(Collectors.toList());
         Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
         return servers;
     }
 
+    public void sendNetworkPacket(String task, String... contents) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(task);
+
+        for (String s : contents)
+            out.writeUTF(s);
+
+        getClient().sendTCP(out.toByteArray());
+    }
 
 }

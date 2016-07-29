@@ -15,11 +15,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/25/2016
  */
-public class MaintenanceCommand extends Command {
+public class CommandMaintenance extends Command {
 
-
-    public MaintenanceCommand(String name, String permission, String... aliases) {
-        super(name, permission, aliases);
+    public CommandMaintenance() {
+        super("maintenancemode", null, "mm");
     }
 
     @Override
@@ -44,7 +43,7 @@ public class MaintenanceCommand extends Command {
                         player.disconnect(ChatColor.translateAlternateColorCodes('&', "&6DungeonRealms &cis undergoing maintenance\nPlease refer to www.dungeonrealms.net for status updates"));
                 });
                 // STOP ALL DUNGEON REALM SERVERS //
-                DungeonRealmsProxy.getInstance().sendPacket("Stop");
+                DungeonRealmsProxy.getInstance().sendNetworkPacket("Stop");
             }, 5, TimeUnit.SECONDS);
 
         } else if (args[0].equalsIgnoreCase("off")) {
