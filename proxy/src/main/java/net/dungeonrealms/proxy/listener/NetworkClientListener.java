@@ -173,7 +173,7 @@ public class NetworkClientListener extends Listener {
                 servers.add(getProxy().getServerInfo(name));
         }
 
-        Collections.sort(servers, (o1, o2) -> ((o1.getPlayers().size() + getPendingConnections(o1)) - (o2.getPlayers().size() + getPendingConnections(o1))));
+        Collections.sort(servers, (o1, o2) -> ((o1.getPlayers().size() + getPendingConnections(o1)) - (o2.getPlayers().size() + getPendingConnections(o2))));
         return servers;
     }
 
