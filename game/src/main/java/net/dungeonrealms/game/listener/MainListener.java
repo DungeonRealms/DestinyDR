@@ -215,7 +215,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
 
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-            player.kickPlayer(ChatColor.RED + "Unable to load you character mode.");
+            player.kickPlayer(ChatColor.RED + "Unable to load your character.");
             return;
         }
 
