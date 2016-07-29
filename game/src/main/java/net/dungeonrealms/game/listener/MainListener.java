@@ -194,6 +194,13 @@ public class MainListener implements Listener {
         e.getWorld().setKeepSpawnInMemory(false);
     }
 
+
+    @EventHandler
+    public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(event.getUniqueId()))
+            DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
+    }
+
     /**
      * This event is the main event once the player has actually entered the
      * world! It is now safe to do things to the player e.g TitleAPI or
@@ -206,6 +213,11 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
+
+        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+            player.kickPlayer(ChatColor.RED + "Unable to load you character mode.");
+            return;
+        }
 
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 

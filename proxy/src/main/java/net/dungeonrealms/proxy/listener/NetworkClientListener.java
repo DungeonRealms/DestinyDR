@@ -50,7 +50,6 @@ public class NetworkClientListener extends Listener {
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(data));
 
             try {
-
                 String task = in.readUTF();
 
                 if (task.equals("AcceptLoginToken")) {
@@ -67,7 +66,6 @@ public class NetworkClientListener extends Listener {
                     return;
                 }
 
-
                 if (task.equals("RefuseLoginToken")) {
                     UUID uuid = UUID.fromString(in.readUTF());
                     ProxiedPlayer player = getProxy().getPlayer(uuid);
@@ -82,54 +80,52 @@ public class NetworkClientListener extends Listener {
 
                 if (task.equals("MoveSessionToken")) {
                     UUID uuid = UUID.fromString(in.readUTF());
-                    ProxiedPlayer player = getProxy().getPlayer(uuid);
 
-                    Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
+                    getProxy().getScheduler().runAsync(DungeonRealmsProxy.getInstance(), () -> {
+                        ProxiedPlayer player = getProxy().getPlayer(uuid);
 
+                        Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
+                        while (optimalShardFinder.hasNext()) {
+                            ServerInfo target = optimalShardFinder.next();
 
-                    while (optimalShardFinder.hasNext()) {
-                        ServerInfo target = optimalShardFinder.next();
+                            try {
+                                PingResponse ping = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 500));
+                                if (!ping.isOnline() || ping.getMotd().contains("offline")) {
 
-                        try {
-                            PingResponse ping = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 500));
-                            if (!ping.isOnline() || ping.getMotd().contains("offline")) {
+                                    if (!optimalShardFinder.hasNext()) {
+                                        // CONNECT THEM TO LOBBY LOAD BALANCER //
+                                        player.connect(getProxy().getServerInfo("Lobby"));
+                                        player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unable to find a session for you.");
+                                        return;
+                                    }
+
+                                    continue;
+                                }
+                            } catch (Exception e) {
 
                                 if (!optimalShardFinder.hasNext()) {
                                     // CONNECT THEM TO LOBBY LOAD BALANCER //
                                     player.connect(getProxy().getServerInfo("Lobby"));
+                                    player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unable to find a session for you.");
                                     return;
                                 }
 
                                 continue;
                             }
-                        } catch (Exception e) {
 
-                            if (!optimalShardFinder.hasNext()) {
+                            if (target.canAccess(player) && !(player.getServer() != null && player.getServer().getInfo().equals(target))) {
+                                DungeonRealmsProxy.getInstance().sendNetworkPacket("LoginRequestToken", player.getUniqueId().toString(), target.getName());
+                                player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Moving your current session...");
+                                break;
+                            } else if (!optimalShardFinder.hasNext()) {
                                 // CONNECT THEM TO LOBBY LOAD BALANCER //
                                 player.connect(getProxy().getServerInfo("Lobby"));
+                                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unable to find a session for you.");
                                 return;
                             }
-
-                            continue;
                         }
+                    });
 
-                        if (target.canAccess(player) && !(player.getServer() != null && player.getServer().getInfo().equals(target))) {
-                            try {
-                                player.connect(target);
-                            } catch (Exception e) {
-                                if (!optimalShardFinder.hasNext()) {
-                                    // CONNECT THEM TO LOBBY LOAD BALANCER //
-                                    player.connect(getProxy().getServerInfo("Lobby"));
-                                } else continue;
-                            }
-                            player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Moving your current session...");
-                            break;
-                        } else if (!optimalShardFinder.hasNext()) {
-                            // CONNECT THEM TO LOBBY LOAD BALANCER //
-                            player.connect(getProxy().getServerInfo("Lobby"));
-                            return;
-                        }
-                    }
                 }
 
             } catch (IOException e) {
