@@ -508,7 +508,7 @@ public class ShopListener implements Listener {
                         if (remainingStock > 0) {
                             itemClicked.setAmount(quantity);
                         } else {
-                            event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR));
+                            event.getInventory().remove(event.getRawSlot());
                         }
                         DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, false);
                         if (shop.getOwner() != null) {
