@@ -126,6 +126,9 @@ public class AntiCheat implements GenericMechanic {
             for (ItemStack i : inv.getContents()) {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
                 if (RepairAPI.isItemArmorOrWeapon(i)) {
+
+                    if (i.getAmount() <= 0) continue;
+
                     String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
                     if (uniqueEpochIdentifier != null)
                         gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
@@ -167,6 +170,9 @@ public class AntiCheat implements GenericMechanic {
             for (ItemStack i : inv.getContents()) {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
                 if (RepairAPI.isItemArmorOrWeapon(i)) {
+
+                    if (i.getAmount() <= 0) continue;
+
                     String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
                     if (uniqueEpochIdentifier != null)
                         gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));

@@ -9,6 +9,7 @@ The network has been completely wiped. For more information please see the websi
 - Shard menu now displays server load
 
 &8Changes&0
+- Improved anticheat
 - T4 drop rates increased further.
 - Burick the Fanatic now poses a greater threat to challengers.
 - The Energy Regen on Burick's gear has been randomized.
