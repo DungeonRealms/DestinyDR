@@ -431,7 +431,7 @@ class RealmMaterialFactory {
 
             GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
 
-            if (isEcash && gamePlayer.getEcashBalance() < pricePerItem) {
+            if (isEcash && gamePlayer.getEcashBalance() < total_price) {
                 player.sendMessage(ChatColor.RED + "You do not have enough E-CASH to complete this purchase.");
                 player.sendMessage(ChatColor.GRAY + "" + amount_to_buy + " X " + pricePerItem + " EC/ea = " + (pricePerItem * amount_to_buy) + " EC.");
                 player.sendMessage(ChatColor.GRAY + "Purchase more at store.dungeonrealms.net -- instant delivery!");
@@ -439,9 +439,7 @@ class RealmMaterialFactory {
 
             }
 
-            if (isEcash) {
-                DonationEffects.getInstance().removeECashFromPlayer(player, total_price);
-            }
+            if (isEcash) DonationEffects.getInstance().removeECashFromPlayer(player, total_price);
 
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
             player.sendMessage(ChatColor.GREEN + "Transaction successful.");
