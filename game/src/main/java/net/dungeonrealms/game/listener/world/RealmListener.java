@@ -784,6 +784,7 @@ public class RealmListener implements Listener {
             }
         }
 
+
         if (slot == -1) {
             // We never found a stack to add it to.
             if (p.getInventory().firstEmpty() == -1) {
@@ -794,7 +795,7 @@ public class RealmListener implements Listener {
                 return;
             }
             // There's room!
-            p.getInventory().setItem(p.getInventory().firstEmpty(), loot);
+            p.getInventory().setItem(p.getInventory().firstEmpty(), GameAPI.makeItemUntradeable(loot));
         }
 
         p.updateInventory();
@@ -823,7 +824,8 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void onRealmChestClose(InventoryCloseEvent event) {
-        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0)) || event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0)) || event.getPlayer().getWorld().getName().contains("DUNGEON"))
+            return;
         if (!event.getInventory().getName().contains("container.chest") && !event.getInventory().getName().contains
                 ("Realm Chest") && !event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
                 && !(event.getInventory().getName().equalsIgnoreCase("container.minecart"))
@@ -832,12 +834,13 @@ public class RealmListener implements Listener {
                 && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
             return;
         }
-        deleteIllegalItemsInInventory(event.getInventory(), (Player)event.getPlayer());
+        deleteIllegalItemsInInventory(event.getInventory(), (Player) event.getPlayer());
     }
 
     @EventHandler
     public void onRealmContainerOpen(InventoryOpenEvent event) {
-        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0)) || event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0)) || event.getPlayer().getWorld().getName().contains("DUNGEON"))
+            return;
         if (!event.getInventory().getName().contains("container.chest") && !event.getInventory().getName().contains
                 ("Realm Chest") && !event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
                 && !(event.getInventory().getName().equalsIgnoreCase("container.minecart"))
@@ -846,7 +849,7 @@ public class RealmListener implements Listener {
                 && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
             return;
         }
-        deleteIllegalItemsInInventory(event.getInventory(), (Player)event.getPlayer());
+        deleteIllegalItemsInInventory(event.getInventory(), (Player) event.getPlayer());
     }
 
     private static int deleteIllegalItemsInInventory(Inventory inv, Player p) {
@@ -923,11 +926,9 @@ public class RealmListener implements Listener {
             ItemStack item = null;
             if (event.isShiftClick()) {
                 item = event.getCurrentItem();
-            }
-            else if (event.getAction() == InventoryAction.HOTBAR_SWAP){
+            } else if (event.getAction() == InventoryAction.HOTBAR_SWAP) {
                 item = event.getInventory().getItem(event.getHotbarButton());
-            }
-            else {
+            } else {
                 return;
             }
             if (Item.ItemType.isArmor(item) || Item.ItemType.isWeapon(item) || item.getType() == Material
