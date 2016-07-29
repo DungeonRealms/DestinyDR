@@ -258,10 +258,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             String from_server = in.readUTF();
                             DonationEffects.getInstance().activateNewLevelBuffOnThisShard(duration, bonusAmount, player_string, from_server);
                         } else if (task.equals("Stop")) {
+                            DungeonRealms.getInstance().isDrStopAll = true;
+
                             if (DungeonRealms.getInstance().hasFinishedSetup())
                                 GameAPI.stopGame();
-
-                            DungeonRealms.getInstance().isDrStopAll = true;
                             return;
                         } else if (task.equals("Guilds")) {
                             String command = in.readUTF();
