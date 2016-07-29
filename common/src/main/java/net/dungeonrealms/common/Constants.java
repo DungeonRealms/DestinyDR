@@ -12,7 +12,7 @@ public class Constants {
 
     public static boolean debug = false;
 
-    public static final String DATABASE_URI = "mongodb://dungeonuser:mwH47e552qxWPwxL@ds025224-a0.mlab.com:25224,ds025224-a1.mlab.com:25224/dungeonrealms?replicaSet=rs-ds025224";
+    public static final String DATABASE_URI = "mongodb://dungeonrealms:ZwGQGVpbPGhSqSXM@131.153.25.138:27017/dungeonrealms";
 
     public static final String[] DEVELOPERS = new String[]{"Proxying", "Atlas__", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle"};
 
