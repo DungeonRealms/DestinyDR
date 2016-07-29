@@ -53,7 +53,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     public List<UUID> ACCEPTED_CONNECTIONS = new CopyOnWriteArrayList<>();
 
-    public Map<String, Set<UUID>> PENDING_TOKENS = new ConcurrentHashMap<>();
+    public Map<String, HashSet<UUID>> PENDING_TOKENS = new ConcurrentHashMap<>();
 
     private boolean MAINTENANCE_MODE = false;
 

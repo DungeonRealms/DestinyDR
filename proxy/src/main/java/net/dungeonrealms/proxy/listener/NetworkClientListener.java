@@ -123,7 +123,7 @@ public class NetworkClientListener extends Listener {
                                 if (DungeonRealmsProxy.getInstance().PENDING_TOKENS.containsKey(target.getName()))
                                     DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(target.getName()).add(player.getUniqueId());
                                 else
-                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.put(target.getName(), Collections.singleton(player.getUniqueId()));
+                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.put(target.getName(), new HashSet<>(Collections.singleton(player.getUniqueId())));
 
                                 DungeonRealmsProxy.getInstance().sendNetworkPacket("LoginRequestToken", player.getUniqueId().toString(), target.getName());
                                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Moving your current session...");
