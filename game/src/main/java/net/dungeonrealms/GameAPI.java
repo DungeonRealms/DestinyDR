@@ -842,40 +842,47 @@ public class GameAPI {
      * @since 1.0
      */
     public static void logoutAllPlayers() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
-            if (!DungeonRealms.getInstance().isDrStopAll) {
-                //TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Moving your current session", ChatColor.GRAY.toString() + "Do not disconnect");
+        Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
 
+        for (int i = 0; i < players.length; i++) {
+            final Player player = players[i];
+
+            player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
+
+            if (!DungeonRealms.getInstance().isDrStopAll) {
                 player.sendMessage(" ");
                 player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
                 player.sendMessage(" ");
             } else {
                 // SEND THEM TO THE LOBBY INSTEAD //
                 BungeeUtils.sendToServer(player.getName(), "Lobby");
+                return;
             }
 
-            GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
-            // prevent any interaction while the data is being uploaded
-            Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
-            player.setInvulnerable(true);
-            player.setNoDamageTicks(10);
-            player.closeInventory();
-            player.setCanPickupItems(false);
+                // prevent any interaction while the data is being uploaded
+                Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
+                player.setInvulnerable(true);
+                player.setNoDamageTicks(10);
+                player.closeInventory();
+                player.setCanPickupItems(false);
 
-            GamePlayer gp = GameAPI.getGamePlayer(player);
-            gp.setAbleToSuicide(false);
-            gp.setAbleToDrop(false);
+                GamePlayer gp = GameAPI.getGamePlayer(player);
+                gp.setAbleToSuicide(false);
+                gp.setAbleToDrop(false);
 
 
-            // upload data and send to server
-            submitAsyncCallback(() -> GameAPI.handleLogout(player.getUniqueId(), false),
-                    consumer -> {
-                        if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
-                        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                        GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString());
-                    });
+                // upload data and send to server
+                submitAsyncCallback(() -> GameAPI.handleLogout(player.getUniqueId(), false),
+                        consumer -> {
+                            if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
+                            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
+                            GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString());
+                        });
+
+            }, (i + 1) * 4);
         }
     }
 
