@@ -459,7 +459,7 @@ public class RealmListener implements Listener {
             }
 
         if (event.hasItem())
-            if (event.getItem().getType().equals(Material.ITEM_FRAME)) {
+            if (event.getItem().getType().equals(Material.ITEM_FRAME) || event.getItem().getType().equals(Material.END_CRYSTAL)) {
                 event.setCancelled(true);
                 return;
             }
