@@ -560,7 +560,7 @@ public class ShopListener implements Listener {
                     return;
                 }
                 if (BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker)) {
-                    event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR));
+                    event.getInventory().remove(itemClicked);
                     ItemStack clickClone = itemClicked.clone();
                     ItemMeta meta = clickClone.getItemMeta();
                     List<String> lore = meta.getLore();
