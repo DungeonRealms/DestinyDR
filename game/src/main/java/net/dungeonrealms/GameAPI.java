@@ -850,6 +850,9 @@ public class GameAPI {
                 player.sendMessage(" ");
                 player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
                 player.sendMessage(" ");
+            } else {
+                // SEND THEM TO THE LOBBY INSTEAD //
+                BungeeUtils.sendToServer(player.getName(), "Lobby");
             }
 
             GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());

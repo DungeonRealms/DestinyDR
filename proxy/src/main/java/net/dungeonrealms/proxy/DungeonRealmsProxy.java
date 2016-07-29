@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     private static GameClient client;
 
     public List<UUID> ACCEPTED_CONNECTIONS = new CopyOnWriteArrayList<>();
+
+    public Map<String, List<UUID>> PENDING_TOKENS = new ConcurrentHashMap<>();
 
     private boolean MAINTENANCE_MODE = false;
 
