@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -32,7 +33,10 @@ public class CommandStop extends BasicCommand {
         }
 
         if (args.length == 1)
-            if (args[0].equalsIgnoreCase("all")) GameAPI.sendStopAllServersPacket();
+            if (args[0].equalsIgnoreCase("all")) {
+                DungeonRealms.getInstance().isDrStopAll = true;
+                GameAPI.sendStopAllServersPacket();
+            }
 
         GameAPI.stopGame();
         return false;

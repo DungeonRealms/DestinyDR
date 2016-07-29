@@ -5,11 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.network.PingResponse;
-import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.ping.ServerPinger;
-import net.dungeonrealms.common.network.ping.type.BungeePingResponse;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.proxy.command.CommandAlert;
 import net.dungeonrealms.proxy.command.CommandMaintenance;
@@ -143,6 +139,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         }
     }
 
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onMaintenanceMode(ServerConnectEvent event) {
         if (MAINTENANCE_MODE && !isWhitelisted(event.getPlayer().getName())) {
@@ -165,68 +162,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         sendNetworkPacket("LoginRequestToken", event.getPlayer().getUniqueId().toString(), shard.getPseudoName());
     }
 
-
-    /**
-     * This is used for seamless shard moving when
-     * server restarts
-     *
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onServerFallback(ServerConnectEvent event) {
-        if ((event.getPlayer().getServer() != null) &&
-                // THIS IS CONSIDERED THE FALLBACK SERVER //
-                event.getTarget().getName().contains("Lobby2")
-                ) {
-
-            Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
-            event.getPlayer().sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Moving your current session...");
-
-            while (optimalShardFinder.hasNext()) {
-                ServerInfo target = optimalShardFinder.next();
-
-                try {
-                    PingResponse data = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 500));
-                    if (!data.isOnline() || data.getMotd().contains("offline")) {
-
-                        if (!optimalShardFinder.hasNext()) {
-                            // CONNECT THEM TO LOBBY LOAD BALANCER //
-                            event.setTarget(getProxy().getServerInfo("Lobby"));
-                            return;
-                        }
-
-                        continue;
-                    }
-                } catch (Exception e) {
-
-                    if (!optimalShardFinder.hasNext()) {
-                        // CONNECT THEM TO LOBBY LOAD BALANCER //
-                        event.setTarget(getProxy().getServerInfo("Lobby"));
-                        return;
-                    }
-
-                    continue;
-                }
-
-                if (target.canAccess(event.getPlayer()) && !(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target))) {
-                    try {
-                        event.setTarget(target);
-                    } catch (Exception e) {
-                        if (!optimalShardFinder.hasNext())
-                            // CONNECT THEM TO LOBBY LOAD BALANCER //
-                            event.setTarget(getProxy().getServerInfo("Lobby"));
-                        else continue;
-                    }
-
-                    break;
-                } else if (!optimalShardFinder.hasNext()) {
-                    // CONNECT THEM TO LOBBY LOAD BALANCER //
-                    event.setTarget(getProxy().getServerInfo("Lobby"));
-                    return;
-                }
-            }
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLobbyConnect(ServerConnectEvent event) {
@@ -270,8 +205,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         if (lastSpaceIndex >= 0) partialPlayerName = partialPlayerName.substring(lastSpaceIndex + 1);
 
         for (ProxiedPlayer p : getProxy().getPlayers())
-            if (p.getName().toLowerCase().startsWith(partialPlayerName))
-                ev.getSuggestions().add(ChatColor.GREEN + p.getName());
+            if (p.getName().toLowerCase().startsWith(partialPlayerName)) ev.getSuggestions().add(p.getName());
     }
 
 
@@ -304,21 +238,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         ping.setPlayers(new ServerPing.Players(Constants.PLAYER_SLOTS, players, sample));
     }
 
-    public List<ServerInfo> getOptimalShards() {
-        List<ServerInfo> servers = new ArrayList<>();
-
-        for (ShardInfo shardInfo : ShardInfo.values()) {
-            // We want to only put them on a US as they may fail the criteria for another shard.
-            // They are free to join another shard once connected.
-
-            String name = shardInfo.getPseudoName();
-            if (name.startsWith("us") && !name.equalsIgnoreCase("us0"))
-                servers.add(getProxy().getServerInfo(name));
-        }
-
-        Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
-        return servers;
-    }
 
     public List<ServerInfo> getOptimalLobbies() {
         List<ServerInfo> servers = getProxy().getServers().values().stream().filter(server -> server.getName().contains("Lobby")).collect(Collectors.toList());

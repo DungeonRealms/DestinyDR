@@ -254,6 +254,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             if (DungeonRealms.getInstance().hasFinishedSetup())
                                 GameAPI.stopGame();
 
+                            DungeonRealms.getInstance().isDrStopAll = true;
                             return;
                         } else if (task.equals("Guilds")) {
                             String command = in.readUTF();

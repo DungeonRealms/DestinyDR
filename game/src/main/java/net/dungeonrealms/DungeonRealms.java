@@ -122,6 +122,8 @@ public class DungeonRealms extends JavaPlugin {
 
     private volatile boolean hasFinishedSetup = false;
 
+    public boolean isDrStopAll;
+
     @Getter
     private List<String> loggingOut = new ArrayList<>();
 

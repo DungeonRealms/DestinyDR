@@ -843,10 +843,34 @@ public class GameAPI {
      */
     public static void logoutAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
-            if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
-            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-            BungeeUtils.sendToServer(player.getName(), "Lobby");
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7>>> &cThis &6DungeonRealms &cshard is " + ChatColor.BOLD + "RESTARTING."));
+
+            GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
+
+            // prevent any interaction while the data is being uploaded
+            Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
+            player.setInvulnerable(true);
+            player.setNoDamageTicks(10);
+            player.closeInventory();
+            player.setCanPickupItems(false);
+
+            GamePlayer gp = GameAPI.getGamePlayer(player);
+            gp.setAbleToSuicide(false);
+            gp.setAbleToDrop(false);
+
+            if (!DungeonRealms.getInstance().isDrStopAll) {
+                TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.GRAY + "Moving your current session", ChatColor.RED.toString() + "Do not disconnect");
+
+                player.sendMessage(" ");
+                player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
+            }
+            // upload data and send to server
+            submitAsyncCallback(() -> GameAPI.handleLogout(player.getUniqueId(), false),
+                    consumer -> {
+                        if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
+                        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
+                        GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString());
+                    });
         }
     }
 
