@@ -175,13 +175,17 @@ public class DatabaseAPI {
             // GRABBED CACHED DATA
             doc = PLAYERS.get(uuid);
         } else {
+            long currentTime = 0;
             // we should never be getting offline data sync.
             if (Constants.debug) {
+                currentTime = System.currentTimeMillis();
                 Constants.log.warning("[Database] Retrieving " + uuid.toString() + "'s offline data on the main thread...");
                 StackTraceElement ste = new Exception().getStackTrace()[1];
                 Constants.log.warning(ste.getClassName() + " " + ste.getMethodName() + " " + ste.getLineNumber());
             }
             doc = DatabaseDriver.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
+            if (Constants.debug)
+                Constants.log.info("Mongo document retrieved in " + String.valueOf(System.currentTimeMillis() - currentTime) + " ms.");
         }
 
         String[] key = data.getKey().split("\\.");
@@ -197,7 +201,7 @@ public class DatabaseAPI {
     }
 
     private void printTrace() {
-        StackTraceElement trace = new Exception().getStackTrace()[1];
+        StackTraceElement trace = new Exception().getStackTrace()[2];
 
         Constants.log.info("[Database] Class: " + trace.getClassName());
         Constants.log.info("[Database] Method: " + trace.getMethodName());
