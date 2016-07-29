@@ -53,9 +53,11 @@ public class ShopListener implements Listener {
         if (event.getPlayer().hasMetadata("pricing")) return;
         if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
             event.getPlayer().openInventory(shop.getInventory());
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
         } else {
             if (shop.isopen) {
                 event.getPlayer().openInventory(shop.getInventory());
+                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
             }
         }
     }
@@ -543,9 +545,13 @@ public class ShopListener implements Listener {
                             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), shop::updateStatus, 10L);
                         }
                     } catch (NumberFormatException e) {
+                        clicker.removeMetadata("pricing", DungeonRealms.getInstance());
                         clicker.sendMessage(ChatColor.RED + "Please enter a valid number.");
                     }
-                }, p -> p.sendMessage(ChatColor.RED + "Transaction cancelled."));
+                }, p -> {
+                    p.sendMessage(ChatColor.RED + "Transaction cancelled.");
+                    clicker.removeMetadata("pricing", DungeonRealms.getInstance());
+                });
             } else if (event.isShiftClick()) {
                 int totalPrice = itemPrice * itemClicked.getAmount();
                 if (totalPrice > 0 && (BankMechanics.getInstance().getTotalGemsInInventory(clicker) < totalPrice)) {
