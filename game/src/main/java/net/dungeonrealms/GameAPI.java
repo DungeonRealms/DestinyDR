@@ -843,7 +843,14 @@ public class GameAPI {
      */
     public static void logoutAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7>>> &cThis &6DungeonRealms &cshard is " + ChatColor.BOLD + "RESTARTING."));
+            player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
+            if (!DungeonRealms.getInstance().isDrStopAll) {
+                //TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Moving your current session", ChatColor.GRAY.toString() + "Do not disconnect");
+
+                player.sendMessage(" ");
+                player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
+                player.sendMessage(" ");
+            }
 
             GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
@@ -858,12 +865,7 @@ public class GameAPI {
             gp.setAbleToSuicide(false);
             gp.setAbleToDrop(false);
 
-            if (!DungeonRealms.getInstance().isDrStopAll) {
-                TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.GRAY + "Moving your current session", ChatColor.RED.toString() + "Do not disconnect");
 
-                player.sendMessage(" ");
-                player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
-            }
             // upload data and send to server
             submitAsyncCallback(() -> GameAPI.handleLogout(player.getUniqueId(), false),
                     consumer -> {
