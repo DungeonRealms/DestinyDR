@@ -123,7 +123,7 @@ public class NetworkClientListener extends Listener {
                                 if (DungeonRealmsProxy.getInstance().PENDING_TOKENS.containsKey(target.getName()))
                                     DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(target.getName()).add(player.getUniqueId());
                                 else
-                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.put(target.getName(), Collections.singletonList(player.getUniqueId()));
+                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.put(target.getName(), Collections.singleton(player.getUniqueId()));
 
                                 DungeonRealmsProxy.getInstance().sendNetworkPacket("LoginRequestToken", player.getUniqueId().toString(), target.getName());
                                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Moving your current session...");
@@ -131,7 +131,8 @@ public class NetworkClientListener extends Listener {
                                 ProxyServer.getInstance().getScheduler().schedule(DungeonRealmsProxy.getInstance(),
                                         () -> {
                                             if (DungeonRealmsProxy.getInstance().PENDING_TOKENS.containsKey(target.getName()))
-                                                DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(target.getName()).remove(uuid);
+                                                if (DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(target.getName()).contains(uuid))
+                                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(target.getName()).remove(uuid);
                                         }, 5, TimeUnit.SECONDS);
                                 break;
                             } else if (!optimalShardFinder.hasNext()) {
