@@ -157,7 +157,7 @@ public class DatabaseAPI {
     }
 
     public void createNewShardCollection(String shard) {
-        DatabaseDriver.playerData.insertOne(new Document("shard", shard));
+        DatabaseDriver.shardData.insertOne(new Document("shard", shard));
     }
 
     /**
