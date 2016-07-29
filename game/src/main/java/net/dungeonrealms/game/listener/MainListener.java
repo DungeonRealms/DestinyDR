@@ -40,7 +40,10 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
+import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
@@ -361,6 +364,26 @@ public class MainListener implements Listener {
         }
 
 
+    }
+
+    /**
+     * Fixes the client-side sync issue of 1.9 when a mounted player switches chunks.
+     *
+     * @param event
+     */
+    @EventHandler
+    public void onMountedPlayerChunkChange(PlayerMoveEvent event) {
+        Player p = event.getPlayer();
+        if (p.getVehicle() == null) return;
+
+        if (!event.getFrom().getChunk().equals(event.getTo().getChunk())) {
+            Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PacketPlayOutMount packetPlayOutMount = new PacketPlayOutMount(((CraftEntity) p).getHandle());
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutMount);
+                }
+            });
+        }
     }
 
     /**
