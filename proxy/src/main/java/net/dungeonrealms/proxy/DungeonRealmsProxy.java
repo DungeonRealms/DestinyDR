@@ -32,8 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -51,9 +49,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     @Getter
     private static GameClient client;
 
-    public List<UUID> ACCEPTED_CONNECTIONS = new CopyOnWriteArrayList<>();
-
-    public Map<String, HashSet<UUID>> PENDING_TOKENS = new ConcurrentHashMap<>();
 
     private boolean MAINTENANCE_MODE = false;
 
@@ -150,19 +145,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
             event.setCancelled(true);
             return;
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onServerConnect(ServerConnectEvent event) {
-        // CHECK IF SERVER IS A SHARD //
-        ShardInfo shard = ShardInfo.getByPseudoName(event.getTarget().getName());
-        if (shard == null) return;
-
-        if (ACCEPTED_CONNECTIONS.contains(event.getPlayer().getUniqueId())) return;
-        event.setCancelled(true);
-
-        // SEND REQUEST PLAYER'S DATA PACKET //
-        sendNetworkPacket("LoginRequestToken", event.getPlayer().getUniqueId().toString(), shard.getPseudoName());
     }
 
 

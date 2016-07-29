@@ -10,10 +10,6 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.donate.buffs.Buff;
-import net.dungeonrealms.game.donate.buffs.LevelBuff;
-import net.dungeonrealms.game.donate.buffs.LootBuff;
-import net.dungeonrealms.game.donate.buffs.ProfessionBuff;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
@@ -83,19 +79,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
             try {
                 String task = in.readUTF();
 
-                if (task.equals("LoginRequestToken")) {
-                    UUID uuid = UUID.fromString(in.readUTF());
-                    String shard = in.readUTF();
-
-                    if (!DungeonRealms.getShard().getPseudoName().equals(shard)) return;
-                    GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(uuid), after -> {
-                        if (DungeonRealms.getInstance().hasFinishedSetup())
-                            GameAPI.sendNetworkMessage("AcceptLoginToken", uuid.toString(), shard);
-                        else
-                            GameAPI.sendNetworkMessage("RefuseLoginToken", uuid.toString(), ChatColor.RED + "This server is still setting up..");
-                    });
-                    return;
-                } else if (task.equals("Update")) {
+                if (task.equals("Update")) {
                     UUID uuid = UUID.fromString(in.readUTF());
                     Player player1 = Bukkit.getPlayer(uuid);
 

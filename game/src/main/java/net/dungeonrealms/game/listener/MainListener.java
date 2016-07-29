@@ -197,8 +197,8 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
-        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(event.getUniqueId()))
-            DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
+        // REQUEST PLAYER'S DATA ASYNC //
+        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
 
     /**

@@ -19,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/15/2016
@@ -52,36 +51,6 @@ public class NetworkClientListener extends Listener {
 
             try {
                 String task = in.readUTF();
-                if (task.equals("AcceptLoginToken")) {
-                    UUID uuid = UUID.fromString(in.readUTF());
-                    String shard = in.readUTF();
-
-                    ProxiedPlayer player = getProxy().getPlayer(uuid);
-
-                    if (player == null) return;
-
-                    DungeonRealmsProxy.getInstance().ACCEPTED_CONNECTIONS.add(player.getUniqueId());
-                    player.connect(getProxy().getServerInfo(shard),
-                            (success, throwable) -> {
-                                if (DungeonRealmsProxy.getInstance().PENDING_TOKENS.containsKey(getProxy().getServerInfo(shard).getName()))
-                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(getProxy().getServerInfo(shard).getName()).remove(uuid);
-
-                                DungeonRealmsProxy.getInstance().ACCEPTED_CONNECTIONS.remove(uuid);
-                            });
-                    return;
-                }
-
-                if (task.equals("RefuseLoginToken")) {
-                    UUID uuid = UUID.fromString(in.readUTF());
-                    ProxiedPlayer player = getProxy().getPlayer(uuid);
-
-                    if (player != null && in.available() > 0) {
-                        String message = in.readUTF();
-
-                        if (message.contains("setting up") && ShardInfo.getByPseudoName(player.getServer().getInfo().getName()) == null)
-                            player.sendMessage(message);
-                    }
-                }
 
                 if (task.equals("MoveSessionToken")) {
                     UUID uuid = UUID.fromString(in.readUTF());
@@ -119,21 +88,8 @@ public class NetworkClientListener extends Listener {
                             }
 
                             if (target.canAccess(player) && !(player.getServer() != null && player.getServer().getInfo().equals(target))) {
-
-                                if (DungeonRealmsProxy.getInstance().PENDING_TOKENS.containsKey(target.getName()))
-                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(target.getName()).add(player.getUniqueId());
-                                else
-                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.put(target.getName(), new HashSet<>(Collections.singleton(player.getUniqueId())));
-
-                                DungeonRealmsProxy.getInstance().sendNetworkPacket("LoginRequestToken", player.getUniqueId().toString(), target.getName());
                                 player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Moving your current session...");
-
-                                ProxyServer.getInstance().getScheduler().schedule(DungeonRealmsProxy.getInstance(),
-                                        () -> {
-                                            if (DungeonRealmsProxy.getInstance().PENDING_TOKENS.containsKey(target.getName()))
-                                                if (DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(target.getName()).contains(uuid))
-                                                    DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(target.getName()).remove(uuid);
-                                        }, 5, TimeUnit.SECONDS);
+                                player.connect(target);
                                 break;
                             } else if (!optimalShardFinder.hasNext()) {
                                 // CONNECT THEM TO LOBBY LOAD BALANCER //
@@ -158,10 +114,6 @@ public class NetworkClientListener extends Listener {
     }
 
 
-    private int getPendingConnections(ServerInfo server) {
-        return DungeonRealmsProxy.getInstance().PENDING_TOKENS.containsKey(server.getName()) ? DungeonRealmsProxy.getInstance().PENDING_TOKENS.get(server.getName()).size() : 0;
-    }
-
     public List<ServerInfo> getOptimalShards() {
         List<ServerInfo> servers = new ArrayList<>();
 
@@ -174,7 +126,7 @@ public class NetworkClientListener extends Listener {
                 servers.add(getProxy().getServerInfo(name));
         }
 
-        Collections.sort(servers, (o1, o2) -> ((o1.getPlayers().size() + getPendingConnections(o1)) - (o2.getPlayers().size() + getPendingConnections(o2))));
+        Collections.sort(servers, (o1, o2) -> ((o1.getPlayers().size())) - (o2.getPlayers().size()));
         return servers;
     }
 
