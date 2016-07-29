@@ -325,6 +325,7 @@ public class CommandEss extends BasicCommand {
                 case "buff":
                     if (args.length != 4) {
                         commandSender.sendMessage(ChatColor.RED + "Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
+                        break;
                     }
                     String buffType = args[1].toLowerCase();
                     try {
@@ -335,6 +336,7 @@ public class CommandEss extends BasicCommand {
                     }
                     catch (NumberFormatException ex) {
                         commandSender.sendMessage(ChatColor.RED + "Invalid duration or bonus amount! Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
+                        break;
                     }
                     String duration = args[2];
                     String bonusAmount = args[3];
@@ -356,6 +358,7 @@ public class CommandEss extends BasicCommand {
                             break;
                         default:
                             commandSender.sendMessage(ChatColor.RED + "Invalid buff type! Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
+                            break;
                     }
                 default:
                     commandSender.sendMessage(ChatColor.RED + "The command " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0].toUpperCase() + ChatColor.RED + " does not exist.");
