@@ -12,6 +12,7 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
@@ -316,8 +317,9 @@ public class ItemListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void useEcashItem(PlayerInteractEvent event) {
         if (event.getItem() != null) {
+            Player player = event.getPlayer();
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
             if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
-                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
                 if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
                     event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm.");
                     Chat.listenForMessage(event.getPlayer(), chat -> {
@@ -334,7 +336,6 @@ public class ItemListener implements Listener {
                 }
             }
             if (event.getItem().getType() == Material.FIREWORK) {
-                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
                 if (nms.hasTag() && nms.getTag().hasKey("globalMessenger")) {
                     event.getPlayer().sendMessage("");
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "Please enter the message you'd like to send to " + ChatColor.UNDERLINE + "all servers" + ChatColor.YELLOW
@@ -372,10 +373,8 @@ public class ItemListener implements Listener {
                     }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                 }
             } else if (event.getItem().getType() == Material.ENDER_CHEST) {
-                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
                 if (nms.hasTag() && nms.getTag().hasKey("type")) {
                     if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
-                        Player player = event.getPlayer();
                         if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
                             player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
                             player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
@@ -397,6 +396,32 @@ public class ItemListener implements Listener {
                         }
                         event.getPlayer().sendMessage(ChatColor.YELLOW + "Your banks storage has been increased by 9 slots.");
                     }
+                }
+            } else if (event.getItem().getType() == Material.DIAMOND) {
+                if (nms.hasTag() && nms.getTag().hasKey("buff") && nms.getTag().getString("buff").equals("loot")) {
+                    event.setCancelled(true);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    event.setUseItemInHand(Event.Result.DENY);
+                    player.sendMessage("");
+                    Utils.sendCenteredMessage(player, ChatColor.DARK_GRAY + "***" + ChatColor.GREEN.toString() +
+                            ChatColor.BOLD + "GLOBAL LOOT BUFF CONFIRMATION" + ChatColor.DARK_GRAY + "***");
+                    player.sendMessage(ChatColor.GOLD
+                            + "Are you sure you want to use this item? It will apply a 20% buff to all character level XP gains across all servers for 30 minutes. This cannot be undone once it has begun.");
+                    if (DonationEffects.getInstance().getActiveLootBuff() != null)
+                        player.sendMessage(ChatColor.RED + "NOTICE: There is an ongoing loot buff, so your loot buff " +
+                                "will be queued to be activated immediately after this one if you confirm. Cancel if " +
+                                "you do not wish to queue yours.");
+                    player.sendMessage("");
+                    player.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' to confirm, or any other message to cancel.");
+                    Chat.listenForMessage(player, e -> {
+                        if (e.getMessage().equalsIgnoreCase("y")) {
+                            event.getPlayer().getInventory().remove(event.getItem());
+                            GameAPI.sendNetworkMessage("lootBuff", "1800", "20", GameChat.getFormattedName(player), DungeonRealms.getInstance().bungeeName);
+                        }
+                        else {
+                            player.sendMessage(ChatColor.RED + "Global Loot Buff - Cancelled");
+                        }
+                    }, p -> p.sendMessage(ChatColor.RED + "Global Loot Buff - CANCELLED"));
                 }
             }
         }

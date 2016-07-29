@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.inventory;
 
+import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
@@ -106,6 +107,9 @@ public class ECashMenus {
                 ChatColor.GRAY + "Permanent Untradeable",
                 ChatColor.WHITE + "200" + ChatColor.GREEN + " E-Cash",
                 ChatColor.GRAY + "Display Item"}).setNBTString("globalMessenger", "true").setNBTInt("eCash", 200).build());
+
+        inventory.addItem(new ItemBuilder().setItem(ItemManager.createLootBuff()).addLore(ChatColor.WHITE + "4000" +
+                ChatColor.GREEN + " E-Cash", ChatColor.GRAY + "Display Item").setNBTInt("eCash", 4000).build());
 
         player.openInventory(inventory);
     }

@@ -4,6 +4,7 @@ import com.esotericsoftware.minlog.Log;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.commands.CommandManager;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -191,6 +192,7 @@ public class DungeonRealms extends JavaPlugin {
         BungeeUtils.setPlugin(this);
 
         DatabaseDriver.getInstance().startInitialization(true);
+        DatabaseAPI.getInstance().startInitialization(bungeeName);
         AntiCheat.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
@@ -504,6 +506,8 @@ public class DungeonRealms extends JavaPlugin {
         tcc.onDisable();
         if (!mm.isShutdown())
             mm.stopInvocation();
+
+        DatabaseAPI.getInstance().stopInvocation();
 
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
     }

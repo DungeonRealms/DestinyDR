@@ -1,12 +1,14 @@
 package net.dungeonrealms.game.mastery;
 
 import net.dungeonrealms.common.Constants;
+import net.minecraft.server.v1_9_R2.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
@@ -47,6 +49,26 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Given a name in the format lowercaseprefix# (e.g. us0), converts to proper format (e.g. US-0)
+     *
+     * @param name
+     * @return
+     */
+    public static String getFormattedShardName(String name) {
+        return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
+    }
+
+    public static void setMaxStackSize(Item item, int i){
+        try {
+
+            Field field = Item.class.getDeclaredField("maxStackSize");
+            field.setAccessible(true);
+            field.setInt(item, i);
+
+        } catch (Exception e) {}
     }
 
     public static <T> Set<T> findDuplicates(Collection<T> list) {

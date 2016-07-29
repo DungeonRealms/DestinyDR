@@ -25,9 +25,12 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import net.minecraft.server.v1_9_R2.NBTTagString;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemFactory;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -111,6 +114,35 @@ public class ItemManager {
         nms.getTag().setString("type", "armorenchant");
         nms.getTag().setInt("tier", tier);
         return CraftItemStack.asBukkitCopy(nms);
+    }
+
+    public static ItemStack createLootBuff() {
+        ItemStack lootBuff = new ItemBuilder().setItem(Material.DIAMOND, (short) 0, ChatColor.GOLD.toString() + "Global Loot Buff", new
+                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + "30 minutes", ChatColor.GOLD
+                .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
+                "Increases all loot drop chances for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
+                "20% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
+                .setNBTInt("untradeable", 1).setNBTString("buff", "loot").build();
+        // apply antidupe to make unstackable
+        return AntiCheat.getInstance().applyAntiDupe(lootBuff);
+    }
+
+    public static ItemStack createProfessionBuff() {
+         return new ItemBuilder().setItem(Material.GOLDEN_CARROT, (short) 0, ChatColor.GOLD.toString() + "Global Profession Buff", new
+                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + "30 minutes", ChatColor.GOLD
+                .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
+                "Increases all experience gained from professions for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
+                "20% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
+                .setNBTInt("untradeable", 1).setNBTString("buff", "loot").build();
+    }
+
+    public static ItemStack createLevelBuff() {
+        return new ItemBuilder().setItem(Material.EXP_BOTTLE, (short) 0, ChatColor.GOLD.toString() + "Global Level EXP Buff", new
+                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + "30 minutes", ChatColor.GOLD
+                .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
+                "Increases all experience gained from mobs for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
+                "20% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
+                .setNBTInt("untradeable", 1).setNBTString("buff", "loot").build();
     }
 
     /**

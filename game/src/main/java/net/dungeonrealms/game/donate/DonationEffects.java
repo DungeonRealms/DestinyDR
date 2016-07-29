@@ -7,6 +7,10 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.game.donate.buffs.Buff;
+import net.dungeonrealms.game.donate.buffs.LevelBuff;
+import net.dungeonrealms.game.donate.buffs.LootBuff;
+import net.dungeonrealms.game.donate.buffs.ProfessionBuff;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -28,6 +32,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * Created by Kieran on 10/1/2015.
  */
+@Getter
+@Setter
 public class DonationEffects implements GenericMechanic {
 
     private static DonationEffects instance = null;
@@ -49,9 +55,16 @@ public class DonationEffects implements GenericMechanic {
     @Getter
     public Set<Creeper> fireWorkCreepers = new CopyOnWriteArraySet<>();
     public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
-    @Getter
-    @Setter
-    public boolean lootBuffActive = false;
+
+
+    private LootBuff activeLootBuff = null;
+    private ProfessionBuff activeProfessionBuff = null;
+    private LevelBuff activeLevelBuff = null;
+    private Queue<LootBuff> queuedLootBuffs = new LinkedList<>();
+    private Queue<ProfessionBuff> queuedProfessionBuffs = new LinkedList<>();
+    private Queue<LevelBuff> queuedLevelBuffs = new LinkedList<>();
+
+
     private static Random random = new Random();
 
     @Override
@@ -65,11 +78,74 @@ public class DonationEffects implements GenericMechanic {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 2L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 4L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::handleCreeperFireworks, 40L, 100L);
+
+        // check if there are available buffs (will be null if not)
+        activeLootBuff = (LootBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
+                .getInstance().bungeeName, "buffs.activeLootBuff"), LootBuff.class);
+        final ArrayList<String> queuedLootBuffData = (ArrayList<String>)DatabaseAPI.getInstance().getShardData(DungeonRealms
+                .getInstance().bungeeName, "buffs.queuedLootBuffs");
+        if (queuedLootBuffData != null && !queuedLootBuffData.isEmpty()) {
+            for (String s : queuedLootBuffData) {
+                queuedLootBuffs.add((LootBuff)Buff.deserialize(s, LootBuff.class));
+            }
+        }
+
+        activeProfessionBuff = (ProfessionBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData
+                (DungeonRealms.getInstance().bungeeName, "buffs.activeProfessionBuff"), ProfessionBuff.class);
+        final Object queuedProfessionBuffData = DatabaseAPI.getInstance().getShardData(DungeonRealms
+                .getInstance().bungeeName, "buffs.queuedProfessionBuffs");
+        if (queuedProfessionBuffData != null) queuedProfessionBuffs = (LinkedList<ProfessionBuff>) queuedProfessionBuffData;
+
+
+        activeLevelBuff = (LevelBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
+                .getInstance().bungeeName, "buffs.activeLevelBuff"), LevelBuff.class);
+        final Object queuedLevelBuffData = DatabaseAPI.getInstance().getShardData(DungeonRealms
+                .getInstance().bungeeName, "buffs.queuedLevelBuffs");
+        if (queuedLevelBuffData != null) queuedLevelBuffs = (LinkedList<LevelBuff>) queuedLevelBuffData;
+
+        // expired while we were offline, RIP
+        if (activeLootBuff != null && System.currentTimeMillis() > activeLootBuff.getTimeUntilExpiry()) {
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+                    "buffs.activeLootBuff", activeLootBuff.serialize(), true);
+            activeLootBuff.deactivateBuff();
+        }
+        if (activeProfessionBuff != null && System.currentTimeMillis() > activeProfessionBuff.getTimeUntilExpiry()) {
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+                    "buffs.activeProfessionBuff", activeLootBuff.serialize(), true);
+            activeProfessionBuff.deactivateBuff();
+        }
+        if (activeLevelBuff != null && System.currentTimeMillis() > activeLevelBuff.getTimeUntilExpiry()) {
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+                    "buffs.activeLevelBuff", activeLootBuff.serialize(), true);
+            activeLevelBuff.deactivateBuff();
+        }
+
+        if (activeLootBuff != null) {
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeLootBuff.deactivateBuff(), (
+                    (activeLootBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
+        }
+        if (activeLevelBuff != null) {
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeLevelBuff.deactivateBuff(), (
+                    (activeLevelBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
+        }
+        if (activeProfessionBuff != null) {
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> activeProfessionBuff.deactivateBuff(), (
+                    (activeProfessionBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000) * 20L);
+        }
     }
 
     @Override
     public void stopInvocation() {
-
+        // update database of active buffs (queued buffs should already be there)
+        if (this.activeLootBuff != null)
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+                    "buffs.activeLootBuff", activeLootBuff.serialize(), true);
+        if (this.activeProfessionBuff != null)
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+                    "buffs.activeProfessionBuff", activeProfessionBuff.serialize(), true);
+        if (this.activeLevelBuff != null)
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+                    "buffs.activeLevelBuff", activeLevelBuff.serialize(), true);
     }
 
     private void handleCreeperFireworks() {
@@ -106,6 +182,96 @@ public class DonationEffects implements GenericMechanic {
                 e.printStackTrace();
                 Utils.log.warning("[Donations] Could not spawn donation particle " + particleEffect.name() + " for player " + player.getName());
             }
+        }
+    }
+
+    public void doLogin(Player p) {
+        if (this.activeLootBuff != null) {
+            int minutesLeft = (int) (((activeLootBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
+            int bonusAmount = (int) activeLootBuff.getBonusAmount();
+            String playerName = activeLootBuff.getActivatingPlayer();
+            if (p != null) {
+                p.sendMessage("");
+                p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + playerName + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Drop Rates" + ChatColor.GOLD
+                        + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
+                p.sendMessage("");
+            }
+        }
+        if (this.activeProfessionBuff != null) {
+            int minutesLeft = (int) (((activeProfessionBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
+            int bonusAmount = (int) activeProfessionBuff.getBonusAmount();
+            String playerName = activeLootBuff.getActivatingPlayer();
+            if (p != null) {
+                p.sendMessage("");
+                p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + playerName + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Profession EXP Rates" + ChatColor.GOLD
+                        + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
+                p.sendMessage("");
+            }
+        }
+        if (this.activeLevelBuff != null) {
+            int minutesLeft = (int) (((activeLevelBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
+            int bonusAmount = (int) activeLevelBuff.getBonusAmount();
+            String playerName = activeLootBuff.getActivatingPlayer();
+            if (p != null) {
+                p.sendMessage("");
+                p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + playerName + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Character Level EXP Rates" + ChatColor.GOLD
+                        + " is active for " + ChatColor.UNDERLINE + minutesLeft + ChatColor.RESET + ChatColor.GOLD + " more minute(s)!");
+                p.sendMessage("");
+            }
+        }
+    }
+
+    public void activateNewLootBuffOnThisShard(int duration, float bonusAmount, String activatingPlayer, String shard) {
+        final LootBuff newLootBuff = new LootBuff(duration, bonusAmount, activatingPlayer, shard);
+
+        // check if there is already one active
+        if (this.activeLootBuff != null) {
+            // queue a new buff
+            this.queuedLootBuffs.add(newLootBuff);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
+                    "buffs.queuedLootBuffs", newLootBuff.serialize(), true);
+            Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLootBuff.getActivatingPlayer() + ChatColor
+                    .GOLD + " has queued a Global Loot Buff set for activation after the current one expires.");
+            Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
+        }
+        else {
+            newLootBuff.activateBuff();
+        }
+    }
+
+    public void activateNewLevelBuffOnThisShard(int duration, float bonusAmount, String activatingPlayer, String shard) {
+        final LevelBuff newLevelBuff = new LevelBuff(duration, bonusAmount, activatingPlayer, shard);
+
+        // check if there is already one active
+        if (this.activeLevelBuff != null) {
+            // queue a new buff
+            this.queuedLevelBuffs.add(newLevelBuff);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
+                    "buffs.queuedLevelBuffs", newLevelBuff.serialize(), true);
+            Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newLevelBuff.getActivatingPlayer() + ChatColor
+                    .GOLD + " has queued a Global Level Buff set for activation after the current one expires.");
+            Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
+        }
+        else {
+            newLevelBuff.activateBuff();
+        }
+    }
+
+    public void activateNewProfessionBuffOnThisShard(int duration, float bonusAmount, String activatingPlayer, String shard) {
+        final ProfessionBuff newProfessionBuff = new ProfessionBuff(duration, bonusAmount, activatingPlayer, shard);
+
+        // check if there is already one active
+        if (this.activeProfessionBuff != null) {
+            // queue a new buff
+            this.queuedProfessionBuffs.add(newProfessionBuff);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PUSH,
+                    "buffs.queuedProfessionBuffs", newProfessionBuff.serialize(), true);
+            Bukkit.broadcastMessage(ChatColor.GOLD + ">> Player " + newProfessionBuff.getActivatingPlayer() + ChatColor
+                    .GOLD + " has queued a Global Profession Buff set for activation after the current one expires.");
+            Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_EGG_THROW, 1f, 1f));
+        }
+        else {
+            newProfessionBuff.activateBuff();
         }
     }
 
