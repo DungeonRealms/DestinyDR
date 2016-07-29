@@ -18,3 +18,4 @@ Build <build>
 - Fixed lag spikes
 - Fixed occasional bug preventing you from picking up items.
 - Fixed occasional bug preventing you from opening shops.
+- Fixed critical exploits

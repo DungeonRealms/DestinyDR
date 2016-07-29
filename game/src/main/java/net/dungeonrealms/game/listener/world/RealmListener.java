@@ -31,6 +31,7 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -632,10 +633,12 @@ public class RealmListener implements Listener {
         e.setCancelled(true);
 
         Material m = b.getType();
-        if (m == Material.AIR || m == Material.PORTAL) {
-            return;
-        }
-        ItemStack loot = (new ItemStack(b.getType(), 1, b.getData()));
+        if (m == Material.AIR || m == Material.PORTAL) return;
+
+        ItemStack loot = (new ItemStack(b.getType(), 1, b.getState().getRawData()));
+
+        if (b instanceof Skull)
+            loot.setDurability((short) ((Skull) b).getSkullType().ordinal());
 
         if (b.getType() == Material.WATER || b.getType() == Material.STATIONARY_WATER || b.getType() == Material.LAVA
                 || b.getType() == Material.STATIONARY_LAVA) {
@@ -794,6 +797,7 @@ public class RealmListener implements Listener {
                 b.setType(m); // Revert the block.
                 return;
             }
+
             // There's room!
             p.getInventory().setItem(p.getInventory().firstEmpty(), GameAPI.makeItemUntradeable(loot));
         }

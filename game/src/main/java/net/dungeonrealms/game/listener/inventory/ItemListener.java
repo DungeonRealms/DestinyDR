@@ -187,7 +187,7 @@ public class ItemListener implements Listener {
                         + ChatColor.DARK_GRAY + " ***");
                 p.sendMessage(ChatColor.DARK_GRAY + "FROM Tier " + ChatColor.LIGHT_PURPLE + tier + ChatColor.DARK_GRAY + " TO " + ChatColor.LIGHT_PURPLE
                         + (tier + 1));
-                p.sendMessage(ChatColor.DARK_GRAY + "Upgrade Cost: " + ChatColor.LIGHT_PURPLE + "" + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
+                p.sendMessage(ChatColor.DARK_GRAY + "Upgrade Cost: " + ChatColor.LIGHT_PURPLE + "" + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s) from your bank");
                 p.sendMessage("");
                 p.sendMessage(ChatColor.GRAY + "Enter '" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "CONFIRM" + ChatColor.GRAY + "' to confirm realm upgrade.");
                 p.sendMessage("");
@@ -197,20 +197,24 @@ public class ItemListener implements Listener {
 
 
                 Chat.listenForMessage(p, confirmation -> {
-                    if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
-                        p.sendMessage(ChatColor.RED + "Realm upgrade cancel");
-                        return;
-                    }
-
-                    if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
-                        if (!(BankMechanics.getInstance().takeGemsFromInventory(Realms.getInstance().getRealmUpgradeCost(tier + 1), p))) {
-                            p.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to purchase this upgrade. Upgrade cancelled.");
-                            p.sendMessage(ChatColor.RED + "COST: " + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                        if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
+                            p.sendMessage(ChatColor.RED + "Realm upgrade cancel");
                             return;
                         }
 
-                        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> Realms.getInstance().upgradeRealm(p));
-                    }
+                        if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
+
+                            int balance = (Integer) DatabaseAPI.getInstance().getData(EnumData.GEMS, p.getUniqueId());
+                            if (balance < Realms.getInstance().getRealmUpgradeCost(tier + 1)) {
+                                p.sendMessage(ChatColor.RED + "You do not have enough GEM(s) in your bank to purchase this upgrade. Upgrade cancelled.");
+                                p.sendMessage(ChatColor.RED + "COST: " + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
+                                return;
+                            }
+
+                            DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, balance, false, doAfter -> Realms.getInstance().upgradeRealm(p));
+                        }
+                    });
                 }, null);
                 return;
             }
@@ -417,8 +421,7 @@ public class ItemListener implements Listener {
                         if (e.getMessage().equalsIgnoreCase("y")) {
                             event.getPlayer().getInventory().remove(event.getItem());
                             GameAPI.sendNetworkMessage("lootBuff", "1800", "20", GameChat.getFormattedName(player), DungeonRealms.getInstance().bungeeName);
-                        }
-                        else {
+                        } else {
                             player.sendMessage(ChatColor.RED + "Global Loot Buff - Cancelled");
                         }
                     }, p -> p.sendMessage(ChatColor.RED + "Global Loot Buff - CANCELLED"));
