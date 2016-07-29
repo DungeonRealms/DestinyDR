@@ -428,7 +428,7 @@ public class ShopListener implements Listener {
             if (event.getRawSlot() >= (shop.getInvSize() - 1))
                 return;
 
-            ItemStack itemClicked = event.getCurrentItem();
+            final ItemStack itemClicked = event.getCurrentItem();
             if (itemClicked == null || itemClicked.getType() == Material.AIR) return;
             if (clicker.getInventory().firstEmpty() == -1) {
                 clicker.sendMessage(ChatColor.RED + "No space available in inventory. Clear some room before attempting to purchase.");
@@ -506,7 +506,7 @@ public class ShopListener implements Listener {
                         clicker.updateInventory();
                         int remainingStock = itemClicked.getAmount() - quantity;
                         if (remainingStock > 0) {
-                            itemClicked.setAmount(quantity);
+                            itemClicked.setAmount(remainingStock);
                         } else {
                             event.getInventory().remove(event.getRawSlot());
                         }
