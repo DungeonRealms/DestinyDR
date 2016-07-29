@@ -144,6 +144,7 @@ public class DatabaseAPI {
         if (doc == null) return null;
 
         String[] key = data.split("\\.");
+        if (!(doc.get(key[0]) instanceof Document)) return null;
         Document rootDoc = (Document) doc.get(key[0]);
         if (rootDoc == null) return null;
 
