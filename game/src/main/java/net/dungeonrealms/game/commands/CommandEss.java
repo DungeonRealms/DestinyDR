@@ -34,15 +34,7 @@ public class CommandEss extends BasicCommand {
         if (!commandSender.isOp() && !(commandSender instanceof ConsoleCommandSender)) {
             return false;
         }
-        
-        if(commandSender instanceof Player){
-        	Player player = (Player)commandSender;
-            if (!Rank.isDev(player)) {
-                return false;
-            }
-        }
-        
-        
+
         if (args.length > 0) {
             switch (args[0]) {
                 case "hearthstone":

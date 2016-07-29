@@ -343,17 +343,25 @@ public class RestrictionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void shardingExtraSafetyCheckDrop(PlayerDropItemEvent event) {
         if (event.getPlayer().hasMetadata("sharding")) {
             event.setCancelled(true);
+            try {
+                event.getPlayer().closeInventory();
+            } catch (Exception ignored) {
+            }
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void shardingExtraSafetyCheckDrop(PlayerPickupItemEvent event) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void shardingExtraSafetyCheckPickup(PlayerPickupItemEvent event) {
         if (event.getPlayer().hasMetadata("sharding")) {
             event.setCancelled(true);
+            try {
+                event.getPlayer().closeInventory();
+            } catch (Exception ignored) {
+            }
         }
     }
 

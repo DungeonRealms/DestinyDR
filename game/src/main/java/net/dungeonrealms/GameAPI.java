@@ -1265,6 +1265,7 @@ public class GameAPI {
         player.setNoDamageTicks(10);
         player.closeInventory();
         player.setCanPickupItems(false);
+        player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
 
         GamePlayer gp = GameAPI.getGamePlayer(player);
         gp.setAbleToSuicide(false);
@@ -1280,6 +1281,7 @@ public class GameAPI {
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
                 GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(player.getUniqueId()), consumer -> {
+                    player.removeMetadata("sharding", DungeonRealms.getInstance());
                     TitleAPI.clearTitle(player);
                     GameAPI.handleLogin(player.getUniqueId());
                     player.setInvulnerable(false);
