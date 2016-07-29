@@ -1,11 +1,13 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -320,6 +322,41 @@ public class CommandEss extends BasicCommand {
                     DatabaseAPI.getInstance().update(((Player)commandSender).getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
                     commandSender.sendMessage(ChatColor.GREEN + "Your mule level has been reset.");
                     break;
+                case "buff":
+                    if (args.length != 4) {
+                        commandSender.sendMessage(ChatColor.RED + "Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
+                    }
+                    String buffType = args[1].toLowerCase();
+                    try {
+                        //noinspection ResultOfMethodCallIgnored
+                        Integer.parseInt(args[2]);
+                        //noinspection ResultOfMethodCallIgnored
+                        Float.parseFloat(args[3]);
+                    }
+                    catch (NumberFormatException ex) {
+                        commandSender.sendMessage(ChatColor.RED + "Invalid duration or bonus amount! Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
+                    }
+                    String duration = args[2];
+                    String bonusAmount = args[3];
+                    switch (buffType) {
+                        case "level":
+                            GameAPI.sendNetworkMessage("levelBuff", duration, bonusAmount, commandSender instanceof
+                                    Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
+                                    DungeonRealms.getInstance().bungeeName);
+                            break;
+                        case "loot":
+                            GameAPI.sendNetworkMessage("lootBuff", duration, bonusAmount, commandSender instanceof
+                                    Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
+                                    DungeonRealms.getInstance().bungeeName);
+                            break;
+                        case "profession":
+                            GameAPI.sendNetworkMessage("professionBuff", duration, bonusAmount, commandSender instanceof
+                                    Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
+                                    DungeonRealms.getInstance().bungeeName);
+                            break;
+                        default:
+                            commandSender.sendMessage(ChatColor.RED + "Invalid buff type! Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
+                    }
                 default:
                     commandSender.sendMessage(ChatColor.RED + "The command " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0].toUpperCase() + ChatColor.RED + " does not exist.");
                     break;

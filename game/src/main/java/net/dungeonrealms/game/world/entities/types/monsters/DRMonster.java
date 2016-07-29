@@ -100,8 +100,8 @@ public interface DRMonster {
             chance /= 3;
         }
 
-        if (DonationEffects.getInstance().isLootBuffActive()) {
-            chance *= 1.2;
+        if (DonationEffects.getInstance().getActiveLootBuff() != null) {
+            chance += chance * (DonationEffects.getInstance().getActiveLootBuff().getBonusAmount() / 100f);
         }
 
         if (gemRoll < (gemChance * gold_drop_multiplier)) {

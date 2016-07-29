@@ -3,6 +3,7 @@ Build <build>
 The network has been completely wiped. For more information please see the website.
 
 &2New Features&0
+- Added global loot buff.
 - Added /vote command.
 - Seamless shard moving when server restarts
 - Subscribers can now bypass the global chat delay.
@@ -11,10 +12,11 @@ The network has been completely wiped. For more information please see the websi
 
 &8Changes&0
 - Improved anticheat
-- T4 drop rates increased further.
+- T4 drop rates have been increased further.
 - Burick the Fanatic now poses a greater threat to challengers.
-- The Energy Regen on Burick's gear has been randomized.
+- The "Energy Regeneration" on Burick's gear has been randomized.
 
 &4Bug Fixes&0
 - Fixed lag spikes
 - Fixed occasional bug preventing you from picking up items.
+- Fixed occasional bug preventing you from opening shops.

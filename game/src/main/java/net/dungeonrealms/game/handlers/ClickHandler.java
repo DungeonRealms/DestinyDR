@@ -1707,6 +1707,21 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
                     }
                 }
+                if (nmsStack.getTag().hasKey("buff") && nmsStack.getTag().getString("buff").equals("loot")) {
+                    eCashCost = nmsStack.getTag().getInt("eCash");
+                    if (player.getInventory().firstEmpty() != -1) {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                            player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + "Global Loot Buff.");
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
+                            player.getInventory().addItem(ItemManager.createLootBuff());
+                            player.closeInventory();
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
+                    }
+                }
                 break;
         }
     }

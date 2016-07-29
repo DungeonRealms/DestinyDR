@@ -1239,6 +1239,10 @@ public class GameAPI {
             ScoreboardHandler.getInstance().matchMainScoreboard(player);
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignmentDB().getAlignmentColor(), gp.getLevel());
         }, 100L);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            DonationEffects.getInstance().doLogin(player);
+        }, 100L);
     }
 
     /**

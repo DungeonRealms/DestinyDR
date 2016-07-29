@@ -1,6 +1,8 @@
 package net.dungeonrealms.common.game.database;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.concurrent.SingleUpdateQuery;
@@ -11,6 +13,8 @@ import org.bson.Document;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -22,12 +26,19 @@ public class DatabaseAPI {
     private static DatabaseAPI instance = null;
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
     private volatile Map<String, String> CACHED_UUIDS = new ConcurrentHashMap<>();
+    private final ExecutorService serverExecutorThread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("MONGODB Server Collection Thread").build());
 
     public static DatabaseAPI getInstance() {
         if (instance == null) {
             instance = new DatabaseAPI();
         }
         return instance;
+    }
+
+    public void startInitialization(String shard) {
+        if (getShardData(shard, "shard") == null) {
+            createNewShardCollection(shard);
+        }
     }
 
     /**
@@ -104,6 +115,49 @@ public class DatabaseAPI {
         update(uuid, EO, variable, object, async, null);
     }
 
+    public void updateShardCollection(String shard, EnumOperators EO, String variable, Object value, boolean async, Consumer<UpdateResult> doAfterOptional) {
+        UpdateOptions uo = new UpdateOptions();
+        uo.upsert(true);
+
+        if (async)
+            serverExecutorThread.submit(() -> DatabaseDriver.shardData.updateOne(Filters.eq("shard", shard), new
+                    Document(EO.getUO(), new Document(variable, value))), uo);
+        else {
+            UpdateResult result = DatabaseDriver.playerData.updateOne(Filters.eq("shard", shard), new Document(EO.getUO(), new Document(variable, value)), uo);
+            if (doAfterOptional != null)
+                doAfterOptional.accept(result);
+
+            if (Constants.debug) {
+                Constants.log.warning("[Database] Updating server collection on the main thread.");
+                printTrace();
+            }
+        }
+    }
+
+    public void updateShardCollection(String shard, EnumOperators EO, String variable, Object value, boolean async) {
+        updateShardCollection(shard, EO, variable, value, async, null);
+    }
+
+    public Object getShardData(String shard, String data) {
+        Document doc = DatabaseDriver.shardData.find(Filters.eq("shard", shard)).first();
+
+        if (doc == null) return null;
+
+        String[] key = data.split("\\.");
+        Document rootDoc = (Document) doc.get(key[0]);
+        if (rootDoc == null) return null;
+
+        Object dataObj = rootDoc.get(key[1]);
+
+        if (dataObj == null) return null;
+        Class<?> clazz = dataObj.getClass();
+
+        return rootDoc.get(key[1], clazz);
+    }
+
+    public void createNewShardCollection(String shard) {
+        DatabaseDriver.playerData.insertOne(new Document("shard", shard));
+    }
 
     /**
      * Returns the object that's requested.
@@ -356,4 +410,7 @@ public class DatabaseAPI {
     }
 
 
+    public void stopInvocation() {
+        serverExecutorThread.shutdown();
+    }
 }

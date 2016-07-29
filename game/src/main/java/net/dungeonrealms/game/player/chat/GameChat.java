@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
@@ -170,6 +171,17 @@ public final class GameChat {
             default:
                 return ""; // Invalid rank
         }
+    }
+
+    /**
+     * Returns a player's rank prefix if any followed by a space followed by their username with the correct color
+     * 
+     * @param player
+     * @return
+     */
+    public static String getFormattedName(Player player) {
+        final String rank = Rank.getInstance().getRank(player.getUniqueId());
+        return getRankPrefix(rank) + getName(player, rank, true);
     }
 
     /**

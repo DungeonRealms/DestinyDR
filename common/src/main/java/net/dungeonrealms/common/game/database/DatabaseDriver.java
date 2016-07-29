@@ -28,6 +28,7 @@ public class DatabaseDriver {
     public static MongoDatabase database = null;
 
     public static MongoCollection<Document> playerData = null;
+    public static MongoCollection<Document> shardData = null;
     public static MongoCollection<Document> bans = null;
     public static MongoCollection<Document> guilds = null;
     public static MongoCollection<Document> quests = null;
@@ -43,6 +44,7 @@ public class DatabaseDriver {
 
         database = mongoClient.getDatabase("dungeonrealms");
         playerData = database.getCollection("player_data");
+        shardData = database.getCollection("shard_data");
         bans = database.getCollection("bans");
         guilds = database.getCollection("guilds");
         quests = database.getCollection("quests");

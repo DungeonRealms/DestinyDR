@@ -9,6 +9,11 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.donate.buffs.Buff;
+import net.dungeonrealms.game.donate.buffs.LevelBuff;
+import net.dungeonrealms.game.donate.buffs.LootBuff;
+import net.dungeonrealms.game.donate.buffs.ProfessionBuff;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
@@ -250,6 +255,24 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             }
                             if (sound != null)
                                 player.playSound(player.getLocation(), sound, volume, pitch);
+                        } else if (task.equals("lootBuff")) {
+                            int duration = Integer.parseInt(in.readUTF());
+                            int bonusAmount = Integer.parseInt(in.readUTF());
+                            String player_string = in.readUTF();
+                            String from_server = in.readUTF();
+                            DonationEffects.getInstance().activateNewLootBuffOnThisShard(duration, bonusAmount, player_string, from_server);
+                        } else if (task.equals("professionBuff")) {
+                            int duration = Integer.parseInt(in.readUTF());
+                            int bonusAmount = Integer.parseInt(in.readUTF());
+                            String player_string = in.readUTF();
+                            String from_server = in.readUTF();
+                            DonationEffects.getInstance().activateNewProfessionBuffOnThisShard(duration, bonusAmount, player_string, from_server);
+                        } else if (task.equals("levelBuff")) {
+                            int duration = Integer.parseInt(in.readUTF());
+                            int bonusAmount = Integer.parseInt(in.readUTF());
+                            String player_string = in.readUTF();
+                            String from_server = in.readUTF();
+                            DonationEffects.getInstance().activateNewLevelBuffOnThisShard(duration, bonusAmount, player_string, from_server);
                         } else if (task.equals("Stop")) {
                             if (DungeonRealms.getInstance().hasFinishedSetup())
                                 GameAPI.stopGame();
