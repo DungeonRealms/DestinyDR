@@ -1,7 +1,7 @@
 Build <build>
 
 &2New Features&0
-- Added global loot buff.
+- Added global loot, profession, and xp buffs.
 - Added /vote command.
 - Blood effects
 - Seamless shard moving when server restarts
