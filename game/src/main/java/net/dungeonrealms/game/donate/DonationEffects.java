@@ -113,18 +113,18 @@ public class DonationEffects implements GenericMechanic {
 
         // expired while we were offline, RIP
         if (activeLootBuff != null && System.currentTimeMillis() > activeLootBuff.getTimeUntilExpiry()) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.activeLootBuff", activeLootBuff.serialize(), true);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+                    "buffs.activeLootBuff", "", true);
             activeLootBuff.deactivateBuff();
         }
         if (activeProfessionBuff != null && System.currentTimeMillis() > activeProfessionBuff.getTimeUntilExpiry()) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.activeProfessionBuff", activeLootBuff.serialize(), true);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+                    "buffs.activeProfessionBuff", "", true);
             activeProfessionBuff.deactivateBuff();
         }
         if (activeLevelBuff != null && System.currentTimeMillis() > activeLevelBuff.getTimeUntilExpiry()) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.activeLevelBuff", activeLootBuff.serialize(), true);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+                    "buffs.activeLevelBuff", "", true);
             activeLevelBuff.deactivateBuff();
         }
 

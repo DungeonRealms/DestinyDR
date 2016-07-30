@@ -18,7 +18,10 @@ public enum EnumOperators {
     $SET(3, "$set"),
 
     //Remove from an ArrayList
-    $PULL(4, "$pull");
+    $PULL(4, "$pull"),
+
+    //remove from a document
+    $UNSET(5, "$unset");
 
     private int id;
     private String UO;
