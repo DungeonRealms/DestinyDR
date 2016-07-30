@@ -142,6 +142,16 @@ public class Rank {
         return rank != null && !rank.equalsIgnoreCase("default");
     }
 
+    public static boolean isSubscriberPlus(Player player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId());
+        return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub");
+    }
+
+    public static boolean isSubscriberLifetime(Player player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId());
+        return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub") && !rank.equalsIgnoreCase("sub+");
+    }
+
     public static String rankFromPrefix(String prefix) {
         switch (prefix.toLowerCase()) {
             case "dev":
