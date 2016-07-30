@@ -197,6 +197,8 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+        DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
+
         // REQUEST PLAYER'S DATA ASYNC //
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }

@@ -75,14 +75,10 @@ public class GamePlayer {
         this.attributeBonusesFromStats = new HashMap<>();
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
         this.isTargettable = true;
+        this.isInvulnerable = false;
         this.ableToPickup = true;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
-
-        if (Rank.isGM(player)) {
-            isInvulnerable = true;
-            isTargettable = false;
-        }
     }
 
     /**

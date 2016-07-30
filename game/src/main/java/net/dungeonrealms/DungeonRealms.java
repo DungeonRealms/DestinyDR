@@ -1,6 +1,7 @@
 package net.dungeonrealms;
 
 import com.esotericsoftware.minlog.Log;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.commands.CommandManager;
@@ -87,6 +88,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DungeonRealms extends JavaPlugin {
 
@@ -125,6 +127,8 @@ public class DungeonRealms extends JavaPlugin {
 
     public boolean isDrStopAll;
 
+    @Getter
+    private Set<UUID> loggingIn = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
     @Getter
     private List<String> loggingOut = new ArrayList<>();
 
