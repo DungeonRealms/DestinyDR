@@ -122,23 +122,23 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
     }
 
     private boolean firstHeal = false;
-    private boolean secondHeal = false;
-    private boolean thirdHeal = false;
+    private boolean isEnraged = false;
     private CopyOnWriteArrayList<Entity> spawnedMobs = new CopyOnWriteArrayList<>();
     private boolean canAddsRespawn = true;
     private boolean hasMessaged = false;
 
     public void startEnragedMode(LivingEntity en) {
+        isEnraged = true;
         for (Player pl : en.getWorld().getPlayers()) {
             pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "Burick The Fanatic: " + ChatColor.WHITE
                     + "Pain. Sufferring. Agony. These are the emotions you will be feeling for the rest of eternity!");
             pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "Burick The Fanatic " + ChatColor.GOLD + "has become ENRAGED"
-                    + ChatColor.GOLD + " 2.5X DMG, +80% ARMOR, 2x SPEED!");
+                    + ChatColor.GOLD + " 2X DMG, +80% ARMOR, 2x SPEED!");
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 0.8F, 0.5F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1.2F, 0.2F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 0.8F, 1.2F);
         }
-        DamageAPI.setDamageBonus(en, 150);
+        DamageAPI.setDamageBonus(en, 100);
         DamageAPI.setArmorBonus(en, 80);
         en.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true));
     }
@@ -191,7 +191,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             }
         }
         if (hp <= tenPercentHP) {
-            if (!firstHeal && !secondHeal && !thirdHeal) {
+            if (!firstHeal) {
                 HealthHandler.getInstance().healMonsterByAmount(en, HealthHandler.getInstance().getMonsterMaxHPLive(en));
                 HealthHandler.getInstance().setMonsterHPLive(en, HealthHandler.getInstance().getMonsterMaxHPLive(en));
                 canAddsRespawn = true;
@@ -201,16 +201,9 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                         pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "Let the powers of Maltai channel into me and give me strength!");
                         pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1F, 0.5F);
                     }
-                } else if (!secondHeal) {
-                    secondHeal = true;
-                    for (Player pl : en.getWorld().getPlayers()) {
-                        pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "You cannot kill that which is already condemned, foolish adventurer!");
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1F, 0.5F);
-                    }
-                } else if (!thirdHeal) {
-                    thirdHeal = true;
-                    startEnragedMode(en);
                 }
+            } else {
+                startEnragedMode(en);
             }
         }
     }

@@ -10,11 +10,13 @@ Build <build>
 - Shard menu now displays server load
 
 &8Changes&0
-- Burick the Fanatic has been slightly weakened but is still a challenge to adventurers.
+- Burick has been further reworked
+- Increased timer of all E-Cash buffs from 30 minutes to 1 hour.
 - Improved anticheat
 - Lobbies are now less crowded
 
 &4Bug Fixes&0
+- Fixed buying all of one stack wiping all other stacks of the same itemtype in a shop.
 - Fixed lag spikes
 - Fixed occasional bug preventing you from picking up items.
 - Fixed occasional bug preventing you from opening shops.

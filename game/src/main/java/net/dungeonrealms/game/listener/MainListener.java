@@ -82,67 +82,45 @@ public class MainListener implements Listener {
         if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
             Player player = Bukkit.getPlayer(event.getVote().getUsername());
 
-            String rank = Rank.getInstance().getRank(player.getUniqueId());
-
+            // Handle the experience calculations.
             GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
             int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
             int expToGive = expToLevel / 20;
             expToGive += 100;
+
+            // Prepare the mesage.
             TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
             bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/vote/174212"));
             bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
 
-            switch (rank.toLowerCase()) {
-                case "default":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                    if (GameAPI.getGamePlayer(player) == null) {
-                        return;
-                    }
-                    gamePlayer.addExperience(expToGive, false, true);
-                    final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
-                    for (Player player1 : Bukkit.getOnlinePlayers()) {
-                        normal.sendToPlayer(player1);
-                    }
-                    break;
-                case "sub":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true);
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
-                    if (GameAPI.getGamePlayer(player) == null) {
-                        return;
-                    }
-                    final JSONMessage normal2 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-                    normal2.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
-                    for (Player player1 : Bukkit.getOnlinePlayers()) {
-                        normal2.sendToPlayer(player1);
-                    }
-                    break;
-                case "sub+":
-                case "sub++":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true);
+            // Handle reward calculations & achievements.
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
+            int ecashReward = 15;
+            if (Rank.isSubscriber(player)) {
+                ecashReward = 20;
+                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
+                // Now let's check if we should reward them for being a SUB+/++.
+                if (Rank.isSubscriberPlus(player)) {
+                    ecashReward = 25;
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
-                    if (GameAPI.getGamePlayer(player) == null) {
-                        return;
-                    }
-                    gamePlayer.addExperience(expToGive, false, true);
-                    final JSONMessage normal3 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-                    normal3.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
-                    for (Player player1 : Bukkit.getOnlinePlayers()) {
-                        normal3.sendToPlayer(player1);
-                    }
-                    break;
-                default:
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                    if (GameAPI.getGamePlayer(player) == null) {
-                        return;
-                    }
-                    gamePlayer.addExperience(expToGive, false, true);
-                    final JSONMessage normal4 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-                    normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
-                    Bukkit.getOnlinePlayers().forEach(normal4::sendToPlayer);
-                    break;
+                }
+            }
+
+
+            // Update the database with the new E-Cash reward!
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
+
+            // Reward to player with their EXP increase.
+            if (GameAPI.getGamePlayer(player) == null) {
+                return;
+            }
+            gamePlayer.addExperience(expToGive, false, true);
+
+            // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.
+            final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+            normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
+            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                normal.sendToPlayer(player1);
             }
         }
 

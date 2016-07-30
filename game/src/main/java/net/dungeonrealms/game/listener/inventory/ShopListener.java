@@ -508,7 +508,7 @@ public class ShopListener implements Listener {
                         if (remainingStock > 0) {
                             itemClicked.setAmount(remainingStock);
                         } else {
-                            event.getInventory().remove(itemClicked);
+                            event.getInventory().clear(event.getRawSlot());
                         }
                         DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, false);
                         if (shop.getOwner() != null) {
@@ -560,7 +560,7 @@ public class ShopListener implements Listener {
                     return;
                 }
                 if (BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker)) {
-                    event.getInventory().remove(itemClicked);
+                    event.getInventory().clear(event.getRawSlot());
                     ItemStack clickClone = itemClicked.clone();
                     ItemMeta meta = clickClone.getItemMeta();
                     List<String> lore = meta.getLore();
