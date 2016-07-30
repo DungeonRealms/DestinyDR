@@ -651,9 +651,8 @@ public class GameAPI {
     public static boolean savePlayerData(UUID uuid, boolean logout, boolean async) {
         Player player = Bukkit.getPlayer(uuid);
 
-        if (player == null) {
+        if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId()))
             return false;
-        }
 
         // BANK AND COLLECTION BIN
         if (BankMechanics.storage.containsKey(uuid)) {
@@ -736,10 +735,11 @@ public class GameAPI {
      * @since 1.0
      */
     public static boolean handleLogout(UUID uuid, boolean async) {
-        Utils.log.info("Handling logout for " + uuid.toString());
-
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return false;
+        if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return false;
+
+        Utils.log.info("Handling logout for " + uuid.toString());
 
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
@@ -901,6 +901,7 @@ public class GameAPI {
             return;
         }
         Player player = Bukkit.getPlayer(uuid);
+
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
             return;
@@ -1238,13 +1239,14 @@ public class GameAPI {
             HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);
             HealthHandler.getInstance().setPlayerHPLive(player, 10000);
 
-            //TODO: Re-Add this whenever we have a way to toggle it.
-            //gp.setInvulnerable(true);
+            gp.setInvulnerable(true);
+            gp.setTargettable(true);
             player.sendMessage("");
 
-            Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY"
-            );
+            Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY");
         }
+
+        DungeonRealms.getInstance().getLoggingIn().remove(player.getUniqueId());
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             //Prevent weird scoreboard thing when sharding.
@@ -1288,6 +1290,7 @@ public class GameAPI {
         Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
                 GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().requestPlayer(player.getUniqueId()), consumer -> {
+                    DungeonRealms.getInstance().getLoggingIn().add(player.getUniqueId());
                     player.removeMetadata("sharding", DungeonRealms.getInstance());
                     TitleAPI.clearTitle(player);
                     GameAPI.handleLogin(player.getUniqueId());

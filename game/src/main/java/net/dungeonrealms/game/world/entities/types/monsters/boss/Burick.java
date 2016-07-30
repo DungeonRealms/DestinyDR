@@ -140,7 +140,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
         }
         DamageAPI.setDamageBonus(en, 150);
         DamageAPI.setArmorBonus(en, 80);
-        en.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+        en.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true));
     }
 
     @Override

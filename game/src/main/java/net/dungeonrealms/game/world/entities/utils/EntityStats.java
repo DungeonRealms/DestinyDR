@@ -233,7 +233,7 @@ public class EntityStats {
             EnchantmentAPI.addGlow(i);
         }
         EnchantmentAPI.addGlow(((LivingEntity) bukkitEntity).getEquipment().getItemInMainHand());
-        ((LivingEntity) bukkitEntity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true));
+        ((LivingEntity) bukkitEntity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) bukkitEntity, HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) bukkitEntity));
 	}
 

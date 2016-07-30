@@ -191,6 +191,13 @@ public class PvEListener implements Listener {
                 Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
                 b.onBossHit(event);
             }
+            else
+                return;
+            powerChance = 12;
+            if (rand.nextInt(100) <= powerChance) {
+                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
+                PowerMove.doPowerMove("whirlwind", receiver, null);
+            }
         } else {
             switch (mobTier) {
                 case 1:
@@ -325,6 +332,13 @@ public class PvEListener implements Listener {
             if (receiver instanceof CraftLivingEntity) {
                 Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
                 b.onBossHit(event);
+            }
+            else
+                return;
+            powerChance = 12;
+            if (rand.nextInt(100) <= powerChance) {
+                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
+                PowerMove.doPowerMove("whirlwind", receiver, null);
             }
         } else {
             switch (mobTier) {
