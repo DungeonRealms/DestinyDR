@@ -11,6 +11,7 @@ Build <build>
 
 &8Changes&0
 - Improved anticheat
+- Lobbies are now less crowded
 - T4 drop rates have been increased further.
 - Burick the Fanatic now poses a greater threat to challengers.
 - The "Energy Regeneration" on Burick's gear has been randomized.
