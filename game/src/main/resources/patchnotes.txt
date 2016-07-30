@@ -15,6 +15,7 @@ Build <build>
 - Lobbies are now less crowded
 
 &4Bug Fixes&0
+- Fixed buying all of one stack wiping all other stacks of the same itemtype in a shop.
 - Fixed lag spikes
 - Fixed occasional bug preventing you from picking up items.
 - Fixed occasional bug preventing you from opening shops.
