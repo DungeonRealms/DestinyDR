@@ -1,7 +1,6 @@
 package net.dungeonrealms;
 
 import com.esotericsoftware.minlog.Log;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.commands.CommandManager;
@@ -468,6 +467,7 @@ public class DungeonRealms extends JavaPlugin {
         }
 
         Bukkit.getServer().setWhitelist(false);
+
 
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
             if (System.currentTimeMillis() >= (SERVER_START_TIME + 14100000L)) {

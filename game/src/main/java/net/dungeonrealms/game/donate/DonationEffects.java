@@ -92,16 +92,24 @@ public class DonationEffects implements GenericMechanic {
 
         activeProfessionBuff = (ProfessionBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData
                 (DungeonRealms.getInstance().bungeeName, "buffs.activeProfessionBuff"), ProfessionBuff.class);
-        final Object queuedProfessionBuffData = DatabaseAPI.getInstance().getShardData(DungeonRealms
+        final ArrayList<String> queuedProfessionBuffData =  (ArrayList<String>)DatabaseAPI.getInstance().getShardData(DungeonRealms
                 .getInstance().bungeeName, "buffs.queuedProfessionBuffs");
-        if (queuedProfessionBuffData != null) queuedProfessionBuffs = (LinkedList<ProfessionBuff>) queuedProfessionBuffData;
+        if (queuedProfessionBuffData != null && !queuedProfessionBuffData.isEmpty()) {
+            for (String s : queuedProfessionBuffData) {
+                queuedProfessionBuffs.add((ProfessionBuff) Buff.deserialize(s, ProfessionBuff.class));
+            }
+        }
 
 
         activeLevelBuff = (LevelBuff) Buff.deserialize((String) DatabaseAPI.getInstance().getShardData(DungeonRealms
                 .getInstance().bungeeName, "buffs.activeLevelBuff"), LevelBuff.class);
-        final Object queuedLevelBuffData = DatabaseAPI.getInstance().getShardData(DungeonRealms
+        final ArrayList<String> queuedLevelBuffData = (ArrayList<String>)DatabaseAPI.getInstance().getShardData(DungeonRealms
                 .getInstance().bungeeName, "buffs.queuedLevelBuffs");
-        if (queuedLevelBuffData != null) queuedLevelBuffs = (LinkedList<LevelBuff>) queuedLevelBuffData;
+        if (queuedLevelBuffData != null && !queuedLevelBuffData.isEmpty()) {
+            for (String s : queuedLevelBuffData) {
+                queuedLevelBuffs.add((LevelBuff) Buff.deserialize(s, LevelBuff.class));
+            }
+        }
 
         // expired while we were offline, RIP
         if (activeLootBuff != null && System.currentTimeMillis() > activeLootBuff.getTimeUntilExpiry()) {
@@ -200,7 +208,7 @@ public class DonationEffects implements GenericMechanic {
         if (this.activeProfessionBuff != null) {
             int minutesLeft = (int) (((activeProfessionBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
             int bonusAmount = (int) activeProfessionBuff.getBonusAmount();
-            String playerName = activeLootBuff.getActivatingPlayer();
+            String playerName = activeProfessionBuff.getActivatingPlayer();
             if (p != null) {
                 p.sendMessage("");
                 p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + playerName + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Profession EXP Rates" + ChatColor.GOLD
@@ -211,7 +219,7 @@ public class DonationEffects implements GenericMechanic {
         if (this.activeLevelBuff != null) {
             int minutesLeft = (int) (((activeLevelBuff.getTimeUntilExpiry() - System.currentTimeMillis()) / 1000.0D) / 60.0D);
             int bonusAmount = (int) activeLevelBuff.getBonusAmount();
-            String playerName = activeLootBuff.getActivatingPlayer();
+            String playerName = activeLevelBuff.getActivatingPlayer();
             if (p != null) {
                 p.sendMessage("");
                 p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + playerName + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Character Level EXP Rates" + ChatColor.GOLD

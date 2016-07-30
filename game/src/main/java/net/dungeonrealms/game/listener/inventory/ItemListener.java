@@ -32,6 +32,7 @@ import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -401,31 +402,51 @@ public class ItemListener implements Listener {
                         event.getPlayer().sendMessage(ChatColor.YELLOW + "Your banks storage has been increased by 9 slots.");
                     }
                 }
-            } else if (event.getItem().getType() == Material.DIAMOND) {
-                if (nms.hasTag() && nms.getTag().hasKey("buff") && nms.getTag().getString("buff").equals("loot")) {
-                    event.setCancelled(true);
-                    event.setUseInteractedBlock(Event.Result.DENY);
-                    event.setUseItemInHand(Event.Result.DENY);
-                    player.sendMessage("");
-                    Utils.sendCenteredMessage(player, ChatColor.DARK_GRAY + "***" + ChatColor.GREEN.toString() +
-                            ChatColor.BOLD + "GLOBAL LOOT BUFF CONFIRMATION" + ChatColor.DARK_GRAY + "***");
-                    player.sendMessage(ChatColor.GOLD
-                            + "Are you sure you want to use this item? It will apply a 20% buff to all character level XP gains across all servers for 30 minutes. This cannot be undone once it has begun.");
+            } else if (nms.hasTag() && nms.getTag().hasKey("buff")) {
+                String itemName = ChatColor.stripColor(event.getItem().getItemMeta().getDisplayName());
+                int duration = nms.getTag().getInt("duration");
+                int bonusAmount = nms.getTag().getInt("bonusAmount");
+                String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
+                final String buffType = nms.getTag().getString("buff");
+
+                event.setCancelled(true);
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.setUseItemInHand(Event.Result.DENY);
+                player.updateInventory();
+
+                player.sendMessage("");
+                Utils.sendCenteredMessage(player, ChatColor.DARK_GRAY + "***" + ChatColor.GREEN.toString() +
+                        ChatColor.BOLD + itemName.toUpperCase() + " CONFIRMATION" + ChatColor.DARK_GRAY + "***");
+                player.sendMessage(ChatColor.GOLD
+                        + "Are you sure you want to use this item? It will apply a " + bonusAmount + "% buff to all " + nms.getTag().get("description") + " across all servers for " + formattedTime + ". This cannot be undone once it has begun.");
+
+                if (buffType.equals("loot")) {
                     if (DonationEffects.getInstance().getActiveLootBuff() != null)
-                        player.sendMessage(ChatColor.RED + "NOTICE: There is an ongoing loot buff, so your loot buff " +
-                                "will be queued to be activated immediately after this one if you confirm. Cancel if " +
-                                "you do not wish to queue yours.");
-                    player.sendMessage("");
-                    player.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' to confirm, or any other message to cancel.");
-                    Chat.listenForMessage(player, e -> {
-                        if (e.getMessage().equalsIgnoreCase("y")) {
-                            event.getPlayer().getInventory().remove(event.getItem());
-                            GameAPI.sendNetworkMessage("lootBuff", "1800", "20", GameChat.getFormattedName(player), DungeonRealms.getInstance().bungeeName);
-                        } else {
-                            player.sendMessage(ChatColor.RED + "Global Loot Buff - Cancelled");
-                        }
-                    }, p -> p.sendMessage(ChatColor.RED + "Global Loot Buff - CANCELLED"));
+                        player.sendMessage(ChatColor.RED + "NOTICE: There is an ongoing " + buffType + " buff, so your buff " +
+                                "will be activated afterwards. Cancel if you do not wish to queue yours.");
+                } else if (buffType.equals("profession")) {
+                    if (DonationEffects.getInstance().getActiveProfessionBuff() != null)
+                        player.sendMessage(ChatColor.RED + "NOTICE: There is an ongoing " + buffType + " buff, so your buff " +
+                                "will be activated afterwards. Cancel if you do not wish to queue yours.");
+                } else if (buffType.equals("level")) {
+                    if (DonationEffects.getInstance().getActiveLevelBuff() != null)
+                        player.sendMessage(ChatColor.RED + "NOTICE: There is an ongoing " + buffType + " buff, so your buff " +
+                                "will be activated afterwards. Cancel if you do not wish to queue yours.");
                 }
+
+                player.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' to confirm, or any other message to cancel.");
+                player.sendMessage("");
+
+                Chat.listenForMessage(player, e -> {
+                    if (e.getMessage().equalsIgnoreCase("y")) {
+                        event.getPlayer().getInventory().remove(event.getItem());
+                        GameAPI.sendNetworkMessage("buff", buffType, String.valueOf(nms.getTag().getInt("duration"))
+                                , String.valueOf(nms.getTag().getInt("bonusAmount")), GameChat.getFormattedName
+                                        (player), DungeonRealms.getInstance().bungeeName);
+                    } else {
+                        player.sendMessage(ChatColor.RED + itemName + " - CANCELLED");
+                    }
+                }, p -> p.sendMessage(ChatColor.RED + itemName + " - CANCELLED"));
             }
         }
     }

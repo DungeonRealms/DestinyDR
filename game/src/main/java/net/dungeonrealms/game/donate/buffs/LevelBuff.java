@@ -31,7 +31,7 @@ public class LevelBuff extends Buff {
         Bukkit.getServer().broadcastMessage(
                 ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + "(" + Utils.getFormattedShardName(fromServer) + ") " + ChatColor.RESET + activatingPlayer + ChatColor.GOLD
                         + " has just activated " + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Character Level XP Rates" + ChatColor.GOLD
-                        + " for " + formattedTime + " by using 'Global Level Buff' from the E-CASH store!");
+                        + " for " + formattedTime + " by using 'Global Level EXP Buff' from the E-CASH store!");
         Bukkit.getServer().broadcastMessage("");
         DonationEffects.getInstance().setActiveLevelBuff(this);
         DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
@@ -43,7 +43,7 @@ public class LevelBuff extends Buff {
         final DonationEffects de = DonationEffects.getInstance();
         final LevelBuff nextBuff = de.getQueuedLevelBuffs().poll();
 
-        Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + ChatColor.GOLD + activatingPlayer + "'s " + ChatColor.UNDERLINE
+        Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + ChatColor.GOLD + activatingPlayer + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE
                 + "+20% Global Character Level XP Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
@@ -53,5 +53,4 @@ public class LevelBuff extends Buff {
         } else
             de.getInstance().setActiveLevelBuff(null);
     }
-
 }

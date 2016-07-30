@@ -1707,19 +1707,55 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
                     }
                 }
-                if (nmsStack.getTag().hasKey("buff") && nmsStack.getTag().getString("buff").equals("loot")) {
+                if (nmsStack.getTag().hasKey("buff")) {
                     eCashCost = nmsStack.getTag().getInt("eCash");
-                    if (player.getInventory().firstEmpty() != -1) {
-                        if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                            player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + "Global Loot Buff.");
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
-                            player.getInventory().addItem(ItemManager.createLootBuff());
-                            player.closeInventory();
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                        }
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
+                    final String buffType = nmsStack.getTag().getString("buff");
+                    switch (buffType) {
+                        case "loot":
+                            if (player.getInventory().firstEmpty() != -1) {
+                                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                                    player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + "Global Loot Buff.");
+
+                                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
+                                    player.getInventory().addItem(ItemManager.createLootBuff(nmsStack.getTag().getInt("duration"), nmsStack.getTag().getInt("bonusAmount")));
+                                    player.closeInventory();
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
+                            }
+                            break;
+                        case "profession":
+                            if (player.getInventory().firstEmpty() != -1) {
+                                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                                    player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + "Global Profession Buff.");
+
+                                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
+                                    player.getInventory().addItem(ItemManager.createProfessionBuff(nmsStack.getTag().getInt("duration"), nmsStack.getTag().getInt("bonusAmount")));
+                                    player.closeInventory();
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
+                            }
+                            break;
+                        case "level":
+                            if (player.getInventory().firstEmpty() != -1) {
+                                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                                    player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + "Global Level XP Buff.");
+
+                                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
+                                    player.getInventory().addItem(ItemManager.createLevelBuff(nmsStack.getTag().getInt("duration"), nmsStack.getTag().getInt("bonusAmount")));
+                                    player.closeInventory();
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
+                            }
+                            break;
                     }
                 }
                 break;

@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -270,12 +271,26 @@ public class Mining implements GenericMechanic {
         int currentXP = nms.getTag().getInt("XP");
         int maxXP = nms.getTag().getInt("maxXP");
         int tier = nms.getTag().getInt("itemTier");
+        int professionBuffBonus = 0;
+        if (DonationEffects.getInstance().getActiveProfessionBuff() != null) {
+            professionBuffBonus = Math.round(experienceGain * (DonationEffects.getInstance().getActiveProfessionBuff()
+                    .getBonusAmount() / 100f));
+            experienceGain += professionBuffBonus;
+        }
+        currentXP += experienceGain;
+
         if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
             p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + experienceGain + ChatColor.BOLD + " EXP"
                     + ChatColor.YELLOW + ChatColor.GRAY + " [" + currentXP + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded(getLvl(stackInHand)) + " EXP]");
+            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+            if (professionBuffBonus > 0) {
+                p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
+                        .toString() + ChatColor.BOLD + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                        + "+" + ChatColor.YELLOW + Math.round(professionBuffBonus) + ChatColor.BOLD + " EXP " +
+                        ChatColor.GOLD.toString() + ChatColor.BOLD + "(GLOBAL PROF. BUFF)");
+            }
         }
 
-        currentXP += experienceGain;
         if (currentXP > maxXP) {
             lvlUp(tier, p);
             return;

@@ -159,7 +159,8 @@ public class ScoreboardHandler implements GenericMechanic {
     }
 
     public void updateCurrentPlayerLevel(Player toSetFor, Scoreboard scoreboard) {
-       GamePlayer gamePlayer = GameAPI.getGamePlayer(toSetFor);
+        GamePlayer gamePlayer = GameAPI.getGamePlayer(toSetFor);
+        if (gamePlayer == null) return;
 
         int level = gamePlayer.getStats().getLevel();
 

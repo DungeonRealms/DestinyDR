@@ -9,6 +9,8 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.donate.buffs.LevelBuff;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ProtectionHandler;
@@ -268,6 +270,12 @@ public class GamePlayer {
         int subBonus = (int) (rank.equals("sub") ? experienceToAdd * 0.05 : 0.0);
         int subPlusBonus = (int) ((rank.equals("sub+") || rank.equals("sub++")) ? experienceToAdd * 0.1 : 0.0);
         int futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
+        int levelBuffBonus = 0;
+        final LevelBuff activeLevelBuff = DonationEffects.getInstance().getActiveLevelBuff();
+        if (activeLevelBuff != null) {
+            levelBuffBonus = Math.round(experienceToAdd * (activeLevelBuff.getBonusAmount() / 100f));
+            experienceToAdd += levelBuffBonus;
+        }
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
             int continuedExperience = futureExperience - xpNeeded;
@@ -280,6 +288,12 @@ public class GamePlayer {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - subBonus - subPlusBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     if (rank.equals("sub") || rank.equals("sub+") || rank.equals("sub++")) {
                         T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(rank) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(subBonus + subPlusBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    }
+                    if (activeLevelBuff != null) {
+                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
+                                .toString() + ChatColor.BOLD + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                                + "+" + ChatColor.YELLOW + Math.round(levelBuffBonus) + ChatColor.BOLD + " EXP " +
+                                ChatColor.GOLD.toString() + ChatColor.BOLD + "(GLOBAL LEVEL BUFF)");
                     }
                 }
             }

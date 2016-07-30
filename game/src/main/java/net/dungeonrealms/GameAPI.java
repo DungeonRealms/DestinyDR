@@ -1240,7 +1240,7 @@ public class GameAPI {
             HealthHandler.getInstance().setPlayerHPLive(player, 10000);
 
             gp.setInvulnerable(true);
-            gp.setTargettable(true);
+            gp.setTargettable(false);
             player.sendMessage("");
 
             Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY");

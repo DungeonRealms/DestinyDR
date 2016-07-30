@@ -25,12 +25,10 @@ import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import net.minecraft.server.v1_9_R2.NBTTagString;
-import org.bukkit.Bukkit;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemFactory;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -116,33 +114,44 @@ public class ItemManager {
         return CraftItemStack.asBukkitCopy(nms);
     }
 
-    public static ItemStack createLootBuff() {
+    public static ItemStack createLootBuff(int duration, int bonusAmount) {
+        String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
         ItemStack lootBuff = new ItemBuilder().setItem(Material.DIAMOND, (short) 0, ChatColor.GOLD.toString() + "Global Loot Buff", new
-                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + "30 minutes", ChatColor.GOLD
+                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + formattedTime, ChatColor.GOLD
                 .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
                 "Increases all loot drop chances for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
-                "20% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
-                .setNBTInt("untradeable", 1).setNBTString("buff", "loot").build();
+                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
+                .setNBTInt("untradeable", 1).setNBTString("buff", "loot").setNBTInt("duration", duration).setNBTInt
+                        ("bonusAmount", bonusAmount).setNBTString("description", "loot drop chances").build();
         // apply antidupe to make unstackable
         return AntiCheat.getInstance().applyAntiDupe(lootBuff);
     }
 
-    public static ItemStack createProfessionBuff() {
-         return new ItemBuilder().setItem(Material.GOLDEN_CARROT, (short) 0, ChatColor.GOLD.toString() + "Global Profession Buff", new
-                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + "30 minutes", ChatColor.GOLD
+    public static ItemStack createProfessionBuff(int duration, int bonusAmount) {
+        String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
+        ItemStack professionBuff = new ItemBuilder().setItem(Material.GOLDEN_CARROT, (short) 0, ChatColor.GOLD.toString() + "Global Profession Buff", new
+                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + formattedTime, ChatColor.GOLD
                 .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
                 "Increases all experience gained from professions for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
-                "20% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
-                .setNBTInt("untradeable", 1).setNBTString("buff", "loot").build();
+                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
+                .setNBTInt("untradeable", 1).setNBTString("buff", "profession").setNBTInt("duration", duration)
+                .setNBTInt("bonusAmount", bonusAmount).setNBTString("description", "experience gained from " +
+                        "professions").build();
+        // apply antidupe to make unstackable
+        return AntiCheat.getInstance().applyAntiDupe(professionBuff);
     }
 
-    public static ItemStack createLevelBuff() {
-        return new ItemBuilder().setItem(Material.EXP_BOTTLE, (short) 0, ChatColor.GOLD.toString() + "Global Level EXP Buff", new
-                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + "30 minutes", ChatColor.GOLD
+    public static ItemStack createLevelBuff (int duration, int bonusAmount) {
+        String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
+        ItemStack levelBuff = new ItemBuilder().setItem(Material.EXP_BOTTLE, (short) 0, ChatColor.GOLD.toString() + "Global Level EXP Buff", new
+                String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + formattedTime, ChatColor.GOLD
                 .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
                 "Increases all experience gained from mobs for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
-                "20% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
-                .setNBTInt("untradeable", 1).setNBTString("buff", "loot").build();
+                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
+                .setNBTInt("untradeable", 1).setNBTString("buff", "level").setNBTInt("duration", duration).setNBTInt
+                        ("bonusAmount", bonusAmount).setNBTString("description", "character experience gained").build();
+        // apply antidupe to make unstackable
+        return AntiCheat.getInstance().applyAntiDupe(levelBuff);
     }
 
     /**

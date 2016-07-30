@@ -450,7 +450,7 @@ public class InventoryListener implements Listener {
                 if (p2 != null)
                     p2.closeInventory();
             }
-        } else if (event.getInventory().getTitle().contains("Storage Chest")) {
+        } else if (event.getInventory().getTitle().contains("Storage Chest") && !CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             storage.inv.setContents(event.getInventory().getContents());
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
@@ -466,7 +466,7 @@ public class InventoryListener implements Listener {
                 stat.resetTemp();
             }
             stat.reset = true;
-        } else if (event.getInventory().getTitle().contains("Collection Bin")) {
+        } else if (event.getInventory().getTitle().contains("Collection Bin") && !CommandModeration.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             Inventory bin = storage.collection_bin;
             if (bin == null)

@@ -36,7 +36,8 @@ public class DatabaseAPI {
     }
 
     public void startInitialization(String shard) {
-        if (getShardData(shard, "shard") == null) {
+        Document doc = DatabaseDriver.shardData.find(Filters.eq("shard", shard)).first();
+        if (doc == null) {
             createNewShardCollection(shard);
         }
     }
@@ -123,12 +124,12 @@ public class DatabaseAPI {
             serverExecutorThread.submit(() -> DatabaseDriver.shardData.updateOne(Filters.eq("shard", shard), new
                     Document(EO.getUO(), new Document(variable, value))), uo);
         else {
-            UpdateResult result = DatabaseDriver.playerData.updateOne(Filters.eq("shard", shard), new Document(EO.getUO(), new Document(variable, value)), uo);
+            UpdateResult result = DatabaseDriver.shardData.updateOne(Filters.eq("shard", shard), new Document(EO.getUO(), new Document(variable, value)), uo);
             if (doAfterOptional != null)
                 doAfterOptional.accept(result);
 
             if (Constants.debug) {
-                Constants.log.warning("[Database] Updating server collection on the main thread.");
+                Constants.log.warning("[Database] Updating shard_data collection on the main thread.");
                 printTrace();
             }
         }
@@ -158,6 +159,7 @@ public class DatabaseAPI {
 
     public void createNewShardCollection(String shard) {
         DatabaseDriver.shardData.insertOne(new Document("shard", shard));
+        Constants.log.info("[MONGO] Created new document in the shard_data collection for shard " + shard);
     }
 
     /**

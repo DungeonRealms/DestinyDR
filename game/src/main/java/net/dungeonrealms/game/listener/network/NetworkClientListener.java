@@ -239,24 +239,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             }
                             if (sound != null)
                                 player.playSound(player.getLocation(), sound, volume, pitch);
-                        } else if (task.equals("lootBuff")) {
+                        } else if (task.equals("buff")) {
+                            String type = in.readUTF();
                             int duration = Integer.parseInt(in.readUTF());
                             int bonusAmount = Integer.parseInt(in.readUTF());
                             String player_string = in.readUTF();
                             String from_server = in.readUTF();
-                            DonationEffects.getInstance().activateNewLootBuffOnThisShard(duration, bonusAmount, player_string, from_server);
-                        } else if (task.equals("professionBuff")) {
-                            int duration = Integer.parseInt(in.readUTF());
-                            int bonusAmount = Integer.parseInt(in.readUTF());
-                            String player_string = in.readUTF();
-                            String from_server = in.readUTF();
-                            DonationEffects.getInstance().activateNewProfessionBuffOnThisShard(duration, bonusAmount, player_string, from_server);
-                        } else if (task.equals("levelBuff")) {
-                            int duration = Integer.parseInt(in.readUTF());
-                            int bonusAmount = Integer.parseInt(in.readUTF());
-                            String player_string = in.readUTF();
-                            String from_server = in.readUTF();
-                            DonationEffects.getInstance().activateNewLevelBuffOnThisShard(duration, bonusAmount, player_string, from_server);
+                            if (type.equals("loot"))
+                                DonationEffects.getInstance().activateNewLootBuffOnThisShard(duration, bonusAmount, player_string, from_server);
+                            else if (type.equals("profession"))
+                                DonationEffects.getInstance().activateNewProfessionBuffOnThisShard(duration, bonusAmount, player_string, from_server);
+                            else if (type.equals("level"))
+                                DonationEffects.getInstance().activateNewLevelBuffOnThisShard(duration, bonusAmount, player_string, from_server);
                         } else if (task.equals("Stop")) {
                             DungeonRealms.getInstance().isDrStopAll = true;
 
