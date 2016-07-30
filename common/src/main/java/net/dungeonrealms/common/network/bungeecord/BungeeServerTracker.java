@@ -75,7 +75,7 @@ public class BungeeServerTracker {
     public static void startTask(Plugin plugin, long refreshSeconds) {
         if (taskID != -1) Bukkit.getScheduler().cancelTask(taskID);
 
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> new BukkitRunnable() {
+        taskID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, () -> new BukkitRunnable() {
             @Override
             public void run() {
                 for (ShardInfo shard : ShardInfo.values()) {
@@ -117,7 +117,7 @@ public class BungeeServerTracker {
                     }
                 }
             }
-        }.runTaskAsynchronously(plugin), 1, refreshSeconds * 20);
+        }, 0, refreshSeconds * 20);
     }
 
 
