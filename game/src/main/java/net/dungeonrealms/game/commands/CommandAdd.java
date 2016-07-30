@@ -413,6 +413,33 @@ public class CommandAdd extends BasicCommand {
 
                     player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + " has received everything.");
                     break;
+                case "ecash_buff":
+                    if (args.length >= 2) {
+                        int buffDuration = 1800;
+                        int buffBonus = 20;
+
+                        if (args.length >= 3) {
+                            buffDuration = Integer.parseInt(args[2]) * 60;
+                        }
+                        if (args.length >= 4) {
+                            buffBonus = Integer.parseInt(args[3]);
+                        }
+
+                        switch (args[1].toLowerCase()) {
+                            case "loot":
+                                player.getInventory().addItem(ItemManager.createLootBuff(buffDuration, buffBonus));
+                                break;
+                            case "profession":
+                                player.getInventory().addItem(ItemManager.createProfessionBuff(buffDuration, buffBonus));
+                                break;
+                            case "level":
+                                player.getInventory().addItem(ItemManager.createLevelBuff(buffDuration, buffBonus));
+                                break;
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /add ecash_buff <LOOT|PROFESSION|LEVEL>");
+                    }
+                    break;
                 default:
                     player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");
                     break;
