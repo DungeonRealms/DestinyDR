@@ -10,7 +10,7 @@ Build <build>
 - Shard menu now displays server load
 
 &8Changes&0
-- Burick the Fanatic has been slightly weakened but is still a challenge to adventurers.
+- Burick has been further reworked
 - Improved anticheat
 - Lobbies are now less crowded
 

@@ -193,7 +193,7 @@ public class PvEListener implements Listener {
             }
             else
                 return;
-            powerChance = 12;
+            powerChance = 3;
             if (rand.nextInt(100) <= powerChance) {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
                 PowerMove.doPowerMove("whirlwind", receiver, null);
