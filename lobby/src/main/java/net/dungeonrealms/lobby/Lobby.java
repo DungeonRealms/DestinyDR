@@ -4,10 +4,12 @@ import lombok.Getter;
 import net.dungeonrealms.common.game.commands.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.commands.CommandShard;
+import net.dungeonrealms.lobby.effect.GhostFactory;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -32,6 +34,9 @@ public class Lobby extends JavaPlugin implements Listener {
     @Getter
     private static Lobby instance;
 
+    @Getter
+    private GhostFactory ghostFactory;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -41,7 +46,9 @@ public class Lobby extends JavaPlugin implements Listener {
         DatabaseDriver.getInstance().startInitialization(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
+        ghostFactory = new GhostFactory(this);
         Bukkit.getPluginManager().registerEvents(this, this);
+
 
         CommandManager cm = new CommandManager();
 
@@ -76,10 +83,21 @@ public class Lobby extends JavaPlugin implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Bukkit.getScheduler().runTask(this, () -> {
             Player player = event.getPlayer();
+
+            player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+            player.setDisplayName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+            player.setCustomName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+
             player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
+
             if (!player.isOp())
                 player.getInventory().clear();
+
             player.getInventory().setItem(0, getShardSelector());
+
+            ghostFactory.addPlayer(player);
+            ghostFactory.setGhost(player, !Rank.isGM(player) && !Rank.isSubscriber(player));
+
         });
     }
 
@@ -126,7 +144,7 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onItemClick(PlayerInteractEvent e) {
         final Player p = e.getPlayer();
         if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
@@ -135,6 +153,7 @@ public class Lobby extends JavaPlugin implements Listener {
             if (e.getItem().getType() != Material.COMPASS) return;
 
             new ShardSelector(p).open(p);
+            e.setCancelled(true);
         }
     }
 
