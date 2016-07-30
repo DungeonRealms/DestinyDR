@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.Utils;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -25,12 +26,12 @@ public class ProfessionBuff extends Buff {
 
     @Override
     public void onActivateBuff() {
-        int minutesUntilExpiry = duration / 60;
+        String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
         Bukkit.getServer().broadcastMessage("");
         Bukkit.getServer().broadcastMessage(
                 ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + "(" + Utils.getFormattedShardName(fromServer) + ") " + ChatColor.RESET + activatingPlayer + ChatColor.GOLD
                         + " has just activated " + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Profession Rates" + ChatColor.GOLD
-                        + " for 30 minutes by using 'Global Profession Buff' from the E-CASH store!");
+                        + " for " + formattedTime + " by using 'Global Profession Buff' from the E-CASH store!");
         Bukkit.getServer().broadcastMessage("");
         DonationEffects.getInstance().setActiveProfessionBuff(this);
         DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,

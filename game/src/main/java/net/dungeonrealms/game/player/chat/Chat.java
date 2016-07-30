@@ -72,7 +72,7 @@ public class Chat {
                 return "";
             }
             UUID uuid = UUID.fromString(testUUID);
-            if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.getInstance().isGM(Bukkit.getOfflinePlayer(uuid))) {
+            if (!FriendHandler.getInstance().areFriends(player, uuid)) {
                 if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, uuid)) {
                     player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
                     return "";
