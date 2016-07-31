@@ -1526,8 +1526,8 @@ public class ClickHandler {
                         } else {
                             GameAPI._hiddenPlayers.add(player);
                             player.setCustomNameVisible(false);
-                            player.hidePlayer(player);
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
+                            Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
                             player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
                             player.setGameMode(GameMode.SPECTATOR);
                         }
