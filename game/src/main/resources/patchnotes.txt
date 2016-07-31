@@ -1,25 +1,13 @@
 Build <build>
 
 &2New Features&0
+- PMs now show guilds
 - Added global loot, profession, and xp buffs.
 - Added /vote command.
-- Blood effects
-- Seamless shard moving when server restarts
-- Subscribers can now bypass the global chat delay.
-- Energy regen now updates 3x faster for a smoother look.
-- Shard menu now displays server load
 
 &8Changes&0
-- Burick has been further reworked
+- Burick has been further reworked.
 - Increased timer of all E-Cash buffs from 30 minutes to 1 hour.
-- E-Cash vote bonuses are now awarded to miscellaneous ranks (PMOD, BUILDER, GM, etc.)
-- Improved anticheat
-- Lobbies are now less crowded
 
 &4Bug Fixes&0
-- Fixed buying all of one stack wiping all other stacks of the same itemtype in a shop.
-- Fixed lag spikes
-- Fixed occasional bug preventing you from picking up items.
-- Fixed occasional bug preventing you from opening shops.
-- Fixed critical exploits
-- Fixed shard item bug
+- Fixed Burick spamming in the chat and sound.

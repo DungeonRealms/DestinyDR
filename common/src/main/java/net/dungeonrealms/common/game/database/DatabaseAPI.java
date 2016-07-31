@@ -98,7 +98,7 @@ public class DatabaseAPI {
         if (async)
             UpdateThread.CONCURRENT_QUERIES.add(new SingleUpdateQuery<>(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), doAfterOptional));
         else {
-            UpdateResult result = DatabaseDriver.playerData.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+            UpdateResult result = DatabaseDriver.playerData.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), UpdateThread.uo);
             if (doAfterOptional != null)
                 doAfterOptional.accept(result);
 
