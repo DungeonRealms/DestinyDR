@@ -419,14 +419,16 @@ public class DamageAPI {
                     continue;
                 // let's not damage ourself
                 if (entity.equals(damager)) continue;
-                double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
-                if (damage - armorCalculation[0] <= 0) continue;
                 if (entity != event.getEntity() && !(entity instanceof Player)) {
                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                        double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
+                        if (damage - armorCalculation[0] <= 0) continue;
                         HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, damager, damage - armorCalculation[0]);
                     }
                 } else if (GameAPI.isPlayer(entity)) {
                     if (damagerIsMob) {
+                        double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
+                        if (damage - armorCalculation[0] <= 0) continue;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);
                     } else if (!GameAPI.isNonPvPRegion(entity.getLocation())) {
                         if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
@@ -444,6 +446,8 @@ public class DamageAPI {
                                 continue;
                             }
                         }
+                        double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
+                        if (damage - armorCalculation[0] <= 0) continue;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);
                     }
                 }
