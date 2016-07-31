@@ -139,7 +139,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 0.8F, 1.2F);
         }
         DamageAPI.setDamageBonus(en, 100);
-        DamageAPI.setArmorBonus(en, 80);
+        DamageAPI.setArmorBonus(en, 30);
         en.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, true));
     }
 
