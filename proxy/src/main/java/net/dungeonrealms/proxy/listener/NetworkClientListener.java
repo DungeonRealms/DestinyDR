@@ -63,7 +63,7 @@ public class NetworkClientListener extends Listener {
                             ServerInfo target = optimalShardFinder.next();
 
                             try {
-                                PingResponse ping = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 500));
+                                PingResponse ping = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 20));
                                 if (!ping.isOnline() || ping.getMotd().contains("offline")) {
 
                                     if (!optimalShardFinder.hasNext()) {

@@ -18,8 +18,8 @@ public class CommandReboot extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        String time = DurationFormatUtils.formatDurationWords(DungeonRealms.getInstance().getRebootTime(), true, true);
-        commandSender.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "Next Scheduled Reboot:" + ChatColor.RED + time);
+        String time = DurationFormatUtils.formatDurationWords((DungeonRealms.getInstance().getRebootTime() - System.currentTimeMillis()), true, true);
+        commandSender.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "Next Scheduled Reboot: " + ChatColor.RED + time);
         return true;
     }
 }
