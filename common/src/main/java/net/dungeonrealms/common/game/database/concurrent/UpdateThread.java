@@ -1,5 +1,6 @@
 package net.dungeonrealms.common.game.database.concurrent;
 
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class UpdateThread extends Thread {
 
     public static Queue<SingleUpdateQuery<UpdateResult>> CONCURRENT_QUERIES = new ConcurrentLinkedQueue<>();
+    public final static UpdateOptions uo = new UpdateOptions().upsert(true);
 
     @Override
     public void run() {
@@ -28,7 +30,7 @@ public class UpdateThread extends Thread {
                 SingleUpdateQuery<UpdateResult> query = CONCURRENT_QUERIES.poll();
                 if (query == null) continue;
 
-                UpdateResult result = DatabaseDriver.playerData.updateOne(query.getSearchQuery(), query.getNewDocument());
+                UpdateResult result = DatabaseDriver.playerData.updateOne(query.getSearchQuery(), query.getNewDocument(), uo);
 
                 if (result.wasAcknowledged()) {
                     if (Constants.debug)
