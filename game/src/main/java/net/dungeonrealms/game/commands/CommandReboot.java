@@ -2,6 +2,7 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.commands.BasicCommand;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,9 +18,8 @@ public class CommandReboot extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        long timeDifference = System.currentTimeMillis() - DungeonRealms.getServerStart();
-        timeDifference = (4 * 60 * 60 * 1000) - timeDifference;
-        commandSender.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "Next Scheduled Reboot:" + ChatColor.YELLOW + " " + (int) (timeDifference / 3600000 % 24) + ChatColor.BOLD + "h " + ChatColor.YELLOW + (int) (timeDifference / 60000 % 60) + ChatColor.BOLD + "m " + ChatColor.YELLOW + (int) (timeDifference / 1000 % 60) + ChatColor.BOLD + "s");
+        String time = DurationFormatUtils.formatDurationWords(DungeonRealms.getInstance().getRebootTime(), true, true);
+        commandSender.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "Next Scheduled Reboot:" + ChatColor.RED + time);
         return true;
     }
 }

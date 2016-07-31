@@ -20,6 +20,10 @@ public class Constants {
 
     public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
 
+    public static final long MIN_GAME_TIME = 14100000L;
+
+    public static final long MAX_GAME_TIME = 21300000L;
+
     public static final int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //

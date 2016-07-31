@@ -91,7 +91,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DungeonRealms extends JavaPlugin {
 
-    private static long SERVER_START_TIME;
+    private static long SERVER_START_TIME, REBOOT_TIME;
 
     @Getter
     private static ShardInfo shard;
@@ -139,6 +139,7 @@ public class DungeonRealms extends JavaPlugin {
         return SERVER_START_TIME;
     }
 
+
     public void onLoad() {
         Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
         instance = this;
@@ -160,8 +161,16 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onEnable() {
         SERVER_START_TIME = System.currentTimeMillis();
+
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
+
+        // RANDOMIZE REBOOT TIME //
+        Random random = new Random();
+        long min = Constants.MIN_GAME_TIME + SERVER_START_TIME;
+        long max = Constants.MAX_GAME_TIME + SERVER_START_TIME;
+
+        REBOOT_TIME += min + (long) (random.nextDouble() * (max - min));
 
         Utils.log.info("Reading shard config...");
         Ini ini = new Ini();
@@ -470,7 +479,7 @@ public class DungeonRealms extends JavaPlugin {
 
 
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
-            if (System.currentTimeMillis() >= (SERVER_START_TIME + 14100000L)) {
+            if (System.currentTimeMillis() >= (REBOOT_TIME)) {
                 scheduleRestartTask();
                 Bukkit.getScheduler().cancelTask(rebooterID);
             }
@@ -494,6 +503,10 @@ public class DungeonRealms extends JavaPlugin {
 
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);
+    }
+
+    public long getRebootTime() {
+        return REBOOT_TIME;
     }
 
     private void scheduleRestartTask() {
