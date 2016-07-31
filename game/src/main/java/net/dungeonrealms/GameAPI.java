@@ -1208,12 +1208,11 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
         }
 
-        // calculate attributes
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> GameAPI.calculateAllAttributes(player), 5L);
-
-        // check inventory
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> PlayerManager.checkInventory(uuid), 5L);
-
+        // calculate attributes and check inventory
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+            GameAPI.calculateAllAttributes(player);
+            PlayerManager.checkInventory(uuid);
+        }, 5L);
 
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
