@@ -61,9 +61,7 @@ public class HealthHandler implements GenericMechanic {
 
     public void startInitialization() {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
-                setPlayerOverheadHP(pl, getPlayerHPLive(pl));
-            }
+            Bukkit.getServer().getOnlinePlayers().stream().forEach(pl -> setPlayerOverheadHP(pl, getPlayerHPLive(pl)));
         }, 0L, 6L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40L, 20L);
     }
@@ -509,7 +507,7 @@ public class HealthHandler implements GenericMechanic {
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
         }
 
-        player.getWorld().playEffect(player.getLocation().clone().add(0.5, 1.5, 0.5), Effect.STEP_SOUND, 152);
+        player.getWorld().playEffect(player.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
             if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
@@ -726,7 +724,7 @@ public class HealthHandler implements GenericMechanic {
             if (GameAPI.isPlayer(attacker)) {
                 handleMonsterDamageTracker(entity.getUniqueId(), (Player) attacker, damage);
                 checkForNewTarget(entity);
-                entity.getWorld().playEffect(entity.getLocation().clone().add(0.5, 1.5, 0.5), Effect.STEP_SOUND, 152);
+                entity.getWorld().playEffect(entity.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
 
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     if (!entity.hasMetadata("uuid")) {
