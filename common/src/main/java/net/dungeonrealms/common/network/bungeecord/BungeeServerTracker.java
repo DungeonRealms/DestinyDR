@@ -8,7 +8,6 @@ import net.dungeonrealms.common.network.ping.ServerPinger;
 import net.dungeonrealms.common.network.ping.type.SpigotPingResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -75,49 +74,46 @@ public class BungeeServerTracker {
     public static void startTask(Plugin plugin, long refreshSeconds) {
         if (taskID != -1) Bukkit.getScheduler().cancelTask(taskID);
 
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (ShardInfo shard : ShardInfo.values()) {
+        taskID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, () -> {
+            for (ShardInfo shard : ShardInfo.values()) {
 
-                    String bungeeName = shard.getPseudoName();
-                    ServerAddress address = shard.getAddress();
+                String bungeeName = shard.getPseudoName();
+                ServerAddress address = shard.getAddress();
 
-                    BungeeServerInfo serverInfo = getOrCreateServerInfo(bungeeName);
-                    boolean displayOffline = false;
+                BungeeServerInfo serverInfo = getOrCreateServerInfo(bungeeName);
+                boolean displayOffline = false;
 
-                    try {
-                        PingResponse data = new SpigotPingResponse(ServerPinger.fetchData(address, 500));
+                try {
+                    PingResponse data = new SpigotPingResponse(ServerPinger.fetchData(address, 500));
 
-                        if (data.isOnline()) {
-                            serverInfo.setOnline(true);
-                            serverInfo.setOnlinePlayers(data.getOnlinePlayers());
-                            serverInfo.setMaxPlayers(data.getMaxPlayers());
-                            serverInfo.setMotd(data.getMotd());
-                        } else {
-                            displayOffline = true;
-                        }
-                    } catch (SocketTimeoutException e) {
+                    if (data.isOnline()) {
+                        serverInfo.setOnline(true);
+                        serverInfo.setOnlinePlayers(data.getOnlinePlayers());
+                        serverInfo.setMaxPlayers(data.getMaxPlayers());
+                        serverInfo.setMotd(data.getMotd());
+                    } else {
                         displayOffline = true;
-                    } catch (UnknownHostException e) {
-                        Constants.log.warning("Couldn't fetch data from " + bungeeName + "(" + address.toString() + "): unknown host address.");
-                        displayOffline = true;
-                    } catch (IOException e) {
-                        displayOffline = true;
-                    } catch (Exception e) {
-                        displayOffline = true;
-                        Constants.log.warning("Couldn't fetch data from " + bungeeName + "(" + address.toString() + "), unhandled exception: " + e.toString());
                     }
+                } catch (SocketTimeoutException e) {
+                    displayOffline = true;
+                } catch (UnknownHostException e) {
+                    Constants.log.warning("Couldn't fetch data from " + bungeeName + "(" + address.toString() + "): unknown host address.");
+                    displayOffline = true;
+                } catch (IOException e) {
+                    displayOffline = true;
+                } catch (Exception e) {
+                    displayOffline = true;
+                    Constants.log.warning("Couldn't fetch data from " + bungeeName + "(" + address.toString() + "), unhandled exception: " + e.toString());
+                }
 
-                    if (displayOffline) {
-                        serverInfo.setOnline(false);
-                        serverInfo.setOnlinePlayers(0);
-                        serverInfo.setMaxPlayers(0);
-                        serverInfo.setMotd("offline");
-                    }
+                if (displayOffline) {
+                    serverInfo.setOnline(false);
+                    serverInfo.setOnlinePlayers(0);
+                    serverInfo.setMaxPlayers(0);
+                    serverInfo.setMotd("offline");
                 }
             }
-        }.runTaskAsynchronously(plugin), 1, refreshSeconds * 20);
+        }, 0L, refreshSeconds * 20L);
     }
 
 
