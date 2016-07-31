@@ -1,25 +1,27 @@
 package net.dungeonrealms.common.network.bungeecord;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.network.PingResponse;
 import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ping.ServerPinger;
 import net.dungeonrealms.common.network.ping.type.SpigotPingResponse;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class BungeeServerTracker {
 
     private static Map<String, BungeeServerInfo> trackedServers = new ConcurrentHashMap<>();
-    private static int taskID = -1;
+    private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Server Pinger Thread").build());
 
     public static void resetTrackedServers() {
         trackedServers.clear();
@@ -67,14 +69,11 @@ public class BungeeServerTracker {
     }
 
     public static Map<String, BungeeServerInfo> getTrackedServers() {
-
         return trackedServers;
     }
 
-    public static void startTask(Plugin plugin, long refreshSeconds) {
-        if (taskID != -1) Bukkit.getScheduler().cancelTask(taskID);
-
-        taskID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, () -> {
+    public static void startTask(long refreshSeconds) {
+        executorService.scheduleAtFixedRate(() -> {
             for (ShardInfo shard : ShardInfo.values()) {
 
                 String bungeeName = shard.getPseudoName();
@@ -113,7 +112,7 @@ public class BungeeServerTracker {
                     serverInfo.setMotd("offline");
                 }
             }
-        }, 0L, refreshSeconds * 20L);
+        }, 0, refreshSeconds, TimeUnit.SECONDS);
     }
 
 

@@ -17,14 +17,14 @@ public class ServerPinger {
         Socket socket = null;
         DataOutputStream dataOut = null;
         DataInputStream dataIn = null;
+        final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        final DataOutputStream handshake = new DataOutputStream(byteOut);
 
         try {
             socket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
             socket.setSoTimeout(timeout);
             dataOut = new DataOutputStream(socket.getOutputStream());
             dataIn = new DataInputStream(socket.getInputStream());
-            final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-            final DataOutputStream handshake = new DataOutputStream(byteOut);
             handshake.write(0);
             PacketUtils.writeVarInt(handshake, 4);
             PacketUtils.writeString(handshake, serverAddress.getAddress(), PacketUtils.UTF8);
@@ -46,6 +46,8 @@ public class ServerPinger {
             PacketUtils.closeQuietly(dataOut);
             PacketUtils.closeQuietly(dataIn);
             PacketUtils.closeQuietly(socket);
+            PacketUtils.closeQuietly(byteOut);
+            PacketUtils.closeQuietly(handshake);
         }
     }
 
