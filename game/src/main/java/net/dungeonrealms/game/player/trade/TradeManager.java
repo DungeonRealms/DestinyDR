@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -32,10 +33,10 @@ public class TradeManager {
 
     public static Player getTarget(Player trader) {
         ArrayList<Entity> list = new ArrayList<>();
-        trader.getNearbyEntities(2.0D, 2.0D, 2.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC") && canTrade(e.getUniqueId())).forEach(list::add);
-        if (list.size() == 0)
-            return null;
-        return (Player) list.get(0);
+        Optional<Entity> tradie =
+        trader.getNearbyEntities(2.0D, 2.0D, 2.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC")
+                && canTrade(e.getUniqueId()) && trader.hasLineOfSight(e)).findFirst();
+        return tradie.isPresent() ? (Player) tradie.get() : null;
     }
 
     public static boolean canTrade(UUID uniqueId) {
