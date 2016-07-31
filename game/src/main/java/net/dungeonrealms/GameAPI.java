@@ -856,7 +856,7 @@ public class GameAPI {
             } else {
                 // SEND THEM TO THE LOBBY INSTEAD //
                 BungeeUtils.sendToServer(player.getName(), "Lobby");
-                return;
+                continue;
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
