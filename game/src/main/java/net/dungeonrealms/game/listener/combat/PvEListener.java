@@ -85,6 +85,7 @@ public class PvEListener implements Listener {
 
         if (!GameAPI.isWeapon(damager.getEquipment().getItemInMainHand())) {
             HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, 1);
+            checkPowerMove(event, receiver);
             return;
         }
 
@@ -155,72 +156,7 @@ public class PvEListener implements Listener {
         }
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
         DamageAPI.handlePolearmAOE(event, finalDamage / 2, damager);
-
-        if (!receiver.hasMetadata("tier")) return;
-        if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId()))
-            return;
-
-        int mobTier = receiver.getMetadata("tier").get(0).asInt();
-        Random rand = new Random();
-        int powerChance = 0;
-        if (receiver.hasMetadata("elite")) {
-            switch (mobTier) {
-                case 1:
-                    powerChance = 5;
-                    break;
-                case 2:
-                    powerChance = 7;
-                    break;
-                case 3:
-                    powerChance = 10;
-                    break;
-                case 4:
-                    powerChance = 13;
-                    break;
-                case 5:
-                    powerChance = 20;
-                    break;
-
-            }
-            if (rand.nextInt(100) <= powerChance) {
-                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("whirlwind", receiver, null);
-            }
-        } else if (receiver.hasMetadata("boss")) {
-            if (receiver instanceof CraftLivingEntity) {
-                Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
-                b.onBossHit(event);
-            }
-            else
-                return;
-            powerChance = 3;
-            if (rand.nextInt(100) <= powerChance) {
-                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("whirlwind", receiver, null);
-            }
-        } else {
-            switch (mobTier) {
-                case 1:
-                    powerChance = 5;
-                    break;
-                case 2:
-                    powerChance = 7;
-                    break;
-                case 3:
-                    powerChance = 10;
-                    break;
-                case 4:
-                    powerChance = 13;
-                    break;
-                case 5:
-                    powerChance = 20;
-                    break;
-
-            }
-            if (rand.nextInt(100) <= powerChance) {
-                PowerMove.doPowerMove("powerstrike", receiver, null);
-            }
-        }
+        checkPowerMove(event, receiver);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -298,71 +234,7 @@ public class PvEListener implements Listener {
         }
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
 
-        if (!receiver.hasMetadata("tier")) return;
-        if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId()))
-            return;
-
-        int mobTier = receiver.getMetadata("tier").get(0).asInt();
-        Random rand = new Random();
-        int powerChance = 0;
-        if (receiver.hasMetadata("elite")) {
-            switch (mobTier) {
-                case 1:
-                    powerChance = 5;
-                    break;
-                case 2:
-                    powerChance = 7;
-                    break;
-                case 3:
-                    powerChance = 10;
-                    break;
-                case 4:
-                    powerChance = 13;
-                    break;
-                case 5:
-                    powerChance = 20;
-                    break;
-
-            }
-            if (rand.nextInt(100) <= powerChance) {
-                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("whirlwind", receiver, null);
-            }
-        } else if (receiver.hasMetadata("boss")) {
-            if (receiver instanceof CraftLivingEntity) {
-                Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
-                b.onBossHit(event);
-            }
-            else
-                return;
-            powerChance = 12;
-            if (rand.nextInt(100) <= powerChance) {
-                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
-                PowerMove.doPowerMove("whirlwind", receiver, null);
-            }
-        } else {
-            switch (mobTier) {
-                case 1:
-                    powerChance = 5;
-                    break;
-                case 2:
-                    powerChance = 7;
-                    break;
-                case 3:
-                    powerChance = 10;
-                    break;
-                case 4:
-                    powerChance = 13;
-                    break;
-                case 5:
-                    powerChance = 20;
-                    break;
-
-            }
-            if (rand.nextInt(100) <= powerChance) {
-                PowerMove.doPowerMove("powerstrike", receiver, null);
-            }
-        }
+        checkPowerMove(event, receiver);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -494,6 +366,74 @@ public class PvEListener implements Listener {
                 break;
             default:
                 break;
+        }
+    }
+
+    private static void checkPowerMove(EntityDamageByEntityEvent event, LivingEntity receiver) {
+        if (!receiver.hasMetadata("tier")) return;
+        if (PowerMove.chargedMonsters.contains(receiver.getUniqueId()) || PowerMove.chargingMonsters.contains(receiver.getUniqueId()))
+            return;
+
+        int mobTier = receiver.getMetadata("tier").get(0).asInt();
+        Random rand = new Random();
+        int powerChance = 0;
+        if (receiver.hasMetadata("elite")) {
+            switch (mobTier) {
+                case 1:
+                    powerChance = 5;
+                    break;
+                case 2:
+                    powerChance = 7;
+                    break;
+                case 3:
+                    powerChance = 10;
+                    break;
+                case 4:
+                    powerChance = 13;
+                    break;
+                case 5:
+                    powerChance = 20;
+                    break;
+
+            }
+            if (rand.nextInt(100) <= powerChance) {
+                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
+                PowerMove.doPowerMove("whirlwind", receiver, null);
+            }
+        } else if (receiver.hasMetadata("boss")) {
+            if (receiver instanceof CraftLivingEntity) {
+                Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
+                b.onBossHit(event);
+            }
+            else
+                return;
+            powerChance = 3;
+            if (rand.nextInt(100) <= powerChance) {
+                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 4.0F);
+                PowerMove.doPowerMove("whirlwind", receiver, null);
+            }
+        } else {
+            switch (mobTier) {
+                case 1:
+                    powerChance = 5;
+                    break;
+                case 2:
+                    powerChance = 7;
+                    break;
+                case 3:
+                    powerChance = 10;
+                    break;
+                case 4:
+                    powerChance = 13;
+                    break;
+                case 5:
+                    powerChance = 20;
+                    break;
+
+            }
+            if (rand.nextInt(100) <= powerChance) {
+                PowerMove.doPowerMove("powerstrike", receiver, null);
+            }
         }
     }
 }

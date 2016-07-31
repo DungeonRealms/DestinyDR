@@ -1523,6 +1523,7 @@ public class ClickHandler {
                             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
                             player.setCustomNameVisible(true);
                             player.setGameMode(GameMode.SURVIVAL);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_VANISH, false, true);
                         } else {
                             GameAPI._hiddenPlayers.add(player);
                             player.setCustomNameVisible(false);
@@ -1530,6 +1531,7 @@ public class ClickHandler {
                             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
                             player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
                             player.setGameMode(GameMode.SPECTATOR);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_VANISH, true, true);
                         }
                         break;
 
