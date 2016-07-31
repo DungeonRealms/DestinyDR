@@ -100,16 +100,15 @@ public class Chat {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-            String toPlayerRank = Rank.getInstance().getRank(UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName)));
-            String fromPlayerRank = Rank.getInstance().getRank(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getRankPrefix
-                    (toPlayerRank) + GameChat.getName(playerName, toPlayerRank, true) + ChatColor.GRAY + " [" +
-                    ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " + ChatColor.WHITE + finalMessage);
+            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
+                    (playerName) + ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " +
+                    ChatColor.WHITE + finalMessage);
+            player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2f, 1.2f);
 
             GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.GRAY.toString() +
-                    ChatColor.BOLD + "FROM " + GameChat.getRankPrefix(fromPlayerRank) + GameChat.getName(player, fromPlayerRank, true) +
-                    ChatColor.GRAY + " [" + ChatColor.AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor
-                    .WHITE + finalMessage));
+                    ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
+                    .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
+                    finalMessage));
             GameAPI.sendNetworkMessage("BroadcastSoundPlayer", playerName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
         });
     }

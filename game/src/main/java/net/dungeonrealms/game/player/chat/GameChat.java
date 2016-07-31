@@ -6,7 +6,6 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
@@ -174,14 +173,27 @@ public final class GameChat {
     }
 
     /**
-     * Returns a player's rank prefix if any followed by a space followed by their username with the correct color
+     * Returns a player's guild and rank prefix if any followed by a space followed by their username with the correct color
      * 
      * @param player
      * @return
      */
     public static String getFormattedName(Player player) {
+        String guild = "";
+        if (GuildDatabase.getAPI().isGuildNull(player.getUniqueId()))
+            guild = ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(player
+                    .getUniqueId())) + "] ";
         final String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return getRankPrefix(rank) + getName(player, rank, true);
+        return guild + getRankPrefix(rank) + getName(player, rank, true);
+    }
+
+    public static String getFormattedName(String playerName) {
+        UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+        String guild = "";
+        if (GuildDatabase.getAPI().isGuildNull(uuid))
+            guild = ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(uuid)) + "] ";
+        final String rank = Rank.getInstance().getRank(uuid);
+        return guild + getRankPrefix(rank) + getName(playerName, rank, true);
     }
 
     /**
