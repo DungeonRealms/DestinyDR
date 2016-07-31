@@ -180,7 +180,7 @@ public final class GameChat {
      */
     public static String getFormattedName(Player player) {
         String guild = "";
-        if (GuildDatabase.getAPI().isGuildNull(player.getUniqueId()))
+        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId()))
             guild = ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(player
                     .getUniqueId())) + "] ";
         final String rank = Rank.getInstance().getRank(player.getUniqueId());
@@ -190,7 +190,7 @@ public final class GameChat {
     public static String getFormattedName(String playerName) {
         UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
         String guild = "";
-        if (GuildDatabase.getAPI().isGuildNull(uuid))
+        if (!GuildDatabase.getAPI().isGuildNull(uuid))
             guild = ChatColor.WHITE + "[" + GuildDatabase.getAPI().getTagOf(GuildDatabase.getAPI().getGuildOf(uuid)) + "] ";
         final String rank = Rank.getInstance().getRank(uuid);
         return guild + getRankPrefix(rank) + getName(playerName, rank, true);
