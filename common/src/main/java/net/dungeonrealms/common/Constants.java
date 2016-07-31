@@ -36,6 +36,6 @@ public class Constants {
     public static final String BUILD_VERSION = "v5.0";
 
     // BUILD NUMBER //
-    public static final String BUILD_NUMBER = "#154";
+    public static final String BUILD_NUMBER = "#155";
 
 }
