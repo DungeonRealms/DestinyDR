@@ -117,7 +117,7 @@ public class Rank {
      */
     public static boolean isPMOD(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
     /**
