@@ -76,35 +76,31 @@ public class PvPListener implements Listener {
 
         switch (weaponType) {
             case BOW:
+                double knockback = 0;
                 switch (tier) {
                     case TIER_1:
-                        DamageAPI.knockbackEntity(damager, receiver, 1.2);
-                        event.setCancelled(true);
-                        damager.updateInventory();
-                        return;
+                        knockback = 1.2;
+                        break;
                     case TIER_2:
-                        DamageAPI.knockbackEntity(damager, receiver, 1.5);
-                        event.setCancelled(true);
-                        damager.updateInventory();
-                        return;
+                        knockback = 1.5;
+                        break;
                     case TIER_3:
-                        DamageAPI.knockbackEntity(damager, receiver, 1.8);
-                        event.setCancelled(true);
-                        damager.updateInventory();
-                        return;
+                        knockback = 1.8;
+                        break;
                     case TIER_4:
-                        DamageAPI.knockbackEntity(damager, receiver, 2.0);
-                        event.setCancelled(true);
-                        damager.updateInventory();
-                        return;
+                        knockback = 2;
+                        break;
                     case TIER_5:
-                        DamageAPI.knockbackEntity(damager, receiver, 2.2);
-                        event.setCancelled(true);
-                        damager.updateInventory();
-                        return;
+                        knockback = 2.2;
+                        break;
                     default:
                         return;
                 }
+                DamageAPI.knockbackEntity(damager, receiver, knockback);
+                KarmaHandler.getInstance().handleAlignmentChanges(damager);
+                event.setCancelled(true);
+                damager.updateInventory();
+                return;
             case STAFF:
                 event.setDamage(0);
                 event.setCancelled(true);
