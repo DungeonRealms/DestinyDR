@@ -202,7 +202,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                         pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1F, 0.5F);
                     }
                 }
-            } else {
+            } else if (!isEnraged) {
                 startEnragedMode(en);
             }
         }
