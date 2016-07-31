@@ -223,7 +223,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                 for (int i = 0; i < 4; i++) {
                     Entity entity = SpawningMechanics.getMob(world, 1, EnumMonster.Monk);
                     int level = Utils.getRandomFromTier(3, "high");
-                    String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                    String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
                     EntityStats.createDungeonMob(entity, level, 3);
                     SpawningMechanics.rollElement(entity, EnumMonster.Monk);
                     if (entity == null) {
@@ -244,7 +244,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                 for (int i = 0; i <= 4; i++) {
                     Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.Acolyte);
                     int level = Utils.getRandomFromTier(3, "high");
-                    String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                    String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
                     EntityStats.createDungeonMob(entity, level, 3);
                     SpawningMechanics.rollElement(entity, EnumMonster.Acolyte);
                     if (entity == null) {
@@ -265,7 +265,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                 for (int i = 0; i <= 6; i++) {
                     Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.Skeleton);
                     int level = Utils.getRandomFromTier(2, "high");
-                    String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                    String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
                     EntityStats.createDungeonMob(entity, level, 2);
                     SpawningMechanics.rollElement(entity, EnumMonster.Skeleton);
                     if (entity == null) {

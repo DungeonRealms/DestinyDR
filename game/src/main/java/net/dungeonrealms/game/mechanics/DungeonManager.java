@@ -128,7 +128,7 @@ public class DungeonManager implements GenericMechanic {
                     net.minecraft.server.v1_9_R2.World world = entity.getWorld();
                     net.minecraft.server.v1_9_R2.Entity toSpawn = SpawningMechanics.getMob(world, 3, EnumMonster.MagmaCube);
                     int level = Utils.getRandomFromTier(3, "low");
-                    String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                    String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
                     EntityStats.createDungeonMob(toSpawn, level, 3);
                     SpawningMechanics.rollElement(toSpawn, EnumMonster.MagmaCube);
                     if (toSpawn == null) {

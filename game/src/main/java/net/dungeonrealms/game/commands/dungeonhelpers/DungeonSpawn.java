@@ -106,7 +106,7 @@ public class DungeonSpawn extends BasicCommand {
         int newLevel = Utils.getRandomFromTier(tier + 1, "high");
         EntityStats.createDungeonMob(entity, newLevel, tier);
         SpawningMechanics.rollElement(entity, monsterType);
-        String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";
+        String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + newLevel + "] ";
         if (customName.equals("")) {
             customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
         }

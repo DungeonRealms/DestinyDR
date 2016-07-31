@@ -174,7 +174,7 @@ public class Entities implements GenericMechanic {
                                 entity.setCustomName(entity.getMetadata("customname").get(0).asString().trim());
                             }
                         } else {
-                            String lvlName = ChatColor.LIGHT_PURPLE + "[" + entity.getMetadata("level").get(0).asInt() + "] " + ChatColor.RESET;
+                            String lvlName = ChatColor.AQUA.toString() + "[Lvl. " + entity.getMetadata("level").get(0).asInt() + "] " + ChatColor.RESET;
                             if (entity.hasMetadata("customname")) {
                                 entity.setCustomName(lvlName + entity.getMetadata("customname").get(0).asString());
                             }
@@ -290,7 +290,7 @@ public class Entities implements GenericMechanic {
 
         return_string = return_string + cc + ChatColor.BOLD.toString() + "║";
         if (!elite && !boss) {
-            return return_string + ChatColor.LIGHT_PURPLE + " [" + ent.getMetadata("level").get(0).asInt() + "]";
+            return return_string + ChatColor.AQUA.toString() + "[Lvl. " + ent.getMetadata("level").get(0).asInt() + "]";
         } else {
             return return_string;
             // 20 Bars, that's 5% HP per bar

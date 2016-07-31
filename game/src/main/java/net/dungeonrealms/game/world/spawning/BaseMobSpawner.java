@@ -173,7 +173,7 @@ public class BaseMobSpawner {
                 int level = Utils.getRandomFromTier(tier, lvlRange);
                 EntityStats.setMonsterRandomStats(entity, level, tier);
                 SpawningMechanics.rollElement(entity, monsterType);
-                String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                String lvlName = ChatColor.AQUA.toString() + "[Lvl. "+ level + "] ";
                 String mobName;
                 try {
                     mobName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
@@ -214,7 +214,7 @@ public class BaseMobSpawner {
                         int newLevel = Utils.getRandomFromTier(tier, lvlRange);
                         EntityStats.setMonsterRandomStats(newEntity, newLevel, tier);
                         SpawningMechanics.rollElement(newEntity, monsterType);
-                        String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";
+                        String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + newLevel + "] ";
                         String newMobName;
                         try {
                             newMobName = newEntity.getBukkitEntity().getMetadata("customname").get(0).asString();

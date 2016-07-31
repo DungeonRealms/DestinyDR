@@ -129,7 +129,7 @@ public class ScoreboardHandler implements GenericMechanic {
                 guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
             }
             team.setPrefix(guild + chatColor);
-            team.setSuffix(ChatColor.LIGHT_PURPLE + " [" + playerLevel + "]");
+            team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
             player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
             if (!team.hasEntry(player.getName())) {
                 team.addEntry(player.getName());

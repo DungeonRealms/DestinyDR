@@ -97,7 +97,7 @@ public class DungeonMobCreator {
                 if (!isElite) {
                     EntityStats.createDungeonMob(entity, level, tier);
                     SpawningMechanics.rollElement(entity, enumMonster);
-                    String levelName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
+                    String levelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
                     if (hasCustomName) {
                         entity.setCustomName(levelName + GameAPI.getTierColor(tier) + customName.trim());
                         entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + customName.trim()));

@@ -2040,7 +2040,7 @@ public class GameAPI {
         net.minecraft.server.v1_9_R2.World world = ((CraftWorld) location.getWorld()).getHandle();
         int level = Utils.getRandomFromTier(tier, "low");
         EntityStats.setMonsterRandomStats(entity, level, tier);
-        String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+        String lvlName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
         int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
         entity.setCustomName(lvlName + ChatColor.RESET + customName);
