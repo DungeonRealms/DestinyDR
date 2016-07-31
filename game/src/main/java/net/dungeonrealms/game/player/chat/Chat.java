@@ -78,7 +78,7 @@ public class Chat {
                     return "";
                 }
             }
-            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid)) || GameAPI.isPlayerHidden(uuid)) {
+            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid)) || (GameAPI.isPlayerHidden(uuid) && !Rank.isGM(player))) {
                 player.sendMessage(ChatColor.RED + "That user is not currently online.");
                 return "";
             }
