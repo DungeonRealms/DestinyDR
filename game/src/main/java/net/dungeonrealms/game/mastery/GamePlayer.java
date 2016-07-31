@@ -24,10 +24,11 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.AttributeType;
 import net.dungeonrealms.game.world.party.Affair;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
@@ -321,6 +322,13 @@ public class GamePlayer {
             T.getWorld().playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .4F);
             T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
 
+            Firework firework = (Firework) T.getLocation().getWorld().spawnEntity(T.getLocation().clone(), EntityType.FIREWORK);
+            FireworkMeta fireworkMeta = firework.getFireworkMeta();
+            FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(Color.GREEN).withFade(Color.WHITE).with(FireworkEffect.Type.BALL_LARGE).trail(true).build();
+            fireworkMeta.addEffect(effect);
+            fireworkMeta.setPower(1);
+            firework.setFireworkMeta(fireworkMeta);
+
             T.sendMessage("");
             Utils.sendCenteredMessage(T, ChatColor.AQUA.toString() + ChatColor.BOLD + "******************************");
             Utils.sendCenteredMessage(T, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UP");
@@ -479,6 +487,6 @@ public class GamePlayer {
     }
 
     public int secsPvPTaggedLeft() {
-        return isPvPTagged() ? 0 : (int)(pvpTaggedUntil - System.currentTimeMillis()) / 1000;
+        return isPvPTagged() ? 0 : (int) (pvpTaggedUntil - System.currentTimeMillis()) / 1000;
     }
 }
