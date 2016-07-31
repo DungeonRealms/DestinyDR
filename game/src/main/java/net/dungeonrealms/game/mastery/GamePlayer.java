@@ -285,15 +285,16 @@ public class GamePlayer {
             setPlayerEXP(futureExperience);
             if (displayMessage) {
                 if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
-                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - subBonus - subPlusBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - subBonus - subPlusBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     if (rank.equals("sub") || rank.equals("sub+") || rank.equals("sub++")) {
-                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(rank) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(subBonus + subPlusBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(rank) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(subBonus + subPlusBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     }
-                    if (activeLevelBuff != null) {
+                    if (levelBuffBonus > 0) {
                         T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
-                                .toString() + ChatColor.BOLD + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
+                                .toString() + ChatColor.BOLD + "XP BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
                                 + "+" + ChatColor.YELLOW + Math.round(levelBuffBonus) + ChatColor.BOLD + " EXP " +
-                                ChatColor.GOLD.toString() + ChatColor.BOLD + "(GLOBAL LEVEL BUFF)");
+                                ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" +
+                                ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     }
                 }
             }
