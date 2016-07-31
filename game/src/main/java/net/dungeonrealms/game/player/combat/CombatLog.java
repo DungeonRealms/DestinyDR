@@ -166,7 +166,7 @@ public class CombatLog implements GenericMechanic {
         combatNPC.getEquipment().setArmorContents(player.getEquipment().getArmorContents());
         combatNPC.getEquipment().setItemInMainHand(player.getEquipment().getItemInMainHand());
         combatNPC.getEquipment().setItemInOffHand(player.getEquipment().getItemInOffHand());
-        combatNPC.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RED + " " + player.getName());
+        combatNPC.setCustomName(ChatColor.AQUA + "[Lvl. " + lvl + "]" + ChatColor.RED + " " + player.getName());
         combatNPC.setCustomNameVisible(true);
         MetadataUtils.registerEntityMetadata(((CraftEntity) combatNPC).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
         HealthHandler.getInstance().setMonsterHPLive(combatNPC, HealthHandler.getInstance().getPlayerHPLive(player));
