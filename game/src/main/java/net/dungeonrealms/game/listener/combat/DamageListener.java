@@ -86,6 +86,12 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onAnimalAttack(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof DRMonster) && !(event.getEntity() instanceof Player))
+            event.getEntity().getWorld().playEffect(event.getEntity().getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
+    }
+
     /**
      * This event listens for EnderCrystal explosions.
      * Which are buffs.. with the correct nbt at least.
@@ -1029,7 +1035,7 @@ public class DamageListener implements Listener {
                     for (int i = 0; i <= 3; i++) {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(2, "low");
-                        String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                        String newLevelName = org.bukkit.ChatColor.AQUA + "[Lvl. "+ level + "] ";
                         EntityStats.setMonsterRandomStats(entity, level, 2);
                         SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
                         if (entity == null) {
@@ -1054,7 +1060,7 @@ public class DamageListener implements Listener {
                         World world = ((CraftWorld) event.getEntity().getWorld()).getHandle();
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, tier, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(tier, "low");
-                        String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                        String newLevelName = org.bukkit.ChatColor.AQUA + "[Lvl. " + level + "] ";
                         EntityStats.setMonsterRandomStats(entity, level, tier);
                         SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
                         if (entity == null) {

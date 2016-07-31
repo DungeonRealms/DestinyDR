@@ -24,10 +24,11 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.AttributeType;
 import net.dungeonrealms.game.world.party.Affair;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
@@ -266,10 +267,17 @@ public class GamePlayer {
         if (isParty) {
             expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
         }
-        String rank = Rank.getInstance().getRank(T.getUniqueId()).toLowerCase();
-        int subBonus = (int) (rank.equals("sub") ? experienceToAdd * 0.05 : 0.0);
-        int subPlusBonus = (int) ((rank.equals("sub+") || rank.equals("sub++")) ? experienceToAdd * 0.1 : 0.0);
-        int futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
+
+        // Bonuses
+        int expBonus = 0;
+        if (Rank.isSubscriberPlus(T)) {
+            expBonus = (int) (experienceToAdd * 0.1);
+        } else if (Rank.isSubscriber(T)) {
+            expBonus = (int) (experienceToAdd * 0.05);
+        }
+        //
+
+        int futureExperience = experience + experienceToAdd + expBonus;
         int levelBuffBonus = 0;
         final LevelBuff activeLevelBuff = DonationEffects.getInstance().getActiveLevelBuff();
         if (activeLevelBuff != null) {
@@ -285,9 +293,9 @@ public class GamePlayer {
             setPlayerEXP(futureExperience);
             if (displayMessage) {
                 if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
-                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - subBonus - subPlusBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
-                    if (rank.equals("sub") || rank.equals("sub+") || rank.equals("sub++")) {
-                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(rank) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(subBonus + subPlusBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - expBonus - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    if (expBonus > 0) {
+                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(Rank.getInstance().getRank(T.getUniqueId()).toLowerCase()) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(expBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - levelBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     }
                     if (levelBuffBonus > 0) {
                         T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
@@ -321,6 +329,13 @@ public class GamePlayer {
 
             T.getWorld().playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .4F);
             T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
+
+            Firework firework = (Firework) T.getLocation().getWorld().spawnEntity(T.getLocation().clone(), EntityType.FIREWORK);
+            FireworkMeta fireworkMeta = firework.getFireworkMeta();
+            FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(Color.GREEN).withFade(Color.WHITE).with(FireworkEffect.Type.BALL_LARGE).trail(true).build();
+            fireworkMeta.addEffect(effect);
+            fireworkMeta.setPower(1);
+            firework.setFireworkMeta(fireworkMeta);
 
             T.sendMessage("");
             Utils.sendCenteredMessage(T, ChatColor.AQUA.toString() + ChatColor.BOLD + "******************************");
@@ -480,6 +495,6 @@ public class GamePlayer {
     }
 
     public int secsPvPTaggedLeft() {
-        return isPvPTagged() ? 0 : (int)(pvpTaggedUntil - System.currentTimeMillis()) / 1000;
+        return isPvPTagged() ? 0 : (int) (pvpTaggedUntil - System.currentTimeMillis()) / 1000;
     }
 }

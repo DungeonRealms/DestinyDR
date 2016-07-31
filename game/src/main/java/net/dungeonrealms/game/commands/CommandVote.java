@@ -27,25 +27,14 @@ public class CommandVote extends BasicCommand {
         if (!(sender instanceof Player)) return true;
         Player player = (Player) sender;
 
-        String rank = Rank.getInstance().getRank(player.getUniqueId());
-
-        String preMessage = "";
-        switch (rank.toLowerCase()) {
-            case "default":
-                preMessage = ChatColor.AQUA + "To vote for 15 ECASH & 5% EXP, click ";
-                break;
-            case "sub":
-                preMessage = ChatColor.AQUA + "To vote for 25 ECASH & 5% EXP, click ";
-                break;
-            case "sub+":
-            case "sub++":
-                preMessage = ChatColor.AQUA + "To vote for 25 ECASH & 5% EXP, click ";
-                break;
-            default:
-                preMessage = ChatColor.AQUA + "To vote for 15 ECASH & 5% EXP, click ";
-                break;
+        int ecashAmount = 15;
+        if (Rank.isSubscriberPlus(player)) {
+           ecashAmount = 25;
+        } else if (Rank.isSubscriber(player)) {
+           ecashAmount = 20;
         }
-        final JSONMessage message = new JSONMessage(preMessage, ChatColor.AQUA);
+
+        final JSONMessage message = new JSONMessage("To vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.AQUA);
         message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
         message.sendToPlayer(player);
         return true;

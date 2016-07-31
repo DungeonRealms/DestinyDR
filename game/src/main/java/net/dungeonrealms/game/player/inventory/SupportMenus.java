@@ -183,7 +183,7 @@ public class SupportMenus {
 
         // Ranks that can only be applied by developers.
         if (Rank.isDev(player)) {
-            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.CYAN.getData()), Rank.rankFromPrefix("builder"), new String[]{
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()), Rank.rankFromPrefix("builder"), new String[]{
                     ChatColor.WHITE + "Set user rank to: Builder",
                     ChatColor.WHITE + "User will have identical permissions as a Subscriber."
             });

@@ -27,7 +27,7 @@ public final class GameChat {
     public static final String SUPPORT = ChatColor.BLUE.toString() + ChatColor.BOLD + "SUPPORT" + ChatColor.RESET + " ";
     public static final String DEV = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "DEV" + ChatColor.RESET + " ";
     public static final String YOUTUBE = ChatColor.RED.toString() + ChatColor.BOLD + "YOUTUBE" + ChatColor.RESET + " ";
-    public static final String BUILDER = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "BUILDER" + ChatColor.RESET + " ";
+    public static final String BUILDER = ChatColor.YELLOW.toString() + ChatColor.BOLD + "BUILDER" + ChatColor.RESET + " ";
     public static final String PMOD = ChatColor.WHITE.toString() + ChatColor.BOLD + "PMOD" + ChatColor.RESET + " ";
 
     /*

@@ -144,7 +144,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
             for (int i = 0; i < 4; i++) {
                 Entity entity = SpawningMechanics.getMob(world, 1, EnumMonster.MayelPirate);
                 int level = Utils.getRandomFromTier(2, "high");
-                String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
                 EntityStats.createDungeonMob(entity, level, 1);
                 SpawningMechanics.rollElement(entity, EnumMonster.MayelPirate);
                 if (entity == null) {

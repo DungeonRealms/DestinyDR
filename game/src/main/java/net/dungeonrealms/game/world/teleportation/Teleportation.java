@@ -150,7 +150,7 @@ public class Teleportation implements GenericMechanic {
         } else if (location.equals(Gloomy_Hollows)) {
             message += "Gloomy Hollows";
         } else if (location.equals(Crestguard_Keep)) {
-            message += "Crestgaurd Keep";
+            message += "Crestguard Keep";
         } else if (location.equals(Tutorial)) {
             message += "Tutorial Island";
         }

@@ -151,7 +151,7 @@ public class ScoreboardHandler implements GenericMechanic {
             guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
         }
         team.setPrefix(guild + chatColor);
-        team.setSuffix(ChatColor.LIGHT_PURPLE + " [" + playerLevel + "]");
+        team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
         player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
         if (!team.hasEntry(player.getName())) {
             team.addEntry(player.getName());
@@ -175,7 +175,7 @@ public class ScoreboardHandler implements GenericMechanic {
             guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
         }
         team.setPrefix(guild + chatColor);
-        team.setSuffix(ChatColor.LIGHT_PURPLE + " [" + level + "]");
+        team.setSuffix(ChatColor.AQUA + " [Lvl. " + level + "]");
         toSetFor.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(toSetFor.getUniqueId())) + toSetFor.getName());
         if (!team.hasEntry(toSetFor.getName())) {
             team.addEntry(toSetFor.getName());
@@ -207,7 +207,7 @@ public class ScoreboardHandler implements GenericMechanic {
                 guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
             }
             team.setPrefix(guild + chatColor);
-            team.setSuffix(ChatColor.LIGHT_PURPLE + " [" + level + "]");
+            team.setSuffix(ChatColor.AQUA + " [Lvl. " + level + "]");
             player1.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player1.getUniqueId())) + player1.getName());
             if (!team.hasEntry(player1.getName())) {
                 team.addEntry(player1.getName());

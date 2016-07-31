@@ -117,7 +117,7 @@ public class Rank {
      */
     public static boolean isPMOD(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
     /**
@@ -167,7 +167,7 @@ public class Rank {
             case "youtube":
                 return ChatColor.RED + "YouTuber";
             case "builder":
-                return ChatColor.DARK_AQUA + "Builder";
+                return ChatColor.YELLOW + "Builder";
             case "sub++":
                 return ChatColor.DARK_AQUA + "Subscriber++";
             case "sub+":
@@ -196,7 +196,7 @@ public class Rank {
             case "youtube":
                 return ChatColor.RED;
             case "builder":
-                return ChatColor.DARK_AQUA;
+                return ChatColor.YELLOW;
             case "sub++":
                 return ChatColor.DARK_AQUA;
             case "sub+":

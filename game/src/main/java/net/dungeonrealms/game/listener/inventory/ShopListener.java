@@ -369,6 +369,12 @@ public class ShopListener implements Listener {
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
                     clicker.closeInventory();
                     Chat.listenForMessage(clicker, chat -> {
+                        if (shop.inventory.getItem(event.getRawSlot()) == null || shop.inventory.getItem(event.getRawSlot()).getType() == Material.AIR) {
+                            // The item has been removed from the shop, anti-dupe.
+                            clicker.sendMessage(ChatColor.RED + "You cannot edit this item as it is longer in your shop.");
+                            return;
+                        }
+
                         if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
                             clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
                             return;
