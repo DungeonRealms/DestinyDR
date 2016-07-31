@@ -11,6 +11,7 @@ Build <build>
 
 &8Changes&0
 - Increased timer of all E-Cash buffs from 30 minutes to 1 hour.
+- E-Cash vote bonuses are now awarded to miscellaneous ranks (PMOD, BUILDER, GM, etc.)
 - Burick the Fanatic has been slightly weakened but is still a challenge to adventurers.
 - Improved anticheat
 - Lobbies are now less crowded
