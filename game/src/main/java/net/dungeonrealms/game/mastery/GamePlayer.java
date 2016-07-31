@@ -267,10 +267,17 @@ public class GamePlayer {
         if (isParty) {
             expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
         }
-        String rank = Rank.getInstance().getRank(T.getUniqueId()).toLowerCase();
-        int subBonus = (int) (rank.equals("sub") ? experienceToAdd * 0.05 : 0.0);
-        int subPlusBonus = (int) ((rank.equals("sub+") || rank.equals("sub++")) ? experienceToAdd * 0.1 : 0.0);
-        int futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
+
+        // Bonuses
+        int expBonus = 0;
+        if (Rank.isSubscriberPlus(T)) {
+            expBonus = (int) (experienceToAdd * 0.1);
+        } else if (Rank.isSubscriber(T)) {
+            expBonus = (int) (experienceToAdd * 0.05);
+        }
+        //
+
+        int futureExperience = experience + experienceToAdd + expBonus;
         int levelBuffBonus = 0;
         final LevelBuff activeLevelBuff = DonationEffects.getInstance().getActiveLevelBuff();
         if (activeLevelBuff != null) {
@@ -286,9 +293,9 @@ public class GamePlayer {
             setPlayerEXP(futureExperience);
             if (displayMessage) {
                 if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
-                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - subBonus - subPlusBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
-                    if (rank.equals("sub") || rank.equals("sub+") || rank.equals("sub++")) {
-                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(rank) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(subBonus + subPlusBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience - expBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    if (expBonus > 0) {
+                        T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + GameChat.getRankPrefix(Rank.getInstance().getRank(T.getUniqueId()).toLowerCase()) + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+" + ChatColor.YELLOW + Math.round(expBonus) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                     }
                     if (activeLevelBuff != null) {
                         T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
