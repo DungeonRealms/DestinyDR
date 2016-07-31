@@ -72,13 +72,13 @@ public class Chat {
                 return "";
             }
             UUID uuid = UUID.fromString(testUUID);
-            if (!FriendHandler.getInstance().areFriends(player, uuid)) {
+            if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.isGM(player)) {
                 if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, uuid)) {
                     player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
                     return "";
                 }
             }
-            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid))) {
+            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid)) || GameAPI.isPlayerHidden(uuid)) {
                 player.sendMessage(ChatColor.RED + "That user is not currently online.");
                 return "";
             }

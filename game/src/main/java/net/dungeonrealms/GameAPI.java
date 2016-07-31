@@ -2049,4 +2049,10 @@ public class GameAPI {
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 
     }
+
+    public static boolean isPlayerHidden(UUID uuid) {
+        if (Bukkit.getPlayer(uuid) != null) return _hiddenPlayers.contains(Bukkit.getPlayer(uuid));
+        final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, uuid);
+        return isVanished != null && (Boolean) isVanished;
+    }
 }

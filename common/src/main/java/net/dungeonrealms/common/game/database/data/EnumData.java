@@ -81,6 +81,7 @@ public enum EnumData {
     TOGGLE_DUEL("toggles.duel"),
     TOGGLE_CHAOTIC_PREVENTION("toggles.chaoticPrevention"),
     TOGGLE_TIPS("toggles.tips"),
+    TOGGLE_VANISH("toggles.vanish"), // for GMs only
 
     PORTAL_SHARDS_T1("portalKeyShards.tier1"),
     PORTAL_SHARDS_T2("portalKeyShards.tier2"),

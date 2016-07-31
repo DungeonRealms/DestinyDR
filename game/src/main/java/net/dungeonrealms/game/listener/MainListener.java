@@ -915,7 +915,7 @@ public class MainListener implements Listener {
         if (trader == null)
             return;
 
-        if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, trader.getUniqueId())) {
+        if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, trader.getUniqueId()) && !Rank.isGM(pl)) {
             pl.sendMessage(ChatColor.RED + trader.getName() + " has Trades disabled.");
             trader.sendMessage(ChatColor.RED + "Trade attempted, but your trades are disabled.");
             trader.sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/toggletrade " + ChatColor.RED + " to enable trades.");
