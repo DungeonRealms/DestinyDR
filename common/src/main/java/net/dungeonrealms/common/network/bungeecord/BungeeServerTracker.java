@@ -20,17 +20,19 @@ import java.util.function.Consumer;
 
 public class BungeeServerTracker {
 
-    private static Map<String, BungeeServerInfo> trackedServers = new ConcurrentHashMap<>();
-    private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Server Pinger Thread").build());
+    private static Map<String, BungeeServerInfo> TRACKED_SERVER = new ConcurrentHashMap<>();
+
+    private static final ScheduledExecutorService EXECUTOR_SERVICE
+            = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Server Pinger Thread").build());
 
     public static void resetTrackedServers() {
-        trackedServers.clear();
+        TRACKED_SERVER.clear();
     }
 
     public static void track(String server, Consumer<String> requestPlayerCount) {
-        if (!trackedServers.containsKey(server)) {
+        if (!TRACKED_SERVER.containsKey(server)) {
             BungeeServerInfo info = new BungeeServerInfo(server);
-            trackedServers.put(server, info);
+            TRACKED_SERVER.put(server, info);
 
             requestPlayerCount.accept(server);
             //NetworkAPI.getInstance().askPlayerCount(server);
@@ -38,21 +40,21 @@ public class BungeeServerTracker {
     }
 
     public static void untrack(String server) {
-        trackedServers.remove(server);
+        TRACKED_SERVER.remove(server);
     }
 
     public static BungeeServerInfo getOrCreateServerInfo(String server) {
-        BungeeServerInfo info = trackedServers.get(server);
+        BungeeServerInfo info = TRACKED_SERVER.get(server);
         if (info == null) {
             info = new BungeeServerInfo(server);
-            trackedServers.put(server, info);
+            TRACKED_SERVER.put(server, info);
         }
 
         return info;
     }
 
     public static int getPlayersOnline(String server, Consumer<String> requestPlayerCount) {
-        BungeeServerInfo info = trackedServers.get(server);
+        BungeeServerInfo info = TRACKED_SERVER.get(server);
         if (info != null) {
 
             info.updateLastRequest();
@@ -65,15 +67,15 @@ public class BungeeServerTracker {
     }
 
     public static int getTrackedSize() {
-        return trackedServers.size();
+        return TRACKED_SERVER.size();
     }
 
     public static Map<String, BungeeServerInfo> getTrackedServers() {
-        return trackedServers;
+        return TRACKED_SERVER;
     }
 
     public static void startTask(long refreshSeconds) {
-        executorService.scheduleAtFixedRate(() -> {
+        EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
             for (ShardInfo shard : ShardInfo.values()) {
 
                 String bungeeName = shard.getPseudoName();
