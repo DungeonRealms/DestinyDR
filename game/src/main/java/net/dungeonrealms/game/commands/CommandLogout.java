@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -12,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Chase on Nov 18, 2015
@@ -32,6 +34,12 @@ public class CommandLogout extends BasicCommand {
                     return true;
                 }
 
+                GamePlayer gp = GameAPI.getGamePlayer(player);
+
+                gp.setAbleToSuicide(false);
+                gp.setAbleToDrop(false);
+                player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+
                 Location startingLocation = player.getLocation();
                 if (GameAPI.isInSafeRegion(startingLocation)) {
                     BungeeUtils.sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
@@ -46,6 +54,9 @@ public class CommandLogout extends BasicCommand {
                     }
                     if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Logout - CANCELLED");
+                        player.removeMetadata("sharding", DungeonRealms.getInstance());
+                        gp.setAbleToSuicide(true);
+                        gp.setAbleToDrop(true);
                         return;
                     }
                     player.sendMessage(ChatColor.RED + "Logging out in ... " + ChatColor.BOLD + taskTimer[0] + "s");

@@ -860,10 +860,10 @@ public class ItemManager {
         DecimalFormat df = new DecimalFormat("#.##");
         PlayerStats stats = gp.getStats();
 
-        if (pretty_align.contains("CHAOTIC")) {
+        if (pretty_align.contains("CHAOTIC") || pretty_align.contains("NEUTRAL")) {
             String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n"
-                    + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" + ChatColor.RED.toString() + ChatColor.BOLD + time + "s.." + new_line
+                    + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" + playerAlignment.getAlignmentColor().toString() + ChatColor.BOLD + time + "s.." + new_line
                     + ChatColor.BLACK.toString() + playerAlignment.description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
                     + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
                     + "   " + Math.round(gp.getStats().getDPS()) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()

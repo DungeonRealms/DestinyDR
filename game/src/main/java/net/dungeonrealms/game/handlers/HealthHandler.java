@@ -480,7 +480,11 @@ public class HealthHandler implements GenericMechanic {
             } else if (damager instanceof Projectile) {
                 leAttacker = (LivingEntity) ((Projectile) damager).getShooter();
             }
-            CombatLog.addToCombat(player);
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.updateCombat(player);
+            } else {
+                CombatLog.addToCombat(player);
+            }
         }
 
         if (leAttacker instanceof Player) {
@@ -504,7 +508,7 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
-                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]");
+                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]");
             }
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
         }
@@ -624,6 +628,7 @@ public class HealthHandler implements GenericMechanic {
                 final String finalKillerName = killerName;
                 GameAPI.getNearbyPlayers(player.getLocation(), 100).forEach(player1 -> player1.sendMessage(finalDeadPlayerName + " was killed by a(n) " + finalKillerName));
                 final LivingEntity finalLeAttacker = leAttacker;
+                GameAPI.getGamePlayer(player).setPvpTaggedUntil(0);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                     player.damage(player.getMaxHealth());
@@ -651,6 +656,7 @@ public class HealthHandler implements GenericMechanic {
             final String finalKillerName = killerName;
             GameAPI.getNearbyPlayers(player.getLocation(), 100).forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
             final LivingEntity finalLeAttacker = leAttacker;
+            GameAPI.getGamePlayer(player).setPvpTaggedUntil(0);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 player.damage(player.getMaxHealth());

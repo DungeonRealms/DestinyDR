@@ -1,11 +1,16 @@
 Build <build>
 
 &2New Features&0
+- Use /ask if you have any questions
+- Character journal now displays neutral alignment time.
 - PMs now show guilds
 - Added global loot, profession, and xp buffs.
 - Added /vote command.
+- Added staff chat
 
 &8Changes&0
+- Made debug PvP names red instead of dark purple.
+- Vertical knockback no longer stacks when it is greater than 0.
 - Builder ranks now have a dark green tag and sub++ have a yellow tag.
 - Repair cost of T4 and T5 weapons have been lowered by about 1/6.
 - Special ranks (PMOD, GM, etc.) now receive bonus EXP.
@@ -13,6 +18,11 @@ Build <build>
 - Increased timer of all E-Cash buffs from 30 minutes to 1 hour.
 
 &4Bug Fixes&0
+- Fixed combat not refreshing when you're damaged (environment, PvP, PvE, etc.)
+- Fixed projectiles sometimes damaging yourself.
+- Fixed alignment desync by ~5-10 minutes across shards.
+- Neutral alignment time now refreshes again on hit.
+- +4 now has a chance to fail again.
 - Fixed occasionally not receiving a character journal.
 - Fixed armor pieces with Armor% costing 10g to repair every time.
 - Fixed Burick spamming in the chat and sound.

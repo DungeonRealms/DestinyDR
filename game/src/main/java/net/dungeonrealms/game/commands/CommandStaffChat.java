@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import org.bukkit.ChatColor;
+import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,9 +28,16 @@ public class CommandStaffChat extends BasicCommand {
 
         if (!Rank.isPMOD(player) && !Rank.isSupport(player)) return false;
 
-        player.sendMessage(ChatColor.RED + "Currently unavailable, coming soon.");
-        // @todo: Create SC!
+        StringBuilder message;
+        if (args.length > 0) {
+            message = new StringBuilder(args[0]);
 
+            for (int arg = 1; arg < args.length; arg++)
+                message.append(" ").append(args[arg]);
+
+            GameAPI.sendNetworkMessage("StaffMessage", "&a<SC> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&f: &e" + message);
+
+        } else sender.sendMessage("/sc|staffchat [message]");
         return true;
     }
 }
