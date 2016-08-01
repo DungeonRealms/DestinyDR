@@ -32,12 +32,12 @@ public class CommandAnswer extends BasicCommand {
         StringBuilder message = new StringBuilder(args[1]);
         for (int arg = 2; arg < args.length; arg++) message.append(" ").append(args[arg]);
 
-        GameAPI.sendNetworkMessage("PrivateMessage", sender.getName(), other, "&a<ANSWERED> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&f: &e" + message);
+        GameAPI.sendNetworkMessage("PrivateMessage", sender.getName(), other, "&a<ANSWERED> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&e" + message);
         GameAPI.sendNetworkMessage("PrivateMessage", sender.getName(), other, "&cType &e/msg " + sender.getName().toLowerCase() + " [message] &cto reply back.");
 
         GameAPI.sendNetworkMessage("BroadcastSoundPlayer", other, Sound.BLOCK_NOTE_PLING.toString(), "1.0f", "1.0f");
 
-        GameAPI.sendNetworkMessage("StaffMessage", "&a<ANSWERED: " + other + "> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&f: &e" + message);
+        GameAPI.sendNetworkMessage("StaffMessage", "&a<ANSWERED: " + other + "> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&e" + message);
         return false;
     }
 
