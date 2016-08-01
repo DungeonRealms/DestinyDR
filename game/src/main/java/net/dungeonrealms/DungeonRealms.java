@@ -122,7 +122,7 @@ public class DungeonRealms extends JavaPlugin {
     public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
     // End of Shard Config
 
-    private volatile boolean hasFinishedSetup = false;
+    private volatile boolean acceptPlayers = false;
 
     public boolean isDrStopAll;
 
@@ -151,12 +151,12 @@ public class DungeonRealms extends JavaPlugin {
         return Arrays.asList(Constants.DEVELOPERS);
     }
 
-    public boolean hasFinishedSetup() {
-        return hasFinishedSetup;
+    public boolean canAcceptPlayers() {
+        return acceptPlayers;
     }
 
-    public void setFinishedSetup(boolean bool) {
-        hasFinishedSetup = bool;
+    public void setAcceptPlayers(boolean bool) {
+        acceptPlayers = bool;
     }
 
     public void onEnable() {
@@ -491,7 +491,7 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            this.hasFinishedSetup = true;
+            this.acceptPlayers = true;
             Bukkit.getServer().setWhitelist(false);
         }, 240L);
 
@@ -512,13 +512,23 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     private void scheduleRestartTask() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
-            Bukkit.getServer().setWhitelist(true);
-        });
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), 20 * 60 * 4);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, GameAPI::stopGame, 20 * 60 * 5);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                setAcceptPlayers(false);
+                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(),
+                        () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")));
+            }
+        }, 240000L);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), GameAPI::stopGame);
+            }
+        }, 300000L);
     }
 
     public void onDisable() {

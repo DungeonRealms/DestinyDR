@@ -478,7 +478,7 @@ public class RealmInstance implements Realms {
 
     @Override
     public void doLogout(Player player) {
-        if (!isRealmCached(player.getUniqueId()) || !DungeonRealms.getInstance().hasFinishedSetup()) return;
+        if (!isRealmCached(player.getUniqueId()) || !DungeonRealms.getInstance().canAcceptPlayers()) return;
 
         RealmToken realm = Realms.getInstance().getRealm(player.getUniqueId());
 
