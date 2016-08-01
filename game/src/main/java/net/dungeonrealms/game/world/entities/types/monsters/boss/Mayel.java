@@ -241,7 +241,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
             }
             GameAPI.getGamePlayer(player).addExperience(5000, false, true);
         }
-        final String adventurers = partyMembers;
+        final String adventurers = partyMembers.substring(0, partyMembers.length() - 2);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + ChatColor.GOLD + "The cunning bandit lord " + ChatColor.UNDERLINE + "Mayel The Cruel" + ChatColor.RESET + ChatColor.GOLD + " has been slain by a group of adventurers!");
             Bukkit.broadcastMessage(ChatColor.GRAY + "Group: " + adventurers);
