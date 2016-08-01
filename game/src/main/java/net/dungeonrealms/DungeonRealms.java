@@ -483,7 +483,7 @@ public class DungeonRealms extends JavaPlugin {
                 scheduleRestartTask();
                 Bukkit.getScheduler().cancelTask(rebooterID);
             }
-        }, 0, 20 * 60 * 5);
+        }, 0, 5 * 20);
 
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
