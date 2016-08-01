@@ -102,11 +102,11 @@ public class RepairAPI {
                 repair_cost = total_dmg_cost * multiplier;
             }
             if (item_tier == 4) {
-                multiplier = 6;
+                multiplier = 5;
                 repair_cost = total_dmg_cost * multiplier;
             }
             if (item_tier == 5) {
-                multiplier = 9;
+                multiplier = 7.5;
                 repair_cost = total_dmg_cost * multiplier;
             }
             repair_cost = repair_cost * global_multiplier;
