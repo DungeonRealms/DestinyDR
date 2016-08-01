@@ -361,7 +361,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             }
             GameAPI.getGamePlayer(player).addExperience(25000, false, true);
         }
-        final String adventurers = partyMembers;
+        final String adventurers = partyMembers.substring(0, partyMembers.length() - 2);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + ChatColor.GOLD + "The corrupt Unholy Priest " + ChatColor.UNDERLINE + "Burick The Fanatic" + ChatColor.RESET + ChatColor.GOLD + " has been slain by a group of adventurers!");
             Bukkit.broadcastMessage(ChatColor.GRAY + "Group: " + adventurers);
