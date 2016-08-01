@@ -28,7 +28,7 @@ public class RepairAPI {
             int item_tier = nms.getTag().getInt("itemTier");
             double maxStat;
             double minStat;
-            if (nms.getTag().hasKey("armor")) {
+            if (nms.getTag().hasKey("armorMin")) {
                 maxStat = nms.getTag().getInt("armorMax");
                 minStat = nms.getTag().getInt("armorMin");
             } else {
