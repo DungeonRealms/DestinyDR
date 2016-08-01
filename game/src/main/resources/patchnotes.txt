@@ -6,10 +6,12 @@ Build <build>
 - Added /vote command.
 
 &8Changes&0
+- Repair cost of T4 and T5 weapons have been lowered by about 1/6.
 - Special ranks (PMOD, GM, etc.) now receive bonus EXP.
 - Builders now have a yellow tag instead of dark aqua.
 - Burick has been further reworked.
 - Increased timer of all E-Cash buffs from 30 minutes to 1 hour.
 
 &4Bug Fixes&0
+- Fixed armor pieces with Armor% costing 10g to repair every time.
 - Fixed Burick spamming in the chat and sound.
