@@ -13,5 +13,6 @@ Build <build>
 - Increased timer of all E-Cash buffs from 30 minutes to 1 hour.
 
 &4Bug Fixes&0
+- Fixed occasionally not receiving a character journal.
 - Fixed armor pieces with Armor% costing 10g to repair every time.
 - Fixed Burick spamming in the chat and sound.
