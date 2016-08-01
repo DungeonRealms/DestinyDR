@@ -748,7 +748,7 @@ public class InventoryListener implements Listener {
             }
 
             boolean failed = false;
-            if (amount < 4) {
+            if (amount < 3) {
                 failed = false;
             } else {
                 if (amount >= 12) {
@@ -900,7 +900,7 @@ public class InventoryListener implements Listener {
             }
 
             boolean failed = false;
-            if (amount < 4) {
+            if (amount < 3) {
                 failed = false;
             } else {
                 if (amount >= 12) {
