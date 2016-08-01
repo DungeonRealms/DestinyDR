@@ -47,6 +47,9 @@ public class SupportMenus {
     }
 
     public static void openMainMenu(Player player, String playerName) {
+        // @todo: Redo the loading of player data, looks like whoever change how the DB works messed up this entire system.
+        // @todo: As ranks no longer are read properly therefore leaving data [temporarily] outdated.
+
         try {
             UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
 
@@ -212,6 +215,34 @@ public class SupportMenus {
             });
             inv.setItem(33, applySupportItemTags(item, playerName, uuid));
         }
+
+        player.openInventory(inv);
+    }
+
+    public static void openRankSubscriptionMenu(Player player, String playerName, UUID uuid, String rank) {
+        rank = rank.toUpperCase();
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Subscription)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GOLD + "Extend Subscription", new String[]{
+                ChatColor.WHITE + "This will add to the subscription length of: " + playerName
+        });
+        inv.setItem(21, addNbtTag(applySupportItemTags(item, playerName, uuid), "rank", rank));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), ChatColor.GOLD + "Set Subscription", new String[]{
+                ChatColor.WHITE + "This will set the subscription length of: " + playerName
+        });
+        inv.setItem(22, addNbtTag(applySupportItemTags(item, playerName, uuid), "rank", rank));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.GOLD + "Remove Gems", new String[]{
+                ChatColor.WHITE + "This will remove from the subscription length of: " + playerName
+        });
+        inv.setItem(23, addNbtTag(applySupportItemTags(item, playerName, uuid), "rank", rank));
 
         player.openInventory(inv);
     }

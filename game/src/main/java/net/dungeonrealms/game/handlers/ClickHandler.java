@@ -1081,6 +1081,7 @@ public class ClickHandler {
                 if (!Rank.isDev(player) && (slot == 29 || slot == 30 || slot == 32 || slot == 33)) return;
 
                 String newRank;
+                boolean subscriptionPrompt = false;
 
                 switch (slot) {
                     case 4:
@@ -1091,9 +1092,11 @@ public class ClickHandler {
                         break;
                     case 21:
                         newRank = "SUB";
+                        //subscriptionPrompt = true;
                         break;
                     case 22:
                         newRank = "SUB+";
+                        //subscriptionPrompt = true;
                         break;
                     case 23:
                         newRank = "SUB++";
@@ -1117,6 +1120,11 @@ public class ClickHandler {
                         return;
                 }
 
+                if (subscriptionPrompt) {
+                    SupportMenus.openRankSubscriptionMenu(player, playerName, uuid, newRank);
+                    return;
+                }
+
                 // Always update the database with the new rank.
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true, doAfter -> {
                     if (Bukkit.getPlayer(playerName) != null) {
@@ -1128,6 +1136,59 @@ public class ClickHandler {
 
                 player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
                 SupportMenus.openMainMenu(player, playerName);
+                break;
+            case "Support Tools (Subscription)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    return;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+                String subscriptionRank;
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
+
+                String subscriptionType;
+                switch (slot) {
+                    case 4:
+                        SupportMenus.openMainMenu(player, playerName);
+                        return;
+                    case 21:
+                        subscriptionRank = tag.getString("rank");
+                        subscriptionType = "add";
+                        break;
+                    case 22:
+                        subscriptionRank = tag.getString("rank");
+                        subscriptionType = "set";
+                        break;
+                    case 23:
+                        subscriptionRank = tag.getString("rank");
+                        subscriptionType = "remove";
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        return;
+                }
+
+                if (subscriptionRank != null && subscriptionType != null) {
+                    player.sendMessage(ChatColor.YELLOW + "Please enter the number of days you would to " + subscriptionType + ":");
+                    player.closeInventory();
+
+                    final String customSubscriptionRank = subscriptionRank;
+                    final String customSubscriptionType = subscriptionType;
+                    Chat.listenForMessage(player, customAmount -> {
+                        if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
+                            try {
+                                Support.modifySubscription(player, playerName, uuid, Integer.parseInt(customAmount.getMessage()), customSubscriptionType, customSubscriptionRank);
+                            } catch (NumberFormatException e) {
+                                player.sendMessage(ChatColor.RED + customAmount.getMessage() + " is not a valid number.");
+                            }
+                        }
+                    }, null);
+                }
+
                 break;
             case "Support Tools (Level)":
                 event.setCancelled(true);
