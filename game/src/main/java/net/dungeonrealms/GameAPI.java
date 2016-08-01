@@ -954,7 +954,8 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToDrop(true), 20L * 10L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
 
-        GameAPI._hiddenPlayers.forEach(p -> player.hidePlayer(p));
+        // Hide invisible users from non-GMs.
+        if (!Rank.isGM(player)) GameAPI._hiddenPlayers.forEach(p -> player.hidePlayer(p));
 
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.

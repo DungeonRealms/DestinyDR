@@ -50,7 +50,7 @@ public class CommandSetRank extends BasicCommand {
 
         if (args.length >= 2 && Arrays.asList(ranks).contains(args[1].toUpperCase())) {
             try {
-                UUID uuid = Bukkit.getPlayer(args[0]) != null ? Bukkit.getPlayer(args[0]).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
+                UUID uuid = Bukkit.getPlayer(args[0]) != null && Bukkit.getPlayer(args[0]).getDisplayName().equalsIgnoreCase(args[0]) ? Bukkit.getPlayer(args[0]).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
                 String rank = args[1].toUpperCase();
 
                 // Check for any ranks that cannot be revoked by a GM.
