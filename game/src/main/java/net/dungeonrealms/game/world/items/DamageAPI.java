@@ -1142,6 +1142,7 @@ public class DamageAPI {
         org.bukkit.util.Vector unitVector = ent.getLocation().toVector().subtract(p.getLocation().toVector()).normalize();
         unitVector.setY(0.35);
         if (speed > 1) unitVector.setY(0.2);
+        if (p.getVelocity().getY() > 0) unitVector.setY(0);
         // Set speed and push entity:
         ent.setVelocity(unitVector.multiply(speed));
     }
