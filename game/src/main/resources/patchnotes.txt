@@ -1,10 +1,12 @@
 Build <build>
 
 &2New Features&0
+- Use /ask if you have any questions
 - Character journal now displays neutral alignment time.
 - PMs now show guilds
 - Added global loot, profession, and xp buffs.
 - Added /vote command.
+- Added staff chat
 
 &8Changes&0
 - Made debug PvP names red instead of dark purple.

@@ -98,6 +98,11 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             p.sendMessage(msg);
                         }
                     });
+                } else if (task.equals("StaffMessage")) {
+                    String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
+                    Bukkit.getOnlinePlayers().forEach(p -> {
+                        if (Rank.isPMOD(p) || Rank.isSupport(p)) p.sendMessage(msg);
+                    });
                 }
 
                 // Handle packet sync //
