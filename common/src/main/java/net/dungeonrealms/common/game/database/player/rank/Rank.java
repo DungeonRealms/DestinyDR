@@ -167,9 +167,9 @@ public class Rank {
             case "youtube":
                 return ChatColor.RED + "YouTuber";
             case "builder":
-                return ChatColor.YELLOW + "Builder";
+                return ChatColor.DARK_GREEN + "Builder";
             case "sub++":
-                return ChatColor.DARK_AQUA + "Subscriber++";
+                return ChatColor.YELLOW + "Subscriber++";
             case "sub+":
                 return ChatColor.GOLD + "Subscriber+";
             case "sub":
@@ -196,9 +196,9 @@ public class Rank {
             case "youtube":
                 return ChatColor.RED;
             case "builder":
-                return ChatColor.YELLOW;
+                return ChatColor.DARK_GREEN;
             case "sub++":
-                return ChatColor.DARK_AQUA;
+                return ChatColor.YELLOW;
             case "sub+":
                 return ChatColor.GOLD;
             case "sub":

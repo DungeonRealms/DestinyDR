@@ -22,12 +22,12 @@ public final class GameChat {
 
     public static final String SUB = ChatColor.GREEN.toString() + ChatColor.BOLD + "S" + ChatColor.RESET + " ";
     public static final String SUBPLUS = ChatColor.GOLD.toString() + ChatColor.BOLD + "S+" + ChatColor.RESET + " ";
-    public static final String SUBPLUSPLUS = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "S++" + ChatColor.RESET + " ";
+    public static final String SUBPLUSPLUS = ChatColor.YELLOW.toString() + ChatColor.BOLD + "S++" + ChatColor.RESET + " ";
     public static final String GM = ChatColor.AQUA.toString() + ChatColor.BOLD + "GM" + ChatColor.RESET + " ";
     public static final String SUPPORT = ChatColor.BLUE.toString() + ChatColor.BOLD + "SUPPORT" + ChatColor.RESET + " ";
     public static final String DEV = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "DEV" + ChatColor.RESET + " ";
     public static final String YOUTUBE = ChatColor.RED.toString() + ChatColor.BOLD + "YOUTUBE" + ChatColor.RESET + " ";
-    public static final String BUILDER = ChatColor.YELLOW.toString() + ChatColor.BOLD + "BUILDER" + ChatColor.RESET + " ";
+    public static final String BUILDER = ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "BUILDER" + ChatColor.RESET + " ";
     public static final String PMOD = ChatColor.WHITE.toString() + ChatColor.BOLD + "PMOD" + ChatColor.RESET + " ";
 
     /*

@@ -220,7 +220,7 @@ public class PetUtils implements GenericMechanic{
             } else if (rank.equalsIgnoreCase("sub+")) {
                 prefix = ChatColor.GOLD;
             } else if (rank.equalsIgnoreCase("sub++")) {
-                prefix = ChatColor.DARK_AQUA;
+                prefix = ChatColor.YELLOW;
             }
         }
         if (Rank.isDev(player)) {

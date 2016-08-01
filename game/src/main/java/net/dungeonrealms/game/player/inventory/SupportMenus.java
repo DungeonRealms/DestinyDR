@@ -171,7 +171,7 @@ public class SupportMenus {
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.CYAN.getData()), Rank.rankFromPrefix("sub++"), new String[]{
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()), Rank.rankFromPrefix("sub++"), new String[]{
                 ChatColor.WHITE + "Set user rank to: Subscriber++",
                 ChatColor.WHITE + "User will have access to the subscriber server."
         });
@@ -186,7 +186,7 @@ public class SupportMenus {
 
         // Ranks that can only be applied by developers.
         if (Rank.isDev(player)) {
-            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()), Rank.rankFromPrefix("builder"), new String[]{
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()), Rank.rankFromPrefix("builder"), new String[]{
                     ChatColor.WHITE + "Set user rank to: Builder",
                     ChatColor.WHITE + "User will have identical permissions as a Subscriber."
             });
