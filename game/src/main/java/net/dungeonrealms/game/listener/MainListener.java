@@ -137,7 +137,7 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPing(ServerListPingEvent event) {
-        if (!DungeonRealms.getInstance().hasFinishedSetup()) event.setMotd("offline");
+        if (!DungeonRealms.getInstance().canAcceptPlayers()) event.setMotd("offline");
         else event.setMotd(DungeonRealms.getInstance().shardid + "," + GameAPI.getServerLoad());
     }
 

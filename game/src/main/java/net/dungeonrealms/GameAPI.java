@@ -369,7 +369,7 @@ public class GameAPI {
         long restartTime = Bukkit.getOnlinePlayers().size() * 10 + 20 * 5; // half a second per player plus 5 seconds
 
         Bukkit.getServer().setWhitelist(true);
-        DungeonRealms.getInstance().setFinishedSetup(false);
+        DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
@@ -907,7 +907,7 @@ public class GameAPI {
         } else if (player != null) {
             player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
-            if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {
+            if (!DungeonRealms.getInstance().canAcceptPlayers() && !Rank.isDev(player)) {
                 player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
                 return;
             } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
