@@ -35,9 +35,8 @@ public class CommandStaffChat extends BasicCommand {
             for (int arg = 1; arg < args.length; arg++)
                 message.append(" ").append(args[arg]);
 
-            GameAPI.sendNetworkMessage("StaffMessage", "&a<SC> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&f: &e" + message);
-
-        } else sender.sendMessage("/sc|staffchat [message]");
+            GameAPI.sendNetworkMessage("StaffMessage", "&6<SC> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&6" + message);
+        } else sender.sendMessage("/sc|staffchat|s [message]");
         return true;
     }
 }

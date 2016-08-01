@@ -31,7 +31,7 @@ public class CommandAsk extends BasicCommand {
                 message.append(" ").append(args[arg]);
 
             p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Your question has been sent to an online staff member."));
-            GameAPI.sendNetworkMessage("StaffMessage", "&e<QUESTION> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(p) + "&f: &e" + message);
+            GameAPI.sendNetworkMessage("StaffMessage", "&e<QUESTION> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(p) + "&e" + message);
 
         } else sender.sendMessage("/ask|a [message]");
 
