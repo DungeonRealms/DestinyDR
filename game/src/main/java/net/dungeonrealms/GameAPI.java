@@ -79,6 +79,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -1245,6 +1247,17 @@ public class GameAPI {
             player.sendMessage("");
 
             Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY");
+
+            // check vanish
+            final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, player.getUniqueId());
+            if (isVanished != null && (Boolean) isVanished) {
+                GameAPI._hiddenPlayers.add(player);
+                player.setCustomNameVisible(false);
+                Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
+                Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM VANISH");
+                player.setGameMode(GameMode.SPECTATOR);
+            }
         }
 
         DungeonRealms.getInstance().getLoggingIn().remove(player.getUniqueId());
