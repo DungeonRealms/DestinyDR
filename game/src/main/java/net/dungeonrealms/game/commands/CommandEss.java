@@ -352,6 +352,7 @@ public class CommandEss extends BasicCommand {
                             commandSender.sendMessage(ChatColor.RED + "Invalid buff type! Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
                             break;
                     }
+                    break;
                 default:
                     commandSender.sendMessage(ChatColor.RED + "The command " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0].toUpperCase() + ChatColor.RED + " does not exist.");
                     break;
