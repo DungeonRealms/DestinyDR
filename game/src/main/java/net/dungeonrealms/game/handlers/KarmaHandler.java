@@ -348,6 +348,8 @@ public class KarmaHandler implements GenericMechanic {
         EnumPlayerAlignments alignmentPlayer = getPlayerRawAlignment(player);
         if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, alignmentPlayer, false);
+        } else if (alignmentPlayer == EnumPlayerAlignments.NEUTRAL) {
+            PLAYER_ALIGNMENT_TIMES.put(player, 120);
         }
     }
 
