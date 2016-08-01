@@ -463,7 +463,9 @@ public class HealthHandler implements GenericMechanic {
 
     public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, EntityDamageEvent.DamageCause cause) {
         final GamePlayer gp = GameAPI.getGamePlayer(player);
-        if (player.getGameMode().equals(GameMode.SPECTATOR) || gp == null || gp.isInvulnerable()) return;
+        if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE) || gp
+                == null || gp.isInvulnerable())
+            return;
 
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
