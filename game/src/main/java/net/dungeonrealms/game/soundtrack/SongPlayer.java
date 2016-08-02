@@ -28,6 +28,7 @@ public abstract class SongPlayer {
     protected byte fadeStart = volume;
     protected int fadeDuration = 60;
     protected int fadeDone = 0;
+    protected long loopDelay = 0;
     protected FadeType fadeType = FadeType.FADE_LINEAR;
 
     public SongPlayer(Song song) {
@@ -89,18 +90,15 @@ public abstract class SongPlayer {
             while (!destroyed) {
                 long startTime = System.currentTimeMillis();
                 synchronized (SongPlayer.this) {
-                    if (playing) {
+                    if (playing && System.currentTimeMillis() >= loopDelay) {
                         calculateFade();
                         tick++;
                         if (tick > song.getLength()) {
-                            try {
-                                Thread.sleep(Soundtrack.LOOP_DELAY);
-                                tick = -1;
-                                continue;
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            loopDelay = Soundtrack.LOOP_DELAY + System.currentTimeMillis();
+                            tick = -1;
+                            continue;
                         }
+
                         for (String s : playerList.keySet()) {
                             @SuppressWarnings("deprecation")
                             Player p = Bukkit.getPlayerExact(s);
@@ -125,7 +123,7 @@ public abstract class SongPlayer {
                 }
             }
         });
-        playerThread.setPriority(Thread.MAX_PRIORITY);
+        playerThread.setPriority(Thread.NORM_PRIORITY);
         playerThread.start();
     }
 
