@@ -94,7 +94,7 @@ public class ECashMenus {
     }
 
     public static void openEcashMisc(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 9, "E-Cash Miscellaneous");
+        Inventory inventory = Bukkit.createInventory(null, 18, "E-Cash Miscellaneous");
         inventory.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         inventory.addItem(new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
