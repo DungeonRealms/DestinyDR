@@ -10,6 +10,7 @@ Build <build>
 
 &8Changes&0
 - Global Buffs are now more powerful.
+- Temporally disabled the Varenglade dungeon
 - Burick no longer takes knockback in enraged mode.
 - Made debug PvP names red instead of dark purple.
 - Vertical knockback no longer stacks when it is greater than 0.

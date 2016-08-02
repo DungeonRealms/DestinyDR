@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class CommandMaintenance extends Command {
 
     public CommandMaintenance() {
-        super("maintenancemode", null, "mm");
+        super("maintenancemode", null, "mm", "whitelist");
     }
 
     @Override
