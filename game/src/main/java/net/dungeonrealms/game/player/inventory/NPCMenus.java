@@ -1,16 +1,16 @@
 package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

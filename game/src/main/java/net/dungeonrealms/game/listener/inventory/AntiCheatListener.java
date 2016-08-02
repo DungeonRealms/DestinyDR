@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.listener.inventory;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiCheat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -1,6 +1,6 @@
 package net.dungeonrealms.common.game.database.concurrent;
 
-import lombok.Getter;
+import lombok.Data;
 import org.bson.conversions.Bson;
 
 import java.util.function.Consumer;
@@ -9,12 +9,11 @@ import java.util.function.Consumer;
  * Class written by APOLLOSOFTWARE.IO on 7/27/2016
  */
 
+@Data
 public class SingleUpdateQuery<T> {
 
-    @Getter
     private final Bson searchQuery, newDocument;
 
-    @Getter
     private final Consumer<T> doAfterOptional;
 
     /**

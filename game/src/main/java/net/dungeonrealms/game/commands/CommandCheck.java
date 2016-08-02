@@ -4,7 +4,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.item.Item;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

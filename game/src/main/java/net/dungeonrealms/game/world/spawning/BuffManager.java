@@ -2,12 +2,12 @@ package net.dungeonrealms.game.world.spawning;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.mechanic.generic.EnumPriority;
+import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.entities.types.EnderCrystal;
-import net.dungeonrealms.game.world.entities.utils.BuffUtils;
+import net.dungeonrealms.game.world.entity.type.EnderCrystal;
+import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;

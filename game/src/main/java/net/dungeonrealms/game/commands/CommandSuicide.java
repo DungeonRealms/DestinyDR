@@ -2,7 +2,7 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
-import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

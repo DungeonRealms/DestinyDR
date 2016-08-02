@@ -4,8 +4,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.utils.EntityAPI;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.Bukkit;
@@ -68,12 +68,12 @@ public class CommandJail extends BasicCommand {
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
 
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
-            Entity pet = Entities.PLAYER_PETS.get(player.getUniqueId());
+            Entity pet = EntityMechanics.PLAYER_PETS.get(player.getUniqueId());
             pet.dead = true;
             EntityAPI.removePlayerPetList(player.getUniqueId());
         }
         if (EntityAPI.hasMountOut(player.getUniqueId())) {
-            Entity mount = Entities.PLAYER_MOUNTS.get(player.getUniqueId());
+            Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
             mount.dead = true;
             EntityAPI.removePlayerMountList(player.getUniqueId());
         }

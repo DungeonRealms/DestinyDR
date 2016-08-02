@@ -2,7 +2,7 @@ package net.dungeonrealms.game.player.notice;
 
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.handlers.MailHandler;
+import net.dungeonrealms.game.handler.MailHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
