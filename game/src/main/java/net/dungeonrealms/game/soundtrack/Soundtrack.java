@@ -2,7 +2,6 @@ package net.dungeonrealms.game.soundtrack;
 
 import lombok.NoArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.util.ResourceExtractor;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -14,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -89,22 +87,12 @@ public class Soundtrack implements GenericMechanic, Listener {
     public void startInitialization() {
         Utils.log.info("DungeonRealms Loading Soundtrack...");
 
-        File SOUNDTRACK_FILE = new File(DungeonRealms.getInstance().getDataFolder(), "soundtrack");
-        ResourceExtractor extractor = new ResourceExtractor(DungeonRealms.getInstance(), SOUNDTRACK_FILE, "soundtrack", null);
-
-        try {
-            // EXTRACT FOLDER //
-            extractor.extract();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         // LOAD ALL SONGS FROM FOLDER \\
-        Arrays.stream(SOUNDTRACK_FILE.listFiles()).forEach(file -> {
-            EnumSong enumSong = EnumSong.getByPath(file.getName());
+        Arrays.stream(EnumSong.values()).forEach(enumSong -> {
+            File file = new File(DungeonRealms.getInstance().getDataFolder(), enumSong.getPath());
 
-            if (enumSong == null) {
-                Utils.log.warning("Could not find song for " + file.getName());
+            if (file == null || !file.exists()) {
+                Utils.log.warning("Could not find song for " + enumSong.getPath());
                 return;
             }
 
