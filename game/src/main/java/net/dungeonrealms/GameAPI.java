@@ -388,6 +388,31 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, restartTime + 20 * 5);
     }
 
+    public static void uploadDataOnCrash() {
+        Bukkit.getServer().setWhitelist(true);
+        DungeonRealms.getInstance().setAcceptPlayers(false);
+        DungeonRealms.getInstance().saveConfig();
+
+        System.out.println("Uploading data on crash...");
+
+        ShopMechanics.deleteAllShops(true);
+        System.out.println("Saved all player shops successfully.");
+
+        CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
+
+        System.out.println("Saving all playerdata...");
+        long currentTime = System.currentTimeMillis();
+        ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet().stream().forEach(uuid -> savePlayerData(uuid,
+                true, false));
+        System.out.println("Successfully saved all playerdata in " + String.valueOf(currentTime - System.currentTimeMillis()) + "ms");
+
+        DungeonRealms.getInstance().mm.stopInvocation();
+        AsyncUtils.pool.shutdown();
+        DatabaseDriver.mongoClient.close();
+
+        Bukkit.shutdown();
+    }
+
     /**
      * @param pLevel
      * @param mob_level

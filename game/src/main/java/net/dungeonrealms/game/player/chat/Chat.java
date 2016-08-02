@@ -60,9 +60,13 @@ public class Chat {
         }
     }
 
-    public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
-            "dick", "clit", "homo", "fag", "faggot", "queer", "nigger", "nigga", "dike", "dyke", "retard", " motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
-            "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "gay", "minecade", "unowild", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "kys", "jigga", "jiggaboo", "hitler", "jews", "titanrift", "fucked"));
+    public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore",
+            "slut", "wank", "asshole", "cock",
+            "dick", "clit", "homo", "fag", "faggot", "queer", "nigger", "nigga", "dike", "dyke", "retard", " " +
+                    "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
+            "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "ass", "@ss", "mystic " +
+                    "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "kys", "jigga",
+            "jiggaboo", "hitler", "jews", "titanrift", "fucked"));
 
     public static void sendPrivateMessage(Player player, String playerName, String finalMessage) {
         GameAPI.submitAsyncWithAsyncCallback(() -> {
