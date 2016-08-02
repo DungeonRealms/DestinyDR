@@ -104,7 +104,7 @@ public class Soundtrack implements GenericMechanic, Listener {
             EnumSong enumSong = EnumSong.getByPath(file.getName());
 
             if (enumSong == null) {
-                Utils.log.warning("Could not find song for " + enumSong.getPath());
+                Utils.log.warning("Could not find song for " + file.getName());
                 return;
             }
 
