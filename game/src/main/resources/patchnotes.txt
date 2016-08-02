@@ -9,12 +9,13 @@ Build <build>
 - Added staff chat
 
 &8Changes&0
+- Global Buffs are now more powerful.
+- Burick no longer takes knockback in enraged mode.
 - Made debug PvP names red instead of dark purple.
 - Vertical knockback no longer stacks when it is greater than 0.
 - Builder ranks now have a dark green tag and sub++ have a yellow tag.
 - Repair cost of T4 and T5 weapons have been lowered by about 1/6.
 - Special ranks (PMOD, GM, etc.) now receive bonus EXP.
-- Burick has been further reworked.
 - Increased timer of all E-Cash buffs from 30 minutes to 1 hour.
 
 &4Bug Fixes&0

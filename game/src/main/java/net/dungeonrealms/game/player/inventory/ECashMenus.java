@@ -108,14 +108,14 @@ public class ECashMenus {
                 ChatColor.WHITE + "200" + ChatColor.GREEN + " E-Cash",
                 ChatColor.GRAY + "Display Item"}).setNBTString("globalMessenger", "true").setNBTInt("eCash", 200).build());
 
-        inventory.addItem(new ItemBuilder().setItem(ItemManager.createLootBuff(3600, 20)).addLore(ChatColor.WHITE + "2500" +
-                ChatColor.GREEN + " E-Cash", ChatColor.GRAY + "Display Item").setNBTInt("eCash", 2500).build());
+        inventory.addItem(new ItemBuilder().setItem(ItemManager.createLootBuff(3600, 50)).addLore(ChatColor.WHITE + "3000" +
+                ChatColor.GREEN + " E-Cash", ChatColor.GRAY + "Display Item").setNBTInt("eCash", 3000).build());
 
-        inventory.addItem(new ItemBuilder().setItem(ItemManager.createProfessionBuff(3600, 20)).addLore(ChatColor.WHITE + "2500" +
-                ChatColor.GREEN + " E-Cash", ChatColor.GRAY + "Display Item").setNBTInt("eCash", 2500).build());
+        inventory.addItem(new ItemBuilder().setItem(ItemManager.createProfessionBuff(3600, 50)).addLore(ChatColor.WHITE + "3000" +
+                ChatColor.GREEN + " E-Cash", ChatColor.GRAY + "Display Item").setNBTInt("eCash", 3000).build());
 
-        inventory.addItem(new ItemBuilder().setItem(ItemManager.createLevelBuff(3600, 20)).addLore(ChatColor.WHITE + "2500" +
-                ChatColor.GREEN + " E-Cash", ChatColor.GRAY + "Display Item").setNBTInt("eCash", 2500).build());
+        inventory.addItem(new ItemBuilder().setItem(ItemManager.createLevelBuff(3600, 50)).addLore(ChatColor.WHITE + "3000" +
+                ChatColor.GREEN + " E-Cash", ChatColor.GRAY + "Display Item").setNBTInt("eCash", 3000).build());
 
         player.openInventory(inventory);
     }
