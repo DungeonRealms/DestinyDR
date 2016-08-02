@@ -11,14 +11,15 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class SongPlayer {
 
     protected Song song;
     protected boolean playing = false;
     protected short tick = -1;
-    protected ArrayList<String> playerList = new ArrayList<String>();
+    protected Map<String, Long> playerList = new HashMap<>();
     protected boolean autoDestroy = false;
     protected boolean destroyed = false;
     protected Thread playerThread;
@@ -27,6 +28,7 @@ public abstract class SongPlayer {
     protected byte fadeStart = volume;
     protected int fadeDuration = 60;
     protected int fadeDone = 0;
+    protected long loopDelay = 0;
     protected FadeType fadeType = FadeType.FADE_LINEAR;
 
     public SongPlayer(Song song) {
@@ -88,27 +90,25 @@ public abstract class SongPlayer {
             while (!destroyed) {
                 long startTime = System.currentTimeMillis();
                 synchronized (SongPlayer.this) {
-                    if (playing) {
+                    if (playing && System.currentTimeMillis() >= loopDelay) {
                         calculateFade();
                         tick++;
                         if (tick > song.getLength()) {
-                            playing = false;
+                            loopDelay = Soundtrack.LOOP_DELAY + System.currentTimeMillis();
                             tick = -1;
-                            SongEndEvent event = new SongEndEvent(SongPlayer.this);
-                            Bukkit.getPluginManager().callEvent(event);
-                            if (autoDestroy) {
-                                destroy();
-                                return;
-                            }
+                            continue;
                         }
-                        for (String s : playerList) {
+
+                        for (String s : playerList.keySet()) {
                             @SuppressWarnings("deprecation")
                             Player p = Bukkit.getPlayerExact(s);
                             if (p == null) {
                                 // offline...
                                 continue;
                             }
-                            playTick(p, tick);
+                            long startDelay = playerList.get(s);
+                            if (System.currentTimeMillis() >= startDelay)
+                                playTick(p, tick);
                         }
                     }
                 }
@@ -123,22 +123,22 @@ public abstract class SongPlayer {
                 }
             }
         });
-        playerThread.setPriority(Thread.MAX_PRIORITY);
+        playerThread.setPriority(Thread.NORM_PRIORITY);
         playerThread.start();
     }
 
-    public List<String> getPlayerList() {
-        return Collections.unmodifiableList(playerList);
+    public Map<String, Long> getPlayerList() {
+        return Collections.unmodifiableMap(playerList);
     }
 
     public void addPlayer(Player p) {
         synchronized (this) {
-            if (!playerList.contains(p.getName())) {
-                playerList.add(p.getName());
+            if (!playerList.containsKey(p.getName())) {
+                playerList.put(p.getName(), Soundtrack.START_DELAY + System.currentTimeMillis());
                 ArrayList<SongPlayer> songs = Soundtrack.getInstance().playingSongs
                         .get(p.getName());
                 if (songs == null) {
-                    songs = new ArrayList<SongPlayer>();
+                    songs = new ArrayList<>();
                 }
                 songs.add(this);
                 Soundtrack.getInstance().playingSongs.put(p.getName(), songs);

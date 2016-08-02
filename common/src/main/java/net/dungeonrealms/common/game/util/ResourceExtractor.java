@@ -141,8 +141,11 @@ public final class ResourceExtractor {
                         InputStream is = jar.getInputStream(entry);
                         FileOutputStream fos = new FileOutputStream(file);
 
-                        while (is.available() > 0) {
-                            fos.write(is.read());
+                        int read;
+                        byte[] bytes = new byte[1024];
+
+                        while ((read = is.read(bytes)) != -1) {
+                            fos.write(bytes, 0, read);
                         }
 
                         fos.close();

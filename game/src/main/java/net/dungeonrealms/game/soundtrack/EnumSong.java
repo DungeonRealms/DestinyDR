@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public enum EnumSong {
 
-    CYRENNICA_1("cyren_1.nbs"),
-    WILDERNESS_1("wilderness_1.nbs"),
-    //TEST_2("test2.nbs"),
-    TEST("test.nbs");
+    CYRENNICA_1("soundtrack/cyren_1.nbs"),
+    CYRENNICA_2("soundtrack/cyren_2.nbs"),
+    WILDERNESS_1("soundtrack/wilderness_1.nbs"),
+    TEST("soundtrack/test.nbs");
 
     @Getter
     private String path;

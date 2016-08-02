@@ -2,7 +2,7 @@ package net.dungeonrealms.game.soundtrack;
 
 import lombok.NoArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.util.ResourceExtractor;
+import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -11,10 +11,10 @@ import net.dungeonrealms.game.soundtrack.player.RadioSongPlayer;
 import net.dungeonrealms.game.soundtrack.player.song.Song;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,10 +30,11 @@ public class Soundtrack implements GenericMechanic, Listener {
     // INSTANCE //
     protected static Soundtrack instance = null;
 
-    private final long LOOP_DELAY = 30000L;
+    protected static final long LOOP_DELAY = 95000L;
+    protected static final long START_DELAY = 15000L;
 
-    public HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
-    public HashMap<String, Byte> playerVolume = new HashMap<String, Byte>();
+    protected HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
+    protected HashMap<String, Byte> playerVolume = new HashMap<String, Byte>();
 
     private Map<EnumSong, SongPlayer> PLAYERS = new HashMap<>();
 
@@ -89,27 +90,18 @@ public class Soundtrack implements GenericMechanic, Listener {
     public void startInitialization() {
         Utils.log.info("DungeonRealms Loading Soundtrack...");
 
-        File SOUNDTRACK_FILE = new File(DungeonRealms.getInstance().getDataFolder(), "soundtrack");
-        ResourceExtractor extractor = new ResourceExtractor(DungeonRealms.getInstance(), SOUNDTRACK_FILE, "soundtrack", null);
-
-        try {
-            // EXTRACT FOLDER //
-            extractor.extract();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         // LOAD ALL SONGS FROM FOLDER \\
-        Arrays.stream(SOUNDTRACK_FILE.listFiles()).forEach(file -> {
-            EnumSong enumSong = EnumSong.getByPath(file.getName());
+        Arrays.stream(EnumSong.values()).forEach(enumSong -> {
+            File file = new File(DungeonRealms.getInstance().getDataFolder(), enumSong.getPath());
 
-            if (enumSong == null) {
-                Utils.log.warning("Could not find song for " + file.getName());
+            if (file == null || !file.exists()) {
+                Utils.log.warning("Could not find song for " + enumSong.getPath());
                 return;
             }
 
             Song song = NBSDecoder.parse(file);
             SongPlayer player = new RadioSongPlayer(song);
+            player.setPlaying(true);
 
             PLAYERS.put(enumSong, player);
         });
@@ -121,5 +113,18 @@ public class Soundtrack implements GenericMechanic, Listener {
     @Override
     public void stopInvocation() {
 
+    }
+
+    @EventHandler
+    public void onRegion(PlayerEnterRegionEvent event) {
+        Player player = event.getPlayer();
+
+        if (isReceivingSong(player))
+            stopPlaying(player);
+
+        String region = event.getRegion();
+
+        if (region.contains("cyren"))
+            getPlayer(EnumSong.CYRENNICA_2).addPlayer(player);
     }
 }
