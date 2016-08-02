@@ -2,6 +2,7 @@ package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
@@ -23,7 +24,7 @@ public class CrashDetector implements GenericMechanic {
     @Override
     public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> antiCrashTime = System
-                .currentTimeMillis(), 5 * 20L, 1 * 20L);
+                .currentTimeMillis(), 5 * 20L, 20L);
 
         crashChecker = new Thread(() -> {
             long multithreadAntiCrash = 0;
@@ -40,8 +41,7 @@ public class CrashDetector implements GenericMechanic {
                     if (crashDetected) continue;
 
                     // No tick in last 30 seconds, upload local data and reboot.
-                    System.out
-                            .println("[HIVE (Slave Edition)] Detected no activity in main thread for 30 seconds, uploading local data and locking server.");
+                    Constants.log.warning("Detected no heartbeat in main thread for 30 seconds, uploading local data and locking server to prevent database issues.");
 
                     crashDetected = true;
                     GameAPI.uploadDataOnCrash();

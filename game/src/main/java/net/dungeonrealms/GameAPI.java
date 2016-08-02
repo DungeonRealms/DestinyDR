@@ -393,18 +393,18 @@ public class GameAPI {
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
 
-        System.out.println("Uploading data on crash...");
+        Constants.log.info("Uploading data on crash...");
 
         ShopMechanics.deleteAllShops(true);
-        System.out.println("Saved all player shops successfully.");
+        Constants.log.info("Saved all player shops successfully.");
 
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
 
-        System.out.println("Saving all playerdata...");
+        Constants.log.info("Saving all playerdata...");
         long currentTime = System.currentTimeMillis();
         ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet().stream().forEach(uuid -> savePlayerData(uuid,
                 true, false));
-        System.out.println("Successfully saved all playerdata in " + String.valueOf(currentTime - System.currentTimeMillis()) + "ms");
+        Constants.log.info("Successfully saved all playerdata in " + String.valueOf(currentTime - System.currentTimeMillis()) + "ms");
 
         DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
