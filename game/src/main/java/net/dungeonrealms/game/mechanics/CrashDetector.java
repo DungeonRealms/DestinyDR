@@ -14,6 +14,12 @@ public class CrashDetector implements GenericMechanic {
     public static volatile long antiCrashTime = 0;
     public static volatile boolean crashDetected = false;
     public static Thread crashChecker;
+    static CrashDetector instance = null;
+
+    public static CrashDetector getInstance() {
+        if (instance == null) instance = new CrashDetector();
+        return instance;
+    }
 
     @Override
     public EnumPriority startPriority() {

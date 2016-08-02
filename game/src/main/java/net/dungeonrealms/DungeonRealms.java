@@ -48,6 +48,7 @@ import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.listener.world.BlockListener;
 import net.dungeonrealms.game.listener.world.DungeonListener;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.CrashDetector;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -240,6 +241,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(new ForceField());
+            mm.registerMechanic(CrashDetector.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             mm.registerMechanic(new ShopMechanics());
