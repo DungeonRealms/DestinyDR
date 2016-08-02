@@ -9,6 +9,8 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
+
 /**
  * Created by Alan on 7/28/2016.
  */
@@ -44,11 +46,13 @@ public class LevelBuff extends Buff {
         final LevelBuff nextBuff = de.getQueuedLevelBuffs().poll();
 
         Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + ChatColor.GOLD + activatingPlayer + "'s " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE
-                + "+20% Global Character Level XP Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
+                + "+20% Global Character Level XP Rates" + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PULL,
-                    "buffs.queuedLevelBuffs", this.serialize(), true);
+            ArrayList<String> queuedBuffs = new ArrayList<>();
+            de.getQueuedLevelBuffs().forEach(buff -> queuedBuffs.add(buff.serialize()));
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+                    "buffs.queuedLevelBuffs", queuedBuffs, true);
             nextBuff.activateBuff();
         } else
             de.getInstance().setActiveLevelBuff(null);

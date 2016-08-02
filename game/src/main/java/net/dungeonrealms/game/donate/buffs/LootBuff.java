@@ -9,6 +9,8 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
+
 /**
  * Created by Alan on 7/28/2016.
  */
@@ -47,8 +49,10 @@ public class LootBuff extends Buff {
                 + "+20% Global Drop Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$PULL,
-                    "buffs.queuedLootBuffs", this.serialize(), true);
+            ArrayList<String> queuedBuffs = new ArrayList<>();
+            de.getQueuedLootBuffs().forEach(buff -> queuedBuffs.add(buff.serialize()));
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+                    "buffs.queuedLootBuffs", queuedBuffs, true);
             nextBuff.activateBuff();
         } else
             de.getInstance().setActiveLootBuff(null);
