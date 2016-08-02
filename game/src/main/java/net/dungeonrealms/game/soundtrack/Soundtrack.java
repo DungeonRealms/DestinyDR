@@ -2,6 +2,7 @@ package net.dungeonrealms.game.soundtrack;
 
 import lombok.NoArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -10,6 +11,7 @@ import net.dungeonrealms.game.soundtrack.player.RadioSongPlayer;
 import net.dungeonrealms.game.soundtrack.player.song.Song;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.io.File;
@@ -28,10 +30,11 @@ public class Soundtrack implements GenericMechanic, Listener {
     // INSTANCE //
     protected static Soundtrack instance = null;
 
-    private final long LOOP_DELAY = 30000L;
+    protected static final long LOOP_DELAY = 60000L;
+    protected static final long START_DELAY = 15000L;
 
-    public HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
-    public HashMap<String, Byte> playerVolume = new HashMap<String, Byte>();
+    protected HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
+    protected HashMap<String, Byte> playerVolume = new HashMap<String, Byte>();
 
     private Map<EnumSong, SongPlayer> PLAYERS = new HashMap<>();
 
@@ -98,6 +101,7 @@ public class Soundtrack implements GenericMechanic, Listener {
 
             Song song = NBSDecoder.parse(file);
             SongPlayer player = new RadioSongPlayer(song);
+            player.setPlaying(true);
 
             PLAYERS.put(enumSong, player);
         });
@@ -109,5 +113,18 @@ public class Soundtrack implements GenericMechanic, Listener {
     @Override
     public void stopInvocation() {
 
+    }
+
+    @EventHandler
+    public void onRegion(PlayerEnterRegionEvent event) {
+        Player player = event.getPlayer();
+
+        if (isReceivingSong(player))
+            stopPlaying(player);
+
+        String region = event.getRegion();
+
+        if (region.contains("cyren"))
+            getPlayer(EnumSong.CYRENNICA_2).addPlayer(player);
     }
 }

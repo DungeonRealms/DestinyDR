@@ -11,14 +11,15 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class SongPlayer {
 
     protected Song song;
     protected boolean playing = false;
     protected short tick = -1;
-    protected ArrayList<String> playerList = new ArrayList<String>();
+    protected Map<String, Long> playerList = new HashMap<>();
     protected boolean autoDestroy = false;
     protected boolean destroyed = false;
     protected Thread playerThread;
@@ -92,23 +93,24 @@ public abstract class SongPlayer {
                         calculateFade();
                         tick++;
                         if (tick > song.getLength()) {
-                            playing = false;
-                            tick = -1;
-                            SongEndEvent event = new SongEndEvent(SongPlayer.this);
-                            Bukkit.getPluginManager().callEvent(event);
-                            if (autoDestroy) {
-                                destroy();
-                                return;
+                            try {
+                                Thread.sleep(Soundtrack.LOOP_DELAY);
+                                tick = -1;
+                                continue;
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
                         }
-                        for (String s : playerList) {
+                        for (String s : playerList.keySet()) {
                             @SuppressWarnings("deprecation")
                             Player p = Bukkit.getPlayerExact(s);
                             if (p == null) {
                                 // offline...
                                 continue;
                             }
-                            playTick(p, tick);
+                            long startDelay = playerList.get(s);
+                            if (System.currentTimeMillis() >= startDelay)
+                                playTick(p, tick);
                         }
                     }
                 }
@@ -127,18 +129,18 @@ public abstract class SongPlayer {
         playerThread.start();
     }
 
-    public List<String> getPlayerList() {
-        return Collections.unmodifiableList(playerList);
+    public Map<String, Long> getPlayerList() {
+        return Collections.unmodifiableMap(playerList);
     }
 
     public void addPlayer(Player p) {
         synchronized (this) {
-            if (!playerList.contains(p.getName())) {
-                playerList.add(p.getName());
+            if (!playerList.containsKey(p.getName())) {
+                playerList.put(p.getName(), Soundtrack.START_DELAY + System.currentTimeMillis());
                 ArrayList<SongPlayer> songs = Soundtrack.getInstance().playingSongs
                         .get(p.getName());
                 if (songs == null) {
-                    songs = new ArrayList<SongPlayer>();
+                    songs = new ArrayList<>();
                 }
                 songs.add(this);
                 Soundtrack.getInstance().playingSongs.put(p.getName(), songs);
