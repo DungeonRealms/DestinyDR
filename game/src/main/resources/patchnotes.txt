@@ -2,6 +2,7 @@ Build <build>
 
 &2New Features&0
 - Use /ask if you have any questions
+- Preview of the DR soundtrack
 - Character journal now displays neutral alignment time.
 - PMs now show guilds
 - Added global loot, profession, and xp buffs.

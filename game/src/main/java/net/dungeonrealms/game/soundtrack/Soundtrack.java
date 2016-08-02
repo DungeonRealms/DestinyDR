@@ -30,7 +30,7 @@ public class Soundtrack implements GenericMechanic, Listener {
     // INSTANCE //
     protected static Soundtrack instance = null;
 
-    protected static final long LOOP_DELAY = 60000L;
+    protected static final long LOOP_DELAY = 65000L;
     protected static final long START_DELAY = 15000L;
 
     protected HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
