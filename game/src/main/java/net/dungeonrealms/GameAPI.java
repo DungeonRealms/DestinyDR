@@ -815,7 +815,7 @@ public class GameAPI {
         if (CombatLog.isInCombat(player)) {
             if (!DuelingMechanics.isDueling(uuid)) {
                 if (!GameAPI.isNonPvPRegion(player.getLocation())) {
-                    CombatLog.handleCombatLogger(player);
+                	//CombatLog.handleCombatLogger(player);
                 }
             }
         }
