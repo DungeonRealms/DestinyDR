@@ -2,7 +2,7 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.handlers.TipHandler;
+import net.dungeonrealms.game.handler.TipHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;

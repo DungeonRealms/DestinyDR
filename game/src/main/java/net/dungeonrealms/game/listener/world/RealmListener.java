@@ -8,20 +8,20 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.updater.UpdateEvent;
 import net.dungeonrealms.common.game.updater.UpdateType;
-import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.handlers.FriendHandler;
-import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.handler.FriendHandler;
+import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
@@ -70,13 +70,13 @@ public class RealmListener implements Listener {
     public void onWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
-            net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(player.getUniqueId());
+            net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(player.getUniqueId());
             pet.dead = true;
             EntityAPI.removePlayerPetList(player.getUniqueId());
         }
 
         if (EntityAPI.hasMountOut(player.getUniqueId())) {
-            net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(player.getUniqueId());
+            net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
             mount.dead = true;
             EntityAPI.removePlayerMountList(player.getUniqueId());
         }
@@ -953,12 +953,12 @@ public class RealmListener implements Listener {
     public void onPlayerEnterPortal(PlayerPortalEvent event) {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) {
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
-                Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
+                Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
                 EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
             }
             if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
-                Entity mount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
+                Entity mount = EntityMechanics.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
                 mount.dead = true;
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
@@ -983,12 +983,12 @@ public class RealmListener implements Listener {
             }
         } else if (REALMS.getRealm(event.getPlayer().getLocation().getWorld()) != null) {
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
-                Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
+                Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
                 EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
             }
             if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
-                Entity mount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
+                Entity mount = EntityMechanics.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
                 mount.dead = true;
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }

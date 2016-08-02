@@ -2,9 +2,9 @@ package net.dungeonrealms.game.world.teleportation;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.generic.EnumPriority;
+import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;

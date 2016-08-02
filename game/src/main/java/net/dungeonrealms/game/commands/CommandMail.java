@@ -3,7 +3,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.handlers.MailHandler;
+import net.dungeonrealms.game.handler.MailHandler;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import org.bukkit.ChatColor;

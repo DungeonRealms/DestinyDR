@@ -10,7 +10,7 @@ import net.dungeonrealms.game.guild.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.guild.token.GuildCreateToken;
 import net.dungeonrealms.game.guild.token.GuildInfoToken;
-import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;

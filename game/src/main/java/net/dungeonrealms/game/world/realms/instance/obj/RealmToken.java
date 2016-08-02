@@ -1,8 +1,7 @@
 package net.dungeonrealms.game.world.realms.instance.obj;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,43 +16,25 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
  */
 
+@Data
 public class RealmToken {
 
-    @Getter
     private final UUID owner;
 
-    @Getter
     private final String name;
 
-    @Getter
-    @Setter
     private RealmStatus status;
 
-    @Getter
-    @Setter
     private Location portalLocation;
 
-    @Getter
-    @Setter
-    private boolean isLoaded = false;
+    private boolean isLoaded = false, settingSpawn = false;
 
-    @Setter
-    @Getter
-    private boolean settingSpawn = false;
-
-    @Getter
-    @Setter
     private double upgradeProgress;
 
-    @Getter
-    @Setter
     private Hologram hologram;
 
-
-    @Getter
     private Set<UUID> builders = new CopyOnWriteArraySet<>();
 
-    @Getter
     private Map<String, RealmProperty> realmProperties = new HashMap<>();
 
 

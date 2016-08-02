@@ -2,7 +2,7 @@ package net.dungeonrealms.game.commands.toggles;
 
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.game.mechanics.PlayerManager;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -2,8 +2,8 @@ package net.dungeonrealms.game.world.loot;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.mechanic.generic.EnumPriority;
+import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.loot.types.LootType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

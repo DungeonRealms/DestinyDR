@@ -2,12 +2,12 @@ package net.dungeonrealms.game.commands.dungeonhelpers;
 
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mechanics.DungeonManager;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Burick;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
-import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.boss.Burick;
+import net.dungeonrealms.game.world.entity.type.monster.boss.InfernalAbyss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.Mayel;
+import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

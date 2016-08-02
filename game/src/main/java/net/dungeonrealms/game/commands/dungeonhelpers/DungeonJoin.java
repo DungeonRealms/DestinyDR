@@ -3,8 +3,9 @@ package net.dungeonrealms.game.commands.dungeonhelpers;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
-import net.dungeonrealms.game.mechanics.DungeonManager;
-import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.mechanic.DungeonManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -33,7 +34,7 @@ public class DungeonJoin extends BasicCommand {
         Player player = (Player) sender;
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
             if (Affair.getInstance().isInParty(player)) {
-                Affair.AffairO party = Affair.getInstance().getParty(player).get();
+                Party party = Affair.getInstance().getParty(player).get();
                 boolean partyInDungeon = false;
                 DungeonManager.DungeonObject dungeonObject = null;
                 if (party.getOwner().getWorld().getName().contains("DUNGEON")) {

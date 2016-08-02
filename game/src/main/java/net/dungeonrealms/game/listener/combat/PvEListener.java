@@ -2,19 +2,19 @@ package net.dungeonrealms.game.listener.combat;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.handler.EnergyHandler;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.PowerMove;
-import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
-import net.dungeonrealms.game.world.items.Attribute;
-import net.dungeonrealms.game.world.items.DamageAPI;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
+import net.dungeonrealms.game.world.entity.PowerMove;
+import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
+import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
+import net.dungeonrealms.game.world.item.Attribute;
+import net.dungeonrealms.game.world.item.DamageAPI;
+import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
@@ -41,8 +41,8 @@ public class PvEListener implements Listener {
     public void playerMeleeMob(EntityDamageByEntityEvent event) {
         if (!GameAPI.isPlayer(event.getDamager())) return;
         if (event.getEntity() instanceof Player) return;
-        if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (EntityMechanics.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (EntityMechanics.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (event.getEntity() instanceof LivingEntity) {
             if (!event.getEntity().hasMetadata("type")) return;
         } else {
@@ -163,8 +163,8 @@ public class PvEListener implements Listener {
     public void playerRangedMob(EntityDamageByEntityEvent event) {
         if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
         if (event.getEntity() instanceof Player) return;
-        if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (EntityMechanics.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (EntityMechanics.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         Projectile projectile = (Projectile) event.getDamager();
         if (!(projectile.getShooter() instanceof Player)) {
             event.setDamage(0);

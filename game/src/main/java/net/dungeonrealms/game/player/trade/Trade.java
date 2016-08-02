@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.player.trade;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

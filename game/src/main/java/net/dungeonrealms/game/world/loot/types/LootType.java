@@ -2,7 +2,7 @@ package net.dungeonrealms.game.world.loot.types;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -2,8 +2,8 @@ package net.dungeonrealms.game.listener.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.handler.EnergyHandler;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.profession.Mining;
 import net.minecraft.server.v1_9_R2.EntityExperienceOrb;
 import org.bukkit.Bukkit;

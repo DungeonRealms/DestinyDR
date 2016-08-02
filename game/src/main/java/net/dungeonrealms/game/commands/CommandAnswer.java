@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -21,7 +22,10 @@ public class CommandAnswer extends BasicCommand {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (!Rank.isPMOD(player)) return false;
+        }
 
         if ((args.length == 0) || (args.length < 2)) {
             sender.sendMessage(ChatColor.RED + "/answer [name] [message]");

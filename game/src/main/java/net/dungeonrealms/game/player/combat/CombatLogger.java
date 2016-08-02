@@ -3,7 +3,7 @@ package net.dungeonrealms.game.player.combat;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handler.KarmaHandler;
 import org.bukkit.Location;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;

@@ -4,15 +4,16 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.mechanics.DungeonManager;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.types.EnderCrystal;
-import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.affair.party.Party;
+import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
+import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
+import net.dungeonrealms.game.world.entity.type.EnderCrystal;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -225,7 +226,7 @@ public class DungeonListener implements Listener {
             }
             if (Affair.getInstance().isInParty(player)) {
                 List<Player> toSend = new ArrayList<>();
-                Affair.AffairO party = Affair.getInstance().getParty(player).get();
+                Party party = Affair.getInstance().getParty(player).get();
                 toSend.addAll(party.getMembers());
                 toSend.add(party.getOwner());
                 for (Player player1 : toSend) {
@@ -259,12 +260,12 @@ public class DungeonListener implements Listener {
             }
 
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
-                net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
+                net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
                 EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
             }
             if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
-                net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
+                net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
                 mount.dead = true;
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
@@ -284,7 +285,7 @@ public class DungeonListener implements Listener {
             boolean isPartyInInstance = false;
 
             if (Affair.getInstance().isInParty(player)) {
-                Affair.AffairO party = Affair.getInstance().getParty(player).get();
+                Party party = Affair.getInstance().getParty(player).get();
                 List<Player> partyMembers = new ArrayList<>();
                 partyMembers.add(party.getOwner());
                 partyMembers.addAll(party.getMembers());

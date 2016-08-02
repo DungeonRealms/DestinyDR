@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
+import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -23,6 +24,12 @@ public class CommandAsk extends BasicCommand {
         if (!(sender instanceof Player)) return true;
 
         Player p = (Player) sender;
+
+        if (PunishAPI.isMuted(p.getUniqueId())) {
+            p.sendMessage(PunishAPI.getMutedMessage(p.getUniqueId()));
+            return true;
+        }
+
         StringBuilder message;
         if (args.length > 0) {
             message = new StringBuilder(args[0]);

@@ -21,18 +21,20 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.handler.EnergyHandler;
+import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.*;
-import net.dungeonrealms.game.mechanics.DungeonManager;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mechanics.PlayerManager;
+import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
@@ -43,18 +45,16 @@ import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.title.TitleAPI;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
-import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
-import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
-import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.util.EntityStats;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
@@ -393,14 +393,14 @@ public class GameAPI {
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
 
-        System.out.println("Uploading data on crash...");
+        Constants.log.info("Uploading data on crash...");
 
         ShopMechanics.deleteAllShops(true);
-        System.out.println("Saved all player shops successfully.");
+        Constants.log.info("Saved all player shops successfully.");
 
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
 
-        System.out.println("Saving all playerdata...");
+        Constants.log.info("Saving all playerdata...");
         long currentTime = System.currentTimeMillis();
         ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet().stream().forEach(uuid -> {
             savePlayerData(uuid, true, false);
@@ -830,7 +830,7 @@ public class GameAPI {
             ScoreboardHandler.getInstance().removePlayerScoreboard(player);
         });
         if (EntityAPI.hasPetOut(uuid)) {
-            net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(uuid);
+            net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(uuid);
             pet.dead = true;
             if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(pet)) {
                 DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(pet);
@@ -838,7 +838,7 @@ public class GameAPI {
             EntityAPI.removePlayerPetList(uuid);
         }
         if (EntityAPI.hasMountOut(uuid)) {
-            net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(uuid);
+            net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(uuid);
             if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(mount)) {
                 DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(mount);
             }

@@ -5,7 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.commands.BasicCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.handlers.FriendHandler;
+import net.dungeonrealms.game.handler.FriendHandler;
 import net.minecraft.server.v1_9_R2.EnumHand;
 import net.minecraft.server.v1_9_R2.PacketDataSerializer;
 import net.minecraft.server.v1_9_R2.PacketPlayOutCustomPayload;
