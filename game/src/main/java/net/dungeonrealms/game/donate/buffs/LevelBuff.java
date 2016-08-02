@@ -49,12 +49,13 @@ public class LevelBuff extends Buff {
                 + "+20% Global Character Level XP Rates" + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
-            ArrayList<String> queuedBuffs = new ArrayList<>();
-            de.getQueuedLevelBuffs().forEach(buff -> queuedBuffs.add(buff.serialize()));
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.queuedLevelBuffs", queuedBuffs, true);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
+                    "buffs.queuedLevelBuffs", -1, true);
             nextBuff.activateBuff();
-        } else
+        } else {
             de.getInstance().setActiveLevelBuff(null);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+                    "buffs.activeLevelBuff", "", true);
+        }
     }
 }

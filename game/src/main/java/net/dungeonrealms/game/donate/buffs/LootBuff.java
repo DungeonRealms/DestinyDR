@@ -49,12 +49,13 @@ public class LootBuff extends Buff {
                 + "+20% Global Drop Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
-            ArrayList<String> queuedBuffs = new ArrayList<>();
-            de.getQueuedLootBuffs().forEach(buff -> queuedBuffs.add(buff.serialize()));
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.queuedLootBuffs", queuedBuffs, true);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
+                    "buffs.queuedLootBuffs", -1, true);
             nextBuff.activateBuff();
-        } else
+        } else {
             de.getInstance().setActiveLootBuff(null);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+                    "buffs.activeLootBuff", "", true);
+        }
     }
 }

@@ -21,7 +21,10 @@ public enum EnumOperators {
     $PULL(4, "$pull"),
 
     //remove from a document
-    $UNSET(5, "$unset");
+    $UNSET(5, "$unset"),
+
+    //remove from a document
+    $POP(6, "$pop");
 
     private int id;
     private String UO;

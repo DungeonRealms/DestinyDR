@@ -49,13 +49,14 @@ public class ProfessionBuff extends Buff {
                 + "+20% Global Profession Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
-            ArrayList<String> queuedBuffs = new ArrayList<>();
-            de.getQueuedProfessionBuffs().forEach(buff -> queuedBuffs.add(buff.serialize()));
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
-                    "buffs.queuedProfessionBuffs", queuedBuffs, true);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
+                    "buffs.queuedProfessionBuffs", -1, true);
             nextBuff.activateBuff();
-        } else
+        } else {
             de.getInstance().setActiveProfessionBuff(null);
+            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+                    "buffs.activeProfessionBuff", "", true);
+        }
     }
 
 }
