@@ -22,7 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 /**
- * Created by Kieran Quigley (Proxying) on 17-Jun-16.
+ * Created by Alan on 8/2/2016.
  */
 public class BossSpawn extends BasicCommand {
     public BossSpawn(String command, String usage, String description) {
@@ -35,6 +35,9 @@ public class BossSpawn extends BasicCommand {
         final Player player = (Player) sender;
         if (!(Rank.isGM(player))) return true;
 
+        if (args.length != 1) {
+            player.sendMessage(ChatColor.RED + "Syntax: /bspawn mayel|burick|infernal");
+        }
         switch (args[0].toLowerCase()) {
             case "mayel":
                 Location toSpawn = new Location(player.getWorld(), 529, 55, -313);
@@ -67,7 +70,10 @@ public class BossSpawn extends BasicCommand {
                 infernal.setLocation(abyss.getX(), abyss.getY(), abyss.getZ(), 1, 1);
                 abyss.getWorld().playSound(abyss, Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F);
                 break;
+            default:
+                player.sendMessage(ChatColor.RED + "Syntax: /bspawn mayel|burick|infernal");
+                break;
         }
-        return false;
+        return true;
     }
 }

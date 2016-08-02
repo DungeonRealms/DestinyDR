@@ -377,6 +377,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandMonSpawn("monspawn", "/<command> [args]", "Spawn monsters"));
         cm.registerCommand(new ReplaceNear("drreplacenear", "/<command> [args]", "Replaces nearby blocks"));
         cm.registerCommand(new BossTeleport("bosstp", "/<command> [args]", "Dungeon Boss Teleporation"));
+        cm.registerCommand(new BossTeleport("bspawn", "/<command> [args]", "Spawn a dungeon boss."));
         cm.registerCommand(new CommandTips("tips", "/<command>", "Tips command"));
         cm.registerCommand(new DungeonJoin("djoin", "/<command>", "Dungeon Join command"));
         cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
