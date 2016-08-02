@@ -402,8 +402,10 @@ public class GameAPI {
 
         System.out.println("Saving all playerdata...");
         long currentTime = System.currentTimeMillis();
-        ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet().stream().forEach(uuid -> savePlayerData(uuid,
-                true, false));
+        ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet().stream().forEach(uuid -> {
+            savePlayerData(uuid, true, false);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
+        });
         System.out.println("Successfully saved all playerdata in " + String.valueOf(currentTime - System.currentTimeMillis()) + "ms");
 
         DungeonRealms.getInstance().mm.stopInvocation();
@@ -813,7 +815,7 @@ public class GameAPI {
         if (CombatLog.isInCombat(player)) {
             if (!DuelingMechanics.isDueling(uuid)) {
                 if (!GameAPI.isNonPvPRegion(player.getLocation())) {
-//                    CombatLog.handleCombatLogger(player);
+                    CombatLog.handleCombatLogger(player);
                 }
             }
         }
