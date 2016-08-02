@@ -9,6 +9,7 @@ Build <build>
 - Added staff chat
 
 &8Changes&0
+- Combat Loggers have been temporarily disabled.
 - Global Buffs are now more powerful.
 - Temporally disabled the Varenglade dungeon
 - Burick no longer takes knockback in enraged mode.
