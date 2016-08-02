@@ -88,7 +88,7 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAnimalAttack(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof DRMonster) && !(event.getEntity() instanceof Player))
+        if (!(event.getEntity() instanceof DRMonster) && !(event.getEntity() instanceof Player) && event instanceof LivingEntity)
             event.getEntity().getWorld().playEffect(event.getEntity().getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
     }
 
