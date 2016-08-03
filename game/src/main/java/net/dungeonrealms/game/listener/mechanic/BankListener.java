@@ -295,7 +295,7 @@ public class BankListener implements Listener {
                                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
-                                meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()
+                                meta.setDisplayName(ChatColor.GREEN + String.valueOf(getPlayerGems(player.getUniqueId())) + size + ChatColor.BOLD.toString()
                                         + ChatColor.GREEN + " GEM(s)");
                                 ArrayList<String> lore = new ArrayList<>();
                                 lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
@@ -453,7 +453,7 @@ public class BankListener implements Listener {
                             e.setCancelled(true);
                             ItemStack bankItem = new ItemStack(Material.EMERALD);
                             ItemMeta meta = bankItem.getItemMeta();
-                            meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()
+                            meta.setDisplayName(ChatColor.GREEN + String.valueOf(getPlayerGems(player.getUniqueId())) + size + ChatColor.BOLD.toString()
                                     + ChatColor.GREEN + " GEM(s)");
                             ArrayList<String> lore = new ArrayList<>();
                             int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
