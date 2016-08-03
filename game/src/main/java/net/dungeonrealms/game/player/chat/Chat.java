@@ -104,7 +104,7 @@ public class Chat {
             }
             player.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "TO " + receivingShard + " " +
             		GameChat.getFormattedName(playerName) + ":" + ChatColor.WHITE + finalMessage);
-            player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2f, 1.2f);
+            
 
             GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "TO " + receivingShard + " " +
             		GameChat.getFormattedName(playerName) + ":" + ChatColor.WHITE + finalMessage));
