@@ -38,4 +38,14 @@ public class Constants {
     // BUILD NUMBER //
     public static final String BUILD_NUMBER = "#165";
 
+    // FTP INFO //
+    public static final String FTP_HOST_NAME = "167.114.65.102";
+
+    public static final String FTP_USER_NAME = "newdr.53";
+
+    public static final String FTP_PASSWORD = "SBobNQyc6fy3j8Rj";
+
+    public static final int FTP_PORT = 21;
+
+
 }

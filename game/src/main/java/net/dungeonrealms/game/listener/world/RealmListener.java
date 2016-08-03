@@ -83,8 +83,8 @@ public class RealmListener implements Listener {
 
         World to = player.getWorld();
 
-        if (REALMS.getRealm(to) != null) {
-            RealmToken realm = REALMS.getRealm(to);
+        if (REALMS.getToken(to) != null) {
+            RealmToken realm = REALMS.getToken(to);
 
             if (!player.getUniqueId().equals(realm.getOwner()))
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You have entered " + ChatColor.BOLD + realm.getName() + "'s" + ChatColor.LIGHT_PURPLE + " realm.");
@@ -113,8 +113,8 @@ public class RealmListener implements Listener {
                     GameAPI.getGamePlayer(player).setInvulnerable(false);
             }, 15 * 20L);
 
-        } else if (REALMS.getRealm(event.getFrom()) != null) {
-            RealmToken realm = REALMS.getRealm(event.getFrom());
+        } else if (REALMS.getToken(event.getFrom()) != null) {
+            RealmToken realm = REALMS.getToken(event.getFrom());
 
             if (!player.getGameMode().equals(GameMode.CREATIVE))
                 player.setAllowFlight(false);
@@ -132,7 +132,7 @@ public class RealmListener implements Listener {
     public void onBlock(BlockPhysicsEvent event) {
         if (event.getBlock().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
-        RealmToken realm = REALMS.getRealm(event.getBlock().getLocation().getWorld());
+        RealmToken realm = REALMS.getToken(event.getBlock().getLocation().getWorld());
 
         if (realm != null && !realm.isSettingSpawn() && event.getBlock().getType().equals(Material.PORTAL))
             event.setCancelled(true);
@@ -148,7 +148,7 @@ public class RealmListener implements Listener {
                 World w = Bukkit.getWorld(w_name);
                 int limy = (128 - REALMS.getRealmDimensions(REALMS.getRealmTier(entry.getKey())));
                 CopyOnWriteArrayList<Location> loc_list = new CopyOnWriteArrayList<>(entry.getValue());
-                RealmToken realm = REALMS.getRealm(entry.getKey());
+                RealmToken realm = REALMS.getToken(entry.getKey());
                 int x = 0;
 
                 for (Location loc : loc_list) {
@@ -287,7 +287,7 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void onHopperMove(InventoryMoveItemEvent event) {
-        RealmToken realm = REALMS.getRealm(event.getSource().getLocation().getWorld());
+        RealmToken realm = REALMS.getToken(event.getSource().getLocation().getWorld());
 
         if (realm == null) return;
         ItemStack i = event.getItem();
@@ -361,7 +361,7 @@ public class RealmListener implements Listener {
             event.setUseItemInHand(Event.Result.DENY);
             return;
         }
-        RealmToken realm = REALMS.getRealm(p.getUniqueId());
+        RealmToken realm = REALMS.getToken(p.getUniqueId());
 
 
         if (tag.getString("orb").equalsIgnoreCase("flight")) {
@@ -434,7 +434,7 @@ public class RealmListener implements Listener {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         if (event.getTo().getY() <= 0) {
-            RealmToken realm = REALMS.getRealm(event.getPlayer().getLocation().getWorld());
+            RealmToken realm = REALMS.getToken(event.getPlayer().getLocation().getWorld());
 
             if (realm == null) return;
 
@@ -446,7 +446,7 @@ public class RealmListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        RealmToken realm = REALMS.getRealm(event.getPlayer().getLocation().getWorld());
+        RealmToken realm = REALMS.getToken(event.getPlayer().getLocation().getWorld());
 
         Player p = event.getPlayer();
 
@@ -477,7 +477,7 @@ public class RealmListener implements Listener {
         if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
         if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
-        RealmToken realm = REALMS.getRealm(event.getClickedBlock().getLocation());
+        RealmToken realm = REALMS.getToken(event.getClickedBlock().getLocation());
         if (realm == null) return;
 
         if (event.getClickedBlock().getType().equals(Material.PORTAL) && realm.getOwner().equals(event.getPlayer().getUniqueId()) ||
@@ -494,7 +494,7 @@ public class RealmListener implements Listener {
 
         if (p.getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
-        RealmToken realm = REALMS.getRealm(p.getLocation().getWorld());
+        RealmToken realm = REALMS.getToken(p.getLocation().getWorld());
 
         if (realm == null) return;
 
@@ -564,7 +564,7 @@ public class RealmListener implements Listener {
             return;
         }
 
-        RealmToken realm = REALMS.getRealm(p.getUniqueId());
+        RealmToken realm = REALMS.getToken(p.getUniqueId());
 
         if (!(FriendHandler.getInstance().areFriends(p, target.getUniqueId()))) {
             p.sendMessage(ChatColor.RED + "Cannot add a non-buddy to realm build list.");
@@ -616,7 +616,7 @@ public class RealmListener implements Listener {
         if (p.getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
 
-        RealmToken realm = REALMS.getRealm(p.getWorld());
+        RealmToken realm = REALMS.getToken(p.getWorld());
 
         if (realm == null) return;
 
@@ -892,7 +892,7 @@ public class RealmListener implements Listener {
         if (!event.getInventory().getName().equalsIgnoreCase("container.hopper") && event.getAction() == InventoryAction.PICKUP_ALL) {
             // Trying to grab all items from a chest in a realm.
             String realm_name = p.getWorld().getName();
-            if (!(realm_name.equalsIgnoreCase(p.getUniqueId().toString()) || (REALMS.getRealm(p.getLocation()).getBuilders().contains(p.getUniqueId())))) {
+            if (!(realm_name.equalsIgnoreCase(p.getUniqueId().toString()) || (REALMS.getToken(p.getLocation()).getBuilders().contains(p.getUniqueId())))) {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
                 return;
@@ -964,7 +964,7 @@ public class RealmListener implements Listener {
             }
 
             if (!CombatLog.isInCombat(event.getPlayer())) {
-                RealmToken realm = REALMS.getRealm(event.getFrom());
+                RealmToken realm = REALMS.getToken(event.getFrom());
 
                 if (realm == null) return;
 
@@ -981,7 +981,7 @@ public class RealmListener implements Listener {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in combat!");
             }
-        } else if (REALMS.getRealm(event.getPlayer().getLocation().getWorld()) != null) {
+        } else if (REALMS.getToken(event.getPlayer().getLocation().getWorld()) != null) {
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
                 Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
@@ -993,7 +993,7 @@ public class RealmListener implements Listener {
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
 
-            RealmToken realm = REALMS.getRealm(event.getPlayer().getLocation().getWorld());
+            RealmToken realm = REALMS.getToken(event.getPlayer().getLocation().getWorld());
             event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
         }
     }

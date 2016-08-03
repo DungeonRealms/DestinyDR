@@ -85,7 +85,7 @@ public class BlockListener implements Listener {
         if (nms.hasTag() && nms.getTag().hasKey("type"))
             event.setCancelled(true);
 
-        RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getWorld());
+        RealmToken realm = Realms.getInstance().getToken(event.getPlayer().getWorld());
         if (realm == null) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can't place Realm Chests here.");
             event.setCancelled(true);
@@ -314,7 +314,7 @@ public class BlockListener implements Listener {
             Material mat = block.getType();
 
             if (mat == Material.HOPPER && mat == Material.DISPENSER
-                    && ((block.getWorld().equals(Bukkit.getWorlds().get(0)) || block.getWorld().getName().contains("DUNGEON")) && Realms.getInstance().getRealm(block.getWorld()) == null))
+                    && ((block.getWorld().equals(Bukkit.getWorlds().get(0)) || block.getWorld().getName().contains("DUNGEON")) && Realms.getInstance().getToken(block.getWorld()) == null))
                 event.setCancelled(true);
 
             if (mat == Material.FURNACE || mat == Material.HOPPER_MINECART || mat == Material.TRAPPED_CHEST)

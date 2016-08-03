@@ -43,7 +43,7 @@ public class CommandResetRealm extends BasicCommand {
 
 
         if (Realms.getInstance().isRealmCached(player.getUniqueId())) {
-            RealmToken realm = Realms.getInstance().getRealm(player.getUniqueId());
+            RealmToken realm = Realms.getInstance().getToken(player.getUniqueId());
 
             if (realm.getStatus() != RealmStatus.OPENED && realm.getStatus() != RealmStatus.CLOSED) {
                 player.sendMessage(Realms.getInstance().getRealmStatusMessage(realm.getStatus()));

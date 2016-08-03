@@ -308,7 +308,7 @@ public interface Realms extends GenericMechanic {
      * @param uuid Owner of realm
      * @return Players realm.
      */
-    RealmToken getRealm(UUID uuid);
+    RealmToken getToken(UUID uuid);
 
     /**
      * @param uuid Owner of realm
@@ -320,12 +320,12 @@ public interface Realms extends GenericMechanic {
      * @param portalLocation Location
      * @return Players realm.
      */
-    RealmToken getRealm(Location portalLocation);
+    RealmToken getToken(Location portalLocation);
 
 
     /**
      * @param world Realm world
      * @return Players realm.
      */
-    RealmToken getRealm(World world);
+    RealmToken getToken(World world);
 }

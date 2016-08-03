@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CachedClientProvider<D> {
 
-    private Map<UUID, D> PLAYER_DATA_CACHE = new ConcurrentHashMap<>();
+    protected Map<UUID, D> PLAYER_DATA_CACHE = new ConcurrentHashMap<>();
 
     /**
      * @param player Player object
@@ -20,8 +20,13 @@ public abstract class CachedClientProvider<D> {
      */
     public D createIfNotExists(Player player) {
         if (!this.PLAYER_DATA_CACHE.containsKey(player.getUniqueId()))
-            this.PLAYER_DATA_CACHE.put(player.getUniqueId(), addPlayer(player));
+            this.PLAYER_DATA_CACHE.put(player.getUniqueId(), cache(player));
         return this.PLAYER_DATA_CACHE.get(player.getUniqueId());
+    }
+
+
+    public Map<UUID, D> getCache(){
+        return PLAYER_DATA_CACHE;
     }
 
     /**
@@ -45,6 +50,7 @@ public abstract class CachedClientProvider<D> {
      * @param uuid UUID
      */
     public void delete(UUID uuid) {
+        if(PLAYER_DATA_CACHE.containsKey(uuid))
         PLAYER_DATA_CACHE.remove(uuid);
     }
 
@@ -68,6 +74,6 @@ public abstract class CachedClientProvider<D> {
      * @param player Player
      * @return New player data
      */
-    public abstract D addPlayer(Player player);
+    protected abstract D cache(Player player, Object... params);
 }
 

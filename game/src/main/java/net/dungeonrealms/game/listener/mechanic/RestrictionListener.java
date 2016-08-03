@@ -18,6 +18,8 @@ import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.shops.Shop;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -28,10 +30,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -125,6 +124,20 @@ public class RestrictionListener implements Listener {
         }
     }
 
+    /**
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerClickShopInventory(InventoryClickEvent event) {
+        if (event.getAction() == InventoryAction.NOTHING) return;
+
+        if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+            event.setCancelled(true);
+        }
+        if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
+            event.setCancelled(true);
+        }
+    }
 
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
