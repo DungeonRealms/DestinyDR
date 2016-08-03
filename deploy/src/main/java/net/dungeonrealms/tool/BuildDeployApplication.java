@@ -60,7 +60,7 @@ public class BuildDeployApplication {
                 System.out.print("Unable to generate patch notes!");
             }
 
-            final URL GENERATED_PATCHNOTES = pastebinURL;
+            URL GENERATED_PATCHNOTES = pastebinURL;
             Arrays.stream(NOTIFICATION_CHANNELS).forEach(
                     channelID -> {
                         SlackChannel channel = session.findChannelById(channelID);
