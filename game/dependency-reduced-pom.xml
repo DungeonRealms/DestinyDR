@@ -72,6 +72,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot</artifactId>
+      <version>1.9.4-R0.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>1.9.4-R0.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>com.codingforcookies</groupId>
       <artifactId>ArmorEquipEvent</artifactId>
       <version>1.6.3</version>
@@ -82,6 +94,12 @@
           <groupId>org.spigotmc</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.inventivetalent</groupId>
+      <artifactId>bossbarapi</artifactId>
+      <version>2.4.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.inventivetalent.npclib</groupId>
@@ -162,6 +180,12 @@
           <groupId>rhino</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.vexsoftware</groupId>
+      <artifactId>votifier</artifactId>
+      <version>1.9</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

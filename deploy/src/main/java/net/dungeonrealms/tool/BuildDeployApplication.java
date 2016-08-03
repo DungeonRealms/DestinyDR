@@ -50,17 +50,25 @@ public class BuildDeployApplication {
             SlackSession session = SlackSessionFactory.createWebSocketSlackSession("xoxb-66008293216-GTP9wV6kFuw1FAk09qzXeaV2");
             session.connect();
 
+            URL pastebinURL = null;
+
+            System.out.println("[BUILD] Generating patch notes...");
+
+            try {
+                pastebinURL = getPatchNotes();
+            } catch (IOException | PasteException e) {
+                System.out.print("Unable to generate patch notes!");
+            }
+
+            final URL GENERATED_PATCHNOTES = pastebinURL;
             Arrays.stream(NOTIFICATION_CHANNELS).forEach(
                     channelID -> {
                         SlackChannel channel = session.findChannelById(channelID);
                         session.sendMessage(channel, "Dungeon Realms "  + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER + " has been deployed to the remote master FTP server.");
-                        session.sendMessage(channel, "This build will be propagated on the next reboot.");
+                        session.sendMessage(channel, "This deployed build will be propagated on the network when the servers reboot.");
 
-                        try {
-                            session.sendMessage(channel, "Latest patch notes for this build are available here " + getPatchNotes().toString());
-                        } catch (IOException | PasteException e) {
-                            System.out.print("Unable to generate patch notes!");
-                        }
+                        if(GENERATED_PATCHNOTES != null)
+                         session.sendMessage(channel, "Latest patch notes for this build are available here " + GENERATED_PATCHNOTES.toString());
                     }
             );
 
