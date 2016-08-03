@@ -38,7 +38,8 @@ import java.util.Map;
 /**
  * Created by Nick on 10/19/2015.
  */
-@Data
+@Getter
+@Setter
 public class GamePlayer {
 
     private Player T;
