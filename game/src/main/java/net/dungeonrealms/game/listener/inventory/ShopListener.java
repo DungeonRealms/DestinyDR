@@ -451,6 +451,7 @@ public class ShopListener implements Listener {
                 clicker.sendMessage(ChatColor.GRAY + "MAX: " + itemClicked.getAmount() + "X (" + itemPrice * itemClicked.getAmount() + "g), OR " + itemPrice + "g/each.");
                 Chat.listenForMessage(clicker, chat -> {
                     clicker.removeMetadata("pricing", DungeonRealms.getInstance());
+                    
                     if (chat.getMessage().equalsIgnoreCase("cancel") || chat.getMessage().equalsIgnoreCase("c")) {
                         clicker.sendMessage(ChatColor.RED + "Purchase of item " + ChatColor.BOLD + "CANCELLED");
                         return;
@@ -459,7 +460,8 @@ public class ShopListener implements Listener {
                         clicker.sendMessage(ChatColor.RED + "No space available in inventory. Type 'cancel' or clear some room.");
                         return;
                     }
-                    if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen) {
+                    if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen || 
+                    		(!ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
                         clicker.sendMessage(ChatColor.RED + "The shop is no longer available.");
                         clicker.closeInventory();
                         return;
