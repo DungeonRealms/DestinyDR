@@ -179,7 +179,7 @@ public class ArmorModifiers {
 	public class MainDPS extends ItemModifier {
 
         public MainDPS() {
-            super(Collections.singletonList(ItemType.LEGGINGS), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
+            super(Arrays.asList(ItemType.LEGGINGS, ItemType.CHESTPLATE), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)));
@@ -248,7 +248,7 @@ public class ArmorModifiers {
 	public class OtherDPS extends ItemModifier {
 
         public OtherDPS() {
-            super(Collections.singletonList(ItemType.HELMET), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
+            super(Arrays.asList(ItemType.HELMET, ItemType.BOOTS), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)));

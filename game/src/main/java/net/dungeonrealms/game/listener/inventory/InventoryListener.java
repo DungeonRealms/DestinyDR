@@ -157,7 +157,7 @@ public class InventoryListener implements Listener {
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
         if (!CommandModeration.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
 
@@ -169,7 +169,7 @@ public class InventoryListener implements Listener {
         CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onArmorSeeClose(InventoryCloseEvent event) {
         if (!CommandModeration.offline_armor_watchers.containsKey(event.getPlayer().getUniqueId())) return;
 
@@ -196,7 +196,7 @@ public class InventoryListener implements Listener {
         CommandModeration.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBankSeeClose(InventoryCloseEvent event) {
         if (!(CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
 
@@ -211,7 +211,7 @@ public class InventoryListener implements Listener {
         CommandModeration.offline_bank_watchers.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBinSeeClose(InventoryCloseEvent event) {
         if (!(CommandModeration.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
 

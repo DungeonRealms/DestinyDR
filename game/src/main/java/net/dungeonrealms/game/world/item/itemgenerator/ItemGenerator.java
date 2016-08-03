@@ -49,6 +49,8 @@ public class ItemGenerator {
     private boolean isUntradeable;
     private boolean isPermanentlyUntradeable;
 
+    private static Random rand = new Random();
+
 	public ItemGenerator setType(Item.ItemType type){
 		this.type = type;
 		return this;
@@ -128,9 +130,9 @@ public class ItemGenerator {
         }
         
         // if no values given, generate a random item
-        if(tier == null) tier = Item.ItemTier.values()[new Random().nextInt(Item.ItemTier.values().length - 1)];
-        if(type == null) type = Item.ItemType.values()[new Random().nextInt(Item.ItemType.values().length - 1)];
-        if(rarity == null) rarity = Item.ItemRarity.values()[new Random().nextInt(Item.ItemRarity.values().length - 1)];
+        if(tier == null) tier = Item.ItemTier.values()[rand.nextInt(Item.ItemTier.values().length - 1)];
+        if(type == null) type = Item.ItemType.values()[rand.nextInt(Item.ItemType.values().length - 1)];
+        if(rarity == null) rarity = Item.ItemRarity.values()[rand.nextInt(Item.ItemRarity.values().length - 1)];
 
         ItemStack item = isReroll && origItem != null && (RepairAPI.isItemArmorOrWeapon(origItem)) ? origItem : new ItemStack(type.getTier(tier));
         ItemMeta meta = item.getItemMeta().clone();
@@ -160,7 +162,7 @@ public class ItemGenerator {
 						String suffix = modifier.getSuffix(meta);
 						
 						if(bonus.getReplacement() != null && bonus.getReplacement().size() > 0){
-							ItemModifier replacement = ItemGenerator.modifiers.get(bonus.getReplacement().get(new Random().nextInt(bonus.getReplacement().size())));
+							ItemModifier replacement = ItemGenerator.modifiers.get(bonus.getReplacement().get(rand.nextInt(bonus.getReplacement().size())));
 							prefix = replacement.getPrefix(meta);
 							suffix = replacement.getSuffix(meta);
 						}
@@ -187,7 +189,7 @@ public class ItemGenerator {
 	            
 	            int belowChance = (mc.getChance() < 0) ? im.getChance() : mc.getChance();
 
-	            if (new Random().nextInt(100) < belowChance) {
+	            if (rand.nextInt(100) < belowChance) {
 	                order.add(mc);
 	            }
 	            else {
@@ -598,7 +600,7 @@ public class ItemGenerator {
                             int lower = Integer.parseInt(s.substring(0, s.indexOf("~")));
                             int upper = Integer.parseInt(s.substring(s.indexOf("~") + 1, s.indexOf(")")));
 
-                            int val = new Random().nextInt((upper - lower)) + lower;
+                            int val = rand.nextInt((upper - lower)) + lower;
                             if (line.contains("+") || line.contains("-")) {
                                 line = line.replace("(" + lower + "~" + upper + ")", String.valueOf(val));
                             } else {
