@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mastery;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
@@ -37,8 +38,7 @@ import java.util.Map;
 /**
  * Created by Nick on 10/19/2015.
  */
-@Getter
-@Setter
+@Data
 public class GamePlayer {
 
     private Player T;

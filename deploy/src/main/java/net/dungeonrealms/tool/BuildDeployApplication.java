@@ -50,14 +50,14 @@ public class BuildDeployApplication {
             SlackSession session = SlackSessionFactory.createWebSocketSlackSession("xoxb-66008293216-GTP9wV6kFuw1FAk09qzXeaV2");
             session.connect();
 
-            URL pastebinURL = null;
-
             System.out.println("[BUILD] Generating patch notes...");
+            URL pastebinURL = null;
 
             try {
                 pastebinURL = getPatchNotes();
             } catch (IOException | PasteException e) {
-                System.out.print("Unable to generate patch notes!");
+                System.out.println("Unable to generate patch notes!");
+                e.printStackTrace();
             }
 
             URL GENERATED_PATCHNOTES = pastebinURL;
@@ -92,7 +92,7 @@ public class BuildDeployApplication {
         }
 
         builder.append("Tool created by the one and only apollooooooo.");
-        return Pastebin.pastePaste("3e7fbbeaeb6b59a4f29b2f724e3c364f", builder.toString(), "Build " + Constants.BUILD_NUMBER + " Patch Notes");
+        return Pastebin.pastePaste("3e7fbbeaeb6b59a4f29b2f724e3c364f", builder.toString());
     }
 
 

@@ -20,9 +20,7 @@ import net.dungeonrealms.game.command.friend.FriendsCommand;
 import net.dungeonrealms.game.command.friend.RemoveCommand;
 import net.dungeonrealms.game.command.guild.*;
 import net.dungeonrealms.game.command.menu.*;
-import net.dungeonrealms.game.command.newcommands.GlobalBroadcastCommand;
 import net.dungeonrealms.game.command.KickAllCommand;
-import net.dungeonrealms.game.command.newcommands.RealmTestCommand;
 import net.dungeonrealms.game.command.StarterCommand;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
@@ -460,9 +458,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a test command.", Collections.singletonList("testinghall")));
 
             cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Provides a player with the starter kit."));
-            cm.registerCommand(new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm."));
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server."));
-            cm.registerCommand(new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcasts a global message across all shards!"));
 
             //FRIENDS
             cm.registerCommand(new AddCommand("add", "/<command> [args]", "Send Friend request!", Collections.singletonList("friend")));
