@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.listener.network;
 
+import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.DatabaseDriver;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
@@ -73,27 +75,21 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                     String address = in.readUTF();
 
                     GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().getDocumentFromAddress(address),
-                            consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                        try {
-                                            Document existingDoc = consumer.get();
-                                            if (existingDoc != null) {
-                                                long banTime = ((Document) existingDoc.get("punishments")).get("banned", Long.class);
-                                                UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
+                            consumer -> {
+                                try {
+                                    Document existingDoc = consumer.get();
+                                    if (existingDoc != null) {
+                                        UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
 
-                                                if (banTime == -1 || banTime != 0 && System.currentTimeMillis() < banTime) {
-                                                    String bannedMessage = PunishAPI.getBannedMessage(uuid);
-                                                    PunishAPI.kick(player.getName(), bannedMessage, doBefore -> {
-                                                    });
-
-                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_TIME, DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.BANNED_TIME), true);
-                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.BANNED_REASON, DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.BANNED_REASON), true);
-                                                }
-                                            }
-                                        } catch (InterruptedException | ExecutionException e) {
-                                            e.printStackTrace();
-                                        }
+                                        if (PunishAPI.isBanned(uuid))
+                                            PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
+                                        ;
                                     }
-                            ));
+                                } catch (InterruptedException | ExecutionException e) {
+                                    e.printStackTrace();
+                                }
+
+                            } );
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
                     return;
