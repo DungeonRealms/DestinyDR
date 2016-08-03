@@ -21,11 +21,12 @@ import java.util.regex.Pattern;
 public class BuildDeployApplication {
 
     public static void main(String[] args) throws IOException {
+
         File BUILD_JAR = new File(System.getProperty("user.dir"), "game/target/DungeonRealms.jar");
         String REMOTE_LOCATION = "/update/DungeonRealms.jar";
         String[] NOTIFICATION_CHANNELS = new String[]{"G191V775M", "C1H00KN6S"};
 
-        System.out.println("[BUILD] Begin build application for DungeonRealms " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER);
+        System.out.println("[BUILD] Initiating build application tool for DungeonRealms " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER);
 
         InputStream in =  new FileInputStream(BUILD_JAR);
 
@@ -38,11 +39,13 @@ public class BuildDeployApplication {
         ftpClient.enterLocalPassiveMode();
         ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
+        System.out.println("[BUILD] Charging me lazer,,,");
         System.out.println("[BUILD] Uploading Build " + Constants.BUILD_NUMBER + " to remote master FTP server...");
 
+        final long start = System.currentTimeMillis();
 
         if(ftpClient.storeFile(REMOTE_LOCATION, in)) {
-            System.out.println("[BUILD] Successfully deployed Build " + Constants.BUILD_NUMBER  + " to remote master FTP server");
+            System.out.println("[BUILD] Successfully deployed Build " + Constants.BUILD_NUMBER  + " to remote master FTP server (Took " + (System.currentTimeMillis() - start) + "ms)");
 
             SlackSession session = SlackSessionFactory.createWebSocketSlackSession("xoxb-66008293216-GTP9wV6kFuw1FAk09qzXeaV2");
             session.connect();
@@ -51,15 +54,16 @@ public class BuildDeployApplication {
                     channelID -> {
                         SlackChannel channel = session.findChannelById(channelID);
                         session.sendMessage(channel, "DungeonRealms Build " + Constants.BUILD_NUMBER + " has been deployed to the remote master FTP server.");
+                        session.sendMessage(channel, "This build will be propagated on the next reboot.");
 
                         try {
-                            session.sendMessage(channel, "Latest patch notes are available here " + getPatchNotes().toString());
+                            session.sendMessage(channel, "Latest patch notes for this build are available here " + getPatchNotes().toString());
                         } catch (IOException | PasteException e) {
-                            System.out.print("Unable to generate patch notes");
+                            System.out.print("Unable to generate patch notes!");
                         }
-
                     }
             );
+
             System.exit(1);
         }
     }
