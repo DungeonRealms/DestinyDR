@@ -147,7 +147,7 @@ public class AntiCheat implements GenericMechanic {
                     if (GameAPI.isOrb(i))
                         orbCount += i.getAmount();
                     else if (BankMechanics.getInstance().isBankNote(i))
-                        gemCount += BankMechanics.getInstance().getNoteValue(i);
+                        gemCount += BankMechanics.getInstance().getNoteValue(i) * i.getAmount();
                     else if (ItemManager.isEnchantScroll(i))
                         enchantCount += i.getAmount();
                     else if (ItemManager.isProtectScroll(i))
