@@ -355,6 +355,7 @@ public class DatabaseAPI {
                                         .append("tradeChat", true)
                                         .append("globalChat", false)
                                         .append("receiveMessage", true)
+                                        .append("soundtrack", true)
                                         .append("pvp", false)
                                         .append("duel", true)
                                         .append("chaoticPrevention", true)

@@ -80,6 +80,7 @@ public enum EnumData {
     TOGGLE_PVP("toggles.pvp"),
     TOGGLE_DUEL("toggles.duel"),
     TOGGLE_CHAOTIC_PREVENTION("toggles.chaoticPrevention"),
+    TOGGLE_SOUNDTRACK("toggles.soundtrack"),
     TOGGLE_TIPS("toggles.tips"),
     TOGGLE_VANISH("toggles.vanish"), // for GMs only
 

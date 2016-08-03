@@ -2,6 +2,8 @@ package net.dungeonrealms.game.soundtrack;
 
 import lombok.NoArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -118,6 +120,8 @@ public class Soundtrack implements GenericMechanic, Listener {
     @EventHandler
     public void onRegion(PlayerEnterRegionEvent event) {
         Player player = event.getPlayer();
+
+        if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_SOUNDTRACK, player.getUniqueId())) return;
 
         if (isReceivingSong(player))
             stopPlaying(player);
