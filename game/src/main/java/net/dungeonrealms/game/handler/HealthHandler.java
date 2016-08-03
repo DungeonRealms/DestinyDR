@@ -471,6 +471,12 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
+        if (CombatLog.isInCombat(player)) {
+            CombatLog.updateCombat(player);
+        } else {
+            CombatLog.addToCombat(player);
+        }
+
         LivingEntity leAttacker = null;
         if (damager != null) {
             if (damager instanceof Player) {
@@ -479,11 +485,6 @@ public class HealthHandler implements GenericMechanic {
                 leAttacker = (LivingEntity) damager;
             } else if (damager instanceof Projectile) {
                 leAttacker = (LivingEntity) ((Projectile) damager).getShooter();
-            }
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.updateCombat(player);
-            } else {
-                CombatLog.addToCombat(player);
             }
         }
 
