@@ -459,7 +459,8 @@ public class ShopListener implements Listener {
                         clicker.sendMessage(ChatColor.RED + "No space available in inventory. Type 'cancel' or clear some room.");
                         return;
                     }
-                    if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen) {
+                    if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen ||
+                    		!(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
                         clicker.sendMessage(ChatColor.RED + "The shop is no longer available.");
                         clicker.closeInventory();
                         return;
