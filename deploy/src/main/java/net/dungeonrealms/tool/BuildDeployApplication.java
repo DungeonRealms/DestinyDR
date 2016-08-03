@@ -71,7 +71,7 @@ public class BuildDeployApplication {
                          session.sendMessage(channel, "Latest patch notes for this build are available here " + GENERATED_PATCHNOTES.toString());
                     }
             );
-
+            session.disconnect();
             System.exit(1);
         }
     }

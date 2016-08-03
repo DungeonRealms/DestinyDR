@@ -1,10 +1,11 @@
-package net.dungeonrealms.lobby.commands;
+package net.dungeonrealms.game.command;
 
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-import net.dungeonrealms.lobby.Lobby;
-import net.dungeonrealms.lobby.ShardSelector;
+import net.dungeonrealms.game.player.menu.ShardSwitcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,9 +14,12 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+import static net.dungeonrealms.GameAPI.handleLogout;
+
 /**
- * Class written by APOLLOSOFTWARE.IO on 7/13/2016
+ * Created by Brad on 09/06/2016.
  */
+
 public class CommandShard extends BaseCommand {
 
     public CommandShard(String command, String usage, String description, List<String> aliases) {
@@ -28,16 +32,21 @@ public class CommandShard extends BaseCommand {
         Player player = (Player) sender;
 
         if (args.length == 0 || !Rank.isGM(player)) {
-            new ShardSelector(player).open(player);
+            new ShardSwitcher(player).open(player);
             return true;
         }
 
 
         if (args.length > 0) {
-            player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
+            GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
+            GameAPI.submitAsyncCallback(() -> handleLogout(player.getUniqueId(), false),
+                    consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Lobby.getInstance(),
-                    () -> BungeeUtils.sendToServer(player.getName(), args[0]), 10);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                                () -> BungeeUtils.sendToServer(player.getName(), args[0]), 10);
+                    }));
+
         }
 
         return true;
