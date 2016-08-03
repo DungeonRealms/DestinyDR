@@ -106,10 +106,8 @@ public class Chat {
             		GameChat.getFormattedName(playerName) + ":" + ChatColor.WHITE + finalMessage);
             player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2f, 1.2f);
 
-            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.GRAY.toString() +
-                    ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
-                    .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
-                    finalMessage));
+            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "TO " + receivingShard + " " +
+            		GameChat.getFormattedName(playerName) + ":" + ChatColor.WHITE + finalMessage));
             GameAPI.sendNetworkMessage("BroadcastSoundPlayer", playerName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
         });
     }
