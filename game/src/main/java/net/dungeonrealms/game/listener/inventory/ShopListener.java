@@ -27,6 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -51,15 +52,27 @@ public class ShopListener implements Listener {
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
         if (event.getPlayer().hasMetadata("pricing")) return;
+        if (event.getPlayer().getInventory().firstEmpty() == -1) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Please clear some inventory space before your browse this shop.");
+            return;
+        }
         if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
             event.getPlayer().openInventory(shop.getInventory());
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
+            event.getPlayer().setCanPickupItems(false);
         } else {
             if (shop.isopen) {
                 event.getPlayer().openInventory(shop.getInventory());
                 event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
+                event.getPlayer().setCanPickupItems(false);
             }
         }
+    }
+
+    @EventHandler
+    public void playerCloseShopInventory(InventoryCloseEvent event) {
+        if (!event.getInventory().getTitle().contains("@")) return;
+        event.getPlayer().setCanPickupItems(true);
     }
 
     /**
@@ -98,7 +111,7 @@ public class ShopListener implements Listener {
     /**
      * @param event
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void playerClickShopInventory(InventoryClickEvent event) {
         if (!event.getInventory().getTitle().contains("@")) return;
 
@@ -143,7 +156,7 @@ public class ShopListener implements Listener {
                     }
 
                     ItemStack stackClicked = event.getCurrentItem().clone();
-                    event.setCurrentItem(null);
+                    event.setCurrentItem(new ItemStack(Material.AIR));
                     if (BankMechanics.shopPricing.containsKey(clicker.getName())) {
                         clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                     }
@@ -176,6 +189,7 @@ public class ShopListener implements Listener {
                             clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
                             clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                             BankMechanics.shopPricing.remove(clicker.getName());
+                            clicker.updateInventory();
                             return;
                         } else {
                             if (BankMechanics.shopPricing.get(clicker.getName()) == null) return;
@@ -205,15 +219,18 @@ public class ShopListener implements Listener {
                                         ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
                                         ChatColor.YELLOW + "Left Click the item to remove it from your shop."});
                                 BankMechanics.shopPricing.remove(clicker.getName());
+                                clicker.updateInventory();
                             } else {
                                 clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                                 BankMechanics.shopPricing.remove(clicker.getName());
                                 clicker.sendMessage("There is no room for this item in your Shop");
+                                clicker.updateInventory();
                             }
                         }
                     }, player -> {
                         player.getInventory().addItem(BankMechanics.shopPricing.get(player.getName()));
                         BankMechanics.shopPricing.remove(player.getName());
+                        clicker.updateInventory();
                     });
                 } else {
                     ItemStack stackClicked = event.getCurrentItem();
@@ -257,7 +274,7 @@ public class ShopListener implements Listener {
                             return;
                         }
                         event.setCancelled(true);
-                        event.setCursor(null);
+                        event.setCursor(new ItemStack(Material.AIR));
                         int playerSlot = clicker.getInventory().firstEmpty();
                         if (BankMechanics.shopPricing.containsKey(clicker.getName())) {
                             clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
@@ -424,7 +441,7 @@ public class ShopListener implements Listener {
             if (!shop.isopen) {
                 if (event.getCursor() != null) {
                     clicker.getInventory().addItem(event.getCursor());
-                    event.setCursor(null);
+                    event.setCursor(new ItemStack(Material.AIR));
                 }
                 clicker.closeInventory();
                 clicker.sendMessage(ChatColor.RED + "The shop has closed");

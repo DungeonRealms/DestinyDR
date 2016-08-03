@@ -63,7 +63,6 @@ public class GamePlayer {
 
     private boolean ableToDrop;
     private boolean ableToSuicide;
-    private boolean ableToPickup;
 
     private String lastMessager;
 
@@ -79,7 +78,6 @@ public class GamePlayer {
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
         this.isTargettable = true;
         this.isInvulnerable = false;
-        this.ableToPickup = true;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
     }

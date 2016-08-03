@@ -336,8 +336,6 @@ public class BlockListener implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
-        final GamePlayer gp = GameAPI.getGamePlayer(player);
-        gp.setAbleToPickup(false);
         if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) {
             player.sendMessage(ChatColor.YELLOW + "Equip the item to repair and " + ChatColor.UNDERLINE + "RIGHT CLICK" + ChatColor.RESET + ChatColor.YELLOW + " the ANVIL.");
             player.sendMessage(ChatColor.GRAY + "Or, if you have an item scrap, drag it on top of the item in your inventory.");
@@ -423,11 +421,12 @@ public class BlockListener implements Listener {
             repairMap.put(block.getLocation(), repair);
 
             String name = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : StringUtils.capitaliseAllWords(item.getType().name().toLowerCase().replace("_", ""));
+            player.setCanPickupItems(false);
             player.sendMessage(ChatColor.YELLOW + "It will cost " + ChatColor.GREEN + ChatColor.BOLD.toString() + newCost + "G" + ChatColor.YELLOW + " to repair '" + name + ChatColor.YELLOW + "'");
             player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Y" + ChatColor.GRAY + " to confirm this repair. Or type " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " to cancel.");
             Chat.listenForMessage(player, chat -> {
                 if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
-                    gp.setAbleToPickup(true);
+                    player.setCanPickupItems(true);
                     //Not enough? cya.
                     if (BankMechanics.getInstance().getTotalGemsInInventory(player) < newCost) {
                         player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
@@ -457,9 +456,10 @@ public class BlockListener implements Listener {
                     returnItem(player, item);
                     repairMap.remove(block.getLocation());
                     player.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
+                    player.setCanPickupItems(true);
                 }
             }, p -> {
-                gp.setAbleToPickup(true);
+                player.setCanPickupItems(true);
                 itemEntity.remove();
                 returnItem(player, item);
                 repairMap.remove(block.getLocation());
