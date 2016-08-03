@@ -76,6 +76,7 @@ import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
+import net.dungeonrealms.tool.DupedItemsRemover;
 import net.dungeonrealms.tool.PatchTools;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -163,6 +164,7 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onEnable() {
+//        new DupedItemsRemover().startInitialization();
         SERVER_START_TIME = System.currentTimeMillis();
 
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
