@@ -39,7 +39,7 @@ public class BuildDeployApplication {
         ftpClient.enterLocalPassiveMode();
         ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
-        System.out.println("[BUILD] Charging me lazer,,,");
+        System.out.println("[BUILD] Charging me laser...");
         System.out.println("[BUILD] Uploading Build " + Constants.BUILD_NUMBER + " to remote master FTP server...");
 
         final long start = System.currentTimeMillis();
@@ -53,7 +53,7 @@ public class BuildDeployApplication {
             Arrays.stream(NOTIFICATION_CHANNELS).forEach(
                     channelID -> {
                         SlackChannel channel = session.findChannelById(channelID);
-                        session.sendMessage(channel, "DungeonRealms Build " + Constants.BUILD_NUMBER + " has been deployed to the remote master FTP server.");
+                        session.sendMessage(channel, "Dungeon Realms "  + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER + " has been deployed to the remote master FTP server.");
                         session.sendMessage(channel, "This build will be propagated on the next reboot.");
 
                         try {
@@ -83,6 +83,7 @@ public class BuildDeployApplication {
             builder.append(str.replace("<build>", Constants.BUILD_NUMBER)).append("\n");
         }
 
+        builder.append("Tool created by the one and only apollooooooo.");
         return Pastebin.pastePaste("3e7fbbeaeb6b59a4f29b2f724e3c364f", builder.toString(), "Build " + Constants.BUILD_NUMBER + " Patch Notes");
     }
 
