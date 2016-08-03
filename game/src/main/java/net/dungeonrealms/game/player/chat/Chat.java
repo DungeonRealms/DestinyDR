@@ -102,9 +102,8 @@ public class Chat {
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
-                    (playerName) + ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " +
-                    ChatColor.WHITE + finalMessage);
+            player.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "TO " + receivingShard + " " +
+            		GameChat.getFormattedName(playerName) + ":" + ChatColor.WHITE + finalMessage);
             player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2f, 1.2f);
 
             GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.GRAY.toString() +
