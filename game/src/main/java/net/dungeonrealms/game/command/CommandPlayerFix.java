@@ -49,7 +49,7 @@ public class CommandPlayerFix extends BaseCommand {
         if (wholeShard) {
             String shard = args[0].toLowerCase();
             GameAPI.submitAsyncCallback(() -> DatabaseDriver.playerData.updateMany(Filters.eq("info.current", shard),
-                    new Document(EnumOperators.$SET.getUO(), new Document("info.current", false))), result -> {
+                    new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))), result -> {
                 try {
                     if (result.get().wasAcknowledged()) {
                         sender.sendMessage(ChatColor.YELLOW + "Set " + result.get().getModifiedCount() + " players' " +
