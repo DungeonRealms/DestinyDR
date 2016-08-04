@@ -819,8 +819,6 @@ public class GameAPI {
                 }
             }
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, async);
-
         MountUtils.inventories.remove(uuid);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis(), async);
         EnergyHandler.getInstance().handleLogoutEvents(player);
@@ -854,6 +852,8 @@ public class GameAPI {
         if (Affair.getInstance().isInParty(player)) {
             Affair.getInstance().removeMember(player, false);
         }
+
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, async);
 
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
