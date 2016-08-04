@@ -45,6 +45,7 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
+import java.net.ConnectException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -525,9 +526,10 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             try {
                 ftpClient.connect(Constants.FTP_HOST_NAME, Constants.FTP_PORT);
                 boolean login = ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
-                if (login) {
-                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-                }
+
+                if (login) Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
+                else throw new ConnectException("Failed to download realm for " + uuid.toString());
+
                 ftpClient.enterLocalPassiveMode();
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                 Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
