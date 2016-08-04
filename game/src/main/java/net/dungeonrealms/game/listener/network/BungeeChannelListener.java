@@ -83,7 +83,6 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
 
                                         if (PunishAPI.isBanned(uuid))
                                             PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
-                                        ;
                                     }
                                 } catch (InterruptedException | ExecutionException e) {
                                     e.printStackTrace();

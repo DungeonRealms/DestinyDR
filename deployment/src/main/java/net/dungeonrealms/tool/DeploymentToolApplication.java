@@ -67,7 +67,6 @@ public class DeploymentToolApplication {
                 pastebinURL = getPatchNotes();
             } catch (IOException | PasteException e) {
                 System.out.println("Unable to generate patch notes!");
-                e.printStackTrace();
             }
 
             if (pastebinURL != null)
