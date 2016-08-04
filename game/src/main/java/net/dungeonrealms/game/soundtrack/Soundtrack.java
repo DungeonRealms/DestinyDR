@@ -35,6 +35,8 @@ public class Soundtrack implements GenericMechanic, Listener {
     protected static final long LOOP_DELAY = 95000L;
     protected static final long START_DELAY = 15000L;
 
+    private static final byte DEFAULT_VOLUME = 50;
+
     protected HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
     protected HashMap<String, Byte> playerVolume = new HashMap<String, Byte>();
 
@@ -76,7 +78,7 @@ public class Soundtrack implements GenericMechanic, Listener {
     public static byte getPlayerVolume(Player p) {
         Byte b = instance.playerVolume.get(p.getName());
         if (b == null) {
-            b = 100;
+            b = DEFAULT_VOLUME;
             instance.playerVolume.put(p.getName(), b);
         }
         return b;
