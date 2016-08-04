@@ -114,7 +114,7 @@ public class Soundtrack implements GenericMechanic, Listener {
 
     @Override
     public void stopInvocation() {
-
+        PLAYERS.values().stream().forEach(SongPlayer::destroy);
     }
 
     @EventHandler
