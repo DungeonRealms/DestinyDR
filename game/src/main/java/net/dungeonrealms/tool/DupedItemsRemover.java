@@ -1,12 +1,14 @@
 package net.dungeonrealms.tool;
 
 import com.mongodb.Block;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.anticheat.AntiCheat;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import org.apache.commons.lang.time.DurationFormatUtils;
@@ -24,6 +26,10 @@ import java.util.*;
 public class DupedItemsRemover implements GenericMechanic {
     private static Map<String, Set<String>> uids = new HashMap<>(20000);
     private static Map<ItemStack, Set<String>> dupedItems = new HashMap<>();
+    private static int playerGems = 0;
+    private static int playerOrbs = 0;
+    private static Map<String, Integer> playersWithHighGems = new HashMap<>();
+    private static Map<String, Integer> playersWithHighOrbs = new HashMap<>();
 
     public void startInitialization() {
         final int[] totalDupedItemsFound = {0};
@@ -49,6 +55,8 @@ public class DupedItemsRemover implements GenericMechanic {
                 UUID uuid = UUID.fromString(infoDoc.get("uuid", String.class));
 
                 if (name != null) System.out.println("Checking player " + name);
+
+                playerGems = infoDoc.get("gems", Integer.class);
 
                 Document invDoc = doc.get("inventory", Document.class);
 
@@ -108,6 +116,10 @@ public class DupedItemsRemover implements GenericMechanic {
                 }
 
                 totalDupedItemsFound[0] += dupedItemsFound;
+                if (playerGems > 50000) playersWithHighGems.put(name, playerGems);
+                if (playerOrbs > 32) playersWithHighOrbs.put(name, playerOrbs);
+                playerGems = 0;
+                playerOrbs = 0;
             }
         });
         String formattedTime = DurationFormatUtils.formatDurationWords(System.currentTimeMillis() -
@@ -123,11 +135,24 @@ public class DupedItemsRemover implements GenericMechanic {
             players = players.substring(0, players.length() - 2);
             System.out.println(entry.getKey().getItemMeta().getDisplayName() + " found on player(s) " + players);
         }
+        System.out.println("Players with more than 50k gems: ");
+        for (Map.Entry<String, Integer> entry : playersWithHighGems.entrySet()) {
+            System.out.println("Player: " + entry.getKey() + " Gems: " + entry.getValue());
+        }
+        System.out.println("Players with more than 32 orbs: ");
+        for (Map.Entry<String, Integer> entry : playersWithHighOrbs.entrySet()) {
+            System.out.println("Player: " + entry.getKey() + " Orbs: " + entry.getValue());
+        }
     }
 
     private static int addGearUIDSAndCheckDupes(Inventory inv, EnumData data, UUID uuid, String name) {
         int dupedItemsFound = 0;
         for (ItemStack i : inv.getContents()) {
+            if (i == null || i.getType() == Material.AIR) continue;
+            if (GameAPI.isOrb(i))
+                playerOrbs += i.getAmount();
+            else if (BankMechanics.getInstance().isBankNote(i))
+                playerGems += BankMechanics.getInstance().getNoteValue(i) * i.getAmount();
             if (!RepairAPI.isItemArmorOrWeapon(i)) continue;
             final String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
             if (uniqueEpochIdentifier == null) continue;
