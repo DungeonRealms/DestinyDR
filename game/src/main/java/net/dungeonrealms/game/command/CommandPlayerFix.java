@@ -35,7 +35,26 @@ public class CommandPlayerFix extends BaseCommand {
 		}
 
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Syntax: /pfix playername|shard");
+            sender.sendMessage(ChatColor.RED + "Syntax: /pfix <playername|shard|all>");
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("all")) {
+            GameAPI.submitAsyncCallback(() -> DatabaseDriver.playerData.updateMany(Filters.eq("info.isPlaying", true),
+                    new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))), result -> {
+                try {
+                    if (result.get().wasAcknowledged()) {
+                        sender.sendMessage(ChatColor.YELLOW + "Set " + result.get().getModifiedCount() + " players' " +
+                                "statuses to offline.");
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Operation failed: database error.");
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            });
             return true;
         }
 

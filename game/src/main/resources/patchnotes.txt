@@ -9,6 +9,7 @@ Build <build>
 - Temporally disabled the Varenglade dungeon.
 
 &4Bug Fixes&0
+- Fixed some sharding synchronization issues.
 - Chestplates and boots no longer always spawn with armor.
 - Fixed a bug where you could take items from shops without paying.
 - Fixed some duplication glitches.

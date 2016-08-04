@@ -5,6 +5,7 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mongodb.client.model.Filters;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -62,6 +63,7 @@ import net.dungeonrealms.network.GameClient;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
+import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -379,6 +381,8 @@ public class GameAPI {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
+            DatabaseDriver.playerData.updateMany(Filters.eq("info.current", DungeonRealms.getInstance().bungeeName), new
+                    Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
             DungeonRealms.getInstance().mm.stopInvocation();
             AsyncUtils.pool.shutdown();
 
