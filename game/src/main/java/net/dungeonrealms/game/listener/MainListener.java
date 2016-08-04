@@ -177,11 +177,14 @@ public class MainListener implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
         if ((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
-            event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
-                    + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
-                    + "If you have just recently changed servers, your character data is being synced -- " + ChatColor.UNDERLINE.toString()
-                    + "wait a few seconds" + ChatColor.GRAY.toString() + " before reconnecting.");
-            return;
+            if (shard != "" && shard != null) {
+                event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
+
+                        + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
+                        + "If you have just recently changed servers, your character data is being synced -- " + ChatColor.UNDERLINE.toString()
+                        + "wait a few seconds" + ChatColor.GRAY.toString() + " before reconnecting.");
+                return;
+            }
         }
         DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
 

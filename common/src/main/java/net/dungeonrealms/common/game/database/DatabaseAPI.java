@@ -271,6 +271,7 @@ public class DatabaseAPI {
         if (doc == null)
             return "";
         String name = ((Document) doc.get("info")).get("current", String.class);
+        if (name == null) return "";
         return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
     }
 
