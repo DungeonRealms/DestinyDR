@@ -21,12 +21,16 @@ import java.util.function.Consumer;
  * Created by Nick on 8/29/2015.
  */
 
+@SuppressWarnings("unchecked")
 public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
-    public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+
+    public volatile Map<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+
     private volatile Map<String, String> CACHED_UUIDS = new ConcurrentHashMap<>();
-    private final ExecutorService serverExecutorThread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("MONGODB Server Collection Thread").build());
+
+    private final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("MONGODB Server Collection Thread").build());
 
     public static DatabaseAPI getInstance() {
         if (instance == null) {
@@ -121,7 +125,7 @@ public class DatabaseAPI {
         uo.upsert(true);
 
         if (async)
-            serverExecutorThread.submit(() -> DatabaseDriver.shardData.updateOne(Filters.eq("shard", shard), new
+            SERVER_EXECUTOR_SERVICE.submit(() -> DatabaseDriver.shardData.updateOne(Filters.eq("shard", shard), new
                     Document(EO.getUO(), new Document(variable, value))), uo);
         else {
             UpdateResult result = DatabaseDriver.shardData.updateOne(Filters.eq("shard", shard), new Document(EO.getUO(), new Document(variable, value)), uo);
@@ -420,6 +424,6 @@ public class DatabaseAPI {
 
 
     public void stopInvocation() {
-        serverExecutorThread.shutdown();
+        SERVER_EXECUTOR_SERVICE.shutdown();
     }
 }

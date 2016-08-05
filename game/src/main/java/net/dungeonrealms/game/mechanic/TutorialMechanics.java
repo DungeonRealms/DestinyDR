@@ -39,10 +39,10 @@ public class TutorialMechanics implements GenericMechanic, Listener {
             p.sendMessage("");
             p.sendMessage("");
             p.sendMessage("");
-            p.sendMessage(ChatColor.YELLOW + "                    Welcome to " + ChatColor.UNDERLINE + "Dungeon Realms!");
+            p.sendMessage(ChatColor.GOLD + "                    Welcome to " + ChatColor.UNDERLINE + "Dungeon Realms!");
 
 
-            p.sendMessage(ChatColor.GRAY + "Before you dive into the mystical world of Andalucia and discover all of its wonders, you are encouraged to go through this short introductory " + ChatColor.YELLOW + "Tutorial Island.");
+            p.sendMessage(ChatColor.GRAY + "Dive into the mystical world of Andalucia and discover all of its wonders.");
             p.sendMessage("");
             p.sendMessage(ChatColor.GRAY + "You'll get a crash course on game mechanics and " + ChatColor.UNDERLINE + "get free loot" + ChatColor.GRAY + " just for completing it!");
             p.sendMessage("");
