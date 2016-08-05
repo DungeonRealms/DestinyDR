@@ -4,6 +4,7 @@ import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.tab.Column;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -40,12 +41,23 @@ public class GuildTabColumn extends Column {
 
                     List<String> guildMembers = new ArrayList<>();
 
-                    GuildMechanics.getInstance().getAllOnlineGuildMembers(GuildDatabaseAPI.get().getGuildOf(player.getUniqueId())).stream()
+                    String guild = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+
+                    GuildMechanics.getInstance().getAllOnlineGuildMembers(guild).stream()
                             .filter(uuid -> !player.getUniqueId().equals(uuid))
-                            .forEach(uuid -> guildMembers.add(Bukkit.getPlayer(uuid).getName()));
+                            .forEach(uuid -> {
+                                String prefix = "";
+
+                                if(GuildDatabaseAPI.get().isOwner(uuid, guild))
+                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA +  "Owner" + ChatColor.GRAY+ "]";
+                                else if(GuildDatabaseAPI.get().isOfficer(uuid, guild))
+                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA +  "Officer" + ChatColor.GRAY+ "]";
+
+                                guildMembers.add(prefix +  ChatColor.GREEN + Bukkit.getPlayer(uuid).getName());
+                            });
 
                     if (guildMembers.isEmpty()) if (cursor == 0)
-                        return ChatColor.RED + "No friends online";
+                        return ChatColor.RED + "No guild members on this shard";
                     else return "";
 
                     try {
@@ -55,7 +67,7 @@ public class GuildTabColumn extends Column {
                         return "";
                     }
 
-                    return ChatColor.GREEN + guildMembers.get(cursor);
+                    return  guildMembers.get(cursor);
                 }
             });
         }

@@ -42,7 +42,7 @@ public class FriendTabColumn extends Column {
                     friends.stream().filter(name -> Bukkit.getPlayer(name) == null).forEach(friends::remove);
 
                     if (friends.isEmpty()) if (cursor == 0)
-                        return ChatColor.RED + "No friends online";
+                        return ChatColor.RED + "No friends on this shard";
                     else return "";
                     try {
                         if (friends.get(cursor) == null)
