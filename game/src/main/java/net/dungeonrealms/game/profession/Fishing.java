@@ -6,17 +6,21 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -1055,11 +1059,181 @@ public class Fishing implements GenericMechanic {
         return false;
     }
 
-    public boolean isCustomRawFish(ItemStack is) {
+    public static boolean isCustomRawFish(ItemStack is) {
         if (is != null && is.getType() == Material.RAW_FISH && is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()) {
             return true;
         }
         return false;
+    }
+
+    public static void restoreFood(Player p, ItemStack fish) {
+        List<String> lore = fish.getItemMeta().getLore();
+        int food_to_restore = 0;
+
+        for (String s : lore) {
+            if (s.contains("% HUNGER")) {
+                double percent = Integer.parseInt(s.substring(s.indexOf("-") + 1, s.indexOf("%")));
+                int local_amount = (int) ((percent / 100.0D) * 20D);
+                food_to_restore += local_amount;
+            }
+        }
+
+        int cur_food = p.getFoodLevel();
+        if (cur_food + food_to_restore >= 20) {
+            p.setFoodLevel(20);
+            p.setSaturation(20);
+        } else {
+            p.setFoodLevel(cur_food + food_to_restore);
+            p.setSaturation(p.getSaturation() + food_to_restore);
+        }
+    }
+
+    public static void applyFishBuffs(Player p, ItemStack fish) {
+        List<String> lore = fish.getItemMeta().getLore();
+
+        for (String s : lore) {
+            s = ChatColor.stripColor(s);
+            if (s.contains("% HP (instant)")) {
+                double percent_to_heal = Double.parseDouble(s.substring(s.indexOf("+") + 1, s.indexOf("%"))) / 100;
+                double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(p);
+                int amount_to_heal = (int) Math.round((percent_to_heal * max_hp));
+                double current_hp = HealthHandler.getInstance().getPlayerHPLive(p);
+                if (current_hp + 1 > max_hp) {
+                    continue;
+                }
+                if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
+                    p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + amount_to_heal + ChatColor.BOLD + " HP"
+                            + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " ["
+                            + ((int) current_hp + amount_to_heal) + "/" + (int) max_hp + "HP]");
+                }
+
+                if ((current_hp + amount_to_heal) >= max_hp) {
+                    p.setHealth(20);
+                    HealthHandler.getInstance().setPlayerHPLive(p, (int) max_hp);
+                } else if (p.getHealth() <= 19 && ((current_hp + amount_to_heal) < max_hp)) {
+                    HealthHandler.getInstance().setPlayerHPLive(p, HealthHandler.getInstance().getPlayerHPLive(p) + amount_to_heal);
+                    double health_percent = (HealthHandler.getInstance().getPlayerHPLive(p) + amount_to_heal) / max_hp;
+                    double new_health_display = health_percent * 20;
+                    if (new_health_display > 19) {
+                        if (health_percent >= 1) {
+                            new_health_display = 20;
+                        } else if (health_percent < 1) {
+                            new_health_display = 19;
+                        }
+                    }
+                    if (new_health_display < 1) {
+                        new_health_display = 1;
+                    }
+                    p.setHealth((int) new_health_display);
+
+                }
+            } else if (s.startsWith("REGEN")) {
+                double percent_to_regen = Double.parseDouble(s.substring(s.indexOf(" ") + 1, s.indexOf("%"))) / 100.0D;
+                int regen_interval = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("s")));
+                double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(p);
+
+                final int amount_to_regen_per_interval = (int) (max_hp * percent_to_regen) / regen_interval;
+                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + amount_to_regen_per_interval + ChatColor.BOLD
+                        + " HP/s" + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + regen_interval + "s]");
+                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) percent_to_regen);
+
+                p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (int) (regen_interval + (regen_interval * 0.25)), 0));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    p.removePotionEffect(PotionEffectType.REGENERATION);
+                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) -percent_to_regen);
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "   " + amount_to_regen_per_interval + " HP/s " + ChatColor.RED + "FROM "
+                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                }, regen_interval * 20L);
+            } else if (s.startsWith("SPEED")) {
+                String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
+                int effect_tier = 0;
+                if (tier_symbol.equalsIgnoreCase("II")) {
+                    effect_tier = 1;
+                }
+                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effect_time * 20, effect_tier));
+            } else if (s.startsWith("NIGHTVISION")) {
+                String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
+                int effect_tier = 0;
+                if (tier_symbol.equalsIgnoreCase("II")) {
+                    effect_tier = 1;
+                }
+                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, effect_time * 20, effect_tier));
+            } else if (s.contains("ENERGY REGEN")) {
+                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, bonus_percent);
+                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + " Energy/s"
+                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, -bonus_percent);
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + " +" + bonus_percent + "% Energy " + ChatColor.RED + "FROM "
+                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                }, effect_time * 20L);
+            } else if (s.contains("% DMG")) {
+                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, bonus_percent);
+                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% DMG"
+                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, -bonus_percent);
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% DMG " + ChatColor.RED + "FROM "
+                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                }, effect_time * 20L);
+            } else if (s.contains("% ARMOR")) {
+                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, bonus_percent);
+                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% ARMOR"
+                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, -bonus_percent);
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% ARMOR " + ChatColor.RED + "FROM "
+                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                }, effect_time * 20L);
+            } else if (s.contains("% BLOCK")) {
+                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, bonus_percent);
+                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% BLOCK"
+                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, -bonus_percent);
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% BLOCK " + ChatColor.RED + "FROM "
+                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                }, effect_time * 20L);
+            } else if (s.contains("% LIFESTEAL")) {
+                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, bonus_percent);
+                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% LIFESTEAL"
+                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, -bonus_percent);
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% LIFESTEAL " + ChatColor.RED + "FROM "
+                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                }, effect_time * 20L);
+            } else if (s.contains("% CRIT")) {
+                final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
+                int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
+                GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, bonus_percent);
+                p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% CRIT"
+                        + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, -bonus_percent);
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% CRIT " + ChatColor.RED + "FROM "
+                            + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
+                }, effect_time * 20L);
+            }
+        }
     }
 
     public void loadFishingLocations() {
