@@ -171,9 +171,10 @@ public class BlockListener implements Listener {
                 int breakChance = Mining.getBreakChance(stackInHand);
                 breakChance += Mining.getSuccessChance(stackInHand);
                 int willBreak = rand.nextInt(100);
+                int oreToAdd = 0;
                 if (willBreak < breakChance || pickTier > tier) {
                     Mining.addExperience(stackInHand, experienceGain, p);
-                    p.getInventory().addItem(Mining.getBlock(type));
+                    oreToAdd++;
                     gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
                     if (rand.nextInt(100) > duraBuff) {
                         RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), 2);
@@ -193,8 +194,9 @@ public class BlockListener implements Listener {
 
 
                 int doubleDrop = rand.nextInt(100) + 1;
+
                 if (Mining.getDoubleDropChance(stackInHand) >= doubleDrop) {
-                    p.getInventory().addItem(Mining.getBlock(type));
+                    oreToAdd++;
                     gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 1);
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                         p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          DOUBLE ORE DROP" + ChatColor.YELLOW + " (2x)");
@@ -202,12 +204,22 @@ public class BlockListener implements Listener {
 
                 int tripleDrop = rand.nextInt(100) + 1;
                 if (Mining.getTripleDropChance(stackInHand) >= tripleDrop) {
-                    p.getInventory().addItem(Mining.getBlock(type));
-                    p.getInventory().addItem(Mining.getBlock(type));
+                    oreToAdd = oreToAdd + 2;
                     gamePlayer.getPlayerStatistics().setOreMined(gamePlayer.getPlayerStatistics().getOreMined() + 2);
                     if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                         p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          TRIPLE ORE DROP" + ChatColor.YELLOW + " (3x)");
                 }
+
+                ItemStack ore = Mining.getBlock(type);
+                ore.setAmount(oreToAdd);
+
+                if (p.getInventory().firstEmpty() == -1) {
+                    p.getWorld().dropItem(p.getLocation(), ore);
+                    p.sendMessage(ChatColor.GRAY + "Your inventory was " + ChatColor.UNDERLINE + "full" + ChatColor.GRAY + ", so the ore has been dropped at your feet.");
+                } else {
+                    p.getInventory().addItem(ore);
+                }
+
 
                 int dropGems = rand.nextInt(100) + 1;
                 if (Mining.getGemFindChance(stackInHand) >= dropGems) {
