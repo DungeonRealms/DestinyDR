@@ -145,7 +145,7 @@ public class BankListener implements Listener {
                 }
 
                 p.getInventory().addItem(BankMechanics.createGems(event.getItem().getItemStack().getAmount()));
-                
+
                 if (remaining > 0)
                     p.getWorld().dropItem(p.getLocation(), BankMechanics.createGems(remaining));
 

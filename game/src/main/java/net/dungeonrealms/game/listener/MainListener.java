@@ -1160,4 +1160,9 @@ public class MainListener implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void preventNaturalHealthRegen(EntityRegainHealthEvent e) {
+        e.setCancelled(true);
+    }
 }

@@ -64,6 +64,7 @@ public class HealthHandler implements GenericMechanic {
             Bukkit.getServer().getOnlinePlayers().stream().forEach(pl -> setPlayerOverheadHP(pl, getPlayerHPLive(pl)));
         }, 0L, 6L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40L, 20L);
+
     }
 
     @Override
@@ -318,9 +319,9 @@ public class HealthHandler implements GenericMechanic {
             }
             double currentHP = getPlayerHPLive(player);
             double amountToHealPlayer = getPlayerHPRegenLive(player);
-
             double maxHP = getPlayerMaxHPLive(player);
-            if (currentHP + 1 > maxHP) {
+
+            if (currentHP >= maxHP) {
                 if (player.getHealth() != 20) {
                     player.setHealth(20);
                 }
