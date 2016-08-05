@@ -106,24 +106,26 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
-            if (event.getItem().getItemStack().getAmount() <= 0) {
-                event.setCancelled(true);
-                event.getItem().remove();
-            }
+            event.setCancelled(true);
+            event.getItem().remove();
+
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
             if (nms.hasTag() && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
-                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+                Player p = event.getPlayer();
+                int remaining = event.getRemaining();
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
-                    event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
+                    p.sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
                 }
                 int gems = event.getItem().getItemStack().getAmount();
-                Player player = event.getPlayer();
-                GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
+                GamePlayer gamePlayer = GameAPI.getGamePlayer(p);
                 if (gamePlayer != null) {
                     gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + gems);
                 }
-                for (int i = 0; i < event.getPlayer().getInventory().getSize(); i++) {
-                    ItemStack gemPouch = event.getPlayer().getInventory().getItem(i);
+
+                //Try to fill gem pouches
+                for (int i = 0; i < p.getInventory().getSize(); i++) {
+                    ItemStack gemPouch = p.getInventory().getItem(i);
                     if (gemPouch == null || gemPouch.getType() == Material.AIR)
                         continue;
                     if (!BankMechanics.getInstance().isGemPouch(gemPouch))
@@ -132,22 +134,21 @@ public class BankListener implements Listener {
                     int currentAmount = nmsPouch.getTag().getInt("worth");
                     int tier = nmsPouch.getTag().getInt("tier");
                     int max = BankMechanics.getInstance().getPouchMax(tier);
-                    event.getItem().remove();
-                    event.setCancelled(true);
                     if (currentAmount < max) {
                         while (currentAmount < max && gems > 0) {
                             currentAmount += 1;
                             gems -= 1;
                         }
-                        player.getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
+                        p.getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
                         break;
                     }
                 }
-                if (gems > 0) {
-                    event.getItem().remove();
-                    event.setCancelled(true);
-                    event.getPlayer().getInventory().addItem(BankMechanics.createGems(gems));
-                }
+
+                p.getInventory().addItem(BankMechanics.createGems(event.getItem().getItemStack().getAmount()));
+                
+                if (remaining > 0)
+                    p.getWorld().dropItem(p.getLocation(), BankMechanics.createGems(remaining));
+
             }
 
         }
@@ -293,9 +294,12 @@ public class BankListener implements Listener {
                                 int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
                                 BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                                 BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
+
                                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
+
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
+                                player.sendMessage("" + newBalance);
                                 meta.setDisplayName(ChatColor.GREEN + String.valueOf(newBalance) + ChatColor.BOLD.toString()
                                         + ChatColor.GREEN + " GEM(s)");
                                 ArrayList<String> lore = new ArrayList<>();
@@ -306,6 +310,7 @@ public class BankListener implements Listener {
                                 net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                                 nmsBank.getTag().setString("type", "bank");
                                 e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
+
                                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                             }
                         } else {
@@ -452,15 +457,17 @@ public class BankListener implements Listener {
                         }
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
-                            ItemStack bankItem = new ItemStack(Material.EMERALD);
-                            ItemMeta meta = bankItem.getItemMeta();
-                            meta.setDisplayName(ChatColor.GREEN + String.valueOf(getPlayerGems(player.getUniqueId())) + size + ChatColor.BOLD.toString()
-                                    + ChatColor.GREEN + " GEM(s)");
-                            ArrayList<String> lore = new ArrayList<>();
                             int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
                             BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                             BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
+
                             player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
+
+                            ItemStack bankItem = new ItemStack(Material.EMERALD);
+                            ItemMeta meta = bankItem.getItemMeta();
+                            meta.setDisplayName(ChatColor.GREEN + String.valueOf(newBalance) + size + ChatColor.BOLD.toString()
+                                    + ChatColor.GREEN + " GEM(s)");
+                            ArrayList<String> lore = new ArrayList<>();
                             lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
                             lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
                             meta.setLore(lore);
@@ -468,6 +475,7 @@ public class BankListener implements Listener {
                             net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                             nmsBank.getTag().setString("type", "bank");
                             e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
+
                             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                         }
                     }
