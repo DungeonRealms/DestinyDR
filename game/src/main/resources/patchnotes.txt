@@ -5,6 +5,7 @@ Build <build>
 - New and improved tablist
 
 &8Changes&0
+- Fishes now cook in the stack amount clicked with
 - Combat Loggers have been temporarily disabled.
 - Removed blood
 - In-game music reduced.
@@ -17,3 +18,4 @@ Build <build>
 - Fixed a bug where you could take items from shops without paying.
 - Fixed some duplication glitches.
 - Fixed combat not refreshing when you're damaged (environment, PvP, PvE, etc.)
+- Fishes no longer consume on cook, other eating bugs fixed.
