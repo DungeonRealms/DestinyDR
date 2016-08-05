@@ -269,19 +269,14 @@ public class BlockListener implements Listener {
                 }
                 e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1);
                 ItemStack stack = e.getPlayer().getEquipment().getItemInMainHand();
-                if (stack.getAmount() > 1) {
-                    ItemStack cookedFish = stack.clone();
-                    ItemMeta cookedFishMeta = cookedFish.getItemMeta();
-                    String newFishName = cookedFishMeta.getDisplayName().split(" ", 2)[1];
-                    cookedFishMeta.setDisplayName(newFishName);
-                    cookedFish.setItemMeta(cookedFishMeta);
 
-                    cookedFish.setAmount(1);
-                    cookedFish.setType(Material.COOKED_FISH);
-                    e.getPlayer().getInventory().addItem(cookedFish);
-                    stack.setAmount(stack.getAmount() - 1);
-                } else
-                    e.getPlayer().getEquipment().getItemInMainHand().setType(Material.COOKED_FISH);
+                ItemStack cookedFish = stack;
+                ItemMeta cookedFishMeta = cookedFish.getItemMeta();
+                String newFishName = cookedFishMeta.getDisplayName().split(" ", 2)[1];
+                cookedFishMeta.setDisplayName(newFishName);
+                cookedFish.setItemMeta(cookedFishMeta);
+                cookedFish.setType(Material.COOKED_FISH);
+
                 e.getPlayer().updateInventory();
             }
         }
