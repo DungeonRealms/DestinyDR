@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.tab.type;
+package net.dungeonrealms.game.tab;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import lombok.Getter;

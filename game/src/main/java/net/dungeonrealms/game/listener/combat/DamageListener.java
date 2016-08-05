@@ -86,12 +86,6 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onAnimalAttack(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof DRMonster) && !(event.getEntity() instanceof Player) && event instanceof LivingEntity)
-            event.getEntity().getWorld().playEffect(event.getEntity().getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
-    }
-
     /**
      * This event listens for EnderCrystal explosions.
      * Which are buffs.. with the correct nbt at least.

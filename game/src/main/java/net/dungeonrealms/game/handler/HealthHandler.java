@@ -514,7 +514,7 @@ public class HealthHandler implements GenericMechanic {
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
         }
 
-        player.getWorld().playEffect(player.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
+        //player.getWorld().playEffect(player.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
             if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
@@ -733,7 +733,7 @@ public class HealthHandler implements GenericMechanic {
             if (GameAPI.isPlayer(attacker)) {
                 handleMonsterDamageTracker(entity.getUniqueId(), (Player) attacker, damage);
                 checkForNewTarget(entity);
-                entity.getWorld().playEffect(entity.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
+                //entity.getWorld().playEffect(entity.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
 
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     if (!entity.hasMetadata("uuid")) {

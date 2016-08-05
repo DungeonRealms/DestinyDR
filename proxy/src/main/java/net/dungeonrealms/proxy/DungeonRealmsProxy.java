@@ -9,6 +9,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.proxy.command.CommandAlert;
 import net.dungeonrealms.proxy.command.CommandMaintenance;
+import net.dungeonrealms.proxy.command.CommandTest;
 import net.dungeonrealms.proxy.listener.NetworkClientListener;
 import net.dungeonrealms.proxy.listener.ProxyChannelListener;
 import net.md_5.bungee.api.ChatColor;
@@ -65,7 +66,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
         this.getProxy().getPluginManager().registerCommand(this, new CommandMaintenance());
         this.getProxy().getPluginManager().registerCommand(this, new CommandAlert());
-
+        this.getProxy().getPluginManager().registerCommand(this, new CommandTest());
 
         try {
             // SET DEFAULT

@@ -59,6 +59,7 @@ import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.soundtrack.Soundtrack;
+import net.dungeonrealms.game.tab.TabMechanics;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.PowerMove;
@@ -250,7 +251,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(Fishing.getInstance());
             mm.registerMechanic(SpawningMechanics.getInstance());
             mm.registerMechanic(AchievementManager.getInstance());
-            // mm.registerMechanic(TabMechanics.getInstance());
+            mm.registerMechanic(TabMechanics.getInstance());
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());

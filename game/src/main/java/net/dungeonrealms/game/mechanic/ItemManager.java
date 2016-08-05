@@ -141,7 +141,7 @@ public class ItemManager {
         return AntiCheat.getInstance().applyAntiDupe(professionBuff);
     }
 
-    public static ItemStack createLevelBuff (int duration, int bonusAmount) {
+    public static ItemStack createLevelBuff(int duration, int bonusAmount) {
         String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
         ItemStack levelBuff = new ItemBuilder().setItem(Material.EXP_BOTTLE, (short) 0, ChatColor.GOLD.toString() + "Global Level EXP Buff", new
                 String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + formattedTime, ChatColor.GOLD

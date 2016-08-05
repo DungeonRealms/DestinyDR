@@ -3,9 +3,11 @@ package net.dungeonrealms.game.tab.column;
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import com.google.common.collect.Sets;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.tab.type.Column;
+import net.dungeonrealms.game.tab.Column;
+import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -17,7 +19,7 @@ public class CharacterTabColumn extends Column {
     @Override
     public Column register() {
         variablesToRegister.addAll(Sets.newHashSet(
-                new Variable("level") {
+                new Variable("plevel") {
                     @Override
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
@@ -32,8 +34,43 @@ public class CharacterTabColumn extends Column {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
 
-                        return gp.getExperience() + "/"
-                                + gp.getEXPNeeded(gp.getLevel());
+                        double exp = ((double) gp.getExperience()) / ((double) gp.getEXPNeeded(gp.getLevel()));
+                        exp *= 100;
+                        return (int) exp + "%";
+                    }
+                },
+                new Variable("energy") {
+                    @Override
+                    public String getReplacement(Player player) {
+                        GamePlayer gp = GameAPI.getGamePlayer(player);
+                        if (gp == null) return null;
+                        int calculatedValue;
+
+                        try {
+                            calculatedValue = gp.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN);
+                        } catch (NullPointerException ignored) {
+                            return "";
+                        }
+
+                        return String.valueOf(calculatedValue);
+                    }
+                },
+                new Variable("hps") {
+                    @Override
+                    public String getReplacement(Player player) {
+                        GamePlayer gp = GameAPI.getGamePlayer(player);
+                        if (gp == null) return null;
+
+                        return String.valueOf((HealthHandler.getInstance().getPlayerHPRegenLive(player) + gp.getStats().getHPRegen()));
+                    }
+                },
+                new Variable("dps") {
+                    @Override
+                    public String getReplacement(Player player) {
+                        GamePlayer gp = GameAPI.getGamePlayer(player);
+                        if (gp == null) return null;
+
+                        return String.valueOf(Math.round(gp.getStats().getDPS()));
                     }
                 },
                 new Variable("alignment") {

@@ -2,9 +2,11 @@ Build <build>
 
 &2New Features&0
 - Added a GM tool to detect all duped items on the server.
+- New and improved tablist
 
 &8Changes&0
 - Combat Loggers have been temporarily disabled.
+- Removed blood
 - In-game music reduced.
 - Global Buffs are now more powerful.
 - Temporally disabled the Varenglade dungeon.

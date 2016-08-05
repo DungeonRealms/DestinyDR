@@ -66,6 +66,30 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>codecrafter47.bungeetablistplus</groupId>
+      <artifactId>bungee-plugin</artifactId>
+      <version>2.5.3</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>data-core</artifactId>
+          <groupId>codecrafter47.bungeetablistplus</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>bungeetablistplus-common</artifactId>
+          <groupId>codecrafter47.bungeetablistplus</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>Yamler-Core</artifactId>
+          <groupId>net.cubespace</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>fastutil</artifactId>
+          <groupId>it.unimi.dsi</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>net.md-5</groupId>
       <artifactId>bungeecord-api</artifactId>
       <version>1.8-SNAPSHOT</version>
