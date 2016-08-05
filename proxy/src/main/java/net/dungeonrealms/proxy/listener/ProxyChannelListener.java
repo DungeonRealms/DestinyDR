@@ -29,17 +29,13 @@ public class ProxyChannelListener implements Listener {
 
     @EventHandler
     public void onPluginMessageReceived(PluginMessageEvent event) {
-
-//        if (!event.getTag().equals("BungeeCord"))
-//            return;
+        if (!event.getTag().equals("BungeeCord"))
+            return;
 
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
         try {
-
             String subChannel = in.readUTF();
-
-            System.out.println(subChannel);
             if (subChannel.equals("Alert")) {
                 // READ MESSAGE IN STREAM //
                 String message = in.readUTF();
