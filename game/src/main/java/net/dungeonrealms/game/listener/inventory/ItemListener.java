@@ -781,6 +781,11 @@ public class ItemListener implements Listener {
     public void playerEatFish(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null && e.getClickedBlock().getType() != null &&
+                (e.getClickedBlock().getType().equals(Material.FURNACE) || e.getClickedBlock().getType().equals(Material.BURNING_FURNACE))) {
+            return;
+        }
+
         final Player pl = e.getPlayer();
 
         ItemStack fish;

@@ -115,6 +115,7 @@ public class ShopListener implements Listener {
     public void playerClickShopInventory(InventoryClickEvent event) {
         if (!event.getInventory().getTitle().contains("@")) return;
 
+
         String ownerName = event.getInventory().getTitle().split("@")[1];
         if (ownerName == null) return;
         Shop shop = ShopMechanics.getShop(ownerName);
