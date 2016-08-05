@@ -162,9 +162,9 @@ public class BlockListener implements Listener {
                 int pickTier = Mining.getPickTier(stackInHand);
                 if (pickTier < tier) {
                     p.sendMessage(ChatColor.RED + "Your pick is not strong enough to mine this ore!");
-                    e.setCancelled(true);
                     return;
                 }
+
                 int experienceGain = Mining.getOreEXP(stackInHand, type);
                 GamePlayer gamePlayer = GameAPI.getGamePlayer(e.getPlayer());
                 if (gamePlayer == null) return;
@@ -174,6 +174,10 @@ public class BlockListener implements Listener {
                 breakChance += Mining.getSuccessChance(stackInHand);
                 int willBreak = rand.nextInt(100);
                 int oreToAdd = 0;
+
+                p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 1F, 0.75F);
+                e.getBlock().setType(Material.STONE);
+
                 if (willBreak < breakChance || pickTier > tier) {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     oreToAdd++;
@@ -189,9 +193,6 @@ public class BlockListener implements Listener {
                     return;
                 }
 
-                p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 1F, 0.75F);
-
-                e.getBlock().setType(Material.STONE);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
 
 
