@@ -331,7 +331,7 @@ public class GamePlayer {
 
             Firework firework = (Firework) T.getLocation().getWorld().spawnEntity(T.getLocation().clone(), EntityType.FIREWORK);
             FireworkMeta fireworkMeta = firework.getFireworkMeta();
-            FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(Color.GREEN).withFade(Color.WHITE).with(FireworkEffect.Type.BALL_LARGE).trail(true).build();
+            FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(Color.LIME).withFade(Color.WHITE).with(FireworkEffect.Type.BALL_LARGE).trail(true).build();
             fireworkMeta.addEffect(effect);
             fireworkMeta.setPower(1);
             firework.setFireworkMeta(fireworkMeta);

@@ -59,7 +59,8 @@ public class Soundtrack implements GenericMechanic, Listener {
 
 
     public void doLogout(Player player) {
-
+        if(isReceivingSong(player))
+         stopPlaying(player);
     }
 
     public void stopPlaying(Player p) {

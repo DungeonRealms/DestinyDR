@@ -5,6 +5,7 @@ Build <build>
 
 &8Changes&0
 - Combat Loggers have been temporarily disabled.
+- In-game music reduced.
 - Global Buffs are now more powerful.
 - Temporally disabled the Varenglade dungeon.
 
