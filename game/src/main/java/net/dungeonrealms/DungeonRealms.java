@@ -20,8 +20,6 @@ import net.dungeonrealms.game.command.friend.FriendsCommand;
 import net.dungeonrealms.game.command.friend.RemoveCommand;
 import net.dungeonrealms.game.command.guild.*;
 import net.dungeonrealms.game.command.menu.*;
-import net.dungeonrealms.game.command.KickAllCommand;
-import net.dungeonrealms.game.command.StarterCommand;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
@@ -74,7 +72,6 @@ import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
-import net.dungeonrealms.tool.DupedItemsRemover;
 import net.dungeonrealms.tool.PatchTools;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -253,11 +250,11 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(Fishing.getInstance());
             mm.registerMechanic(SpawningMechanics.getInstance());
             mm.registerMechanic(AchievementManager.getInstance());
+            // mm.registerMechanic(TabMechanics.getInstance());
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
             mm.registerMechanic(PatchTools.getInstance());
-
         } else {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
@@ -331,6 +328,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
         }
+
 
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 

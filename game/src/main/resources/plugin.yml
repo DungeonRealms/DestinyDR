@@ -3,5 +3,5 @@ main: net.dungeonrealms.DungeonRealms
 version: ${project.parent.version}
 authors: [apollosoftware, Bradez1571, EtherealTemplar, Proxying, Xwaffle]
 website: http://www.dungeonrealms.net
-depend: [WorldGuard, BossBarAPI, ProtocolLib]
+depend: [WorldGuard, BossBarAPI, ProtocolLib, BungeeTabListPlus]
 description: The new and improved DungeonRealms!

@@ -903,7 +903,6 @@ public class GameAPI {
                 gp.setAbleToSuicide(false);
                 gp.setAbleToDrop(false);
 
-
                 // upload data and send to server
                 submitAsyncCallback(() -> GameAPI.handleLogout(player.getUniqueId(), false),
                         consumer -> {

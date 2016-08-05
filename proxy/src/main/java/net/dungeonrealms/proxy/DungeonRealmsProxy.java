@@ -49,7 +49,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     @Getter
     private static GameClient client;
 
-
     private boolean MAINTENANCE_MODE = false;
 
     private final File BUNGEE_CONFIG_FILE = new File(new File(System.getProperty("user.dir")), "config.yml");
@@ -66,6 +65,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
         this.getProxy().getPluginManager().registerCommand(this, new CommandMaintenance());
         this.getProxy().getPluginManager().registerCommand(this, new CommandAlert());
+
 
         try {
             // SET DEFAULT
