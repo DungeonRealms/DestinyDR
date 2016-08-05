@@ -117,7 +117,8 @@ public class BankListener implements Listener {
                     event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
                 }
                 int gems = event.getItem().getItemStack().getAmount();
-                GamePlayer gamePlayer = GameAPI.getGamePlayer(event.getPlayer());
+                Player player = event.getPlayer();
+                GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
                 if (gamePlayer != null) {
                     gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + gems);
                 }
@@ -138,7 +139,7 @@ public class BankListener implements Listener {
                             currentAmount += 1;
                             gems -= 1;
                         }
-                        event.getPlayer().getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
+                        player.getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
                         break;
                     }
                 }

@@ -68,9 +68,9 @@ public class Chat {
                     "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "kys", "jigga",
             "jiggaboo", "hitler", "jews", "titanrift", "fucked"));
 
-    public static void sendPrivateMessage(Player player, String playerName, String finalMessage) {
+    public static void sendPrivateMessage(Player player, String recipentName, String finalMessage) {
         GameAPI.submitAsyncWithAsyncCallback(() -> {
-            String testUUID = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+            String testUUID = DatabaseAPI.getInstance().getUUIDFromName(recipentName);
             if (testUUID.equals("")) {
                 player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
                 return "";
@@ -103,15 +103,15 @@ public class Chat {
                 e.printStackTrace();
             }
             player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
-                    (playerName) + ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " +
+                    (recipentName) + ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " +
                     ChatColor.WHITE + finalMessage);
-            player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2f, 1.2f);
 
-            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), playerName, (ChatColor.GRAY.toString() +
+
+            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipentName, (ChatColor.GRAY.toString() +
                     ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
                     .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
                     finalMessage));
-            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", playerName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
+            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipentName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
         });
     }
 
