@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.anticheat;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
@@ -16,43 +14,35 @@ import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
-import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 10/1/2015.
  */
-public class AntiCheat implements GenericMechanic {
 
-    static AntiCheat instance = null;
-    @Getter
-    @Setter
-    private Set<String> uids = new HashSet<>(2000);
-    // don't check players in this list for duped items (used for when they're pricing items in a shop or if they're
-    // testing a dupe etc.)
-    public static Set<UUID> antiDupeExclusions = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+public class AntiDuplication implements GenericMechanic {
 
-    public static AntiCheat getInstance() {
+    static AntiDuplication instance = null;
+
+    public static Set<UUID> EXCLUSIONS = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+    public static AntiDuplication getInstance() {
         if (instance == null) {
-            instance = new AntiCheat();
+            instance = new AntiDuplication();
         }
         return instance;
     }
@@ -64,6 +54,7 @@ public class AntiCheat implements GenericMechanic {
 
     @Override
     public void startInitialization() {
+
 //        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(this::checkPlayer), 0, 20);
 
     }
@@ -83,7 +74,7 @@ public class AntiCheat implements GenericMechanic {
 
     public static void checkForDuplicatedEquipment(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
         if (Rank.isGM(p)) return;
-        if (antiDupeExclusions.contains(p.getUniqueId())) return;
+        if (EXCLUSIONS.contains(p.getUniqueId())) return;
 
         Map<Inventory, Tuple<ItemStack, String>> gearUids = new HashMap<>();
 
@@ -96,19 +87,21 @@ public class AntiCheat implements GenericMechanic {
 
                     if (i.getAmount() <= 0) continue;
 
-                    String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
+                    String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
                     if (uniqueEpochIdentifier != null)
                         gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
                 }
             }
         }
 
-        List<String> uids = gearUids.values().stream().map(Tuple::b).collect(Collectors.toList());
+        checkForDuplications(p, gearUids);
+    }
 
-        Set<String> duplicates = Utils.findDuplicates(uids);
+    private static void checkForDuplications(Player p, Map<Inventory, Tuple<ItemStack, String>> map) {
+        Set<String> duplicates = Utils.findDuplicates(map.values().stream().map(Tuple::b).collect(Collectors.toList()));
         if (!duplicates.isEmpty()) { // caught red handed
 
-            for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : gearUids.entrySet()) {
+            for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : map.entrySet()) {
                 String uniqueEpochIdentifier = e.getValue().b();
 
                 if (duplicates.contains(uniqueEpochIdentifier))
@@ -117,11 +110,12 @@ public class AntiCheat implements GenericMechanic {
 
             banAndBroadcast(p, duplicates.size());
         }
+
     }
 
     public static void checkForSuspiciousDupedItems(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
         if (Rank.isGM(p)) return;
-        if (antiDupeExclusions.contains(p.getUniqueId())) return;
+        if (EXCLUSIONS.contains(p.getUniqueId())) return;
 
 
         int orbCount = 0;
@@ -140,7 +134,7 @@ public class AntiCheat implements GenericMechanic {
 
                     if (i.getAmount() <= 0) continue;
 
-                    String uniqueEpochIdentifier = AntiCheat.getInstance().getUniqueEpochIdentifier(i);
+                    String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
                     if (uniqueEpochIdentifier != null)
                         gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
 
@@ -156,20 +150,7 @@ public class AntiCheat implements GenericMechanic {
             }
         }
 
-        List<String> uids = gearUids.values().stream().map(Tuple::b).collect(Collectors.toList());
-
-        Set<String> duplicates = Utils.findDuplicates(uids);
-        if (!duplicates.isEmpty()) { // caught red handed
-
-            for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : gearUids.entrySet()) {
-                String uniqueEpochIdentifier = e.getValue().b();
-
-                if (duplicates.contains(uniqueEpochIdentifier))
-                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> e.getKey().remove(e.getValue().a()));
-            }
-
-            banAndBroadcast(p, duplicates.size());
-        }
+        checkForDuplications(p, gearUids);
 
         if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 350000) {
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
@@ -206,107 +187,6 @@ public class AntiCheat implements GenericMechanic {
 //        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
     }
 
-    //TODO: Have a look at this
-    public void checkForDupedItems(Player player) {
-        if (Rank.isGM(player) || player.getGameMode() != GameMode.SURVIVAL) return;
-        CopyOnWriteArrayList<ItemStack> registeredItems = new CopyOnWriteArrayList<>();
-        for (ItemStack is : player.getInventory().getContents()) {
-            if (is == null || is.getType() == Material.AIR) continue;
-            if (!player.isOnline()) return;
-            if (!isRegistered(is)) continue;
-            registeredItems.add(is);
-        }
-        if (registeredItems.isEmpty()) return;
-        String toCheck;
-        int listIndex = -1;
-        int cloneIndex = -1;
-        for (ItemStack is : registeredItems) {
-            listIndex++;
-            toCheck = getUniqueEpochIdentifier(is);
-            for (ItemStack itemStack : registeredItems) {
-                cloneIndex++;
-                if (cloneIndex == listIndex) {
-                    continue;
-                }
-                if (toCheck.equals(getUniqueEpochIdentifier(itemStack))) {
-                    player.getInventory().remove(is);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.getInventory().addItem(is), 1L);
-                    System.out.println("Duplication : " + player.getName() + " removed item(s).");
-                    registeredItems.remove(cloneIndex);
-                }
-            }
-            cloneIndex = -1;
-        }
-    }
-
-
-
-    /*
-        public void checkForDupedItems(InventoryClickEvent event) {
-        ItemStack checkItem = event.getCurrentItem();
-        if (checkItem == null) return;
-        if (!isRegistered(checkItem)) return;
-        Player player = (Player) event.getWhoClicked();
-        if (Rank.isGM(player) || player.getGameMode() != GameMode.SURVIVAL) return;
-        final String checkAgainst = getUniqueEpochIdentifier(checkItem);
-        for (ItemStack is : player.getInventory().getContents()) {
-            if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM) continue;
-            if (!isRegistered(is)) continue;
-            if (checkAgainst.equals(getUniqueEpochIdentifier(is))) {
-                player.getInventory().remove(is);
-            }
-        }
-    }
-     */
-
-    /**
-     * Will be placed inside an eventlistener to make sure
-     * the player isn't duplicating.
-     *
-     * @param event
-     * @return
-     * @since 1.0
-     */
-    public boolean watchForDupes(InventoryClickEvent event) {
-        ItemStack checkItem = event.getCurrentItem();
-        if (checkItem == null) return false;
-        if (!isRegistered(checkItem)) return false;
-        String check = getUniqueEpochIdentifier(checkItem);
-        for (ItemStack item : event.getInventory().getContents()) {
-            if (item == null || item.getType() == null || item.getType().equals(Material.AIR)) continue;
-            if (check.equals(getUniqueEpochIdentifier(item))) {
-                event.getWhoClicked().getInventory().remove(checkItem);
-                return true;
-            }
-        }
-        checkPlayer(((Player) event.getWhoClicked()));
-        return false;
-    }
-
-    public void checkPlayer(Player player) {
-
-        for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null && !item.getType().equals(Material.AIR)) {
-                if (item.getAmount() > 1) {
-                    if (isRegistered(item)) {
-                        player.getInventory().remove(item);
-                        Utils.log.warning("[ANTI-CHEAT] [DUPE] Player: " + player.getName());
-                        //player.sendMessage(ChatColor.RED + "Duplication detected in your inventory! Action has been logged and most certainly prevented you from any future opportunities.");
-                        //Bukkit.broadcastMessage(ChatColor.RED + "Detected Duplicated Items in: " + ChatColor.AQUA + player.getName() + "'s" + ChatColor.RED + " inventory. Duplicated Items Removed.");
-                    }
-                }
-            }
-        }
-
-
-        if (player.getItemOnCursor() != null && !player.getItemOnCursor().getType().equals(Material.AIR)) {
-            if (player.getItemOnCursor().getAmount() > 1) {
-                if (isRegistered(player.getItemOnCursor())) {
-                    player.setItemOnCursor(new ItemStack(Material.AIR));
-                }
-            }
-        }
-    }
 
     /**
      * Returns the actual Epoch Unix String Identifier
@@ -356,73 +236,5 @@ public class AntiCheat implements GenericMechanic {
         NBTItem nbtItem = new NBTItem(item);
         nbtItem.setString("u", System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(999) + "R");
         return nbtItem.getItem();
-    }
-
-    /**
-     * Checks if an item's (u) is equal to any other items' (u) in a player's bank, storage, and inventory.
-     *
-     * @param p
-     * @param item
-     * @return False if the item isn't registered or has no duplicate (u). True otherwise.
-     * @since 2.0
-     */
-    public boolean checkIfUIDPresentPlayer(ItemStack item, Player p) {
-        if (!isRegistered(item)) return false;
-
-        boolean duplicateFound = false;
-        String u = getUniqueEpochIdentifier(item);
-
-        // INVENTORY CHECK
-        Inventory inv = p.getInventory();
-        for (ItemStack i : inv.getContents()) {
-            if (!isRegistered(i) || i.getType() != item.getType()) continue;
-            if (getUniqueEpochIdentifier(i).equals(u)) return true;
-        }
-
-        // BANK CHECK
-//        Inventory bank = BankMechanics.getInstance().;
-
-        // STORAGE CHECK
-        Inventory storage = BankMechanics.getInstance().getStorage(p.getUniqueId()).inv;
-        for (ItemStack i : storage.getContents()) {
-            if (!isRegistered(i) || i.getType() != item.getType()) continue;
-            if (getUniqueEpochIdentifier(i).equals(u)) return true;
-        }
-
-        // COLLECTION BIN
-        Inventory collectionBin = BankMechanics.getInstance().getStorage(p.getUniqueId()).collection_bin;
-        for (ItemStack i : collectionBin.getContents()) {
-            if (!isRegistered(i) || i.getType() != item.getType()) continue;
-            if (getUniqueEpochIdentifier(i).equals(u)) return true;
-        }
-
-        // todo: implement a realm check
-        return duplicateFound;
-    }
-
-    public boolean checkIfDupedDatabase(ItemStack item) {
-        return uids.contains(getUniqueEpochIdentifier(item));
-    }
-
-    public void mergeUniqueIdentifiers(ItemStack mergingItem, ItemStack itemToMerge) {
-        NBTItem mergingItemNBT = new NBTItem(mergingItem);
-        NBTItem itemToMergeNBT = new NBTItem(itemToMerge);
-        uids.remove(itemToMergeNBT.getString("u"));
-        itemToMergeNBT.setString("u", mergingItemNBT.getString("u"));
-    }
-
-    public void dupedItemFound(Player p, ItemStack i) {
-        List<String> hoveredChat = new ArrayList<>();
-        ItemMeta meta = i.getItemMeta();
-        hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : i.getType().name()));
-        if (meta.hasLore())
-            hoveredChat.addAll(meta.getLore());
-        final JSONMessage normal = new JSONMessage("", ChatColor.WHITE);
-        normal.addText(ChatColor.RED + "[ANTICHEAT] [DUPE] Duped item ");
-        normal.addHoverText(hoveredChat, ChatColor.WHITE.toString() + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
-        normal.addText(ChatColor.RED + " detected and removed from player " + p.getName() + "! This action has been " +
-                "logged.");
-        Bukkit.getOnlinePlayers().forEach(player -> normal.sendToPlayer(player));
-        Utils.log.info("[ANTI-CHEAT] [DUPE] Player: " + p.getName());
     }
 }

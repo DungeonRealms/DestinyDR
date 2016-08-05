@@ -9,7 +9,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -26,7 +26,6 @@ import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
-import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -51,8 +50,6 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -506,10 +503,10 @@ public class ItemListener implements Listener {
             nmsItem = CraftItemStack.asNMSCopy(potion);
             ItemStack potionOffhand = player.getInventory().getItemInOffHand();
             net.minecraft.server.v1_9_R2.ItemStack nmsOffhand = CraftItemStack.asNMSCopy(potionOffhand);
-            if (AntiCheat.getInstance().getUniqueEpochIdentifier(itemUsed) == null) return;
-            if (AntiCheat.getInstance().getUniqueEpochIdentifier(potion) == null && AntiCheat.getInstance().getUniqueEpochIdentifier(potionOffhand) == null)
+            if (AntiDuplication.getInstance().getUniqueEpochIdentifier(itemUsed) == null) return;
+            if (AntiDuplication.getInstance().getUniqueEpochIdentifier(potion) == null && AntiDuplication.getInstance().getUniqueEpochIdentifier(potionOffhand) == null)
                 return;
-            if (AntiCheat.getInstance().getUniqueEpochIdentifier(itemUsed).equalsIgnoreCase(AntiCheat.getInstance().getUniqueEpochIdentifier(potion))) {
+            if (AntiDuplication.getInstance().getUniqueEpochIdentifier(itemUsed).equalsIgnoreCase(AntiDuplication.getInstance().getUniqueEpochIdentifier(potion))) {
                 //Drinking their Mainhand potion
                 if (nmsItem == null || nmsItem.getTag() == null) return;
                 if (!nmsItem.getTag().hasKey("type")) return;

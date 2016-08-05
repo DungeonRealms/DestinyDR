@@ -6,7 +6,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
@@ -229,7 +229,7 @@ public class BankMechanics implements GenericMechanic {
         tag.setInt("worth", amount);
         tag.setInt("tier", type);
 //		nms.setTag(tag);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     public int getPouchMax(int tier) {
@@ -297,7 +297,7 @@ public class BankMechanics implements GenericMechanic {
         stack.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
         nms1.getTag().setInt("worth", amount);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms1));
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms1));
     }
 
     /**

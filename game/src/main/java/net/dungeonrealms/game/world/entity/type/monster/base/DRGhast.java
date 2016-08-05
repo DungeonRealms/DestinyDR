@@ -3,7 +3,7 @@ package net.dungeonrealms.game.world.entity.type.monster.base;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.EnumMonster;
 import net.dungeonrealms.game.world.item.Item;
@@ -56,14 +56,14 @@ public class DRGhast extends EntityGhast implements DRMonster {
         boolean armorMissing = false;
         int chance = 6 + tier;
         if (tier >= 3 || random.nextInt(10) <= chance) {
-            ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+            ItemStack armor0 = AntiDuplication.getInstance().applyAntiDupe(armor[0]);
             livingEntity.getEquipment().setBoots(armor0);
             this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor0));
         } else {
             armorMissing = true;
         }
         if (tier >= 3 || random.nextInt(10) <= chance || armorMissing) {
-            ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+            ItemStack armor1 = AntiDuplication.getInstance().applyAntiDupe(armor[1]);
             livingEntity.getEquipment().setLeggings(armor1);
             this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor1));
             armorMissing = false;
@@ -71,7 +71,7 @@ public class DRGhast extends EntityGhast implements DRMonster {
             armorMissing = true;
         }
         if (tier >= 3 || random.nextInt(10) <= chance || armorMissing) {
-            ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+            ItemStack armor2 = AntiDuplication.getInstance().applyAntiDupe(armor[2]);
             livingEntity.getEquipment().setChestplate(armor2);
             this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor2));
         }
@@ -80,7 +80,7 @@ public class DRGhast extends EntityGhast implements DRMonster {
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.STAFF)
                 .setRarity(GameAPI.getItemRarity(false)).generateItem().getItem();
-        AntiCheat.getInstance().applyAntiDupe(item);
+        AntiDuplication.getInstance().applyAntiDupe(item);
         return item;
     }
 

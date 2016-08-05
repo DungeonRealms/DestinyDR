@@ -23,7 +23,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -1171,7 +1171,7 @@ public class GameAPI {
         Notice.getInstance().doLogin(player);
 
         // Anticheat
-        AntiCheat.getInstance().handleLogin(player);
+        AntiDuplication.getInstance().handleLogin(player);
 
 
         // Newbie Protection

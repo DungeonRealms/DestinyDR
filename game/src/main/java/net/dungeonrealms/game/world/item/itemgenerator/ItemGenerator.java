@@ -2,7 +2,7 @@ package net.dungeonrealms.game.world.item.itemgenerator;
 
 import com.google.common.collect.Lists;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.item.Item;
@@ -537,7 +537,7 @@ public class ItemGenerator {
         nmsStack.setTag(tag);
         
 		// apply antidupe
-		this.item = AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+		this.item = AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
 		
 		return this;
 	}
@@ -781,7 +781,7 @@ public class ItemGenerator {
 //        tag.a(CraftItemStack.asNMSCopy(is).getTag());
         nmsStack.setTag(tag);
 
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 	
 	/**

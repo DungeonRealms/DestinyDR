@@ -3,7 +3,7 @@ package net.dungeonrealms.game.world.entity.type.monster;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -159,7 +159,7 @@ public interface DRMonster {
         }
         if (!ent.hasMetadata("elite")) {
             ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(GameAPI.getItemRarity(false)).generateItem().getItem();
-            AntiCheat.getInstance().applyAntiDupe(helmet);
+            AntiDuplication.getInstance().applyAntiDupe(helmet);
             toDrop.add(helmet);
         }
         //Random drop choice, as opposed dropping in the same order (boots>legs>chest>head)

@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.entity.type.monster.MeleeMobs;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
@@ -60,7 +60,7 @@ public class MeleeWitherSkeleton extends DRWitherSkeleton {
         }
         ItemStack item = new ItemGenerator().setType(itemType).setRarity(GameAPI.getItemRarity(false))
                 .setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
-        AntiCheat.getInstance().applyAntiDupe(item);
+        AntiDuplication.getInstance().applyAntiDupe(item);
         return item;
     }
 

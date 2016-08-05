@@ -11,7 +11,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.affair.Affair;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.command.*;
 import net.dungeonrealms.game.command.dungeon.*;
 import net.dungeonrealms.game.command.friend.AcceptCommand;
@@ -23,6 +23,7 @@ import net.dungeonrealms.game.command.menu.*;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
+import net.dungeonrealms.game.command.test.CommandTestAntidupe;
 import net.dungeonrealms.game.command.test.CommandTestPlayer;
 import net.dungeonrealms.game.command.test.CommandTestRank;
 import net.dungeonrealms.game.command.test.CommandTestingHall;
@@ -208,7 +209,7 @@ public class DungeonRealms extends JavaPlugin {
 
         DatabaseDriver.getInstance().startInitialization(true);
         DatabaseAPI.getInstance().startInitialization(bungeeName);
-        AntiCheat.getInstance().startInitialization();
+        AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
         ItemGenerator.loadModifiers();
@@ -361,6 +362,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPDecline("pdecline", "/<command> [args]", "Decline a party invitation."));
 
         cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to test dr soundtrack."));
+        cm.registerCommand(new CommandTestAntidupe("testantidupe", "/<command> [args]", "Command to test anti dupe."));
 
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "Safely logout of Dungeon Realms."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));

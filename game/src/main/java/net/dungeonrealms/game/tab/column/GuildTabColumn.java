@@ -40,7 +40,8 @@ public class GuildTabColumn extends Column {
 
                     List<String> guildMembers = new ArrayList<>();
 
-                    GuildMechanics.getInstance().getAllOnlineGuildMembers(GuildDatabaseAPI.get().getGuildOf(player.getUniqueId()))
+                    GuildMechanics.getInstance().getAllOnlineGuildMembers(GuildDatabaseAPI.get().getGuildOf(player.getUniqueId())).stream()
+                            .filter(uuid -> !player.getUniqueId().equals(uuid))
                             .forEach(uuid -> guildMembers.add(Bukkit.getPlayer(uuid).getName()));
 
                     if (guildMembers.isEmpty()) if (cursor == 0)

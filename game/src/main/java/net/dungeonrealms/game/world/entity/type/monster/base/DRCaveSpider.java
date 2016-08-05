@@ -3,7 +3,7 @@ package net.dungeonrealms.game.world.entity.type.monster.base;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.EnumMonster;
@@ -69,14 +69,14 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
         boolean armorMissing = false;
         int chance = 6 + tier;
         if (tier >= 3 || random.nextInt(10) <= chance) {
-            org.bukkit.inventory.ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+            org.bukkit.inventory.ItemStack armor0 = AntiDuplication.getInstance().applyAntiDupe(armor[0]);
             livingEntity.getEquipment().setBoots(armor0);
             this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor0));
         } else {
             armorMissing = true;
         }
         if (tier >= 3 || random.nextInt(10) <= chance || armorMissing) {
-            org.bukkit.inventory.ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+            org.bukkit.inventory.ItemStack armor1 = AntiDuplication.getInstance().applyAntiDupe(armor[1]);
             livingEntity.getEquipment().setLeggings(armor1);
             this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor1));
             armorMissing = false;
@@ -84,7 +84,7 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
             armorMissing = true;
         }
         if (tier >= 3 || random.nextInt(10) <= chance || armorMissing) {
-            org.bukkit.inventory.ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+            org.bukkit.inventory.ItemStack armor2 = AntiDuplication.getInstance().applyAntiDupe(armor[2]);
             livingEntity.getEquipment().setChestplate(armor2);
             this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor2));
         }
@@ -107,7 +107,7 @@ public abstract class DRCaveSpider extends EntitySpider implements DRMonster {
         }
         org.bukkit.inventory.ItemStack item = new ItemGenerator().setType(itemType).setRarity(GameAPI.getItemRarity(false))
                 .setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
-        AntiCheat.getInstance().applyAntiDupe(item);
+        AntiDuplication.getInstance().applyAntiDupe(item);
         return item;
     }
 

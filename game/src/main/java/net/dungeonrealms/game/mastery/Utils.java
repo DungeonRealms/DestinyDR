@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -75,12 +76,7 @@ public class Utils {
         Set<T> duplicates = new HashSet<T>();
         Set<T> uniques = new HashSet<T>();
 
-        for(T t : list) {
-            if(!uniques.add(t)) {
-                duplicates.add(t);
-            }
-        }
-
+        duplicates.addAll(list.stream().filter(t -> !uniques.add(t)).collect(Collectors.toList()));
         return duplicates;
     }
 

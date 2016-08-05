@@ -3,7 +3,7 @@ package net.dungeonrealms.game.mechanic;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.game.anticheat.AntiCheat;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -67,7 +67,7 @@ public class ItemManager {
         tag.set("type", new NBTTagString("important"));
         tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
     public static ItemStack createOrbofAlteration() {
@@ -124,7 +124,7 @@ public class ItemManager {
                 .setNBTInt("untradeable", 1).setNBTString("buff", "loot").setNBTInt("duration", duration).setNBTInt
                         ("bonusAmount", bonusAmount).setNBTString("description", "loot drop chances").build();
         // apply antidupe to make unstackable
-        return AntiCheat.getInstance().applyAntiDupe(lootBuff);
+        return AntiDuplication.getInstance().applyAntiDupe(lootBuff);
     }
 
     public static ItemStack createProfessionBuff(int duration, int bonusAmount) {
@@ -138,7 +138,7 @@ public class ItemManager {
                 .setNBTInt("bonusAmount", bonusAmount).setNBTString("description", "experience gained from " +
                         "professions").build();
         // apply antidupe to make unstackable
-        return AntiCheat.getInstance().applyAntiDupe(professionBuff);
+        return AntiDuplication.getInstance().applyAntiDupe(professionBuff);
     }
 
     public static ItemStack createLevelBuff(int duration, int bonusAmount) {
@@ -151,7 +151,7 @@ public class ItemManager {
                 .setNBTInt("untradeable", 1).setNBTString("buff", "level").setNBTInt("duration", duration).setNBTInt
                         ("bonusAmount", bonusAmount).setNBTString("description", "character experience gained").build();
         // apply antidupe to make unstackable
-        return AntiCheat.getInstance().applyAntiDupe(levelBuff);
+        return AntiDuplication.getInstance().applyAntiDupe(levelBuff);
     }
 
     /**
@@ -451,7 +451,7 @@ public class ItemManager {
             tag.setInt("itemTier", tier);
             tag.setInt("healAmount", healAmount);
             nmsStack.setTag(tag);
-            return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+            return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         } else {
             healAmount *= 0.65;
             Potion potion = new Potion(PotionType.WATER, 1);
@@ -487,7 +487,7 @@ public class ItemManager {
             tag.setInt("itemTier", tier);
             tag.setInt("healAmount", healAmount);
             nmsStack.setTag(tag);
-            return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+            return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         }
     }
 
@@ -720,7 +720,7 @@ public class ItemManager {
             tag.setInt("level", lvl);
             tag.set("AttributeModifiers", new NBTTagList());
             nmsStack.setTag(tag);
-            return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+            return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         }
         return null;
     }
@@ -733,7 +733,7 @@ public class ItemManager {
         nms = CraftItemStack.asNMSCopy(stack);
         tag.setString("retrainingBook", "true");
         nms.setTag(tag);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     public static ItemStack createGlobalMessenger() {
@@ -802,7 +802,7 @@ public class ItemManager {
         tag.setInt("XP", 0);
         tag.setInt("maxXP", Fishing.getEXPNeeded(lvl));
         nmsStack.setTag(tag);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
     /**
