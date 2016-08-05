@@ -282,7 +282,7 @@ public class Mining implements GenericMechanic {
         if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
             p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + experienceGain + ChatColor.BOLD + " EXP"
                     + ChatColor.YELLOW + ChatColor.GRAY + " [" + Math.round(currentXP - professionBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded(getLvl(stackInHand)) + " EXP]");
-            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+//            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
             if (professionBuffBonus > 0) {
                 p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        " + ChatColor.GOLD
                         .toString() + ChatColor.BOLD + "PROF. BUFF >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD
