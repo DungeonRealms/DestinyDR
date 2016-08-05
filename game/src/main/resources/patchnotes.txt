@@ -19,3 +19,4 @@ Build <build>
 - Fixed some duplication glitches.
 - Fixed combat not refreshing when you're damaged (environment, PvP, PvE, etc.)
 - Fishes no longer consume on cook, other eating bugs fixed.
+- Fixed mining fatigue not applying in rare cases.

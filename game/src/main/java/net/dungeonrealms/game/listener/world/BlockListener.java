@@ -41,6 +41,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -283,21 +284,26 @@ public class BlockListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void handleMiningFatigue(PlayerAnimationEvent event) {
-        if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) return;
-        if (event.getPlayer().getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
+    public void handleMiningFatigue(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+
+        if (event.getClickedBlock() == null || event.getClickedBlock().getType() == null || event.getClickedBlock().getType() == Material.AIR)
             return;
-        if (!Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand()))
-            return;
-        if (!Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand())) return;
-        ItemStack stackInHand = event.getPlayer().getEquipment().getItemInMainHand();
-        Block block = event.getPlayer().getTargetBlock((HashSet<Byte>) null, 100);
+
+        Player p = event.getPlayer();
+
+        if (p.getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR) return;
+        if (!Mining.isDRPickaxe(p.getEquipment().getItemInMainHand())) return;
+
+        ItemStack stackInHand = p.getEquipment().getItemInMainHand();
+        Block block = event.getClickedBlock();
         if (block == null || block.getType() == Material.AIR) return;
         if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
-            Player p = event.getPlayer();
             Material type = block.getType();
             int tier = Mining.getBlockTier(type);
             int pickTier = Mining.getPickTier(stackInHand);
+
+            p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
 
             switch (pickTier) {
                 case 1:
@@ -306,13 +312,14 @@ public class BlockListener implements Listener {
                     break;
                 case 3:
                     if (tier == pickTier)
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 120, 0));
                     break;
                 case 4:
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 120, 0));
                     break;
                 case 5:
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
+                    if (tier != 4)
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 120, 0));
                     break;
             }
         }
