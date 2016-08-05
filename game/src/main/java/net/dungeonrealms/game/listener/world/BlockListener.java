@@ -40,6 +40,7 @@ import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -270,6 +271,11 @@ public class BlockListener implements Listener {
                 ItemStack stack = e.getPlayer().getEquipment().getItemInMainHand();
                 if (stack.getAmount() > 1) {
                     ItemStack cookedFish = stack.clone();
+                    ItemMeta cookedFishMeta = cookedFish.getItemMeta();
+                    String newFishName = cookedFishMeta.getDisplayName().split(" ", 2)[1];
+                    cookedFishMeta.setDisplayName(newFishName);
+                    cookedFish.setItemMeta(cookedFishMeta);
+
                     cookedFish.setAmount(1);
                     cookedFish.setType(Material.COOKED_FISH);
                     e.getPlayer().getInventory().addItem(cookedFish);
