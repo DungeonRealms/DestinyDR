@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.anticheat;
 
+import com.google.common.collect.HashMultimap;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
@@ -76,7 +77,7 @@ public class AntiDuplication implements GenericMechanic {
         if (Rank.isGM(p)) return;
         if (EXCLUSIONS.contains(p.getUniqueId())) return;
 
-        Map<Inventory, Tuple<ItemStack, String>> gearUids = new HashMap<>();
+        HashMultimap<Inventory, Tuple<ItemStack, String>> gearUids = HashMultimap.create();
 
         for (Inventory inv : INVENTORIES_TO_CHECK) {
             if (inv == null) continue;
@@ -94,14 +95,15 @@ public class AntiDuplication implements GenericMechanic {
             }
         }
 
+
         checkForDuplications(p, gearUids);
     }
 
-    private static void checkForDuplications(Player p, Map<Inventory, Tuple<ItemStack, String>> map) {
+    private static void checkForDuplications(Player p, HashMultimap<Inventory, Tuple<ItemStack, String>> map) {
         Set<String> duplicates = Utils.findDuplicates(map.values().stream().map(Tuple::b).collect(Collectors.toList()));
         if (!duplicates.isEmpty()) { // caught red handed
 
-            for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : map.entrySet()) {
+            for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : map.entries()) {
                 String uniqueEpochIdentifier = e.getValue().b();
 
                 if (duplicates.contains(uniqueEpochIdentifier))
@@ -123,7 +125,7 @@ public class AntiDuplication implements GenericMechanic {
         int protectCount = 0;
         int gemCount = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, p.getUniqueId());
 
-        Map<Inventory, Tuple<ItemStack, String>> gearUids = new HashMap<>();
+        HashMultimap<Inventory, Tuple<ItemStack, String>> gearUids = HashMultimap.create();
 
         for (Inventory inv : INVENTORIES_TO_CHECK) {
             if (inv == null) continue;
