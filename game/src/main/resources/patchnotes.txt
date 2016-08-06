@@ -5,6 +5,7 @@ Build <build>
 - New and improved tablist
 
 &8Changes&0
+- Anti-duplication is now enabled
 - Fishes now cook in the stack amount clicked with
 - Combat Loggers have been temporarily disabled.
 - Removed blood
