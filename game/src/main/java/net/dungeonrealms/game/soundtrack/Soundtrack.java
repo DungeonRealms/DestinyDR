@@ -2,9 +2,11 @@ package net.dungeonrealms.game.soundtrack;
 
 import lombok.NoArgsConstructor;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
+import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -32,10 +34,10 @@ public class Soundtrack implements GenericMechanic, Listener {
     // INSTANCE //
     protected static Soundtrack instance = null;
 
-    protected static final long LOOP_DELAY = 95000L;
-    protected static final long START_DELAY = 15000L;
+    protected static final long LOOP_DELAY = 100000L;
+    protected static final long START_DELAY = 25000L;
 
-    private static final byte DEFAULT_VOLUME = 0x32;
+    private static final byte DEFAULT_VOLUME = 0x1E;
 
     protected HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
     protected HashMap<String, Byte> playerVolume = new HashMap<String, Byte>();
@@ -59,8 +61,9 @@ public class Soundtrack implements GenericMechanic, Listener {
 
 
     public void doLogout(Player player) {
-        if(isReceivingSong(player))
-         stopPlaying(player);
+
+        if (isReceivingSong(player))
+            stopPlaying(player);
     }
 
     public void stopPlaying(Player p) {
@@ -131,7 +134,14 @@ public class Soundtrack implements GenericMechanic, Listener {
 
         String region = event.getRegion();
 
-        if (region.contains("cyren"))
+        if (region.contains("cyren")) {
             getPlayer(EnumSong.CYRENNICA_2).addPlayer(player);
+        } else if (!GameAPI.isInSafeRegion(player.getLocation()) && GameAPI.isNonPvPRegion(player.getLocation())
+                && !KarmaHandler.PLAYER_LOCATIONS.get(player).equals(KarmaHandler.EnumPlayerAlignments.NEUTRAL)) {
+            getPlayer(EnumSong.WILDERNESS_1).addPlayer(player);
+        } else if (!GameAPI.isInSafeRegion(player.getLocation()) && !GameAPI.isNonPvPRegion(player.getLocation())
+                && !KarmaHandler.PLAYER_LOCATIONS.get(player).equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC)) {
+            getPlayer(EnumSong.CHAOTIC_1).addPlayer(player);
+        }
     }
 }

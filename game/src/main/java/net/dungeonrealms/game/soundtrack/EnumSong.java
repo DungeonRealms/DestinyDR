@@ -14,6 +14,7 @@ public enum EnumSong {
     CYRENNICA_1("soundtrack/cyren_1.nbs"),
     CYRENNICA_2("soundtrack/cyren_2.nbs"),
     WILDERNESS_1("soundtrack/wilderness_1.nbs"),
+    CHAOTIC_1("soundtrack/chaotic_1.nbs"),
     TEST("soundtrack/test.nbs");
 
     @Getter
