@@ -42,6 +42,8 @@ public class AntiDuplication implements GenericMechanic {
 
     public static Set<UUID> EXCLUSIONS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    private final static long CHECK_TICK_FREQUENCY = 60L;
+
     public static AntiDuplication getInstance() {
         if (instance == null) {
             instance = new AntiDuplication();
@@ -54,11 +56,11 @@ public class AntiDuplication implements GenericMechanic {
         return EnumPriority.CATHOLICS;
     }
 
+
     @Override
     public void startInitialization() {
-
-//        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(this::checkPlayer), 0, 20);
-
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(),
+                () -> Bukkit.getOnlinePlayers().stream().forEach(p -> checkForSuspiciousDupedItems(p, new HashSet<>(Collections.singletonList(p.getInventory())))), 0, CHECK_TICK_FREQUENCY);
     }
 
     @Override
