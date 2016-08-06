@@ -3,13 +3,14 @@ Build <build>
 &2New Features&0
 - Added a GM tool to detect all duped items on the server.
 - New and improved tablist
+- More tracks for wilderness and chaotic regions
 
 &8Changes&0
 - Anti-duplication is now enabled
 - Fishes now cook in the stack amount clicked with
 - Combat Loggers have been temporarily disabled.
 - Removed blood
-- In-game music reduced.
+- In-game music volume reduced.
 - Global Buffs are now more powerful.
 - Temporally disabled the Varenglade dungeon.
 
