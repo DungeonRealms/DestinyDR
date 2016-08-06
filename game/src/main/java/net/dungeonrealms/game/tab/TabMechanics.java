@@ -47,10 +47,8 @@ public class TabMechanics implements GenericMechanic {
         COLUMNS.add(new FriendTabColumn().register());
         COLUMNS.add(new StatisticsTabColumn().register());
 
-        COLUMNS.forEach(col -> {
-            col.getVariablesToRegister().forEach(var -> BungeeTabListPlusBukkitAPI.registerVariable(DungeonRealms.getInstance(), var));
-
-        });
+        COLUMNS.forEach(col ->
+                col.getVariablesToRegister().forEach(var -> BungeeTabListPlusBukkitAPI.registerVariable(DungeonRealms.getInstance(), var)));
     }
 
     @Override
