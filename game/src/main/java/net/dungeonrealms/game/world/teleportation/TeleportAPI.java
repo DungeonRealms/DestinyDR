@@ -32,26 +32,32 @@ public class TeleportAPI {
      * @since 1.0
      */
     public static boolean canUseHearthstone(Player player) {
-        if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(player.getUniqueId())) {
-            if (GameAPI.getGamePlayer(Bukkit.getPlayer(player.getUniqueId())).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                    if (!TutorialIsland.getInstance().onTutorialIsland(player.getLocation())) {
-                        if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(player.getUniqueId()) <= 0) {
-                            return true;
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because it has not finished its cooldown" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
-                        }
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because have not yet completed our tutorial.");
-                    }
-                } else {
-                    player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because you are not in the main world.");
-                }
-            } else {
-                player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because of your unlawful alignment.");
-            }
+        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
+            player.sendMessage(ChatColor.RED + "You have been jailed.");
+            return false;
         }
-        return false;
+        if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(player.getUniqueId()) > 0) {
+            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because it has not finished its cooldown" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
+            return false;
+        }
+        if (TutorialIsland.getInstance().onTutorialIsland(player.getLocation())) {
+            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because have not yet completed our tutorial.");
+            return false;
+        }
+        if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because you are not in the main world.");
+            return false;
+        }
+
+        if (GameAPI.getGamePlayer(Bukkit.getPlayer(player.getUniqueId())).getPlayerAlignment().equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC)) {
+            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because you are currently Chaotic.");
+            return false;
+        }
+
+        if (!Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(player.getUniqueId())) {
+            return false;
+        }
+        return true;
     }
 
     /**
