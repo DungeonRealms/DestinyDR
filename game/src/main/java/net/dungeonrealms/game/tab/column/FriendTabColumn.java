@@ -45,17 +45,17 @@ public class FriendTabColumn extends Column {
                     friends.stream().filter(uuid -> Bukkit.getPlayer(UUID.fromString(uuid)) != null)
                             .forEach(uuid -> onlineFriends.add(Bukkit.getPlayer(UUID.fromString(uuid)).getName()));
 
-                    if (friends.isEmpty()) if (cursor == 0)
+                    if (onlineFriends.isEmpty()) if (cursor == 0)
                         return ChatColor.RED + "No friends on this shard!";
                     else return "";
                     try {
-                        if (friends.get(cursor) == null)
+                        if (onlineFriends.get(cursor) == null)
                             return "";
                     } catch (Exception ignored) {
                         return "";
                     }
 
-                    return ChatColor.GREEN + friends.get(cursor);
+                    return ChatColor.GREEN + onlineFriends.get(cursor);
                 }
             });
         }
