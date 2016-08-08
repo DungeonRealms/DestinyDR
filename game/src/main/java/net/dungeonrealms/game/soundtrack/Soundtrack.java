@@ -136,6 +136,8 @@ public class Soundtrack implements GenericMechanic, Listener {
 
         if (region.contains("cyren") && !region.contains("plains")) {
             getPlayer(EnumSong.CYRENNICA_2).addPlayer(player);
+        } else if (region.equals("villagesafe")) {
+            getPlayer(EnumSong.HARRISONS_1).addPlayer(player);
         } else if (!GameAPI.isInSafeRegion(player.getLocation()) && GameAPI.isNonPvPRegion(player.getLocation())
                 && !KarmaHandler.PLAYER_LOCATIONS.get(player).equals(KarmaHandler.EnumPlayerAlignments.NEUTRAL)) {
             getPlayer(EnumSong.WILDERNESS_1).addPlayer(player);
