@@ -27,12 +27,7 @@ public class DatabaseDriver {
     public static MongoClientURI mongoClientURI = null;
     public static MongoDatabase database = null;
 
-    public static MongoCollection<Document> playerData = null;
-    public static MongoCollection<Document> shardData = null;
-    public static MongoCollection<Document> bans = null;
-    public static MongoCollection<Document> guilds = null;
-    public static MongoCollection<Document> quests = null;
-
+    public static MongoCollection<Document> playerData, shardData, bans, guilds, quests;
     protected boolean cacheData = true;
 
     public void startInitialization(boolean cacheData) {

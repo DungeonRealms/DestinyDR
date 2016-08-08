@@ -349,7 +349,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStaffChat("staffchat", "/<command> [args]", "Send a message to the staff chat.", Arrays.asList("sc", "s")));
         cm.registerCommand(new CommandBroadcast("broadcast", "/<command> [args]", "Send a formatted broadcast to all shards..", Collections.singletonList("sayall")));
         cm.registerCommand(new CommandGm("gm", "/<command> [args]", "Displays the Game Master toggles."));
-        cm.registerCommand(new CommandPlayerFix("playerfix", "/<command> [args]", "Sets a player's status to offline so he can login.", Collections.singletonList("pfix")));
+        cm.registerCommand(new CommandPlayerFix("playerfix", "/<command> [args]", "Sets a player's state to offline so he can login.", Collections.singletonList("pfix")));
         cm.registerCommand(new CommandSudo("sudo", "/<command> [args]", "Sudo command."));
         cm.registerCommand(new CommandSudoChat("sudochat", "/<command> [args]", "Sudo Chat command."));
 
@@ -491,11 +491,11 @@ public class DungeonRealms extends JavaPlugin {
 
 
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
-            if (System.currentTimeMillis() >= (REBOOT_TIME)) {
+            if (System.currentTimeMillis() >= (REBOOT_TIME - 300000L)) {
                 scheduleRestartTask();
                 Bukkit.getScheduler().cancelTask(rebooterID);
             }
-        }, 0, 5 * 20);
+        }, 0, 100);
 
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
@@ -522,14 +522,14 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     private void scheduleRestartTask() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 60, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
 
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 setAcceptPlayers(false);
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(),
-                        () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")));
+                        () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 60, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")));
             }
         }, 240000L);
 

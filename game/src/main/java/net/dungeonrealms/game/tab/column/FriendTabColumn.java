@@ -8,8 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.UUID;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 8/5/2016
@@ -25,7 +26,7 @@ public class FriendTabColumn extends Column {
                 public String getReplacement(Player player) {
                     if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) return "";
 
-                    List<String> friends = new CopyOnWriteArrayList<>(FriendHandler.getInstance().getFriendsList(player.getUniqueId()));
+                    List<String> friends = FriendHandler.getInstance().getFriendsList(player.getUniqueId());
 
                     if (friends.size() == 0) {
                         switch (cursor) {
@@ -38,11 +39,14 @@ public class FriendTabColumn extends Column {
                         return "";
                     }
 
+                    List<String> onlineFriends = new ArrayList<>();
+
                     // MAKE SURE FRIENDS ARE ONLINE //
-                    friends.stream().filter(name -> Bukkit.getPlayer(name) == null).forEach(friends::remove);
+                    friends.stream().filter(uuid -> Bukkit.getPlayer(UUID.fromString(uuid)) != null)
+                            .forEach(uuid -> onlineFriends.add(Bukkit.getPlayer(UUID.fromString(uuid)).getName()));
 
                     if (friends.isEmpty()) if (cursor == 0)
-                        return ChatColor.RED + "No friends on this shard";
+                        return ChatColor.RED + "No friends on this shard!";
                     else return "";
                     try {
                         if (friends.get(cursor) == null)

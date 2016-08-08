@@ -19,18 +19,17 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/26/2016
  */
 class RealmMaterialFactory {
 
-    // WHERE WE CACHE ALL THE STORES STATICALLY //
-    private static List<RealmMaterialStore> REALM_MATERIAL_STORES = new CopyOnWriteArrayList<>();
-
     // THIS IS HOW MANY PAGES WE NEED FOR NOW //
     private static final int MAX_PAGES = 3;
+
+    // WHERE WE CACHE ALL THE STORES STATICALLY //
+    private static RealmMaterialStore[] REALM_MATERIAL_STORES = new RealmMaterialStore[MAX_PAGES];
 
     // THE INSTANCE //
     private static RealmMaterialFactory instance = null;
@@ -42,7 +41,7 @@ class RealmMaterialFactory {
 
     private RealmMaterialFactory() {
         for (int i = 0; i < MAX_PAGES; i++)
-            REALM_MATERIAL_STORES.add(new RealmMaterialStore("Realm Material Store (" + (i + 1) + "/" + MAX_PAGES + ")"));
+            REALM_MATERIAL_STORES[i] = new RealmMaterialStore("Realm Material Store (" + (i + 1) + "/" + MAX_PAGES + ")");
 
         // ALL SHOP ITEMS // IKR? FOKING MESSY //
         List<RealmMaterialItem> items = new ArrayList<>();
@@ -216,7 +215,7 @@ class RealmMaterialFactory {
 
 
         // FILLS UP STORES //
-        Iterator<RealmMaterialStore> iterator = REALM_MATERIAL_STORES.iterator();
+        Iterator<RealmMaterialStore> iterator = Arrays.stream(REALM_MATERIAL_STORES).iterator();
 
         RealmMaterialStore cursor = iterator.next();
 
@@ -318,7 +317,8 @@ class RealmMaterialFactory {
 
     public void openMaterialStore(Player player, int pageIndex) {
         player.closeInventory();
-        REALM_MATERIAL_STORES.get(pageIndex).open(player);
+
+        REALM_MATERIAL_STORES[pageIndex].open(player);
     }
 
     private class RealmMaterialItem extends GUIButton {

@@ -7,7 +7,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,8 +45,8 @@ public class CommandResetRealm extends BaseCommand {
         if (Realms.getInstance().isRealmCached(player.getUniqueId())) {
             RealmToken realm = Realms.getInstance().getToken(player.getUniqueId());
 
-            if (realm.getStatus() != RealmStatus.OPENED && realm.getStatus() != RealmStatus.CLOSED) {
-                player.sendMessage(Realms.getInstance().getRealmStatusMessage(realm.getStatus()));
+            if (realm.getState() != RealmState.OPENED && realm.getState() != RealmState.CLOSED) {
+                player.sendMessage(Realms.getInstance().getRealmStatusMessage(realm.getState()));
                 return true;
             }
         }

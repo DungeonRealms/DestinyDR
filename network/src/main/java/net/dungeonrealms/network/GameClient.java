@@ -21,7 +21,7 @@ public class GameClient
     public GameClient() {
         this.client = new Client();
         this.client.addListener(this);
-        this.client.setKeepAliveTCP(1000);
+        this.client.setKeepAliveUDP(1000);
         this.client.start();
 
         registerClasses(client.getKryo());

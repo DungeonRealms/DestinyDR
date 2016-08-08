@@ -35,9 +35,9 @@ public class Soundtrack implements GenericMechanic, Listener {
     protected static Soundtrack instance = null;
 
     protected static final long LOOP_DELAY = 100000L;
-    protected static final long START_DELAY = 25000L;
+    protected static final long START_DELAY = 20000L;
 
-    private static final byte DEFAULT_VOLUME = 0x1E;
+    private static final byte DEFAULT_VOLUME = 30;
 
     protected HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
     protected HashMap<String, Byte> playerVolume = new HashMap<String, Byte>();
@@ -134,8 +134,10 @@ public class Soundtrack implements GenericMechanic, Listener {
 
         String region = event.getRegion();
 
-        if (region.contains("cyren")) {
+        if (region.contains("cyren") && !region.contains("plains")) {
             getPlayer(EnumSong.CYRENNICA_2).addPlayer(player);
+        } else if (region.equals("villagesafe")) {
+            getPlayer(EnumSong.HARRISONS_1).addPlayer(player);
         } else if (!GameAPI.isInSafeRegion(player.getLocation()) && GameAPI.isNonPvPRegion(player.getLocation())
                 && !KarmaHandler.PLAYER_LOCATIONS.get(player).equals(KarmaHandler.EnumPlayerAlignments.NEUTRAL)) {
             getPlayer(EnumSong.WILDERNESS_1).addPlayer(player);
