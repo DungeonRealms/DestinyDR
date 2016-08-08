@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -39,7 +40,7 @@ public class FriendTabColumn extends Column {
                     }
 
                     // MAKE SURE FRIENDS ARE ONLINE //
-                    friends.stream().filter(name -> Bukkit.getPlayer(name) == null).forEach(friends::remove);
+                    friends.stream().filter(uuid -> Bukkit.getPlayer(UUID.fromString(uuid)) == null).forEach(friends::remove);
 
                     if (friends.isEmpty()) if (cursor == 0)
                         return ChatColor.RED + "No friends on this shard";

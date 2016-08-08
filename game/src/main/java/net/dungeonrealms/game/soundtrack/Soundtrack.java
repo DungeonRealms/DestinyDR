@@ -35,9 +35,9 @@ public class Soundtrack implements GenericMechanic, Listener {
     protected static Soundtrack instance = null;
 
     protected static final long LOOP_DELAY = 100000L;
-    protected static final long START_DELAY = 25000L;
+    protected static final long START_DELAY = 20000L;
 
-    private static final byte DEFAULT_VOLUME = 0x1E;
+    private static final byte DEFAULT_VOLUME = 30;
 
     protected HashMap<String, ArrayList<SongPlayer>> playingSongs = new HashMap<String, ArrayList<SongPlayer>>();
     protected HashMap<String, Byte> playerVolume = new HashMap<String, Byte>();

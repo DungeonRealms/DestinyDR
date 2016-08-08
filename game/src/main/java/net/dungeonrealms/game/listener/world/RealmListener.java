@@ -24,7 +24,7 @@ import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -183,7 +183,7 @@ public class RealmListener implements Listener {
                         p.sendMessage("");
 
                         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                        realm.setStatus(RealmStatus.CLOSED);
+                        realm.setState(RealmState.CLOSED);
 
                     } else REALMS.removeRealm(entry.getKey(), true);
 
@@ -259,7 +259,7 @@ public class RealmListener implements Listener {
                 p.setAcknowledgeExpiration(false);
             }
 
-            if (realm.getPortalLocation() == null || realm.getStatus() != RealmStatus.OPENED) continue;
+            if (realm.getPortalLocation() == null || realm.getState() != RealmState.OPENED) continue;
 
             Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
 
@@ -971,7 +971,7 @@ public class RealmListener implements Listener {
                 if (!REALMS.isRealmLoaded(realm.getOwner()))
                     return;
 
-                if (realm.getStatus() != RealmStatus.OPENED) return;
+                if (realm.getState() != RealmState.OPENED) return;
 
                 // SAVES THEIR LOCATION
                 DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, GameAPI.locationToString(event.getFrom()), true);

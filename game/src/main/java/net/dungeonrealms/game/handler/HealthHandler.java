@@ -192,16 +192,16 @@ public class HealthHandler implements GenericMechanic {
             playerEXPInfo = ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "MAX";
         }
         BossBarAPI.removeAllBars(player);
-        BossBarAPI.addBar(player, new TextComponent("    " + playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), color, getStyle(healthToDisplay), healthToDisplay);
+        BossBarAPI.addBar(player, new TextComponent("    " + playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), color, getStyle(maxHP), healthToDisplay);
     }
 
-    private BossBarAPI.Style getStyle(double percentHealth) {
+    private BossBarAPI.Style getStyle(double maxHealth) {
 
-        if (percentHealth >= 80) {
+        if (maxHealth >= 2000) {
             return BossBarAPI.Style.NOTCHED_20;
-        } else if (percentHealth >= 60) {
+        } else if (maxHealth >= 1000) {
             return BossBarAPI.Style.NOTCHED_12;
-        } else if (percentHealth >= 40) {
+        } else if (maxHealth >= 500) {
             return BossBarAPI.Style.NOTCHED_10;
         }
 
