@@ -134,7 +134,7 @@ public class Soundtrack implements GenericMechanic, Listener {
 
         String region = event.getRegion();
 
-        if (region.contains("cyren")) {
+        if (region.contains("cyren") && !region.contains("plains")) {
             getPlayer(EnumSong.CYRENNICA_2).addPlayer(player);
         } else if (!GameAPI.isInSafeRegion(player.getLocation()) && GameAPI.isNonPvPRegion(player.getLocation())
                 && !KarmaHandler.PLAYER_LOCATIONS.get(player).equals(KarmaHandler.EnumPlayerAlignments.NEUTRAL)) {
