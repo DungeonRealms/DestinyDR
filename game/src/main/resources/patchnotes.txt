@@ -4,6 +4,7 @@ Build <build>
 - Added a GM tool to detect all duped items on the server.
 - New and improved tablist
 - More tracks for wilderness and chaotic regions
+- Duranor The Cruel and The Mother of Doom now have custom loot.
 
 &8Changes&0
 - Anti-duplication is now enabled
