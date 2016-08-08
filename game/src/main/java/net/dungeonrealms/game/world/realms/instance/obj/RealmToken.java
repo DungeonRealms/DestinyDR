@@ -23,7 +23,7 @@ public class RealmToken {
 
     private final String name;
 
-    private RealmStatus status;
+    private RealmState state;
 
     private Location portalLocation;
 

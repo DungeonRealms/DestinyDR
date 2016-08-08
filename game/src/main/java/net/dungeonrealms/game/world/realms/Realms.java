@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.realms.instance.RealmInstance;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -223,7 +223,7 @@ public interface Realms extends GenericMechanic {
      * @param status Status of realm
      * @return Status message
      */
-    String getRealmStatusMessage(RealmStatus status);
+    String getRealmStatusMessage(RealmState status);
 
 
     /**
@@ -312,9 +312,9 @@ public interface Realms extends GenericMechanic {
 
     /**
      * @param uuid Owner of realm
-     * @return Players realm status.
+     * @return Players realm state.
      */
-    RealmStatus getRealmStatus(UUID uuid);
+    RealmState getRealmStatus(UUID uuid);
 
     /**
      * @param portalLocation Location

@@ -28,7 +28,7 @@ import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -98,6 +98,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
         // REMOVE ANY WORLD FILES THAT ARE STILL THE ROOT FOLDER FOR SOME REASON //
         Utils.log.info("DungeonRealms Registering RealmsInstance() ... Cleaning worlds that are still cached ..");
+
         Arrays.stream(rootFolder.listFiles())
                 .filter(file -> GameAPI.isUUID(file.getName())).forEach(f -> {
             try {
@@ -146,7 +147,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
         // CREATE REALM TOKEN //
         RealmToken realm = new RealmToken(player.getUniqueId(), player.getName());
-        realm.setStatus(RealmStatus.DOWNLOADING);
+        realm.setState(RealmState.DOWNLOADING);
 
         cache(player, realm);
 
@@ -161,7 +162,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
                     player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
 
                     realm.setLoaded(true);
-                    realm.setStatus(RealmStatus.CLOSED);
+                    realm.setState(RealmState.CLOSED);
 
                     if (doAfter != null)
                         doAfter.run();
@@ -272,14 +273,14 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
         RealmToken realm = getToken(player.getUniqueId());
 
-        if (realm.getStatus() == RealmStatus.UPGRADING) {
+        if (realm.getState() == RealmState.UPGRADING) {
             DecimalFormat format = new DecimalFormat("#.##");
             player.sendMessage(ChatColor.RED + "This realm is currently UPGRADING. " + ChatColor.BOLD + format.format(realm.getUpgradeProgress()) + "% Complete.");
             return;
         }
 
-        if (realm.getStatus() != RealmStatus.OPENED && realm.getStatus() != RealmStatus.CLOSED) {
-            player.sendMessage(getRealmStatusMessage(realm.getStatus()));
+        if (realm.getState() != RealmState.OPENED && realm.getState() != RealmState.CLOSED) {
+            player.sendMessage(getRealmStatusMessage(realm.getState()));
             return;
         }
 
@@ -300,7 +301,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         realm.setHologram(realmHologram);
         updateRealmHologram(player.getUniqueId());
 
-        realm.setStatus(RealmStatus.OPENED);
+        realm.setState(RealmState.OPENED);
 
         Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* Realm Portal OPENED *");
 
@@ -355,7 +356,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             closeRealmPortal(player.getUniqueId(), true, ChatColor.RED + player.getName() + " is resetting this realm...");
 
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_LAST_RESET, System.currentTimeMillis(), true);
-        getToken(player.getUniqueId()).setStatus(RealmStatus.RESETTING);
+        getToken(player.getUniqueId()).setState(RealmState.RESETTING);
 
         // UNLOAD WORLD
         unloadRealmWorld(player.getUniqueId());
@@ -363,7 +364,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         loadRealm(player, true,
                 () -> Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                     setRealmTitle(player.getUniqueId(), "");
-                    getToken(player.getUniqueId()).setStatus(RealmStatus.CLOSED);
+                    getToken(player.getUniqueId()).setState(RealmState.CLOSED);
                     Utils.sendCenteredMessage(player, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your realm has successfully been reset!");
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
 
@@ -441,7 +442,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
         // SET REALM STATUS //
         RealmToken realm = getToken(player.getUniqueId());
-        realm.setStatus(RealmStatus.UPGRADING);
+        realm.setState(RealmState.UPGRADING);
 
         World world = realm.getWorld();
 
@@ -479,7 +480,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
         RealmToken realm = Realms.getInstance().getToken(player.getUniqueId());
 
-        if (realm.getStatus() == RealmStatus.UPGRADING) return;
+        if (realm.getState() == RealmState.UPGRADING) return;
 
         Realms.getInstance().getRealmWorld(player.getUniqueId())
                 .getPlayers().forEach(p -> p.teleport(realm.getPortalLocation()));
@@ -487,7 +488,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         if (isRealmPortalOpen(player.getUniqueId()))
             closeRealmPortal(player.getUniqueId(), true, ChatColor.RED + "The owner of this realm has LOGGED OUT.");
 
-        realm.setStatus(RealmStatus.REMOVING);
+        realm.setState(RealmState.REMOVING);
 
         // MUST BE SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> removeRealm(player.getUniqueId(), true), 60L);
@@ -566,7 +567,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         if (!isRealmCached(uuid)) return;
 
         RealmToken realm = getToken(uuid);
-        realm.setStatus(RealmStatus.UPLOADING);
+        realm.setState(RealmState.UPLOADING);
 
         // PLAYER'S REALM IS STILL UPLOADING \\
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, true, false);
@@ -605,7 +606,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             inputStream.close();
             Utils.log.info("[REALM] [ASYNC] Successfully uploaded player realm " + uuid.toString());
         } catch (IOException | ZipException e) {
-            getToken(uuid).setStatus(RealmStatus.CLOSED);
+            getToken(uuid).setState(RealmState.CLOSED);
             e.printStackTrace();
             if (doAfter != null)
                 doAfter.accept(false);
@@ -618,7 +619,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             // SEND PLAYER UPDATE PACKET IF THEY SWITCHED SHARDS //
             GameAPI.updatePlayerData(uuid);
 
-            getToken(uuid).setStatus(RealmStatus.CLOSED);
+            getToken(uuid).setState(RealmState.CLOSED);
 
             if (doAfter != null)
                 doAfter.accept(true);
@@ -655,9 +656,9 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     }
 
     @Override
-    public RealmStatus getRealmStatus(UUID uuid) {
+    public RealmState getRealmStatus(UUID uuid) {
         if (!isRealmCached(uuid)) return null;
-        return getToken(uuid).getStatus();
+        return getToken(uuid).getState();
     }
 
     @Override
@@ -693,7 +694,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             realm.getHologram().delete();
 
         realm.setPortalLocation(null);
-        realm.setStatus(RealmStatus.CLOSED);
+        realm.setState(RealmState.CLOSED);
 
         realm.getWorld().getPlayers().stream().filter(p -> p != null).forEach(p -> {
             if (kickMessage != null && p.getUniqueId() != uuid)
@@ -723,7 +724,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         if (isRealmPortalOpen(uuid))
             closeRealmPortal(uuid, true, null);
 
-        getToken(uuid).setStatus(RealmStatus.REMOVING);
+        getToken(uuid).setState(RealmState.REMOVING);
 
         // UNLOAD WORLD
         unloadRealmWorld(uuid);
@@ -799,7 +800,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     }
 
     @Override
-    public String getRealmStatusMessage(RealmStatus status) {
+    public String getRealmStatusMessage(RealmState status) {
         String message = ChatColor.RED + "Please wait your realm is being ";
 
         switch (status) {
@@ -870,14 +871,14 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     @Override
     public boolean realmsAreUpgrading() {
         for (RealmToken realm : getCache().values())
-            if (realm.getStatus() == RealmStatus.UPGRADING)
+            if (realm.getState() == RealmState.UPGRADING)
                 return true;
         return false;
     }
 
     @Override
     public boolean isRealmPortalOpen(UUID uuid) {
-        return isRealmLoaded(uuid) && getToken(uuid).getStatus() == RealmStatus.OPENED;
+        return isRealmLoaded(uuid) && getToken(uuid).getState() == RealmState.OPENED;
     }
 
     @Override
