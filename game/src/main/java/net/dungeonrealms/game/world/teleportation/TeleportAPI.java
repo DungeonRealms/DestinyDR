@@ -32,6 +32,11 @@ public class TeleportAPI {
      * @since 1.0
      */
     public static boolean canUseHearthstone(Player player) {
+        if (GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).isJailed()) {
+            player.sendMessage(ChatColor.RED + "You have been jailed.");
+            return false;
+        }
+
         if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(player.getUniqueId())) {
             if (GameAPI.getGamePlayer(Bukkit.getPlayer(player.getUniqueId())).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                 if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
