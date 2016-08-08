@@ -37,7 +37,7 @@ public class TeleportAPI {
             return false;
         }
         if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(player.getUniqueId()) > 0) {
-            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because it has not finished its cooldown" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)")
+            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because it has not finished its cooldown" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
             return false;
         }
         if (TutorialIsland.getInstance().onTutorialIsland(player.getLocation())) {
