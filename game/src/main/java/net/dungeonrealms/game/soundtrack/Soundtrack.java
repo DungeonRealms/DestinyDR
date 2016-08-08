@@ -6,7 +6,6 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
-import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -138,11 +137,9 @@ public class Soundtrack implements GenericMechanic, Listener {
             getPlayer(EnumSong.CYRENNICA_2).addPlayer(player);
         } else if (region.equals("villagesafe")) {
             getPlayer(EnumSong.HARRISONS_1).addPlayer(player);
-        } else if (!GameAPI.isInSafeRegion(player.getLocation()) && GameAPI.isNonPvPRegion(player.getLocation())
-                && !KarmaHandler.PLAYER_LOCATIONS.get(player).equals(KarmaHandler.EnumPlayerAlignments.NEUTRAL)) {
+        } else if (!GameAPI.isInSafeRegion(player.getLocation()) && GameAPI.isNonPvPRegion(player.getLocation())) {
             getPlayer(EnumSong.WILDERNESS_1).addPlayer(player);
-        } else if (!GameAPI.isInSafeRegion(player.getLocation()) && !GameAPI.isNonPvPRegion(player.getLocation())
-                && !KarmaHandler.PLAYER_LOCATIONS.get(player).equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC)) {
+        } else if (!GameAPI.isInSafeRegion(player.getLocation()) && !GameAPI.isNonPvPRegion(player.getLocation())) {
             getPlayer(EnumSong.CHAOTIC_1).addPlayer(player);
         }
     }
