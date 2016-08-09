@@ -174,24 +174,22 @@ public class AntiDuplication implements GenericMechanic {
 
     private static void banAndBroadcast(Player p, int i) {
         // @note: Please don't announce things to the public, everything should be a GM alert or silently logged.
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                () -> PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null), 3600);
+        PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
 
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
-                "Banning " + ChatColor.RED + " player " + p.getName() + " in 3 minutes for possession of DUPLICATED EQUIPMENT. Amount: " + i);
+                "Banning " + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);
         //todo: add system for broadcasting SHOW of duped items
         GameAPI.sendNetworkMessage("GMMessage", "");
 //        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
     }
 
     private static void banAndBroadcast(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                () -> PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null), 3600);
+        PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
 
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
-                "Banning " + ChatColor.RED + " player " + p.getName() + " in 3 minutes for possession of " + orbCount + " orbs, " + enchantCount +
+                "Banned " + ChatColor.RED + " player " + p.getName() + " for possession of " + orbCount + " orbs, " + enchantCount +
                 " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " gems on shard " + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
         GameAPI.sendNetworkMessage("GMMessage", "");
 //        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
