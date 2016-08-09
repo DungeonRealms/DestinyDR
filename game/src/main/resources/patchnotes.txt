@@ -14,6 +14,7 @@ Build <build>
 - In-game music volume reduced.
 - Global Buffs are now more powerful.
 - Temporally disabled the Varenglade dungeon.
+- Fixed gem duplications
 
 &4Bug Fixes&0
 - Fixed shop stealing

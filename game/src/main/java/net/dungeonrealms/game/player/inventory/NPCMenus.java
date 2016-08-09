@@ -281,6 +281,19 @@ public class NPCMenus {
 
         }
 
+        for (int i = 0; i < inv.getContents().length; i++) {
+            ItemStack item = inv.getContents()[i];
+            if (item == null || item.getType().equals(Material.AIR)) {
+
+                ItemStack spaceFiller = new ItemStack(Material.THIN_GLASS);
+                ItemMeta meta = spaceFiller.getItemMeta();
+                meta.setDisplayName(" ");
+                spaceFiller.setItemMeta(meta);
+
+                inv.setItem(i, spaceFiller);
+            }
+        }
+
         player.openInventory(inv);
     }
 
