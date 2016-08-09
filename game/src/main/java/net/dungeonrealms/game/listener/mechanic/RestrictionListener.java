@@ -30,7 +30,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -124,21 +127,6 @@ public class RestrictionListener implements Listener {
         }
     }
 
-    /**
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void playerClickShopInventory(InventoryClickEvent event) {
-        if (event.getAction() == InventoryAction.NOTHING) return;
-
-        if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-            event.setCancelled(true);
-        }
-        if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
-            event.setCancelled(true);
-        }
-    }
-
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
@@ -147,6 +135,15 @@ public class RestrictionListener implements Listener {
             event.setCancelled(true);
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void itemPickupOpenInventory(PlayerPickupItemEvent event) {
+        if (event.getPlayer().getOpenInventory() == null) return;
+        String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
+        if (ownerName == null) return;
+        Shop shop = ShopMechanics.getShop(ownerName);
+        if (shop == null) return;
+        event.setCancelled(true);
+    }
 
     @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true)

@@ -54,7 +54,7 @@ public class ShopListener implements Listener {
         if (shop == null) return;
         if (p.hasMetadata("pricing")) return;
         if (p.getInventory().firstEmpty() == -1) {
-            p.sendMessage(ChatColor.RED + "Please clear some inventory space before your browse this shop.");
+            p.sendMessage(ChatColor.RED + "Please clear some inventory space before browsing this shop.");
             return;
         }
         if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
