@@ -16,8 +16,10 @@ Build <build>
 - Temporally disabled the Varenglade dungeon.
 - Fixed gem duplications
 
+
 &4Bug Fixes&0
-- Fixed shop stealing
+- Fixed banknote issues
+- Fixed shop stealing bug
 - Fishes no longer consume on cook, other eating bugs fixed.
 - Fixed mining fatigue not applying in rare cases.
 - Fixed some sharding synchronization issues.
