@@ -175,7 +175,7 @@ public class AntiDuplication implements GenericMechanic {
     private static void banAndBroadcast(Player p, int i) {
         // @note: Please don't announce things to the public, everything should be a GM alert or silently logged.
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                () -> PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null), 180);
+                () -> PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null), 3600);
 
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
@@ -187,7 +187,7 @@ public class AntiDuplication implements GenericMechanic {
 
     private static void banAndBroadcast(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                () -> PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null), 180);
+                () -> PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null), 3600);
 
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +

@@ -145,6 +145,16 @@ public class RestrictionListener implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onInteract(PlayerInteractEvent event) {
+        if (event.getPlayer().getOpenInventory() == null) return;
+        String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
+        if (ownerName == null) return;
+        Shop shop = ShopMechanics.getShop(ownerName);
+        if (shop == null) return;
+        event.setCancelled(true);
+    }
+
     @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true)
     public void onCraftItem(CraftItemEvent event) {
