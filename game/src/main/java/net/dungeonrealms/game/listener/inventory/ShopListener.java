@@ -61,7 +61,7 @@ public class ShopListener implements Listener {
         int freeArmorSlots = 0;
 
         for (int i = 0; i < armor.length; i++) {
-            ItemStack toCheck = inventory[i];
+            ItemStack toCheck = armor[i];
 
             if (toCheck == null || toCheck.getType() == Material.AIR) {
                 freeArmorSlots++;
