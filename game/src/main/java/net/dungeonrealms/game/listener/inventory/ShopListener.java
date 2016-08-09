@@ -46,25 +46,26 @@ public class ShopListener implements Listener {
     public void playerOpenShopInventory(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block block = event.getClickedBlock();
+        Player p = event.getPlayer()''
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
-        if (event.getPlayer().isSneaking()) return;
+        if (p.isSneaking()) return;
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
-        if (event.getPlayer().hasMetadata("pricing")) return;
-        if (event.getPlayer().getInventory().firstEmpty() == -1) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Please clear some inventory space before your browse this shop.");
+        if (p.hasMetadata("pricing")) return;
+        if (p.getInventory().firstEmpty() == -1) {
+            p.sendMessage(ChatColor.RED + "Please clear some inventory space before your browse this shop.");
             return;
         }
         if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
-            event.getPlayer().openInventory(shop.getInventory());
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
-            event.getPlayer().setCanPickupItems(false);
+            p.openInventory(shop.getInventory());
+            p.playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
+            p.setCanPickupItems(false);
         } else {
             if (shop.isopen) {
-                event.getPlayer().openInventory(shop.getInventory());
-                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
-                event.getPlayer().setCanPickupItems(false);
+                p.openInventory(shop.getInventory());
+                p.playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
+                p.setCanPickupItems(false);
             }
         }
     }
