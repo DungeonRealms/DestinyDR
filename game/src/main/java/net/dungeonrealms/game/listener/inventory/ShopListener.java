@@ -46,7 +46,7 @@ public class ShopListener implements Listener {
     public void playerOpenShopInventory(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block block = event.getClickedBlock();
-        Player p = event.getPlayer()''
+        Player p = event.getPlayer();
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
         if (p.isSneaking()) return;
