@@ -857,9 +857,9 @@ public class ItemListener implements Listener {
         if (eaten) {
             p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1F);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1.5F), 4L);
+            p.updateInventory();
         }
 
-        p.updateInventory();
 
 
     }
