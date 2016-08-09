@@ -53,10 +53,23 @@ public class ShopListener implements Listener {
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
         if (p.hasMetadata("pricing")) return;
-        if (p.getInventory().firstEmpty() == -1) {
+
+        int freeSlots = 0;
+        ItemStack[] inventory = p.getInventory().getContents();
+
+        for (int i = 0; i < inventory.length; i++) {
+            ItemStack toCheck = inventory[i];
+
+            if (toCheck == null || toCheck.getType() == Material.AIR) {
+                freeSlots++;
+            }
+        }
+
+        if (freeSlots < 2) {
             p.sendMessage(ChatColor.RED + "Please clear some inventory space before browsing this shop.");
             return;
         }
+
         if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
             p.openInventory(shop.getInventory());
             p.playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
