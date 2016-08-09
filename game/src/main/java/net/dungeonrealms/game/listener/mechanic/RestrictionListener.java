@@ -130,14 +130,15 @@ public class RestrictionListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
-
-        if (command.equalsIgnoreCase("me") && Rank.isDev(event.getPlayer()))
+        if (command.equalsIgnoreCase("me") && !Rank.isDev(event.getPlayer()))
             event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void itemPickupOpenInventory(PlayerPickupItemEvent event) {
         if (event.getPlayer().getOpenInventory() == null) return;
+        if(!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
+
         String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
         if (ownerName == null) return;
         Shop shop = ShopMechanics.getShop(ownerName);
@@ -148,6 +149,8 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getPlayer().getOpenInventory() == null) return;
+        if(!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
+
         String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
         if (ownerName == null) return;
         Shop shop = ShopMechanics.getShop(ownerName);
