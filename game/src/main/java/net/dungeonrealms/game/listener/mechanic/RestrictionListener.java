@@ -133,6 +133,10 @@ public class RestrictionListener implements Listener {
             event.setCancelled(true);
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void itemPickupOpenInventory(PlayerPickupItemEvent event) {
+        if (event.getPlayer().getOpenInventory() != null) event.setCancelled(true);
+    }
 
     @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true)

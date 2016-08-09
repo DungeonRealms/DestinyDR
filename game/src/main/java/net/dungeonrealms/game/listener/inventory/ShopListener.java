@@ -46,7 +46,7 @@ public class ShopListener implements Listener {
     public void playerOpenShopInventory(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block block = event.getClickedBlock();
-        Player p = event.getPlayer()''
+        Player p = event.getPlayer();
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
         if (p.isSneaking()) return;
@@ -54,7 +54,7 @@ public class ShopListener implements Listener {
         if (shop == null) return;
         if (p.hasMetadata("pricing")) return;
         if (p.getInventory().firstEmpty() == -1) {
-            p.sendMessage(ChatColor.RED + "Please clear some inventory space before your browse this shop.");
+            p.sendMessage(ChatColor.RED + "Please clear some inventory space before browsing this shop.");
             return;
         }
         if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
