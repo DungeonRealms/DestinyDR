@@ -841,7 +841,11 @@ public class ClickHandler {
                 break;
             case "Item Vendor":
                 event.setCancelled(true);
+                if (event.getClickedInventory().equals(player.getInventory()))
+                    return;
+
                 ItemStack stack = event.getCurrentItem();
+
                 if (stack == null || stack.getType() == Material.AIR) return;
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
                 if (!nms.getTag().hasKey("worth")) {

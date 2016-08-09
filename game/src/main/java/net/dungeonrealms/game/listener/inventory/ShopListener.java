@@ -54,18 +54,29 @@ public class ShopListener implements Listener {
         if (shop == null) return;
         if (p.hasMetadata("pricing")) return;
 
-        int freeSlots = 0;
         ItemStack[] inventory = p.getInventory().getContents();
+        int freeInvSlots = 0;
+
+        ItemStack[] armor = p.getEquipment().getArmorContents();
+        int freeArmorSlots = 0;
+
+        for (int i = 0; i < armor.length; i++) {
+            ItemStack toCheck = inventory[i];
+
+            if (toCheck == null || toCheck.getType() == Material.AIR) {
+                freeArmorSlots++;
+            }
+        }
 
         for (int i = 0; i < inventory.length; i++) {
             ItemStack toCheck = inventory[i];
 
             if (toCheck == null || toCheck.getType() == Material.AIR) {
-                freeSlots++;
+                freeInvSlots++;
             }
         }
 
-        if (freeSlots < 2) {
+        if ((freeInvSlots - freeArmorSlots) < 2) {
             p.sendMessage(ChatColor.RED + "Please clear some inventory space before browsing this shop.");
             return;
         }
