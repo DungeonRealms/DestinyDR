@@ -18,6 +18,8 @@ import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.shops.Shop;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -135,7 +137,12 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void itemPickupOpenInventory(PlayerPickupItemEvent event) {
-        if (event.getPlayer().getOpenInventory() != null) event.setCancelled(true);
+        if (event.getPlayer().getOpenInventory() == null) return;
+        String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
+        if (ownerName == null) return;
+        Shop shop = ShopMechanics.getShop(ownerName);
+        if (shop == null) return;
+        event.setCancelled(true);
     }
 
     @SuppressWarnings("deprecation")
