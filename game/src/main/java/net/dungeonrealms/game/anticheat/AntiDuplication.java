@@ -164,7 +164,7 @@ public class AntiDuplication implements GenericMechanic {
             /*GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "NOTICE: Banned player " + p.getName() + " for possession of " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
                     "gems at level " + GameAPI.getGamePlayer(p).getLevel());*/
-        } else if (orbCount > 32 || enchantCount > 32 || protectCount > 32 || gemCount > 50000) { // WARN
+        } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // WARN
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: Player " + p.getName() + " has " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
                     "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
