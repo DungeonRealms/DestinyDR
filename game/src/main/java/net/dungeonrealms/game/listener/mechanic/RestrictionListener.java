@@ -131,7 +131,7 @@ public class RestrictionListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
 
-        if (command.equalsIgnoreCase("me") && Rank.isDev(event.getPlayer()))
+        if (command.equalsIgnoreCase("me") && !Rank.isDev(event.getPlayer()))
             event.setCancelled(true);
     }
 
