@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.miscellaneous;
+package net.dungeonrealms.common.game.util;
 
 import java.util.Map;
 import java.util.UUID;

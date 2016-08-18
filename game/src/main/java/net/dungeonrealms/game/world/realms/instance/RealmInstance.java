@@ -122,7 +122,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     }
 
     @Override
-    protected RealmToken cache(Player player, Object... params) {
+    protected RealmToken cache(OfflinePlayer player, Object... params) {
         return getCache().put(player.getUniqueId(), (RealmToken) params[0]);
     }
 

@@ -1,5 +1,6 @@
 package net.dungeonrealms.common.game.database.player;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -58,7 +59,7 @@ public abstract class CachedClientProvider<D> {
      * @param player Player object
      * @param data   Data type
      */
-    public void set(Player player, D data) {
+    public void set(OfflinePlayer player, D data) {
         set(player.getUniqueId(), data);
     }
 
@@ -74,6 +75,6 @@ public abstract class CachedClientProvider<D> {
      * @param player Player
      * @return New player data
      */
-    protected abstract D cache(Player player, Object... params);
+    protected abstract D cache(OfflinePlayer player, Object... params);
 }
 

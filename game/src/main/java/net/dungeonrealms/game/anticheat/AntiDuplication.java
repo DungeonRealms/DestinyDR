@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
+import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -41,6 +42,8 @@ public class AntiDuplication implements GenericMechanic {
     static AntiDuplication instance = null;
 
     public static Set<UUID> EXCLUSIONS = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+    private static CooldownProvider WARNING_SUPPRESSOR = new CooldownProvider();
 
     private final static long CHECK_TICK_FREQUENCY = 60L;
 
@@ -85,7 +88,7 @@ public class AntiDuplication implements GenericMechanic {
 
             for (ItemStack i : inv.getContents()) {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
-                if (RepairAPI.isItemArmorOrWeapon(i)) {
+                if (RepairAPI.isItemArmorOrWeapon(i) || BankMechanics.getInstance().isBankNote(i)) {
 
                     if (i.getAmount() <= 0) continue;
 
@@ -133,7 +136,7 @@ public class AntiDuplication implements GenericMechanic {
 
             for (ItemStack i : inv.getContents()) {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
-                if (RepairAPI.isItemArmorOrWeapon(i)) {
+                if (RepairAPI.isItemArmorOrWeapon(i) || BankMechanics.getInstance().isBankNote(i)) {
 
                     if (i.getAmount() <= 0) continue;
 
@@ -141,15 +144,12 @@ public class AntiDuplication implements GenericMechanic {
                     if (uniqueEpochIdentifier != null)
                         gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
 
-                    if (GameAPI.isOrb(i))
-                        orbCount += i.getAmount();
-                    else if (BankMechanics.getInstance().isBankNote(i))
-                        gemCount += BankMechanics.getInstance().getNoteValue(i) * i.getAmount();
-                    else if (ItemManager.isEnchantScroll(i))
-                        enchantCount += i.getAmount();
-                    else if (ItemManager.isProtectScroll(i))
-                        protectCount += i.getAmount();
-                }
+                } else if (GameAPI.isOrb(i))
+                    orbCount += i.getAmount();
+                else if (ItemManager.isEnchantScroll(i))
+                    enchantCount += i.getAmount();
+                else if (ItemManager.isProtectScroll(i))
+                    protectCount += i.getAmount();
             }
         }
 
@@ -159,10 +159,11 @@ public class AntiDuplication implements GenericMechanic {
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
         } else if (GameAPI.getGamePlayer(p).getLevel() < 20 && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 300000) { // IP BAN
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
-            /*GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "NOTICE: Banned player " + p.getName() + " for possession of " + orbCount + " orbs, " +
-                    enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
-                    "gems at level " + GameAPI.getGamePlayer(p).getLevel());*/
         } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // WARN
+            if (WARNING_SUPPRESSOR.isCooldown(p.getUniqueId()))
+                return;
+
+            WARNING_SUPPRESSOR.cache(p, 120000);
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: Player " + p.getName() + " has " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
                     "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
@@ -243,4 +244,6 @@ public class AntiDuplication implements GenericMechanic {
         nbtItem.setString("u", System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(999) + "R");
         return nbtItem.getItem();
     }
+
+
 }

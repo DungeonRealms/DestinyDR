@@ -52,10 +52,10 @@ public class DeploymentToolApplication {
         if (ftpClient.storeFile(REMOTE_LOCATION, in)) {
             System.out.println("[DEPLOYMENT] Successfully deployed " + (DEV_DEPLOYMENT ? "to development server " : "") + "to remote master FTP server (Took " + ((System.currentTimeMillis() - start)) + "ms) !");
 
-            if (DEV_DEPLOYMENT) {
+//            if (DEV_DEPLOYMENT) {
                 System.exit(1);
-                return;
-            }
+  //              return;
+    //        }
 
             SlackSession session = SlackSessionFactory.createWebSocketSlackSession("xoxb-66008293216-GTP9wV6kFuw1FAk09qzXeaV2");
             session.connect();
