@@ -178,6 +178,8 @@ public class BlockListener implements Listener {
                 p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 1F, 0.75F);
                 e.getBlock().setType(Material.STONE);
 
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
+
                 if (willBreak < breakChance || pickTier > tier) {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     oreToAdd++;
@@ -192,8 +194,6 @@ public class BlockListener implements Listener {
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                     return;
                 }
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
 
 
                 int doubleDrop = rand.nextInt(100) + 1;

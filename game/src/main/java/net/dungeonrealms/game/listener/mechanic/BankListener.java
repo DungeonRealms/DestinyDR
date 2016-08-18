@@ -144,11 +144,12 @@ public class BankListener implements Listener {
                     }
                 }
 
-                p.getInventory().addItem(BankMechanics.createGems(gems));
+                if (gems > 0)
+                    p.getInventory().addItem(BankMechanics.createGems(gems));
 
-                if (remaining > 0) {
+                if (remaining > 0)
                     p.getWorld().dropItem(p.getLocation(), BankMechanics.createGems(remaining));
-                }
+
 
             }
 
@@ -300,7 +301,6 @@ public class BankListener implements Listener {
 
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
-                                player.sendMessage("" + newBalance);
                                 meta.setDisplayName(ChatColor.GREEN + String.valueOf(newBalance) + ChatColor.BOLD.toString()
                                         + ChatColor.GREEN + " GEM(s)");
                                 ArrayList<String> lore = new ArrayList<>();
@@ -466,7 +466,7 @@ public class BankListener implements Listener {
 
                             ItemStack bankItem = new ItemStack(Material.EMERALD);
                             ItemMeta meta = bankItem.getItemMeta();
-                            meta.setDisplayName(ChatColor.GREEN + String.valueOf(newBalance) + size + ChatColor.BOLD.toString()
+                            meta.setDisplayName(ChatColor.GREEN + String.valueOf(newBalance + size) + ChatColor.BOLD.toString()
                                     + ChatColor.GREEN + " GEM(s)");
                             ArrayList<String> lore = new ArrayList<>();
                             lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
