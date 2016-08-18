@@ -71,9 +71,7 @@ public class AntiDuplication implements GenericMechanic {
     public void handleLogin(Player p) {
         Inventory muleInv = MountUtils.inventories.get(p.getUniqueId());
         Storage storage = BankMechanics.getInstance().getStorage(p.getUniqueId());
-        AsyncUtils.pool.submit(() -> {
-            checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv)));
-        });
+        AsyncUtils.pool.submit(() -> checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv))));
     }
 
     public static void checkForDuplicatedEquipment(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {

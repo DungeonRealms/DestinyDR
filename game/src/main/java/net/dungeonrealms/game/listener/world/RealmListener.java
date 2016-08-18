@@ -77,7 +77,7 @@ public class RealmListener implements Listener {
 
         if (EntityAPI.hasMountOut(player.getUniqueId())) {
             net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-            mount.dead = true;
+            mount.dead = true; 
             EntityAPI.removePlayerMountList(player.getUniqueId());
         }
 

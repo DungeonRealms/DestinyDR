@@ -12,7 +12,7 @@ public class Constants {
 
     public static boolean debug = false;
 
-    public static final String DATABASE_URI = "mongodb://dungeonrealms:ZwGQGVpbPGhSqSXM@131.153.25.138:27017/dungeonrealms";
+    public static final String DATABASE_URI = "mongodb://dungeonrealms:KNlZmiaNUp0B@131.153.25.138:27017/dungeonrealms";
 
     public static final String[] DEVELOPERS = new String[]{"Proxying", "Atlas__", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle", "Necrone_"};
 
@@ -41,9 +41,9 @@ public class Constants {
     // FTP INFO //
     public static final String FTP_HOST_NAME = "167.114.65.102";
 
-    public static final String FTP_USER_NAME = "newdr.53";
+    public static final String FTP_USER_NAME = "dungeonrealms.53";
 
-    public static final String FTP_PASSWORD = "SBobNQyc6fy3j8Rj";
+    public static final String FTP_PASSWORD = "KNlZmiaNUp0B";
 
     public static final int FTP_PORT = 21;
 
