@@ -23,6 +23,7 @@ import net.dungeonrealms.game.command.menu.*;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
+import net.dungeonrealms.game.command.test.CommandTestDupe;
 import net.dungeonrealms.game.command.test.CommandTestPlayer;
 import net.dungeonrealms.game.command.test.CommandTestRank;
 import net.dungeonrealms.game.command.test.CommandTestingHall;
@@ -361,6 +362,8 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPDecline("pdecline", "/<command> [args]", "Decline a party invitation."));
 
         cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to test dr soundtrack."));
+        cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
+
 
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "Safely logout of Dungeon Realms."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));
