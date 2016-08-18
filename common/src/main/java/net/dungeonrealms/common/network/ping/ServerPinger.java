@@ -1,5 +1,6 @@
 package net.dungeonrealms.common.network.ping;
 
+import com.google.gson.Gson;
 import net.dungeonrealms.common.network.ServerAddress;
 
 import java.io.ByteArrayOutputStream;
@@ -10,15 +11,16 @@ import java.net.Socket;
 
 public class ServerPinger {
 
-    public static String fetchData(final ServerAddress serverAddress, int timeout) throws IOException {
+    private static Gson gson = new Gson();
 
+    public static PingResponse fetchData(final ServerAddress serverAddress, int timeout) throws IOException {
         Socket socket = null;
         DataOutputStream dataOut = null;
         DataInputStream dataIn = null;
         final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         final DataOutputStream handshake = new DataOutputStream(byteOut);
-
         try {
+
             socket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
             socket.setSoTimeout(timeout);
             dataOut = new DataOutputStream(socket.getOutputStream());
@@ -39,7 +41,8 @@ public class ServerPinger {
             final byte[] responseData = new byte[PacketUtils.readVarInt(dataIn)];
             dataIn.readFully(responseData);
             final String jsonString = new String(responseData, PacketUtils.UTF8);
-            return jsonString;
+            return gson.fromJson(jsonString, PingResponse.class);
+
         } finally {
             PacketUtils.closeQuietly(dataOut);
             PacketUtils.closeQuietly(dataIn);

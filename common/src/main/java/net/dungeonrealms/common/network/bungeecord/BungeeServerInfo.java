@@ -1,5 +1,12 @@
 package net.dungeonrealms.common.network.bungeecord;
 
+
+import lombok.Data;
+import net.dungeonrealms.common.network.ping.PingResponse;
+
+import java.util.List;
+
+@Data
 public class BungeeServerInfo {
 
     // THIS WILL NEVER CHANGE //
@@ -13,48 +20,14 @@ public class BungeeServerInfo {
     private volatile String motd2; // Should never be null
     private volatile long lastRequest;
 
+    private List<PingResponse.PlayerInfo> sample;
+
     public BungeeServerInfo(String serverName) {
         this.serverName = serverName;
         isOnline = false;
         this.motd1 = "";
         this.motd2 = "";
         updateLastRequest();
-    }
-
-    public boolean isOnline() {
-        return isOnline;
-    }
-
-    public void setOnline(boolean isOnline) {
-        this.isOnline = isOnline;
-    }
-
-    public String getServerName() {
-        return serverName;
-    }
-
-    public int getOnlinePlayers() {
-        return onlinePlayers;
-    }
-
-    public void setOnlinePlayers(int onlinePlayers) {
-        this.onlinePlayers = onlinePlayers;
-    }
-
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    public void setMaxPlayers(int maxPlayers) {
-        this.maxPlayers = maxPlayers;
-    }
-
-    public String getMotd1() {
-        return motd1;
-    }
-
-    public String getMotd2() {
-        return motd2;
     }
 
     public void setMotd(String motd) {
@@ -72,11 +45,6 @@ public class BungeeServerInfo {
             this.motd1 = motd;
             this.motd2 = "";
         }
-    }
-
-
-    public long getLastRequest() {
-        return lastRequest;
     }
 
     public void updateLastRequest() {

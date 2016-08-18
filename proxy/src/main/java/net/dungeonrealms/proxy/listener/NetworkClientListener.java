@@ -2,11 +2,10 @@ package net.dungeonrealms.proxy.listener;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import net.dungeonrealms.common.network.PingResponse;
 import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.ping.PingResponse;
 import net.dungeonrealms.common.network.ping.ServerPinger;
-import net.dungeonrealms.common.network.ping.type.BungeePingResponse;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.proxy.DungeonRealmsProxy;
@@ -63,8 +62,16 @@ public class NetworkClientListener extends Listener {
                             ServerInfo target = optimalShardFinder.next();
 
                             try {
-                                PingResponse ping = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 20));
-                                if (!ping.isOnline() || ping.getMotd().contains("offline")) {
+                                PingResponse ping = null;
+                                boolean isOnline = true;
+
+                                try {
+                                    ping = ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 20);
+                                } catch (Exception e) {
+                                    isOnline = true;
+                                }
+
+                                if (!isOnline || ping.getDescription().contains("offline")) {
 
                                     if (!optimalShardFinder.hasNext()) {
                                         // CONNECT THEM TO LOBBY LOAD BALANCER //

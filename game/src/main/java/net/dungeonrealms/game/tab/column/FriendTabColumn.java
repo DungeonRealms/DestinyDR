@@ -1,15 +1,19 @@
 package net.dungeonrealms.game.tab.column;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
+import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.network.ping.PingResponse;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.tab.Column;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -42,8 +46,12 @@ public class FriendTabColumn extends Column {
                     List<String> onlineFriends = new ArrayList<>();
 
                     // MAKE SURE FRIENDS ARE ONLINE //
-                    friends.stream().filter(uuid -> Bukkit.getPlayer(UUID.fromString(uuid)) != null)
-                            .forEach(uuid -> onlineFriends.add(Bukkit.getPlayer(UUID.fromString(uuid)).getName()));
+                    friends.forEach(uuid -> {
+                        Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(UUID.fromString(uuid));
+
+                        if (curInfo.isPresent())
+                            onlineFriends.add(ChatColor.GOLD + curInfo.get().b().getShardID() + " " + ChatColor.GREEN + curInfo.get().a().getName());
+                    });
 
                     if (onlineFriends.isEmpty()) if (cursor == 0)
                         return ChatColor.RED + "No friends on this shard!";

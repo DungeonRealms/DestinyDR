@@ -1,17 +1,16 @@
 package net.dungeonrealms.common.network.bungeecord;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.network.PingResponse;
+import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.ping.PingResponse;
 import net.dungeonrealms.common.network.ping.ServerPinger;
-import net.dungeonrealms.common.network.ping.type.SpigotPingResponse;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,6 +36,20 @@ public class BungeeServerTracker {
             requestPlayerCount.accept(server);
             //NetworkAPI.getInstance().askPlayerCount(server);
         }
+    }
+
+    public static Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> grabPlayerInfo(UUID uuid) {
+        PingResponse.PlayerInfo playerInfo = null;
+        ShardInfo shard = null;
+
+        for (BungeeServerInfo info : getTrackedServers().values())
+            for (PingResponse.PlayerInfo pInfo : info.getSample())
+                if (pInfo.getId().equals(uuid.toString())) {
+                    shard = ShardInfo.getByPseudoName(info.getServerName());
+                    playerInfo = pInfo;
+                }
+
+        return Optional.of(new Tuple<>(playerInfo, shard));
     }
 
     public static void untrack(String server) {
@@ -83,28 +96,24 @@ public class BungeeServerTracker {
 
                 BungeeServerInfo serverInfo = getOrCreateServerInfo(bungeeName);
                 boolean displayOffline = false;
+                PingResponse data = null;
+
+                boolean isOnline = true;
 
                 try {
-                    PingResponse data = new SpigotPingResponse(ServerPinger.fetchData(address, 500));
-
-                    if (data.isOnline()) {
-                        serverInfo.setOnline(true);
-                        serverInfo.setOnlinePlayers(data.getOnlinePlayers());
-                        serverInfo.setMaxPlayers(data.getMaxPlayers());
-                        serverInfo.setMotd(data.getMotd());
-                    } else {
-                        displayOffline = true;
-                    }
-                } catch (SocketTimeoutException e) {
-                    displayOffline = true;
-                } catch (UnknownHostException e) {
-                    Constants.log.warning("Couldn't fetch data from " + bungeeName + "(" + address.toString() + "): unknown host address.");
-                    displayOffline = true;
+                    data = ServerPinger.fetchData(address, 500);
                 } catch (IOException e) {
+                    isOnline = false;
+                }
+
+                if (isOnline) {
+                    serverInfo.setOnline(true);
+                    serverInfo.setOnlinePlayers(data.getPlayers().getOnline());
+                    serverInfo.setMaxPlayers(data.getPlayers().getMax());
+                    serverInfo.setMotd(data.getDescription());
+                    serverInfo.setSample(data.getPlayers().getSample());
+                } else {
                     displayOffline = true;
-                } catch (Exception e) {
-                    displayOffline = true;
-                    Constants.log.warning("Couldn't fetch data from " + bungeeName + "(" + address.toString() + "), unhandled exception: " + e.toString());
                 }
 
                 if (displayOffline) {

@@ -1,17 +1,19 @@
 package net.dungeonrealms.game.tab.column;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
+import net.dungeonrealms.common.Tuple;
+import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.network.ping.PingResponse;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
-import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
-import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.tab.Column;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 8/5/2016
@@ -43,17 +45,21 @@ public class GuildTabColumn extends Column {
 
                     String guild = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
 
-                    GuildMechanics.getInstance().getAllOnlineGuildMembers(guild).stream()
+                    GuildDatabaseAPI.get().getAllOfGuild(guild).stream()
                             .filter(uuid -> !player.getUniqueId().equals(uuid))
                             .forEach(uuid -> {
                                 String prefix = "";
 
-                                if(GuildDatabaseAPI.get().isOwner(uuid, guild))
-                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA +  "Owner" + ChatColor.GRAY+ "]";
-                                else if(GuildDatabaseAPI.get().isOfficer(uuid, guild))
-                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA +  "Officer" + ChatColor.GRAY+ "]";
+                                if (GuildDatabaseAPI.get().isOwner(uuid, guild))
+                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Owner" + ChatColor.GRAY + "]";
+                                else if (GuildDatabaseAPI.get().isOfficer(uuid, guild))
+                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Officer" + ChatColor.GRAY + "]";
 
-                                guildMembers.add(prefix +  ChatColor.GREEN + Bukkit.getPlayer(uuid).getName());
+
+                                Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
+
+                                if (curInfo.isPresent())
+                                    guildMembers.add(ChatColor.GOLD + curInfo.get().b().getShardID() + " " + prefix + ChatColor.GREEN + curInfo.get().a().getName());
                             });
 
                     if (guildMembers.isEmpty()) if (cursor == 0)
@@ -67,7 +73,7 @@ public class GuildTabColumn extends Column {
                         return "";
                     }
 
-                    return  guildMembers.get(cursor);
+                    return guildMembers.get(cursor);
                 }
             });
         }
