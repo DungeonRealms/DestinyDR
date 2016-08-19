@@ -15,22 +15,22 @@ public enum ShardInfo {
     US0("US-0", "us0", new ServerAddress("158.69.122.139", 40007)),
 
     // US1 SHARD //
-    US1("US-1", "us1", new ServerAddress("131.153.25.2", 40007)),
+    US1("US-1", "us1", new ServerAddress("64.38.250.64", 40007)),
 
     // US2 SHARD //
-    US2("US-2", "us2", new ServerAddress("131.153.25.2", 40008)),
+    US2("US-2", "us2", new ServerAddress("64.38.250.64", 40008)),
 
     // US3 SHARD //
-    US3("US-3", "us3", new ServerAddress("131.153.25.218", 40001)),
+    US3("US-3", "us3", new ServerAddress("131.153.27.8", 40001)),
 
     // US4 SHARD //
-    US4("US-4", "us4", new ServerAddress("131.153.25.218", 40002)),
+    US4("US-4", "us4", new ServerAddress("131.153.27.8", 40002)),
 
     // US5 SHARD //
-    US5("US-5", "us5", new ServerAddress("131.153.25.114", 40007)),
+    US5("US-5", "us5", new ServerAddress("64.38.249.176", 40007)),
 
     // BR 1 SHARD //
-    BR1("BR-1", "br1", new ServerAddress("131.153.25.114", 40008)),
+    BR1("BR-1", "br1", new ServerAddress("64.38.249.176", 40008)),
 
     // SUB 1 SHARD //
     SUB1("SUB-1", "sub1", new ServerAddress("158.69.122.139", 40008)),
