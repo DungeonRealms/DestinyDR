@@ -1,36 +1,11 @@
 package net.dungeonrealms.game.listener.inventory;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.anticheat.AntiDuplication;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Created by Alan Lu (dartaran) on 06-Jul-16.
  */
 public class AntiCheatListener implements Listener {
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onInventoryOpenGearCheck(InventoryOpenEvent event) {
-        Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> AntiDuplication
-                .checkForDuplicatedEquipment((Player)event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer()
-                        .getInventory(), event.getPlayer().getOpenInventory().getTopInventory()))));
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPickup(PlayerPickupItemEvent event) {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(DungeonRealms.getInstance(), () -> AntiDuplication
-                .checkForDuplicatedEquipment(event.getPlayer(), new HashSet<>(Arrays.asList(event.getPlayer()
-                        .getInventory()))), 5L);
-    }
 
     //THIS IS DISABLED WHILE I FIGURE OUT HOW TO BEST REMOVE ALL THE GLITCHED "method" ITEMS. PLEASE DON'T ENABLE AGAIN.
     /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -76,30 +76,6 @@ public class AntiDuplication implements GenericMechanic {
         AsyncUtils.pool.submit(() -> checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv))));
     }
 
-    public static void checkForDuplicatedEquipment(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
-        if (Rank.isGM(p)) return;
-        if (EXCLUSIONS.contains(p.getUniqueId())) return;
-
-        HashMultimap<Inventory, Tuple<ItemStack, String>> gearUids = HashMultimap.create();
-
-        for (Inventory inv : INVENTORIES_TO_CHECK) {
-            if (inv == null) continue;
-
-            for (ItemStack i : inv.getContents()) {
-                if (CraftItemStack.asNMSCopy(i) == null) continue;
-
-                if (isRegistered(i)) {
-                    if (i.getAmount() <= 0) continue;
-
-                    String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
-                    if (uniqueEpochIdentifier != null)
-                        gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
-                }
-            }
-        }
-        checkForDuplications(p, gearUids);
-    }
-
     private static void checkForDuplications(Player p, HashMultimap<Inventory, Tuple<ItemStack, String>> map) {
         Set<String> duplicates = Utils.findDuplicates(map.values().stream().map(Tuple::b).collect(Collectors.toList()));
         if (!duplicates.isEmpty()) { // caught red handed
@@ -113,13 +89,11 @@ public class AntiDuplication implements GenericMechanic {
 
             banAndBroadcast(p, duplicates.size());
         }
-
     }
 
     public static void checkForSuspiciousDupedItems(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
         if (Rank.isGM(p)) return;
         if (EXCLUSIONS.contains(p.getUniqueId())) return;
-
 
         int orbCount = 0;
         int enchantCount = 0;
@@ -134,13 +108,12 @@ public class AntiDuplication implements GenericMechanic {
             for (ItemStack i : inv.getContents()) {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
 
-                if (isRegistered(i)) {
-                    if (i.getAmount() <= 0) continue;
+                if (i.getAmount() <= 0) continue;
 
-                    String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
-                    if (uniqueEpochIdentifier != null)
+                String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
+                if (uniqueEpochIdentifier != null)
+                    for (int ii = 0; ii < i.getAmount(); ii++)
                         gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
-                }
 
                 if (GameAPI.isOrb(i))
                     orbCount += i.getAmount();
@@ -149,7 +122,7 @@ public class AntiDuplication implements GenericMechanic {
                 else if (ItemManager.isProtectScroll(i))
                     protectCount += i.getAmount();
                 else if (BankMechanics.getInstance().isBankNote(i))
-                    gemCount += BankMechanics.getInstance().getNoteValue(i) * i.getAmount();
+                    gemCount += (BankMechanics.getInstance().getNoteValue(i) * i.getAmount());
             }
         }
 
@@ -160,10 +133,12 @@ public class AntiDuplication implements GenericMechanic {
         } else if (GameAPI.getGamePlayer(p).getLevel() < 20 && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 300000) { // IP BAN
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
         } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // WARN
-            if (WARNING_SUPPRESSOR.isCooldown(p.getUniqueId()))
+            if (WARNING_SUPPRESSOR.isCooldown(p.getUniqueId())) {
                 return;
+            }
 
-            WARNING_SUPPRESSOR.cache(p, 120000);
+            WARNING_SUPPRESSOR.cache(p, 120000L);
+
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: Player " + p.getName() + " has " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
                     "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
@@ -177,10 +152,9 @@ public class AntiDuplication implements GenericMechanic {
 
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
-                "Banning " + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED EQUIPMENT. Amount: " + i);
+                "Banning" + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED ITEMS. Amount: " + i);
         //todo: add system for broadcasting SHOW of duped items
         GameAPI.sendNetworkMessage("GMMessage", "");
-//        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
     }
 
     private static void banAndBroadcast(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
@@ -188,10 +162,9 @@ public class AntiDuplication implements GenericMechanic {
 
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
-                "Banned " + ChatColor.RED + " player " + p.getName() + " for possession of " + orbCount + " orbs, " + enchantCount +
+                "Banned" + ChatColor.RED + " player " + p.getName() + " for possession of " + orbCount + " orbs, " + enchantCount +
                 " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " gems on shard " + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
         GameAPI.sendNetworkMessage("GMMessage", "");
-//        GameAPI.sendNetworkMessage("BroadcastSound", Sound.ENTITY_ENDERDRAGON_GROWL.toString());
     }
 
 
