@@ -18,7 +18,6 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -88,8 +87,8 @@ public class AntiDuplication implements GenericMechanic {
 
             for (ItemStack i : inv.getContents()) {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
-                if (RepairAPI.isItemArmorOrWeapon(i) || BankMechanics.getInstance().isBankNote(i)) {
 
+                if (isRegistered(i)) {
                     if (i.getAmount() <= 0) continue;
 
                     String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
@@ -98,8 +97,6 @@ public class AntiDuplication implements GenericMechanic {
                 }
             }
         }
-
-
         checkForDuplications(p, gearUids);
     }
 
@@ -136,20 +133,23 @@ public class AntiDuplication implements GenericMechanic {
 
             for (ItemStack i : inv.getContents()) {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
-                if (RepairAPI.isItemArmorOrWeapon(i) || BankMechanics.getInstance().isBankNote(i)) {
 
+                if (isRegistered(i)) {
                     if (i.getAmount() <= 0) continue;
 
                     String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
                     if (uniqueEpochIdentifier != null)
                         gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
+                }
 
-                } else if (GameAPI.isOrb(i))
+                if (GameAPI.isOrb(i))
                     orbCount += i.getAmount();
                 else if (ItemManager.isEnchantScroll(i))
                     enchantCount += i.getAmount();
                 else if (ItemManager.isProtectScroll(i))
                     protectCount += i.getAmount();
+                else if (BankMechanics.getInstance().isBankNote(i))
+                    gemCount += BankMechanics.getInstance().getNoteValue(i) * i.getAmount();
             }
         }
 
@@ -218,7 +218,7 @@ public class AntiDuplication implements GenericMechanic {
      * @return
      * @since 1.0
      */
-    public boolean isRegistered(ItemStack item) {
+    public static boolean isRegistered(ItemStack item) {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         return !(nmsStack == null || nmsStack.getTag() == null) && nmsStack.getTag().hasKey("u");
     }
