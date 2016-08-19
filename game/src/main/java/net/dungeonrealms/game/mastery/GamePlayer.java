@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.mastery;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
@@ -442,6 +441,8 @@ public class GamePlayer {
             Utils.log.warning("Invalid type or type is a ranged attribute.");
             return -1;
         }
+
+        if (attributes == null) return -1;
         if (attributes.get(type.getNBTName()) == null) return -1;
         return attributes.get(type.getNBTName())[1];
     }

@@ -29,12 +29,12 @@ public class TutorialMechanics implements GenericMechanic, Listener {
     }
 
     @Override
-    public void startInitialization() {}
+    public void startInitialization() {
+    }
 
     public void doLogin(Player p) {
         TitleAPI.sendTitle(p, 10, 5 * 20, 1, ChatColor.GRAY.toString() + ChatColor.BOLD + "Welcome to " + ChatColor
-                .GOLD.toString() + ChatColor.BOLD + "Dungeon" + ChatColor.GREEN.toString() + ChatColor.BOLD +
-                "Realms", ChatColor.GRAY + "A world of myth and adventure.");
+                .GOLD.toString() + ChatColor.BOLD + "Dungeon Realms", ChatColor.GRAY + "A world of myth and adventure.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             p.sendMessage("");
             p.sendMessage("");
