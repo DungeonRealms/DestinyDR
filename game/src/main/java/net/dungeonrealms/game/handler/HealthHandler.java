@@ -197,15 +197,16 @@ public class HealthHandler implements GenericMechanic {
 
     private BossBarAPI.Style getStyle(double maxHealth) {
 
-        if (maxHealth >= 2000) {
+        if (maxHealth >= 5000) {
             return BossBarAPI.Style.NOTCHED_20;
-        } else if (maxHealth >= 1000) {
+        } else if (maxHealth >= 3000) {
             return BossBarAPI.Style.NOTCHED_12;
-        } else if (maxHealth >= 500) {
+        } else if (maxHealth >= 1000) {
             return BossBarAPI.Style.NOTCHED_10;
+        } else if (maxHealth >= 500) {
+            return BossBarAPI.Style.NOTCHED_6;
         }
-
-        return BossBarAPI.Style.NOTCHED_6;
+        return BossBarAPI.Style.PROGRESS;
     }
 
 

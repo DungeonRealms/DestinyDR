@@ -36,6 +36,8 @@ public class CharacterTabColumn extends Column {
 
                         double exp = ((double) gp.getExperience()) / ((double) gp.getEXPNeeded(gp.getLevel()));
                         exp *= 100;
+
+                        if (gp.getLevel() == 100) return ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "MAX";
                         return (int) exp + "%";
                     }
                 },
