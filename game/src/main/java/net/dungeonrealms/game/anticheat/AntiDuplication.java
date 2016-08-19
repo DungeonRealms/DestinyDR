@@ -87,7 +87,12 @@ public class AntiDuplication implements GenericMechanic {
                     Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> e.getKey().remove(e.getValue().a()));
             }
 
-            banAndBroadcast(p, duplicates.size());
+            GameAPI.sendNetworkMessage("GMMessage", "");
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
+                    ChatColor.RED + "Player " + p.getName() + " has attempted to duplicate items. Amount: " + duplicates.size());
+            GameAPI.sendNetworkMessage("GMMessage", "");
+
+            //banAndBroadcast(p, duplicates.size());
         }
     }
 
@@ -109,6 +114,8 @@ public class AntiDuplication implements GenericMechanic {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
 
                 if (i.getAmount() <= 0) continue;
+
+                if (ItemManager.isScrap(i)) continue;
 
                 String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
                 if (uniqueEpochIdentifier != null)
@@ -133,9 +140,7 @@ public class AntiDuplication implements GenericMechanic {
         } else if (GameAPI.getGamePlayer(p).getLevel() < 20 && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 300000) { // IP BAN
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
         } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // WARN
-            if (WARNING_SUPPRESSOR.isCooldown(p.getUniqueId())) {
-                return;
-            }
+            if (WARNING_SUPPRESSOR.isCooldown(p.getUniqueId())) return;
 
             WARNING_SUPPRESSOR.cache(p, 120000L);
 

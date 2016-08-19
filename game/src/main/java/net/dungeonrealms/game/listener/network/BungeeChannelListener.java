@@ -1,10 +1,8 @@
 package net.dungeonrealms.game.listener.network;
 
-import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseDriver;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
@@ -50,7 +48,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
         Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
         Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
 
-        BungeeServerTracker.startTask(3L);
+        BungeeServerTracker.startTask(6L);
         Utils.log.info("[BungeeChannelListener] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
     }
 
@@ -88,7 +86,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                                     e.printStackTrace();
                                 }
 
-                            } );
+                            });
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
                     return;

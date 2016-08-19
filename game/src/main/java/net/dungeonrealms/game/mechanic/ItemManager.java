@@ -288,7 +288,7 @@ public class ItemManager {
             tag.set("type", new NBTTagString("scrap"));
             tag.setInt("itemTier", tier);
             nmsStack.setTag(tag);
-            return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+            return CraftItemStack.asBukkitCopy(nmsStack);
         }
         return null;
     }
@@ -1122,6 +1122,16 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("protection");
     }
+
+    /**
+     * @param stack
+     * @return
+     */
+    public static boolean isScrap(ItemStack stack) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        return nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("scrap");
+    }
+
 
     public static ItemStack makeSoulBound(ItemStack is) {
         ItemMeta im = is.getItemMeta();
