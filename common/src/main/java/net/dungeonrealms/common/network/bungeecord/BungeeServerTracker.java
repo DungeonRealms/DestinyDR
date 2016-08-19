@@ -7,7 +7,6 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ping.PingResponse;
 import net.dungeonrealms.common.network.ping.ServerPinger;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,12 +41,14 @@ public class BungeeServerTracker {
         PingResponse.PlayerInfo playerInfo = null;
         ShardInfo shard = null;
 
-        for (BungeeServerInfo info : getTrackedServers().values())
+        for (BungeeServerInfo info : getTrackedServers().values()) {
+            if (info.getSample() == null) continue;
             for (PingResponse.PlayerInfo pInfo : info.getSample())
-                if (pInfo.getId().equals(uuid.toString())) {
+                if (pInfo != null && pInfo.getId().equals(uuid.toString())) {
                     shard = ShardInfo.getByPseudoName(info.getServerName());
                     playerInfo = pInfo;
                 }
+        }
 
         return Optional.of(new Tuple<>(playerInfo, shard));
     }
@@ -90,19 +91,17 @@ public class BungeeServerTracker {
     public static void startTask(long refreshSeconds) {
         EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
             for (ShardInfo shard : ShardInfo.values()) {
-
                 String bungeeName = shard.getPseudoName();
                 ServerAddress address = shard.getAddress();
 
                 BungeeServerInfo serverInfo = getOrCreateServerInfo(bungeeName);
-                boolean displayOffline = false;
                 PingResponse data = null;
 
                 boolean isOnline = true;
 
                 try {
                     data = ServerPinger.fetchData(address, 500);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     isOnline = false;
                 }
 
@@ -110,13 +109,9 @@ public class BungeeServerTracker {
                     serverInfo.setOnline(true);
                     serverInfo.setOnlinePlayers(data.getPlayers().getOnline());
                     serverInfo.setMaxPlayers(data.getPlayers().getMax());
-                    serverInfo.setMotd(data.getDescription());
+                    serverInfo.setMotd(data.getDescription().getText());
                     serverInfo.setSample(data.getPlayers().getSample());
                 } else {
-                    displayOffline = true;
-                }
-
-                if (displayOffline) {
                     serverInfo.setOnline(false);
                     serverInfo.setOnlinePlayers(0);
                     serverInfo.setMaxPlayers(0);

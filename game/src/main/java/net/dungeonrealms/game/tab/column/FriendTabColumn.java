@@ -48,13 +48,19 @@ public class FriendTabColumn extends Column {
                     // MAKE SURE FRIENDS ARE ONLINE //
                     friends.forEach(uuid -> {
                         Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(UUID.fromString(uuid));
+                        if (!curInfo.isPresent()) return;
 
-                        if (curInfo.isPresent())
-                            onlineFriends.add(ChatColor.GOLD + curInfo.get().b().getShardID() + " " + ChatColor.GREEN + curInfo.get().a().getName());
+                        PingResponse.PlayerInfo playerInfo = curInfo.get().a();
+                        if (playerInfo == null) return;
+
+                        String playerName = playerInfo.getName();
+                        ShardInfo shard = curInfo.get().b();
+
+                        onlineFriends.add(getFormat(playerName, shard));
                     });
 
                     if (onlineFriends.isEmpty()) if (cursor == 0)
-                        return ChatColor.RED + "No friends on this shard!";
+                        return ChatColor.RED + "No friends online!";
                     else return "";
                     try {
                         if (onlineFriends.get(cursor) == null)
@@ -63,7 +69,7 @@ public class FriendTabColumn extends Column {
                         return "";
                     }
 
-                    return ChatColor.GREEN + onlineFriends.get(cursor);
+                    return onlineFriends.get(cursor);
                 }
             });
         }

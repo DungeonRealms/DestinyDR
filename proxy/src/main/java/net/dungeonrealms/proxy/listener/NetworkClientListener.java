@@ -71,7 +71,7 @@ public class NetworkClientListener extends Listener {
                                     isOnline = true;
                                 }
 
-                                if (!isOnline || ping.getDescription().contains("offline")) {
+                                if (!isOnline || ping.getDescription().getText().contains("offline")) {
 
                                     if (!optimalShardFinder.hasNext()) {
                                         // CONNECT THEM TO LOBBY LOAD BALANCER //

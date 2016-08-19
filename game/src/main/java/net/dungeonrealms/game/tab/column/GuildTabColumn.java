@@ -48,22 +48,28 @@ public class GuildTabColumn extends Column {
                     GuildDatabaseAPI.get().getAllOfGuild(guild).stream()
                             .filter(uuid -> !player.getUniqueId().equals(uuid))
                             .forEach(uuid -> {
+                                Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
+                                if (!curInfo.isPresent()) return;
+
                                 String prefix = "";
 
                                 if (GuildDatabaseAPI.get().isOwner(uuid, guild))
-                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Owner" + ChatColor.GRAY + "]";
+                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Owner" + ChatColor.GRAY + "] ";
                                 else if (GuildDatabaseAPI.get().isOfficer(uuid, guild))
-                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Officer" + ChatColor.GRAY + "]";
+                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Officer" + ChatColor.GRAY + "] ";
 
 
-                                Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
+                                PingResponse.PlayerInfo playerInfo = curInfo.get().a();
+                                if (playerInfo == null) return;
 
-                                if (curInfo.isPresent())
-                                    guildMembers.add(ChatColor.GOLD + curInfo.get().b().getShardID() + " " + prefix + ChatColor.GREEN + curInfo.get().a().getName());
+                                String playerName = playerInfo.getName();
+                                ShardInfo shard = curInfo.get().b();
+
+                                guildMembers.add(getFormat(prefix + playerName, shard));
                             });
 
                     if (guildMembers.isEmpty()) if (cursor == 0)
-                        return ChatColor.RED + "No guild members on this shard";
+                        return ChatColor.RED + "No guild members online!";
                     else return "";
 
                     try {

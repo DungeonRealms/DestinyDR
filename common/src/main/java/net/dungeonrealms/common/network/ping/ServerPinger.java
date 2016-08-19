@@ -11,16 +11,15 @@ import java.net.Socket;
 
 public class ServerPinger {
 
-    private static Gson gson = new Gson();
-
     public static PingResponse fetchData(final ServerAddress serverAddress, int timeout) throws IOException {
         Socket socket = null;
         DataOutputStream dataOut = null;
         DataInputStream dataIn = null;
         final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         final DataOutputStream handshake = new DataOutputStream(byteOut);
-        try {
+        Gson gson = new Gson();
 
+        try {
             socket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
             socket.setSoTimeout(timeout);
             dataOut = new DataOutputStream(socket.getOutputStream());
@@ -42,7 +41,6 @@ public class ServerPinger {
             dataIn.readFully(responseData);
             final String jsonString = new String(responseData, PacketUtils.UTF8);
             return gson.fromJson(jsonString, PingResponse.class);
-
         } finally {
             PacketUtils.closeQuietly(dataOut);
             PacketUtils.closeQuietly(dataIn);
@@ -51,5 +49,6 @@ public class ServerPinger {
             PacketUtils.closeQuietly(handshake);
         }
     }
+
 
 }
