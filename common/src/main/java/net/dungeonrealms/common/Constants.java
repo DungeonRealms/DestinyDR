@@ -12,11 +12,11 @@ public class Constants {
 
     public static boolean debug = false;
 
-    public static final String DATABASE_URI = "mongodb://dungeonrealms:KNlZmiaNUp0B@131.153.25.138:27017/dungeonrealms";
+    public static final String DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
 
-    public static final String[] DEVELOPERS = new String[]{"Proxying", "Atlas__", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle", "Necrone_"};
+    public static final String[] DEVELOPERS = new String[]{"Atlas__", "APOLLO_IO", "Bradez1571"};
 
-    public static final String MOTD = "&6Dungeon Realms &8- &a• The Best Minecraft MMORPG •\n   &ePatch v5.0          &8- &f&nwww.dungeonrealms.net &8-";
+    public static final String MOTD = "&6Dungeon Realms &8- &a• The #1 Minecraft MMORPG •\n   &cComplete Wipe & Major Fixes          &8- &f&nwww.dungeonrealms.net &8-";
 
     public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
 
@@ -36,7 +36,7 @@ public class Constants {
     public static final String BUILD_VERSION = "v5.0";
 
     // BUILD NUMBER //
-    public static final String BUILD_NUMBER = "#176";
+    public static final String BUILD_NUMBER = "#177";
 
     // FTP INFO //
     public static final String FTP_HOST_NAME = "167.114.65.102";
