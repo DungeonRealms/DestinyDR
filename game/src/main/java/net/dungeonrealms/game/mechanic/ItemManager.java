@@ -74,7 +74,7 @@ public class ItemManager {
         ItemStack rawStack = createItem(Material.MAGMA_CREAM, ChatColor.LIGHT_PURPLE.toString() + "Orb of Alteration", new String[]{(ChatColor.GRAY.toString() + "Randomizes bonus stats of selected equipment")});
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "orb");
-        return CraftItemStack.asBukkitCopy(nms);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     public static ItemStack createOrbofFlight() {
@@ -85,7 +85,7 @@ public class ItemManager {
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(orbOfFlight);
         nms.getTag().setString("orb", "flight");
-        return CraftItemStack.asBukkitCopy(nms);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     public static ItemStack createOrbofPeace() {
@@ -93,7 +93,7 @@ public class ItemManager {
                 new String[]{(ChatColor.GRAY.toString() + "Set realm to " + ChatColor.UNDERLINE + "SAFE ZONE" + ChatColor.GRAY + " for 1 hour(s).")});
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(orbOfPeace);
         nms.getTag().setString("orb", "peace");
-        return CraftItemStack.asBukkitCopy(nms);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     public static ItemStack createWeaponEnchant(int tier) {
@@ -102,7 +102,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "weaponenchant");
         nms.getTag().setInt("tier", tier);
-        return CraftItemStack.asBukkitCopy(nms);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     public static ItemStack createArmorEnchant(int tier) {
@@ -111,7 +111,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "armorenchant");
         nms.getTag().setInt("tier", tier);
-        return CraftItemStack.asBukkitCopy(nms);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     public static ItemStack createLootBuff(int duration, int bonusAmount) {
@@ -197,7 +197,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "protection");
         nms.getTag().setInt("tier", tier);
-        return CraftItemStack.asBukkitCopy(nms);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     /**
@@ -219,7 +219,7 @@ public class ItemManager {
         tag.set("type", new NBTTagString("teleport"));
         tag.set("usage", new NBTTagString(teleportLocation));
         nmsStack.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsStack);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
     /**
@@ -240,7 +240,7 @@ public class ItemManager {
         tag.set("type", new NBTTagString("teleport"));
         tag.set("usage", new NBTTagString(location));
         nmsStack.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsStack);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
     /**
@@ -288,7 +288,7 @@ public class ItemManager {
             tag.set("type", new NBTTagString("scrap"));
             tag.setInt("itemTier", tier);
             nmsStack.setTag(tag);
-            return CraftItemStack.asBukkitCopy(nmsStack);
+            return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         }
         return null;
     }
@@ -626,7 +626,7 @@ public class ItemManager {
             tag.setInt("healAmount", healAmount);
             tag.set("AttributeModifiers", new NBTTagList());
             nmsStack.setTag(tag);
-            return CraftItemStack.asBukkitCopy(nmsStack);
+            return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         }
         return null;
     }
@@ -747,7 +747,7 @@ public class ItemManager {
         tag.set("globalMessenger", new NBTTagString("true"));
         nmsStack.setTag(tag);
 
-        return CraftItemStack.asBukkitCopy(nmsStack);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
 

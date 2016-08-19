@@ -30,7 +30,7 @@ public abstract class Column {
     protected static String getFormat(String displayName, ShardInfo shard) {
         if (DungeonRealms.getShard().equals(shard)) {
             // THIS WILL INDICATE THAT PLAYER IS IN CURRENT SHARD //
-            return ChatColor.GREEN + " ⦿ " + displayName;
+            return ChatColor.GREEN + " ⦿ " + ChatColor.GRAY + displayName;
         } else {
             return ChatColor.GOLD + "(" + shard.getShardID() + ") " + ChatColor.GRAY + displayName;
         }
