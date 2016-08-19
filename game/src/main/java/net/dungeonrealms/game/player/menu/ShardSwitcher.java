@@ -46,7 +46,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
             int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
 
-            if (o1.getServerName().contains("us"))
+            if (!o1.getServerName().contains("us"))
                 return -1;
 
             return o1num - o2num;
