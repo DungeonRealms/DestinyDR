@@ -18,7 +18,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -71,6 +70,9 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
             try {
                 if (subChannel.equals("IP")) {
                     String address = in.readUTF();
+                    System.out.print("Test");
+
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
 
                     GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().getDocumentFromAddress(address),
                             consumer -> {
@@ -88,7 +90,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
 
                             });
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
+
                     return;
                 }
 
@@ -103,9 +105,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                     }
                 }
 
-            } catch (EOFException e) {
-                // Do nothing.
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // This should never happen.
                 e.printStackTrace();
             }

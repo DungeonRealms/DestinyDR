@@ -162,16 +162,17 @@ public class AntiDuplication implements GenericMechanic {
 
         checkForDuplications(p, gearUids);
 
-        if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 350000) {
+        if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 200000) {
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
-        } else if (GameAPI.getGamePlayer(p).getLevel() < 20 && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 300000) { // IP BAN
+        } else if (GameAPI.getGamePlayer(p).getLevel() < 20 && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // IP BAN
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
-        } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // WARN
+        } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 50000) { // WARN
+
             if (WARNING_SUPPRESSOR.isCooldown(p.getUniqueId())) return;
 
-            WARNING_SUPPRESSOR.cache(p, 120000L);
+            WARNING_SUPPRESSOR.submitCooldown(p, 120000L);
 
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: Player " + p.getName() + " has " + orbCount + " orbs, " +
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: " + ChatColor.WHITE + "Player " + p.getName() + " has " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
                     "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
         }

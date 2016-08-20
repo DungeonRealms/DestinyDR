@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
@@ -46,6 +47,8 @@ import java.util.Random;
  * Created by Kieran Quigley (Proxying) on 16-Jun-16.
  */
 public class RestrictionListener implements Listener {
+
+    private static CooldownProvider ANTI_COMMAND_SPAM = new CooldownProvider();
 
     public static int getLevelToUseTier(int tier) {
         switch (tier) {
@@ -130,6 +133,17 @@ public class RestrictionListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
+        if (command.equalsIgnoreCase("g") || command.equalsIgnoreCase("gl")) return;
+
+        if (ANTI_COMMAND_SPAM.isCooldown(event.getPlayer().getUniqueId())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can only execute a command every 5 seconds!");
+            event.setCancelled(true);
+            return;
+        }
+
+        if (!Rank.isGM(event.getPlayer()))
+            ANTI_COMMAND_SPAM.submitCooldown(event.getPlayer(), 5000L);
+
         if (command.equalsIgnoreCase("me") && !Rank.isDev(event.getPlayer()))
             event.setCancelled(true);
     }
@@ -137,7 +151,7 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void itemPickupOpenInventory(PlayerPickupItemEvent event) {
         if (event.getPlayer().getOpenInventory() == null) return;
-        if(!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
+        if (!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
 
         String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
         if (ownerName == null) return;
@@ -149,7 +163,7 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getPlayer().getOpenInventory() == null) return;
-        if(!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
+        if (!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
 
         String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
         if (ownerName == null) return;

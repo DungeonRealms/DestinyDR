@@ -819,7 +819,7 @@ public class GameAPI {
         if (CombatLog.isInCombat(player)) {
             if (!DuelingMechanics.isDueling(uuid)) {
                 if (!GameAPI.isNonPvPRegion(player.getLocation())) {
-                	//CombatLog.handleCombatLogger(player);
+                    //CombatLog.handleCombatLogger(player);
                 }
             }
         }
@@ -1196,10 +1196,12 @@ public class GameAPI {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
 
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("IP");
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("IP");
 
-        player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+            player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+        });
 
         sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
 

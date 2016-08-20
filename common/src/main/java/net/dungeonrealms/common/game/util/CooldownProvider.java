@@ -12,8 +12,18 @@ import java.util.UUID;
 public class CooldownProvider extends CachedClientProvider<Cooldown> {
 
     @Override
-    public Cooldown cache(OfflinePlayer player, Object... params) {
+    protected Cooldown cache(OfflinePlayer player, Object... params) {
         return getCache().put(player.getUniqueId(), new Cooldown((Long) params[0]));
+    }
+
+    /**
+     * Cooldown submitter
+     *
+     * @param player
+     * @param cooldown
+     */
+    public void submitCooldown(OfflinePlayer player, long cooldown) {
+        cache(player, cooldown);
     }
 
     /**
