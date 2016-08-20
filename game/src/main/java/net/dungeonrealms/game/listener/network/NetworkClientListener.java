@@ -7,7 +7,10 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
@@ -20,6 +23,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
+import net.dungeonrealms.network.packet.type.ServerListPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -70,7 +74,17 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
 
     @Override
     public void received(Connection connection, Object object) {
-        if (object instanceof BasicMessagePacket) {
+
+        if (object instanceof ServerListPacket) {
+
+            ServerListPacket packet = (ServerListPacket) object;
+
+            ShardInfo target = packet.target;
+            PlayerToken[] tokens = packet.tokens;
+
+            BungeeServerTracker.getOrCreateServerInfo(target.getPseudoName()).setPlayers(Arrays.asList(tokens));
+
+        } else if (object instanceof BasicMessagePacket) {
             BasicMessagePacket packet = (BasicMessagePacket) object;
 
             byte[] data = packet.data;
@@ -104,7 +118,6 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         if (Rank.isPMOD(p) || Rank.isSupport(p)) p.sendMessage(msg);
                     });
                 }
-
                 // Handle packet sync //
                 Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                     try {

@@ -2,7 +2,7 @@ package net.dungeonrealms.common.network.bungeecord;
 
 
 import lombok.Data;
-import net.dungeonrealms.common.network.ping.PingResponse;
+import net.dungeonrealms.common.game.database.player.PlayerToken;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class BungeeServerInfo {
     private volatile String motd2; // Should never be null
     private volatile long lastRequest;
 
-    private volatile List<PingResponse.PlayerInfo> sample;
+    private volatile List<PlayerToken> players;
 
     public BungeeServerInfo(String serverName) {
         this.serverName = serverName;

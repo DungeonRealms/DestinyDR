@@ -487,7 +487,7 @@ public class ItemManager {
             tag.setInt("itemTier", tier);
             tag.setInt("healAmount", healAmount);
             nmsStack.setTag(tag);
-            return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+            return CraftItemStack.asBukkitCopy(nmsStack);
         }
     }
 

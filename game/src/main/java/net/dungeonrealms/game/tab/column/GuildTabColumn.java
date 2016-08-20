@@ -3,9 +3,9 @@ package net.dungeonrealms.game.tab.column;
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Tuple;
+import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
-import net.dungeonrealms.common.network.ping.PingResponse;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.tab.Column;
@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 8/5/2016
@@ -43,21 +44,21 @@ public class GuildTabColumn extends Column {
                             return "";
                     }
 
-                    List<String> guildMembers = new ArrayList<>();
+                    List<String> guildMembers = new CopyOnWriteArrayList<>();
 
                     String guild = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
 
-                    GuildDatabaseAPI.get().getAllOfGuild(guild).stream()
+                    new ArrayList<>(GuildDatabaseAPI.get().getAllOfGuild(guild)).stream()
                             .filter(uuid -> !player.getUniqueId().equals(uuid))
                             .forEach(uuid -> {
                                 String playerName = null;
                                 ShardInfo shard = null;
 
                                 if (Bukkit.getPlayer(uuid) == null) {
-                                    Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
+                                    Optional<Tuple<PlayerToken, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
                                     if (!curInfo.isPresent()) return;
 
-                                    PingResponse.PlayerInfo playerInfo = curInfo.get().a();
+                                    PlayerToken playerInfo = curInfo.get().a();
                                     if (playerInfo == null) return;
 
                                     playerName = playerInfo.getName();

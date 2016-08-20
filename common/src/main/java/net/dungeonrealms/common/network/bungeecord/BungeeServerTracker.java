@@ -2,6 +2,7 @@ package net.dungeonrealms.common.network.bungeecord;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.dungeonrealms.common.Tuple;
+import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ping.PingResponse;
@@ -37,20 +38,19 @@ public class BungeeServerTracker {
         }
     }
 
-    public static Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> grabPlayerInfo(UUID uuid) {
-        PingResponse.PlayerInfo playerInfo = null;
+    public static Optional<Tuple<PlayerToken, ShardInfo>> grabPlayerInfo(UUID uuid) {
+        PlayerToken token = null;
         ShardInfo shard = null;
 
         for (BungeeServerInfo info : getTrackedServers().values()) {
-            if (info.getSample() == null) continue;
-            for (PingResponse.PlayerInfo pInfo : info.getSample())
-                if (pInfo != null && pInfo.getId().equals(uuid.toString())) {
+            if (info.getPlayers() == null) continue;
+            for (PlayerToken pInfo : info.getPlayers())
+                if (pInfo != null && pInfo.getUUID().equals(uuid)) {
                     shard = ShardInfo.getByPseudoName(info.getServerName());
-                    playerInfo = pInfo;
+                    token = pInfo;
                 }
         }
-
-        return Optional.of(new Tuple<>(playerInfo, shard));
+        return Optional.of(new Tuple<>(token, shard));
     }
 
     public static void untrack(String server) {
@@ -110,7 +110,6 @@ public class BungeeServerTracker {
                     serverInfo.setOnlinePlayers(data.getPlayers().getOnline());
                     serverInfo.setMaxPlayers(data.getPlayers().getMax());
                     serverInfo.setMotd(data.getDescription().getText());
-                    serverInfo.setSample(data.getPlayers().getSample());
                 } else {
                     serverInfo.setOnline(false);
                     serverInfo.setOnlinePlayers(0);

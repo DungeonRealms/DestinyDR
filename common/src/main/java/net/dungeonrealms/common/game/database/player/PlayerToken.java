@@ -3,13 +3,14 @@ package net.dungeonrealms.common.game.database.player;
 
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/16/2016
  */
 
-public class PlayerToken {
+public class PlayerToken implements Serializable {
 
     /**
      * Player's name

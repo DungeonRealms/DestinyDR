@@ -48,7 +48,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
         Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
         Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
 
-        BungeeServerTracker.startTask(6L);
+        BungeeServerTracker.startTask(3L);
         Utils.log.info("[BungeeChannelListener] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
     }
 

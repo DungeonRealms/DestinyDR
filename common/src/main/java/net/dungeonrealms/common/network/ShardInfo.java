@@ -2,6 +2,7 @@ package net.dungeonrealms.common.network;
 
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
  * Class written by APOLLOSOFTWARE.IO on 7/12/2016
  */
 
-public enum ShardInfo {
+public enum ShardInfo implements Serializable {
 
     // DEVELOPMENT SHARD //
     US0("US-0", "us0", new ServerAddress("158.69.122.139", 40007)),

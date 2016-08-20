@@ -3,8 +3,11 @@ package net.dungeonrealms.network;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.minlog.Log;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.network.packet.Packet;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
+import net.dungeonrealms.network.packet.type.ServerListPacket;
 
 import java.io.IOException;
 
@@ -48,6 +51,10 @@ public class MasterServerApplication {
         kryo.register(byte.class);
         kryo.register(byte[].class);
         kryo.register(BasicMessagePacket.class);
+        kryo.register(ServerListPacket.class);
+        kryo.register(ShardInfo.class);
+        kryo.register(PlayerToken.class);
+        kryo.register(PlayerToken[].class);
     }
 
 }

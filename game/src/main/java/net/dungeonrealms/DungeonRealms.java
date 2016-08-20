@@ -6,6 +6,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseDriver;
+import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
@@ -74,10 +75,12 @@ import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
+import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.tool.PatchTools;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ini4j.Ini;
@@ -514,6 +517,26 @@ public class DungeonRealms extends JavaPlugin {
                 GameAPI.GAMEPLAYERS.values().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
             }
         }, 0L, 1000);
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                ServerListPacket packet = new ServerListPacket();
+
+                final Player[] onlinePlayers = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+
+                packet.target = shard;
+                packet.tokens = new PlayerToken[onlinePlayers.length];
+
+
+                for (int i = 0; i < onlinePlayers.length; i++) {
+                    Player player = onlinePlayers[i];
+                    packet.tokens[i] = new PlayerToken(player.getUniqueId(), player.getName());
+                }
+
+                getClient().sendTCP(packet);
+            }
+        }, 0L, 3000);
 
 
         // run backup every ten minutes
