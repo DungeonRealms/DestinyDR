@@ -1133,6 +1133,15 @@ public class ItemManager {
     }
 
 
+    /**
+     * @param stack
+     * @return
+     */
+    public static boolean isPotion(ItemStack stack) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        return nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").toLowerCase().contains("potion");
+    }
+
     public static ItemStack makeSoulBound(ItemStack is) {
         ItemMeta im = is.getItemMeta();
         List<String> lore = new ArrayList<>();

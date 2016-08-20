@@ -142,8 +142,7 @@ public class AntiDuplication implements GenericMechanic {
                 if (CraftItemStack.asNMSCopy(i) == null) continue;
 
                 if (i.getAmount() <= 0) continue;
-
-                if (ItemManager.isScrap(i)) continue;
+                if (ItemManager.isScrap(i) || ItemManager.isPotion(i)) continue;
 
                 String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
                 if (uniqueEpochIdentifier != null)
