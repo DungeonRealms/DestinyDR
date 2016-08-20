@@ -140,8 +140,14 @@ public class Chat {
      */
     public void doChat(AsyncPlayerChatEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
-
         String fixedMessage = checkForBannedWords(event.getMessage());
+
+        if (fixedMessage.contains(".com") || fixedMessage.contains(".net") || fixedMessage.contains(".org") || fixedMessage.contains("http://") || fixedMessage.contains("www."))
+            if (!Rank.isDev(event.getPlayer())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in chat!");
+                return;
+            }
+
         event.setMessage(fixedMessage);
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
