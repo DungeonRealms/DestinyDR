@@ -4,12 +4,14 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.minlog.Log;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.network.packet.Packet;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * This master server network is a cross communication
@@ -22,7 +24,7 @@ import java.io.IOException;
  * Class written by APOLLOSOFTWARE.IO on 7/7/2016
  */
 
-public class MasterServerApplication {
+public class MasterServerLauncher {
 
     private static Kryo kryo;
 
@@ -53,8 +55,12 @@ public class MasterServerApplication {
         kryo.register(BasicMessagePacket.class);
         kryo.register(ServerListPacket.class);
         kryo.register(ShardInfo.class);
+        kryo.register(ServerAddress.class);
         kryo.register(PlayerToken.class);
         kryo.register(PlayerToken[].class);
+        kryo.register(UUID.class);
+        kryo.register(String.class);
+        kryo.register(int.class);
     }
 
 }

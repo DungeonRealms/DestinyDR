@@ -76,14 +76,13 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
     public void received(Connection connection, Object object) {
 
         if (object instanceof ServerListPacket) {
-
             ServerListPacket packet = (ServerListPacket) object;
 
             ShardInfo target = packet.target;
             PlayerToken[] tokens = packet.tokens;
 
-            BungeeServerTracker.getOrCreateServerInfo(target.getPseudoName()).setPlayers(Arrays.asList(tokens));
-
+            BungeeServerTracker.getOrCreateServerInfo(target.getPseudoName())
+                    .setPlayers(Arrays.asList(tokens));
         } else if (object instanceof BasicMessagePacket) {
             BasicMessagePacket packet = (BasicMessagePacket) object;
 

@@ -45,7 +45,7 @@ public class BungeeServerTracker {
         for (BungeeServerInfo info : getTrackedServers().values()) {
             if (info.getPlayers() == null) continue;
             for (PlayerToken pInfo : info.getPlayers())
-                if (pInfo != null && pInfo.getUUID().equals(uuid)) {
+                if (pInfo != null && pInfo.getUUID().equals(uuid.toString())) {
                     shard = ShardInfo.getByPseudoName(info.getServerName());
                     token = pInfo;
                 }

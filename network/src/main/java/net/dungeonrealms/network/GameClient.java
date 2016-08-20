@@ -7,12 +7,14 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.network.packet.Packet;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class GameClient
         extends Listener {
@@ -85,8 +87,12 @@ public class GameClient
         kryo.register(BasicMessagePacket.class);
         kryo.register(ServerListPacket.class);
         kryo.register(ShardInfo.class);
+        kryo.register(ServerAddress.class);
         kryo.register(PlayerToken.class);
         kryo.register(PlayerToken[].class);
+        kryo.register(UUID.class);
+        kryo.register(String.class);
+        kryo.register(int.class);
     }
 
 

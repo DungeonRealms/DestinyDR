@@ -1,6 +1,7 @@
 package net.dungeonrealms.common.network;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Optional;
  * Class written by APOLLOSOFTWARE.IO on 7/12/2016
  */
 
+@NoArgsConstructor
 public enum ShardInfo implements Serializable {
 
     // DEVELOPMENT SHARD //
@@ -41,13 +43,13 @@ public enum ShardInfo implements Serializable {
 
 
     @Getter
-    private final String shardID;
+    private String shardID;
 
     @Getter
-    private final String pseudoName;
+    private String pseudoName;
 
     @Getter
-    private final ServerAddress address;
+    private ServerAddress address;
 
     ShardInfo(String shardID, String pseudoName, ServerAddress address) {
         this.shardID = shardID;

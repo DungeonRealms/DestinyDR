@@ -1,6 +1,11 @@
 package net.dungeonrealms.common.network;
 
-public class ServerAddress {
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@NoArgsConstructor
+public class ServerAddress implements Serializable {
 
     private String ip;
     private int port;

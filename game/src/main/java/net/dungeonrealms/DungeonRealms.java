@@ -531,7 +531,7 @@ public class DungeonRealms extends JavaPlugin {
 
                 for (int i = 0; i < onlinePlayers.length; i++) {
                     Player player = onlinePlayers[i];
-                    packet.tokens[i] = new PlayerToken(player.getUniqueId(), player.getName());
+                    packet.tokens[i] = new PlayerToken(player.getUniqueId().toString(), player.getName());
                 }
 
                 getClient().sendTCP(packet);
