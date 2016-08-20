@@ -20,7 +20,7 @@ public class BungeeServerInfo {
     private volatile String motd2; // Should never be null
     private volatile long lastRequest;
 
-    private List<PingResponse.PlayerInfo> sample;
+    private volatile List<PingResponse.PlayerInfo> sample;
 
     public BungeeServerInfo(String serverName) {
         this.serverName = serverName;

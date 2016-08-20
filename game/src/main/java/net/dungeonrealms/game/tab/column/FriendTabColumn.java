@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.tab.column;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -8,6 +9,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.ping.PingResponse;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.tab.Column;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -47,14 +49,25 @@ public class FriendTabColumn extends Column {
 
                     // MAKE SURE FRIENDS ARE ONLINE //
                     friends.forEach(uuid -> {
-                        Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(UUID.fromString(uuid));
-                        if (!curInfo.isPresent()) return;
 
-                        PingResponse.PlayerInfo playerInfo = curInfo.get().a();
-                        if (playerInfo == null) return;
+                        String playerName = null;
+                        ShardInfo shard = null;
 
-                        String playerName = playerInfo.getName();
-                        ShardInfo shard = curInfo.get().b();
+                        if (Bukkit.getPlayer(uuid) == null) {
+
+                            Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(UUID.fromString(uuid));
+                            if (!curInfo.isPresent()) return;
+
+                            PingResponse.PlayerInfo playerInfo = curInfo.get().a();
+                            if (playerInfo == null) return;
+
+                            playerName = playerInfo.getName();
+                            shard = curInfo.get().b();
+
+                        } else {
+                            shard = DungeonRealms.getShard();
+                            playerName = Bukkit.getPlayer(uuid).getName();
+                        }
 
                         onlineFriends.add(getFormat(playerName, shard));
                     });

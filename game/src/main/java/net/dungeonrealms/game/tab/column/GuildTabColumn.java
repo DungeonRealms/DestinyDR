@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.tab.column;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
@@ -8,6 +9,7 @@ import net.dungeonrealms.common.network.ping.PingResponse;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.database.GuildDatabase;
 import net.dungeonrealms.game.tab.Column;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -48,8 +50,23 @@ public class GuildTabColumn extends Column {
                     GuildDatabaseAPI.get().getAllOfGuild(guild).stream()
                             .filter(uuid -> !player.getUniqueId().equals(uuid))
                             .forEach(uuid -> {
-                                Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
-                                if (!curInfo.isPresent()) return;
+                                String playerName = null;
+                                ShardInfo shard = null;
+
+                                if (Bukkit.getPlayer(uuid) == null) {
+                                    Optional<Tuple<PingResponse.PlayerInfo, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(uuid);
+                                    if (!curInfo.isPresent()) return;
+
+                                    PingResponse.PlayerInfo playerInfo = curInfo.get().a();
+                                    if (playerInfo == null) return;
+
+                                    playerName = playerInfo.getName();
+                                    shard = curInfo.get().b();
+
+                                } else {
+                                    shard = DungeonRealms.getShard();
+                                    playerName = Bukkit.getPlayer(uuid).getName();
+                                }
 
                                 String prefix = "";
 
@@ -57,13 +74,6 @@ public class GuildTabColumn extends Column {
                                     prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Owner" + ChatColor.GRAY + "] ";
                                 else if (GuildDatabaseAPI.get().isOfficer(uuid, guild))
                                     prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Officer" + ChatColor.GRAY + "] ";
-
-
-                                PingResponse.PlayerInfo playerInfo = curInfo.get().a();
-                                if (playerInfo == null) return;
-
-                                String playerName = playerInfo.getName();
-                                ShardInfo shard = curInfo.get().b();
 
                                 guildMembers.add(getFormat(prefix + playerName, shard));
                             });

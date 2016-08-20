@@ -27,6 +27,7 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,21 +79,48 @@ public class AntiDuplication implements GenericMechanic {
 
     private static void checkForDuplications(Player p, HashMultimap<Inventory, Tuple<ItemStack, String>> map) {
         Set<String> duplicates = Utils.findDuplicates(map.values().stream().map(Tuple::b).collect(Collectors.toList()));
+        Map<String, Integer> itemDesc = new HashMap<>();
+
         if (!duplicates.isEmpty()) { // caught red handed
 
             for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : map.entries()) {
                 String uniqueEpochIdentifier = e.getValue().b();
 
-                if (duplicates.contains(uniqueEpochIdentifier))
+                if (duplicates.contains(uniqueEpochIdentifier)) {
+                    String name = "";
+
+                    ItemStack item = e.getValue().a();
+                    ItemMeta meta = item.getItemMeta();
+
+                    if (meta.hasDisplayName()) name += meta.getDisplayName();
+                    else {
+                        Material material = e.getValue().a().getType();
+                        name += material.toString().replace("_", " ");
+                    }
+
+                    if (itemDesc.containsKey(name)) itemDesc.put(name, itemDesc.get(name) + 1);
+                    else itemDesc.put(name, 1);
+
                     Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> e.getKey().remove(e.getValue().a()));
+                }
             }
 
-            GameAPI.sendNetworkMessage("GMMessage", "");
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
-                    ChatColor.RED + "Player " + p.getName() + " has attempted to duplicate items. Amount: " + duplicates.size());
-            GameAPI.sendNetworkMessage("GMMessage", "");
+            StringBuilder builder = new StringBuilder();
 
-            //banAndBroadcast(p, duplicates.size());
+            int i = 0;
+            for (Map.Entry<String, Integer> e : itemDesc.entrySet()) {
+                int amount = e.getValue();
+                String name = e.getKey();
+
+                if (i == 0)
+                    builder.append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
+                else
+                    builder.append(", ").append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
+                i++;
+            }
+
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
+                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. With: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
         }
     }
 
