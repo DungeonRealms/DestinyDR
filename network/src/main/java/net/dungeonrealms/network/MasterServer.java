@@ -16,7 +16,7 @@ public class MasterServer
     private Server server;
 
     public MasterServer() throws IOException {
-        server = new Server();
+        server = new Server(Constants.NET_WRITE_BUFFER_SIZE, Constants.NET_READ_BUFFER_SIZE);
 
         server.start();
         server.addListener(this);

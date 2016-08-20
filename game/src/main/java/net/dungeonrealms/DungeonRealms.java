@@ -478,8 +478,6 @@ public class DungeonRealms extends JavaPlugin {
 
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
             cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
-
-
         }
 
         // Commands exclusive to support agents on their special server.
@@ -494,7 +492,6 @@ public class DungeonRealms extends JavaPlugin {
         }
 
         Bukkit.getServer().setWhitelist(false);
-
 
         rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
             if (System.currentTimeMillis() >= (REBOOT_TIME - 300000L)) {
@@ -518,6 +515,7 @@ public class DungeonRealms extends JavaPlugin {
             }
         }, 0L, 1000);
 
+        // SEND SERVER INFO TO MASTER SERVER REPEATEDLY //
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -537,7 +535,6 @@ public class DungeonRealms extends JavaPlugin {
                 getClient().sendTCP(packet);
             }
         }, 0L, 3000);
-
 
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);

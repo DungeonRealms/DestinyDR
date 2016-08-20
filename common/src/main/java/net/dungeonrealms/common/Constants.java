@@ -32,6 +32,10 @@ public class Constants {
     // BACKEND SERVER SERVER PORT //
     public static final int MASTER_SERVER_PORT = 22964;
 
+    public static final int NET_READ_BUFFER_SIZE = 16384;
+
+    public static final int NET_WRITE_BUFFER_SIZE = 32768;
+
     // BUILD VERSION //
     public static final String BUILD_VERSION = "v5.0";
 
