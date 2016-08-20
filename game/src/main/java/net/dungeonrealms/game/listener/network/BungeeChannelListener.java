@@ -70,10 +70,8 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
             try {
                 if (subChannel.equals("IP")) {
                     String address = in.readUTF();
-                    System.out.print("Test");
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
-
                     GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().getDocumentFromAddress(address),
                             consumer -> {
                                 try {
