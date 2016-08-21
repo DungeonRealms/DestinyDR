@@ -780,8 +780,7 @@ public class GameAPI {
         Soundtrack.getInstance().doLogout(player);
 
         // HANDLE REALM LOGOUT SYNC //
-        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(),
-                () -> Realms.getInstance().doLogout(player));
+        Realms.getInstance().doLogout(player);
 
         // save player data
         savePlayerData(uuid, async, doAfterSave -> {
@@ -1330,10 +1329,13 @@ public class GameAPI {
         gp.setAbleToSuicide(false);
         gp.setAbleToDrop(false);
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true, doAfter -> {
-            GameAPI.handleLogout(player.getUniqueId(), true, consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName));
-        });
-
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true,
+                doAfter -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                        () -> GameAPI.handleLogout(player.getUniqueId(), true,
+                                consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                                        () -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                                                () -> BungeeUtils.sendToServer(player.getName(), serverBungeeName))
+                                ))));
         // check if they're still here (server failed to accept them for some reason)
         new PlayerLogoutWatchdog(player);
     }
