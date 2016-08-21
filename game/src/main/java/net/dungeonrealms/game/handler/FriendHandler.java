@@ -77,14 +77,14 @@ public class FriendHandler {
             case RIGHT:
                 //Remove Pending request
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, tag.getString("info"), true);
                 player.sendMessage(ChatColor.GREEN + "You have successfully cancelled the pending request for " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + ".");
                 PlayerMenus.openFriendInventory(player);
                 break;
             case LEFT:
                 //Add Friend
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, tag.getString("info"), true);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
                 String name = itemStack.getItemMeta().getDisplayName().split("'")[0];
                 player.sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");
@@ -115,7 +115,7 @@ public class FriendHandler {
             return;
         }
 
-        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId().toString(), true);
+        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUESTS, player.getUniqueId().toString(), true);
         player.sendMessage(ChatColor.GREEN + "Your friend request was successfully sent.");
 
         friend.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + player.getName() + ChatColor.GREEN + " sent you a friend request.");
@@ -160,7 +160,7 @@ public class FriendHandler {
             return true;
         }
 
-        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, uuid);
+        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
 
         long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(uuid.toString())).count();
 
@@ -168,7 +168,7 @@ public class FriendHandler {
     }
 
     public boolean isPendingFrom(UUID uuid, String name) {
-        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, uuid);
+        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
         String friendUUID = DatabaseAPI.getInstance().getUUIDFromName(name);
         long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(friendUUID)).count();
 
@@ -178,7 +178,7 @@ public class FriendHandler {
 
     public void acceptFriend(UUID uniqueId, UUID friend, String name) {
 
-        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, friend.toString(), true);
+        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, friend.toString(), true);
 
         DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
         Bukkit.getPlayer(uniqueId).sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + ".");

@@ -2,7 +2,7 @@ package net.dungeonrealms.tool;
 
 import com.mongodb.Block;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseDriver;
+import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -36,9 +36,9 @@ public class DupedItemsRemover implements GenericMechanic {
         final int[] totalQueries = {0};
         final int[] totalQueriesWithDupes = {0};
         long currTotalTime = System.currentTimeMillis();
-        DatabaseDriver.getInstance().startInitialization(true);
+        DatabaseInstance.getInstance().startInitialization(true);
 
-        DatabaseDriver.playerData.find().forEach(new Block<Document>() {
+        DatabaseInstance.playerData.find().forEach(new Block<Document>() {
             @Override
             public void apply(Document doc) {
                 totalQueries[0]++;

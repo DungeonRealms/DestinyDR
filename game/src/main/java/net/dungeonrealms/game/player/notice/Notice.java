@@ -2,7 +2,9 @@ package net.dungeonrealms.game.player.notice;
 
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.MailHandler;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -34,15 +36,21 @@ public class Notice {
      * @since 1.0
      */
     public void doLogin(Player player) {
-
-        ArrayList<String> friendRequests = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, player.getUniqueId());
         ArrayList<String> mailbox = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, player.getUniqueId());
-
-        if (friendRequests.size() > 0) {
-        }
+        Long vote = (Long) DatabaseAPI.getInstance().getData(EnumData.LAST_VOTE, player.getUniqueId());
 
         if (mailbox.size() > 0)
             MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail!");
+
+        if (vote == null || (System.currentTimeMillis() - vote) >= 86400000) {
+            int ecashAmount = 15;
+            if (Rank.isSubscriberPlus(player)) ecashAmount = 25;
+            else if (Rank.isSubscriber(player)) ecashAmount = 20;
+
+            final JSONMessage message = new JSONMessage("Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.YELLOW);
+            message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
+            message.sendToPlayer(player);
+        }
     }
 
 }

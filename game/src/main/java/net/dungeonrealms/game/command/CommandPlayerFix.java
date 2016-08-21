@@ -4,7 +4,7 @@ import com.mongodb.client.model.Filters;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseDriver;
+import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -40,7 +40,7 @@ public class CommandPlayerFix extends BaseCommand {
         }
 
         if (args[0].equalsIgnoreCase("all")) {
-            GameAPI.submitAsyncCallback(() -> DatabaseDriver.playerData.updateMany(Filters.eq("info.isPlaying", true),
+            GameAPI.submitAsyncCallback(() -> DatabaseInstance.playerData.updateMany(Filters.eq("info.isPlaying", true),
                     new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))), result -> {
                 try {
                     if (result.get().wasAcknowledged()) {
@@ -49,9 +49,7 @@ public class CommandPlayerFix extends BaseCommand {
                     } else {
                         sender.sendMessage(ChatColor.RED + "Operation failed: database error.");
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             });
@@ -67,7 +65,7 @@ public class CommandPlayerFix extends BaseCommand {
 
         if (wholeShard) {
             String shard = args[0].toLowerCase();
-            GameAPI.submitAsyncCallback(() -> DatabaseDriver.playerData.updateMany(Filters.eq("info.current", shard),
+            GameAPI.submitAsyncCallback(() -> DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard),
                     new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))), result -> {
                 try {
                     if (result.get().wasAcknowledged()) {
@@ -77,9 +75,7 @@ public class CommandPlayerFix extends BaseCommand {
                     } else {
                         sender.sendMessage(ChatColor.RED + "Operation failed: database error.");
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             });

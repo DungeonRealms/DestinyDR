@@ -14,6 +14,7 @@ import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.event.PlayerMessagePlayerEvent;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -109,6 +110,7 @@ public class MainListener implements Listener {
 
             // Update the database with the new E-Cash reward!
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_VOTE, System.currentTimeMillis(), true);
 
             // Reward to player with their EXP increase.
             if (GameAPI.getGamePlayer(player) == null) {
@@ -122,6 +124,7 @@ public class MainListener implements Listener {
             for (Player player1 : Bukkit.getOnlinePlayers()) {
                 normal.sendToPlayer(player1);
             }
+
         }
 
     }
@@ -175,7 +178,7 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
-        if ((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
+        if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
             if (shard != "" && shard != null) {
                 event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
@@ -190,6 +193,12 @@ public class MainListener implements Listener {
 
         // REQUEST PLAYER'S DATA ASYNC //
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
+
+        // UPDATE GUILD CACHE //
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, event.getUniqueId());
+
+        if (guildName != null)
+            GuildDatabaseAPI.get().updateCache(guildName);
     }
 
     /**
@@ -302,7 +311,7 @@ public class MainListener implements Listener {
             return;
         }
 
-        GameAPI.handleLogout(event.getPlayer().getUniqueId(), true);
+        GameAPI.handleLogout(event.getPlayer().getUniqueId(), true, null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -318,7 +327,7 @@ public class MainListener implements Listener {
             return;
         }
 
-        GameAPI.handleLogout(event.getPlayer().getUniqueId(), true);
+        GameAPI.handleLogout(event.getPlayer().getUniqueId(), true, null);
     }
 
     /**

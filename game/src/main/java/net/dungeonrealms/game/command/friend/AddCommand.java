@@ -54,9 +54,7 @@ public class AddCommand extends BaseCommand {
         if (!isOnline(playerName)) {
             player.sendMessage(ChatColor.RED + "That player is not on any shard!");
             return false;
-
         }
-
 
         String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
 
@@ -64,7 +62,7 @@ public class AddCommand extends BaseCommand {
             player.sendMessage(ChatColor.RED + "You're already friends.");
             return false;
         }
-        ArrayList<String> requests = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, UUID.fromString(uuid));
+        ArrayList<String> requests = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, UUID.fromString(uuid));
 
         if (requests.contains(player.getUniqueId().toString())) {
             player.sendMessage(ChatColor.RED + "You've already sent this user a friend request.");
@@ -83,6 +81,6 @@ public class AddCommand extends BaseCommand {
 
     private boolean isPlayer(String player) {
         String uuid = DatabaseAPI.getInstance().getUUIDFromName(player);
-        return uuid.equals("") ? false : true;
+        return !uuid.equals("");
     }
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseDriver;
+import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -210,7 +210,7 @@ public class DungeonRealms extends JavaPlugin {
         shard = ShardInfo.getByShardID(shardid);
         BungeeUtils.setPlugin(this);
 
-        DatabaseDriver.getInstance().startInitialization(true);
+        DatabaseInstance.getInstance().startInitialization(true);
         DatabaseAPI.getInstance().startInitialization(bungeeName);
         AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
@@ -366,6 +366,7 @@ public class DungeonRealms extends JavaPlugin {
 
         cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to test dr soundtrack."));
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
+        cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
 
 
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "Safely logout of Dungeon Realms."));

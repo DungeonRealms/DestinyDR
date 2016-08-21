@@ -240,7 +240,7 @@ public class ItemManager {
         tag.set("type", new NBTTagString("teleport"));
         tag.set("usage", new NBTTagString(location));
         nmsStack.setTag(tag);
-        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
     /**
@@ -1113,6 +1113,16 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") && (nms.getTag().getString("type").equalsIgnoreCase("armorenchant") || nms.getTag().getString("type").equalsIgnoreCase("weaponenchant"));
     }
+
+    /**
+     * @param stack
+     * @return
+     */
+    public static boolean isTeleportBook(ItemStack stack) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") && (nms.getTag().getString("type").equalsIgnoreCase("teleport"));
+    }
+
 
     /**
      * @param stack

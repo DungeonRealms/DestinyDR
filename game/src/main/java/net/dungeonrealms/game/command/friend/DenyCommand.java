@@ -43,7 +43,7 @@ public class DenyCommand extends BaseCommand {
         }
 
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, uuid.toString(), true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUESTS, uuid.toString(), true);
         player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " friend request!");
         return false;
     }

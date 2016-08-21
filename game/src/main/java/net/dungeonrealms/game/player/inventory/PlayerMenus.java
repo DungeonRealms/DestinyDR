@@ -76,7 +76,7 @@ public class PlayerMenus {
 
     public static void openFriendInventory(Player player) {
         UUID uuid = player.getUniqueId();
-        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, uuid);
+        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
 
         Inventory inv = Bukkit.createInventory(null, 45, "Friend Management");
 

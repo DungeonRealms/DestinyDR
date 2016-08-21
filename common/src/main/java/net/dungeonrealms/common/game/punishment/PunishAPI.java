@@ -4,7 +4,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseDriver;
+import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.util.AsyncUtils;
@@ -43,12 +43,12 @@ public class PunishAPI {
             UpdateOptions uo = new UpdateOptions();
             uo.upsert(true);
 
-            DatabaseDriver.bans.updateMany(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET.getUO
+            DatabaseInstance.bans.updateMany(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET.getUO
                     (), new Document("bans.bannedUntil", (duration != -1 ? System.currentTimeMillis() + (duration *
                     1000) : -1)).append("bans.bannedBy", sourceThatBanned)), uo);
 
             if (!reason.equals(""))
-                DatabaseDriver.bans.updateOne(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET.getUO
+                DatabaseInstance.bans.updateOne(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET.getUO
                         (), new Document("bans.reason", reason)));
         });
     }
@@ -74,7 +74,7 @@ public class PunishAPI {
     public static String getBannedMessage(UUID uuid) {
         if (!isBanned(uuid)) return null;
 
-        Document bansDoc = DatabaseDriver.bans.find(Filters.eq("bans.uuid", uuid.toString())).first().get("bans", Document.class);
+        Document bansDoc = DatabaseInstance.bans.find(Filters.eq("bans.uuid", uuid.toString())).first().get("bans", Document.class);
 
         long banTime = bansDoc.getLong("bannedUntil");
         String reason = bansDoc.getString("reason");
@@ -108,7 +108,7 @@ public class PunishAPI {
             UpdateOptions uo = new UpdateOptions();
             uo.upsert(true);
 
-            DatabaseDriver.bans.updateMany(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET
+            DatabaseInstance.bans.updateMany(Filters.eq("bans.uuid", uuid.toString()), new Document(EnumOperators.$SET
                     .getUO(), new Document("bans.bannedUntil", 0L).append("bans.reason", "")), uo);
         });
     }
@@ -152,7 +152,7 @@ public class PunishAPI {
      */
     public static boolean isBanned(UUID uuid) {
         try {
-            Document bansDoc = DatabaseDriver.bans.find(Filters.eq("bans.uuid", uuid.toString())).first();
+            Document bansDoc = DatabaseInstance.bans.find(Filters.eq("bans.uuid", uuid.toString())).first();
             if (bansDoc == null) return false;
             Long banTime = ((Document)bansDoc.get("bans")).getLong("bannedUntil");
             Constants.log.info(String.valueOf(banTime == -1 || banTime != 0 && System.currentTimeMillis() < banTime) + "");

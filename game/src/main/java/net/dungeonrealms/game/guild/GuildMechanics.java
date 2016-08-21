@@ -52,27 +52,25 @@ public class GuildMechanics {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
-        GameAPI.submitAsyncCallback(() -> GuildDatabaseAPI.get().updateCache(guildName), consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            String tag = GuildDatabaseAPI.get().getTagOf(guildName);
-            String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+        String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-            // Checks if guild still exists
-            checkPlayerGuild(player.getUniqueId());
+        // Checks if guild still exists
+        checkPlayerGuild(player.getUniqueId());
 
-            if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
+        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
 
-            List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
+        List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
 
-            GuildDatabaseAPI.get().getAllOfGuild(guildName)
-                    .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> {
-                Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard."));
-                filter.add(Bukkit.getPlayer(uuid).getName());
-            });
+        GuildDatabaseAPI.get().getAllOfGuild(guildName)
+                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> {
+            Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard."));
+            filter.add(Bukkit.getPlayer(uuid).getName());
+        });
 
-            sendAlertFilter(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
-            showMotd(player, guildName);
+        sendAlertFilter(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
+        showMotd(player, guildName);
 
-        }));
     }
 
     public void doChat(AsyncPlayerChatEvent event) {

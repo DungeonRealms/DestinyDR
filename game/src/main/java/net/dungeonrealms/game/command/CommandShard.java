@@ -39,13 +39,12 @@ public class CommandShard extends BaseCommand {
 
         if (args.length > 0) {
             GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
-            GameAPI.submitAsyncCallback(() -> handleLogout(player.getUniqueId(), false),
-                    consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
+            handleLogout(player.getUniqueId(), true, consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
 
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                                () -> BungeeUtils.sendToServer(player.getName(), args[0]), 10);
-                    }));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                        () -> BungeeUtils.sendToServer(player.getName(), args[0]), 10);
+            }));
 
         }
 

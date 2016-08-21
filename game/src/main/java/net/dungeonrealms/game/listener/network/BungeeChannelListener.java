@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener.network;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
@@ -20,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Nick on 10/12/2015.
@@ -72,23 +70,14 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                     String address = in.readUTF();
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
-                    GameAPI.submitAsyncCallback(() -> DatabaseAPI.getInstance().getDocumentFromAddress(address),
-                            consumer -> {
-                                try {
-                                    Document existingDoc = consumer.get();
-                                    if (existingDoc != null) {
-                                        UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
+                    DatabaseAPI.getInstance().searchDocumentFromAddress(address, existingDoc -> {
+                        if (existingDoc != null) {
+                            UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
 
-                                        if (PunishAPI.isBanned(uuid))
-                                            PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
-                                    }
-                                } catch (InterruptedException | ExecutionException e) {
-                                    e.printStackTrace();
-                                }
-
-                            });
-
-
+                            if (PunishAPI.isBanned(uuid))
+                                PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
+                        }
+                    });
                     return;
                 }
 
@@ -107,9 +96,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                 // This should never happen.
                 e.printStackTrace();
             }
-        } catch (
-                IOException e
-                )
+        } catch (IOException e)
 
         {
             e.printStackTrace();

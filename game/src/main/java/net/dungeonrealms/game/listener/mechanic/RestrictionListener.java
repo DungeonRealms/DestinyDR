@@ -133,7 +133,9 @@ public class RestrictionListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
-        if (command.equalsIgnoreCase("/g") || command.equalsIgnoreCase("/gl") || command.equalsIgnoreCase("/l") ) return;
+
+        if (command.equalsIgnoreCase("/g") || command.equalsIgnoreCase("/gl") || command.equalsIgnoreCase("/l"))
+            return;
 
         if (ANTI_COMMAND_SPAM.isCooldown(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can only execute a command every 5 seconds!");

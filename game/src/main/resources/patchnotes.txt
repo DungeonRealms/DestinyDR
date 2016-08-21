@@ -5,10 +5,14 @@ Build <build>
 - Duranor The Cruel and The Mother of Doom now have custom loot.
 
 &8Changes&0
+- Made teleport books stackable again.
 - Anti-duplication is now improved
 - Fishes now cook in the stack amount clicked with
 - Temporally disabled the Varenglade dungeon.
 
 &4Bug Fixes&0
+- Fixed crashing
+- Fixed shop wipes
+- Fixed random lag spikes
 - Fishes no longer consume on cook, other eating bugs fixed.
 - Fixed tab flickering for players on your shard

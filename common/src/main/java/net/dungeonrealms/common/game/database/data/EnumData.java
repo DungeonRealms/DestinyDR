@@ -53,8 +53,9 @@ public enum EnumData {
     GUILD("info.guild"),
 
     GUILD_INVITATION("notices.guildInvitation"),
-    FRIEND_REQUSTS("notices.friendRequest"),
+    FRIEND_REQUESTS("notices.friendRequest"),
     MAILBOX("notices.mailbox"),
+    LAST_VOTE("notices.lastVote"),
 
     BANNED_TIME("punishments.banned"),
     MUTE_TIME("punishments.muted"),

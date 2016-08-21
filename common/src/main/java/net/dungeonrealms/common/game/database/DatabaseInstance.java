@@ -5,20 +5,20 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.concurrent.UpdateThread;
+import net.dungeonrealms.common.game.database.concurrent.MongoAccessThread;
 import org.bson.Document;
 
 /**
  * Created by Nick on 8/29/2015.
  */
 
-public class DatabaseDriver {
+public class DatabaseInstance {
 
-    private static DatabaseDriver instance = null;
+    private static DatabaseInstance instance = null;
 
-    public static DatabaseDriver getInstance() {
+    public static DatabaseInstance getInstance() {
         if (instance == null) {
-            instance = new DatabaseDriver();
+            instance = new DatabaseInstance();
         }
         return instance;
     }
@@ -46,7 +46,7 @@ public class DatabaseDriver {
 
         Constants.log.info("DungeonRealms Database has connected successfully!");
 
-        new UpdateThread().start();
+        new MongoAccessThread().start();
         Constants.log.info("DungeonRealms Database UpdateThread ... STARTED ...");
     }
 
