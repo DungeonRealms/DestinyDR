@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -44,8 +45,14 @@ public class CommandLocalChat extends BaseCommand {
         }
 
         String finalChat = Chat.getInstance().checkForBannedWords(chatMessage.toString());
-
         Player player = (Player) sender;
+
+        if (finalChat.contains(".com") || finalChat.contains(".net") || finalChat.contains(".org") || finalChat.contains("http://") || finalChat.contains("www."))
+            if (!Rank.isDev(player)) {
+                player.sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in chat!");
+                return true;
+            }
+
 
         UUID uuid = player.getUniqueId();
 

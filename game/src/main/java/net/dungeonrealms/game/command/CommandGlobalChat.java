@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
@@ -49,6 +50,7 @@ public class CommandGlobalChat extends BaseCommand {
             return true;
         }
 
+
         StringBuilder chatMessage = new StringBuilder();
 
         for (String arg : args) {
@@ -56,6 +58,12 @@ public class CommandGlobalChat extends BaseCommand {
         }
 
         String finalChat = Chat.getInstance().checkForBannedWords(chatMessage.toString());
+
+        if (finalChat.contains(".com") || finalChat.contains(".net") || finalChat.contains(".org") || finalChat.contains("http://") || finalChat.contains("www."))
+            if (!Rank.isDev(player)) {
+                player.sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in chat!");
+                return true;
+            }
 
         UUID uuid = player.getUniqueId();
 
