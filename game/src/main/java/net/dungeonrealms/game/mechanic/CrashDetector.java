@@ -50,7 +50,7 @@ public class CrashDetector implements GenericMechanic {
                     Constants.log.warning("Detected no heartbeat in main thread for 30 seconds, uploading local data and locking server to prevent database issues.");
 
                     crashDetected = true;
-                    GameAPI.uploadDataOnCrash();
+                    GameAPI.handleCrash();
 
                     crashed = true;
                     break;
