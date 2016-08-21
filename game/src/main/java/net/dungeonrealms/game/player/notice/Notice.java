@@ -47,7 +47,7 @@ public class Notice {
             if (Rank.isSubscriberPlus(player)) ecashAmount = 25;
             else if (Rank.isSubscriber(player)) ecashAmount = 20;
 
-            final JSONMessage message = new JSONMessage("Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.YELLOW);
+            final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.YELLOW);
             message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
             message.sendToPlayer(player);
         }
