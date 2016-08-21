@@ -397,7 +397,7 @@ public class GameAPI {
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
 
-        final long restartTime = Bukkit.getOnlinePlayers().size() * 10 + 20 * 5; // half a second per player plus 5 seconds
+        final long restartTime = (Bukkit.getOnlinePlayers().size() * 600) + 5; // half a second per player plus 5 seconds
 
         Constants.log.info("Uploading data on crash...");
 
