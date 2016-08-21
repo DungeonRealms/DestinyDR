@@ -97,7 +97,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
 
                     final Location startingLocation = player.getLocation();
 
-                    if (GameAPI.isInSafeRegion(startingLocation)) {
+                    if (GameAPI.isInSafeRegion(startingLocation) || Rank.isGM(player)) {
                         GameAPI.moveToShard(player, bungeeName);
                         return;
                     }
