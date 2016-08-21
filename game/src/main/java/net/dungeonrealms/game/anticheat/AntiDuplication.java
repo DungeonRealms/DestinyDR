@@ -139,7 +139,7 @@ public class AntiDuplication implements GenericMechanic {
             if (inv == null) continue;
 
             for (ItemStack i : inv.getContents()) {
-                if (CraftItemStack.asNMSCopy(i) == null) continue;
+                if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
 
                 if (i.getAmount() <= 0) continue;
                 if (ItemManager.isScrap(i) || ItemManager.isPotion(i) || ItemManager.isTeleportBook(i)) continue;

@@ -1,10 +1,12 @@
 package net.dungeonrealms.game.player.notice;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.MailHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -25,6 +27,13 @@ public class Notice {
         return instance;
     }
 
+    public Notice() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getOnlinePlayers().forEach(this::executeVoteReminder);
+        }, 0L, 6000L);
+
+    }
+
     //TODO: Friends, Guilds and clickable acceptance.
 
     /**
@@ -37,20 +46,30 @@ public class Notice {
      */
     public void doLogin(Player player) {
         ArrayList<String> mailbox = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, player.getUniqueId());
-        Long vote = (Long) DatabaseAPI.getInstance().getData(EnumData.LAST_VOTE, player.getUniqueId());
 
         if (mailbox.size() > 0)
             MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail!");
 
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            executeVoteReminder(player);
+        }, 300);
+    }
+
+    private void executeVoteReminder(Player p) {
+        Long vote = (Long) DatabaseAPI.getInstance().getData(EnumData.LAST_VOTE, p.getUniqueId());
+
         if (vote == null || (System.currentTimeMillis() - vote) >= 86400000) {
             int ecashAmount = 15;
-            if (Rank.isSubscriberPlus(player)) ecashAmount = 25;
-            else if (Rank.isSubscriber(player)) ecashAmount = 20;
+            if (Rank.isSubscriberPlus(p)) ecashAmount = 25;
+            else if (Rank.isSubscriber(p)) ecashAmount = 20;
 
-            final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.YELLOW);
+            p.sendMessage(" ");
+            final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.GRAY);
             message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
-            message.sendToPlayer(player);
+            message.sendToPlayer(p);
+            p.sendMessage(" ");
         }
     }
+
 
 }
