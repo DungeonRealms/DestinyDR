@@ -368,7 +368,7 @@ public class GameAPI {
     public static void stopGame() {
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
-        long restartTime = Bukkit.getOnlinePlayers().size() * 10 + 20 * 5; // half a second per player plus 5 seconds
+        final long restartTime = Bukkit.getOnlinePlayers().size() * 10 + 20 * 5; // half a second per player plus 5 seconds
 
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setAcceptPlayers(false);
@@ -397,6 +397,8 @@ public class GameAPI {
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
 
+        final long restartTime = Bukkit.getOnlinePlayers().size() * 10 + 20 * 5; // half a second per player plus 5 seconds
+
         Constants.log.info("Uploading data on crash...");
 
         ShopMechanics.deleteAllShops(true);
@@ -411,17 +413,16 @@ public class GameAPI {
 
         System.out.println("Successfully saved all playerdata in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
 
-        try {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                System.exit(1);
+            }
+        }, 0L, restartTime);
 
-            DungeonRealms.getInstance().mm.stopInvocation();
-            AsyncUtils.pool.shutdown();
-            DatabaseInstance.mongoClient.close();
-
-        } catch (Exception ignored){
-
-        }
-
-        System.exit(1);
+        DungeonRealms.getInstance().mm.stopInvocation();
+        AsyncUtils.pool.shutdown();
+        DatabaseInstance.mongoClient.close();
     }
 
     /**
