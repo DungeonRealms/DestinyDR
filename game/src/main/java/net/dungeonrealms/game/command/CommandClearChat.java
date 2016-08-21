@@ -28,7 +28,7 @@ public class CommandClearChat extends BaseCommand {
                 p.sendMessage(" ");
 
                 if (i == 99)
-                    p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Chat cleared by " + GameChat.getFormattedName(p));
+                    p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Chat cleared by " + GameChat.getFormattedName((Player) sender));
             }
 
         return false;
