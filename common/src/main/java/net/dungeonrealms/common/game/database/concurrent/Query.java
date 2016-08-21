@@ -1,5 +1,6 @@
 package net.dungeonrealms.common.game.database.concurrent;
 
+import com.mongodb.client.MongoCollection;
 import lombok.Getter;
 import org.bson.conversions.Bson;
 
@@ -15,13 +16,18 @@ public abstract class Query<T> {
     private final Bson searchQuery;
 
     @Getter
+    private final MongoCollection collection;
+
+    @Getter
     private final Consumer<T> doAfter;
 
     /**
-     * @param searchQuery     Search query
-     * @param doAfter Consumer task to do after query is complete.
+     * @param collection  Database collection
+     * @param searchQuery Search query
+     * @param doAfter     Consumer task to do after query is complete.
      */
-    public Query(Bson searchQuery, Consumer<T> doAfter) {
+    public Query(MongoCollection collection, Bson searchQuery, Consumer<T> doAfter) {
+        this.collection = collection;
         this.searchQuery = searchQuery;
         this.doAfter = doAfter;
     }

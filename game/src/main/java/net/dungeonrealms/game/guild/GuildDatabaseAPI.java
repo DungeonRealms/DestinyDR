@@ -77,7 +77,15 @@ public interface GuildDatabaseAPI {
      *
      * @param guildName Guild name
      */
-    boolean updateCache(String guildName);
+    void updateCache(String guildName, boolean async);
+
+    /**
+     * Updates cached guild
+     *
+     * @param guildName       Guild name
+     * @param doAfterOptional Do after optional
+     */
+    void updateCache(String guildName, boolean async, Runnable doAfterOptional);
 
     /**
      * Remove from guild

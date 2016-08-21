@@ -75,7 +75,7 @@ public class Lobby extends JavaPlugin implements Listener {
         }
 
         // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
+        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
 

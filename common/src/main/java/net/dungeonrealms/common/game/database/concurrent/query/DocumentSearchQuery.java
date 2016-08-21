@@ -1,5 +1,6 @@
 package net.dungeonrealms.common.game.database.concurrent.query;
 
+import com.mongodb.client.MongoCollection;
 import net.dungeonrealms.common.game.database.concurrent.Query;
 import org.bson.conversions.Bson;
 
@@ -12,11 +13,12 @@ import java.util.function.Consumer;
 public class DocumentSearchQuery<Document> extends Query<Document> {
 
     /**
+     * @param collection  Database collection
      * @param searchQuery Search query
      * @param doAfter     Consumer task to do after query is complete.
      */
-    public DocumentSearchQuery(Bson searchQuery, Consumer<Document> doAfter) {
-        super(searchQuery, doAfter);
+    public DocumentSearchQuery(MongoCollection collection, Bson searchQuery, Consumer<Document> doAfter) {
+        super(collection, searchQuery, doAfter);
     }
 
 }

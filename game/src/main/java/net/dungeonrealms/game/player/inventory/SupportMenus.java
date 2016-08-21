@@ -57,7 +57,7 @@ public class SupportMenus {
             if (Bukkit.getPlayer(playerName) == null && DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
                 DatabaseAPI.getInstance().PLAYERS.remove(uuid);
             }
-            DatabaseAPI.getInstance().requestPlayer(uuid);
+            DatabaseAPI.getInstance().requestPlayer(uuid, false);
             String playerRank = Rank.getInstance().getRank(uuid);
             if (!Rank.isDev(player) && (playerRank.equalsIgnoreCase("gm") || playerRank.equalsIgnoreCase("dev"))) {
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "DO NOT" + ChatColor.RED + " have permission to manage this user.");
@@ -89,7 +89,7 @@ public class SupportMenus {
                 });
             } else {
                 item = editItem(new ItemStack(Material.BARRIER), ChatColor.RED + "Rank Manager", new String[]{
-                   ChatColor.RED + "You cannot change the rank of your own account."
+                        ChatColor.RED + "You cannot change the rank of your own account."
                 });
             }
             inv.setItem(19, applySupportItemTags(item, playerName, uuid));
@@ -465,7 +465,7 @@ public class SupportMenus {
                     break;
                 }
             }
-            item = editItem(trailType.getSelectionItem(), (hasUnlockedPlayerTrail ? ChatColor.GREEN : ChatColor.RED) + trailType.getDisplayName(), new String[] {
+            item = editItem(trailType.getSelectionItem(), (hasUnlockedPlayerTrail ? ChatColor.GREEN : ChatColor.RED) + trailType.getDisplayName(), new String[]{
                     ChatColor.WHITE + "Click to " + (hasUnlockedPlayerTrail ? "lock" : "unlock") + " the " + trailType.getDisplayName().toLowerCase() + " player trail."
             });
 
@@ -517,7 +517,7 @@ public class SupportMenus {
                 }
             }
 
-            item = editItemWithShort(applySupportItemTags(addNbtTag(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), "pet", petType.getRawName()), playerName, uuid), (short) petType.getEggShortData(), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[] {
+            item = editItemWithShort(applySupportItemTags(addNbtTag(new ItemStack(Material.MONSTER_EGG, 1, (short) petType.getEggShortData()), "pet", petType.getRawName()), playerName, uuid), (short) petType.getEggShortData(), (hasUnlockedPet ? ChatColor.GREEN : ChatColor.RED) + petType.getDisplayName(), new String[]{
                     ChatColor.WHITE + "Click to " + (hasUnlockedPet ? "lock" : "unlock") + " the " + petType.getDisplayName().toLowerCase() + " pet."
             });
 

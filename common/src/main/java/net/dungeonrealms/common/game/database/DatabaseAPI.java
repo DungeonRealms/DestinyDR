@@ -58,7 +58,7 @@ public class DatabaseAPI {
      */
     public void bulkUpdate(List<UpdateOneModel<Document>> operations, boolean async, Consumer<BulkWriteResult> doAfterOptional) {
         if (async) {
-            MongoAccessThread.submitQuery(new BulkWriteQuery<>(operations, doAfterOptional));
+            MongoAccessThread.submitQuery(new BulkWriteQuery<>(DatabaseInstance.playerData, operations, doAfterOptional));
         } else {
             BulkWriteResult result = DatabaseInstance.playerData.bulkWrite(operations);
             if (Constants.debug)
@@ -124,7 +124,7 @@ public class DatabaseAPI {
 
         if (updateDatabase)
             if (async)
-                MongoAccessThread.submitQuery(new SingleUpdateQuery<>(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), doAfterOptional));
+                MongoAccessThread.submitQuery(new SingleUpdateQuery<>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), doAfterOptional));
             else {
                 UpdateResult result = DatabaseInstance.playerData.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), MongoAccessThread.uo);
                 if (doAfterOptional != null)
@@ -259,17 +259,49 @@ public class DatabaseAPI {
      * @param uuid
      * @since 1.0
      */
-    public boolean requestPlayer(UUID uuid) {
-        Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
+    public void requestPlayer(UUID uuid, boolean async) {
+        requestPlayer(uuid, async, null);
+    }
 
-        if (Constants.debug) {
-            Constants.log.info("[Database] New playerdata requested for " + uuid + " from the database.");
-            printTrace();
+    /**
+     * Is fired to grab a player from Mongo
+     * if they don't exist. Fire addNewPlayer() creation.
+     *
+     * @param uuid
+     * @since 1.0
+     */
+    public void requestPlayer(UUID uuid, boolean async, Runnable doAfterOptional) {
+        if (async) {
+            MongoAccessThread.submitQuery(new DocumentSearchQuery<Document>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid.toString()), doc -> {
+
+                if (doc == null) {
+                    addNewPlayer(uuid, async);
+                } else {
+                    PLAYERS.put(uuid, doc);
+                }
+
+
+                if (Constants.debug) {
+                    Constants.log.info("[Database] [ASYNC] New playerdata requested for " + uuid + " from the database.");
+                    printTrace();
+                }
+
+
+                if (doAfterOptional != null)
+                    doAfterOptional.run();
+
+            }));
+        } else {
+            Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
+            if (doc == null) addNewPlayer(uuid, async);
+            else PLAYERS.put(uuid, doc);
+            if (Constants.debug) {
+                Constants.log.info("[Database] New playerdata requested for " + uuid + " from the database.");
+                printTrace();
+            }
+            if (doAfterOptional != null)
+                doAfterOptional.run();
         }
-
-        if (doc == null) addNewPlayer(uuid);
-        else PLAYERS.put(uuid, doc);
-        return true;
     }
 
     public Object retrieveElement(UUID uuid, EnumData data) {
@@ -301,7 +333,7 @@ public class DatabaseAPI {
     }
 
     public void searchDocumentFromAddress(String ipAddress, Consumer<Document> doAfter) {
-        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(Filters.eq("info.ipAddress", ipAddress), doAfter));
+        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(DatabaseInstance.playerData, Filters.eq("info.ipAddress", ipAddress), doAfter));
     }
 
     public String getFormattedShardName(UUID uuid) {
@@ -338,7 +370,7 @@ public class DatabaseAPI {
      * @since 1.0
      */
 
-    private void addNewPlayer(UUID uuid) {
+    private void addNewPlayer(UUID uuid, boolean async) {
         Document newPlayerDocument =
                 new Document("info",
                         new Document("uuid", uuid.toString())
@@ -457,7 +489,7 @@ public class DatabaseAPI {
                                         .append("gems_spent", 0));
 
         DatabaseInstance.playerData.insertOne(newPlayerDocument);
-        requestPlayer(uuid);
+        requestPlayer(uuid, async);
         Constants.log.info("[Database] Requesting new data for : " + uuid);
     }
 

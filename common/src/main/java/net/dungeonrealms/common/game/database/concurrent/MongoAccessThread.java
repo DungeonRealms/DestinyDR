@@ -4,7 +4,6 @@ import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.concurrent.query.BulkWriteQuery;
 import net.dungeonrealms.common.game.database.concurrent.query.DocumentSearchQuery;
 import net.dungeonrealms.common.game.database.concurrent.query.SingleUpdateQuery;
@@ -41,7 +40,7 @@ public class MongoAccessThread extends Thread {
 
                 if (query instanceof SingleUpdateQuery) {
                     SingleUpdateQuery<UpdateResult> updateQuery = (SingleUpdateQuery<UpdateResult>) query;
-                    UpdateResult result = DatabaseInstance.playerData.updateOne(updateQuery.getSearchQuery(), updateQuery.getNewDocument(), uo);
+                    UpdateResult result = updateQuery.getCollection().updateOne(updateQuery.getSearchQuery(), updateQuery.getNewDocument(), uo);
 
                     if (result.wasAcknowledged()) {
                         if (Constants.debug)
@@ -52,7 +51,7 @@ public class MongoAccessThread extends Thread {
                         Constants.log.info("[Database] Update query failed: " + updateQuery.getSearchQuery().toString() + " " + updateQuery.getNewDocument().toString());
                 } else if (query instanceof DocumentSearchQuery) {
                     DocumentSearchQuery documentSearchQuery = (DocumentSearchQuery) query;
-                    Document doc = DatabaseInstance.playerData.find(documentSearchQuery.getSearchQuery()).first();
+                    Document doc = (Document) documentSearchQuery.getCollection().find(documentSearchQuery.getSearchQuery()).first();
 
                     if (Constants.debug)
                         Constants.log.info("[Database] ASYNC Executed search query: " + documentSearchQuery.getSearchQuery().toString() + " " + doc.toString());
@@ -60,7 +59,7 @@ public class MongoAccessThread extends Thread {
                     documentSearchQuery.getDoAfter().accept(doc);
                 } else if (query instanceof BulkWriteQuery) {
                     BulkWriteQuery<BulkWriteResult> bulkWriteQuery = (BulkWriteQuery<BulkWriteResult>) query;
-                    BulkWriteResult result = DatabaseInstance.playerData.bulkWrite(bulkWriteQuery.getModels());
+                    BulkWriteResult result = bulkWriteQuery.getCollection().bulkWrite(bulkWriteQuery.getModels());
 
                     if (Constants.debug)
                         Constants.log.info("[Database] ASYNC Executed bulk write operation. Modifications: " + result.getModifiedCount());

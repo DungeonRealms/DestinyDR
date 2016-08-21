@@ -14,7 +14,6 @@ import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.event.PlayerMessagePlayerEvent;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -192,13 +191,7 @@ public class MainListener implements Listener {
         DungeonRealms.getInstance().getLoggingIn().add(event.getUniqueId());
 
         // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
-
-        // UPDATE GUILD CACHE //
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, event.getUniqueId());
-
-        if (guildName != null)
-            GuildDatabaseAPI.get().updateCache(guildName);
+        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
     /**

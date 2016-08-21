@@ -1,5 +1,6 @@
 package net.dungeonrealms.common.game.database.concurrent.query;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOneModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,11 +21,12 @@ public class BulkWriteQuery<BulkWriteResult> extends Query<BulkWriteResult> {
     private final List<UpdateOneModel<Document>> models;
 
     /**
+     * @param collection  Database collection
      * @param doAfterOptional Consumer task to do after query is complete.
      * @param models          Write models
      */
-    public BulkWriteQuery(List<UpdateOneModel<Document>> models, Consumer<BulkWriteResult> doAfterOptional) {
-        super(null, doAfterOptional);
+    public BulkWriteQuery(MongoCollection collection, List<UpdateOneModel<Document>> models, Consumer<BulkWriteResult> doAfterOptional) {
+        super(collection, null, doAfterOptional);
         this.models = models;
     }
 }

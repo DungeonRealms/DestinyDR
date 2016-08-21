@@ -6,10 +6,12 @@ import lombok.Setter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
+import net.dungeonrealms.common.game.database.concurrent.MongoAccessThread;
+import net.dungeonrealms.common.game.database.concurrent.query.DocumentSearchQuery;
+import net.dungeonrealms.common.game.database.concurrent.query.SingleUpdateQuery;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumGuildData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
@@ -43,13 +45,29 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return instance;
     }
 
-    public boolean updateCache(String guildName) {
-        Document doc = DatabaseInstance.guilds.find(Filters.eq("info.name", guildName)).first();
-        if (doc != null) {
-            CACHED_GUILD.put(guildName, doc);
-            return true;
+    public void updateCache(String guildName, boolean async) {
+        updateCache(guildName, async, null);
+    }
+
+    public void updateCache(String guildName, boolean async, Runnable doAfterOptional) {
+        if (async) {
+            MongoAccessThread.submitQuery(new DocumentSearchQuery<Document>(DatabaseInstance.guilds, Filters.eq("info.name", guildName), doc -> {
+                if (doc != null) {
+                    CACHED_GUILD.put(guildName, doc);
+
+                    if (doAfterOptional != null)
+                        doAfterOptional.run();
+                }
+            }));
+        } else {
+            Document doc = DatabaseInstance.playerData.find(Filters.eq("info.name", guildName)).first();
+            if (doc != null) {
+                CACHED_GUILD.put(guildName, doc);
+
+                if (doAfterOptional != null)
+                    doAfterOptional.run();
+            }
         }
-        return false;
     }
 
     @Override
@@ -172,13 +190,10 @@ public class GuildDatabase implements GuildDatabaseAPI {
             }
         }
         if (async) {
-            AsyncUtils.pool.submit(() -> {
-                DatabaseInstance.guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
-                updateCache(guildName);
-                return true;
-            });
-        }
-        else { // INSTANTLY UPDATES THE MONGODB SERVER //
+            MongoAccessThread.submitQuery(new SingleUpdateQuery<>(DatabaseInstance.guilds, Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)), doAfter -> {
+                updateCache(guildName, async);
+            }));
+        } else { // INSTANTLY UPDATES THE MONGODB SERVER //
             DatabaseInstance.guilds.updateOne(Filters.eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
         }
     }
@@ -217,7 +232,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
         if (getGuildOf(uuid) == null) return;
 
         modifyRank(guildName, uuid, true);
-        updateCache(guildName);
     }
 
 
@@ -225,7 +239,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
         if (getGuildOf(uuid) == null) return;
 
         modifyRank(guildName, uuid, false);
-        updateCache(guildName);
     }
 
     @Override
@@ -268,13 +281,13 @@ public class GuildDatabase implements GuildDatabaseAPI {
                 update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString(), Bukkit.isPrimaryThread());
         }
         update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, uuid.toString(), Bukkit.isPrimaryThread());
-        updateCache(guildName);
+        updateCache(guildName, true);
     }
 
 
     public void setMotdOf(String guildName, String motd) {
         update(guildName, EnumGuildData.MOTD, EnumOperators.$SET, motd, Bukkit.isPrimaryThread());
-        updateCache(guildName);
+        updateCache(guildName, true);
     }
 
     public void removeFromGuild(String guildName, UUID uuid) {
@@ -296,8 +309,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
             }
         } catch (NullPointerException ignored) {
         }
-
-        updateCache(guildName);
     }
 
 

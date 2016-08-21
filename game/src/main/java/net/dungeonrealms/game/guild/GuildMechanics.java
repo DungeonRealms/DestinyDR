@@ -52,25 +52,27 @@ public class GuildMechanics {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
-        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
-        String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
+        GuildDatabaseAPI.get().updateCache(guildName, true, () -> {
+            String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+            String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        // Checks if guild still exists
-        checkPlayerGuild(player.getUniqueId());
+            // Checks if guild still exists
+            checkPlayerGuild(player.getUniqueId());
 
-        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
 
-        List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
+            if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
 
-        GuildDatabaseAPI.get().getAllOfGuild(guildName)
-                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> {
-            Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard."));
-            filter.add(Bukkit.getPlayer(uuid).getName());
+            List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
+
+            GuildDatabaseAPI.get().getAllOfGuild(guildName)
+                    .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> {
+                Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard."));
+                filter.add(Bukkit.getPlayer(uuid).getName());
+            });
+
+            sendAlertFilter(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
+            showMotd(player, guildName);
         });
-
-        sendAlertFilter(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
-        showMotd(player, guildName);
-
     }
 
     public void doChat(AsyncPlayerChatEvent event) {
@@ -220,48 +222,46 @@ public class GuildMechanics {
         player.sendMessage(ChatColor.GRAY + "Loading guild information...");
 
         // UPDATE CACHED DATA INFO //
-        GameAPI.submitAsyncCallback(() -> GuildDatabaseAPI.get().updateCache(guildName), consumer -> {
-            GameAPI.submitAsyncCallback(() -> {
-                GuildInfoToken token = new GuildInfoToken();
+        GuildDatabaseAPI.get().updateCache(guildName, true, () -> GameAPI.submitAsyncCallback(() -> {
+            GuildInfoToken token = new GuildInfoToken();
 
-                token.setOwner(getPlayerName(UUID.fromString(GuildDatabaseAPI.get().getOwnerOf(guildName))));
-                token.getMember().addAll(getPlayerNames(GuildDatabaseAPI.get().getAllGuildMembers(guildName)));
-                token.getOfficers().addAll(getPlayerNames(GuildDatabaseAPI.get().getGuildOfficers(guildName)));
+            token.setOwner(getPlayerName(UUID.fromString(GuildDatabaseAPI.get().getOwnerOf(guildName))));
+            token.getMember().addAll(getPlayerNames(GuildDatabaseAPI.get().getAllGuildMembers(guildName)));
+            token.getOfficers().addAll(getPlayerNames(GuildDatabaseAPI.get().getGuildOfficers(guildName)));
 
-                return token;
-            }, tokenFuture -> {
-                try {
-                    GuildInfoToken token = tokenFuture.get();
+            return token;
+        }, tokenFuture -> {
+            try {
+                GuildInfoToken token = tokenFuture.get();
 
-                    String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
-                    String tag = GuildDatabaseAPI.get().getTagOf(guildName);
-                    String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
+                String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
+                String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+                String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
 
-                    StringBuilder members = getPlayers(token.getMember());
-                    StringBuilder officers = getPlayers(token.getOfficers());
+                StringBuilder members = getPlayers(token.getMember());
+                StringBuilder officers = getPlayers(token.getOfficers());
 
-                    player.sendMessage(ChatColor.GRAY + "              *** " + ChatColor.DARK_AQUA + ChatColor.BOLD + "Guild Info" + ChatColor.GRAY + " ***");
-                    player.sendMessage(" ");
-                    player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
-                    player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
-                    player.sendMessage(ChatColor.GRAY + "Guild Owner: " + token.getOwner());
-                    player.sendMessage(" ");
+                player.sendMessage(ChatColor.GRAY + "              *** " + ChatColor.DARK_AQUA + ChatColor.BOLD + "Guild Info" + ChatColor.GRAY + " ***");
+                player.sendMessage(" ");
+                player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
+                player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
+                player.sendMessage(ChatColor.GRAY + "Guild Owner: " + token.getOwner());
+                player.sendMessage(" ");
 
-                    player.sendMessage(ChatColor.GRAY + "Guild Officers: " + ChatColor.WHITE + (officers.length() == 0 ? "None" : officers));
-                    player.sendMessage(ChatColor.GRAY + "Guild Members: " + ChatColor.WHITE + (members.length() == 0 ? "None" : members));
+                player.sendMessage(ChatColor.GRAY + "Guild Officers: " + ChatColor.WHITE + (officers.length() == 0 ? "None" : officers));
+                player.sendMessage(ChatColor.GRAY + "Guild Members: " + ChatColor.WHITE + (members.length() == 0 ? "None" : members));
 
-                    player.sendMessage(" ");
+                player.sendMessage(" ");
 
-                    if (showMotd)
-                        player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
+                if (showMotd)
+                    player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
 
-                } catch (InterruptedException | ExecutionException e) {
-                    player.sendMessage(ChatColor.RED + "Unable to load guild information");
-                    e.printStackTrace();
-                }
+            } catch (InterruptedException | ExecutionException e) {
+                player.sendMessage(ChatColor.RED + "Unable to load guild information");
+                e.printStackTrace();
+            }
 
-            });
-        });
+        }));
     }
 
     private String getPlayerName(UUID uuid) {
@@ -391,7 +391,7 @@ public class GuildMechanics {
 
             if (setOwner) GuildDatabaseAPI.get().setOwner(guildName, officers.get(0));
 
-            GuildDatabaseAPI.get().updateCache(guildName);
+            GuildDatabaseAPI.get().updateCache(guildName, true);
 
             GameAPI.updateGuildData(guildName);
             GameAPI.updatePlayerData(player.getUniqueId());
