@@ -162,11 +162,11 @@ public class AntiDuplication implements GenericMechanic {
 
         checkForDuplications(p, gearUids);
 
-        if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 200000) {
+        if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 250000) {
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
         } else if ((GameAPI.getGamePlayer(p) != null && GameAPI.getGamePlayer(p).getLevel() < 20) && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // IP BAN
             banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
-        } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 50000) { // WARN
+        } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 100000) { // WARN
 
             if (WARNING_SUPPRESSOR.isCooldown(p.getUniqueId())) return;
 
