@@ -36,7 +36,7 @@ public enum ShardInfo implements Serializable {
     BR1("BR-1", "br1", new ServerAddress("64.38.249.176", 40008)),
 
     // SUB 1 SHARD //
-    SUB1("SUB-1", "sub1", new ServerAddress("158.69.122.139", 40008)),
+    SUB1("SUB-1", "sub1", new ServerAddress("131.153.27.42", 40008)),
 
     // CS 1 SHARD //
     CS1("CS-1", "cs1", new ServerAddress("192.99.200.110", 11250));
