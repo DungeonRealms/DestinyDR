@@ -1,5 +1,8 @@
 Build <build>
 
+&2New Features&0
+- Advanced censoring system.
+
 &8Changes&0
 - Re-enabled ehe Varenglade dungeon.
 - Made teleport books stackable again.

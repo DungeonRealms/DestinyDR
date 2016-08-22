@@ -253,13 +253,13 @@ public class Chat {
 
             for (String word : bannedWords)
                 if (token.contains(word)) {
-                    List<Integer> positions = new ArrayList<Integer>();
+                    List<Integer> positions = new ArrayList<>();
 
                     for (int i = 0; i < token.length(); i++)
                         if (Character.isUpperCase(token.charAt(i))) positions.add(i);
 
                     if (token.toLowerCase().contains(word.toLowerCase())) {
-                        token = token.toLowerCase().replaceAll(word.toLowerCase(), " " + toCensor(3));
+                        token = token.toLowerCase().replaceAll(word.toLowerCase(), " " + toCensor(word.length()));
                     }
 
                     for (int i : positions)
