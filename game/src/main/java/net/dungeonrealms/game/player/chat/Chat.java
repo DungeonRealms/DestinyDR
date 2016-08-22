@@ -22,6 +22,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 /**
  * Created by Nick on 9/26/2015.
@@ -239,35 +240,69 @@ public class Chat {
         event.setCancelled(true);
     }
 
-    public String checkForBannedWords(String message) {
-        String returnMessage = "";
-        if (!message.contains(" ")) {
-            message += " ";
-        }
-        for (String string : message.split(" ")) {
-            for (String word : bannedWords) {
-                if (string.toLowerCase().contains(word.toLowerCase())) {
-                    int wordLength = word.length();
-                    String replacementCharacter = "";
-                    while (wordLength > 0) {
-                        replacementCharacter += "*";
-                        wordLength--;
+    public String checkForBannedWords(String msg) {
+        String result = msg;
+
+        for (String word : bannedWords) result = replaceOperation(result, word);
+
+        StringTokenizer st = new StringTokenizer(result);
+        String string = "";
+
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+
+            for (String word : bannedWords)
+                if (token.contains(word)) {
+                    List<Integer> positions = new ArrayList<Integer>();
+
+                    for (int i = 0; i < token.length(); i++)
+                        if (Character.isUpperCase(token.charAt(i))) positions.add(i);
+
+                    if (token.toLowerCase().contains(word.toLowerCase())) {
+                        token = token.toLowerCase().replaceAll(word.toLowerCase(), " " + toCensor(3));
                     }
-                    int censorStart = string.toLowerCase().indexOf(word);
-                    int censorEnd = censorStart + word.length();
-                    String badWord = string.substring(censorStart, censorEnd);
-                    string = string.replaceAll(badWord, replacementCharacter);
+
+                    for (int i : positions)
+                        if (i < token.length()) Character.toUpperCase(token.charAt(i));
                 }
-            }
-            returnMessage += string + " ";
+            string += token + " ";
         }
-
-        if (returnMessage.endsWith(" ")) {
-            returnMessage = returnMessage.substring(0, returnMessage.lastIndexOf(" "));
-        }
-
-        return returnMessage;
+        return string.trim();
     }
+
+    private String toCensor(int characters) {
+        String result = "";
+        for (int i = 0; i < characters; i++) result = result.concat("*");
+        return result;
+    }
+
+
+    private String replaceOperation(String source, String search) {
+        int length = search.length();
+        if (length < 2) return source;
+
+        // - Ignore the same character mutliple times in a row
+        // - Ignore any non-alphabetic characters
+        // - Ignore any digits and whitespaces between characters
+        StringBuilder sb = new StringBuilder(4 * length - 3);
+        for (int i = 0; i < length - 1; i++) {
+            sb.append("([\\W\\d]*").append(Pattern.quote("" + search.charAt(i))).append(")+");
+        }
+        sb.append("([\\W\\d\\s]*)+");
+        sb.append(search.charAt(length - 1));
+
+        String temp = source.replaceAll("(?i)" + sb.toString(), search).trim();
+        int wordCount = temp.split("\\s").length;
+
+        String replace = source;
+
+        if (wordCount <= 2) {
+            replace = " " + source;
+        }
+
+        return replace.replaceAll("(?i)" + sb.toString(), " " + search).trim();
+    }
+
 
     public static boolean checkGlobalCooldown(Player player) {
         if (Rank.isPMOD(player) || Rank.isSubscriber(player)) return true;
