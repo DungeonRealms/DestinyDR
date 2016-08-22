@@ -22,10 +22,14 @@ public class DeploymentToolApplication {
 
     public static void main(String[] args) throws IOException {
         boolean DEV_DEPLOYMENT = false;
+        boolean SILENT_DEPLOYMENT = false;
 
-        if (args.length > 0)
+        if (args.length > 0) {
             if (args[0].equals("-development"))
                 DEV_DEPLOYMENT = true;
+            else if (args[0].equals("-silent"))
+                SILENT_DEPLOYMENT = true;
+        }
 
         File BUILD_JAR = new File(System.getProperty("user.dir"), "game/target/DungeonRealms.jar");
         String REMOTE_LOCATION = !DEV_DEPLOYMENT ? "/update/DungeonRealms.jar" : "/development/DungeonRealms.jar";
@@ -52,7 +56,7 @@ public class DeploymentToolApplication {
         if (ftpClient.storeFile(REMOTE_LOCATION, in)) {
             System.out.println("[DEPLOYMENT] Successfully deployed " + (DEV_DEPLOYMENT ? "to development server " : "") + "to remote master FTP server (Took " + ((System.currentTimeMillis() - start)) + "ms) !");
 
-            if (DEV_DEPLOYMENT) {
+            if (DEV_DEPLOYMENT || SILENT_DEPLOYMENT) {
                 System.exit(1);
                 return;
             }

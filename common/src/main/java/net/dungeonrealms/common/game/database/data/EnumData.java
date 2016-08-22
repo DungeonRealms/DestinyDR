@@ -5,6 +5,7 @@ package net.dungeonrealms.common.game.database.data;
  */
 public enum EnumData {
 
+    UUID("info.uuid"),
     USERNAME("info.username"),
     HEALTH("info.health"),
     FIRST_LOGIN("info.firstLogin"),

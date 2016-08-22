@@ -181,59 +181,48 @@ public class DatabaseAPI {
         updateShardCollection(shard, EO, variable, value, async, null);
     }
 
-    public Object getShardData(String shard, String data) {
-        Document doc = DatabaseInstance.shardData.find(Filters.eq("shard", shard)).first();
-
-        if (doc == null) return null;
-
-        String[] key = data.split("\\.");
-        if (!(doc.get(key[0]) instanceof Document)) return null;
-        Document rootDoc = (Document) doc.get(key[0]);
-        if (rootDoc == null) return null;
-
-        Object dataObj = rootDoc.get(key[1]);
-
-        if (dataObj == null) return null;
-        Class<?> clazz = dataObj.getClass();
-
-        return rootDoc.get(key[1], clazz);
-    }
-
-    public void createNewShardCollection(String shard) {
-        DatabaseInstance.shardData.insertOne(new Document("shard", shard));
-        Constants.log.info("[MONGO] Created new document in the shard_data collection for shard " + shard);
-    }
 
     /**
-     * Returns the object that's requested.
+     * Safely Returns the object that's requested
+     * based on UUID.
      *
-     * @param data
-     * @param uuid
-     * @return
-     * @since 1.0
+     * @param data Data type
+     * @param uuid UUID
+     * @return Requested data
      */
     public Object getData(EnumData data, UUID uuid) {
         Document doc;
 
-        if (PLAYERS.containsKey(uuid)) {
-            // GRABBED CACHED DATA
-            doc = PLAYERS.get(uuid);
-        } else {
+        // GRABBED CACHED DOCUMENT
+        if (PLAYERS.containsKey(uuid)) doc = PLAYERS.get(uuid);
+        else {
             long currentTime = 0;
             // we should never be getting offline data sync.
             if (Constants.debug) {
                 currentTime = System.currentTimeMillis();
-                Constants.log.warning("[Database] Retrieving " + uuid.toString() + "'s offline data on the main thread...");
+                Constants.log.warning("[Database] Retrieving " + uuid.toString() + "'s offline document on the main thread...");
                 StackTraceElement ste = new Exception().getStackTrace()[1];
                 Constants.log.warning(ste.getClassName() + " " + ste.getMethodName() + " " + ste.getLineNumber());
             }
             doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
             if (Constants.debug)
-                Constants.log.info("Mongo document retrieved in " + String.valueOf(System.currentTimeMillis() - currentTime) + " ms.");
+                Constants.log.info("[Database] Player document retrieved in " + String.valueOf(System.currentTimeMillis() - currentTime) + " ms.");
         }
 
+        return getData(data, doc);
+    }
+
+    /**
+     * Safely Returns the object that's requested
+     * based on UUID.
+     *
+     * @param data     Data type
+     * @param document User's document
+     * @return Requested data
+     */
+    public Object getData(EnumData data, Document document) {
         String[] key = data.getKey().split("\\.");
-        Document rootDoc = (Document) doc.get(key[0]);
+        Document rootDoc = (Document) document.get(key[0]);
         if (rootDoc == null) return null;
 
         Object dataObj = rootDoc.get(key[1]);
@@ -244,13 +233,37 @@ public class DatabaseAPI {
         return rootDoc.get(key[1], clazz);
     }
 
-    private void printTrace() {
-        StackTraceElement trace = new Exception().getStackTrace()[2];
 
-        Constants.log.info("[Database] Class: " + trace.getClassName());
-        Constants.log.info("[Database] Method: " + trace.getMethodName());
-        Constants.log.info("[Database] Line: " + trace.getLineNumber());
+    /**
+     * Retrieve's user's document asynchronously
+     *
+     * @param ipAddress User's IP address
+     * @param doAfter   Executed after document is retrieved
+     */
+    public void retrieveDocumentFromAddress(String ipAddress, Consumer<Document> doAfter) {
+        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(DatabaseInstance.playerData, Filters.eq("info.ipAddress", ipAddress), doAfter));
     }
+
+    /**
+     * Retrieve's user's document asynchronously
+     *
+     * @param uuid    User's UUID
+     * @param doAfter Executed after document is retrieved
+     */
+    public void retrieveDocumentFromUUID(UUID uuid, Consumer<Document> doAfter) {
+        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid.toString()), doAfter));
+    }
+
+    /**
+     * Retrieve's user's document asynchronously
+     *
+     * @param username User's username
+     * @param doAfter  Executed after document is retrieved
+     */
+    public void retrieveDocumentFromUsername(String username, Consumer<Document> doAfter) {
+        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(DatabaseInstance.playerData, Filters.eq("info.username", username.toLowerCase()), doAfter));
+    }
+
 
     /**
      * Is fired to grab a player from Mongo
@@ -272,8 +285,7 @@ public class DatabaseAPI {
      */
     public void requestPlayer(UUID uuid, boolean async, Runnable doAfterOptional) {
         if (async) {
-            MongoAccessThread.submitQuery(new DocumentSearchQuery<Document>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid.toString()), doc -> {
-
+            retrieveDocumentFromUUID(uuid, doc -> {
                 if (doc == null) {
                     addNewPlayer(uuid, async);
                 } else {
@@ -286,11 +298,9 @@ public class DatabaseAPI {
                     printTrace();
                 }
 
-
                 if (doAfterOptional != null)
                     doAfterOptional.run();
-
-            }));
+            });
         } else {
             Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
             if (doc == null) addNewPlayer(uuid, async);
@@ -332,9 +342,6 @@ public class DatabaseAPI {
         return uuidString;
     }
 
-    public void searchDocumentFromAddress(String ipAddress, Consumer<Document> doAfter) {
-        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(DatabaseInstance.playerData, Filters.eq("info.ipAddress", ipAddress), doAfter));
-    }
 
     public String getFormattedShardName(UUID uuid) {
         boolean isOnline = (boolean) getInstance().getData(EnumData.IS_PLAYING, uuid);
@@ -361,6 +368,37 @@ public class DatabaseAPI {
         } else {
             return ((Document) doc.get("info")).get("username", String.class);
         }
+    }
+
+    private void printTrace() {
+        StackTraceElement trace = new Exception().getStackTrace()[2];
+
+        Constants.log.info("[Database] Class: " + trace.getClassName());
+        Constants.log.info("[Database] Method: " + trace.getMethodName());
+        Constants.log.info("[Database] Line: " + trace.getLineNumber());
+    }
+
+    public Object getShardData(String shard, String data) {
+        Document doc = DatabaseInstance.shardData.find(Filters.eq("shard", shard)).first();
+
+        if (doc == null) return null;
+
+        String[] key = data.split("\\.");
+        if (!(doc.get(key[0]) instanceof Document)) return null;
+        Document rootDoc = (Document) doc.get(key[0]);
+        if (rootDoc == null) return null;
+
+        Object dataObj = rootDoc.get(key[1]);
+
+        if (dataObj == null) return null;
+        Class<?> clazz = dataObj.getClass();
+
+        return rootDoc.get(key[1], clazz);
+    }
+
+    public void createNewShardCollection(String shard) {
+        DatabaseInstance.shardData.insertOne(new Document("shard", shard));
+        Constants.log.info("[MONGO] Created new document in the shard_data collection for shard " + shard);
     }
 
     /**

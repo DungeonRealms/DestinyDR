@@ -119,7 +119,6 @@ public class GuildMechanics {
             if (!guildExists) {
                 GuildDatabaseAPI.get().setGuild(uuid, "");
             } else if (guildExists && !GuildDatabaseAPI.get().isInGuild(uuid, guildName)) {
-                System.out.print(GuildDatabaseAPI.get().isInGuild(uuid, guildName));
                 GuildDatabaseAPI.get().setGuild(uuid, "");
             }
         }

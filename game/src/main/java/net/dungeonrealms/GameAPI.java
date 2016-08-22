@@ -172,31 +172,6 @@ public class GameAPI {
     }
 
     /**
-     * Utility type for calling async tasks with callbacks.
-     *
-     * @param callable Callable type
-     * @param consumer Consumer task
-     * @param <T>      Type of data
-     * @author apollosoftware
-     */
-    public static <T> void submitAsyncWithAsyncCallback(Callable<T> callable, Consumer<Future<T>> consumer) {
-        // FUTURE TASK //
-        FutureTask<T> task = new FutureTask<>(callable);
-
-        // BUKKIT'S ASYNC SCHEDULE WORKER
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                // RUN FUTURE TASK ON THREAD //
-                task.run();
-                // ACCEPT CONSUMER //
-                if (consumer != null)
-                    consumer.accept(task);
-            }
-        }.runTaskAsynchronously(DungeonRealms.getInstance());
-    }
-
-    /**
      * To get the players region.
      *
      * @param location The location
@@ -1330,12 +1305,10 @@ public class GameAPI {
         gp.setAbleToDrop(false);
 
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true,
-                doAfter -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                        () -> GameAPI.handleLogout(player.getUniqueId(), true,
-                                consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                                        () -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                                                () -> BungeeUtils.sendToServer(player.getName(), serverBungeeName))
-                                ))));
+                doAfter -> GameAPI.handleLogout(player.getUniqueId(), true,
+                        consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName))
+        );
+
         // check if they're still here (server failed to accept them for some reason)
         new PlayerLogoutWatchdog(player);
     }
@@ -2089,6 +2062,11 @@ public class GameAPI {
     public static boolean isPlayerHidden(UUID uuid) {
         if (Bukkit.getPlayer(uuid) != null) return _hiddenPlayers.contains(Bukkit.getPlayer(uuid));
         final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, uuid);
+        return isVanished != null && (Boolean) isVanished;
+    }
+
+    public static boolean isPlayerHidden(Document document) {
+        final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, document);
         return isVanished != null && (Boolean) isVanished;
     }
 }

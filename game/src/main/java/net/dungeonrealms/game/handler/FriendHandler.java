@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -162,6 +163,30 @@ public class FriendHandler {
 
         ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, uuid);
 
+        long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(uuid.toString())).count();
+
+        return pendingRequests >= 1;
+    }
+
+    /**
+     * Will check and determine if the players are friends or have a pending
+     * friend request.
+     *
+     * @param player Main player
+     * @param uuid   The other player
+     * @return
+     * @since 1.0
+     */
+    public boolean areFriends(Player player, UUID uuid, Document document) {
+        if (player.getUniqueId().equals(uuid)) return true;
+
+        ArrayList<String> friends = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, player.getUniqueId());
+
+        if (friends.contains(uuid.toString())) {
+            return true;
+        }
+
+        ArrayList<String> pendingRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, document);
         long pendingRequests = pendingRequest.stream().filter(s -> s.startsWith(uuid.toString())).count();
 
         return pendingRequests >= 1;

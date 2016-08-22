@@ -11,6 +11,8 @@ import org.bson.Document;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Alan on 7/19/2016.
@@ -19,7 +21,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class MongoAccessThread extends Thread {
 
     public static Queue<Query<?>> CONCURRENT_QUERIES = new ConcurrentLinkedQueue<>();
+
+    private final static ExecutorService CONSUMER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
+
     public final static UpdateOptions uo = new UpdateOptions().upsert(true);
+
 
     public static void submitQuery(Query<?> query) {
         CONCURRENT_QUERIES.add(query);
@@ -29,8 +35,8 @@ public class MongoAccessThread extends Thread {
     public void run() {
         while (true) {
             try {
-                // ALLOW THREAD TO SLEEP FOR 250ms BEFORE CONTINUING QUEUE //
-                Thread.sleep(250L);
+                // ALLOW THREAD TO SLEEP FOR 15ms BEFORE CONTINUING QUEUE //
+                Thread.sleep(15L);
             } catch (InterruptedException ignored) {
             }
 
@@ -46,7 +52,7 @@ public class MongoAccessThread extends Thread {
                         if (Constants.debug)
                             Constants.log.info("[Database] ASYNC Executed update query: " + updateQuery.getSearchQuery().toString() + " " + updateQuery.getNewDocument().toString());
                         if (updateQuery.getDoAfter() != null)
-                            updateQuery.getDoAfter().accept(result);
+                            CONSUMER_EXECUTOR_SERVICE.submit(() -> updateQuery.getDoAfter().accept(result));
                     } else
                         Constants.log.info("[Database] Update query failed: " + updateQuery.getSearchQuery().toString() + " " + updateQuery.getNewDocument().toString());
                 } else if (query instanceof DocumentSearchQuery) {
@@ -56,7 +62,7 @@ public class MongoAccessThread extends Thread {
                     if (Constants.debug)
                         Constants.log.info("[Database] ASYNC Executed search query: " + documentSearchQuery.getSearchQuery().toString() + " " + doc.toString());
 
-                    documentSearchQuery.getDoAfter().accept(doc);
+                    CONSUMER_EXECUTOR_SERVICE.submit(() -> documentSearchQuery.getDoAfter().accept(doc));
                 } else if (query instanceof BulkWriteQuery) {
                     BulkWriteQuery<BulkWriteResult> bulkWriteQuery = (BulkWriteQuery<BulkWriteResult>) query;
                     BulkWriteResult result = bulkWriteQuery.getCollection().bulkWrite(bulkWriteQuery.getModels());
@@ -65,7 +71,7 @@ public class MongoAccessThread extends Thread {
                         Constants.log.info("[Database] ASYNC Executed bulk write operation. Modifications: " + result.getModifiedCount());
 
                     if (bulkWriteQuery.getDoAfter() != null)
-                        bulkWriteQuery.getDoAfter().accept(result);
+                        CONSUMER_EXECUTOR_SERVICE.submit(() -> bulkWriteQuery.getDoAfter().accept(result));
                 }
             }
         }

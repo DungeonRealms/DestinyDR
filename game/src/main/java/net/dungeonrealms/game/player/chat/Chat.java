@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -20,7 +21,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 /**
@@ -69,50 +69,38 @@ public class Chat {
             "jiggaboo", "hitler", "jews", "titanrift", "fucked",
             "MysticRunes.net", "play.wynncraft.com", "mineca.de", "nig", "niger"));
 
-    public static void sendPrivateMessage(Player player, String recipentName, String finalMessage) {
-        GameAPI.submitAsyncWithAsyncCallback(() -> {
-            String testUUID = DatabaseAPI.getInstance().getUUIDFromName(recipentName);
+    public static void sendPrivateMessage(Player player, String recipientName, String finalMessage) {
+        DatabaseAPI.getInstance().retrieveDocumentFromUsername(recipientName, document -> {
+            String testUUID = DatabaseAPI.getInstance().getData(EnumData.UUID, document).toString();
+
             if (testUUID.equals("")) {
                 player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
-                return "";
+                return;
             }
-            UUID uuid = UUID.fromString(testUUID);
-            if (!FriendHandler.getInstance().areFriends(player, uuid) && !Rank.isGM(player)) {
-                if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, uuid)) {
+
+            if (!FriendHandler.getInstance().areFriends(player, UUID.fromString(testUUID), document) && !Rank.isGM(player))
+                if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, document)) {
                     player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
-                    return "";
-                }
-            }
-            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid)) || (GameAPI.isPlayerHidden(uuid) && !Rank.isGM(player))) {
-                player.sendMessage(ChatColor.RED + "That user is not currently online.");
-                return "";
-            }
-            try {
-                return DatabaseAPI.getInstance().getFormattedShardName(uuid);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            return "";
-        }, result -> {
-            String receivingShard = null;
-            try {
-                receivingShard = result.get();
-                if (receivingShard.equals("")) {
                     return;
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+
+            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, document)) || (GameAPI.isPlayerHidden(document) && !Rank.isGM(player))) {
+                player.sendMessage(ChatColor.RED + "That user is not currently online.");
+                return;
             }
+
+            ShardInfo shard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, document));
+
             player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
-                    (recipentName) + ChatColor.GRAY + " [" + ChatColor.AQUA + receivingShard + ChatColor.GRAY + "]: " +
+                    (recipientName) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
                     ChatColor.WHITE + finalMessage);
 
 
-            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipentName, (ChatColor.GRAY.toString() +
+            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
                     ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
                     .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
                     finalMessage));
-            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipentName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
+            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
         });
     }
 
@@ -258,7 +246,7 @@ public class Chat {
         }
         for (String string : message.split(" ")) {
             for (String word : bannedWords) {
-                if (string.toLowerCase().equals(word.toLowerCase())) {
+                if (string.toLowerCase().contains(word.toLowerCase())) {
                     int wordLength = word.length();
                     String replacementCharacter = "";
                     while (wordLength > 0) {

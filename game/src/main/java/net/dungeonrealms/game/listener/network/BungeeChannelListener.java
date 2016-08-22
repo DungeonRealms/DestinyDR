@@ -70,7 +70,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                     String address = in.readUTF();
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IP_ADDRESS, address, true);
-                    DatabaseAPI.getInstance().searchDocumentFromAddress(address, existingDoc -> {
+                    DatabaseAPI.getInstance().retrieveDocumentFromAddress(address, existingDoc -> {
                         if (existingDoc != null) {
                             UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
 
