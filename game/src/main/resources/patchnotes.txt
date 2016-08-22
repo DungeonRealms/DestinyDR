@@ -4,7 +4,7 @@ Build <build>
 - Advanced censoring system.
 
 &8Changes&0
-- Re-enabled ehe Varenglade dungeon.
+- Re-enabled the Varenglade dungeon.
 - Made teleport books stackable again.
 - Anti-duplication is now improved.
 
