@@ -1,18 +1,10 @@
 Build <build>
 
-&2New Features&0
-- More tracks for wilderness and chaotic regions.
-- Duranor The Cruel and The Mother of Doom now have custom loot.
-
 &8Changes&0
 - Re-enabled ehe Varenglade dungeon.
 - Made teleport books stackable again.
 - Anti-duplication is now improved.
-- Fishes now cook in the stack amount clicked with.
-- Temporally disabled the Varenglade dungeon.
 
 &4Bug Fixes&0
 - Fixed frequent crashing.
 - Fixed shop wipes.
-- Fishes no longer consume on cook, other eating bugs fixed.
-- Fixed tab flickering for players on your shard.
