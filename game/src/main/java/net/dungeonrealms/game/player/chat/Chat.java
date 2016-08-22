@@ -65,10 +65,10 @@ public class Chat {
             "slut", "wank", "asshole", "cock",
             "dick", "clit", "homo", "fag", "faggot", "queer", "nigger", "nigga", "dike", "dyke", "retard", " " +
                     "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
-            "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "ass", "@ss", "mystic " +
-                    "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "kys", "jigga",
+            "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "@ss", "mystic " +
+                    "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "jigga",
             "jiggaboo", "hitler", "jews", "titanrift", "fucked",
-            "MysticRunes.net", "play.wynncraft.com", "mineca.de", "nig", "niger"));
+            "MysticRunes.net", "play.wynncraft.com", "mineca.de",  "niger"));
 
     public static void sendPrivateMessage(Player player, String recipientName, String finalMessage) {
         DatabaseAPI.getInstance().retrieveDocumentFromUsername(recipientName, document -> {
