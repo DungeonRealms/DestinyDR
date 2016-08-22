@@ -7,6 +7,7 @@ import net.dungeonrealms.game.world.entity.type.monster.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -41,6 +42,9 @@ public class MeleeWitherSkeleton extends DRWitherSkeleton {
         this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         ((LivingEntity) this.getBukkitEntity()).getEquipment().setItemInMainHand(weapon);
     }
+
+    @Override
+    public void collide(Entity e) {}
 
     private ItemStack getTierWeapon(int tier) {
         Item.ItemType itemType;

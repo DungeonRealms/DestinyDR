@@ -70,7 +70,10 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
         this.setSize(0.7F, 2.4F);
         this.fireProof = true;
         this.setSkeletonType(1);
+
+        collides = true;
     }
+
 
     @Override
     public void setArmor(int tier) {

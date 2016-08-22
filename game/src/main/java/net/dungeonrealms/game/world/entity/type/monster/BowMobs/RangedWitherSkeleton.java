@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 public class RangedWitherSkeleton extends DRWitherSkeleton implements IRangedEntity {
     private int tier;
 
-    public RangedWitherSkeleton(World world, EnumMonster monsterType , EnumEntityType entityType, int tier) {
+    public RangedWitherSkeleton(World world, EnumMonster monsterType, EnumEntityType entityType, int tier) {
         super(world, monsterType, tier, entityType);
         this.tier = tier;
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
@@ -36,6 +36,10 @@ public class RangedWitherSkeleton extends DRWitherSkeleton implements IRangedEnt
 
     @Override
     protected void setStats() {
+    }
+
+    @Override
+    public void collide(Entity e) {
     }
 
     @Override

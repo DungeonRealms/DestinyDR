@@ -113,9 +113,6 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
     }
 
     @Override
-    public void collide(Entity e) {}
-
-    @Override
     public void onMonsterAttack(Player p) {
         // TODO Auto-generated type stub
 
