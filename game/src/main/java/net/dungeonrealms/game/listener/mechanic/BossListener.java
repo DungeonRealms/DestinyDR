@@ -3,7 +3,7 @@ package net.dungeonrealms.game.listener.mechanic;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.DungeonManager.DungeonObject;
-import net.dungeonrealms.game.world.entity.type.monster.EnumBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.event.EventHandler;

@@ -3,7 +3,7 @@ package net.dungeonrealms.game.world.spawning;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.world.entity.type.monster.EnumMonster;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;

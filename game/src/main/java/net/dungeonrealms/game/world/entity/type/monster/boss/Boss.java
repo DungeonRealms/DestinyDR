@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.world.entity.type.monster.EnumBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
