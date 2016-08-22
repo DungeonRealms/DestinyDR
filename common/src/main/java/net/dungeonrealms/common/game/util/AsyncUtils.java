@@ -8,10 +8,16 @@ import java.util.concurrent.Executors;
  */
 public class AsyncUtils {
 
+
     /*
-    We'll use this instead of new Thread().start(); everytime we want
+    The amount of threads available on the machine
+     */
+    public static int threadCount = Runtime.getRuntime().availableProcessors();
+
+    /*
+    We'll use this instead of new Thread().start(); every time we want
     something to be on a different thread..
      */
-    public static ExecutorService pool = Executors.newFixedThreadPool(14);
+    public static ExecutorService pool = Executors.newFixedThreadPool(threadCount);
 
 }

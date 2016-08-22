@@ -47,6 +47,7 @@ public class DatabaseInstance {
         quests = database.getCollection("quests");
 
         Constants.log.info("DungeonRealms Database has connected successfully!");
+
         createMongoAccessThread();
     }
 
