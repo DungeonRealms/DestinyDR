@@ -120,12 +120,8 @@ public class MainListener implements Listener {
             // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.
             final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
             normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
-            for (Player player1 : Bukkit.getOnlinePlayers()) {
-                normal.sendToPlayer(player1);
-            }
-
+            GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
         }
-
     }
 
     @EventHandler
