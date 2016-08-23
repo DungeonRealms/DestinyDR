@@ -821,7 +821,7 @@ public class DamageListener implements Listener {
         if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")))
             return;
 
-        if (event.getCause() == DamageCause.VOID) {
+        if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
             event.getEntity().remove();
             return;
         }

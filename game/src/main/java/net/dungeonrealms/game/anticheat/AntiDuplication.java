@@ -45,7 +45,7 @@ public class AntiDuplication implements GenericMechanic {
 
     private static CooldownProvider WARNING_SUPPRESSOR = new CooldownProvider();
 
-    private final static long CHECK_TICK_FREQUENCY = 60L;
+    private final static long CHECK_TICK_FREQUENCY = 10L;
 
     public static AntiDuplication getInstance() {
         if (instance == null) {
