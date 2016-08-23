@@ -4,6 +4,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -29,14 +30,24 @@ public class Rank {
         return instance;
     }
 
+
+    public static boolean isRank(OfflinePlayer player, String name){
+        return isRank(player, null, name);
+    }
+
     /**
      * Less query intensive rank check
      *
      * @param player
      * @return boolean
      */
-    public static boolean isRank(OfflinePlayer player, String name) {
-        String rank = Rank.getInstance().getRank(player.getUniqueId());
+    public static boolean isRank(OfflinePlayer player, Document document, String name) {
+        String rank;
+
+        if(document == null)
+          rank = Rank.getInstance().getRank(player.getUniqueId());
+        else
+          rank = Rank.getInstance().getRank(document);
 
         switch (name) {
             case "dev":
@@ -220,6 +231,18 @@ public class Rank {
      */
     public String getRank(UUID uuid) {
         String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid);
+        return (rank == null || rank.equals("") ? "default" : rank).toUpperCase();
+    }
+
+    /**
+     * Gets the players rank.
+     *
+     * @param doc
+     * @return
+     * @since 1.0
+     */
+    public String getRank(Document doc) {
+        String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, doc);
         return (rank == null || rank.equals("") ? "default" : rank).toUpperCase();
     }
 

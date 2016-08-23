@@ -50,6 +50,8 @@ public class BungeeServerTracker {
                     token = pInfo;
                 }
         }
+
+        if(token == null) return Optional.empty();
         return Optional.of(new Tuple<>(token, shard));
     }
 
