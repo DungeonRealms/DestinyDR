@@ -505,7 +505,7 @@ public class DungeonRealms extends JavaPlugin {
         }, 0, 100);
 
         // FIX PLAYERS //
-        UpdateResult playerFixResult = DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard),
+        UpdateResult playerFixResult = DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard.getPseudoName()),
                 new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
 
         if (playerFixResult.wasAcknowledged())
