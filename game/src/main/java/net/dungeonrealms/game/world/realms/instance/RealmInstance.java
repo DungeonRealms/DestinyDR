@@ -23,6 +23,7 @@ import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.listener.world.RealmListener;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -679,6 +680,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     public void closeRealmPortal(UUID uuid, boolean kickPlayers, String kickMessage) {
         if (!isRealmLoaded(uuid)) return;
 
+        if (CrashDetector.crashDetected) return;
         RealmToken realm = getToken(uuid);
 
         if (realm.getPortalLocation() == null) return;
@@ -708,6 +710,8 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     @Override
     public void unloadRealmWorld(UUID uuid) {
         if (!Realms.getInstance().isRealmCached(uuid)) return;
+
+        if (CrashDetector.crashDetected) return;
 
         // UNLOAD WORLD
         Utils.log.info("[REALM] [SYNC] Unloading realm for " + uuid.toString());
