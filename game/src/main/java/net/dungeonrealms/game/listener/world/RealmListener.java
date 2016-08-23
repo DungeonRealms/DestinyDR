@@ -444,8 +444,7 @@ public class RealmListener implements Listener {
             int maxDistance = 150;
 
             if (!(Rank.isGM(p)))
-                if (Math.round(to.getX() - 0.5) > maxDistance || Math.round(to.getX() - 0.5) < 16 || Math.round(to.getZ() - 0.5) > maxDistance
-                        || Math.round(to.getZ() - 0.5) < 16) {
+                if (to.getZ() >= maxDistance || to.getZ() <= -maxDistance || to.getX() >= maxDistance || to.getX() <= -maxDistance) {
                     Location newTo = event.getFrom();
                     newTo.setPitch(event.getTo().getPitch());
                     newTo.setYaw(event.getTo().getYaw());
