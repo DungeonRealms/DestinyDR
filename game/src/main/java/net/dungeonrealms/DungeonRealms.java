@@ -509,15 +509,15 @@ public class DungeonRealms extends JavaPlugin {
                 new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
 
         if (playerFixResult.wasAcknowledged())
-            Constants.log.info(ChatColor.YELLOW + "Set " + playerFixResult.getModifiedCount() + " players' " +
+            Constants.log.info("Set " + playerFixResult.getModifiedCount() + " players' " +
                     "statuses to offline from " +
                     "shard " + shard);
-        else Constants.log.info(ChatColor.RED + "Operation failed: database error.");
+        else Constants.log.info("Operation failed: database error.");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            Constants.log.info(ChatColor.RED + "Server now accepting players.");
+            Constants.log.info("Server now accepting players.");
 
             this.acceptPlayers = true;
             Bukkit.getServer().setWhitelist(false);
