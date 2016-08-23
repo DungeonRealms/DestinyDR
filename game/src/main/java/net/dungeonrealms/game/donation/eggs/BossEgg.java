@@ -21,12 +21,5 @@ public abstract class BossEgg {
 
     public abstract ItemStack create();
 
-    public void createInstance() {
-
-
-
-
-
-    }
 
 }
