@@ -9,6 +9,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -68,41 +69,53 @@ public class Chat {
             "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "@ss", "mystic " +
                     "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "jigga",
             "jiggaboo", "hitler", "jews", "titanrift", "fucked",
-            "MysticRunes.net", "play.wynncraft.com", "mineca.de",  "niger"));
+            "MysticRunes.net", "play.wynncraft.com", "mineca.de", "niger"));
 
+    /**
+     * Send a private message over the network.
+     *
+     * @param player
+     * @param recipientName
+     * @param finalMessage
+     */
     public static void sendPrivateMessage(Player player, String recipientName, String finalMessage) {
-        DatabaseAPI.getInstance().retrieveDocumentFromUsername(recipientName, document -> {
-            String testUUID = DatabaseAPI.getInstance().getData(EnumData.UUID, document).toString();
+        if (Bukkit.getPlayer(recipientName) != null && DatabaseAPI.getInstance().PLAYERS.containsKey(Bukkit.getPlayer(recipientName).getUniqueId())) {
+            sendPrivateMessage(player, recipientName, DatabaseAPI.getInstance().PLAYERS.get(Bukkit.getPlayer(recipientName).getUniqueId()), finalMessage);
+        } else
+            DatabaseAPI.getInstance().retrieveDocumentFromUsername(recipientName, document -> sendPrivateMessage(player, recipientName, document, finalMessage));
+    }
 
-            if (testUUID.equals("")) {
-                player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
+    private static void sendPrivateMessage(Player player, String recipientName, Document document, String finalMessage) {
+        String testUUID = DatabaseAPI.getInstance().getData(EnumData.UUID, document).toString();
+
+        if (testUUID.equals("")) {
+            player.sendMessage(ChatColor.RED + "It seems this user has not played DungeonRealms before.");
+            return;
+        }
+
+        if (!FriendHandler.getInstance().areFriends(player, UUID.fromString(testUUID), document) && !Rank.isGM(player))
+            if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, document)) {
+                player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
                 return;
             }
 
-            if (!FriendHandler.getInstance().areFriends(player, UUID.fromString(testUUID), document) && !Rank.isGM(player))
-                if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, document)) {
-                    player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
-                    return;
-                }
+        if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, document)) || (GameAPI.isPlayerHidden(document) && !Rank.isGM(player))) {
+            player.sendMessage(ChatColor.RED + "That user is not currently online.");
+            return;
+        }
 
-            if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, document)) || (GameAPI.isPlayerHidden(document) && !Rank.isGM(player))) {
-                player.sendMessage(ChatColor.RED + "That user is not currently online.");
-                return;
-            }
+        ShardInfo shard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, document));
 
-            ShardInfo shard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, document));
+        player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
+                (recipientName) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
+                ChatColor.WHITE + finalMessage);
 
-            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
-                    (recipientName) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
-                    ChatColor.WHITE + finalMessage);
+        GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
+                ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
+                .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
+                finalMessage));
 
-
-            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
-                    ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
-                    .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
-                    finalMessage));
-            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
-        });
+        GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
     }
 
     /**

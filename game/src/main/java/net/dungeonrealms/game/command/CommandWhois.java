@@ -25,7 +25,7 @@ public class CommandWhois extends BaseCommand {
         if (sender instanceof Player && !Rank.isGM((Player) sender)) return true;
         String p_name = args[0];
 
-        if(args.length != 1) {
+        if (args.length != 1) {
             sender.sendMessage("Syntax. /whois <player>");
             return true;
         }
@@ -34,15 +34,15 @@ public class CommandWhois extends BaseCommand {
             return false;
         }
         UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(p_name));
-        boolean isPlaying = (boolean)DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.IS_PLAYING);
+        boolean isPlaying = (boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid);
         String server = DatabaseAPI.getInstance().getFormattedShardName(uuid);
 
-        if(!isPlaying) {
+        if (!isPlaying) {
             sender.sendMessage(ChatColor.RED + p_name + ", currently offline.");
             return true;
         }
 
-        if(Bukkit.getPlayer(p_name) == null) {
+        if (Bukkit.getPlayer(p_name) == null) {
             sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on server " + ChatColor.UNDERLINE + server);
         } else {
             sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on " + ChatColor.UNDERLINE + "YOUR" + ChatColor.YELLOW + " server.");

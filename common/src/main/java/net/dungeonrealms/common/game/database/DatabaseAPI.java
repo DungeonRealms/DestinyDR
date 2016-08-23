@@ -13,7 +13,9 @@ import net.dungeonrealms.common.game.database.concurrent.query.DocumentSearchQue
 import net.dungeonrealms.common.game.database.concurrent.query.SingleUpdateQuery;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.network.ShardInfo;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -130,9 +132,12 @@ public class DatabaseAPI {
                 if (doAfterOptional != null)
                     doAfterOptional.accept(result);
 
-                if (Constants.debug) {
+
+                if (Bukkit.isPrimaryThread()) {
                     Constants.log.warning("[Database] Updating " + uuid.toString() + "'s player data on the main thread");
-                    printTrace();
+
+                    if (Constants.debug)
+                        printTrace();
                 }
             }
     }
@@ -170,9 +175,10 @@ public class DatabaseAPI {
             if (doAfterOptional != null)
                 doAfterOptional.accept(result);
 
-            if (Constants.debug) {
+            if (Bukkit.isPrimaryThread()) {
                 Constants.log.warning("[Database] Updating shard_data collection on the main thread.");
-                printTrace();
+                if (Constants.debug)
+                    printTrace();
             }
         }
     }
@@ -198,13 +204,18 @@ public class DatabaseAPI {
         else {
             long currentTime = 0;
             // we should never be getting offline data sync.
-            if (Constants.debug) {
-                currentTime = System.currentTimeMillis();
-                Constants.log.warning("[Database] Retrieving " + uuid.toString() + "'s offline document on the main thread...");
-                StackTraceElement ste = new Exception().getStackTrace()[1];
-                Constants.log.warning(ste.getClassName() + " " + ste.getMethodName() + " " + ste.getLineNumber());
+
+            if (Bukkit.isPrimaryThread()) {
+                Constants.log.info("[Database] Requested for " + uuid + "'s document from the database on the main thread.");
+
+                if (Constants.debug)
+                    printTrace();
             }
+
+            if (Constants.debug) currentTime = System.currentTimeMillis();
+
             doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
+
             if (Constants.debug)
                 Constants.log.info("[Database] Player document retrieved in " + String.valueOf(System.currentTimeMillis() - currentTime) + " ms.");
         }
@@ -294,7 +305,7 @@ public class DatabaseAPI {
 
 
                 if (Constants.debug) {
-                    Constants.log.info("[Database] [ASYNC] New playerdata requested for " + uuid + " from the database.");
+                    Constants.log.info("[Database] [ASYNC] Requested for " + uuid + "'s document from the database.");
                     printTrace();
                 }
 
@@ -305,20 +316,21 @@ public class DatabaseAPI {
             Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
             if (doc == null) addNewPlayer(uuid, async);
             else PLAYERS.put(uuid, doc);
+
             if (Constants.debug) {
-                Constants.log.info("[Database] New playerdata requested for " + uuid + " from the database.");
+                Constants.log.info("[Database] Requested for " + uuid + "'s document from the database.");
                 printTrace();
             }
+
+            if (Bukkit.isPrimaryThread()) {
+                Constants.log.info("[Database] Requested for " + uuid + "'s document from the database on the main thread.");
+                if (Constants.debug)
+                    printTrace();
+            }
+
             if (doAfterOptional != null)
                 doAfterOptional.run();
         }
-    }
-
-    public Object retrieveElement(UUID uuid, EnumData data) {
-        Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-        if (doc == null) return null;
-        String[] key = data.getKey().split("\\.");
-        return ((Document) doc.get(key[0])).get(key[1]);
     }
 
     public String getUUIDFromName(String playerName) {
@@ -327,6 +339,14 @@ public class DatabaseAPI {
         if (Constants.debug) {
             Constants.log.info("[Database] Retrieving for " + playerName + " 's UUID from name.");
             printTrace();
+        }
+
+
+        if (Bukkit.isPrimaryThread()) {
+            Constants.log.warning("[Database] Retrieving " + playerName + " 's UUID from name on the main thread.");
+
+            if (Constants.debug)
+                printTrace();
         }
 
         Document doc = DatabaseInstance.playerData.find(Filters.eq("info.username", playerName.toLowerCase())).first();
@@ -342,30 +362,23 @@ public class DatabaseAPI {
         return uuidString;
     }
 
-
     public String getFormattedShardName(UUID uuid) {
         boolean isOnline = (boolean) getInstance().getData(EnumData.IS_PLAYING, uuid);
-        if (!isOnline) {
-            return "None";
-        }
-        Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-        if (doc == null)
-            return "";
-        String name = ((Document) doc.get("info")).get("current", String.class);
-        if (name == null) return "";
-        return name.split("(?=[0-9])", 2)[0].toUpperCase() + "-" + name.split("(?=[0-9])", 2)[1];
+        if (!isOnline) return "None";
+        ShardInfo shard = ShardInfo.getByPseudoName((String) getData(EnumData.CURRENTSERVER, uuid));
+        return shard.getShardID();
     }
 
     public String getOfflineName(UUID uuid) {
-        if (Constants.debug) {
-            Constants.log.info("[Database] Retrieving for " + uuid.toString() + "'s name..");
-            printTrace();
+        if (Bukkit.isPrimaryThread()) {
+            Constants.log.info("[Database] Retrieving for " + uuid.toString() + "'s name on the main thread.");
+            if (Constants.debug)
+                printTrace();
         }
 
         Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-        if (doc == null) {
-            return "";
-        } else {
+        if (doc == null) return "";
+        else {
             return ((Document) doc.get("info")).get("username", String.class);
         }
     }

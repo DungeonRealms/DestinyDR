@@ -24,11 +24,11 @@ public class PunishAPI {
     /**
      * Method to ban players asynchronously.
      *
-     * @param uuid       UUID
-     * @param playerName Target
+     * @param uuid             UUID
+     * @param playerName       Target
      * @param sourceThatBanned
-     * @param duration   Set as -1 for permanent ban
-     * @param reason     Leave empty for no reason
+     * @param duration         Set as -1 for permanent ban
+     * @param reason           Leave empty for no reason
      */
     public static void ban(UUID uuid, String playerName, String sourceThatBanned, long duration, String reason, Consumer<UUID> doBefore) {
         if (uuid == null) return;
@@ -90,8 +90,8 @@ public class PunishAPI {
     }
 
     public static String getMutedMessage(UUID uuid) {
-        long muteTime = (long) DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.MUTE_TIME);
-        String reason = (String) DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.MUTE_REASON);
+        long muteTime = (long) DatabaseAPI.getInstance().getData(EnumData.MUTE_TIME, uuid);
+        String reason = (String) DatabaseAPI.getInstance().getData(EnumData.MUTE_REASON, uuid);
 
         return ChatColor.RED + "You will be unmuted until " + timeString((int) ((muteTime - System.currentTimeMillis()) / 60000)) + (reason != null ? " for " + reason : "");
     }
@@ -154,7 +154,7 @@ public class PunishAPI {
         try {
             Document bansDoc = DatabaseInstance.bans.find(Filters.eq("bans.uuid", uuid.toString())).first();
             if (bansDoc == null) return false;
-            Long banTime = ((Document)bansDoc.get("bans")).getLong("bannedUntil");
+            Long banTime = ((Document) bansDoc.get("bans")).getLong("bannedUntil");
             Constants.log.info(String.valueOf(banTime == -1 || banTime != 0 && System.currentTimeMillis() < banTime) + "");
             return banTime == -1 || banTime != 0 && System.currentTimeMillis() < banTime;
         } catch (NullPointerException ignored) {
@@ -163,7 +163,7 @@ public class PunishAPI {
     }
 
     public static boolean isMuted(UUID uuid) {
-        long muteTime = ((Long) DatabaseAPI.getInstance().retrieveElement(uuid, EnumData.MUTE_TIME));
+        long muteTime = ((Long) DatabaseAPI.getInstance().getData(EnumData.MUTE_TIME, uuid));
         return (muteTime != 0 && System.currentTimeMillis() < muteTime);
     }
 
