@@ -1,13 +1,12 @@
 Build <build>
 
-&2New Features&0
-- Advanced censoring system.
-
 &8Changes&0
-- Re-enabled the Varenglade dungeon.
-- Made teleport books stackable again.
-- Anti-duplication is now improved.
+- New world boss is now in progress
+- Temporarily disabled Varenglade.
 
 &4Bug Fixes&0
+- Fixed lag spikes game is now much
+faster
+- Fix falling off realm glitching
 - Fixed frequent crashing.
 - Fixed shop wipes.
