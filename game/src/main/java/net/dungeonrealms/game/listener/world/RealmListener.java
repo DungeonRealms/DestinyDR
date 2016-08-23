@@ -77,7 +77,7 @@ public class RealmListener implements Listener {
 
         if (EntityAPI.hasMountOut(player.getUniqueId())) {
             net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
-            mount.dead = true; 
+            mount.dead = true;
             EntityAPI.removePlayerMountList(player.getUniqueId());
         }
 
@@ -438,20 +438,18 @@ public class RealmListener implements Listener {
         Location to = event.getTo().clone();
         if (event.getTo().getY() <= 0) {
             RealmToken realm = REALMS.getToken(p.getLocation().getWorld());
-
             if (realm == null) return;
 
             p.teleport(realm.getPortalLocation().clone().add(0, 1, 0));
-
-            int realm_tier = REALMS.getRealmTier(realm.getOwner());
-            int maxDistance = (REALMS.getRealmDimensions(realm_tier) + 16) * 2;
-
-            int max_y = 128;
+            int maxDistance = 150;
 
             if (!(Rank.isGM(p)))
                 if (Math.round(to.getX() - 0.5) > maxDistance || Math.round(to.getX() - 0.5) < 16 || Math.round(to.getZ() - 0.5) > maxDistance
-                        || Math.round(to.getZ() - 0.5) < 16 || (to.getY() > (max_y + (maxDistance) + 1)) || (to.getY() < (max_y - (maxDistance) - 1))) {
-                    event.setCancelled(true);
+                        || Math.round(to.getZ() - 0.5) < 16) {
+                    Location newTo = event.getFrom();
+                    newTo.setPitch(event.getTo().getPitch());
+                    newTo.setYaw(event.getTo().getYaw());
+                    event.setTo(newTo);
                 }
         }
     }
