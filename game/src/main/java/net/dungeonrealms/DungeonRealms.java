@@ -1,11 +1,14 @@
 package net.dungeonrealms;
 
 import com.esotericsoftware.minlog.Log;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
@@ -78,6 +81,7 @@ import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.tool.PatchTools;
 import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -500,10 +504,21 @@ public class DungeonRealms extends JavaPlugin {
             }
         }, 0, 100);
 
+        // FIX PLAYERS //
+        UpdateResult playerFixResult = DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard),
+                new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
+
+        if (playerFixResult.wasAcknowledged())
+            Constants.log.info(ChatColor.YELLOW + "Set " + playerFixResult.getModifiedCount() + " players' " +
+                    "statuses to offline from " +
+                    "shard " + shard);
+        else Constants.log.info(ChatColor.RED + "Operation failed: database error.");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+            Constants.log.info(ChatColor.RED + "Server now accepting players.");
+
             this.acceptPlayers = true;
             Bukkit.getServer().setWhitelist(false);
         }, 240L);
