@@ -13,8 +13,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static net.dungeonrealms.GameAPI.handleLogout;
+import static net.dungeonrealms.GameAPI.submitAsyncCallback;
 
 /**
  * Created by Brad on 09/06/2016.
@@ -32,7 +34,15 @@ public class CommandShard extends BaseCommand {
         Player player = (Player) sender;
 
         if (args.length == 0 || !Rank.isGM(player)) {
-            new ShardSwitcher(player).open(player);
+
+            submitAsyncCallback(() -> new ShardSwitcher(player), menu -> {
+                try {
+                    menu.get().open(player);
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            });
+
             return true;
         }
 

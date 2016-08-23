@@ -216,8 +216,10 @@ public class DatabaseAPI {
 
             doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
 
-            if (Constants.debug)
+            if (Constants.debug) {
                 Constants.log.info("[Database] Player document retrieved in " + String.valueOf(System.currentTimeMillis() - currentTime) + " ms.");
+                printTrace();
+            }
         }
 
         return getData(data, doc);
@@ -366,7 +368,7 @@ public class DatabaseAPI {
         boolean isOnline = (boolean) getInstance().getData(EnumData.IS_PLAYING, uuid);
         if (!isOnline) return "None";
         ShardInfo shard = ShardInfo.getByPseudoName((String) getData(EnumData.CURRENTSERVER, uuid));
-        return shard.getShardID();
+        return shard != null ? shard.getShardID() : "None";
     }
 
     public String getOfflineName(UUID uuid) {
