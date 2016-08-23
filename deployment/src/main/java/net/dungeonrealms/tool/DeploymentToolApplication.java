@@ -81,12 +81,10 @@ public class DeploymentToolApplication {
             System.out.println("[DEPLOYMENT] Notifying slack channels for deployment of Build " + Constants.BUILD_NUMBER);
             Arrays.stream(NOTIFICATION_CHANNELS).forEach(
                     channelID -> {
-
                         SlackChannel channel = session.findChannelById(channelID);
-                        session.sendMessage(channel, "Dungeon Realms " + " Build " + Constants.BUILD_NUMBER + " has been deployed to the remote master FTP server.");
-                        session.sendMessage(channel, "This deployed build will be propagated on the network when the servers reboot.");
-                        if (patchnotesURL != null)
-                            session.sendMessage(channel, "Latest patch notes for this build are available here " + patchnotesURL.toString());
+                        session.sendMessage(channel, "Dungeon Realms Build " + Constants.BUILD_NUMBER + " has been deployed to the remote master FTP server." +
+                                "\nThis deployed build will be propagated on the network when the servers reboot." +
+                                (patchnotesURL != null ? "\nLatest patch notes for this build are available here " + patchnotesURL.toString() : ""));
                     }
             );
             session.disconnect();
