@@ -393,7 +393,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandMonSpawn("monspawn", "/<command> [args]", "Spawn monsters"));
         cm.registerCommand(new ReplaceNear("drreplacenear", "/<command> [args]", "Replaces nearby blocks"));
         cm.registerCommand(new BossTeleport("bosstp", "/<command> [args]", "Dungeon Boss Teleporation"));
-        cm.registerCommand(new BossTeleport("bspawn", "/<command> [args]", "Spawn a dungeon boss."));
+        cm.registerCommand(new BossSpawn("bspawn", "/<command> [args]", "Spawn a dungeon boss."));
         cm.registerCommand(new CommandTips("tips", "/<command>", "Tips command"));
         cm.registerCommand(new DungeonJoin("djoin", "/<command>", "Dungeon Join command"));
         cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
@@ -421,6 +421,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "This will teleport a Game Master to their spawn point."));
+            cm.registerCommand(new CommandTeleport("teleport", "/<command> [args]", "This will allow a Gamer Master to teleport across the lands of Andalucia."));
             cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "This will spawn a Dungeon Realms item.", Collections.singletonList("ad")));
             cm.registerCommand(new CommandList("list", "/<command> [args]", "Displays a list of online players."));
             cm.registerCommand(new CommandSetRank("setrank", "/<command> [args]", "Sets the rank of a player."));
@@ -450,7 +451,6 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandJail("jail", "/<command> [args]", "Jail command"));
             cm.registerCommand(new CommandUnjail("unjail", "/<command> [args]", "Unjail command"));
 
-
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Will announce a purchase messages."));
 
@@ -475,7 +475,6 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new AcceptCommand("deny", "/<command> [args]", "Deny Friend request!", Collections.singletonList("drdeny")));
 
             cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close Shop on all Shards!", Collections.singletonList("shopclose")));
-
 
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
             cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));

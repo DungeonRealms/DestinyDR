@@ -1267,6 +1267,8 @@ public class GameAPI {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
                 Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM VANISH");
                 player.setGameMode(GameMode.SPECTATOR);
+            } else {
+                player.setGameMode(GameMode.CREATIVE);
             }
         }
 

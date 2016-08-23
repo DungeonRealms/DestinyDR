@@ -1575,7 +1575,7 @@ public class ClickHandler {
                 if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
 
                 switch (slot) {
-                    case 0: // Invisible
+                    case 0: // Vanish
                         if (GameAPI._hiddenPlayers.contains(player)) {
                             GameAPI._hiddenPlayers.remove(player);
                             for (Player player1 : Bukkit.getOnlinePlayers()) {
@@ -1587,7 +1587,7 @@ public class ClickHandler {
                             player.removePotionEffect(PotionEffectType.INVISIBILITY);
                             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
                             player.setCustomNameVisible(true);
-                            player.setGameMode(GameMode.SURVIVAL);
+                            player.setGameMode(GameMode.CREATIVE);
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_VANISH, false, true);
                         } else {
                             GameAPI._hiddenPlayers.add(player);
@@ -1614,6 +1614,10 @@ public class ClickHandler {
                         Utils.sendCenteredMessage(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "GM " +
                                 "INVINCIBILITY - " + (gp.isInvulnerable() ? ChatColor.GREEN.toString() + ChatColor
                                 .BOLD + "ENABLED" : ChatColor.RED.toString() + ChatColor.BOLD + "DISABLED"));
+                        break;
+
+                    case 2: // Toggle WARNING prompts
+
                         break;
 
                     default:
