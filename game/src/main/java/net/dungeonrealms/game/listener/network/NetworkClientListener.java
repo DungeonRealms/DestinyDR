@@ -211,6 +211,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 String message = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                                 Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
                                 break;
+                            case "BroadcastRaw":
+                                String rawMessage = in.readUTF();
+                                Bukkit.getOnlinePlayers().forEach(player -> player.sendRawMessage(rawMessage));
+                                break;
                             case "BroadcastSound": {
                                 String name = in.readUTF();
                                 Float volume = 10f;

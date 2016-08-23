@@ -10,14 +10,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
 
 public class CommandAsk extends BaseCommand {
 
-    public CommandAsk(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandAsk(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
