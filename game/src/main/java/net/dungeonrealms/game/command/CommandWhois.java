@@ -42,11 +42,10 @@ public class CommandWhois extends BaseCommand {
             return true;
         }
 
-        if (Bukkit.getPlayer(p_name) == null) {
+        if (Bukkit.getPlayer(p_name) == null)
             sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on server " + ChatColor.UNDERLINE + server);
-        } else {
+        else
             sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on " + ChatColor.UNDERLINE + "YOUR" + ChatColor.YELLOW + " server.");
-        }
 //        });
 
         return true;

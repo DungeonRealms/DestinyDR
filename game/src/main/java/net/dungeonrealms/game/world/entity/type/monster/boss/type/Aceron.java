@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.entity.LivingEntity;
@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 /**
  * Created by Chase on Oct 20, 2015
  */
-public class Aceron extends DRWitherSkeleton implements Boss {
+public class Aceron extends DRWitherSkeleton implements DungeonBoss {
 
     /**
      * @param world
@@ -27,7 +27,7 @@ public class Aceron extends DRWitherSkeleton implements Boss {
     }
 
     @Override
-    public EnumBoss getEnumBoss() {
+    public EnumDungeonBoss getEnumBoss() {
         return null;
     }
 
@@ -41,7 +41,7 @@ public class Aceron extends DRWitherSkeleton implements Boss {
     }
 
     @Override
-    public void onBossHit(EntityDamageByEntityEvent event) {
+    public void onBossAttack(EntityDamageByEntityEvent event) {
         LivingEntity en = (LivingEntity) event.getEntity();
     }
 

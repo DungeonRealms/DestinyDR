@@ -11,7 +11,7 @@ import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
-import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.item.Attribute;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -61,8 +61,8 @@ public class PvEListener implements Listener {
         if (DamageAPI.isInvulnerable(receiver)) {
             if (receiver.hasMetadata("boss")) {
                 if (receiver instanceof CraftLivingEntity) {
-                    Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
-                    b.onBossHit(event);
+                    DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) receiver).getHandle();
+                    b.onBossAttack(event);
                 }
             }
             event.setCancelled(true);
@@ -189,8 +189,8 @@ public class PvEListener implements Listener {
         if (DamageAPI.isInvulnerable(receiver)) {
             if (receiver.hasMetadata("boss")) {
                 if (receiver instanceof CraftLivingEntity) {
-                    Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
-                    b.onBossHit(event);
+                    DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) receiver).getHandle();
+                    b.onBossAttack(event);
                 }
             }
             event.setCancelled(true);
@@ -402,8 +402,8 @@ public class PvEListener implements Listener {
             }
         } else if (receiver.hasMetadata("boss")) {
             if (receiver instanceof CraftLivingEntity) {
-                Boss b = (Boss) ((CraftLivingEntity) receiver).getHandle();
-                b.onBossHit(event);
+                DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) receiver).getHandle();
+                b.onBossAttack(event);
             }
             else
                 return;

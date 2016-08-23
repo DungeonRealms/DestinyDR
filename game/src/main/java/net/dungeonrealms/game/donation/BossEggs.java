@@ -1,24 +1,25 @@
 package net.dungeonrealms.game.donation;
 
-import lombok.Data;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.player.CachedClientProvider;
-import net.dungeonrealms.game.donation.eggs.BossEgg;
+import net.dungeonrealms.game.donation.eggs.WBInstance;
 import net.dungeonrealms.game.listener.world.BossEggListener;
+import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.world.entity.type.monster.boss.eggs.SummonedBoss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.WorldBoss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.type.world.Albranir;
+import net.minecraft.server.v1_9_R2.EntityPigZombie;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 8/22/2016
  */
 
-public class BossEggs extends CachedClientProvider<BossEggs.Instance> implements GenericMechanic {
+public class BossEggs extends CachedClientProvider<WBInstance> implements GenericMechanic {
 
     @Override
     public EnumPriority startPriority() {
@@ -26,32 +27,18 @@ public class BossEggs extends CachedClientProvider<BossEggs.Instance> implements
     }
 
     @Override
-    protected Instance cache(OfflinePlayer player, Object... params) {
-        return getCache().put(player.getUniqueId(), (Instance) params[0]);
+    protected WBInstance cache(OfflinePlayer player, Object... params) {
+        return getCache().put(player.getUniqueId(), (WBInstance) params[0]);
     }
 
-    @Data
-    public class Instance {
-
-        private UUID host;
-        private BossEgg egg;
-
-        private SummonedBoss boss;
-
-        private long initTime;
-
-        public Instance(UUID host, BossEgg egg) {
-            this.host = host;
-            this.egg = egg;
-
-            initTime = System.currentTimeMillis();
-        }
-    }
 
     @Override
     public void startInitialization() {
         Bukkit.getPluginManager().registerEvents(new BossEggListener(), DungeonRealms.getInstance());
 
+        // REGISTER BOSSES //
+        NMSUtils nmsUtils = new NMSUtils();
+        nmsUtils.registerEntity("Albranir", 57, EntityPigZombie.class, Albranir.class);
     }
 
     @Override
@@ -59,10 +46,7 @@ public class BossEggs extends CachedClientProvider<BossEggs.Instance> implements
 
     }
 
-
-    public Instance createInstance(Player host, BossEgg egg){
-        return cache(host, egg);
+    public WBInstance createInstance(Player host, Location location, WorldBoss egg) {
+        return cache(host, location, egg);
     }
-
-
 }

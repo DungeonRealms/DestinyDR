@@ -5,10 +5,10 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
-import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.InfernalAbyss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class InfernalLordsGuard extends MeleeWitherSkeleton implements Boss {
+public class InfernalLordsGuard extends MeleeWitherSkeleton implements DungeonBoss {
 	
 	public boolean died = false;
 	public InfernalAbyss boss;
@@ -87,8 +87,8 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements Boss {
 	}
 
 	@Override
-	public EnumBoss getEnumBoss() {
-		return EnumBoss.LordsGuard;
+	public EnumDungeonBoss getEnumBoss() {
+		return EnumDungeonBoss.LordsGuard;
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements Boss {
 	}
 
 	@Override
-	public void onBossHit(EntityDamageByEntityEvent event) {
+	public void onBossAttack(EntityDamageByEntityEvent event) {
 		//LivingEntity en = (LivingEntity) event.getEntity();
 	}
 

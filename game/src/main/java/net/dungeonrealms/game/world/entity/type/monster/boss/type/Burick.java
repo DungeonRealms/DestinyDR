@@ -12,10 +12,10 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
@@ -46,7 +46,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by Chase on Oct 19, 2015
  */
-public class Burick extends MeleeWitherSkeleton implements Boss {
+public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
 
     public Location loc;
 
@@ -148,7 +148,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
     }
 
     @Override
-    public void onBossHit(EntityDamageByEntityEvent event) {
+    public void onBossAttack(EntityDamageByEntityEvent event) {
         if (!spawnedMobs.isEmpty()) {
             for (Entity entity : spawnedMobs) {
                 if (!entity.isAlive()) {
@@ -213,8 +213,8 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
     }
 
     @Override
-    public EnumBoss getEnumBoss() {
-        return EnumBoss.Burick;
+    public EnumDungeonBoss getEnumBoss() {
+        return EnumDungeonBoss.Burick;
     }
 
     private Location toSpawn = new Location(this.getBukkitEntity().getWorld(), -364, 61, -1);

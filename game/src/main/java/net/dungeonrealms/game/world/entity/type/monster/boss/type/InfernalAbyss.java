@@ -13,11 +13,11 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffWitherSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -49,7 +49,7 @@ import java.util.Map;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
+public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
     public InfernalGhast ghast;
 
@@ -111,8 +111,8 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
     }
 
     @Override
-    public EnumBoss getEnumBoss() {
-        return EnumBoss.InfernalAbyss;
+    public EnumDungeonBoss getEnumBoss() {
+        return EnumDungeonBoss.InfernalAbyss;
     }
 
     private boolean hasFiredGhast = false;
@@ -177,7 +177,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements Boss {
     }
 
     @Override
-    public void onBossHit(EntityDamageByEntityEvent event) {
+    public void onBossAttack(EntityDamageByEntityEvent event) {
         LivingEntity en = (LivingEntity) event.getEntity();
         if (event.getDamager() instanceof Player) {
             Player p_attacker = (Player) event.getDamager();

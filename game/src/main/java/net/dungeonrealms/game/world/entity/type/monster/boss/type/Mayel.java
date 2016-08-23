@@ -12,10 +12,10 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
-import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * Created by Chase on Oct 18, 2015
  */
-public class Mayel extends RangedWitherSkeleton implements Boss {
+public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
 
     /**
      * @param world
@@ -133,7 +133,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
     private boolean canSpawn = false;
 
     @Override
-    public void onBossHit(EntityDamageByEntityEvent event) {
+    public void onBossAttack(EntityDamageByEntityEvent event) {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         if (canSpawnMobs(livingEntity)) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = false, 100L);
@@ -308,7 +308,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
     }
 
     @Override
-    public EnumBoss getEnumBoss() {
-        return EnumBoss.Mayel;
+    public EnumDungeonBoss getEnumBoss() {
+        return EnumDungeonBoss.Mayel;
     }
 }

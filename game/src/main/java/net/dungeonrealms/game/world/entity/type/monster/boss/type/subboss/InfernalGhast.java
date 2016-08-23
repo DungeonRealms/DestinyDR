@@ -5,10 +5,10 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRGhast;
-import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.InfernalAbyss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class InfernalGhast extends DRGhast implements Boss {
+public class InfernalGhast extends DRGhast implements DungeonBoss {
 
     private InfernalAbyss boss;
     @Getter
@@ -58,8 +58,8 @@ public class InfernalGhast extends DRGhast implements Boss {
     }
 
     @Override
-    public EnumBoss getEnumBoss() {
-        return EnumBoss.InfernalGhast;
+    public EnumDungeonBoss getEnumBoss() {
+        return EnumDungeonBoss.InfernalGhast;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class InfernalGhast extends DRGhast implements Boss {
     private int maxHP = 0;
 
     @Override
-    public void onBossHit(EntityDamageByEntityEvent event) {
+    public void onBossAttack(EntityDamageByEntityEvent event) {
         LivingEntity en = (LivingEntity) event.getEntity();
         double totalHP = HealthHandler.getInstance().getMonsterMaxHPLive(en);
         if (totalHP < 10000) {

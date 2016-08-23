@@ -3,8 +3,8 @@ package net.dungeonrealms.game.listener.mechanic;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.DungeonManager.DungeonObject;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumBoss;
-import net.dungeonrealms.game.world.entity.type.monster.boss.Boss;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,8 +21,8 @@ public class BossListener implements Listener {
 		if (event.getEntity().hasMetadata("boss")) {
 			event.getEntity().removeMetadata("boss", DungeonRealms.getInstance());
 			if (event.getEntity() instanceof CraftLivingEntity) {
-				Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
-				if (b.getEnumBoss() != EnumBoss.Pyromancer && b.getEnumBoss() != EnumBoss.InfernalGhast && b.getEnumBoss()!= EnumBoss.LordsGuard)
+				DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) event.getEntity()).getHandle();
+				if (b.getEnumBoss() != EnumDungeonBoss.Pyromancer && b.getEnumBoss() != EnumDungeonBoss.InfernalGhast && b.getEnumBoss()!= EnumDungeonBoss.LordsGuard)
 				if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) != null) {
 					DungeonObject dungeon = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
 					dungeon.teleportPlayersOut(false);
