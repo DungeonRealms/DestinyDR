@@ -372,7 +372,7 @@ public class GameAPI {
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
 
-        final long restartTime = (Bukkit.getOnlinePlayers().size() * 600) + 5; // half a second per player plus 5 seconds
+        final long restartTime = (Bukkit.getOnlinePlayers().size() * 500) + 5000; // half a second per player plus 5 seconds
 
         Constants.log.info("Uploading data on crash...");
 
@@ -388,12 +388,12 @@ public class GameAPI {
 
         System.out.println("Successfully saved all playerdata in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
 
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                System.exit(1);
+                Runtime.getRuntime().exit(1);
             }
-        }, 0L, restartTime);
+        }, restartTime);
 
         DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
