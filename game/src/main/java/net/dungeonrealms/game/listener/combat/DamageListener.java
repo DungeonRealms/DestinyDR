@@ -27,8 +27,8 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entity.powermove.type.PowerStrike;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitch;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
@@ -824,6 +824,11 @@ public class DamageListener implements Listener {
         if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM)
             return;
 
+        if (event.getCause() == DamageCause.VOID) {
+            event.getEntity().remove();
+            return;
+        }
+
         double dmg = event.getDamage();
         event.setDamage(0);
 
@@ -1029,7 +1034,7 @@ public class DamageListener implements Listener {
                     for (int i = 0; i <= 3; i++) {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(2, "low");
-                        String newLevelName = org.bukkit.ChatColor.AQUA + "[Lvl. "+ level + "] ";
+                        String newLevelName = org.bukkit.ChatColor.AQUA + "[Lvl. " + level + "] ";
                         EntityStats.setMonsterRandomStats(entity, level, 2);
                         SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
                         if (entity == null) {
