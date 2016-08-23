@@ -1,10 +1,5 @@
 Build <build>
 
-&2New Features&0
--Update to /list, you can now
-specify -m|-s|-h to refine the query.
-It also now shows the player rank.
-
 &8Changes&0
 - New world boss is now in progress
 - Re-enabled Varenglade.
