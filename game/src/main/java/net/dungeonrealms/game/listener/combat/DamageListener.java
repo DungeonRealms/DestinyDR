@@ -820,14 +820,15 @@ public class DamageListener implements Listener {
     public void onEntityHurtByNonCombat(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")))
             return;
-        if (event.getDamage() <= 0) return;
-        if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM)
-            return;
 
         if (event.getCause() == DamageCause.VOID) {
             event.getEntity().remove();
             return;
         }
+
+        if (event.getDamage() <= 0) return;
+        if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM)
+            return;
 
         double dmg = event.getDamage();
         event.setDamage(0);
