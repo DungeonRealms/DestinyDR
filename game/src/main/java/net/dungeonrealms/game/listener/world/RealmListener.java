@@ -441,16 +441,17 @@ public class RealmListener implements Listener {
             if (realm == null) return;
 
             p.teleport(realm.getPortalLocation().clone().add(0, 1, 0));
-            int maxDistance = 150;
-
-            if (!(Rank.isGM(p)))
-                if (to.getZ() >= maxDistance || to.getZ() <= -maxDistance || to.getX() >= maxDistance || to.getX() <= -maxDistance) {
-                    Location newTo = event.getFrom();
-                    newTo.setPitch(event.getTo().getPitch());
-                    newTo.setYaw(event.getTo().getYaw());
-                    event.setTo(newTo);
-                }
+            return;
         }
+
+        int maxDistance = 150;
+        if (!(Rank.isGM(p)))
+            if (to.getZ() >= maxDistance || to.getZ() <= -maxDistance || to.getX() >= maxDistance || to.getX() <= -maxDistance) {
+                Location newTo = event.getFrom();
+                newTo.setPitch(event.getTo().getPitch());
+                newTo.setYaw(event.getTo().getYaw());
+                event.setTo(newTo);
+            }
     }
 
 
