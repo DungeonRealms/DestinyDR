@@ -433,12 +433,26 @@ public class RealmListener implements Listener {
     public void onMove(PlayerMoveEvent event) {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
+        Player p = event.getPlayer();
+
+        Location to = event.getTo().clone();
         if (event.getTo().getY() <= 0) {
-            RealmToken realm = REALMS.getToken(event.getPlayer().getLocation().getWorld());
+            RealmToken realm = REALMS.getToken(p.getLocation().getWorld());
 
             if (realm == null) return;
 
-            event.getPlayer().teleport(realm.getPortalLocation().clone().add(0, 1, 0));
+            p.teleport(realm.getPortalLocation().clone().add(0, 1, 0));
+
+            int realm_tier = REALMS.getRealmTier(realm.getOwner());
+            int maxDistance = (REALMS.getRealmDimensions(realm_tier) + 16) * 2;
+
+            int max_y = 128;
+
+            if (!(Rank.isGM(p)))
+                if (Math.round(to.getX() - 0.5) > maxDistance || Math.round(to.getX() - 0.5) < 16 || Math.round(to.getZ() - 0.5) > maxDistance
+                        || Math.round(to.getZ() - 0.5) < 16 || (to.getY() > (max_y + (maxDistance) + 1)) || (to.getY() < (max_y - (maxDistance) - 1))) {
+                    event.setCancelled(true);
+                }
         }
     }
 
