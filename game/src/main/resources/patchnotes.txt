@@ -2,7 +2,7 @@ Build <build>
 
 &8Changes&0
 - New world boss is now in progress
-- Re-enabled Varenglade.
+- Disabled Varenglade dungeon.
 
 &4Bug Fixes&0
 - Fixed lag spikes game is now much
