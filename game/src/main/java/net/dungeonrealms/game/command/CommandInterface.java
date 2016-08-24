@@ -37,7 +37,7 @@ public class CommandInterface extends BaseCommand {
                 case "item":
                 case "itemvendor":
                 case "item_vendor":
-                    player.sendMessage(ChatColor.RED + "Unavailable.");
+                    NPCMenus.openItemVendorMenu(player);
                     break;
 
                 case "food":
