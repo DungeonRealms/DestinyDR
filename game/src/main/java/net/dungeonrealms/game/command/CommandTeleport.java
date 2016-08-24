@@ -38,6 +38,9 @@ public class CommandTeleport extends BaseCommand {
                 { "Varenglade", "-673 58 1399" },
                 { "Bandit Trove", "-978 60 745" },
                 { "Infernal Abyss", "-280 25 -478" },
+                { "Cop'jak", "-80 100 1270" },
+                { "Kilatan", "-400 40 3480" },
+                { "Blayshan", "-280 85 200" },
                // { "-", "0 0 0" },
         };
 
