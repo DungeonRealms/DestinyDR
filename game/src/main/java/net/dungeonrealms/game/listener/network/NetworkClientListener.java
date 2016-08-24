@@ -24,9 +24,12 @@ import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
+import net.minecraft.server.v1_9_R2.IChatBaseComponent;
+import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.io.ByteArrayInputStream;
@@ -213,7 +216,8 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 break;
                             case "BroadcastRaw":
                                 String rawMessage = in.readUTF();
-                                Bukkit.getOnlinePlayers().forEach(player -> player.sendRawMessage(rawMessage));
+                                Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.sendPacket(
+                                        new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(rawMessage), (byte) 1)));
                                 break;
                             case "BroadcastSound": {
                                 String name = in.readUTF();
