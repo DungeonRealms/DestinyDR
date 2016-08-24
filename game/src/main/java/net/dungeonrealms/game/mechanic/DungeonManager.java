@@ -108,7 +108,6 @@ public class DungeonManager implements GenericMechanic {
                     if (TRACKED_SPAWNS.containsKey(mob.getUniqueID())) {
                         Location location = TRACKED_SPAWNS.get(mob.getUniqueID());
                         mob.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        System.out.println("test");
                     }
 
                 if (!mob.isAlive() || mob.dead) {
