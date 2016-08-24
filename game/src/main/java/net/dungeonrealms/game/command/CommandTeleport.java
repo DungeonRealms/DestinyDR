@@ -35,6 +35,9 @@ public class CommandTeleport extends BaseCommand {
                 { "Tutorial", "990 32 -147" },
                 { "Avalon Peaks", "-1263 103 -516" },
                 { "Lost City of Avalon", "-221 153 -3489" },
+                { "Varenglade", "-673 58 1399" },
+                { "Bandit Trove", "-978 60 745" },
+                { "Infernal Abyss", "-280 25 -478" },
                // { "-", "0 0 0" },
         };
 
