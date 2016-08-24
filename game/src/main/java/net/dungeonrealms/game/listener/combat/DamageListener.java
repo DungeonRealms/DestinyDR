@@ -80,12 +80,6 @@ import java.util.stream.Collectors;
  */
 public class DamageListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onSufficate(EntityDamageEvent event) {
-        if (event.getEntity() instanceof LivingEntity) if (event.getCause() == DamageCause.SUFFOCATION)
-            event.setCancelled(true);
-    }
-
     /**
      * This event listens for EnderCrystal explosions.
      * Which are buffs.. with the correct nbt at least.
@@ -411,19 +405,22 @@ public class DamageListener implements Listener {
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
         }
+
         if (event.getCause() == DamageCause.LAVA) {
             if (event.getEntity() instanceof Player) {
                 event.setDamage(0);
                 event.setCancelled(true);
             }
         }
+
         if (event.getCause() == DamageCause.FIRE) {
             event.setDamage(0);
             event.setCancelled(true);
         }
+
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
             event.setCancelled(true);
-            event.getEntity().teleport(event.getEntity().getWorld().getSpawnLocation());
+            event.getEntity().teleport(Teleportation.Cyrennica);
         }
 
         if (!(event.getEntity() instanceof Player) && event.getCause() == DamageCause.FALL) {

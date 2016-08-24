@@ -4,10 +4,11 @@ Build <build>
 - You can now toggle party chat
 
 &8Changes&0
+- Re-enabled The Infernal Abyss dungeon.
 - You now only get patch notes notifications
 once.
 - New world boss is now in progress
-- Disabled Varenglade dungeon.
+- Re-enabled Varenglade dungeon.
 
 &4Bug Fixes&0
 - DPS is now fixed.

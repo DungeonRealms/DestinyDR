@@ -53,6 +53,9 @@ public class DungeonManager implements GenericMechanic {
 
     private CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
     public static volatile ConcurrentHashMap<String, HashMap<Location, String>> instance_mob_spawns = new ConcurrentHashMap<>();
+
+    public Map<UUID, Location> TRACKED_SPAWNS = new WeakHashMap<>();
+
     @Getter
     private ConcurrentHashMap<String, Integer> players_Entering_Dungeon = new ConcurrentHashMap<>();
     @Getter
@@ -93,17 +96,21 @@ public class DungeonManager implements GenericMechanic {
             e.printStackTrace();
         }
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (Map.Entry<String, Integer> entry : players_Entering_Dungeon.entrySet()) {
-                if (entry.getValue() > 1) {
-                    players_Entering_Dungeon.put(entry.getKey(), (entry.getValue() - 1));
-                } else {
-                    players_Entering_Dungeon.remove(entry.getKey());
-                }
-            }
+            for (Map.Entry<String, Integer> entry : players_Entering_Dungeon.entrySet())
+                if (entry.getValue() > 1) players_Entering_Dungeon.put(entry.getKey(), (entry.getValue() - 1));
+                else players_Entering_Dungeon.remove(entry.getKey());
         }, 100L, 20L);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.forEach(dungeon -> dungeon.aliveMonsters.forEach(mob -> {
             if (mob != null) {
+                if (mob.locY < 90 && dungeon.getType().equals(DungeonType.THE_INFERNAL_ABYSS))
+
+                    if (TRACKED_SPAWNS.containsKey(mob.getUniqueID())) {
+                        Location location = TRACKED_SPAWNS.get(mob.getUniqueID());
+                        mob.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        System.out.println("test");
+                    }
+
                 if (!mob.isAlive() || mob.dead) {
                     dungeon.aliveMonsters.remove(mob);
                     dungeon.killed = dungeon.killed + 1;
@@ -147,12 +154,10 @@ public class DungeonManager implements GenericMechanic {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.forEach(dungeonObject -> {
             if (dungeonObject.getTime() > 10) {
                 if (dungeonObject.getType() == DungeonType.THE_INFERNAL_ABYSS) {
-                    for (Player player : Bukkit.getWorld(dungeonObject.worldName).getPlayers()) {
-                        if (player.hasPotionEffect(PotionEffectType.WITHER)) {
-                            player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType() == PotionEffectType.WITHER).filter(potionEffect ->
-                                    !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1));
-                        }
-                    }
+                    Bukkit.getWorld(dungeonObject.worldName).getPlayers().stream().filter(player -> player.hasPotionEffect(PotionEffectType.WITHER)).forEach(player -> {
+                        player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType() == PotionEffectType.WITHER).filter(potionEffect ->
+                                !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1));
+                    });
                 }
             }
 
@@ -336,6 +341,7 @@ public class DungeonManager implements GenericMechanic {
                             player.getInventory().remove(stack);
                 }
         });
+
         Bukkit.getWorlds().remove(Bukkit.getWorld(dungeonObject.getWorldName()));
         Utils.log.info("[DUNGEONS] Removing world: " + dungeonObject.getWorldName() + " from worldList().");
         Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
@@ -594,6 +600,7 @@ public class DungeonManager implements GenericMechanic {
         }
     }
 
+
     /**
      * Loads the nonExistent world and teleports all players to the
      * spawnLocation of that world.
@@ -648,6 +655,7 @@ public class DungeonManager implements GenericMechanic {
                             final Entity entity = entry.getKey();
                             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                            TRACKED_SPAWNS.put(entity.getUniqueID(), location);
                             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                             entity.setCustomNameVisible(true);
                             if (entity.isAlive()) {
@@ -744,6 +752,7 @@ public class DungeonManager implements GenericMechanic {
 
     private void deleteFolder(File folder) {
         try {
+            if (folder == null) return;
             FileUtils.forceDelete(folder);
         } catch (IOException e) {
             e.printStackTrace();
