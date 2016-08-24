@@ -175,7 +175,7 @@ public class MainListener implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
-            if (shard != "" && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
+            if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
                 event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
 
                         + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
