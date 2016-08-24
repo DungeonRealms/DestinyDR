@@ -27,12 +27,6 @@ public class CommandPChat extends BaseCommand {
         Player player = (Player) s;
 
         if (Affair.getInstance().isInParty(player)) {
-
-            if (args.length == 0) {
-
-                return true;
-            }
-
             if (args.length > 0) {
                 StringBuilder message = new StringBuilder();
 
@@ -44,7 +38,6 @@ public class CommandPChat extends BaseCommand {
             } else {
                 Affair.getInstance().togglePartyChat(player);
             }
-
         } else {
             player.sendMessage(ChatColor.RED + "You are not in a party!");
         }
