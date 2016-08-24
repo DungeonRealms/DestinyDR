@@ -350,7 +350,7 @@ public class RealmListener implements Listener {
         if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
-        if (!p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString())) {
+        if (!p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString()) && !Rank.isGM(p)) {
             // Trying to use in a realm that isn't theirs.
             if (tag.getString("orb").equalsIgnoreCase("flight"))
                 p.sendMessage(ChatColor.RED + "You may only use an " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED + " in your OWN realm.");

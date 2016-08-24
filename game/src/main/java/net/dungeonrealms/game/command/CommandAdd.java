@@ -215,7 +215,17 @@ public class CommandAdd extends BaseCommand {
                     Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getEquipment().getItemInMainHand())));
                     break;
                 case "orb":
+                case "orb_of_alteration":
                     player.getInventory().addItem(ItemManager.createOrbofAlteration());
+                    break;
+                case "orb_of_peace":
+                    player.getInventory().addItem(ItemManager.createOrbofPeace());
+                    break;
+                case "orb_of_flight":
+                    player.getInventory().addItem(ItemManager.createOrbofFlight());
+                    break;
+                case "global_messenger":
+                    player.getInventory().addItem(ItemManager.createGlobalMessenger());
                     break;
                 case "buff":
                     BuffUtils.spawnBuff(player.getUniqueId());
