@@ -323,6 +323,8 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     public void removeInstance(DungeonObject dungeonObject) {
+        if (CrashDetector.crashDetected) return;
+
         Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
             if (player != null) if (Bukkit.getPlayer(player.getUniqueId()) != null)
                 if (GameAPI.getGamePlayer(player) != null) if (GameAPI.getGamePlayer(player).isInDungeon()) {
