@@ -150,10 +150,13 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             lore.add(ChatColor.WHITE + "character onto this shard.");
             lore.add(" ");
 
-            if (info.getMotd1().contains(","))
-                lore.add(ChatColor.GRAY + "Load: " + info.getMotd1().split(",")[1].replace("}", "").replace("\"", ""));
+            String[] data = info.getMotd1().replace("}", "").replace("\"", "").split(",");
+            lore.add(ChatColor.GRAY + "Load: " + data[1]);
 
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
+
+            if (data.length >= 3)
+                lore.add(ChatColor.GRAY + "Build: " + ChatColor.GOLD + data[2]);
 
             button.setDisplayName(getShardColour(shardID) + ChatColor.BOLD.toString() + shardID);
             button.setLore(lore);

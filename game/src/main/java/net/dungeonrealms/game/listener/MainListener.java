@@ -3,6 +3,7 @@ package net.dungeonrealms.game.listener;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
@@ -136,7 +137,8 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPing(ServerListPingEvent event) {
         if (!DungeonRealms.getInstance().canAcceptPlayers()) event.setMotd("offline");
-        else event.setMotd(DungeonRealms.getInstance().shardid + "," + GameAPI.getServerLoad());
+        else
+            event.setMotd(DungeonRealms.getInstance().shardid + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER);
     }
 
     /**
