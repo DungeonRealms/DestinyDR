@@ -391,7 +391,8 @@ public class GameAPI {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                Runtime.getRuntime().exit(1);
+                Constants.log.info("Force killing server thread...");
+                Runtime.getRuntime().exit(-1);
             }
         }, restartTime);
 
@@ -1237,16 +1238,6 @@ public class GameAPI {
                 }
             }, 100);
         }
-
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            final JSONMessage normal = new JSONMessage(ChatColor.YELLOW + "*" + ChatColor.GOLD + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
-            normal.addRunCommand(ChatColor.YELLOW.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
-            normal.addText(ChatColor.YELLOW + "*");
-            normal.sendToPlayer(player);
-
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
-        }, 150);
-
 
         if (Rank.isGM(player)) {
             HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);

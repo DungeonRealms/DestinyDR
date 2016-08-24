@@ -1,22 +1,13 @@
 package net.dungeonrealms.game.command.party;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.affair.Affair;
-import net.dungeonrealms.game.affair.party.Party;
-import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.chat.GameChat;
-import net.dungeonrealms.game.player.json.JSONMessage;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +28,11 @@ public class CommandPChat extends BaseCommand {
 
         if (Affair.getInstance().isInParty(player)) {
 
+            if (args.length == 0) {
+
+                return true;
+            }
+
             if (args.length > 0) {
                 StringBuilder message = new StringBuilder();
 
@@ -44,47 +40,9 @@ public class CommandPChat extends BaseCommand {
                     message.append(rw).append(" ");
                 }
 
-                Party party = Affair.getInstance().getParty(player).get();
-
-                List<Player> everyone = new ArrayList<>();
-                {
-                    everyone.add(party.getOwner());
-                    everyone.addAll(party.getMembers());
-                }
-                String finalChat = Chat.getInstance().checkForBannedWords(message.toString());
-
-
-                if (finalChat.contains("@i@") && player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    String[] split = finalChat.split("@i@");
-                    String after = "";
-                    String before = "";
-                    if (split.length > 0)
-                        before = split[0];
-                    if (split.length > 1)
-                        after = split[1];
-
-
-                    ItemStack stack = player.getInventory().getItemInMainHand();
-
-                    List<String> hoveredChat = new ArrayList<>();
-                    ItemMeta meta = stack.getItemMeta();
-                    hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
-                    if (meta.hasLore())
-                        hoveredChat.addAll(meta.getLore());
-                    String prefix = ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + ChatColor.GRAY + ": ";
-                    final JSONMessage normal = new JSONMessage(prefix, org.bukkit.ChatColor.WHITE);
-                    normal.addText(before + "");
-                    normal.addHoverText(hoveredChat, org.bukkit.ChatColor.BOLD + org.bukkit.ChatColor.UNDERLINE.toString() + "SHOW");
-                    normal.addText(after);
-                    everyone.forEach(normal::sendToPlayer);
-                    return true;
-                }
-
-
-
-                everyone.forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + ChatColor.GRAY + ": " + message.toString()));
+                Affair.getInstance().sendPartyChat(player, message.toString());
             } else {
-                player.sendMessage(ChatColor.RED + "Unfinished"); // @todo: toggle <P> chat!
+                Affair.getInstance().togglePartyChat(player);
             }
 
         } else {

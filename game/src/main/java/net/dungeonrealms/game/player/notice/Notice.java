@@ -1,13 +1,16 @@
 package net.dungeonrealms.game.player.notice;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.MailHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -50,9 +53,27 @@ public class Notice {
         if (mailbox.size() > 0)
             MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail!");
 
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            executeVoteReminder(player);
-        }, 300);
+        String lastViewedBuild = (String) DatabaseAPI.getInstance().getData(EnumData.LAST_BUILD, player.getUniqueId());
+
+        if (lastViewedBuild == null || !lastViewedBuild.equals(Constants.BUILD_NUMBER))
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeBuildNotice(player), 150);
+
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeVoteReminder(player), 300);
+    }
+
+    private void executeBuildNotice(Player p) {
+        final JSONMessage normal = new JSONMessage(" " + ChatColor.YELLOW + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
+        normal.addRunCommand(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
+        normal.addText(" ");
+
+        p.sendMessage(" ");
+        normal.sendToPlayer(p);
+        p.sendMessage(" ");
+
+        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
+
+        // UPDATE LAST VIEWED BUILD NUMBER //
+        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LAST_BUILD, Constants.BUILD_NUMBER, true);
     }
 
     private void executeVoteReminder(Player p) {

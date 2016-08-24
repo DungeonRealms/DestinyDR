@@ -6,6 +6,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.tab.Column;
 import net.dungeonrealms.game.world.item.Item;
 import org.bukkit.ChatColor;
@@ -72,7 +73,7 @@ public class CharacterTabColumn extends Column {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
 
-                        return String.valueOf(Math.round(gp.getStats().getDPS()));
+                        return String.valueOf(Utils.round(gp.getStats().getDPS(), 3));
                     }
                 },
                 new Variable("alignment") {

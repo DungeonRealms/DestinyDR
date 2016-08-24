@@ -161,6 +161,7 @@ public class MainListener implements Listener {
         }
 
         Chat.getInstance().doChat(event);
+        Affair.getInstance().doChat(event);
         GuildMechanics.getInstance().doChat(event);
         Chat.getInstance().doLocalChat(event);
     }
@@ -169,7 +170,6 @@ public class MainListener implements Listener {
     public void worldInit(org.bukkit.event.world.WorldInitEvent e) {
         e.getWorld().setKeepSpawnInMemory(false);
     }
-
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {

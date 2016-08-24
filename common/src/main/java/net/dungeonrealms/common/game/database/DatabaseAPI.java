@@ -497,8 +497,9 @@ public class DatabaseAPI {
                         .append("notices",
                                 new Document("guildInvitation", null)
                                         .append("friendRequest", new ArrayList<String>())
-                                        .append("mailbox", new ArrayList<String>()))
-                        .append("lastVote", 0L)
+                                        .append("mailbox", new ArrayList<String>())
+                                        .append("lastBuild", "")
+                                        .append("lastVote", 0L))
                         .append("rank",
                                 new Document("expiration_date", 0)
                                         .append("rank", "DEFAULT"))

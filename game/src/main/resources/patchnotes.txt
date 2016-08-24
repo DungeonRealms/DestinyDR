@@ -1,10 +1,16 @@
 Build <build>
 
+&2New Features&0
+- You can now toggle party chat
+
 &8Changes&0
+- You now only get patch notes notifications
+once.
 - New world boss is now in progress
 - Disabled Varenglade dungeon.
 
 &4Bug Fixes&0
+- DPS is now fixed.
 - Fixed lag spikes game is now much
 faster
 - Fix falling off realm glitching

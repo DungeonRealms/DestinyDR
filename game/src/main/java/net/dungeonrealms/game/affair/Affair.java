@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.affair;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -10,10 +12,17 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -22,6 +31,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -43,6 +53,9 @@ public class Affair implements GenericMechanic {
     public EnumPriority startPriority() {
         return EnumPriority.CATHOLICS;
     }
+
+    @Getter
+    private final List<UUID> PARTY_CHAT = new ArrayList<>();
 
     public CopyOnWriteArrayList<Party> _parties = new CopyOnWriteArrayList<>();
     public static ConcurrentHashMap<Player, Party> _invitations = new ConcurrentHashMap<>();
@@ -90,6 +103,68 @@ public class Affair implements GenericMechanic {
             }
 
         }), 0, 15);
+    }
+
+    public void doChat(AsyncPlayerChatEvent event) {
+        if (event.isCancelled()) return;
+
+        Player player = event.getPlayer();
+        String message = event.getMessage();
+
+        if (PARTY_CHAT.contains(player.getUniqueId())) {
+            sendPartyChat(player, message);
+            event.setCancelled(true);
+        }
+    }
+
+    public void sendPartyChat(Player player, String message) {
+        Party party = Affair.getInstance().getParty(player).get();
+
+        List<Player> everyone = new ArrayList<>();
+        {
+            everyone.add(party.getOwner());
+            everyone.addAll(party.getMembers());
+        }
+        String finalChat = Chat.getInstance().checkForBannedWords(message);
+
+        if (finalChat.contains("@i@") && player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
+            String[] split = finalChat.split("@i@");
+            String after = "";
+            String before = "";
+            if (split.length > 0)
+                before = split[0];
+            if (split.length > 1)
+                after = split[1];
+
+
+            ItemStack stack = player.getInventory().getItemInMainHand();
+
+            List<String> hoveredChat = new ArrayList<>();
+            ItemMeta meta = stack.getItemMeta();
+            hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
+            if (meta.hasLore())
+                hoveredChat.addAll(meta.getLore());
+            String prefix = net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + "<" + net.md_5.bungee.api.ChatColor.BOLD + "P" + net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + "> " + net.md_5.bungee.api.ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + net.md_5.bungee.api.ChatColor.GRAY + ": ";
+            final JSONMessage normal = new JSONMessage(prefix, org.bukkit.ChatColor.WHITE);
+            normal.addText(before + "");
+            normal.addHoverText(hoveredChat, org.bukkit.ChatColor.BOLD + org.bukkit.ChatColor.UNDERLINE.toString() + "SHOW");
+            normal.addText(after);
+            everyone.forEach(normal::sendToPlayer);
+            return;
+        }
+        everyone.forEach(player1 -> player1.sendMessage(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + "<" + net.md_5.bungee.api.ChatColor.BOLD + "P" + net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + "> " + net.md_5.bungee.api.ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + net.md_5.bungee.api.ChatColor.GRAY + ": " + message.toString()));
+
+    }
+
+    public void togglePartyChat(Player player) {
+        if (PARTY_CHAT.contains(player.getUniqueId())) {
+            PARTY_CHAT.remove(player.getUniqueId());
+            player.sendMessage(ChatColor.GRAY + "Messages will now be default sent to local chat.");
+        } else {
+            PARTY_CHAT.add(player.getUniqueId());
+            player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to party chat. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
+            player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/p" + ChatColor.GRAY + " again.");
+        }
     }
 
     public void invitePlayer(Player inviting, Player invitor) {
