@@ -11,6 +11,7 @@ once.
 - Re-enabled Varenglade dungeon.
 
 &4Bug Fixes&0
+- Fixed non existent game player
 - DPS is now fixed.
 - Fixed lag spikes game is now much
 faster

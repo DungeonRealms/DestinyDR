@@ -814,14 +814,20 @@ public class DamageListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void onEntityHurtByNonCombat(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")))
+    public void onMiscDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player)
             return;
 
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
             event.getEntity().remove();
             return;
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    public void onEntityHurtByNonCombat(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player) && !(event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")))
+            return;
 
         if (event.getDamage() <= 0) return;
         if (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.CUSTOM)

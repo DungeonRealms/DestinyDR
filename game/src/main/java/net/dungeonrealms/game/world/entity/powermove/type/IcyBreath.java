@@ -26,8 +26,10 @@ public class IcyBreath extends PowerMove {
 
         Random random = new Random();
 
+        float angle = entity.getEyeLocation().getYaw() / 60;
+
         for (int i = 0; i < random.nextInt(6) + 1; i++) {
-            FallingBlock ice = entity.getWorld().spawnFallingBlock(entity.getLocation(), Material.FROSTED_ICE, (byte) 0);
+            FallingBlock ice = entity.getWorld().spawnFallingBlock(entity.getEyeLocation().add(Math.cos(angle) * -0.50, -1.07, Math.sin(angle) * -0.50), Material.FROSTED_ICE, (byte) 0);
             ice.setVelocity(vector);
         }
     }
