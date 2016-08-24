@@ -368,7 +368,7 @@ public class DatabaseAPI {
         boolean isOnline = (boolean) getInstance().getData(EnumData.IS_PLAYING, uuid);
         if (!isOnline) return "None";
         ShardInfo shard = ShardInfo.getByPseudoName((String) getData(EnumData.CURRENTSERVER, uuid));
-        return shard != null ? shard.getShardID() : "None";
+        return shard != null ? shard.getShardID() : "";
     }
 
     public String getOfflineName(UUID uuid) {
