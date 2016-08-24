@@ -72,7 +72,7 @@ public class CharacterTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf((gp.getStats().getDPS() < 0 ? Utils.round(gp.getStats().getDPS(), 3) : Math.round(gp.getStats().getDPS())));
+                        return String.valueOf((gp.getStats().getDPS() < 1 ? Utils.round(gp.getStats().getDPS(), 3) : Math.round(gp.getStats().getDPS())));
                     }
                 },
                 new Variable("alignment") {
