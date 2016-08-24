@@ -4,6 +4,7 @@ Build <build>
 - You can now toggle party chat
 
 &8Changes&0
+- Fixed not being able to move in dungeons.
 - Re-enabled The Infernal Abyss dungeon.
 - You now only get patch notes notifications
 once.

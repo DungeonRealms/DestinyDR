@@ -431,14 +431,12 @@ public class RealmListener implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
-
+        RealmToken realm = REALMS.getToken(event.getPlayer().getLocation().getWorld());
+        if (realm == null) return;
         Player p = event.getPlayer();
 
         Location to = event.getTo().clone();
         if (event.getTo().getY() <= 0) {
-            RealmToken realm = REALMS.getToken(p.getLocation().getWorld());
-            if (realm == null) return;
 
             p.teleport(realm.getPortalLocation().clone().add(0, 1, 0));
             return;
