@@ -306,6 +306,12 @@ public class MainListener implements Listener {
         GameAPI.handleLogout(event.getPlayer().getUniqueId(), true, null);
     }
 
+    @EventHandler
+    public void onLogin(PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && Rank.isSubscriber(event.getPlayer()))
+            event.allow();
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);

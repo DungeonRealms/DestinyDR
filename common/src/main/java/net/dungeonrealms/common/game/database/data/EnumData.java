@@ -72,6 +72,7 @@ public enum EnumData {
 
     MOUNTS("collectibles.mounts"),
     PETS("collectibles.pets"),
+    BUFFS("collectibles.buffs"),
     PARTICLES("collectibles.particles"),
     MOUNT_SKINS("collectibles.mountskins"),
 
