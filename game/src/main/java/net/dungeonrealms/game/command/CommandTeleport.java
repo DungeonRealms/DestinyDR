@@ -39,8 +39,14 @@ public class CommandTeleport extends BaseCommand {
                 { "Bandit Trove", "-978 60 745" },
                 { "Infernal Abyss", "-280 25 -478" },
                 { "Cop'jak", "-80 100 1270" },
-                { "Kilatan", "-400 40 3480" },
-                { "Blayshan", "-280 85 200" },
+                { "Kilatan", "-400 40 -3480" },
+                { "Blayshan", "-280 85 -200" },
+                { "Maltai", "-1440 60 1290" },
+                { "Throne Room", "-1565 75 1312" },
+                { "Lord Taylor", "-1040 120 1260" },
+                { "Mure", "-1240 90 200" },
+                { "Skullneck", "600 90 890" },
+                { "Crystal Peaks Tower", "980 90 910" },
                // { "-", "0 0 0" },
         };
 
