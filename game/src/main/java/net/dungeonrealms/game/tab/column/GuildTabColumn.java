@@ -72,7 +72,7 @@ public class GuildTabColumn extends Column {
                                 String prefix = "";
 
                                 if (GuildDatabaseAPI.get().isOwner(uuid, guild))
-                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Owner" + ChatColor.GRAY + "] ";
+                                    prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "♛" + ChatColor.GRAY + "] ";
                                 else if (GuildDatabaseAPI.get().isOfficer(uuid, guild))
                                     prefix += ChatColor.GRAY + "[" + ChatColor.DARK_AQUA + "Officer" + ChatColor.GRAY + "] ";
 

@@ -51,7 +51,7 @@ public class Notice {
         ArrayList<String> mailbox = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, player.getUniqueId());
 
         if (mailbox.size() > 0)
-            MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail!");
+            MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + " ✉ You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail! ✉ ");
 
         String lastViewedBuild = (String) DatabaseAPI.getInstance().getData(EnumData.LAST_BUILD, player.getUniqueId());
 
@@ -62,9 +62,9 @@ public class Notice {
     }
 
     private void executeBuildNotice(Player p) {
-        final JSONMessage normal = new JSONMessage(" " + ChatColor.YELLOW + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
+        final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " ❢ " + ChatColor.YELLOW + "Patch notes available for Build " + Constants.BUILD_NUMBER + " " + ChatColor.GRAY + "View notes ", ChatColor.WHITE);
         normal.addRunCommand(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/patch");
-        normal.addText(" ");
+        normal.addText(ChatColor.GOLD + " ❢ ");
 
         p.sendMessage(" ");
         normal.sendToPlayer(p);
