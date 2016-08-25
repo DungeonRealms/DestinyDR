@@ -9,8 +9,6 @@ import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import java.util.ArrayList;
-
 /**
  * Created by Alan on 7/28/2016.
  */
@@ -46,7 +44,7 @@ public class ProfessionBuff extends Buff {
         final ProfessionBuff nextBuff = de.getQueuedProfessionBuffs().poll();
 
         Bukkit.broadcastMessage(ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + ChatColor.GOLD + "The " + ChatColor.UNDERLINE
-                + "+20% Global Profession Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
+                + "+" + bonusAmount + "% Global Profession Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
             DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
