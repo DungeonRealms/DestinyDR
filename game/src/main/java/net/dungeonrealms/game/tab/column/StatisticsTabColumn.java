@@ -6,6 +6,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.tab.Column;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,13 +23,13 @@ public class StatisticsTabColumn extends Column {
                 new Variable("gems") {
                     @Override
                     public String getReplacement(Player player) {
-                        return String.valueOf(DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()));
+                        return Utils.format((Integer) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()));
                     }
                 },
                 new Variable("ecash") {
                     @Override
                     public String getReplacement(Player player) {
-                        return String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ECASH, player.getUniqueId()));
+                        return Utils.format((Integer) DatabaseAPI.getInstance().getData(EnumData.ECASH, player.getUniqueId()));
                     }
                 },
                 new Variable("pk") {
@@ -36,7 +37,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getPlayerKills());
+                        return Utils.format(gp.getPlayerStatistics().getPlayerKills());
                     }
                 },
                 new Variable("t1") {
@@ -44,7 +45,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getT1MobsKilled());
+                        return Utils.format(gp.getPlayerStatistics().getT1MobsKilled());
                     }
                 },
                 new Variable("t2") {
@@ -52,7 +53,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getT2MobsKilled());
+                        return Utils.format(gp.getPlayerStatistics().getT2MobsKilled());
                     }
                 },
                 new Variable("t3") {
@@ -60,7 +61,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getT3MobsKilled());
+                        return Utils.format(gp.getPlayerStatistics().getT3MobsKilled());
                     }
                 },
                 new Variable("t4") {
@@ -68,7 +69,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getT4MobsKilled());
+                        return Utils.format(gp.getPlayerStatistics().getT4MobsKilled());
                     }
                 },
                 new Variable("t5") {
@@ -76,7 +77,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getT5MobsKilled());
+                        return Utils.format(gp.getPlayerStatistics().getT5MobsKilled());
                     }
                 },
                 new Variable("deaths") {
@@ -84,7 +85,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getDeaths());
+                        return Utils.format(gp.getPlayerStatistics().getDeaths());
                     }
                 },
                 new Variable("played") {
@@ -102,7 +103,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getLootChestsOpened());
+                        return Utils.format(gp.getPlayerStatistics().getLootChestsOpened());
                     }
                 }
                 ,
@@ -111,7 +112,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getOreMined());
+                        return Utils.format(gp.getPlayerStatistics().getOreMined());
                     }
                 }
                 ,
@@ -120,7 +121,7 @@ public class StatisticsTabColumn extends Column {
                     public String getReplacement(Player player) {
                         GamePlayer gp = GameAPI.getGamePlayer(player);
                         if (gp == null) return null;
-                        return String.valueOf(gp.getPlayerStatistics().getFishCaught());
+                        return Utils.format(gp.getPlayerStatistics().getFishCaught());
                     }
                 }
         ));
