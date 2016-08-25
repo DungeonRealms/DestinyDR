@@ -285,7 +285,7 @@ public class PlayerStats {
 
     //TODO INCORPORATE IN GAME
     public String getDPS() {
-        return df.format(dexPoints * 0.017);
+        return df.format(dexPoints * 0.03);
     }
 
     public double getDodge() {
