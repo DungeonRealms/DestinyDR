@@ -3,6 +3,7 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -22,7 +23,7 @@ public class CommandList extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender commandSender, Command cmd, String string, String[] args) {
 
-        if (commandSender instanceof ConsoleCommandSender || !Rank.isGM((Player) commandSender))
+        if (commandSender instanceof Player && !Rank.isGM((Player) commandSender))
             return false;
 
         if (args.length > 0 && (args[0].equals("-h") || args[0].equals("-help"))) {
@@ -48,6 +49,7 @@ public class CommandList extends BaseCommand {
         }
 
         int onlinePlayers = 0; // Use an int that increments so we can refine the search.
+        final JSONMessage message = new JSONMessage("", ChatColor.GREEN);
         for (Player player : Bukkit.getOnlinePlayers()) {
             // Searching for staff but player isn't staff, skip...
             if (staffOnly && !Rank.isPMOD(player)) continue;
@@ -55,18 +57,23 @@ public class CommandList extends BaseCommand {
             if (pmodsOnly && !Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("pmod")) continue;
 
             onlinePlayers++;
-            if (players.length() > 0) {
-                players.append(ChatColor.AQUA).append(", ").append(ChatColor.GOLD);
-            }
 
             // Format player name + rank properly.
             String playerName = GameChat.getPreMessage(player);
-            players.append(playerName.substring(0, playerName.length() - 4));
+            playerName = playerName.substring(0, playerName.length() - 4);
+
+            message.addRunCommand(ChatColor.GRAY + "[" + playerName + ChatColor.GRAY + "]" + (onlinePlayers % 4 == 0 ? "\n" : " "), ChatColor.GRAY, "/tp " + player.getDisplayName());
+            players.append(playerName);
         }
 
         if (players.length() > 0) {
             commandSender.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + searchName + " Online: " + ChatColor.LIGHT_PURPLE + onlinePlayers + ChatColor.GRAY + "/" + ChatColor.LIGHT_PURPLE + Bukkit.getMaxPlayers());
-            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + players.toString() + ChatColor.GRAY + "]");
+            // If the user is a player we want to send the JSONMessage to them so that they can use the added teleport functionality.
+            if ((commandSender instanceof Player) && Rank.isGM((Player) commandSender)) {
+                message.sendToPlayer((Player) commandSender);
+            } else {
+                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + players.toString() + ChatColor.GRAY + "]");
+            }
         } else {
             commandSender.sendMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "No " + searchName.toLowerCase() + " online.");
         }
