@@ -956,7 +956,7 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
 
         // Hide invisible users from non-GMs.
-        if (!Rank.isGM(player)) GameAPI._hiddenPlayers.forEach(p -> player.hidePlayer(p));
+        if (!Rank.isGM(player)) GameAPI._hiddenPlayers.forEach(player::hidePlayer);
 
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.
@@ -1029,7 +1029,7 @@ public class GameAPI {
              /*PLAYER IS NEW*/
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7Welcome &6" + player.getName() + " &7to &6Dungeon Realms&7."));
             ItemManager.giveStarter(player);
-            player.teleport(new Location(Bukkit.getWorlds().get(0), -405 + .5, 84 + 1.5, 376 + .5, 90F, -3.8F));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });
