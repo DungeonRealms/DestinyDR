@@ -77,6 +77,13 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
 
                     Cooldown.addCooldown(player.getUniqueId(), 1000L);
 
+                    if (info.getOnlinePlayers() >= info.getMaxPlayers() && !Rank.isSubscriber(player)) {
+                        player.sendMessage(new String[]{
+                                ChatColor.RED + "This shard is " + ChatColor.BOLD + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " for normal users!",
+                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://shop.dungeonrealms.net" + ChatColor.RED + " to bypass this."
+                        });
+                    }
+
                     if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
                         player.sendMessage(new String[]{
                                 ChatColor.RED + "This is a " + ChatColor.BOLD + ChatColor.UNDERLINE + "SUBSCRIBER ONLY" + ChatColor.RED + " shard!",
