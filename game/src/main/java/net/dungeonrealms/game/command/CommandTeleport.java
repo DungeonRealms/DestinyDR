@@ -47,6 +47,7 @@ public class CommandTeleport extends BaseCommand {
                 { "Mure", "-1240 90 200" },
                 { "Skullneck", "600 90 890" },
                 { "Crystal Peaks Tower", "980 90 910" },
+                { "Crest Watch", "-522 60 -420" },
                // { "-", "0 0 0" },
         };
 
