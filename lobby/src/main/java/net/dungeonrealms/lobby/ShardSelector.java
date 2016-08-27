@@ -57,6 +57,12 @@ public class ShardSelector extends AbstractMenu {
                     Player player = event.getWhoClicked();
                     player.closeInventory();
 
+                    if (info.getOnlinePlayers() >= info.getMaxPlayers() && !Rank.isSubscriber(player)) {
+                        player.sendMessage(new String[]{
+                                ChatColor.RED + "This shard is " + ChatColor.BOLD + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " for normal users!",
+                                ChatColor.RED + "You can subscribe at: " + ChatColor.UNDERLINE + "http://shop.dungeonrealms.net" + ChatColor.RED + " to bypass this."
+                        });
+                    }
 
                     if (shardID.contains("SUB") && !Rank.isSubscriber(player)) {
                         player.sendMessage(new String[]{
@@ -166,7 +172,7 @@ public class ShardSelector extends AbstractMenu {
             if (ShardInfo.getByPseudoName(bungeeName) == null) continue;
             BungeeServerInfo info = e.getValue();
 
-            if (!info.isOnline() || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().contains("offline"))
+            if (!info.isOnline() || info.getMotd1().contains("offline"))
                 continue;
 
             filteredServers.put(bungeeName, info);

@@ -53,11 +53,12 @@ public class NetworkClientListener extends Listener {
 
                 if (task.equals("MoveSessionToken")) {
                     UUID uuid = UUID.fromString(in.readUTF());
+                    Boolean sub = Boolean.valueOf(in.readUTF());
 
                     getProxy().getScheduler().runAsync(DungeonRealmsProxy.getInstance(), () -> {
                         ProxiedPlayer player = getProxy().getPlayer(uuid);
 
-                        Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
+                        Iterator<ServerInfo> optimalShardFinder = getOptimalShards(sub).iterator();
                         while (optimalShardFinder.hasNext()) {
                             ServerInfo target = optimalShardFinder.next();
 
@@ -121,7 +122,7 @@ public class NetworkClientListener extends Listener {
     }
 
 
-    public List<ServerInfo> getOptimalShards() {
+    public List<ServerInfo> getOptimalShards(boolean isSub) {
         List<ServerInfo> servers = new ArrayList<>();
 
         for (ShardInfo shardInfo : ShardInfo.values()) {
@@ -129,7 +130,7 @@ public class NetworkClientListener extends Listener {
             // They are free to join another shard once connected.
 
             String name = shardInfo.getPseudoName();
-            if (name.startsWith("us") && !name.equalsIgnoreCase("us0"))
+            if ((name.startsWith("us") && !name.equalsIgnoreCase("us0")) || (isSub && name.startsWith("sub")))
                 servers.add(getProxy().getServerInfo(name));
         }
 

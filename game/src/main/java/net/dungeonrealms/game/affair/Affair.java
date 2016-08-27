@@ -118,7 +118,14 @@ public class Affair implements GenericMechanic {
     }
 
     public void sendPartyChat(Player player, String message) {
-        Party party = Affair.getInstance().getParty(player).get();
+        Optional<Party> partyOptional = Affair.getInstance().getParty(player);
+
+        if (!partyOptional.isPresent()) {
+            player.sendMessage(ChatColor.RED + "You are no longer in a party");
+            return;
+        }
+
+        Party party = partyOptional.get();
 
         List<Player> everyone = new ArrayList<>();
         {
@@ -203,9 +210,9 @@ public class Affair implements GenericMechanic {
     }
 
     public void removeMember(Player player, boolean kicked) {
-        if (!getParty(player).isPresent()) {
-            return;
-        }
+        if (!getParty(player).isPresent()) return;
+
+        if (PARTY_CHAT.contains(player.getUniqueId())) PARTY_CHAT.remove(player.getUniqueId());
 
         if (isOwner(player)) {
             removeParty(getParty(player).get());

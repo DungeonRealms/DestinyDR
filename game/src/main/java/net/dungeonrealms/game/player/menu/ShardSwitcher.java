@@ -132,7 +132,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                                 return;
                             }
 
-                            player.sendMessage(ChatColor.RED + "Transferring your character data ... " + net.md_5.bungee.api.ChatColor.BOLD + taskTimer[0] + "s");
+                            player.sendMessage(ChatColor.RED + "Commencing shard transfer... " + net.md_5.bungee.api.ChatColor.BOLD + taskTimer[0] + "s");
                             taskTimer[0]--;
 
                             if (taskTimer[0] == 0) {
@@ -247,7 +247,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
 
-            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().contains("offline"))
+            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getMotd1().contains("offline"))
                 continue;
 
             filteredServers.put(bungeeName, info);

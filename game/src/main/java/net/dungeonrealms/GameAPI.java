@@ -124,7 +124,7 @@ public class GameAPI {
         private Player player;
 
         PlayerLogoutWatchdog(Player player) {
-            this.runTaskLater(DungeonRealms.getInstance(), 8 * 20);
+            this.runTaskLater(DungeonRealms.getInstance(), 12 * 20);
             this.player = player;
         }
 
@@ -878,14 +878,16 @@ public class GameAPI {
                 gp.setAbleToSuicide(false);
                 gp.setAbleToDrop(false);
 
+                final boolean sub = Rank.isSubscriber(player);
+
                 // upload data and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
                     if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                    GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString());
+                    GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString(), String.valueOf(sub));
                 });
 
-            }, (i + 1) * 4);
+            }, (i + 1) * 5);
         }
     }
 
@@ -1290,13 +1292,13 @@ public class GameAPI {
         gp.setAbleToSuicide(false);
         gp.setAbleToDrop(false);
 
+        // check if they're still here (server failed to accept them for some reason)
+        new PlayerLogoutWatchdog(player);
+
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true,
                 doAfter -> GameAPI.handleLogout(player.getUniqueId(), true,
                         consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName))
         );
-
-        // check if they're still here (server failed to accept them for some reason)
-        new PlayerLogoutWatchdog(player);
     }
 
     static void backupDatabase() {
