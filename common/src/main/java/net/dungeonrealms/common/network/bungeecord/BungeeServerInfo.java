@@ -47,6 +47,13 @@ public class BungeeServerInfo {
         }
     }
 
+    public List<PlayerToken> getPlayers() {
+        if ((System.currentTimeMillis() - lastRequest) >= 120000L)
+            return null;
+        return players;
+    }
+
+
     public void updateLastRequest() {
         this.lastRequest = System.currentTimeMillis();
     }

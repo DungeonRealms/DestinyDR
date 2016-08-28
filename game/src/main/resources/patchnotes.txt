@@ -1,17 +1,20 @@
 Build <build>
 
 &2New Features&0
-- All subscribers now have PARTICLES
-and PETS unlocked while they are subscribed
-- You can now toggle party chat
+&4- All subscribers now have PARTICLES
+&4and PETS unlocked while they are subscribed
+&0- You can now toggle party chat
 
 &8Changes&0
+- The Infernal Abyss dungeon is
+temporarily disabled
 - Player slots have been reduced
 buy subscriber to bypass this.
-- Re-enabled The Infernal Abyss dungeon.
 
 &4Bug Fixes&0
 - Fixed rare crashes
+- Fixed players in tab staying when
+server goes offline
 - Fixed non existent game player
 - Fixed lag spikes game is now much
 faster

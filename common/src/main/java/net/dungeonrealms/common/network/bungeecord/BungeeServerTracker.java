@@ -51,7 +51,7 @@ public class BungeeServerTracker {
                 }
         }
 
-        if(token == null) return Optional.empty();
+        if (token == null) return Optional.empty();
         return Optional.of(new Tuple<>(token, shard));
     }
 
@@ -112,6 +112,7 @@ public class BungeeServerTracker {
                     serverInfo.setOnlinePlayers(data.getPlayers().getOnline());
                     serverInfo.setMaxPlayers(data.getPlayers().getMax());
                     serverInfo.setMotd(data.getDescription().getText());
+                    serverInfo.updateLastRequest();
                 } else {
                     serverInfo.setOnline(false);
                     serverInfo.setOnlinePlayers(0);

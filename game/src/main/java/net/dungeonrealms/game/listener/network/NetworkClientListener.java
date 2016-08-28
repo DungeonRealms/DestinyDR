@@ -10,6 +10,7 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.donation.DonationEffects;
@@ -84,8 +85,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
             ShardInfo target = packet.target;
             PlayerToken[] tokens = packet.tokens;
 
-            BungeeServerTracker.getOrCreateServerInfo(target.getPseudoName())
-                    .setPlayers(Arrays.asList(tokens));
+            BungeeServerInfo info = BungeeServerTracker.getOrCreateServerInfo(target.getPseudoName());
+            info.setPlayers(Arrays.asList(tokens));
+            info.updateLastRequest();
+
         } else if (object instanceof BasicMessagePacket) {
             BasicMessagePacket packet = (BasicMessagePacket) object;
 

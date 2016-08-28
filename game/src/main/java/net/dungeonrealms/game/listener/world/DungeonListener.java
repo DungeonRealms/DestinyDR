@@ -254,6 +254,11 @@ public class DungeonListener implements Listener {
                 return;
             }
 
+            if (dungeonName.equalsIgnoreCase("fireydungeon")) {
+                player.sendMessage(ChatColor.RED + "The Infernal Abyss dungeon is temporarily disabled");
+                return;
+            }
+
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
                 net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
