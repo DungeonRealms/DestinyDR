@@ -5,7 +5,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRPigman;
 import net.dungeonrealms.game.world.entity.type.monster.boss.WorldBoss;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.ChatColor;
@@ -31,6 +30,7 @@ public class Albranir extends DRPigman implements WorldBoss {
     @Getter
     private int phase;
 
+    @Getter
     private final Location eventLocation;
 
     @Getter
@@ -40,13 +40,13 @@ public class Albranir extends DRPigman implements WorldBoss {
         super(world);
         this.phase = 1;
         this.eventLocation = eventLocation;
-        setArmor(4);
+        ///setArmor(4);
 
         this.angerLevel = 30000;
         this.setCustomName(ChatColor.AQUA + "Albranir The Bitter");
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.AQUA + "Albranir The Bitter"));
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.ICE_BOSS.getSkull()));
-        EntityStats.setBossRandomStats(this, 100, 4);
+        //EntityStats.setBossRandomStats(this, 100, 4);
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
 
@@ -56,6 +56,7 @@ public class Albranir extends DRPigman implements WorldBoss {
         this.setSize(0.7F, 2.4F);
 
         clearGoalSelectors();
+
         this.fireProof = true;
         this.goalSelector.a(10, new PathfinderGoalLookAtPlayer(this, EntityInsentient.class, 8.0F));
         freeze();
@@ -98,11 +99,6 @@ public class Albranir extends DRPigman implements WorldBoss {
     public static void checkRequirements(Player player) {
 
 
-    }
-
-    @Override
-    public void g(double d0, double d1, double d2) {
-        // Do nothing //
     }
 
     private void freeze() {

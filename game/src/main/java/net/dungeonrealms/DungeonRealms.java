@@ -27,10 +27,7 @@ import net.dungeonrealms.game.command.menu.*;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
-import net.dungeonrealms.game.command.test.CommandTestDupe;
-import net.dungeonrealms.game.command.test.CommandTestPlayer;
-import net.dungeonrealms.game.command.test.CommandTestRank;
-import net.dungeonrealms.game.command.test.CommandTestingHall;
+import net.dungeonrealms.game.command.test.*;
 import net.dungeonrealms.game.command.toggle.*;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.*;
@@ -370,6 +367,7 @@ public class DungeonRealms extends JavaPlugin {
 
         cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to test dr soundtrack."));
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
+        cm.registerCommand(new CommandAlbranir("albranir", "/<command> [args]", "Command to spawn albranir."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
 
 
@@ -516,6 +514,12 @@ public class DungeonRealms extends JavaPlugin {
         else Constants.log.info("Operation failed: database error.");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
+
+        try {
+            Constants.log.info("Successfully discovered process's pid - " + Utils.getPid());
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             Constants.log.info("Server now accepting players.");

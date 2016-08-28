@@ -367,27 +367,41 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, restartTime + 20 * 5);
     }
 
+
+    /**
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void handleCrash() {
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
 
-        Constants.log.info("Uploading data on crash...");
+        Constants.log.info("called handleCrash()...");
 
         ShopMechanics.deleteAllShops(true);
         Constants.log.info("Saved all player shops successfully.");
 
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
 
-        Constants.log.info("Saving all playerdata...");
+        Constants.log.info("Moving all players' sessions...");
+
         final long currentTime = System.currentTimeMillis();
         ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet()
-                .stream().forEach(uuid -> savePlayerData(uuid, false, doAfter -> DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false)));
+                .stream().forEach(uuid -> savePlayerData(uuid, false, doAfter -> {
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, false);
+            GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
+        }));
 
-        System.out.println("Successfully saved all playerdata in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
+        System.out.println("Successfully moved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
 
-        Constants.log.info("Force killing server thread...");
-        Runtime.getRuntime().exit(-1);
+        Constants.log.info("Force killing server's process...");
+
+        try {
+            Runtime.getRuntime().exec("kill -9 " + Utils.getPid());
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
         DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
@@ -851,6 +865,7 @@ public class GameAPI {
 
         for (int i = 0; i < players.length; i++) {
             final Player player = players[i];
+            final boolean sub = Rank.isSubscriber(player);
 
             player.sendMessage(ChatColor.AQUA + ">>> This DungeonRealms shard is " + ChatColor.BOLD + "RESTARTING.");
 
@@ -878,7 +893,6 @@ public class GameAPI {
                 gp.setAbleToSuicide(false);
                 gp.setAbleToDrop(false);
 
-                final boolean sub = Rank.isSubscriber(player);
 
                 // upload data and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {

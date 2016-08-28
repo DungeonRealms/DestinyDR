@@ -3,11 +3,19 @@ package net.dungeonrealms.game.mastery;
 import net.dungeonrealms.common.Constants;
 import net.minecraft.server.v1_9_R2.Item;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.util.BlockIterator;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -83,7 +91,7 @@ public class Utils {
             field.setAccessible(true);
             field.setInt(item, i);
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -164,13 +172,9 @@ public class Utils {
         for (char c : message.toCharArray()) {
             if (c == '&') {
                 previousCode = true;
-                continue;
-            } else if (previousCode == true) {
+            } else if (previousCode) {
                 previousCode = false;
-                if (c == 'l' || c == 'L') {
-                    isBold = true;
-                    continue;
-                } else isBold = false;
+                isBold = c == 'l' || c == 'L';
             } else {
                 DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
                 messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
@@ -192,6 +196,58 @@ public class Utils {
 
     public static String ucfirst(String string) {
         return Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase();
+    }
+
+    public static LivingEntity getTarget(LivingEntity entity, double range) {
+        List<Entity> nearbyE = entity.getNearbyEntities(range,
+                range, range);
+        ArrayList<LivingEntity> livingE = nearbyE.stream().filter(e -> e instanceof LivingEntity)
+                .map(e -> (LivingEntity) e).collect(Collectors.toCollection(ArrayList::new));
+
+        LivingEntity target = null;
+        BlockIterator bItr = new BlockIterator(entity, (int) range);
+        Block block;
+        Location loc;
+        int bx, by, bz;
+        double ex, ey, ez;
+        // loop through player's line of sight
+        while (bItr.hasNext()) {
+            block = bItr.next();
+            bx = block.getX();
+            by = block.getY();
+            bz = block.getZ();
+            // check for entities near this block in the line of sight
+            for (LivingEntity e : livingE) {
+                loc = e.getLocation();
+                ex = loc.getX();
+                ey = loc.getY();
+                ez = loc.getZ();
+                if ((bx - .75 <= ex && ex <= bx + 1.75) && (bz - .75 <= ez && ez <= bz + 1.75) && (by - 1 <= ey && ey <= by + 2.5)) {
+                    // entity is close enough, set target and stop
+                    target = e;
+                    break;
+                }
+            }
+        }
+        return target;
+    }
+
+    public static String getPid() throws IOException, InterruptedException {
+        Vector<String> commands = new Vector<>();
+        commands.add("/bin/bash");
+        commands.add("-c");
+        commands.add("echo $PPID");
+        ProcessBuilder pb = new ProcessBuilder(commands);
+
+        Process pr = pb.start();
+        pr.waitFor();
+        if (pr.exitValue() == 0) {
+            BufferedReader outReader = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            return outReader.readLine().trim();
+        } else {
+            System.out.println("Error while getting PID");
+            return "";
+        }
     }
 
     /**
