@@ -678,31 +678,31 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
     @Override
     public void closeRealmPortal(UUID uuid, boolean kickPlayers, String kickMessage) {
-        if (!isRealmLoaded(uuid)) return;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            if (!isRealmLoaded(uuid)) return;
+            RealmToken realm = getToken(uuid);
 
-        if (CrashDetector.crashDetected) return;
-        RealmToken realm = getToken(uuid);
+            if (realm.getPortalLocation() == null) return;
 
-        if (realm.getPortalLocation() == null) return;
+            Location portalLocation = realm.getPortalLocation().clone();
 
-        Location portalLocation = realm.getPortalLocation().clone();
+            portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+            portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
 
-        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
-        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+            portalLocation.getWorld().playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
 
-        portalLocation.getWorld().playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
+            if (realm.getHologram() != null)
+                realm.getHologram().delete();
 
-        if (realm.getHologram() != null)
-            realm.getHologram().delete();
+            realm.setPortalLocation(null);
+            realm.setState(RealmState.CLOSED);
 
-        realm.setPortalLocation(null);
-        realm.setState(RealmState.CLOSED);
+            realm.getWorld().getPlayers().stream().filter(p -> p != null).forEach(p -> {
+                if (kickMessage != null && p.getUniqueId() != uuid)
+                    p.sendMessage(kickMessage);
 
-        realm.getWorld().getPlayers().stream().filter(p -> p != null).forEach(p -> {
-            if (kickMessage != null && p.getUniqueId() != uuid)
-                p.sendMessage(kickMessage);
-
-            p.teleport(portalLocation);
+                p.teleport(portalLocation);
+            });
         });
     }
 
