@@ -159,7 +159,12 @@ public class PlayerMenus {
             return;
         }
 
-        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
+        Set<String> playerPets = new HashSet<> ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid));
+
+        if(Rank.isSubscriber(player))
+            for (EnumPets p : EnumPets.values())
+            playerPets.add(p.getRawName());
+
 
         if (playerPets.size() <= 0) {
             Inventory noPets = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Pets!");
@@ -273,7 +278,11 @@ public class PlayerMenus {
     public static void openPlayerParticleMenu(Player player) {
         UUID uuid = player.getUniqueId();
 
-        List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
+       Set<String> playerTrails = new HashSet<> ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid));
+
+        if(Rank.isSubscriber(player))
+            for (EnumPets p : EnumPets.values())
+                playerTrails.add(p.getRawName());
 
         if (playerTrails == null || playerTrails.size() <= 0) {
             Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Player Effects!");
