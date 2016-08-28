@@ -124,7 +124,7 @@ public class GameAPI {
         private Player player;
 
         PlayerLogoutWatchdog(Player player) {
-            this.runTaskLater(DungeonRealms.getInstance(), 12 * 20);
+            this.runTaskLater(DungeonRealms.getInstance(), 8 * 20);
             this.player = player;
         }
 

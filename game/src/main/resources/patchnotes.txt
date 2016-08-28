@@ -1,24 +1,17 @@
 Build <build>
 
 &2New Features&0
+- All subscribers now have PARTICLES
+and PETS unlocked while they are subscribed
 - You can now toggle party chat
 
 &8Changes&0
 - Player slots have been reduced
 buy subscriber to bypass this.
-- Front end changes
-- Fixed not being able to move in dungeons.
 - Re-enabled The Infernal Abyss dungeon.
-- You now only get patch notes notifications
-once.
-- New world boss is now in progress
-- Re-enabled Varenglade dungeon.
 
 &4Bug Fixes&0
+- Fixed rare crashes
 - Fixed non existent game player
-- DPS is now fixed.
 - Fixed lag spikes game is now much
 faster
-- Fix falling off realm glitching
-- Fixed frequent crashing.
-- Fixed shop wipes.
