@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.game.world.realms.Realms;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,9 +18,9 @@ import java.util.UUID;
  * Class written by APOLLOSOFTWARE.IO on 6/23/2016
  */
 
-public class CommandRealmFix extends BaseCommand {
+public class CommandRealmWipe extends BaseCommand {
 
-    public CommandRealmFix(String command, String usage, String description) {
+    public CommandRealmWipe(String command, String usage, String description) {
         super(command, usage, description);
     }
 
@@ -41,12 +42,21 @@ public class CommandRealmFix extends BaseCommand {
         }
 
         UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
-        DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, false);
-        DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, false);
 
-        sender.sendMessage(ChatColor.GRAY.toString() + "Realm fixed");
+        GameAPI.submitAsyncCallback(() -> {
+                    Realms.getInstance().wipeRealm(p_uuid);
+                    return true;
+                }, callback -> {
+                    DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
+                    DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
+                    DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true);
 
-        GameAPI.updatePlayerData(p_uuid);
+                    sender.sendMessage(ChatColor.GRAY.toString() + "Realm wiped.");
+                    GameAPI.updatePlayerData(p_uuid);
+                }
+        );
+
+
         return true;
     }
 }

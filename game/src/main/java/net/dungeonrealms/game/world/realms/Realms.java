@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.world.realms;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
+import net.lingala.zip4j.exception.ZipException;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -115,30 +115,20 @@ public interface Realms extends GenericMechanic {
      */
     void doLogout(Player player);
 
-    /**
-     * Async realm loader
-     *
-     * @param player          Owner of realm
-     * @param callOnException Should call callback if exception is caught
-     * @param task            Async task
-     * @param callback        Callback type?
-     */
-    void loadRealmAsync(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> callback);
-
 
     /**
      * This function downloads the player's realm from the realm FTP database if it exists
      *
      * @param uuid Owner of realm
      */
-    ListenableFuture<Boolean> downloadRealm(UUID uuid);
+    boolean downloadRealm(UUID uuid) throws IOException, ZipException;
 
     /**
      * Unzips default world for realms
      *
      * @param player Owner of realm
      */
-    ListenableFuture<Boolean> loadTemplate(UUID player);
+    boolean loadTemplate(UUID player) throws IOException, ZipException;
 
 
     /**
@@ -165,6 +155,14 @@ public interface Realms extends GenericMechanic {
      * @param player Owner of realm
      */
     void resetRealm(Player player) throws IOException;
+
+    /**
+     * Completely wipe realm
+     *
+     * @param uuid Owner of realm
+     */
+    void wipeRealm(UUID uuid) throws IOException;
+
 
     /**
      * Upgrades realm dimensions

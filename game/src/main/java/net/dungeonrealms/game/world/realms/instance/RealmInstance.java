@@ -2,10 +2,6 @@ package net.dungeonrealms.game.world.realms.instance;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -19,7 +15,6 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.CachedClientProvider;
-import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.listener.world.RealmListener;
 import net.dungeonrealms.game.mastery.Utils;
@@ -44,12 +39,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
 import java.net.ConnectException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 /**
@@ -154,21 +149,34 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
         player.sendMessage(ChatColor.YELLOW + "Please wait whilst your realm is being loaded...");
 
-        loadRealmAsync(player, false, downloadRealm(player.getUniqueId()), callback -> {
-            // RUN SYNC AGAIN //
-            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-                if (!callback) Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* REALM CREATED *");
+        GameAPI.submitAsyncCallback(() -> downloadRealm(player.getUniqueId()), callback -> {
+            try {
+                final boolean result = callback.get();
 
-                loadRealm(player, !callback, () -> {
-                    player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
+                // RUN SYNC AGAIN //
+                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
 
-                    realm.setLoaded(true);
-                    realm.setState(RealmState.CLOSED);
+                    if (!result)
+                        Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE + "* REALM CREATED *");
 
-                    if (doAfter != null)
-                        doAfter.run();
+
+                    loadRealm(player, !result, () -> {
+                        player.sendMessage(ChatColor.YELLOW + "Your realm has been loaded.");
+
+                        realm.setLoaded(true);
+                        realm.setState(RealmState.CLOSED);
+
+                        if (doAfter != null)
+                            doAfter.run();
+                    });
                 });
-            });
+
+            } catch (InterruptedException | ExecutionException e) {
+                player.sendMessage(ChatColor.RED + "There was an error whilst trying to download your realm! Please contact a game master to solve this issue");
+                Constants.log.warning("Unable to download " + player.getName() + "'s realm");
+                delete(player.getUniqueId());
+                e.printStackTrace();
+            }
         });
     }
 
@@ -231,37 +239,15 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         return true;
     }
 
-    @Override
-    public void loadRealmAsync(Player player, boolean callOnException, ListenableFuture<Boolean> task, Consumer<Boolean> doAfter) {
-        Futures.addCallback(task, new FutureCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean success) {
-                doAfter.accept(success);
-            }
-
-            @ParametersAreNonnullByDefault
-            public void onFailure(Throwable thrown) {
-                if (callOnException)
-                    doAfter.accept(false);
-
-                delete(player.getUniqueId());
-
-                player.sendMessage(ChatColor.RED + "There was an error whilst trying to loaded your realm!");
-                thrown.printStackTrace();
-            }
-        });
-    }
-
     private void loadRealm(Player player, boolean create, Runnable doAfter) {
         if (create) {
-            loadRealmAsync(player, false, loadTemplate(player.getUniqueId()), callback -> {
-                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-                            loadRealmWorld(player.getUniqueId());
-                            if (doAfter != null)
-                                doAfter.run();
-                        }
-                );
-            });
+            GameAPI.submitAsyncCallback(() -> loadTemplate(player.getUniqueId())
+                    , callback -> Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+                                loadRealmWorld(player.getUniqueId());
+                                if (doAfter != null)
+                                    doAfter.run();
+                            }
+                    ));
         } else {
             loadRealmWorld(player.getUniqueId());
             doAfter.run();
@@ -496,72 +482,69 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     }
 
     @Override
-    public ListenableFuture<Boolean> loadTemplate(UUID uuid) {
-        return MoreExecutors.listeningDecorator(AsyncUtils.pool).submit(() -> {
-            Utils.log.info("[REALM] [ASYNC] Loading template for " + uuid.toString());
+    public boolean loadTemplate(UUID uuid) throws IOException, ZipException {
+        Utils.log.info("[REALM] [ASYNC] Loading template for " + uuid.toString());
 
-            // Create the player realm folder
-            File file = new File(rootFolder.getAbsolutePath(), uuid.toString());
+        // Create the player realm folder
+        File file = new File(rootFolder.getAbsolutePath(), uuid.toString());
 
-            // DELETE WORLD IF IT EXIST //
-            if (file.exists())
-                FileUtils.forceDelete(new File(rootFolder.getAbsolutePath() + "/" + uuid.toString()));
+        // DELETE WORLD IF IT EXIST //
+        if (file.exists())
+            FileUtils.forceDelete(new File(rootFolder.getAbsolutePath() + "/" + uuid.toString()));
 
-            if (!file.mkdir()) throw new IOException();
-            //Unzip the local template.
+        if (!file.mkdir()) throw new IOException();
+        //Unzip the local template.
 
-            Utils.log.info("[REALM] [ASYNC] Extracting Realm template for " + uuid.toString());
-            ZipFile realmTemplateFile = new ZipFile(DungeonRealms.getInstance().getDataFolder() + "/realms/" + "realm_template.zip");
-            realmTemplateFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
-            return true;
-        });
+        Utils.log.info("[REALM] [ASYNC] Extracting Realm template for " + uuid.toString());
+        ZipFile realmTemplateFile = new ZipFile(DungeonRealms.getInstance().getDataFolder() + "/realms/" + "realm_template.zip");
+        realmTemplateFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
+        return true;
     }
 
     @Override
-    public ListenableFuture<Boolean> downloadRealm(UUID uuid) {
-        return MoreExecutors.listeningDecorator(AsyncUtils.pool).submit(() -> {
-            FTPClient ftpClient = new FTPClient();
-            FileOutputStream fos = null;
-            String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
-            File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
+    public boolean downloadRealm(UUID uuid) throws IOException, ZipException {
+        FTPClient ftpClient = new FTPClient();
+        FileOutputStream fos = null;
+        String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+        File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
 
-            try {
-                ftpClient.connect(Constants.FTP_HOST_NAME, Constants.FTP_PORT);
-                boolean login = ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
+        try {
+            ftpClient.connect(Constants.FTP_HOST_NAME, Constants.FTP_PORT);
+            boolean login = ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
 
-                if (login) Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-                else throw new ConnectException("Failed to download realm for " + uuid.toString());
+            if (login) Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
+            else throw new ConnectException("Failed to download realm for " + uuid.toString());
 
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-                Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
 
-                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
+            fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
 
-                if (ftpClient.retrieveFile(REMOTE_FILE, fos)) {
-                    Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
+            if (ftpClient.retrieveFile(REMOTE_FILE, fos)) {
+                Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
 
-                    ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
-                    Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
-                    zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
-                    Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
+                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
+                Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
+                zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
+                Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
 
-                    return true;
-                }
-
-                return false;
-            } finally {
-                if (fos != null) fos.close();
-
-                FileUtils.forceDelete(TEMP_LOCAL_LOCATION);
-
-                if (ftpClient.isConnected()) {
-                    ftpClient.logout();
-                    ftpClient.disconnect();
-                }
+                return true;
             }
-        });
+
+            return false;
+        } finally {
+            if (fos != null) fos.close();
+
+            FileUtils.forceDelete(TEMP_LOCAL_LOCATION);
+
+            if (ftpClient.isConnected()) {
+                ftpClient.logout();
+                ftpClient.disconnect();
+            }
+        }
     }
+
 
     @Override
     public void uploadRealm(UUID uuid, boolean runAsync, Consumer<Boolean> doAfter) {
@@ -642,6 +625,29 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         }
     }
 
+    @Override
+    public void wipeRealm(UUID uuid) throws IOException {
+        FTPClient ftpClient = new FTPClient();
+        String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+
+        try {
+            ftpClient.connect(Constants.FTP_HOST_NAME, Constants.FTP_PORT);
+            boolean login = ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
+
+            if (login) Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
+            else throw new ConnectException("Failed to wipe realm for " + uuid.toString());
+
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            Utils.log.info("[REALM] [ASYNC] Wiping " + uuid.toString() + "'s Realm ... STARTING");
+            if (ftpClient.deleteFile(REMOTE_FILE)) Utils.log.info("[REALM] [ASYNC] Realm wiped for " + uuid.toString());
+        } finally {
+            if (ftpClient.isConnected()) {
+                ftpClient.logout();
+                ftpClient.disconnect();
+            }
+        }
+    }
 
     private boolean isPortalNearby(Location location, int radius) {
         double rad = Math.pow(radius, 2);
