@@ -241,13 +241,22 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
     private void loadRealm(Player player, boolean create, Runnable doAfter) {
         if (create) {
-            GameAPI.submitAsyncCallback(() -> loadTemplate(player.getUniqueId())
-                    , callback -> Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+            GameAPI.submitAsyncCallback(() -> loadTemplate(player.getUniqueId()), callback -> {
+                try {
+                    callback.get();
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                                 loadRealmWorld(player.getUniqueId());
                                 if (doAfter != null)
                                     doAfter.run();
                             }
-                    ));
+                    );
+                } catch (InterruptedException | ExecutionException e) {
+                    player.sendMessage(ChatColor.RED + "There was an error whilst trying to load your realm! Please contact a game master to solve this issue");
+                    Constants.log.warning("Unable to load " + player.getName() + "'s realm");
+                    delete(player.getUniqueId());
+                    e.printStackTrace();
+                }
+            });
         } else {
             loadRealmWorld(player.getUniqueId());
             doAfter.run();
