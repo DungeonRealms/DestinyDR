@@ -162,8 +162,12 @@ public class PlayerMenus {
         Set<String> playerPets = new HashSet<> ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid));
 
         if(Rank.isSubscriber(player))
-            for (EnumPets p : EnumPets.values())
-            playerPets.add(p.getRawName());
+            for (EnumPets p : EnumPets.values()) {
+                if (p == EnumPets.BABY_HORSE)
+                    continue;
+
+                playerPets.add(p.getRawName());
+            }
 
 
         if (playerPets.size() <= 0) {
@@ -281,8 +285,8 @@ public class PlayerMenus {
        Set<String> playerTrails = new HashSet<> ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid));
 
         if(Rank.isSubscriber(player))
-            for (EnumPets p : EnumPets.values())
-                playerTrails.add(p.getRawName());
+            for (ParticleAPI.ParticleEffect effect : ParticleAPI.ParticleEffect.values())
+                playerTrails.add(effect.getRawName());
 
         if (playerTrails == null || playerTrails.size() <= 0) {
             Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Player Effects!");
