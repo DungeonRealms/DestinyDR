@@ -3,7 +3,8 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -22,11 +23,9 @@ public class CommandAnswer extends BaseCommand {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            if (!Rank.isPMOD(player)) return false;
-        }
+        if (!(sender instanceof Player)) return true;
 
+        Player p = (Player) sender;
         if ((args.length == 0) || (args.length < 2)) {
             sender.sendMessage(ChatColor.RED + "/answer [name] [message]");
             return true;
@@ -36,12 +35,21 @@ public class CommandAnswer extends BaseCommand {
         StringBuilder message = new StringBuilder(args[1]);
         for (int arg = 2; arg < args.length; arg++) message.append(" ").append(args[arg]);
 
-        GameAPI.sendNetworkMessage("PrivateMessage", sender.getName(), other, "&a<ANSWERED> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&e" + message);
-        GameAPI.sendNetworkMessage("PrivateMessage", sender.getName(), other, "&cType &e/msg " + sender.getName().toLowerCase() + " [message] &cto reply back.");
+
+        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, "&a<ANSWERED> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(p) + "&e" + message);
+        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, "&cType &e/msg " + sender.getName().toLowerCase() + " [message] &cto reply back.");
 
         GameAPI.sendNetworkMessage("BroadcastSoundPlayer", other, Sound.BLOCK_NOTE_PLING.toString(), "1.0f", "1.0f");
 
-        GameAPI.sendNetworkMessage("StaffMessage", "&a<ANSWERED: " + other + "> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&e" + message);
+        GameAPI.sendNetworkMessage("StaffMessage", "&a<ANSWERED: " + other + "> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(p) + "&e" + message);
+
+        PlayerManager.PlayerToggles toggle = PlayerManager.PlayerToggles.RECEIVE_MESSAGES;
+
+        if (!(boolean) DatabaseAPI.getInstance().getData(toggle.getDbField(), p.getUniqueId())) {
+            toggle.setToggleState(p, true);
+            sender.sendMessage(ChatColor.GRAY + "Your DND has been disabled so players can reply to your answer.");
+        }
+
         return false;
     }
 
