@@ -263,7 +263,7 @@ public class RealmListener implements Listener {
 
             Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
 
-            if (Rank.isDev(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
+            if (Rank.isGM(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
                 createDoubleHelix(loc);
             else if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
                 DonationEffects.getInstance().spawnPlayerParticleEffects(loc);
