@@ -329,37 +329,40 @@ public class DungeonManager implements GenericMechanic {
     public void removeInstance(DungeonObject dungeonObject) {
         if (CrashDetector.crashDetected) return;
 
-        Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
-            if (player != null) if (Bukkit.getPlayer(player.getUniqueId()) != null)
-                if (GameAPI.getGamePlayer(player) != null) if (GameAPI.getGamePlayer(player).isInDungeon()) {
-                    DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
-                    player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
-                    player.teleport(Teleportation.Cyrennica);
-                    for (ItemStack stack : player.getInventory().getContents())
-                        if (stack != null && stack.getType() != Material.AIR) if (isDungeonItem(stack))
-                            player.getInventory().remove(stack);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
+                if (player != null) if (Bukkit.getPlayer(player.getUniqueId()) != null)
+                    if (GameAPI.getGamePlayer(player) != null) if (GameAPI.getGamePlayer(player).isInDungeon()) {
+                        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
+                        player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
+                        player.teleport(Teleportation.Cyrennica);
+                        for (ItemStack stack : player.getInventory().getContents())
+                            if (stack != null && stack.getType() != Material.AIR) if (isDungeonItem(stack))
+                                player.getInventory().remove(stack);
+                    }
+            });
+
+            Bukkit.getWorlds().remove(Bukkit.getWorld(dungeonObject.getWorldName()));
+            Utils.log.info("[DUNGEONS] Removing world: " + dungeonObject.getWorldName() + " from worldList().");
+            Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
+            Utils.log.info("[DUNGEONS] Unloading world: " + dungeonObject.getWorldName() + " in preparation for deletion!");
+            Bukkit.getScheduler().cancelTask(dungeonObject.spawningTaskID);
+
+            GameAPI.submitAsyncCallback(() -> {
+                deleteFolder(new File(dungeonObject.worldName));
+                deleteFolder(new File("plugins/WorldGuard/worlds/" + dungeonObject.worldName));
+                return true;
+            }, consumer -> {
+                if (Dungeons.contains(dungeonObject)) {
+                    dungeonObject.cleanup();
+                    Dungeons.remove(dungeonObject);
                 }
-        });
 
-        Bukkit.getWorlds().remove(Bukkit.getWorld(dungeonObject.getWorldName()));
-        Utils.log.info("[DUNGEONS] Removing world: " + dungeonObject.getWorldName() + " from worldList().");
-        Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
-        Utils.log.info("[DUNGEONS] Unloading world: " + dungeonObject.getWorldName() + " in preparation for deletion!");
-        Bukkit.getScheduler().cancelTask(dungeonObject.spawningTaskID);
-
-        GameAPI.submitAsyncCallback(() -> {
-            deleteFolder(new File(dungeonObject.worldName));
-            deleteFolder(new File("plugins/WorldGuard/worlds/" + dungeonObject.worldName));
-            return true;
-        }, consumer -> {
-            if (Dungeons.contains(dungeonObject)) {
-                dungeonObject.cleanup();
-                Dungeons.remove(dungeonObject);
-            }
-
-            Utils.log.info("[DUNGEONS] Deleted world: " + dungeonObject.getWorldName() + " final stage.");
+                Utils.log.info("[DUNGEONS] Deleted world: " + dungeonObject.getWorldName() + " final stage.");
+            });
         });
     }
+
 
     /**
      * @param type       DungeonType

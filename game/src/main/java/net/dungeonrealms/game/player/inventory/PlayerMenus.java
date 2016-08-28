@@ -159,9 +159,9 @@ public class PlayerMenus {
             return;
         }
 
-        Set<String> playerPets = new HashSet<> ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid));
+        Set<String> playerPets = new HashSet<>((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid));
 
-        if(Rank.isSubscriber(player))
+        if (Rank.isSubscriber(player))
             for (EnumPets p : EnumPets.values()) {
                 if (p == EnumPets.BABY_HORSE)
                     continue;
@@ -282,9 +282,9 @@ public class PlayerMenus {
     public static void openPlayerParticleMenu(Player player) {
         UUID uuid = player.getUniqueId();
 
-       Set<String> playerTrails = new HashSet<> ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid));
+        Set<String> playerTrails = new HashSet<>((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid));
 
-        if(Rank.isSubscriber(player))
+        if (Rank.isSubscriber(player))
             for (ParticleAPI.ParticleEffect effect : ParticleAPI.ParticleEffect.values())
                 playerTrails.add(effect.getRawName());
 
