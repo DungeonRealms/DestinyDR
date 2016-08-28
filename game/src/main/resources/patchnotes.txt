@@ -12,6 +12,7 @@ temporarily disabled
 buy subscriber to bypass this.
 
 &4Bug Fixes&0
+- Fixed realms occasionally rolling back
 - Fixed rare crashes
 - Fixed players in tab staying when
 server goes offline
