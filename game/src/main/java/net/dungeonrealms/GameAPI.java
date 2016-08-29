@@ -763,7 +763,7 @@ public class GameAPI {
         Soundtrack.getInstance().doLogout(player);
 
         // HANDLE REALM LOGOUT SYNC //
-        Realms.getInstance().doLogout(player);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
 
         // save player data
         savePlayerData(uuid, async, doAfterSave -> {

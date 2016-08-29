@@ -691,33 +691,32 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         return world != null && world.getName().split("-").length == 5 ? getToken(UUID.fromString(world.getName())) : null;
     }
 
+
     @Override
     public void closeRealmPortal(UUID uuid, boolean kickPlayers, String kickMessage) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            if (!isRealmLoaded(uuid)) return;
-            RealmToken realm = getToken(uuid);
+        if (!isRealmLoaded(uuid)) return;
+        RealmToken realm = getToken(uuid);
 
-            if (realm.getPortalLocation() == null) return;
+        if (realm.getPortalLocation() == null) return;
 
-            Location portalLocation = realm.getPortalLocation().clone();
+        Location portalLocation = realm.getPortalLocation().clone();
 
-            portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
-            portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
 
-            portalLocation.getWorld().playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
+        portalLocation.getWorld().playSound(portalLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 0.75F);
 
-            if (realm.getHologram() != null)
-                realm.getHologram().delete();
+        if (realm.getHologram() != null)
+            realm.getHologram().delete();
 
-            realm.setPortalLocation(null);
-            realm.setState(RealmState.CLOSED);
+        realm.setPortalLocation(null);
+        realm.setState(RealmState.CLOSED);
 
-            realm.getWorld().getPlayers().stream().filter(p -> p != null).forEach(p -> {
-                if (kickMessage != null && p.getUniqueId() != uuid)
-                    p.sendMessage(kickMessage);
+        realm.getWorld().getPlayers().stream().filter(p -> p != null).forEach(p -> {
+            if (kickMessage != null && p.getUniqueId() != uuid)
+                p.sendMessage(kickMessage);
 
-                p.teleport(portalLocation);
-            });
+            p.teleport(portalLocation);
         });
     }
 
