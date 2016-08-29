@@ -1,6 +1,0 @@
-name: ArenaServer
-main: net.dungeonrealms.arenas.ArenaServer
-version: ${project.parent.version}
-authors: [apollosoftware]
-website: http://www.dungeonrealms.net
-description: This module handles arenas instances
