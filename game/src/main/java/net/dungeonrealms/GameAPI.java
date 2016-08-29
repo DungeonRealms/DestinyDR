@@ -873,10 +873,6 @@ public class GameAPI {
                 player.sendMessage(" ");
                 player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
                 player.sendMessage(" ");
-            } else {
-                // SEND THEM TO THE LOBBY INSTEAD //
-                BungeeUtils.sendToServer(player.getName(), "Lobby");
-                continue;
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -893,6 +889,12 @@ public class GameAPI {
                 gp.setAbleToSuicide(false);
                 gp.setAbleToDrop(false);
 
+                if (DungeonRealms.getInstance().isDrStopAll) {
+
+                    // SEND THEM TO THE LOBBY NORMALLY INSTEAD //
+                    BungeeUtils.sendToServer(player.getName(), "Lobby");
+                    return;
+                }
 
                 // upload data and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
