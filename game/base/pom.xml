@@ -3,20 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>DungeonRealms-parent</artifactId>
+        <artifactId>DungeonRealms-game</artifactId>
         <groupId>net.dungeonrealms</groupId>
         <version>5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>DungeonRealms-game</artifactId>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>base</module>
-        <module>arenas</module>
-    </modules>
-
+    <artifactId>Dungeonrealms-game-base</artifactId>
     <build>
         <defaultGoal>clean install</defaultGoal>
         <finalName>DungeonRealms</finalName>
@@ -82,63 +75,67 @@
     <dependencies>
 
         <dependency>
-            <groupId>net.dungeonrealms</groupId>
-            <artifactId>DungeonRealms-network</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!--Spigot GameAPI-->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.9.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-
-        <!--Bukkit GameAPI-->
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.9.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.2.2</version>
+            <groupId>com.codingforcookies</groupId>
+            <artifactId>ArmorEquipEvent</artifactId>
+            <version>1.6.3</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-            <version>3.2.2</version>
+            <groupId>org.inventivetalent</groupId>
+            <artifactId>bossbarapi</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.inventivetalent.npclib</groupId>
+            <artifactId>api</artifactId>
+            <version>1.8.6</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib-API</artifactId>
+            <version>RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vexsoftware</groupId>
+            <artifactId>votifier</artifactId>
+            <version>1.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>6.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldedit</artifactId>
+            <version>RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>codecrafter47.bungeetablistplus</groupId>
+            <artifactId>bungeetablistplus-api-bukkit</artifactId>
+            <version>2.5.3</version>
+            <scope>provided</scope>
         </dependency>
 
 
         <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>3.5</version>
+            <groupId>com</groupId>
+            <artifactId>holographicdisplaysapi</artifactId>
+            <version>2.1.7</version>
+            <systemPath>${project.basedir}/lib/HolographicDisplaysAPI_v2.1.7.jar</systemPath>
+            <scope>system</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.ini4j</groupId>
-            <artifactId>ini4j</artifactId>
-            <version>0.5.4</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>net.lingala.zip4j</groupId>
-            <artifactId>zip4j</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-
 
     </dependencies>
 

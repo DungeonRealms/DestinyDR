@@ -31,7 +31,7 @@ public class DeploymentToolApplication {
                 SILENT_DEPLOYMENT = true;
         }
 
-        File BUILD_JAR = new File(System.getProperty("user.dir"), "game/target/DungeonRealms.jar");
+        File BUILD_JAR = new File(System.getProperty("user.dir"), "game/base/target/DungeonRealms.jar");
         String REMOTE_LOCATION = !DEV_DEPLOYMENT ? "/update/DungeonRealms.jar" : "/development/DungeonRealms.jar";
         String[] NOTIFICATION_CHANNELS = new String[]{"G191V775M", "C1H00KN6S"};
 
