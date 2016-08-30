@@ -234,6 +234,7 @@ public class DatabaseAPI {
      * @return Requested data
      */
     public Object getData(EnumData data, Document document) {
+        if (document == null) return null;
         String[] key = data.getKey().split("\\.");
         Document rootDoc = (Document) document.get(key[0]);
         if (rootDoc == null) return null;
