@@ -18,6 +18,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -77,16 +78,15 @@ public class AntiDuplication implements GenericMechanic {
         AsyncUtils.pool.submit(() -> checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv))));
     }
 
+
     private static void checkForDuplications(Player p, HashMultimap<Inventory, Tuple<ItemStack, String>> map) {
         Set<String> duplicates = Utils.findDuplicates(map.values().stream().map(Tuple::b).collect(Collectors.toList()));
         Map<String, Integer> itemDesc = new HashMap<>();
-
         if (!duplicates.isEmpty()) { // caught red handed
-
             for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : map.entries()) {
                 String uniqueEpochIdentifier = e.getValue().b();
-
                 if (duplicates.contains(uniqueEpochIdentifier)) {
+
                     String name = "";
 
                     ItemStack item = e.getValue().a();
@@ -101,15 +101,25 @@ public class AntiDuplication implements GenericMechanic {
                     if (itemDesc.containsKey(name)) itemDesc.put(name, itemDesc.get(name) + 1);
                     else itemDesc.put(name, 1);
 
-                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> e.getKey().remove(e.getValue().a()));
+                    // GIVE THEM AN ORIGINAL //
+                    if (RepairAPI.isItemArmorOrWeapon(e.getValue().a())) {
+                        // THIS WILL REMOVED THE DUPLICATE ITEMS //
+                        e.getKey().remove(e.getValue().a());
+                        e.getKey().addItem(e.getValue().a());
+                    } else if (trackCount(e.getKey(), e.getValue().b()) == 0) {
+                        e.getValue().a().setAmount(1);
+                        e.getKey().addItem(e.getValue().a());
+                    } else {
+                        itemDesc.put(name, itemDesc.get(name) + (e.getValue().a().getAmount() - 2));
+                        e.getKey().remove(e.getValue().a());
+                    }
                 }
             }
 
             StringBuilder builder = new StringBuilder();
-
             int i = 0;
             for (Map.Entry<String, Integer> e : itemDesc.entrySet()) {
-                int amount = e.getValue();
+                int amount = e.getValue() - 1;
                 String name = e.getKey();
 
                 if (i == 0)
@@ -120,9 +130,24 @@ public class AntiDuplication implements GenericMechanic {
             }
 
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
-                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. With: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+
         }
     }
+
+
+    public static int trackCount(Inventory inventory, String uniqueEpochIdentifier) {
+        int amount = 0;
+        for (ItemStack i : inventory) {
+            if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
+            if (i.getAmount() <= 0) continue;
+            if (isRegistered(i))
+                if (AntiDuplication.getInstance().getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
+                    amount += i.getAmount();
+        }
+        return amount;
+    }
+
 
     public static void checkForSuspiciousDupedItems(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
         if (Rank.isGM(p)) return;
@@ -145,9 +170,8 @@ public class AntiDuplication implements GenericMechanic {
                 if (ItemManager.isScrap(i) || ItemManager.isPotion(i) || ItemManager.isTeleportBook(i)) continue;
 
                 String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
-                if (uniqueEpochIdentifier != null)
-                    for (int ii = 0; ii < i.getAmount(); ii++)
-                        gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
+                if (uniqueEpochIdentifier != null) for (int ii = 0; ii < i.getAmount(); ii++)
+                    gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
 
                 if (GameAPI.isOrb(i))
                     orbCount += i.getAmount();
