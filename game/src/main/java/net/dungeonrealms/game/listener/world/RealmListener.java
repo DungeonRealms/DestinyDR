@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.updater.UpdateEvent;
 import net.dungeonrealms.common.game.updater.UpdateType;
 import net.dungeonrealms.common.game.util.Cooldown;
+import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -959,9 +960,16 @@ public class RealmListener implements Listener {
         }
     }
 
+    private static CooldownProvider EXIT_COOLDOWN = new CooldownProvider();
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerEnterPortal(PlayerPortalEvent event) {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) {
+            if (EXIT_COOLDOWN.isCooldown(event.getPlayer().getUniqueId())) {
+                event.setCancelled(true);
+                return;
+            }
+
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
                 Entity pet = EntityMechanics.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
@@ -1005,6 +1013,8 @@ public class RealmListener implements Listener {
 
             RealmToken realm = REALMS.getToken(event.getPlayer().getLocation().getWorld());
             event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
+
+            EXIT_COOLDOWN.submitCooldown(event.getPlayer(), 2000L);
         }
     }
 }

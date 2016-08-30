@@ -211,6 +211,7 @@ public class MainListener implements Listener {
             return;
         }
 
+        GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 
         CombatLog.checkCombatLog(player.getUniqueId());

@@ -20,6 +20,7 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.player.rank.Subscription;
 import net.dungeonrealms.common.game.util.AsyncUtils;
+import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
@@ -113,6 +114,8 @@ public class GameAPI {
      */
     public static Map<String, GamePlayer> GAMEPLAYERS = new ConcurrentHashMap<>();
     public static Set<Player> _hiddenPlayers = new HashSet<>();
+
+    public static CooldownProvider SAVE_DATA_COOLDOWN = new CooldownProvider();
 
     /**
      * Used to avoid double saving player data
@@ -672,6 +675,9 @@ public class GameAPI {
      */
     public static boolean savePlayerData(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
         Player player = Bukkit.getPlayer(uuid);
+
+        if (SAVE_DATA_COOLDOWN.isCooldown(uuid))
+            return false;
 
         if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId()))
             return false;

@@ -34,6 +34,8 @@ public class DatabaseAPI {
 
     public volatile Map<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
 
+    public volatile Map<UUID, Long> PLAYERS_LOGINS = new ConcurrentHashMap<>();
+
     private volatile Map<String, String> CACHED_UUIDS = new ConcurrentHashMap<>();
 
     private final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("MONGODB Server Collection Thread").build());

@@ -205,13 +205,14 @@ public class ItemListener implements Listener {
                         if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
 
                             int balance = (Integer) DatabaseAPI.getInstance().getData(EnumData.GEMS, p.getUniqueId());
+                            int cost = Realms.getInstance().getRealmUpgradeCost(tier + 1);
                             if (balance < Realms.getInstance().getRealmUpgradeCost(tier + 1)) {
                                 p.sendMessage(ChatColor.RED + "You do not have enough GEM(s) in your bank to purchase this upgrade. Upgrade cancelled.");
                                 p.sendMessage(ChatColor.RED + "COST: " + Realms.getInstance().getRealmUpgradeCost(tier + 1) + " Gem(s)");
                                 return;
                             }
 
-                            DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, balance, false, doAfter -> Realms.getInstance().upgradeRealm(p));
+                            DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, balance - cost, false, doAfter -> Realms.getInstance().upgradeRealm(p));
                         }
                     });
                 }, null);
@@ -800,8 +801,7 @@ public class ItemListener implements Listener {
             if (Fishing.isCustomRawFish(fish)) {
                 p.sendMessage(ChatColor.RED + "You must cook this fish before you can eat it!");
 
-            }
-            else if (Fishing.isCustomFish(fish)) {
+            } else if (Fishing.isCustomFish(fish)) {
                 eaten = true;
 
                 e.setUseInteractedBlock(Event.Result.DENY);
@@ -821,7 +821,6 @@ public class ItemListener implements Listener {
             }
 
 
-
         }
 
         if (p.getInventory().getItemInOffHand() != null && p.getInventory().getItemInOffHand().getType() != Material.AIR) {
@@ -830,8 +829,7 @@ public class ItemListener implements Listener {
             if (Fishing.isCustomRawFish(fish)) {
                 p.sendMessage(ChatColor.RED + "You must cook this fish before you can eat it!");
 
-            }
-            else if (Fishing.isCustomFish(fish)) {
+            } else if (Fishing.isCustomFish(fish)) {
                 eaten = true;
 
                 e.setUseInteractedBlock(Event.Result.DENY);
@@ -851,7 +849,6 @@ public class ItemListener implements Listener {
             }
 
 
-
         }
 
         if (eaten) {
@@ -859,7 +856,6 @@ public class ItemListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1.5F), 4L);
             p.updateInventory();
         }
-
 
 
     }
