@@ -16,8 +16,6 @@ temporarily disabled
 - Fixed potential wiping when players crash
 before they load their data
 - Fixed going past +8 for protection scrolls
-- Fixed not being able to exit realm when
-falling out
 - Fixed realms occasionally rolling back
 - Fixed rare crashes
 - Fixed players in tab staying when

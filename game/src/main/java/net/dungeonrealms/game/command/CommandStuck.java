@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +25,11 @@ public class CommandStuck extends BaseCommand {
         if (sender instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) sender;
+
+        if (CombatLog.isInCombat(player)) {
+            player.sendMessage(ChatColor.RED + "You cannot use this while in combat!");
+            return true;
+        }
 
         sender.sendMessage(ChatColor.GREEN + "Checking your status ...");
 
