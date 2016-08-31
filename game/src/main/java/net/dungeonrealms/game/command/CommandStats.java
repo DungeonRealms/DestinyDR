@@ -22,6 +22,10 @@ public class CommandStats extends BaseCommand {
 	public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
 		if (s instanceof ConsoleCommandSender)
 			return false;
+
+		if(true)
+			return true;
+
 		Player player = (Player) s;
 		player.openInventory(StatsManager.getInventory(player));
 		return true;

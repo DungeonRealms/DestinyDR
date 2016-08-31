@@ -87,41 +87,41 @@ public class ClickHandler {
                         return;
                     } else {
                         EnumMounts mount = EnumMounts.getByName(nmsStack.getTag().getString("mountType"));
-                            if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
-                                if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
-                                    if (mount != EnumMounts.MULE) {
-                                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
-                                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
-                                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mount")) {
-                                            player.getInventory().addItem(ItemManager.getPlayerMountItem());
-                                        }
-                                    } else {
-                                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mule")) {
-                                            Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
-                                            if (muleTier == null) {
-                                                player.sendMessage(ChatColor.RED + "No mule data found.");
-                                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
-                                                muleTier = 1;
-                                            }
-                                            MuleTier tier = MuleTier.getByTier((int) muleTier);
-                                            if (tier == null) {
-                                                System.out.println("Invalid mule tier!");
-                                                return;
-                                            }
-                                            player.getInventory().addItem(ItemManager.getPlayerMuleItem(tier));
-                                        }
+                        if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
+                            if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
+                                if (mount != EnumMounts.MULE) {
+                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
+                                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
+                                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mount")) {
+                                        player.getInventory().addItem(ItemManager.getPlayerMountItem());
                                     }
-                                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount.");
-                                    player.closeInventory();
-                                    return;
                                 } else {
-                                    player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
-                                    return;
+                                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mule")) {
+                                        Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+                                        if (muleTier == null) {
+                                            player.sendMessage(ChatColor.RED + "No mule data found.");
+                                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
+                                            muleTier = 1;
+                                        }
+                                        MuleTier tier = MuleTier.getByTier((int) muleTier);
+                                        if (tier == null) {
+                                            System.out.println("Invalid mule tier!");
+                                            return;
+                                        }
+                                        player.getInventory().addItem(ItemManager.getPlayerMuleItem(tier));
+                                    }
                                 }
+                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount.");
+                                player.closeInventory();
+                                return;
                             } else {
-                                player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
+                                player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
+                                return;
                             }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
+                        }
                     }
                 }
                 break;
@@ -723,6 +723,8 @@ public class ClickHandler {
                 event.setCancelled(true);
                 switch (slot) {
                     case 0:
+                        if (true)
+                            break;
                         player.openInventory(StatsManager.getInventory(player));
                         break;
                     case 1:
@@ -1657,7 +1659,7 @@ public class ClickHandler {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, petType, true);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
-                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"pet")) {
+                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "pet")) {
                         player.getInventory().addItem(ItemManager.getPlayerPetItem());
                     }
                     player.closeInventory();
@@ -1694,7 +1696,7 @@ public class ClickHandler {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, effectType, true);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect.");
-                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"trail")) {
+                    if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "trail")) {
                         player.getInventory().addItem(ItemManager.getPlayerTrailItem());
                     }
                     player.closeInventory();
