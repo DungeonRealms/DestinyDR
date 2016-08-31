@@ -346,7 +346,7 @@ public class GameAPI {
     public static void stopGame() {
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
-        final long restartTime = Bukkit.getOnlinePlayers().size() * 10 + 20 * 5; // half a second per player plus 5 seconds
+        final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
 
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setAcceptPlayers(false);
@@ -908,7 +908,7 @@ public class GameAPI {
                     GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString(), String.valueOf(sub));
                 });
 
-            }, (i + 1) * 5);
+            }, (i + 1) * 4);
         }
     }
 

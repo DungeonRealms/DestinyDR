@@ -137,9 +137,8 @@ public class AntiDuplication implements GenericMechanic {
     /**
      * Checks for suspiciously duped items
      *
-     * @param player Player target
+     * @param player      Player target
      * @param inventories Inventories to check
-     *
      * @author APOLLOSOFTWARE
      * @author EtherealTemplar
      */
