@@ -72,7 +72,7 @@ public class PlayerStats {
         //this.dexPoints = (int) DatabaseAPI.getInstance().getData(EnumData.DEXTERITY, playerUUID);
         //this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);
         //this.vitPoints = (int) DatabaseAPI.getInstance().getData(EnumData.VITALITY, playerUUID);
-        //this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
+        this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
         //this.resetAmounts = (int) DatabaseAPI.getInstance().getData(EnumData.RESETS, playerUUID);
         //this.freeResets = (int) DatabaseAPI.getInstance().getData(EnumData.FREERESETS, playerUUID);
     }

@@ -882,7 +882,6 @@ public class GameAPI {
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
                 // prevent any interaction while the data is being uploaded
                 Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
@@ -900,7 +899,7 @@ public class GameAPI {
                     // SEND THEM TO THE LOBBY NORMALLY INSTEAD //
                     BungeeUtils.sendToServer(player.getName(), "Lobby");
                     return;
-                }
+                } else GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
                 // upload data and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
