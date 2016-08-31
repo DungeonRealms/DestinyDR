@@ -6,6 +6,8 @@ Build <build>
 &0- You can now toggle party chat
 
 &8Changes&0
+- Mining emeralds now takes less time
+- Fixed extra mining fatigue
 - Anti cheat no longer removes original item
 on accidental duplication
 - 10 minute cooldown added to suiciding

@@ -436,7 +436,7 @@ public class Mining implements GenericMechanic {
 
             if (addEnchant) {
                 giveRandomEnchant(p, pick, tier);
-            }else {
+            } else {
                 p.getEquipment().setItemInMainHand(pick);
             }
         }
@@ -725,6 +725,7 @@ public class Mining implements GenericMechanic {
     public void startInitialization() {
         loadOreLocations();
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::placeOre);
+
     }
 
     /**

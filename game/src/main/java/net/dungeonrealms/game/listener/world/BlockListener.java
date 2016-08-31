@@ -293,7 +293,8 @@ public class BlockListener implements Listener {
 
         Player p = event.getPlayer();
 
-        if (p.getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR) return;
+        if (p.getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
+            return;
         if (!Mining.isDRPickaxe(p.getEquipment().getItemInMainHand())) return;
 
         ItemStack stackInHand = p.getEquipment().getItemInMainHand();
@@ -310,17 +311,19 @@ public class BlockListener implements Listener {
                 case 1:
                     break;
                 case 2:
+                    if (tier == pickTier && block.getType() == Material.EMERALD_ORE)
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 80, 0));
                     break;
                 case 3:
                     if (tier == pickTier)
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 120, 0));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 80, 0));
                     break;
                 case 4:
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 120, 0));
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 80, 0));
                     break;
                 case 5:
                     if (tier != 4)
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 120, 0));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 80, 0));
                     break;
             }
         }
@@ -467,7 +470,10 @@ public class BlockListener implements Listener {
                     if (player.getEquipment().getItemInMainHand() == null) {
                         player.getEquipment().setItemInMainHand(item);
                     } else {
-                        player.getInventory().addItem(item);
+                        if (player.getInventory().firstEmpty() != -1)
+                            player.getInventory().setItem(player.getInventory().firstEmpty(), item);
+                        else
+                            player.sendMessage(ChatColor.RED + "No inventory room.");
                     }
                     player.updateInventory();
                     repairMap.remove(block.getLocation());
