@@ -19,6 +19,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -442,7 +443,7 @@ public class Fishing implements GenericMechanic {
                     // Vampirism
                     buff_val = new Random().nextInt(5) + 3;
                     fish_name = "Albino " + ChatColor.YELLOW.toString() + fish_name;
-                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% Lelse ifESTEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
+                    fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFE STEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 65 && buff_type <= 85) {
                     // Nightvision for 60 seconds.
                     fish_name += " of Omniscient Vision";
@@ -1128,6 +1129,11 @@ public class Fishing implements GenericMechanic {
 
                 }
             } else if (s.startsWith("REGEN")) {
+                if (p.hasMetadata("fishhpRegen")) {
+                    p.sendMessage(ChatColor.GRAY + "You already have fish hp regen applied.");
+                    return;
+                }
+
                 double percent_to_regen = Double.parseDouble(s.substring(s.indexOf(" ") + 1, s.indexOf("%"))) / 100.0D;
                 int regen_interval = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("s")));
                 double max_hp = HealthHandler.getInstance().getPlayerMaxHPLive(p);
@@ -1139,12 +1145,14 @@ public class Fishing implements GenericMechanic {
 
                 p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (int) (regen_interval + (regen_interval * 0.25)), 0));
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    p.removeMetadata("fishhpRegen", DungeonRealms.getInstance());
                     p.removePotionEffect(PotionEffectType.REGENERATION);
                     GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.HEALTH_REGEN, (float) -percent_to_regen);
                     p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "   " + amount_to_regen_per_interval + " HP/s " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, regen_interval * 20L);
             } else if (s.startsWith("SPEED")) {
+
                 String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
                 int effect_tier = 0;
                 if (tier_symbol.equalsIgnoreCase("II")) {
@@ -1153,6 +1161,7 @@ public class Fishing implements GenericMechanic {
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effect_time * 20, effect_tier));
             } else if (s.startsWith("NIGHTVISION")) {
+
                 String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
                 int effect_tier = 0;
                 if (tier_symbol.equalsIgnoreCase("II")) {
@@ -1161,42 +1170,76 @@ public class Fishing implements GenericMechanic {
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, effect_time * 20, effect_tier));
             } else if (s.contains("ENERGY REGEN")) {
+
+                if (p.hasMetadata("fishEnRegen")) {
+                    p.sendMessage(ChatColor.GRAY + "You already have fish energy regen applied.");
+                    return;
+                }
+
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, bonus_percent);
                 p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "      " + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + " Energy/s"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
+                p.setMetadata("fishEnRegen", new FixedMetadataValue(DungeonRealms.getInstance(), true));
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    p.removeMetadata("fishEnRegen", DungeonRealms.getInstance());
                     GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ENERGY_REGEN, -bonus_percent);
                     p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + " +" + bonus_percent + "% Energy " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% DMG")) {
+                if (p.hasMetadata("fishDMG")) {
+                    p.sendMessage(ChatColor.GRAY + "You already have fish damage applied.");
+                    return;
+                }
+
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, bonus_percent);
                 p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% DMG"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
+                p.setMetadata("fishDMG", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    p.removeMetadata("fishDMG", DungeonRealms.getInstance());
                     GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.DAMAGE, -bonus_percent);
                     p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% DMG " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
+
+
             } else if (s.contains("% ARMOR")) {
+                if (p.hasMetadata("fishArmor")) {
+                    p.sendMessage(ChatColor.GRAY + "You already have fish armor applied.");
+                    return;
+                }
+
+                p.setMetadata("fishArmor", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, bonus_percent);
                 p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "+" + ChatColor.GREEN + bonus_percent + ChatColor.BOLD + "% ARMOR"
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
+
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    p.removeMetadata("fishArmor", DungeonRealms.getInstance());
                     GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.ARMOR, -bonus_percent);
                     p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% ARMOR " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% BLOCK")) {
+                if (p.hasMetadata("fishBlock")) {
+                    p.sendMessage(ChatColor.GRAY + "You already have fish block applied.");
+                    return;
+                }
+
+                p.setMetadata("fishBlock", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, bonus_percent);
@@ -1204,11 +1247,18 @@ public class Fishing implements GenericMechanic {
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    p.removeMetadata("fishBlock", DungeonRealms.getInstance());
                     GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.ArmorAttributeType.BLOCK, -bonus_percent);
                     p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% BLOCK " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% LIFESTEAL")) {
+                if (p.hasMetadata("fishLifesteal")) {
+                    p.sendMessage(ChatColor.GRAY + "You already have fish life steal applied.");
+                    return;
+                }
+
+                p.setMetadata("fishLifesteal", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, bonus_percent);
@@ -1216,11 +1266,19 @@ public class Fishing implements GenericMechanic {
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    p.removeMetadata("fishLifesteal", DungeonRealms.getInstance());
                     GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.LIFE_STEAL, -bonus_percent);
                     p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% LIFESTEAL " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");
                 }, effect_time * 20L);
             } else if (s.contains("% CRIT")) {
+                if (p.hasMetadata("fishCrit")) {
+                    p.sendMessage(ChatColor.GRAY + "You already have fish life steal applied.");
+                    return;
+                }
+
+                p.setMetadata("fishCrit", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+
                 final int bonus_percent = Integer.parseInt(s.substring(s.indexOf("+") + 1, s.indexOf("%")));
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, bonus_percent);
@@ -1228,6 +1286,8 @@ public class Fishing implements GenericMechanic {
                         + ChatColor.GREEN + " FROM " + fish.getItemMeta().getDisplayName() + ChatColor.GRAY + " [" + effect_time + "s]");
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    p.removeMetadata("fishCrit", DungeonRealms.getInstance());
+
                     GameAPI.getGamePlayer(p).changeAttributeValPercentage(Item.WeaponAttributeType.CRITICAL_HIT, -bonus_percent);
                     p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "+" + bonus_percent + "% CRIT " + ChatColor.RED + "FROM "
                             + fish.getItemMeta().getDisplayName() + ChatColor.RED + " " + ChatColor.UNDERLINE + "EXPIRED");

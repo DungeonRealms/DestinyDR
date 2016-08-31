@@ -67,14 +67,14 @@ public class PlayerStats {
      * @since 1.0;
      */
     public void loadPlayerStats() {
-        //this.freePoints = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.BUFFER_POINTS, playerUUID)));
-        //this.intPoints = (int) DatabaseAPI.getInstance().getData(EnumData.INTELLECT, playerUUID);
-        //this.dexPoints = (int) DatabaseAPI.getInstance().getData(EnumData.DEXTERITY, playerUUID);
-        //this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);
-        //this.vitPoints = (int) DatabaseAPI.getInstance().getData(EnumData.VITALITY, playerUUID);
+        this.freePoints = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.BUFFER_POINTS, playerUUID)));
+        this.intPoints = (int) DatabaseAPI.getInstance().getData(EnumData.INTELLECT, playerUUID);
+        this.dexPoints = (int) DatabaseAPI.getInstance().getData(EnumData.DEXTERITY, playerUUID);
+        this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);
+        this.vitPoints = (int) DatabaseAPI.getInstance().getData(EnumData.VITALITY, playerUUID);
         this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
-        //this.resetAmounts = (int) DatabaseAPI.getInstance().getData(EnumData.RESETS, playerUUID);
-        //this.freeResets = (int) DatabaseAPI.getInstance().getData(EnumData.FREERESETS, playerUUID);
+        this.resetAmounts = (int) DatabaseAPI.getInstance().getData(EnumData.RESETS, playerUUID);
+        this.freeResets = (int) DatabaseAPI.getInstance().getData(EnumData.FREERESETS, playerUUID);
     }
 
     public void allocatePoint(String type, Player p, Inventory inv) {

@@ -1238,10 +1238,10 @@ public class GameAPI {
         }
 
         // calculate attributes and check inventory
-        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-            GameAPI.calculateAllAttributes(player);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             PlayerManager.checkInventory(uuid);
-        }, 5L);
+            GameAPI.calculateAllAttributes(player);
+        }, 2 * 20L);
 
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {

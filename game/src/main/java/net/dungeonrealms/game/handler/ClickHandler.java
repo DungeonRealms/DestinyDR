@@ -723,8 +723,6 @@ public class ClickHandler {
                 event.setCancelled(true);
                 switch (slot) {
                     case 0:
-                        if (true)
-                            break;
                         player.openInventory(StatsManager.getInventory(player));
                         break;
                     case 1:

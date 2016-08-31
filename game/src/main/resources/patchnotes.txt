@@ -1,26 +1,20 @@
 Build <build>
 
-&4TEMPORARILY DISABLED STATS
-
 &2New Features&0
 &4- All subscribers now have PARTICLES
 &4and PETS unlocked while they are subscribed
 &0- You can now toggle party chat
 
 &8Changes&0
+- Fixed critical exploits
 - Mining emeralds now takes less time
 - Fixed extra mining fatigue
 - Anti cheat no longer removes original item
 on accidental duplication
 - 10 minute cooldown added to suiciding
-- The Infernal Abyss dungeon is
-temporarily disabled
 
 &4Bug Fixes&0
 - Fixed potential wiping when players crash
 before they load their data
 - Fixed going past +8 for protection scrolls
 - Fixed realms occasionally rolling back
-- Fixed rare crashes
-- Fixed players in tab staying when
-server goes offline

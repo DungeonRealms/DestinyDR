@@ -79,6 +79,12 @@ public class AntiDuplication implements GenericMechanic {
     }
 
 
+    /**
+     * Checks and removes duplicated items
+     * when detected.
+     *
+     * @author APOLLOSOFTWARE
+     */
     private static void checkForDuplications(Player p, HashMultimap<Inventory, Tuple<ItemStack, String>> map) {
         Set<String> duplicates = Utils.findDuplicates(map.values().stream().map(Tuple::b).collect(Collectors.toList()));
         Map<String, Integer> itemDesc = new HashMap<>();
@@ -86,36 +92,31 @@ public class AntiDuplication implements GenericMechanic {
             for (Map.Entry<Inventory, Tuple<ItemStack, String>> e : map.entries()) {
                 String uniqueEpochIdentifier = e.getValue().b();
                 if (duplicates.contains(uniqueEpochIdentifier)) {
-
                     String name = "";
-
                     ItemStack item = e.getValue().a();
                     ItemMeta meta = item.getItemMeta();
-
                     if (meta.hasDisplayName()) name += meta.getDisplayName();
                     else {
                         Material material = e.getValue().a().getType();
                         name += material.toString().replace("_", " ");
                     }
-
                     if (itemDesc.containsKey(name)) itemDesc.put(name, itemDesc.get(name) + 1);
                     else itemDesc.put(name, 1);
-
                     // GIVE THEM AN ORIGINAL //
                     if (RepairAPI.isItemArmorOrWeapon(e.getValue().a())) {
+                        remove(e.getKey(), e.getValue().b());
                         // THIS WILL REMOVED THE DUPLICATE ITEMS //
-                        e.getKey().remove(e.getValue().a());
-                        e.getKey().addItem(e.getValue().a());
-                    } else if (trackCount(e.getKey(), e.getValue().b()) == 0) {
+                        if (traceCount(e.getKey(), e.getValue().b()) == 0)
+                            e.getKey().addItem(e.getValue().a());
+                    } else if (traceCount(e.getKey(), e.getValue().b()) == 0) {
                         e.getValue().a().setAmount(1);
                         e.getKey().addItem(e.getValue().a());
                     } else {
                         itemDesc.put(name, itemDesc.get(name) + (e.getValue().a().getAmount() - 2));
-                        e.getKey().remove(e.getValue().a());
+                        remove(e.getKey(), e.getValue().b());
                     }
                 }
             }
-
             StringBuilder builder = new StringBuilder();
             int i = 0;
             for (Map.Entry<String, Integer> e : itemDesc.entrySet()) {
@@ -128,39 +129,32 @@ public class AntiDuplication implements GenericMechanic {
                     builder.append(", ").append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
                 i++;
             }
-
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
                     ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
-
         }
     }
 
-
-    public static int trackCount(Inventory inventory, String uniqueEpochIdentifier) {
-        int amount = 0;
-        for (ItemStack i : inventory) {
-            if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
-            if (i.getAmount() <= 0) continue;
-            if (isRegistered(i))
-                if (AntiDuplication.getInstance().getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
-                    amount += i.getAmount();
-        }
-        return amount;
-    }
-
-
-    public static void checkForSuspiciousDupedItems(Player p, final Set<Inventory> INVENTORIES_TO_CHECK) {
-        if (Rank.isGM(p)) return;
-        if (EXCLUSIONS.contains(p.getUniqueId())) return;
+    /**
+     * Checks for suspiciously duped items
+     *
+     * @param player Player target
+     * @param inventories Inventories to check
+     *
+     * @author APOLLOSOFTWARE
+     * @author EtherealTemplar
+     */
+    public static void checkForSuspiciousDupedItems(Player player, final Set<Inventory> inventories) {
+        if (Rank.isGM(player)) return;
+        if (EXCLUSIONS.contains(player.getUniqueId())) return;
 
         int orbCount = 0;
         int enchantCount = 0;
         int protectCount = 0;
-        int gemCount = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, p.getUniqueId());
+        int gemCount = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId());
 
         HashMultimap<Inventory, Tuple<ItemStack, String>> gearUids = HashMultimap.create();
 
-        for (Inventory inv : INVENTORIES_TO_CHECK) {
+        for (Inventory inv : inventories) {
             if (inv == null) continue;
 
             for (ItemStack i : inv.getContents()) {
@@ -184,37 +178,25 @@ public class AntiDuplication implements GenericMechanic {
             }
         }
 
-        checkForDuplications(p, gearUids);
+        checkForDuplications(player, gearUids);
 
         if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 350000) {
-            banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
-        } else if ((GameAPI.getGamePlayer(p) != null && GameAPI.getGamePlayer(p).getLevel() < 20) && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // IP BAN
-            banAndBroadcast(p, orbCount, enchantCount, protectCount, gemCount);
+            catchOp(player, orbCount, enchantCount, protectCount, gemCount);
+        } else if ((GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).getLevel() < 20) && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 150000) { // IP BAN
+            catchOp(player, orbCount, enchantCount, protectCount, gemCount);
         } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 170000) { // WARN
 
-            if (WARNING_SUPPRESSOR.isCooldown(p.getUniqueId())) return;
+            if (WARNING_SUPPRESSOR.isCooldown(player.getUniqueId())) return;
 
-            WARNING_SUPPRESSOR.submitCooldown(p, 120000L);
+            WARNING_SUPPRESSOR.submitCooldown(player, 120000L);
 
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: " + ChatColor.WHITE + "Player " + p.getName() + " has " + orbCount + " orbs, " +
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: " + ChatColor.WHITE + "Player " + player.getName() + " has " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
                     "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
         }
     }
 
-
-    private static void banAndBroadcast(Player p, int i) {
-        // @note: Please don't announce things to the public, everything should be a GM alert or silently logged.
-        PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
-
-        GameAPI.sendNetworkMessage("GMMessage", "");
-        GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
-                "Banning" + ChatColor.RED + " player " + p.getName() + " for possession of DUPLICATED ITEMS. Amount: " + i);
-        //todo: add system for broadcasting SHOW of duped items
-        GameAPI.sendNetworkMessage("GMMessage", "");
-    }
-
-    private static void banAndBroadcast(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
+    private static void catchOp(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
         PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
 
         GameAPI.sendNetworkMessage("GMMessage", "");
@@ -224,6 +206,28 @@ public class AntiDuplication implements GenericMechanic {
         GameAPI.sendNetworkMessage("GMMessage", "");
     }
 
+    private static void remove(Inventory inventory, String uniqueEpochIdentifier) {
+        for (ItemStack i : inventory) {
+            if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
+            if (i.getAmount() <= 0) continue;
+            if (isRegistered(i))
+                if (AntiDuplication.getInstance().getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
+                    inventory.remove(i);
+        }
+    }
+
+
+    private static int traceCount(Inventory inventory, String uniqueEpochIdentifier) {
+        int amount = 0;
+        for (ItemStack i : inventory) {
+            if (i == null || CraftItemStack.asNMSCopy(i) == null) continue;
+            if (i.getAmount() <= 0) continue;
+            if (isRegistered(i))
+                if (AntiDuplication.getInstance().getUniqueEpochIdentifier(i).equals(uniqueEpochIdentifier))
+                    amount += i.getAmount();
+        }
+        return amount;
+    }
 
     /**
      * Returns the actual Epoch Unix String Identifier
