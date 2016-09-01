@@ -60,6 +60,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -1048,11 +1049,13 @@ public class GameAPI {
                     Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
         } else {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
-            TutorialMechanics.getInstance().doLogin(player);
+            //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7Welcome &6" + player.getName() + " &7to &6Dungeon Realms&7."));
-            ItemManager.giveStarter(player);
-            player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7&lWelcome &6&l" + player.getName() + " &7&lto &6&lDungeon Realms&f&l!"));
+            //ItemManager.giveStarter(player);
+
+            player.teleport(Teleportation.Tutorial);
+            //player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });

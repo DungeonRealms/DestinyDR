@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.title.TitleAPI;
 import net.minecraft.server.v1_9_R2.EntityExperienceOrb;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -96,6 +97,7 @@ public class EnergyListener implements Listener {
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
             player.playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
+            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "❢ LOW ENERGY ❢", 4 * 20);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
             } catch (Exception ex) {
@@ -104,7 +106,7 @@ public class EnergyListener implements Listener {
             return;
         }
         if (player.hasMetadata("lastAttack")) {
-            if (System.currentTimeMillis() - player.getMetadata("lastAttack").get(0).asLong() < 80){
+            if (System.currentTimeMillis() - player.getMetadata("lastAttack").get(0).asLong() < 80) {
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setCancelled(true);
                 return;

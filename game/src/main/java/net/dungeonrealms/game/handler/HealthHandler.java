@@ -171,19 +171,19 @@ public class HealthHandler implements GenericMechanic {
         }
         float healthToDisplay = (float) (healthPercentage * 100.F);
         int playerLevel = gamePlayer.getLevel();
-        String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
+        String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LV. " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.WHITE.toString() + " - ";
         String playerHPInfo;
         BossBarAPI.Color color;
         if (GameAPI.isInSafeRegion(player.getLocation())) {
             color = BossBarAPI.Color.GREEN;
-            playerHPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + hp + ChatColor.BOLD + " / " + ChatColor.GREEN + (int) maxHP;
+            playerHPInfo = hp != maxHP ? ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + hp + ChatColor.BOLD + " / " + ChatColor.GREEN + (int) maxHP : ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + (int) maxHP;
         } else if (GameAPI.isNonPvPRegion(player.getLocation())) {
             color = BossBarAPI.Color.YELLOW;
-            playerHPInfo = ChatColor.YELLOW.toString() + ChatColor.BOLD + "HP " + ChatColor.YELLOW + hp + ChatColor.BOLD + " / " + ChatColor.YELLOW + (int) maxHP;
+            playerHPInfo = hp != maxHP ? ChatColor.YELLOW.toString() + ChatColor.BOLD + "HP " + ChatColor.YELLOW + hp + ChatColor.BOLD + " / " + ChatColor.YELLOW + (int) maxHP : ChatColor.YELLOW.toString() + ChatColor.BOLD + "HP " + ChatColor.YELLOW + (int) maxHP;
         } else {
             color = BossBarAPI.Color.RED;
-            playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
+            playerHPInfo = hp != maxHP ? ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP : ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + (int) maxHP;
         }
         double exp = ((double) gamePlayer.getExperience()) / ((double) gamePlayer.getEXPNeeded(playerLevel));
         exp *= 100;

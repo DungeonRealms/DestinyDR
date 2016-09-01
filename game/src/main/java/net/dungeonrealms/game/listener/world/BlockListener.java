@@ -472,8 +472,14 @@ public class BlockListener implements Listener {
                     } else {
                         if (player.getInventory().firstEmpty() != -1)
                             player.getInventory().setItem(player.getInventory().firstEmpty(), item);
-                        else
-                            player.sendMessage(ChatColor.RED + "No inventory room.");
+                        else {
+                            player.sendMessage(ChatColor.RED + "No inventory space.");
+                            itemEntity.remove();
+                            returnItem(player, item);
+                            repairMap.remove(block.getLocation());
+                            player.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
+                            player.setCanPickupItems(true);
+                        }
                     }
                     player.updateInventory();
                     repairMap.remove(block.getLocation());

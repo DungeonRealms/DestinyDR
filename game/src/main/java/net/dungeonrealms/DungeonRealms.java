@@ -51,6 +51,7 @@ import net.dungeonrealms.game.listener.world.DungeonListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
@@ -261,6 +262,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
             mm.registerMechanic(PatchTools.getInstance());
+            mm.registerMechanic(TutorialIsland.getInstance());
         } else {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
@@ -304,6 +306,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new EnergyListener(), this);
             pm.registerEvents(new TitleAPI(), this);
             pm.registerEvents(new AntiCheatListener(), this);
+            pm.registerEvents(TutorialIsland.getInstance(), this);
             //TODO: Fix.
             pm.registerEvents(new ShopListener(), this);
             pm.registerEvents(new AchievementManager(), this);

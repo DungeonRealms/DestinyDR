@@ -36,9 +36,9 @@ public class CommandSkip extends BaseCommand {
                     + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to finish the tutorial. Otherwise, just type '"
                     + ChatColor.RED + "cancel" + ChatColor.GRAY + "' to continue with the tutorial.");
 
-            Chat.getInstance().listenForMessage(player, chat -> {
+            Chat.listenForMessage(player, chat -> {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
-                    player.teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
+                    player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
                     ItemManager.giveStarter(player);
                 }
             }, p -> p.sendMessage(ChatColor.RED + "Tutorial Skip - " + ChatColor.BOLD + "CANCELLED"));
