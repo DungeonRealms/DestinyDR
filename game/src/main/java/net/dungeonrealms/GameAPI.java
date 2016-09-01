@@ -1051,7 +1051,7 @@ public class GameAPI {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7&lWelcome &6&l" + player.getName() + " &7&lto &6&lDungeon Realms&f&l!"));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7&lWelcome &6&l" + player.getName() + " &7&lto &6&lDungeon Realms&7&l!"));
             //ItemManager.giveStarter(player);
 
             player.teleport(Teleportation.Tutorial);

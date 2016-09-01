@@ -510,7 +510,7 @@ public class MainListener implements Listener {
                 Chat.listenForMessage(event.getPlayer(), e -> {
                     if (e.getMessage().equalsIgnoreCase("y")) {
                         event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
-                        event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -466, 75, 389));
+                        event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
                         ItemManager.giveStarter(event.getPlayer());
                     }
                 }, pl -> pl.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
