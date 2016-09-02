@@ -5,7 +5,10 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.ping.PingResponse;
+import net.dungeonrealms.common.network.ping.ServerPinger;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.proxy.command.CommandAlert;
 import net.dungeonrealms.proxy.command.CommandMaintenance;
@@ -102,7 +105,6 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         );
     }
 
-
     public void onDisable() {
         try {
             // SAVE WHITELIST //
@@ -114,6 +116,90 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         }
     }
 
+    /**
+     * Method used to send player to an optimal shard.
+     *
+     * @param uuid        Target
+     * @param populated   Find populated shard?
+     * @param subscriber  Subscriber
+     * @param sendToLobby Send them to lobby if they have failed to connect to a shard
+     */
+    public void LoadBalancer(UUID uuid, boolean populated, boolean subscriber, boolean sendToLobby) {
+        getProxy().getScheduler().runAsync(DungeonRealmsProxy.getInstance(), () -> {
+            ProxiedPlayer player = getProxy().getPlayer(uuid);
+            Iterator<ServerInfo> optimalShardFinder = getOptimalShards(subscriber, populated).iterator();
+            while (optimalShardFinder.hasNext()) {
+                ServerInfo target = optimalShardFinder.next();
+
+                try {
+                    PingResponse ping = null;
+                    boolean isOnline = true;
+
+                    try {
+                        ping = ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 20);
+                    } catch (Exception e) {
+                        isOnline = true;
+                    }
+
+                    if (!isOnline || ping.getDescription().getText().contains("offline")) {
+
+                        if (!optimalShardFinder.hasNext()) {
+                            // CONNECT THEM TO LOBBY LOAD BALANCER //
+                            if (sendToLobby)
+                                player.connect(getProxy().getServerInfo("Lobby"));
+                            player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unable to find a session for you.");
+                            return;
+                        }
+
+                        continue;
+                    }
+                } catch (Exception e) {
+
+                    if (!optimalShardFinder.hasNext()) {
+                        // CONNECT THEM TO LOBBY LOAD BALANCER //
+                        if (sendToLobby)
+                            player.connect(getProxy().getServerInfo("Lobby"));
+                        player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unable to find a session for you.");
+                        return;
+                    }
+
+                    continue;
+                }
+
+                if (target.canAccess(player) && !(player.getServer() != null && player.getServer().getInfo().equals(target))) {
+                    player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Moving your current session...");
+                    player.connect(target);
+                    break;
+                } else if (!optimalShardFinder.hasNext()) {
+                    // CONNECT THEM TO LOBBY LOAD BALANCER //
+                    if (sendToLobby)
+                        player.connect(getProxy().getServerInfo("Lobby"));
+                    player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unable to find a session for you.");
+                    return;
+                }
+            }
+        });
+    }
+
+    public List<ServerInfo> getOptimalShards(boolean populated, boolean isSub) {
+        List<ServerInfo> servers = new ArrayList<>();
+
+        for (ShardInfo shardInfo : ShardInfo.values()) {
+            // We want to only put them on a US as they may fail the criteria for another shard.
+            // They are free to join another shard once connected.
+
+            String name = shardInfo.getPseudoName();
+            if ((name.startsWith("us") && !name.equalsIgnoreCase("us0")) || (isSub && name.startsWith("sub")))
+                servers.add(getProxy().getServerInfo(name));
+        }
+
+        Collections.sort(servers, (o1, o2) -> ((o1.getPlayers().size())) - (o2.getPlayers().size()));
+
+        if (populated)
+            Collections.reverse(servers);
+
+        return servers;
+    }
 
     public List<String> getWhitelist() {
         return WHITELIST;

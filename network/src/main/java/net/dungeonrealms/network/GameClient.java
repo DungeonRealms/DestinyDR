@@ -5,6 +5,8 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.network.ServerAddress;
@@ -78,6 +80,17 @@ public class GameClient
 
         packet.data = data;
         sendUDP(packet);
+    }
+
+    public void sendNetworkMessage(String task, String message, String... contents) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(task);
+        out.writeUTF(message);
+
+        for (String s : contents)
+            out.writeUTF(s);
+
+        client.sendTCP(out.toByteArray());
     }
 
     private static void registerClasses(Kryo kryo) {

@@ -35,7 +35,9 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.*;
-import net.dungeonrealms.game.mechanic.*;
+import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
@@ -372,10 +374,6 @@ public class GameAPI {
     }
 
 
-    /**
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static void handleCrash() {
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setAcceptPlayers(false);
@@ -383,29 +381,37 @@ public class GameAPI {
 
         Constants.log.info("called handleCrash()...");
 
+        final long terminateTime = (ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.size() * 500) + 5000;
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Constants.log.info("Terminating server's process..");
+
+                try {
+                    Runtime.getRuntime().exec("kill -9 " + Utils.getPid());
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, terminateTime);
+
         ShopMechanics.deleteAllShops(true);
         Constants.log.info("Saved all player shops successfully.");
 
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
 
-        Constants.log.info("Moving all players' sessions...");
+        Constants.log.info("Saving all players' sessions...");
 
         final long currentTime = System.currentTimeMillis();
         ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.keySet()
                 .stream().forEach(uuid -> savePlayerData(uuid, false, doAfter -> {
+            IGNORE_QUIT_EVENT.add(uuid);
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, false);
             GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
         }));
 
-        System.out.println("Successfully moved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
-
-        Constants.log.info("Force killing server's process...");
-
-        try {
-            Runtime.getRuntime().exec("kill -9 " + Utils.getPid());
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        System.out.println("Successfully saved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
 
         DungeonRealms.getInstance().mm.stopInvocation();
         AsyncUtils.pool.shutdown();
@@ -489,14 +495,7 @@ public class GameAPI {
      * @since 1.0
      */
     public static void sendNetworkMessage(String task, String message, String... contents) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(task);
-        out.writeUTF(message);
-
-        for (String s : contents)
-            out.writeUTF(s);
-
-        getClient().sendTCP(out.toByteArray());
+        getClient().sendNetworkMessage(task, message, contents);
     }
 
     /**
