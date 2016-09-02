@@ -216,7 +216,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
             Chat.listenForMessage(e.getPlayer(), ev -> {
                 if (ev.getMessage().equalsIgnoreCase("y")) {
                     ev.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
-                    ev.getPlayer().teleport(Teleportation.Cyrennica);
+                    ev.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
                     ItemManager.giveStarter(e.getPlayer());
                 }
             }, pla -> pla.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
