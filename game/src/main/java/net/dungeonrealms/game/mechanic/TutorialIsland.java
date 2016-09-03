@@ -2,7 +2,6 @@ package net.dungeonrealms.game.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.mastery.Utils;
@@ -13,7 +12,6 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -39,6 +37,8 @@ public class TutorialIsland implements GenericMechanic, Listener {
     public static HashMap<String, List<String>> quest_map = new HashMap<>();
     // Player_name, List of remaining NPC names to be spoken too.
 
+    public static Map<UUID, List<String>> WELCOMES = new HashMap<>();
+
     public static HashMap<String, List<String>> completion_delay = new HashMap<>();
     // Player_name, List of NPC names who have a timer event to tell them they've completed running. (used for rewards)
 
@@ -49,6 +49,15 @@ public class TutorialIsland implements GenericMechanic, Listener {
     // Already got exp.
 
     private static TutorialIsland instance = null;
+
+    public List<String> getWelcomes(UUID uuid) {
+        List<String> welcomes;
+        if (!WELCOMES.containsKey(uuid)) {
+            welcomes = new ArrayList<>();
+            WELCOMES.put(uuid, welcomes);
+        } else welcomes = WELCOMES.get(uuid);
+        return welcomes;
+    }
 
     @Override
     public EnumPriority startPriority() {

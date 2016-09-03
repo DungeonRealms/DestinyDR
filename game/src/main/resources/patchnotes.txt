@@ -1,9 +1,8 @@
 Build <build>
 
 &2New Features&0
-&4- All subscribers now have PARTICLES
-&4and PETS unlocked while they are subscribed
-&0- You can now toggle party chat
+Use /welcome to welcome new players
+for ecash!
 
 &8Changes&0
 - Fixed critical exploits
