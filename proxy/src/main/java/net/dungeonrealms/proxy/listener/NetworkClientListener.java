@@ -49,12 +49,7 @@ public class NetworkClientListener extends Listener {
                     boolean sub = Boolean.valueOf(in.readUTF());
 
                     DungeonRealmsProxy.getInstance().LoadBalancer(uuid, false, sub, true);
-
-                } else if (task.equals("HandleNewAccount")) {
-                    UUID uuid = UUID.fromString(in.readUTF());
-                    DungeonRealmsProxy.getInstance().LoadBalancer(uuid, true, false, false);
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

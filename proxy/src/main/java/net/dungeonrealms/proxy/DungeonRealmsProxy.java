@@ -125,6 +125,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
      * @param sendToLobby Send them to lobby if they have failed to connect to a shard
      */
     public void LoadBalancer(UUID uuid, boolean populated, boolean subscriber, boolean sendToLobby) {
+        Log.info("Called load balancer");
+
         getProxy().getScheduler().runAsync(DungeonRealmsProxy.getInstance(), () -> {
             ProxiedPlayer player = getProxy().getPlayer(uuid);
             Iterator<ServerInfo> optimalShardFinder = getOptimalShards(subscriber, populated).iterator();

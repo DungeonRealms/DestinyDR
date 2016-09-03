@@ -42,9 +42,6 @@ public class Lobby extends JavaPlugin implements Listener {
     @Getter
     private GhostFactory ghostFactory;
 
-    @Getter
-    private GameClient client;
-
     @Override
     public void onEnable() {
         instance = this;
@@ -56,18 +53,6 @@ public class Lobby extends JavaPlugin implements Listener {
 
         ghostFactory = new GhostFactory(this);
         Bukkit.getPluginManager().registerEvents(this, this);
-
-
-        Constants.log.info("Connecting to DungeonRealms master server...");
-        client = new GameClient();
-
-        try {
-            client.connect();
-            Log.set(Log.LEVEL_INFO);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         CommandManager cm = new CommandManager();
 
         // Commands always registered regardless of server.
@@ -94,13 +79,6 @@ public class Lobby extends JavaPlugin implements Listener {
 
         // REQUEST PLAYER'S DATA ASYNC //
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
-
-        // SEND THEM DIRECTLY TO A SHARD WHEN THEY LOGIN FOR THE FIRST TIME
-        if (DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, event.getUniqueId()).equals("")) {
-            client.sendNetworkMessage("HandleNewAccount", event.getUniqueId().toString());
-            // GIVE THEM MAKE SURE THEY DON'T CONNECT TO THE LOBBY BEFORE WE SEND THEM AWWAY//
-            Thread.sleep(3000L);
-        }
     }
 
 

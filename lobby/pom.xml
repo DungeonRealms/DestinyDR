@@ -47,7 +47,6 @@
                                     <include>org.mongodb:mongo-java-driver</include>
                                     <include>org.mongodb:bson</include>
                                     <include>commons-net:commons-net</include>
-                                    <include>com.esotericsoftware:kryo-shaded</include>
                                     <include>net.lingala.zip4j:zip4j</include>
                                     <include>net.dungeonrealms:DungeonRealms-common</include>
                                     <include>net.dungeonrealms:DungeonRealms-network</include>

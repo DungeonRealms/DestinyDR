@@ -90,7 +90,7 @@ public class GameClient
         for (String s : contents)
             out.writeUTF(s);
 
-        client.sendTCP(out.toByteArray());
+        sendTCP(out.toByteArray());
     }
 
     private static void registerClasses(Kryo kryo) {
