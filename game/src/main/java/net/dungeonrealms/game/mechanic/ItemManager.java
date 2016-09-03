@@ -913,22 +913,27 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.INTELLECT) * 0.02) + "% Staff DMG";
 
         String page5_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
-                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "@<PLAYER> <MSG>" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/msg" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/ask" + "\n" + ChatColor.BLACK.toString() + "Ask any questions." + new_line
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/shard" + "\n" + ChatColor.BLACK.toString() + "Switch your current session." + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/pinvite"
                 + "\n"
                 + ChatColor.BLACK.toString()
-                + "Invite to party"
-                + new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
+                + "Invite to party");
+
+
+        String page6_string = (ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
                 + "Kick player from party" + new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/pleave " + "\n"
-                + ChatColor.BLACK.toString() + "Leave your party" + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString());
-
-
-        String page6_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll " + "\n" + ChatColor.BLACK.toString() + "Rolls a random number."
+                + ChatColor.BLACK.toString() + "Leave your party"
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll "
+                + "\n" + ChatColor.BLACK.toString() + "Rolls a random number."
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/logout " + "\n" + ChatColor.BLACK.toString()
                 + "Safetly logs out your character."
-                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
-                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
+        );
 
+
+        String page7_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
 
         ArrayList<String> friendsList = FriendHandler.getInstance().getFriendsList(p.getUniqueId());
 
@@ -939,6 +944,8 @@ public class ItemManager {
         pages.add(page4_string);
         pages.add(page5_string);
         pages.add(page6_string);
+        pages.add(page7_string);
+
 //        int count = 0;
 //        String nextLine = "\n";
 ////        String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);

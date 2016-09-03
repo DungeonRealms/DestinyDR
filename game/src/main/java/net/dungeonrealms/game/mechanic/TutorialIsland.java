@@ -2,12 +2,14 @@ package net.dungeonrealms.game.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
@@ -218,6 +220,19 @@ public class TutorialIsland implements GenericMechanic, Listener {
                     ev.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
                     ev.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
                     ItemManager.giveStarter(e.getPlayer());
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " ❢ " + ChatColor.YELLOW + "Need more information? Visit our wiki " + ChatColor.WHITE);
+                        normal.addURL(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "http://dungeonrealms.wikia.com/wiki/Main_Page");
+                        normal.addSuggestCommand(ChatColor.YELLOW.toString() + " or for any questions. Click " + ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/ask ");
+                        normal.addText(ChatColor.GOLD + " ❢ ");
+
+                        pl.sendMessage("");
+                        normal.sendToPlayer(ev.getPlayer());
+                        pl.sendMessage("");
+
+                        ev.getPlayer().playSound(ev.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
+                    }, 40);
                 }
             }, pla -> pla.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
             return;

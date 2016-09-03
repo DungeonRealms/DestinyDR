@@ -1,12 +1,15 @@
 package net.dungeonrealms.game.command;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -40,6 +43,19 @@ public class CommandSkip extends BaseCommand {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
                     player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
                     ItemManager.giveStarter(player);
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " ❢ " + ChatColor.YELLOW + "Need more information? Visit our wiki " + ChatColor.WHITE);
+                        normal.addURL(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "http://dungeonrealms.wikia.com/wiki/Main_Page");
+                        normal.addSuggestCommand(ChatColor.YELLOW.toString() + " or for any questions. Click " + ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/ask ");
+                        normal.addText(ChatColor.GOLD + " ❢ ");
+
+                        player.sendMessage("");
+                        normal.sendToPlayer(player);
+                        player.sendMessage("");
+
+                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
+                    }, 40);
                 }
             }, p -> p.sendMessage(ChatColor.RED + "Tutorial Skip - " + ChatColor.BOLD + "CANCELLED"));
         } else {
