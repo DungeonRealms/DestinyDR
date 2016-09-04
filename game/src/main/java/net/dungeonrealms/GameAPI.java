@@ -405,8 +405,6 @@ public class GameAPI {
 
         Constants.log.info("Saved all player realms successfully.");
 
-        CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
-
         Constants.log.info("Saving all players' sessions...");
 
         final long currentTime = System.currentTimeMillis();
@@ -414,9 +412,7 @@ public class GameAPI {
                 .stream().forEach(uuid -> savePlayerData(uuid, false, doAfter -> {
             IGNORE_QUIT_EVENT.add(uuid);
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, false);
-
-            String name = (String) DatabaseAPI.getInstance().getData(EnumData.USERNAME, uuid);
-            BungeeUtils.sendToServer(name, "Lobby");
+            GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
         }));
 
         System.out.println("Successfully saved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
