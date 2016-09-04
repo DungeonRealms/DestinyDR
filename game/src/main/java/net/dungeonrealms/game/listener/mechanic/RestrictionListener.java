@@ -13,6 +13,7 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.ProtectionHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
@@ -160,6 +161,12 @@ public class RestrictionListener implements Listener {
         Shop shop = ShopMechanics.getShop(ownerName);
         if (shop == null) return;
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onCrash(PlayerInteractEvent event) {
+        if (CrashDetector.crashDetected)
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

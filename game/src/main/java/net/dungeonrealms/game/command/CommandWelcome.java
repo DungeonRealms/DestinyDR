@@ -29,7 +29,7 @@ public class CommandWelcome extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) return true;
 
-        if (args.length < 2) {
+        if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "/welcome <newplayer>");
             return false;
         }
@@ -54,7 +54,7 @@ public class CommandWelcome extends BaseCommand {
             return true;
         }
 
-        List<String> welcomes = TutorialIsland.getInstance().getWelcomes(target.getUniqueId());
+        List<String> welcomes = TutorialIsland.getInstance().getWelcomes(player.getUniqueId());
 
         if (welcomes.contains(playerName.toLowerCase())) {
             player.sendMessage(ChatColor.RED + "You have already welcomed " + playerName);

@@ -58,28 +58,17 @@ public class BungeeUtils {
      */
 
     public static void sendNetworkMessage(String channel, String subChannel, String message, String... contents) {
-        Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
-        if (player != null)
-            sendNetworkMessage(channel, subChannel, message, contents);
-    }
-
-    /**
-     * @param player   Player
-     * @param channel  Type of custom Channel (actually sub)
-     * @param message  Message to send.
-     * @param contents Contents of the internal guts.
-     * @since 1.0
-     */
-
-    public static void sendNetworkMessage(Player player, String channel, String subChannel, String message, String... contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(subChannel);
         out.writeUTF(message);
 
         for (String s : contents)
             out.writeUTF(s);
-        player.sendPluginMessage(plugin, channel, out.toByteArray());
+
+        Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+
+        if (player != null)
+            player.sendPluginMessage(plugin, channel, out.toByteArray());
     }
 
     /**

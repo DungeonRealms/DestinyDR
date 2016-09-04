@@ -1,19 +1,15 @@
 package net.dungeonrealms.lobby;
 
-import com.esotericsoftware.minlog.Log;
 import lombok.Getter;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.lobby.effect.GhostFactory;
-import net.dungeonrealms.network.GameClient;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -28,7 +24,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
 import java.util.Collections;
 
 /**
