@@ -381,7 +381,7 @@ public class GameAPI {
 
         Constants.log.info("called handleCrash()...");
 
-        final long terminateTime = (ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.size() * 500) + 5000;
+        final long terminateTime = (ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.size() * 1000) + 10000;
 
         new Timer().schedule(new TimerTask() {
             @Override
@@ -399,6 +399,12 @@ public class GameAPI {
         ShopMechanics.deleteAllShops(true);
         Constants.log.info("Saved all player shops successfully.");
 
+        Constants.log.info("Saving all player realms.");
+
+        Realms.getInstance().saveAllRealms();
+
+        Constants.log.info("Saved all player realms successfully.");
+
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
 
         Constants.log.info("Saving all players' sessions...");
@@ -408,7 +414,9 @@ public class GameAPI {
                 .stream().forEach(uuid -> savePlayerData(uuid, false, doAfter -> {
             IGNORE_QUIT_EVENT.add(uuid);
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, false);
-            GameAPI.sendNetworkMessage("MoveSessionToken", uuid.toString(), "false");
+
+            String name = (String) DatabaseAPI.getInstance().getData(EnumData.USERNAME, uuid);
+            BungeeUtils.sendToServer(name, "Lobby");
         }));
 
         System.out.println("Successfully saved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");

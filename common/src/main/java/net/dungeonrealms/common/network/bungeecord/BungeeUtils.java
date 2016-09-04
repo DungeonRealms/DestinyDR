@@ -66,7 +66,6 @@ public class BungeeUtils {
             out.writeUTF(s);
 
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-
         if (player != null)
             player.sendPluginMessage(plugin, channel, out.toByteArray());
     }

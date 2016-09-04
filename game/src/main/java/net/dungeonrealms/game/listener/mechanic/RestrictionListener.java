@@ -369,6 +369,9 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void loggingOutDropItem(PlayerDropItemEvent event) {
+        if (CrashDetector.crashDetected)
+            event.setCancelled(true);
+
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
             event.setCancelled(true);
             try {
@@ -380,6 +383,9 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void loggingOutPickupItem(PlayerPickupItemEvent event) {
+        if (CrashDetector.crashDetected)
+            event.setCancelled(true);
+
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
             event.setCancelled(true);
             try {

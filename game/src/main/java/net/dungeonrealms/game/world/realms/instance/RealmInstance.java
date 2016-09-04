@@ -239,6 +239,12 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         return true;
     }
 
+    @Override
+    public void saveAllRealms() {
+        getCachedRealms().values()
+                .forEach(token -> uploadRealm(token.getOwner(), false, true, doAfter -> Constants.log.info("Successfully saved " + token.getOwner() + "'s realm.")));
+    }
+
     private void loadRealm(Player player, boolean create, Runnable doAfter) {
         if (create) {
             GameAPI.submitAsyncCallback(() -> loadTemplate(player.getUniqueId()), callback -> {
@@ -556,7 +562,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
 
     @Override
-    public void uploadRealm(UUID uuid, boolean runAsync, Consumer<Boolean> doAfter) {
+    public void uploadRealm(UUID uuid, boolean removeCacheFolder, boolean runAsync, Consumer<Boolean> doAfter) {
         if (!isRealmCached(uuid)) return;
 
         RealmToken realm = getToken(uuid);
@@ -568,16 +574,16 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         if (runAsync) {
             // SUBMIT THREAD INTO ASYNC POOL //
             GameAPI.submitAsyncCallback(() -> {
-                uploadRealm(uuid, doAfter);
+                uploadRealm(uuid, removeCacheFolder, doAfter);
                 return true;
             }, null);
         } else {
             // EXECUTE ON MAIN THREAD //
-            uploadRealm(uuid, doAfter);
+            uploadRealm(uuid, removeCacheFolder, doAfter);
         }
     }
 
-    private void uploadRealm(UUID uuid, Consumer<Boolean> doAfter) {
+    private void uploadRealm(UUID uuid, boolean removeCacheFolder, Consumer<Boolean> doAfter) {
         Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
         InputStream inputStream = null;
 
@@ -627,7 +633,9 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
             try {
                 FileUtils.forceDelete(new File(pluginFolder.getAbsolutePath() + "/realms/uploading/" + uuid.toString() + ".zip"));
-                FileUtils.forceDelete(new File(rootFolder.getAbsolutePath() + "/" + uuid.toString()));
+
+                if (removeCacheFolder)
+                    FileUtils.forceDelete(new File(rootFolder.getAbsolutePath() + "/" + uuid.toString()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -748,7 +756,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         unloadRealmWorld(uuid);
 
         // SUBMITS ASYNC UPLOAD THREAD //
-        uploadRealm(uuid, runAsync, success -> removeCachedRealm(uuid));
+        uploadRealm(uuid, true, runAsync, success -> removeCachedRealm(uuid));
     }
 
     @Override

@@ -84,6 +84,12 @@ public interface Realms extends GenericMechanic {
 
 
     /**
+     * Saves all realms
+     */
+    void saveAllRealms();
+
+
+    /**
      * Sets up realm world guard region
      *
      * @param world     Realm world
@@ -136,9 +142,10 @@ public interface Realms extends GenericMechanic {
      * by the other shards
      *
      * @param runAsync Should execute on async pool?
+     * @param removeCacheFolder Removed cached folder
      * @param uuid     Owner of realm
      */
-    void uploadRealm(UUID uuid, boolean runAsync, Consumer<Boolean> doAfter);
+    void uploadRealm(UUID uuid, boolean removeCacheFolder, boolean runAsync, Consumer<Boolean> doAfter);
 
     /**
      * Closes the realm portal
