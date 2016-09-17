@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.concurrent.MongoAccessThread;
+import net.dungeonrealms.common.game.util.AsyncUtils;
 import org.bson.Document;
 
 /**
@@ -27,7 +28,7 @@ public class DatabaseInstance {
     public static MongoClientURI mongoClientURI = null;
     public static MongoDatabase database = null;
 
-    public static MongoAccessThread accessThread = null;
+    public static MongoAccessThread[] accessThreads = null;
 
     public static MongoCollection<Document> playerData, shardData, bans, guilds, quests;
     protected boolean cacheData = true;
@@ -48,15 +49,20 @@ public class DatabaseInstance {
 
         Constants.log.info("DungeonRealms Database has connected successfully!");
 
-        createMongoAccessThread();
+        createMongoAccessThreads();
     }
 
 
-    private static void createMongoAccessThread() {
-        accessThread = new MongoAccessThread();
-        accessThread.start();
+    private static void createMongoAccessThreads() {
+        int threads = AsyncUtils.threadCount;
 
-        Constants.log.info("DungeonRealms Database MongoAccessThread ... STARTED ...");
+        for (int i = 0; i < threads; i++) {
+            accessThreads[i] = new MongoAccessThread();
+            accessThreads[i].start();
+        }
+
+
+        Constants.log.info("DungeonRealms Database mongo access threads ... STARTED ...");
     }
 
     protected boolean isCacheData() {

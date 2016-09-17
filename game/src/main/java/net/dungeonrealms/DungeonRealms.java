@@ -358,6 +358,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandBroadcast("broadcast", "/<command> [args]", "Send a formatted broadcast to all shards..", Collections.singletonList("sayall")));
         cm.registerCommand(new CommandGm("gm", "/<command> [args]", "Displays the Game Master toggles."));
         cm.registerCommand(new CommandPlayerFix("playerfix", "/<command> [args]", "Sets a player's state to offline so he can login.", Collections.singletonList("pfix")));
+        cm.registerCommand(new CommandPlayerRetention("pretention", "/<command> [args]", "Player retention command."));
         cm.registerCommand(new CommandSudo("sudo", "/<command> [args]", "Sudo command."));
         cm.registerCommand(new CommandSudoChat("sudochat", "/<command> [args]", "Sudo Chat command."));
 

@@ -27,6 +27,7 @@ public class BossTeleport extends BaseCommand {
     public BossTeleport(String command, String usage, String description) {
         super(command, usage, description);
     }
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length != 3) return true;

@@ -63,11 +63,13 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     public InfernalAbyss(World world, Location loc) {
         super(world);
         this.setSkeletonType(1);
+        setArmor(getEnumBoss().tier);
         this.fireProof = true;
         this.getBukkitEntity().setCustomNameVisible(true);
         int bossLevel = 50;
         MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, bossLevel);
         this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
+        ;
         EntityStats.setBossRandomStats(this, bossLevel, getEnumBoss().tier);
         this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
@@ -78,7 +80,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         this.setSize(0.7F, 2.4F);
         this.fireProof = true;
         this.setSkeletonType(1);
-        setArmor(getEnumBoss().tier);
         this.persistent = true;
         DungeonManager.getInstance().getFireUnderEntity().add(this);
     }
@@ -274,7 +275,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
                     for (int i = 0; i < 2; i++) {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 4, EnumMonster.Silverfish);
                         int level = Utils.getRandomFromTier(4, "low");
-                        String newLevelName = ChatColor.AQUA + "[Lvl. "+ level + "] ";
+                        String newLevelName = ChatColor.AQUA + "[Lvl. " + level + "] ";
                         EntityStats.createDungeonMob(entity, level, 4);
                         SpawningMechanics.rollElement(entity, EnumMonster.Silverfish);
                         if (entity == null) {

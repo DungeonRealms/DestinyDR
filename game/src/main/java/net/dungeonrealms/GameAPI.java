@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.bulk.BulkWriteResult;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOneModel;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -178,6 +179,35 @@ public class GameAPI {
     }
 
     /**
+     * Method for calculating how many players we are retaining.
+     *
+     * @param retentionPolicy Calculate for who joined in seconds
+     * @return Returns how many players are we actually retaining
+     */
+    public static int calculatePlayerRetention(long retentionPolicy) {
+        // GRAB ALL DOCUMENTS //
+        FindIterable<Document> all = DatabaseInstance.playerData
+                .find(Filters.gte(EnumData.FIRST_LOGIN.getKey(), (System.currentTimeMillis()) - (retentionPolicy * 1000)));
+
+        final int[] retention = {0};
+
+        // RUN CHECK BLOCK FOR EACH DOCUMENT //
+        all.forEach(new com.mongodb.Block<Document>() {
+            @Override
+            public void apply(Document document) {
+                int minsPlayed = (Integer) DatabaseAPI.getInstance().getData(EnumData.TIME_PLAYED, document);
+                int level = (Integer) DatabaseAPI.getInstance().getData(EnumData.LEVEL, document);
+                int bankGems = (Integer) DatabaseAPI.getInstance().getData(EnumData.GEMS, document);
+
+                // APPLY STATIC RETENTION POLICY //
+                if (minsPlayed >= 300 && level >= 8 && bankGems > 0)
+                    retention[0]++;
+            }
+        });
+        return retention[0];
+    }
+
+    /**
      * To get the players region.
      *
      * @param location The location
@@ -210,6 +240,7 @@ public class GameAPI {
         }
         return "";
     }
+
 
     public static ItemStack makeItemUntradeable(ItemStack item) {
         if (item.hasItemMeta()) {

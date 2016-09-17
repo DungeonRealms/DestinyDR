@@ -22,9 +22,10 @@ public class MongoAccessThread extends Thread {
 
     public static Queue<Query<?>> CONCURRENT_QUERIES = new ConcurrentLinkedQueue<>();
 
-    private final static ExecutorService CONSUMER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
     public final static UpdateOptions uo = new UpdateOptions().upsert(true);
+
+    private final ExecutorService CONSUMER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
 
     public static void submitQuery(Query<?> query) {

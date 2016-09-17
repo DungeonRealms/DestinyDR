@@ -28,16 +28,14 @@ public class BossSpawn extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (args.length != 3) return true;
         if (!(sender instanceof Player)) return true;
         final Player player = (Player) sender;
         if (!(Rank.isGM(player))) return true;
 
         Location toSpawn = player.getLocation();
 
-        if (args.length != 1) {
-            player.sendMessage(ChatColor.RED + "Syntax: /bspawn mayel|burick|infernal");
-        }
+        if (args.length == 0) player.sendMessage(ChatColor.RED + "Syntax: /bspawn mayel|burick|infernal");
+
         switch (args[0].toLowerCase()) {
             case "mayel":
                 Entity mayel = new Mayel(((CraftWorld) player.getWorld()).getHandle(), toSpawn);
