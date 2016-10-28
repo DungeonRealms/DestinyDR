@@ -14,7 +14,9 @@ public class Constants {
 
     public static final String DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
 
-    public static final String[] DEVELOPERS = new String[]{"Atlas__", "APOLLO_IO", "Bradez1571"};
+    public static final String[] DEVELOPERS = new String[]{"Atlas__", "Vawke", "matt11matthew"};
+
+    public static final String[] OLD_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro"};
 
     public static final String MOTD = "&6Dungeon Realms™ &8- &a• The #1 Minecraft MMORPG •    \n                      &e&o&lOut of Beta!";
 
