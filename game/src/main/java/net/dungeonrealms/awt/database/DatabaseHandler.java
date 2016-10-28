@@ -1,6 +1,8 @@
 package net.dungeonrealms.awt.database;
 
+import lombok.Getter;
 import net.dungeonrealms.awt.SuperHandler;
+import net.dungeonrealms.awt.database.sql.MySQL;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -10,9 +12,16 @@ import net.dungeonrealms.awt.SuperHandler;
  */
 public class DatabaseHandler implements SuperHandler.Handler
 {
+    @Getter
+    private MySQL mySQL;
+
+    private boolean locked = false;
+    
     @Override
     public void prepare()
     {
-
+        //TODO connect via common-Constants
+        if (!locked)
+            locked = true;
     }
 }
