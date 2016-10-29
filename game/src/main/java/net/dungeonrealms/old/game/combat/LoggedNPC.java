@@ -9,10 +9,12 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.old.game.handler.KarmaHandler;
+import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mastery.ItemSerialization;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -49,12 +51,18 @@ public class LoggedNPC {
 
     private KarmaHandler.EnumPlayerAlignments alignment;
 
-    public LoggedNPC(UUID uuid, String name, Location location, KarmaHandler.EnumPlayerAlignments alignment) {
-        this.uuid = uuid;
-        this.name = name;
+    private Player player;
+    private GamePlayer gp;
+
+    public LoggedNPC(GamePlayer gp) {
+        this.player = gp.getPlayer();
+        this.gp = gp;
+        this.uuid = gp.getPlayer().getUniqueId();
+        this.name = gp.getPlayer().getDisplayName();
         this.timeLeft = 10;
-        this.location = location;
-        this.alignment = alignment;
+        this.location = gp.getPlayer().getLocation();
+        this.alignment = gp.getPlayerAlignment();
+        loadInventory();
         spawnNPC();
         new BukkitRunnable() {
 
@@ -85,6 +93,10 @@ public class LoggedNPC {
 
     public enum DespawnCauseEnum {
         DEAD, SAFE
+
+    }
+
+    public void update() {
 
     }
 
