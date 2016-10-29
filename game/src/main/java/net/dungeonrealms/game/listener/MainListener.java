@@ -156,8 +156,8 @@ public class MainListener implements Listener {
 
         Chat.getInstance().doMessageChatListener(event);
 
-        if (PunishAPI.isMuted(event.getPlayer().getUniqueId()) && !event.isCancelled()) {
-            event.getPlayer().sendMessage(PunishAPI.getMutedMessage(event.getPlayer().getUniqueId()));
+        if (PunishAPI.getInstance().isMuted(event.getPlayer().getUniqueId()) && !event.isCancelled()) {
+            event.getPlayer().sendMessage(PunishAPI.getInstance().getMutedMessage(event.getPlayer().getUniqueId()));
             event.setCancelled(true);
             return;
         }

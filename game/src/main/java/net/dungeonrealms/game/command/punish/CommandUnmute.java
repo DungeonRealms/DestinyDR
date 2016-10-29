@@ -44,12 +44,12 @@ public class CommandUnmute extends BaseCommand {
 
         UUID p_uuid = p.getUniqueId();
 
-        if (!PunishAPI.isMuted(p_uuid)) {
+        if (!PunishAPI.getInstance().isMuted(p_uuid)) {
             sender.sendMessage(ChatColor.RED + p_name + " is not muted.");
             return true;
         }
 
-        PunishAPI.unmute(p_uuid);
+        PunishAPI.getInstance().unmute(p_uuid);
         sender.sendMessage(ChatColor.RED.toString() + "You have unmuted " + ChatColor.BOLD + p_name);
         return false;
     }

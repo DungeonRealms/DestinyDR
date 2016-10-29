@@ -74,8 +74,8 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                         if (existingDoc != null) {
                             UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
 
-                            if (PunishAPI.isBanned(uuid))
-                                PunishAPI.ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
+                            if (PunishAPI.getInstance().isBanned(uuid))
+                                PunishAPI.getInstance().ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
                         }
                     });
                     return;

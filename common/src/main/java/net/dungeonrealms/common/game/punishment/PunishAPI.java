@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 
 public class PunishAPI {
 
+    private static PunishAPI instance;
+
     /**
      * Method to ban players asynchronously.
      *
@@ -30,7 +32,7 @@ public class PunishAPI {
      * @param duration         Set as -1 for permanent ban
      * @param reason           Leave empty for no reason
      */
-    public static void ban(UUID uuid, String playerName, String sourceThatBanned, long duration, String reason, Consumer<UUID> doBefore) {
+    public void ban(UUID uuid, String playerName, String sourceThatBanned, long duration, String reason, Consumer<UUID> doBefore) {
         if (uuid == null) return;
 
         // KICK PLAYER //
@@ -60,7 +62,7 @@ public class PunishAPI {
      * @param duration Set as -1 for permanent ban
      * @param reason   Leave empty for no reason
      */
-    public static void mute(UUID uuid, long duration, String reason, Consumer<UUID> doAfter) {
+    public void mute(UUID uuid, long duration, String reason, Consumer<UUID> doAfter) {
         if (uuid == null) return;
         // MUTE PLAYER //
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.MUTE_TIME, System.currentTimeMillis() + (duration * 1000), false);
@@ -71,7 +73,7 @@ public class PunishAPI {
         doAfter.accept(uuid);
     }
 
-    public static String getBannedMessage(UUID uuid) {
+    public String getBannedMessage(UUID uuid) {
         if (!isBanned(uuid)) return null;
 
         Document bansDoc = DatabaseInstance.bans.find(Filters.eq("bans.uuid", uuid.toString())).first().get("bans", Document.class);
@@ -89,7 +91,7 @@ public class PunishAPI {
         return message;
     }
 
-    public static String getMutedMessage(UUID uuid) {
+    public String getMutedMessage(UUID uuid) {
         long muteTime = (long) DatabaseAPI.getInstance().getData(EnumData.MUTE_TIME, uuid);
         String reason = (String) DatabaseAPI.getInstance().getData(EnumData.MUTE_REASON, uuid);
 
@@ -101,7 +103,7 @@ public class PunishAPI {
      *
      * @param uuid Target
      */
-    public static void unban(UUID uuid) {
+    public void unban(UUID uuid) {
         if (uuid == null) return;
 
         AsyncUtils.pool.submit(() -> {
@@ -118,7 +120,7 @@ public class PunishAPI {
      *
      * @param uuid Target
      */
-    public static void unmute(UUID uuid) {
+    public void unmute(UUID uuid) {
         if (uuid == null) return;
         if (!isMuted(uuid)) return;
 
@@ -132,7 +134,7 @@ public class PunishAPI {
      * @param playerName  Target
      * @param kickMessage Kick message for player if they're connected to the proxy
      */
-    public static void kick(String playerName, String kickMessage, Consumer<UUID> doBefore) {
+    public void kick(String playerName, String kickMessage, Consumer<UUID> doBefore) {
         String uuidString = DatabaseAPI.getInstance().getUUIDFromName(playerName);
         UUID uuid = !uuidString.equals("") ? UUID.fromString(uuidString) : null;
 
@@ -150,7 +152,7 @@ public class PunishAPI {
      * @param uuid
      * @return
      */
-    public static boolean isBanned(UUID uuid) {
+    public boolean isBanned(UUID uuid) {
         try {
             Document bansDoc = DatabaseInstance.bans.find(Filters.eq("bans.uuid", uuid.toString())).first();
             if (bansDoc == null) return false;
@@ -162,12 +164,12 @@ public class PunishAPI {
         }
     }
 
-    public static boolean isMuted(UUID uuid) {
+    public boolean isMuted(UUID uuid) {
         long muteTime = ((Long) DatabaseAPI.getInstance().getData(EnumData.MUTE_TIME, uuid));
         return (muteTime != 0 && System.currentTimeMillis() < muteTime);
     }
 
-    public static String timeString(int totalMinutes) {
+    public String timeString(int totalMinutes) {
         String timeStr = "";
 
         int totalMins = totalMinutes;
@@ -234,4 +236,10 @@ public class PunishAPI {
         return timeStr.toLowerCase();
     }
 
+    public static PunishAPI getInstance() {
+        if (instance ==  null) {
+            instance = new PunishAPI();
+        }
+        return instance;
+    }
 }

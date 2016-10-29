@@ -29,8 +29,8 @@ public class CommandReply extends BaseCommand {
 
         Player player = (Player) sender;
 
-        if (PunishAPI.isMuted(player.getUniqueId())) {
-            player.sendMessage(PunishAPI.getMutedMessage(player.getUniqueId()));
+        if (PunishAPI.getInstance().isMuted(player.getUniqueId())) {
+            player.sendMessage(PunishAPI.getInstance().getMutedMessage(player.getUniqueId()));
             return true;
         }
 

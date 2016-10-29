@@ -21,8 +21,8 @@ public class TabbedChatListener implements Listener {
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
         final Player player = e.getPlayer();
 
-        if (PunishAPI.isMuted(e.getPlayer().getUniqueId())) {
-            e.getPlayer().sendMessage(PunishAPI.getMutedMessage(e.getPlayer().getUniqueId()));
+        if (PunishAPI.getInstance().isMuted(e.getPlayer().getUniqueId())) {
+            e.getPlayer().sendMessage(PunishAPI.getInstance().getMutedMessage(e.getPlayer().getUniqueId()));
             return;
         }
 

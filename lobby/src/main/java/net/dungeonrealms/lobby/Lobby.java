@@ -63,8 +63,8 @@ public class Lobby extends JavaPlugin implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) throws InterruptedException {
-        if (PunishAPI.isBanned(event.getUniqueId())) {
-            String bannedMessage = PunishAPI.getBannedMessage(event.getUniqueId());
+        if (PunishAPI.getInstance().isBanned(event.getUniqueId())) {
+            String bannedMessage = PunishAPI.getInstance().getBannedMessage(event.getUniqueId());
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.setKickMessage(bannedMessage);
 

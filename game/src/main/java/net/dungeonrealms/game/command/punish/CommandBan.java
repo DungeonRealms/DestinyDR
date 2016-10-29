@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.command.punish;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.punishment.TimeFormat;
@@ -101,18 +100,18 @@ public class CommandBan extends BaseCommand {
                 String reasonString = reason.toString() + " [" + sender.getName() + "]";
 
                 if (duration != -1)
-                    sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)) + " for " + reasonString);
+                    sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.getInstance().timeString((int) (duration / 60)) + " for " + reasonString);
                 else
                     sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + reasonString);
 
-                PunishAPI.ban(p_uuid, p_name, sender.getName(), duration, reasonString, null);
+                PunishAPI.getInstance().ban(p_uuid, p_name, sender.getName(), duration, reasonString, null);
             } else {
                 if (duration != -1)
-                    sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
+                    sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.getInstance().timeString((int) (duration / 60)));
                 else
                     sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name);
 
-                PunishAPI.ban(p_uuid, p_name, sender.getName(), duration, "", null);
+                PunishAPI.getInstance().ban(p_uuid, p_name, sender.getName(), duration, "", null);
             }
         });
 

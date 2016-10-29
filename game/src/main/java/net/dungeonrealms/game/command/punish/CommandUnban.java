@@ -48,12 +48,12 @@ public class CommandUnban extends BaseCommand {
 
         UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
 
-        if (!PunishAPI.isBanned(p_uuid)) {
+        if (!PunishAPI.getInstance().isBanned(p_uuid)) {
             sender.sendMessage(ChatColor.RED + p_name + " is not banned.");
             return true;
         }
 
-        PunishAPI.unban(p_uuid);
+        PunishAPI.getInstance().unban(p_uuid);
 
         sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name);
         return false;

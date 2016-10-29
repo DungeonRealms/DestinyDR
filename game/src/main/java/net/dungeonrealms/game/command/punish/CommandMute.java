@@ -84,16 +84,16 @@ public class CommandMute extends BaseCommand {
             StringBuilder reason = new StringBuilder(args[2]);
             for (int arg = 3; arg < args.length; arg++) reason.append(" ").append(args[arg]);
 
-            PunishAPI.mute(p_uuid, duration, reason.toString(), doAfter -> GameAPI.updatePlayerData(p_uuid));
+            PunishAPI.getInstance().mute(p_uuid, duration, reason.toString(), doAfter -> GameAPI.updatePlayerData(p_uuid));
 
-            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)) + " for " + reason.toString());
-            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)) + " for " + reason.toString());
+            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.getInstance().timeString((int) (duration / 60)) + " for " + reason.toString());
+            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishAPI.getInstance().timeString((int) (duration / 60)) + " for " + reason.toString());
 
         } else {
-            PunishAPI.mute(p_uuid, duration, "", doAfter -> GameAPI.updatePlayerData(p_uuid));
+            PunishAPI.getInstance().mute(p_uuid, duration, "", doAfter -> GameAPI.updatePlayerData(p_uuid));
 
-            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
-            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
+            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.getInstance().timeString((int) (duration / 60)));
+            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishAPI.getInstance().timeString((int) (duration / 60)));
         }
 
         return false;

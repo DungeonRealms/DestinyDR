@@ -27,8 +27,8 @@ public class CommandAsk extends BaseCommand {
 
         Player p = (Player) sender;
 
-        if (PunishAPI.isMuted(p.getUniqueId())) {
-            p.sendMessage(PunishAPI.getMutedMessage(p.getUniqueId()));
+        if (PunishAPI.getInstance().isMuted(p.getUniqueId())) {
+            p.sendMessage(PunishAPI.getInstance().getMutedMessage(p.getUniqueId()));
             return true;
         }
 
