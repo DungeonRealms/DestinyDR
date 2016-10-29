@@ -6,7 +6,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mastery.Utils;
@@ -63,7 +63,7 @@ public class CommandAdd extends BaseCommand {
             Item.ItemRarity rarity;
             switch (args[0]) {
                 case "pcheck":
-                    player.sendMessage(ChatColor.GREEN + "There are " + String.valueOf(Affair.getInstance()._parties.size()));
+                    player.sendMessage(ChatColor.GREEN + "There are " + String.valueOf(PartyMechanics.getInstance()._parties.size()));
                     break;
                 case "check":
 //                    player.sendMessage("YOUR REALM EXIST? " + String.valueOf(RealmInstance.getInstance().doesRemoteRealmExist(player.getUniqueId().toString())));

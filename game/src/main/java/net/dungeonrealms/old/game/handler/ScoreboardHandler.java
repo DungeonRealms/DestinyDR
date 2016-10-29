@@ -4,8 +4,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.old.game.affair.Affair;
-import net.dungeonrealms.old.game.affair.party.Party;
+import net.dungeonrealms.old.game.party.PartyMechanics;
+import net.dungeonrealms.old.game.party.Party;
 import net.dungeonrealms.old.game.guild.database.GuildDatabase;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
@@ -87,15 +87,15 @@ public class ScoreboardHandler implements GenericMechanic {
      * @since 1.0
      */
     public void updatePlayerHP(Player player, int hp) {
-        Affair affair = Affair.getInstance();
+        PartyMechanics partyMechanics = PartyMechanics.getInstance();
         for (Player player1 : Bukkit.getOnlinePlayers()) {
             //Party support.
-            if (affair.isInParty(player1)) continue;
+            if (partyMechanics.isInParty(player1)) continue;
 
             getPlayerScoreboardObject(player1).getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
         }
 
-        for (Party party : affair._parties) {
+        for (Party party : partyMechanics._parties) {
             Scoreboard scoreboard = party.getPartyScoreboard();
             scoreboard.getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
         }
@@ -112,11 +112,11 @@ public class ScoreboardHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
-      Affair affair = Affair.getInstance();
+      PartyMechanics partyMechanics = PartyMechanics.getInstance();
         for (Player player1 : Bukkit.getOnlinePlayers()) {
 
             //Party support.
-            if (affair.isInParty(player1)) {
+            if (partyMechanics.isInParty(player1)) {
                 //Dont update them each indiviually.
                 continue;
             }
@@ -137,7 +137,7 @@ public class ScoreboardHandler implements GenericMechanic {
             }
         }
 
-        for (Party party : affair._parties) {
+        for (Party party : partyMechanics._parties) {
             //Update the party scoreboards with this persons new level.
             updateCurrentPlayerLevel(player, party.getPartyScoreboard());
         }

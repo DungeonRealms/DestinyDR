@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.command.party;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,17 +26,17 @@ public class CommandPRemove extends BaseCommand {
 
         Player player = (Player) s;
 
-        if (!Affair.getInstance().isInParty(player)) {
+        if (!PartyMechanics.getInstance().isInParty(player)) {
             player.sendMessage(ChatColor.RED + "You must be in a party.");
             return true;
         }
 
         if (args.length == 1) {
-            if (Affair.getInstance().isOwner(player)) {
+            if (PartyMechanics.getInstance().isOwner(player)) {
                 if (Bukkit.getPlayer(args[0]) == null) {
                     player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is offline.");
                 } else {
-                    Affair.getInstance().removeMember(Bukkit.getPlayer(args[0]), true);
+                    PartyMechanics.getInstance().removeMember(Bukkit.getPlayer(args[0]), true);
                 }
             } else {
                 player.sendMessage(new String[] {

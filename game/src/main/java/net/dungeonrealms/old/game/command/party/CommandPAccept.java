@@ -2,7 +2,7 @@ package net.dungeonrealms.old.game.command.party;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,9 +25,9 @@ public class CommandPAccept extends BaseCommand {
         Player player = (Player) s;
 
         if (args.length == 0) {
-            if (Affair._invitations.containsKey(player) && Affair._invitations.get(player) != null) {
-                Affair._invitations.get(player).getMembers().add(player);
-                Affair._invitations.remove(player);
+            if (PartyMechanics._invitations.containsKey(player) && PartyMechanics._invitations.get(player) != null) {
+                PartyMechanics._invitations.get(player).getMembers().add(player);
+                PartyMechanics._invitations.remove(player);
                 player.sendMessage(ChatColor.GREEN + "You have joined the party!");
                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PARTY_UP);
             } else {

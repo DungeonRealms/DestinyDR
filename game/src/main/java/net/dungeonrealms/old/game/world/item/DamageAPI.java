@@ -4,7 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.old.game.handler.EnergyHandler;
 import net.dungeonrealms.old.game.handler.HealthHandler;
@@ -438,7 +438,7 @@ public class DamageAPI {
                                 }
                                 continue;
                             }
-                            if (Affair.getInstance().areInSameParty(damager, (Player) entity)) {
+                            if (PartyMechanics.getInstance().areInSameParty(damager, (Player) entity)) {
                                 continue;
                             }
 

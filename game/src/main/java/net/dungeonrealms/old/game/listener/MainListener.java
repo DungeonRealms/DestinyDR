@@ -11,7 +11,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.old.game.event.PlayerMessagePlayerEvent;
@@ -163,7 +163,7 @@ public class MainListener implements Listener {
         }
 
         Chat.getInstance().doChat(event);
-        Affair.getInstance().doChat(event);
+        PartyMechanics.getInstance().doChat(event);
         GuildMechanics.getInstance().doChat(event);
         Chat.getInstance().doLocalChat(event);
     }
@@ -1156,16 +1156,16 @@ public class MainListener implements Listener {
                     event.setDamage(0);
                     Player player = (Player) event.getDamager();
                     Player invite = (Player) event.getEntity();
-                    if (Affair.getInstance().isInParty(invite)) {
+                    if (PartyMechanics.getInstance().isInParty(invite)) {
                         player.sendMessage(ChatColor.RED + "That player is already in a party!");
                     } else {
-                        if (Affair.getInstance().isInParty(player)) {
-                            if (Affair.getInstance().isOwner(player)) {
-                                if (Affair.getInstance().getParty(player).get().getMembers().size() >= 7) {
+                        if (PartyMechanics.getInstance().isInParty(player)) {
+                            if (PartyMechanics.getInstance().isOwner(player)) {
+                                if (PartyMechanics.getInstance().getParty(player).get().getMembers().size() >= 7) {
                                     player.sendMessage(ChatColor.RED + "Your party has reached the max player count!");
                                     return;
                                 }
-                                Affair.getInstance().invitePlayer(invite, player);
+                                PartyMechanics.getInstance().invitePlayer(invite, player);
                             } else {
                                 player.sendMessage(new String[]{
                                         ChatColor.RED + "You are NOT the leader of your party.",
@@ -1173,8 +1173,8 @@ public class MainListener implements Listener {
                                 });
                             }
                         } else {
-                            Affair.getInstance().createParty(player);
-                            Affair.getInstance().invitePlayer(invite, player);
+                            PartyMechanics.getInstance().createParty(player);
+                            PartyMechanics.getInstance().invitePlayer(invite, player);
                         }
                     }
                 }

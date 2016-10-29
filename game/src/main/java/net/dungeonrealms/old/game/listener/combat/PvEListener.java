@@ -2,7 +2,7 @@ package net.dungeonrealms.old.game.listener.combat;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.handler.EnergyHandler;
 import net.dungeonrealms.old.game.handler.HealthHandler;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
@@ -269,7 +269,7 @@ public class PvEListener implements Listener {
                 killer.sendMessage(ChatColor.GRAY + "They have been awarded the XP.");
             }
         }
-        if (Affair.getInstance().isInParty(highestDamage)) {
+        if (PartyMechanics.getInstance().isInParty(highestDamage)) {
             List<Player> nearbyPlayers = GameAPI.getNearbyPlayers(highestDamage.getLocation(), 10);
             List<Player> nearbyPartyMembers = new ArrayList<>();
             if (!nearbyPlayers.isEmpty()) {
@@ -280,7 +280,7 @@ public class PvEListener implements Listener {
                     if (!GameAPI.isPlayer(highestDamage)) {
                         continue;
                     }
-                    if (Affair.getInstance().areInSameParty(highestDamage, player)) {
+                    if (PartyMechanics.getInstance().areInSameParty(highestDamage, player)) {
                         nearbyPartyMembers.add(player);
                     }
                 }

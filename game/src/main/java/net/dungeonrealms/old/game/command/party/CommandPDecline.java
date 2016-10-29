@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.command.party;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,9 +24,9 @@ public class CommandPDecline extends BaseCommand {
         Player player = (Player) s;
 
         if (args.length == 0) {
-            if (Affair._invitations.containsKey(player) && Affair._invitations.get(player) != null) {
-                Player owner = Affair._invitations.get(player).getOwner();
-                Affair._invitations.remove(player);
+            if (PartyMechanics._invitations.containsKey(player) && PartyMechanics._invitations.get(player) != null) {
+                Player owner = PartyMechanics._invitations.get(player).getOwner();
+                PartyMechanics._invitations.remove(player);
                 owner.sendMessage(ChatColor.RED + player.getName() + " has declined your party invitation.");
                 player.sendMessage(ChatColor.GREEN + "You have declined " + owner.getName() + "(s) party invitation.");
             } else {

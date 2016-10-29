@@ -9,7 +9,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.donation.buffs.LevelBuff;
 import net.dungeonrealms.old.game.handler.HealthHandler;
@@ -111,7 +111,7 @@ public class GamePlayer {
      * @since 1.0
      */
     public boolean isInParty() {
-        return Affair.getInstance().isInParty(T);
+        return PartyMechanics.getInstance().isInParty(T);
     }
 
     /**
