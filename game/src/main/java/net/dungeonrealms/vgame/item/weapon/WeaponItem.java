@@ -8,7 +8,6 @@ import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.IStack;
 import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttibute;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 

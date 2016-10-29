@@ -1,7 +1,6 @@
 package net.dungeonrealms.vgame.item.weapon;
 
 import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
-import net.dungeonrealms.vgame.item.IStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.ConcurrentHashMap;
