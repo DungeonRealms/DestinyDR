@@ -1,8 +1,13 @@
 package net.dungeonrealms.vgame;
 
 import lombok.Getter;
+import net.dungeonrealms.backend.GameShard;
+import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -21,6 +26,9 @@ public class Game extends JavaPlugin
     @Getter
     private ConsoleCommandSender instanceLogger;
 
+    @Getter
+    private GameShard gameShard;
+
     @Override
     public void onEnable()
     {
@@ -28,6 +36,15 @@ public class Game extends JavaPlugin
 
         //** Logger **//
         this.instanceLogger = this.getServer().getConsoleSender();
+        // ** Init shard **//
+        try
+        {
+            this.gameShard = new GameShard(new FileReader("shardConfig.ini"));
+        } catch (FileNotFoundException e)
+        {
+            this.instanceLogger.sendMessage(ChatColor.RED + "ShardConfiguration not found, shutting down..");
+            Game.getGame().getServer().shutdown();
+        }
         //** Handlers **//
         this.handlerCore = new HandlerCore();
         this.handlerCore.prepare();
