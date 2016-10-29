@@ -1,5 +1,8 @@
 package net.dungeonrealms.awt.database;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Created by Giovanni on 29-10-2016.
  * <p>
@@ -8,4 +11,8 @@ package net.dungeonrealms.awt.database;
  */
 public interface DataRegistry
 {
+    AtomicBoolean atomicPreference();
+
+    // Always use maps with atomic references
+    ConcurrentHashMap getMap();
 }
