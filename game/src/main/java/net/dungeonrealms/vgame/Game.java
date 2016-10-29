@@ -21,7 +21,10 @@ public class Game extends JavaPlugin
     private static Game game;
 
     @Getter
-    private HandlerCore handlerCore;
+    private GameHandler handlerCore;
+
+    @Getter
+    private RegistryHandler registryHandler;
 
     @Getter
     private ConsoleCommandSender instanceLogger;
@@ -46,7 +49,11 @@ public class Game extends JavaPlugin
             Game.getGame().getServer().shutdown();
         }
         //** Handlers **//
-        this.handlerCore = new HandlerCore();
+        this.handlerCore = new GameHandler();
         this.handlerCore.prepare();
+
+        //** Registries **//
+        this.registryHandler = new RegistryHandler();
+        this.registryHandler.prepare();
     }
 }

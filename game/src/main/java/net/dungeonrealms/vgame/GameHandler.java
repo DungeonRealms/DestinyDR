@@ -3,6 +3,7 @@ package net.dungeonrealms.vgame;
 import lombok.Getter;
 import net.dungeonrealms.awt.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;
+import net.dungeonrealms.common.game.database.sql.handle.SQLHandler;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
@@ -16,15 +17,21 @@ import static net.dungeonrealms.awt.SuperHandler.*;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class HandlerCore implements Handler
+public class GameHandler implements Handler
 {
     @Getter
     protected ConcurrentHashMap<UUID, SuperHandler.Handler> handlerMap;
 
+    @Getter
+    private SQLHandler sqlHandler;
+
+    @Getter
+    private RegistryHandler registryHandler;
+
     @Override
     public void prepare()
     {
-        Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "[ HANDLER CORE ]");
+        Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ HANDLER CORE ]");
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Creating atomic reference..");
         this.handlerMap = new ConcurrentHashMap<>();
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Atomic reference created");
@@ -32,6 +39,8 @@ public class HandlerCore implements Handler
         // Provide handlers
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Collecting handlers for atomic reference..");
         this.handlerMap.put(UUID.randomUUID(), new RebootHandler()); // The first handler to ever exist for the recode! yay!
+        this.handlerMap.put(UUID.randomUUID(), this.sqlHandler = new SQLHandler()); // From DungeonRealms-common
+        this.handlerMap.put(UUID.randomUUID(), this.registryHandler = new RegistryHandler());
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers provided");
 
         // Register them

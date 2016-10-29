@@ -13,12 +13,14 @@ import org.bson.Document;
  * Created by Nick on 8/29/2015.
  */
 
-public class DatabaseInstance {
-
+public class DatabaseInstance
+{
     private static DatabaseInstance instance = null;
 
-    public static DatabaseInstance getInstance() {
-        if (instance == null) {
+    public static DatabaseInstance getInstance()
+    {
+        if (instance == null)
+        {
             instance = new DatabaseInstance();
         }
         return instance;
@@ -33,7 +35,8 @@ public class DatabaseInstance {
     public static MongoCollection<Document> playerData, shardData, bans, guilds, quests;
     protected boolean cacheData = true;
 
-    public void startInitialization(boolean cacheData) {
+    public void startInitialization(boolean cacheData)
+    {
         this.cacheData = cacheData;
         mongoClientURI = new MongoClientURI(Constants.DATABASE_URI);
 
@@ -53,10 +56,12 @@ public class DatabaseInstance {
     }
 
 
-    private static void createMongoAccessThreads() {
+    private static void createMongoAccessThreads()
+    {
         int threads = AsyncUtils.threadCount;
 
-        for (int i = 0; i < threads; i++) {
+        for (int i = 0; i < threads; i++)
+        {
             accessThreads[i] = new MongoAccessThread();
             accessThreads[i].start();
         }
@@ -65,7 +70,8 @@ public class DatabaseInstance {
         Constants.log.info("DungeonRealms Database mongo access threads ... STARTED ...");
     }
 
-    protected boolean isCacheData() {
+    protected boolean isCacheData()
+    {
         return cacheData;
     }
 }
