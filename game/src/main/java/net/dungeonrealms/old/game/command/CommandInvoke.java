@@ -2,7 +2,7 @@ package net.dungeonrealms.old.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.mechanic.DungeonManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -35,9 +35,9 @@ public class CommandInvoke extends BaseCommand {
                 switch (args[0].toLowerCase()) {
                     case "bandittrove":
                     case "t1dungeon":
-                        if (Affair.getInstance().isInParty(player)) {
+                        if (PartyMechanics.getInstance().isInParty(player)) {
                             Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                            for (Player player1 : PartyMechanics.getInstance().getParty(player).get().getMembers()) {
                                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
                                     partyList.put(player1, true);
                                 } else {
@@ -47,9 +47,9 @@ public class CommandInvoke extends BaseCommand {
                             partyList.put(player, true);
                             DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
                         } else {
-                            Affair.getInstance().createParty(player);
+                            PartyMechanics.getInstance().createParty(player);
                             Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                            for (Player player1 : PartyMechanics.getInstance().getParty(player).get().getMembers()) {
                                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
                                     partyList.put(player1, true);
                                 } else {
@@ -62,9 +62,9 @@ public class CommandInvoke extends BaseCommand {
                         break;
                     case "varenglade":
                     case "dodungeon":
-                        if (Affair.getInstance().isInParty(player)) {
+                        if (PartyMechanics.getInstance().isInParty(player)) {
                             Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                            for (Player player1 : PartyMechanics.getInstance().getParty(player).get().getMembers()) {
                                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
                                     partyList.put(player1, true);
                                 } else {
@@ -74,9 +74,9 @@ public class CommandInvoke extends BaseCommand {
                             partyList.put(player, true);
                             DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
                         } else {
-                            Affair.getInstance().createParty(player);
+                            PartyMechanics.getInstance().createParty(player);
                             Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                            for (Player player1 : PartyMechanics.getInstance().getParty(player).get().getMembers()) {
                                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
                                     partyList.put(player1, true);
                                 } else {
@@ -90,9 +90,9 @@ public class CommandInvoke extends BaseCommand {
                     case "infernal_abyss":
                     case "infernalabyss":
                     case "fireydungeon":
-                        if (Affair.getInstance().isInParty(player)) {
+                        if (PartyMechanics.getInstance().isInParty(player)) {
                             Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                            for (Player player1 : PartyMechanics.getInstance().getParty(player).get().getMembers()) {
                                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 400) {
                                     partyList.put(player1, true);
                                 } else {
@@ -102,9 +102,9 @@ public class CommandInvoke extends BaseCommand {
                             partyList.put(player, true);
                             DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
                         } else {
-                            Affair.getInstance().createParty(player);
+                            PartyMechanics.getInstance().createParty(player);
                             Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                            for (Player player1 : PartyMechanics.getInstance().getParty(player).get().getMembers()) {
                                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 400) {
                                     partyList.put(player1, true);
                                 } else {

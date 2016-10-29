@@ -26,7 +26,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.old.game.achievements.AchievementManager;
 import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.enchantments.EnchantmentAPI;
@@ -879,8 +879,8 @@ public class GameAPI {
                 EntityAPI.removePlayerMountList(uuid);
             }
 
-            if (Affair.getInstance().isInParty(player)) {
-                Affair.getInstance().removeMember(player, false);
+            if (PartyMechanics.getInstance().isInParty(player)) {
+                PartyMechanics.getInstance().removeMember(player, false);
             }
 
             operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.IS_PLAYING.getKey(), false))));

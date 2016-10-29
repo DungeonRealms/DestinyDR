@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.command.party;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,8 +25,8 @@ public class CommandPLeave extends BaseCommand {
 
         Player player = (Player) s;
 
-        if (Affair.getInstance().isInParty(player)) {
-            Affair.getInstance().removeMember(player, false);
+        if (PartyMechanics.getInstance().isInParty(player)) {
+            PartyMechanics.getInstance().removeMember(player, false);
         } else {
             player.sendMessage(ChatColor.RED + "You are not in a party.");
         }

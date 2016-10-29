@@ -7,7 +7,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.old.game.handler.EnergyHandler;
 import net.dungeonrealms.old.game.handler.HealthHandler;
@@ -613,7 +613,7 @@ public class RestrictionListener implements Listener {
                 return;
             }
 
-            if (Affair.getInstance().areInSameParty(pDamager, pReceiver)) {
+            if (PartyMechanics.getInstance().areInSameParty(pDamager, pReceiver)) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 pDamager.updateInventory();

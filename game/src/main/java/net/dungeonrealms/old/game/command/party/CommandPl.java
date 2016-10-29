@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.command.party;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -30,26 +30,26 @@ public class CommandPl extends BaseCommand {
 
         if (args.length == 1) {
             if (Bukkit.getPlayer(args[0]) != null && !Bukkit.getPlayer(args[0]).equals(player)) {
-                if (Affair.getInstance().isInParty(Bukkit.getPlayer(args[0]))) {
+                if (PartyMechanics.getInstance().isInParty(Bukkit.getPlayer(args[0]))) {
                     player.sendMessage(ChatColor.RED + "That player is already in a party!");
                     return true;
                 }
              /*
                 Invoker is in party
                  */
-                if (Affair.getInstance().isInParty(player)) {
+                if (PartyMechanics.getInstance().isInParty(player)) {
                 /*
                 Check if player is owner of the party they're in.
                  */
-                    if (Affair.getInstance().isOwner(player)) {
+                    if (PartyMechanics.getInstance().isOwner(player)) {
 
-                        if(Affair.getInstance().getParty(player).get().getMembers().size() >= 7) {
+                        if(PartyMechanics.getInstance().getParty(player).get().getMembers().size() >= 7) {
                             player.sendMessage(ChatColor.RED + "Your party has reached the max player count!");
                             return true;
                         }
 
                         if (Bukkit.getPlayer(args[0]) != null) {
-                            Affair.getInstance().invitePlayer(Bukkit.getPlayer(args[0]), player);
+                            PartyMechanics.getInstance().invitePlayer(Bukkit.getPlayer(args[0]), player);
                             player.sendMessage(ChatColor.GREEN + "Invited " + ChatColor.AQUA + args[0] + " " + ChatColor.GREEN + " to your party!");
                         } else {
                             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is OFFLINE!");
@@ -66,9 +66,9 @@ public class CommandPl extends BaseCommand {
                  */
                     if (Bukkit.getPlayer(args[0]) != null) {
                         Player inviting = Bukkit.getPlayer(args[0]);
-                        if (!Affair.getInstance().isInParty(inviting)) {
-                            Affair.getInstance().createParty(player);
-                            Affair.getInstance().invitePlayer(inviting, player);
+                        if (!PartyMechanics.getInstance().isInParty(inviting)) {
+                            PartyMechanics.getInstance().createParty(player);
+                            PartyMechanics.getInstance().invitePlayer(inviting, player);
                         } else {
                             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is already in your party.");
                         }

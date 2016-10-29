@@ -4,8 +4,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.old.game.affair.Affair;
-import net.dungeonrealms.old.game.affair.party.Party;
+import net.dungeonrealms.old.game.party.PartyMechanics;
+import net.dungeonrealms.old.game.party.Party;
 import net.dungeonrealms.old.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.old.game.handler.HealthHandler;
 import net.dungeonrealms.old.game.mechanic.DungeonManager;
@@ -224,9 +224,9 @@ public class DungeonListener implements Listener {
                     }
                 }
             }
-            if (Affair.getInstance().isInParty(player)) {
+            if (PartyMechanics.getInstance().isInParty(player)) {
                 List<Player> toSend = new ArrayList<>();
-                Party party = Affair.getInstance().getParty(player).get();
+                Party party = PartyMechanics.getInstance().getParty(player).get();
                 toSend.addAll(party.getMembers());
                 toSend.add(party.getOwner());
                 for (Player player1 : toSend) {
@@ -284,8 +284,8 @@ public class DungeonListener implements Listener {
 
             boolean isPartyInInstance = false;
 
-            if (Affair.getInstance().isInParty(player)) {
-                Party party = Affair.getInstance().getParty(player).get();
+            if (PartyMechanics.getInstance().isInParty(player)) {
+                Party party = PartyMechanics.getInstance().getParty(player).get();
                 List<Player> partyMembers = new ArrayList<>();
                 partyMembers.add(party.getOwner());
                 partyMembers.addAll(party.getMembers());
@@ -356,13 +356,13 @@ public class DungeonListener implements Listener {
                     }
                     return;
                 }
-                if (!(Affair.getInstance().getParty(player).get()).getOwner().getName().equals(player.getName())) {
+                if (!(PartyMechanics.getInstance().getParty(player).get()).getOwner().getName().equals(player.getName())) {
                     player.sendMessage(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " the party leader.");
                     player.sendMessage(ChatColor.GRAY + "Only the party leader can start a new dungeon instance.");
                     return;
                 }
             } else {
-                Affair.getInstance().createParty(player);
+                PartyMechanics.getInstance().createParty(player);
             }
 
             if (!DungeonManager.getInstance().canCreateInstance()) {
@@ -373,7 +373,7 @@ public class DungeonListener implements Listener {
             }
 
             Map<Player, Boolean> partyList = new HashMap<>();
-            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+            for (Player player1 : PartyMechanics.getInstance().getParty(player).get().getMembers()) {
                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player1.getName(), 100);
                     partyList.put(player1, true);

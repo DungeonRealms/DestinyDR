@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.command.party;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,7 +26,7 @@ public class CommandPChat extends BaseCommand {
 
         Player player = (Player) s;
 
-        if (Affair.getInstance().isInParty(player)) {
+        if (PartyMechanics.getInstance().isInParty(player)) {
             if (args.length > 0) {
                 StringBuilder message = new StringBuilder();
 
@@ -34,9 +34,9 @@ public class CommandPChat extends BaseCommand {
                     message.append(rw).append(" ");
                 }
 
-                Affair.getInstance().sendPartyChat(player, message.toString());
+                PartyMechanics.getInstance().sendPartyChat(player, message.toString());
             } else {
-                Affair.getInstance().togglePartyChat(player);
+                PartyMechanics.getInstance().togglePartyChat(player);
             }
         } else {
             player.sendMessage(ChatColor.RED + "You are not in a party!");

@@ -14,7 +14,7 @@ import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.old.game.achievements.AchievementManager;
-import net.dungeonrealms.old.game.affair.Affair;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.command.*;
 import net.dungeonrealms.old.game.command.dungeon.*;
@@ -259,7 +259,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(TabMechanics.getInstance());
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new LootManager());
-            mm.registerMechanic(Affair.getInstance());
+            mm.registerMechanic(PartyMechanics.getInstance());
             //mm.registerMechanic(net.dungeonrealms.old.tool.PatchTools.getInstance());
             mm.registerMechanic(TutorialIsland.getInstance());
         } else {
@@ -281,7 +281,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(RealmInstance.getInstance());
             mm.registerMechanic(AchievementManager.getInstance());
             mm.registerMechanic(new LootManager());
-            mm.registerMechanic(Affair.getInstance());
+            mm.registerMechanic(PartyMechanics.getInstance());
 
 
             if (realmnumber >= 0) mm.registerMechanic(Realms.getInstance());

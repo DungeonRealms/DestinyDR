@@ -1,4 +1,4 @@
-package net.dungeonrealms.old.game.affair.party;
+package net.dungeonrealms.old.game.party;
 
 import lombok.Data;
 import net.dungeonrealms.old.game.handler.ScoreboardHandler;

@@ -1,11 +1,10 @@
-package net.dungeonrealms.old.game.affair;
+package net.dungeonrealms.old.game.party;
 
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.affair.party.Party;
 import net.dungeonrealms.old.game.handler.HealthHandler;
 import net.dungeonrealms.old.game.handler.ScoreboardHandler;
 import net.dungeonrealms.old.game.mastery.Utils;
@@ -38,13 +37,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by Nick on 11/9/2015.
  */
-public class Affair implements GenericMechanic {
+public class PartyMechanics implements GenericMechanic {
 
-    static Affair instance = null;
+    static PartyMechanics instance = null;
 
-    public static Affair getInstance() {
+    public static PartyMechanics getInstance() {
         if (instance == null) {
-            instance = new Affair();
+            instance = new PartyMechanics();
         }
         return instance;
     }
@@ -118,7 +117,7 @@ public class Affair implements GenericMechanic {
     }
 
     public void sendPartyChat(Player player, String message) {
-        Optional<Party> partyOptional = Affair.getInstance().getParty(player);
+        Optional<Party> partyOptional = PartyMechanics.getInstance().getParty(player);
 
         if (!partyOptional.isPresent()) {
             player.sendMessage(ChatColor.RED + "You are no longer in a party");
