@@ -18,9 +18,9 @@ public class Constants {
 
     public static final String[] OLD_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
 
-    public static final String MOTD = "&6Dungeon Realms™ &8- &a• The #1 Minecraft MMORPG •    \n                      &e&o&lOut of Beta!";
+    public static final String MOTD = "&6Dungeon Realms &8- &a• The #1 Minecraft MMORPG •    \n                      &eThe real recode!";
 
-    public static final String MAINTENANCE_MOTD = "&6Dungeon Realms™ &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
+    public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
 
     public static final long MIN_GAME_TIME = 14100000L;
 
@@ -39,10 +39,10 @@ public class Constants {
     public static final int NET_WRITE_BUFFER_SIZE = 32768;
 
     // BUILD VERSION //
-    public static final String BUILD_VERSION = "v5.0";
+    public static final String BUILD_VERSION = "v1.0";
 
     // BUILD NUMBER //
-    public static final String BUILD_NUMBER = "#200";
+    public static final String BUILD_NUMBER = "#1";
 
     // FTP INFO //
     public static final String FTP_HOST_NAME = "167.114.65.102";

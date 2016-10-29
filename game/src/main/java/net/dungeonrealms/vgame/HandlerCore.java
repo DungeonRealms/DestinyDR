@@ -2,7 +2,7 @@ package net.dungeonrealms.vgame;
 
 import lombok.Getter;
 import net.dungeonrealms.awt.SuperHandler;
-import net.dungeonrealms.awt.database.DatabaseHandler;
+import net.dungeonrealms.backend.reboot.RebootHandler;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
@@ -31,7 +31,7 @@ public class HandlerCore implements Handler
 
         // Provide handlers
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Collecting handlers for atomic reference..");
-        this.handlerMap.put(UUID.randomUUID(), new DatabaseHandler());
+        this.handlerMap.put(UUID.randomUUID(), new RebootHandler()); // The first handler to ever exist for the recode! yay!
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers provided");
 
         // Register them
