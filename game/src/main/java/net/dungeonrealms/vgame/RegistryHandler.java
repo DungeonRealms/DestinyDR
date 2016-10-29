@@ -3,11 +3,11 @@ package net.dungeonrealms.vgame;
 import lombok.Getter;
 import net.dungeonrealms.awt.SuperHandler;
 import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
+import net.dungeonrealms.vgame.item.weapon.WeaponRegistry;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -20,6 +20,9 @@ public class RegistryHandler implements SuperHandler.Handler
     @Getter
     private ConcurrentHashMap<UUID, DataRegistry> registryMap;
 
+    @Getter
+    private WeaponRegistry weaponRegistry;
+
     @Override
     public void prepare()
     {
@@ -28,8 +31,9 @@ public class RegistryHandler implements SuperHandler.Handler
         this.registryMap = new ConcurrentHashMap<>();
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Atomic reference created");
 
-        // Provide handlers
+        // Provide registries
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Connecting & collecting registries for atomic reference..");
+        this.registryMap.put(UUID.randomUUID(), this.weaponRegistry = new WeaponRegistry());
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers connected & collected");
 
         // Register them

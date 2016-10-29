@@ -4,6 +4,8 @@ import lombok.Getter;
 import net.dungeonrealms.awt.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;
 import net.dungeonrealms.common.game.database.sql.handle.SQLHandler;
+import net.dungeonrealms.vgame.item.weapon.handle.BowHandler;
+import net.dungeonrealms.vgame.item.weapon.handle.WeaponHandler;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
@@ -41,6 +43,8 @@ public class GameHandler implements Handler
         this.handlerMap.put(UUID.randomUUID(), new RebootHandler()); // The first handler to ever exist for the recode! yay!
         this.handlerMap.put(UUID.randomUUID(), this.sqlHandler = new SQLHandler()); // From DungeonRealms-common
         this.handlerMap.put(UUID.randomUUID(), this.registryHandler = new RegistryHandler());
+        this.handlerMap.put(UUID.randomUUID(), new WeaponHandler());
+        this.handlerMap.put(UUID.randomUUID(), new BowHandler());
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers provided");
 
         // Register them
