@@ -18,7 +18,7 @@ public class Constants {
 
     public static final String[] OLD_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
 
-    public static final String MOTD = "&6Dungeon Realms &8- &a• The #1 Minecraft MMORPG •    \n                      &eThe real recode!";
+    public static final String MOTD = "&6Dungeon Realms™ &8- &a• The #1 Minecraft MMORPG •    \n                      &eHuge rework";
 
     public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
 
