@@ -1,6 +1,7 @@
 package net.dungeonrealms.vgame;
 
 import lombok.Getter;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -17,11 +18,16 @@ public class Game extends JavaPlugin
     @Getter
     private HandlerCore handlerCore;
 
+    @Getter
+    private ConsoleCommandSender instanceLogger;
+
     @Override
     public void onEnable()
     {
         game = this;
 
+        //** Logger **//
+        this.instanceLogger = this.getServer().getConsoleSender();
         //** Handlers **//
         this.handlerCore = new HandlerCore();
         this.handlerCore.prepare();
