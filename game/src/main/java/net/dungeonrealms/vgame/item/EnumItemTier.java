@@ -2,7 +2,8 @@ package net.dungeonrealms.vgame.item;
 
 import lombok.Getter;
 import net.dungeonrealms.api.collection.AtomicCollection;
-import org.bukkit.ChatColor;
+
+import java.util.HashMap;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -12,30 +13,18 @@ import org.bukkit.ChatColor;
  */
 public enum EnumItemTier
 {
-    COMMON(0, ChatColor.GRAY, ChatColor.ITALIC + "Common" + ChatColor.RESET),
-    UNCOMMON(1, ChatColor.GREEN, ChatColor.ITALIC + "Uncommon" + ChatColor.RESET),
-    RARE(2, ChatColor.AQUA, ChatColor.ITALIC + "Rare" + ChatColor.RESET),
-    UNIQUE(3, ChatColor.YELLOW, ChatColor.ITALIC + "Unique" + ChatColor.RESET),
-    LEGENDARY(4, ChatColor.GOLD, ChatColor.ITALIC + "Legendary" + ChatColor.RESET);
+    ONE(2), TWO(3), THREE(4), FOUR(5), FIVE(6);
 
     @Getter
-    private int id;
-
-    @Getter
-    private String name;
-
-    @Getter
-    private ChatColor color;
+    private int maxAttributes;
 
     private static AtomicCollection<EnumItemTier> atomicCollection = new AtomicCollection<>();
 
     private static boolean loaded;
 
-    EnumItemTier(int id, ChatColor color, String identifierName)
+    EnumItemTier(int maxAttributes)
     {
-        this.id = id;
-        this.color = color;
-        this.name = identifierName;
+        this.maxAttributes = maxAttributes;
     }
 
     public static EnumItemTier random()
@@ -46,11 +35,11 @@ public enum EnumItemTier
         } else
         {
             // Weight is not final
-            atomicCollection.getMap().get().put(0.8, COMMON);
-            atomicCollection.getMap().get().put(0.6, UNCOMMON);
-            atomicCollection.getMap().get().put(0.4, RARE);
-            atomicCollection.getMap().get().put(0.2, UNIQUE);
-            atomicCollection.getMap().get().put(0.05, LEGENDARY);
+            atomicCollection.getMap().get().put(0.8, ONE);
+            atomicCollection.getMap().get().put(0.6, TWO);
+            atomicCollection.getMap().get().put(0.4, THREE);
+            atomicCollection.getMap().get().put(0.2, FOUR);
+            atomicCollection.getMap().get().put(0.05, FIVE);
             loaded = true;
             return atomicCollection.next();
         }

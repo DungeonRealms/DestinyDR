@@ -1,6 +1,7 @@
 package net.dungeonrealms.vgame.item.weapon;
 
 import lombok.Getter;
+import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;
 import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.IStack;
@@ -26,6 +27,9 @@ public class WeaponItem implements IStack
     private EnumItemType itemType; // TODO
 
     @Getter
+    private EnumItemRarity itemRarity;
+
+    @Getter
     private EnumItemTier itemTier;
 
     @Getter
@@ -38,13 +42,14 @@ public class WeaponItem implements IStack
     {
         this.uuid = UUID.randomUUID();
 
+        this.itemRarity = EnumItemRarity.random(); // Random rarity upon generation
         this.itemTier = EnumItemTier.random(); // Random tier upon generation
 
         // Create the atomic key (bukkit itemstack)
         this.itemStack = new ItemStack(Material.AIR);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
-        itemMeta.setDisplayName(this.itemTier.getColor() + "Test Object");
-        itemMeta.setLore(Arrays.asList("", this.itemTier.getColor() + this.itemTier.getName()));
+        itemMeta.setDisplayName(this.itemRarity.getColor() + "Test Object");
+        itemMeta.setLore(Arrays.asList("", this.itemRarity.getColor() + this.itemRarity.getName()));
         itemMeta.getItemFlags().clear();
         this.itemStack.setItemMeta(itemMeta);
         this.itemStack.setDurability((short) durability);
