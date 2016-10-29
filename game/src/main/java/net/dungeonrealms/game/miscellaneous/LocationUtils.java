@@ -17,6 +17,7 @@ public class LocationUtils {
 		}
 		return found;
 	}
+
 	public static boolean isInBorder(Location center, Location notCenter, int range) {
 		int x = center.getBlockX(), z = center.getBlockZ();
 		int x1 = notCenter.getBlockX(), z1 = notCenter.getBlockZ();
@@ -26,5 +27,4 @@ public class LocationUtils {
 		}
 		return true;
 	}
-    
 }

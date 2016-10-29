@@ -22,7 +22,6 @@ public class Transition {
         return cursor;
     }
 
-
     public void updateTransitionTime() {
         this.lastTransitionTime = System.currentTimeMillis();
     }

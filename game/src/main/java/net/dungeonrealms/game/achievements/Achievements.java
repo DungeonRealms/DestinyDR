@@ -599,6 +599,4 @@ public class Achievements {
             return hideWhenIncomplete;
         }
     }
-
-
 }
