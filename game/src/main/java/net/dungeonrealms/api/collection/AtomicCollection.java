@@ -54,4 +54,19 @@ public class AtomicCollection<E>
         double value = random.nextDouble() * total;
         return map.get().ceilingEntry(value).getValue();
     }
+
+    public class Entry
+    {
+        private Enum enumeration;
+
+        Entry(Enum enumeration)
+        {
+            this.enumeration = enumeration;
+        }
+
+        public Enum getEnumeration()
+        {
+            return enumeration;
+        }
+    }
 }

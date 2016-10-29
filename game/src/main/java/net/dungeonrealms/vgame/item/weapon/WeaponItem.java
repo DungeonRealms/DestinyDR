@@ -1,16 +1,19 @@
 package net.dungeonrealms.vgame.item.weapon;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;
 import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.IStack;
+import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttibute;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -38,18 +41,43 @@ public class WeaponItem implements IStack
     @Getter
     private int durability = 100; // Default value ?
 
+    @Getter
+    private List<EnumWeaponAttibute> weaponAttibutes;
+
+    @Getter
+    private String name;
+
     public WeaponItem()
     {
         this.uuid = UUID.randomUUID();
 
+        this.itemType = EnumItemType.randomItem(false); // Random weapon item
+
+        this.weaponAttibutes = EnumWeaponAttibute.random(this.itemTier.getMaxAttributes()); // Random collection of attributes
         this.itemRarity = EnumItemRarity.random(); // Random rarity upon generation
         this.itemTier = EnumItemTier.random(); // Random tier upon generation
 
         // Create the atomic key (bukkit itemstack)
-        this.itemStack = new ItemStack(Material.AIR);
+        this.itemStack = new ItemStack(this.itemTier.getMaterial(this.itemType));
         ItemMeta itemMeta = this.itemStack.getItemMeta();
         itemMeta.setDisplayName(this.itemRarity.getColor() + "Test Object");
-        itemMeta.setLore(Arrays.asList("", this.itemRarity.getColor() + this.itemRarity.getName()));
+
+        // Attach the lore
+        List<String> lore = Lists.newArrayList();
+
+        // Add lore pieces {1, 2, 3, etc}
+        for (String string : new String[]{"",
+                ChatColor.RED + "DMG: " + ChatColor.WHITE + minDmg + " - " + maxDmg,
+                this.itemRarity.getColor() + this.itemRarity.getName()})
+        {
+            lore.add(string);
+        }
+
+        // Add weapon attributes to the lore
+        lore.addAll(weaponAttibutes.stream().map(EnumWeaponAttibute::getName).collect(Collectors.toList()));
+
+        itemMeta.setLore(lore);
+
         itemMeta.getItemFlags().clear();
         this.itemStack.setItemMeta(itemMeta);
         this.itemStack.setDurability((short) durability);

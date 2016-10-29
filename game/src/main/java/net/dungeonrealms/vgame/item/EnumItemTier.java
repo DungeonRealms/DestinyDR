@@ -1,9 +1,12 @@
 package net.dungeonrealms.vgame.item;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.dungeonrealms.api.collection.AtomicCollection;
+import org.bukkit.Material;
 
-import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -13,18 +16,83 @@ import java.util.HashMap;
  */
 public enum EnumItemTier
 {
-    ONE(2), TWO(3), THREE(4), FOUR(5), FIVE(6);
+    ONE(0, 2), TWO(1, 3), THREE(2, 4), FOUR(3, 5), FIVE(4, 6);
 
     @Getter
     private int maxAttributes;
+
+    @Getter
+    private Map<EnumItemType, Material> materialMap;
 
     private static AtomicCollection<EnumItemTier> atomicCollection = new AtomicCollection<>();
 
     private static boolean loaded;
 
-    EnumItemTier(int maxAttributes)
+    EnumItemTier(int id, int maxAttributes)
     {
         this.maxAttributes = maxAttributes;
+        this.materialMap = Maps.newHashMap();
+
+        this.materialMap.put(EnumItemType.BOW, Material.BOW);
+
+        switch (id)
+        {
+            case 0:
+                this.materialMap.put(EnumItemType.SWORD, Material.WOOD_SWORD);
+                this.materialMap.put(EnumItemType.POLE_ARM, Material.WOOD_SPADE);
+                this.materialMap.put(EnumItemType.AXE, Material.WOOD_AXE);
+                this.materialMap.put(EnumItemType.STAFF, Material.WOOD_HOE);
+                this.materialMap.put(EnumItemType.HELMET, Material.LEATHER_HELMET);
+                this.materialMap.put(EnumItemType.CHESTPLATE, Material.LEATHER_CHESTPLATE);
+                this.materialMap.put(EnumItemType.LEGGINGS, Material.LEATHER_LEGGINGS);
+                this.materialMap.put(EnumItemType.BOOTS, Material.LEATHER_BOOTS);
+                break;
+            case 1:
+                this.materialMap.put(EnumItemType.SWORD, Material.STONE_SWORD);
+                this.materialMap.put(EnumItemType.POLE_ARM, Material.STONE_SPADE);
+                this.materialMap.put(EnumItemType.AXE, Material.STONE_AXE);
+                this.materialMap.put(EnumItemType.STAFF, Material.STONE_HOE);
+                this.materialMap.put(EnumItemType.HELMET, Material.CHAINMAIL_HELMET);
+                this.materialMap.put(EnumItemType.CHESTPLATE, Material.CHAINMAIL_CHESTPLATE);
+                this.materialMap.put(EnumItemType.LEGGINGS, Material.CHAINMAIL_LEGGINGS);
+                this.materialMap.put(EnumItemType.BOOTS, Material.CHAINMAIL_BOOTS);
+                break;
+            case 2:
+                this.materialMap.put(EnumItemType.SWORD, Material.IRON_SWORD);
+                this.materialMap.put(EnumItemType.POLE_ARM, Material.IRON_SPADE);
+                this.materialMap.put(EnumItemType.AXE, Material.IRON_AXE);
+                this.materialMap.put(EnumItemType.STAFF, Material.IRON_HOE);
+                this.materialMap.put(EnumItemType.HELMET, Material.IRON_HELMET);
+                this.materialMap.put(EnumItemType.CHESTPLATE, Material.IRON_CHESTPLATE);
+                this.materialMap.put(EnumItemType.LEGGINGS, Material.IRON_LEGGINGS);
+                this.materialMap.put(EnumItemType.BOOTS, Material.IRON_BOOTS);
+                break;
+            case 3:
+                this.materialMap.put(EnumItemType.SWORD, Material.GOLD_SWORD);
+                this.materialMap.put(EnumItemType.POLE_ARM, Material.GOLD_SPADE);
+                this.materialMap.put(EnumItemType.AXE, Material.GOLD_AXE);
+                this.materialMap.put(EnumItemType.STAFF, Material.GOLD_HOE);
+                this.materialMap.put(EnumItemType.HELMET, Material.GOLD_HELMET);
+                this.materialMap.put(EnumItemType.CHESTPLATE, Material.GOLD_CHESTPLATE);
+                this.materialMap.put(EnumItemType.LEGGINGS, Material.GOLD_LEGGINGS);
+                this.materialMap.put(EnumItemType.BOOTS, Material.GOLD_BOOTS);
+                break;
+            case 4:
+                this.materialMap.put(EnumItemType.SWORD, Material.DIAMOND_SWORD);
+                this.materialMap.put(EnumItemType.POLE_ARM, Material.DIAMOND_SPADE);
+                this.materialMap.put(EnumItemType.AXE, Material.DIAMOND_AXE);
+                this.materialMap.put(EnumItemType.STAFF, Material.DIAMOND_HOE);
+                this.materialMap.put(EnumItemType.HELMET, Material.DIAMOND_HELMET);
+                this.materialMap.put(EnumItemType.CHESTPLATE, Material.DIAMOND_CHESTPLATE);
+                this.materialMap.put(EnumItemType.LEGGINGS, Material.DIAMOND_LEGGINGS);
+                this.materialMap.put(EnumItemType.BOOTS, Material.DIAMOND_BOOTS);
+                break;
+        }
+    }
+
+    public Material getMaterial(EnumItemType itemType)
+    {
+        return this.materialMap.get(itemType);
     }
 
     public static EnumItemTier random()
