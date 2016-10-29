@@ -1,4 +1,4 @@
-package net.dungeonrealms.awt.anticheat;
+package net.dungeonrealms.vgame.anticheat;
 
 import net.dungeonrealms.DungeonRealms;
 import org.bukkit.Bukkit;
