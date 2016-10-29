@@ -1,13 +1,16 @@
 package net.dungeonrealms.awt.database;
 
 import lombok.Getter;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.awt.SuperHandler;
 import net.dungeonrealms.awt.database.sql.MySQL;
 import net.dungeonrealms.awt.database.sql.SQLResult;
 import net.dungeonrealms.awt.events.DatabaseConnectEvent;
-import net.dungeonrealms.common.Constants;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +39,8 @@ public class DatabaseHandler implements SuperHandler.Handler {
     }
 
     private void setupConnection() {
-        this.mySQL = new MySQL(this, Constants.SQL_HOSTNAME, Constants.SQL_PORT, Constants.SQL_DATABASE, Constants.SQL_USERNAME, Constants.SQL_PASSWORD);
+        FileConfiguration sql = YamlConfiguration.loadConfiguration(new File(DungeonRealms.getInstance().getDataFolder() +  "/", "sql.yml"));
+        this.mySQL = new MySQL(this, sql.getString("hostname"), sql.getInt("port"), sql.getString("database"), sql.getString("username"), sql.getString("password"));
         SQLResult sqlResult;
         try {
             this.mySQL.updateConnection();
