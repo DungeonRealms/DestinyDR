@@ -1,5 +1,6 @@
 package net.dungeonrealms.vgame;
 
+import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -10,4 +11,19 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class Game extends JavaPlugin
 {
+    @Getter
+    private static Game game;
+
+    @Getter
+    private HandlerCore handlerCore;
+
+    @Override
+    public void onEnable()
+    {
+        game = this;
+
+        //** Handlers **//
+        this.handlerCore = new HandlerCore();
+        this.handlerCore.prepare();
+    }
 }
