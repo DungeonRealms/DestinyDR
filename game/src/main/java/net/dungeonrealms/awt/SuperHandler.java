@@ -2,11 +2,10 @@ package net.dungeonrealms.awt;
 
 import org.bukkit.event.Listener;
 
+import java.util.logging.Logger;
+
 /**
  * Created by Giovanni on 29-10-2016.
- * <p>
- * This file is part of the Dungeon Realms project.
- * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public interface SuperHandler
 {
@@ -15,6 +14,10 @@ public interface SuperHandler
     interface Handler
     {
         void prepare();
+
+        default Logger getLogger() {
+            return Logger.getLogger("DungeonRealms");
+        }
     }
 
     interface ListeningHandler extends Handler, Listener

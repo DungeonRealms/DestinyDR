@@ -15,9 +15,12 @@ public class MySQL {
     public Connection connection;
 
     private final String user;
+    @Getter
     private final String database;
     private final String password;
+    @Getter
     private final int port;
+    @Getter
     private final String hostname;
     @Getter
     private DatabaseHandler databaseHandler;
@@ -29,14 +32,13 @@ public class MySQL {
         this.database = database;
         this.user = username;
         this.password = password;
-
     }
 
     public boolean checkConnection() throws SQLException {
         return connection != null && !connection.isClosed();
     }
 
-    public void updateConnection() throws SQLException, ClassNotFoundException {
+    public void updateConnection() throws SQLException {
         if (!checkConnection())
             openConnection();
     }
@@ -50,7 +52,7 @@ public class MySQL {
             connection.close();
     }
 
-    public ResultSet query(String query) throws SQLException, ClassNotFoundException {
+    public ResultSet query(String query) throws SQLException {
         databaseHandler.getPool().submit(() -> {
             updateConnection();
             return connection.createStatement().executeQuery(query);
@@ -58,7 +60,7 @@ public class MySQL {
         return null;
     }
 
-    public int update(String query) throws SQLException, ClassNotFoundException {
+    public int update(String query) throws SQLException {
         updateConnection();
         databaseHandler.getPool().submit(() -> {
             return connection.createStatement().executeUpdate(query);
@@ -66,7 +68,7 @@ public class MySQL {
         return -1;
     }
 
-    public Connection openConnection() throws SQLException, ClassNotFoundException {
+    public Connection openConnection() throws SQLException {
         databaseHandler.getPool().submit(() -> {
             if (checkConnection()) {
                 return connection;

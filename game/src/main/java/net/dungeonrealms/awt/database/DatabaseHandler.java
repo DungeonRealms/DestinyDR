@@ -3,8 +3,12 @@ package net.dungeonrealms.awt.database;
 import lombok.Getter;
 import net.dungeonrealms.awt.SuperHandler;
 import net.dungeonrealms.awt.database.sql.MySQL;
+import net.dungeonrealms.awt.database.sql.SQLResult;
+import net.dungeonrealms.awt.events.DatabaseConnectEvent;
 import net.dungeonrealms.common.Constants;
+import org.bukkit.Bukkit;
 
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,9 +29,25 @@ public class DatabaseHandler implements SuperHandler.Handler {
 
     @Override
     public void prepare() {
-        //TODO connect via common-Constants
-        mySQL = new MySQL(this, Constants.SQL_HOSTNAME, Constants.SQL_PORT, Constants.SQL_DATABASE,Constants.SQL_USERNAME, Constants.SQL_PASSWORD);
-        if (!locked)
+        setupConnection();
+        if (!locked) {
             locked = true;
+        }
+    }
+
+    private void setupConnection() {
+        this.mySQL = new MySQL(this, Constants.SQL_HOSTNAME, Constants.SQL_PORT, Constants.SQL_DATABASE, Constants.SQL_USERNAME, Constants.SQL_PASSWORD);
+        SQLResult sqlResult;
+        try {
+            this.mySQL.updateConnection();
+            sqlResult = SQLResult.SUCCESS;
+            getLogger().log(sqlResult.getLevel(), "Connected to database " + mySQL.getHostname() + " on port " + mySQL.getPort() + " database " + mySQL.getDatabase());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            sqlResult = SQLResult.FAILED;
+            getLogger().log(sqlResult.getLevel(), "Failed to connect to database");
+        }
+        DatabaseConnectEvent event = new DatabaseConnectEvent(true, this.mySQL, sqlResult);
+        Bukkit.getServer().getPluginManager().callEvent(event);
     }
 }
