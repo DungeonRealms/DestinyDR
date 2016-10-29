@@ -53,10 +53,11 @@ public class Constants {
 
     public static final int FTP_PORT = 21;
 
-    //Removed use sql.yml
-//    public static final String SQL_HOSTNAME = "";
-//    public static final int SQL_PORT = 3306;
-//    public static final String SQL_DATABASE = "dungeonrealms";
-//    public static final String SQL_PASSWORD = "";
-//    public static final String SQL_USERNAME = "";
+    //MySQL INFO
+    public static final String SQL_HOSTNAME = "";
+    public static final int SQL_PORT = 3306;
+    public static final String SQL_DATABASE = "dungeonrealms";
+    public static final String SQL_PASSWORD = "";
+    public static final String SQL_USERNAME = "";
+
 }

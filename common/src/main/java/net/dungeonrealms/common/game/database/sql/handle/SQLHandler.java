@@ -1,7 +1,7 @@
 package net.dungeonrealms.common.game.database.sql.handle;
 
 import lombok.Getter;
-import net.dungeonrealms.awt.SuperHandler;
+import net.dungeonrealms.common.game.awt.SuperHandler;
 import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.database.sql.enumeration.EnumSQLPurpose;
 
