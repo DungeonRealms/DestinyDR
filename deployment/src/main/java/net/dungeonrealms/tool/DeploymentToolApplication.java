@@ -1,4 +1,4 @@
-package net.dungeonrealms.tool;
+package net.dungeonrealms.old.tool;
 
 import com.ullink.slack.simpleslackapi.SlackChannel;
 import com.ullink.slack.simpleslackapi.SlackSession;

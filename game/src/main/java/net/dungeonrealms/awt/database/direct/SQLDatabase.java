@@ -193,7 +193,6 @@ public class SQLDatabase
             database.update(query);
         } catch (Exception e)
         {
-            System.out.println("Vawke test 123");
             e.printStackTrace();
         }
     }
