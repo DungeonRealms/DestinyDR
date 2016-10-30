@@ -26,7 +26,7 @@ public class WeaponItem implements IStack
 
     private ItemStack itemStack;
 
-    private EnumItemType itemType; // TODO
+    private EnumItemType itemType;
 
     @Getter
     private EnumItemRarity itemRarity;

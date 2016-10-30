@@ -15,6 +15,8 @@ public interface DataRegistry
 
     void save();
 
+    void collect();
+
     AtomicBoolean atomicPreference();
 
     ConcurrentHashMap getMap();

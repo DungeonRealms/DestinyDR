@@ -4,10 +4,19 @@ import com.google.gson.Gson;
 import lombok.Getter;
 import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.item.EnumItemRarity;
+import net.dungeonrealms.vgame.item.EnumItemTier;
+import net.dungeonrealms.vgame.item.EnumItemType;
+import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttibute;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,29 +52,60 @@ public class WeaponRegistry implements DataRegistry
         {
             this.itemMap = new AtomicReference<ConcurrentHashMap<ItemStack, WeaponItem>>();
             this.itemMap.set(new ConcurrentHashMap<>());
+            this.collect();
         }
     }
-
 
     // Must be ran async!
     @Override
     public void save()
     {
         // Save all existant weapon items into the database
+        Gson gson = new Gson();
         for (WeaponItem weaponItem : getMap().values())
         {
             ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<>();
             map.put("UUID", weaponItem.getUniqueID());
             map.put("material", weaponItem.getItemStack().getType().name());
+            map.put("type", weaponItem.getType().name());
             map.put("rarity", weaponItem.getItemRarity().name());
             map.put("tier", weaponItem.getItemTier().name());
             map.put("durability", weaponItem.getDurability());
             map.put("name", weaponItem.getName());
-            map.put("attributes", new Gson().toJson(weaponItem.getWeaponAttibutes()));
+            map.put("attributes", gson.toJson(weaponItem.getWeaponAttibutes()));
 
             // Set into the database
             Game.getGame().getSQLDatabase().set(table, map, "UUID", weaponItem.getUniqueID().toString());
         }
+    }
+
+    // Must be ran async!
+    @Override
+    public void collect()
+    {
+        Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () -> {
+            Gson gson = new Gson();
+            ResultSet set = Game.getGame().getSQLDatabase().getSet("SELECT * FROM " + table);
+            try
+            {
+                while (set.next())
+                {
+                    UUID uuid = UUID.fromString(set.getString("UUID"));
+                    Material material = Material.valueOf(set.getString("material"));
+                    EnumItemRarity rarity = EnumItemRarity.valueOf(set.getString("rarity"));
+                    EnumItemType itemType = EnumItemType.valueOf(set.getString("type"));
+                    EnumItemTier itemTier = EnumItemTier.valueOf(set.getString("tier"));
+                    int durability = set.getInt("durability");
+                    String name = set.getString("name");
+                    List<EnumWeaponAttibute> attibuteList = gson.fromJson(set.getString("attributes"), List.class);
+                    // TODO construct weapon
+                }
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+                Game.getGame().getServer().shutdown(); // No weapons, no purpose.
+            }
+        }, 20L);
     }
 
     @Override
@@ -86,6 +126,7 @@ public class WeaponRegistry implements DataRegistry
         Game.getGame().getSQLDatabase().createTable(table,
                 Arrays.asList("UUID;VARCHAR(50)",
                         "material;TEXT",
+                        "type;TEXT",
                         "rarity;TEXT",
                         "tier;TEXT",
                         "durability;INT(11)",
