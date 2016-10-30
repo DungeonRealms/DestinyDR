@@ -2,6 +2,7 @@ package net.dungeonrealms.common.lib.scoreboard;
 
 import lombok.Getter;
 import net.dungeonrealms.vgame.Game;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -48,6 +49,11 @@ public class ScoreboardBuilder
     public ScoreboardBuilder setDisplayName(String name)
     {
         getObjective().setDisplayName(name);
+        return this;
+    }
+
+    public ScoreboardBuilder setLine(int line, String value) {
+        getObjective().getScore(ChatColor.translateAlternateColorCodes('&', value)).setScore(line);
         return this;
     }
 
