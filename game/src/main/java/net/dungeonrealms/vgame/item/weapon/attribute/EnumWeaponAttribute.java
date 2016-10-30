@@ -47,10 +47,6 @@ public enum EnumWeaponAttribute
 
     ACCURACY("ACCURACY"),
 
-    STRENGTH("STR"),
-
-    DEXTERITY("DEX"),
-
     INTELLECT("INT"),
 
     VITALITY("VIT");

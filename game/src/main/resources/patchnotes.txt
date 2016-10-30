@@ -1,20 +1,22 @@
 Build <build>
 
-&2New Features&0
-Use /welcome to welcome new players
-for ecash!
+&a&lThe new & actual recoded Dungeon Realms!
+As of October 2016.
 
-&8Changes&0
-- Fixed critical exploits
-- Mining emeralds now takes less time
-- Fixed extra mining fatigue
-- Anti cheat no longer removes original item
-on accidental duplication
-- 10 minute cooldown added to suiciding
+&8&lDevelopers/Authors:
+- Vawke
+- matt11matthew
 
-&4Bug Fixes&0
-- Fixed crashing
-- Fixed potential wiping when players crash
-before they load their data
-- Fixed going past +8 for protection scrolls
-- Fixed realms occasionally rolling back
+&4&lChangelog
+- New developers
+- New item system implemented
+- New creature system implemented
+- New dungeon system implemented
+- New networking implementation
+- Global atomic references for sharding
+- Performance improvements
+- Better & efficient code!
+
+&7If you are missing your SUB rank, contact support.
+
+&6www.dungeonrealms.net

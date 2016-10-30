@@ -75,7 +75,7 @@ public class WeaponRegistry implements DataRegistry
             map.put("tier", weaponItem.getItemTier().name());
             map.put("durability", weaponItem.getDurability());
             map.put("name", weaponItem.getName());
-            map.put("attributes", gson.toJson(weaponItem.getWeaponAttibutes()));
+            map.put("attributes", gson.toJson(weaponItem.getWeaponAttributes()));
 
             // Set into the database
             Game.getGame().getSQLDatabase().set(table, map, "UUID", weaponItem.getUniqueID().toString());
@@ -100,13 +100,14 @@ public class WeaponRegistry implements DataRegistry
                     EnumItemTier itemTier = EnumItemTier.valueOf(set.getString("tier"));
                     int durability = set.getInt("durability");
                     String name = set.getString("name");
+                    // TODO min, max dmg
 
                     // JSON conversion
                     List<String> attributeStrings = gson.fromJson(set.getString("attributes"), List.class);
 
                     // Convert the attribute names to the actual attribute
-                    List<EnumWeaponAttribute> attibuteList = Lists.newArrayList();
-                    attibuteList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
+                    List<EnumWeaponAttribute> attributeList = Lists.newArrayList();
+                    attributeList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
                     // TODO construct weapon
                 }
             } catch (SQLException e)
