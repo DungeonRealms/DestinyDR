@@ -29,7 +29,7 @@ public enum EnumWeaponAttribute
 
     PURE_DAMAGE("PURE DMG"),
 
-    CRIT("CRITICAL HIT"),
+    CRITICAL_HIT("CRITICAL HIT"),
 
     PENETRATION("ARMOR PENETRATION"),
 
@@ -47,7 +47,11 @@ public enum EnumWeaponAttribute
 
     ACCURACY("ACCURACY"),
 
-    STRENGTH("STRENGTH"),
+    STRENGTH("STR"),
+
+    DEXTERITY("DEX"),
+
+    INTELLECT("INT"),
 
     VITALITY("VIT");
 
