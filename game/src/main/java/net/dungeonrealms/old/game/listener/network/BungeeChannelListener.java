@@ -1,6 +1,5 @@
 package net.dungeonrealms.old.game.listener.network;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
@@ -10,6 +9,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.vgame.Game;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -42,8 +42,8 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
 
     public void startInitialization() {
         Utils.log.info("[BungeeChannelListener] Registering Outbound/Inbound BungeeCord channels...");
-        Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
-        Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(Game.getGame(), "BungeeCord");
+        Bukkit.getMessenger().registerIncomingPluginChannel(Game.getGame(), "BungeeCord", this);
 
         BungeeServerTracker.startTask(3L);
         Utils.log.info("[BungeeChannelListener] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
@@ -53,8 +53,8 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
     public void stopInvocation() {
         Utils.log.info("[BungeeChannelListener] Unregistering Outbound/Inbound BungeeCord channels...");
 
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(Game.getGame(), "BungeeCord");
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(Game.getGame(), "BungeeCord", this);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
                             UUID uuid = UUID.fromString(((Document) existingDoc.get("info")).get("uuid", String.class));
 
                             if (PunishAPI.getInstance().isBanned(uuid))
-                                PunishAPI.getInstance().ban(player.getUniqueId(), player.getName(), DungeonRealms.getShard().getShardID(), -1, "Ban evading", null);
+                                PunishAPI.getInstance().ban(player.getUniqueId(), player.getName(), Game.getGame().getGameShard().getShardInfo().getShardID(), -1, "Ban evading", null);
                         }
                     });
                     return;

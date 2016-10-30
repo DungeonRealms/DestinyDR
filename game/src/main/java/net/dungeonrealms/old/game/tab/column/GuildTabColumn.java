@@ -9,6 +9,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.old.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.old.game.guild.database.GuildDatabase;
 import net.dungeonrealms.old.game.tab.Column;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -65,7 +66,7 @@ public class GuildTabColumn extends Column {
                                     shard = curInfo.get().b();
 
                                 } else {
-                                    shard = DungeonRealms.getShard();
+                                    shard = Game.getGame().getGameShard().getShardInfo();
                                     playerName = Bukkit.getPlayer(uuid).getName();
                                 }
 

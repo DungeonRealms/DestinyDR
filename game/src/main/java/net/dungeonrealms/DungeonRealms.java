@@ -1,18 +1,10 @@
 package net.dungeonrealms;
 
-import com.esotericsoftware.minlog.Log;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.updater.UpdateTask;
-import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.old.game.achievements.AchievementManager;
 import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
@@ -69,40 +61,21 @@ import net.dungeonrealms.old.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.old.game.world.entity.util.PetUtils;
 import net.dungeonrealms.old.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.old.game.world.loot.LootManager;
-import net.dungeonrealms.old.game.world.realms.Realms;
 import net.dungeonrealms.old.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.old.game.world.shops.ShopMechanics;
 import net.dungeonrealms.old.game.world.spawning.BuffManager;
 import net.dungeonrealms.old.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
-import net.dungeonrealms.network.GameClient;
-import net.dungeonrealms.network.packet.type.ServerListPacket;
-import org.apache.commons.io.FileUtils;
-import org.bson.Document;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.ini4j.Ini;
-import org.ini4j.InvalidFileFormatException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DungeonRealms extends JavaPlugin {
-
-    private static long SERVER_START_TIME, REBOOT_TIME;
-
-    @Getter
-    private static ShardInfo shard;
-
-    @Getter
-    private static GameClient client;
+public class DungeonRealms extends JavaPlugin
+{
 
     private static DungeonRealms instance = null;
     private static HearthStone hs;
@@ -112,20 +85,6 @@ public class DungeonRealms extends JavaPlugin {
     // Shard Config
     public MechanicManager mm = null;
     public boolean isInstanceServer = false;
-    public String bungeeName = "Lobby";
-    public int realmnumber = -1;
-    public int realmport = -1;
-    public int realmmax = 0;
-    public int realmpmax = 0;
-    public String shardid = "US-666";
-    public boolean isMasterShard = false; // Master shard (US-0) - handles rollout / editable / etc.
-    public boolean isSubscriberShard = false; // Subscriber shard - only allow subsribers.
-    public boolean isSupportShard = false; // Custom support shard - should we enable support commands?
-    public boolean isYouTubeShard = false; // YouTuber shard - only YTers / staff allowed.
-    public boolean isBrazilianShard = false; // Brazilian shard - eventually create DR localization, etc.
-    public boolean isRoleplayShard = false; // Role playing shard - prompt user its a RP shard.
-    public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
-    // End of Shard Config
 
     private volatile boolean acceptPlayers = false;
 
@@ -136,83 +95,39 @@ public class DungeonRealms extends JavaPlugin {
     @Getter
     private List<String> loggingOut = new ArrayList<>();
 
-    public static DungeonRealms getInstance() {
+    public static DungeonRealms getInstance()
+    {
         return instance;
     }
 
-    public static long getServerStart() {
-        return SERVER_START_TIME;
-    }
-
-
-    public void onLoad() {
+    public void onLoad()
+    {
         Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
         instance = this;
     }
 
-    public static int rebooterID;
-
-    public List<String> getDevelopers() {
+    public List<String> getDevelopers()
+    {
         return Arrays.asList(Constants.DEVELOPERS);
     }
 
-    public boolean canAcceptPlayers() {
+    public boolean canAcceptPlayers()
+    {
         return acceptPlayers;
     }
 
-    public void setAcceptPlayers(boolean bool) {
+    public void setAcceptPlayers(boolean bool)
+    {
         acceptPlayers = bool;
     }
 
-    public void onEnable() {
+    public void onEnable()
+    {
 //        new DupedItemsRemover().startInitialization();
-        SERVER_START_TIME = System.currentTimeMillis();
 
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
 
-        // RANDOMIZE REBOOT TIME //
-        Random random = new Random();
-        long min = Constants.MIN_GAME_TIME + SERVER_START_TIME;
-        long max = Constants.MAX_GAME_TIME + SERVER_START_TIME;
-
-        REBOOT_TIME += min + (long) (random.nextDouble() * (max - min));
-
-        Utils.log.info("Reading shard config...");
-        Ini ini = new Ini();
-        try {
-            ini.load(new FileReader("shardconfig.ini"));
-            // Main
-            isInstanceServer = ini.get("Main", "instanced", Boolean.class);
-            shardid = ini.get("Main", "shardid", String.class);
-            bungeeName = ini.get("Bungee", "name", String.class);
-
-            realmnumber = ini.get("RealmInstance", "number", int.class);
-            realmport = ini.get("RealmInstance", "port", int.class);
-            realmmax = ini.get("RealmInstance", "maxrealms", int.class);
-            realmpmax = ini.get("RealmInstance", "maxplayers", int.class);
-            // Shard Settings
-            isMasterShard = ini.get("Settings", "master_shard", Boolean.class);
-            isSubscriberShard = ini.get("Settings", "subscriber_shard", Boolean.class);
-            isSupportShard = ini.get("Settings", "support_shard", Boolean.class);
-            isYouTubeShard = ini.get("Settings", "youtube_shard", Boolean.class);
-            isBrazilianShard = ini.get("Settings", "brazilian_shard", Boolean.class);
-            isRoleplayShard = ini.get("Settings", "roleplay_shard", Boolean.class);
-            isBetaShard = ini.get("Settings", "beta_shard", Boolean.class);
-        } catch (InvalidFileFormatException e1) {
-            Utils.log.info("InvalidFileFormat in shard config!");
-        } catch (FileNotFoundException e1) {
-            Utils.log.info("Shard Config not found!");
-        } catch (IOException e1) {
-            Utils.log.info("IOException in shard config!");
-        }
-        Utils.log.info("Done reading shard config!");
-
-        shard = ShardInfo.getByShardID(shardid);
-        BungeeUtils.setPlugin(this);
-
-        DatabaseInstance.getInstance().startInitialization(true);
-        DatabaseAPI.getInstance().startInitialization(bungeeName);
         AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
@@ -223,18 +138,10 @@ public class DungeonRealms extends JavaPlugin {
         ItemGenerator.loadModifiers();
 
         Utils.log.info("Connecting to DungeonRealms master server...");
-        client = new GameClient();
-
-        try {
-            client.connect();
-            Log.set(Log.LEVEL_INFO);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
 
         mm = new MechanicManager();
-        if (!isInstanceServer) {
+        if (!isInstanceServer)
+        {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(Teleportation.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
@@ -262,7 +169,8 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(PartyMechanics.getInstance());
             //mm.registerMechanic(net.dungeonrealms.old.tool.PatchTools.getInstance());
             mm.registerMechanic(TutorialIsland.getInstance());
-        } else {
+        } else
+        {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
             mm.registerMechanic(EnergyHandler.getInstance());
@@ -282,9 +190,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(AchievementManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(PartyMechanics.getInstance());
-
-
-            if (realmnumber >= 0) mm.registerMechanic(Realms.getInstance());
         }
 
         mm.loadMechanics();
@@ -295,7 +200,8 @@ public class DungeonRealms extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
 
-        if (!isInstanceServer) {
+        if (!isInstanceServer)
+        {
             pm.registerEvents(new MainListener(), this);
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
@@ -321,7 +227,8 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new RestrictionListener(), this);
             pm.registerEvents(new PvPListener(), this);
             pm.registerEvents(new PvEListener(), this);
-        } else {
+        } else
+        {
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
             pm.registerEvents(new InventoryListener(), this);
@@ -407,11 +314,13 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandReply("reply", "/<command>", "Messages a player", Collections.singletonList("r")));
         cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
         // Commands only registered for an instance server (including the always registered commands).
-        if (isInstanceServer) {
+        if (isInstanceServer)
+        {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));
         }
         // Commands only registered for live servers (including always registered).
-        else {
+        else
+        {
 
             //GUILD STUFF
             cm.registerCommand(new CommandGInfo("ginfo", "/<command>", "Guild info command."));
@@ -487,41 +396,13 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
         }
 
-        // Commands exclusive to support agents on their special server.
-        if (isMasterShard || isSupportShard) {
-            cm.registerCommand(new CommandSupport("support", "/<command> [args]", "The main command for accessing all support features and tools."));
-        }
+        cm.registerCommand(new CommandSupport("support", "/<command> [args]", "The main command for accessing all support features and tools."));
 
-        try {
-            FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Bukkit.getServer().setWhitelist(false);
-
-        rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
-            if (System.currentTimeMillis() >= (REBOOT_TIME - 300000L)) {
-                scheduleRestartTask();
-                Bukkit.getScheduler().cancelTask(rebooterID);
-            }
-        }, 0, 100);
-
-        // FIX PLAYERS //
-        UpdateResult playerFixResult = DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard.getPseudoName()),
-                new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
-
-        if (playerFixResult.wasAcknowledged())
-            Constants.log.info("Set " + playerFixResult.getModifiedCount() + " players' " +
-                    "statuses to offline from " +
-                    "shard " + shard);
-        else Constants.log.info("Operation failed: database error.");
-
-        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / SERVER_START_TIME) + "/s");
-
-        try {
+        try
+        {
             Constants.log.info("Successfully discovered process's pid - " + Utils.getPid());
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e)
+        {
             e.printStackTrace();
         }
 
@@ -532,69 +413,15 @@ public class DungeonRealms extends JavaPlugin {
             Bukkit.getServer().setWhitelist(false);
         }, 240L);
 
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                GameAPI.GAMEPLAYERS.values().forEach(gp -> gp.getPlayerStatistics().setTimePlayed(gp.getPlayerStatistics().getTimePlayed() + 1));
-            }
-        }, 0L, 1000);
-
-        // SEND SERVER INFO TO MASTER SERVER REPEATEDLY //
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                ServerListPacket packet = new ServerListPacket();
-
-                final Player[] onlinePlayers = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
-
-                packet.target = shard;
-                packet.tokens = new PlayerToken[onlinePlayers.length];
-
-
-                for (int i = 0; i < onlinePlayers.length; i++) {
-                    Player player = onlinePlayers[i];
-                    packet.tokens[i] = new PlayerToken(player.getUniqueId().toString(), player.getName());
-                }
-
-                getClient().sendTCP(packet);
-            }
-        }, 0L, 3000);
-
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);
     }
 
-    public long getRebootTime() {
-        return REBOOT_TIME;
-    }
-
-    private void scheduleRestartTask() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 60, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                setAcceptPlayers(false);
-                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(),
-                        () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 60, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")));
-            }
-        }, 240000L);
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), GameAPI::stopGame);
-            }
-        }, 300000L);
-    }
-
-    public void onDisable() {
+    public void onDisable()
+    {
         ps.onDisable();
         hs.onDisable();
         tcc.onDisable();
-        if (!mm.isShutdown())
-            mm.stopInvocation();
 
         DatabaseAPI.getInstance().stopInvocation();
 

@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.player.chat.GameChat;
 import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -336,17 +337,17 @@ public class CommandEss extends BaseCommand {
                         case "level":
                             GameAPI.sendNetworkMessage("levelBuff", duration, bonusAmount, commandSender instanceof
                                     Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
-                                    DungeonRealms.getInstance().bungeeName);
+                                    Game.getGame().getGameShard().getBungeeIdentifier());
                             break;
                         case "loot":
                             GameAPI.sendNetworkMessage("lootBuff", duration, bonusAmount, commandSender instanceof
                                     Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
-                                    DungeonRealms.getInstance().bungeeName);
+                                    Game.getGame().getGameShard().getBungeeIdentifier());
                             break;
                         case "profession":
                             GameAPI.sendNetworkMessage("professionBuff", duration, bonusAmount, commandSender instanceof
                                     Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
-                                    DungeonRealms.getInstance().bungeeName);
+                                    Game.getGame().getGameShard().getBungeeIdentifier());
                             break;
                         default:
                             commandSender.sendMessage(ChatColor.RED + "Invalid buff type! Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");

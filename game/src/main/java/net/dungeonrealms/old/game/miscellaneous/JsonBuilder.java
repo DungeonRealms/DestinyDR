@@ -34,8 +34,8 @@ public class JsonBuilder {
     }
 
     public JsonBuilder parse(String text) {
-        String regex = "[&�]{1}([a-fA-Fl-oL-O0-9]){1}";
-        text = text.replaceAll(regex, "�$1");
+        String regex = "[&\ufffd]{1}([a-fA-Fl-oL-O0-9]){1}";
+        text = text.replaceAll(regex, "\ufffd$1");
         if (!Pattern.compile(regex).matcher(text).find()) {
             withText(text);
             return this;

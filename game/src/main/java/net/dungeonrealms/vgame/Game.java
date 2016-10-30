@@ -1,9 +1,9 @@
 package net.dungeonrealms.vgame;
 
 import lombok.Getter;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
 import net.dungeonrealms.common.game.database.sql.SQLDatabase;
-import net.dungeonrealms.common.game.database.sql.handle.SQLHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +19,12 @@ import java.io.FileReader;
  */
 public class Game extends JavaPlugin
 {
+    /**
+     * TODO keep in mind to register the realms mechanic.
+     * if (realmnumber >= 0) mm.registerMechanic(Realms.getInstance());
+     * pseudo
+     */
+
     @Getter
     private static Game game;
 
@@ -57,6 +63,12 @@ public class Game extends JavaPlugin
         //** Registries **//
         this.registryHandler = new RegistryHandler();
         this.registryHandler.prepare();
+    }
+
+    @Override
+    public void onDisable()
+    {
+        GameAPI.stopGame();
     }
 
     // Quick access to MySQL

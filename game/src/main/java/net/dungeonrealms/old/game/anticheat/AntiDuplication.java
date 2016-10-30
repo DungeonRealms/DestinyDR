@@ -19,6 +19,7 @@ import net.dungeonrealms.old.game.player.banks.BankMechanics;
 import net.dungeonrealms.old.game.player.banks.Storage;
 import net.dungeonrealms.old.game.world.entity.util.MountUtils;
 import net.dungeonrealms.old.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.vgame.Game;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -130,7 +131,7 @@ public class AntiDuplication implements GenericMechanic {
                 i++;
             }
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
-                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + Game.getGame().getGameShard().getShardId());
         }
     }
 
@@ -191,7 +192,7 @@ public class AntiDuplication implements GenericMechanic {
 
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: " + ChatColor.WHITE + "Player " + player.getName() + " has " + orbCount + " orbs, " +
                     enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
-                    "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
+                    "gems. He is currently on shard " + Game.getGame().getGameShard().getShardId());
         }
     }
 
@@ -201,7 +202,7 @@ public class AntiDuplication implements GenericMechanic {
         GameAPI.sendNetworkMessage("GMMessage", "");
         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
                 "Banned" + ChatColor.RED + " player " + p.getName() + " for possession of " + orbCount + " orbs, " + enchantCount +
-                " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " gems on shard " + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+                " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " gems on shard " + ChatColor.UNDERLINE + Game.getGame().getGameShard().getShardId());
         GameAPI.sendNetworkMessage("GMMessage", "");
     }
 

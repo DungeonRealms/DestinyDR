@@ -9,6 +9,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.handler.FriendHandler;
 import net.dungeonrealms.old.game.player.json.JSONMessage;
+import net.dungeonrealms.vgame.Game;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -112,7 +113,7 @@ public class Chat {
 
         GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
                 ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
-                .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
+                .AQUA + Game.getGame().getGameShard().getShardId() + ChatColor.GRAY + "]: " + ChatColor.WHITE +
                 finalMessage));
 
         GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");

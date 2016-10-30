@@ -1,8 +1,10 @@
 package net.dungeonrealms.old.game.command.test;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.backend.enumeration.EnumShardType;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,7 +20,7 @@ public class CommandTestRank extends BaseCommand {
 		Player p = (Player)sender;
 
 		// This command can only be executed from US-0 or if the player is an OP on a live shard.
-		if (!DungeonRealms.getInstance().isMasterShard && !p.isOp()) return false;
+		if (!(Game.getGame().getGameShard().getShardType() == EnumShardType.MASTER && !p.isOp())) return false;
 
 		p.sendMessage("Developer: " + Rank.isDev(p));
 		p.sendMessage("Game Master: " + Rank.isGM(p));

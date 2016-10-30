@@ -17,6 +17,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.old.game.player.combat.CombatLog;
 import net.dungeonrealms.old.game.title.TitleAPI;
 import net.dungeonrealms.old.game.world.realms.Realms;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -247,7 +248,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
 
-            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getMotd1().contains("offline"))
+            if (!info.isOnline() || shardID.equals(Game.getGame().getGameShard().getShardId()) || info.getMotd1().contains("offline"))
                 continue;
 
             filteredServers.put(bungeeName, info);

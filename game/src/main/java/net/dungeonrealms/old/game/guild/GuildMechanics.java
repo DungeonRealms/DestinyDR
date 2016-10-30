@@ -15,6 +15,7 @@ import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mastery.ItemSerialization;
 import net.dungeonrealms.old.game.player.banks.BankMechanics;
 import net.dungeonrealms.old.game.player.chat.Chat;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -70,7 +71,7 @@ public class GuildMechanics {
                 filter.add(Bukkit.getPlayer(uuid).getName());
             });
 
-            sendAlertFilter(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
+            sendAlertFilter(guildName, player.getName() + " has joined shard " + Game.getGame().getGameShard().getShardId(), filter.toArray(new String[filter.size()]));
             showMotd(player, guildName);
         });
     }

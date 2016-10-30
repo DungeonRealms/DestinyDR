@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.player.chat.GameChat;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class CommandStaffChat extends BaseCommand {
             for (int arg = 1; arg < args.length; arg++)
                 message.append(" ").append(args[arg]);
 
-            GameAPI.sendNetworkMessage("StaffMessage", "&6<SC> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage((Player) sender) + "&6" + message);
+            GameAPI.sendNetworkMessage("StaffMessage", "&6<SC> &6(" + Game.getGame().getGameShard().getShardId() + ") " + GameChat.getPreMessage((Player) sender) + "&6" + message);
         } else sender.sendMessage("/sc|staffchat|s [message]");
         return true;
     }

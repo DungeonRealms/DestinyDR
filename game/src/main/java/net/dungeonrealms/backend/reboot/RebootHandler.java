@@ -1,5 +1,6 @@
 package net.dungeonrealms.backend.reboot;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.awt.SuperHandler;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
@@ -32,8 +33,8 @@ public class RebootHandler implements SuperHandler.Handler
                 Game.getGame().getRegistryHandler().getRegistryMap().values().forEach((dataRegistry) -> dataRegistry.save());
 
                 // Shutdown
+                GameAPI.stopGame();
                 Game.getGame().getGameShard().manageSimpleStop();
-                Game.getGame().getServer().shutdown();
             } else
             {
                 this.rebootTime--;

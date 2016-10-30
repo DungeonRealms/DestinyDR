@@ -1,17 +1,22 @@
 package net.dungeonrealms.backend;
 
-import com.esotericsoftware.minlog.Log;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
 import net.dungeonrealms.backend.enumeration.EnumShardType;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.vgame.Game;
+import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.ini4j.Ini;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -67,6 +72,8 @@ public class GameShard
             this.shardInfo = ShardInfo.getByShardID(shardId);
             this.setupDatabase();
             this.connect();
+            this.clearPlayerData();
+            this.managePlayerData();
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -84,6 +91,29 @@ public class GameShard
     {
         // Just for instances/handlers that require a manual stop, no saving of data will take place here
         DatabaseAPI.getInstance().stopInvocation();
+
+        // TODO stop all mechanics
+    }
+
+    private void managePlayerData()
+    {
+        UpdateResult playerFixResult = DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shardInfo.getPseudoName()),
+                new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
+        if (playerFixResult.wasAcknowledged())
+        {
+            Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Update online player results");
+        }
+    }
+
+    private void clearPlayerData()
+    {
+        try
+        {
+            FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void connect()
@@ -114,7 +144,7 @@ public class GameShard
             ini.load(fileReader);
 
             this.instanceServer = ini.get("Backend", "instance", Boolean.class);
-            this.shardId = ini.get("Backend", "shardid", String.class);
+            this.shardId = ini.get("Backend", "shardId", String.class);
             this.bungeeIdentifier = ini.get("Backend", "bungeeId", String.class);
 
             this.realmsNumber = ini.get("RealmData", "number", Integer.class);

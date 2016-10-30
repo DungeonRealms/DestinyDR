@@ -4,6 +4,7 @@ import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public abstract class Column {
 
 
     protected static String getFormat(String displayName, ShardInfo shard) {
-        if (DungeonRealms.getShard().equals(shard)) {
+        if (Game.getGame().getGameShard().getShardInfo().equals(shard)) {
             // THIS WILL INDICATE THAT PLAYER IS IN CURRENT SHARD //
             return ChatColor.GREEN + " ⦿ " + ChatColor.GRAY + displayName;
         } else {

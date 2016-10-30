@@ -1,10 +1,10 @@
 package net.dungeonrealms.old.game.donation.buffs;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.mastery.Utils;
+import net.dungeonrealms.vgame.Game;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,7 +34,7 @@ public class ProfessionBuff extends Buff {
                         + " for " + formattedTime + " by using 'Global Profession Buff' from the E-CASH store!");
         Bukkit.getServer().broadcastMessage("");
         DonationEffects.getInstance().setActiveProfessionBuff(this);
-        DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
+        DatabaseAPI.getInstance().updateShardCollection(Game.getGame().getGameShard().getBungeeIdentifier(), EnumOperators.$SET,
                 "buffs.activeProfessionBuff", this.serialize(), true);
     }
 
@@ -47,12 +47,12 @@ public class ProfessionBuff extends Buff {
                 + "+" + bonusAmount + "% Global Profession Rates" + ChatColor.GOLD + " from " + activatingPlayer + ChatColor.GOLD + " has expired.");
 
         if (nextBuff != null) {
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$POP,
+            DatabaseAPI.getInstance().updateShardCollection(Game.getGame().getGameShard().getBungeeIdentifier(), EnumOperators.$POP,
                     "buffs.queuedProfessionBuffs", -1, true);
             nextBuff.activateBuff();
         } else {
             de.getInstance().setActiveProfessionBuff(null);
-            DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$UNSET,
+            DatabaseAPI.getInstance().updateShardCollection(Game.getGame().getGameShard().getBungeeIdentifier(), EnumOperators.$UNSET,
                     "buffs.activeProfessionBuff", "", true);
         }
     }

@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.old.game.player.chat.GameChat;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -40,7 +41,7 @@ public class CommandAsk extends BaseCommand {
                 message.append(" ").append(args[arg]);
 
             p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Your question has been sent to an online staff member."));
-            GameAPI.sendNetworkMessage("StaffMessage", "&e<QUESTION> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(p) + "&e" + message);
+            GameAPI.sendNetworkMessage("StaffMessage", "&e<QUESTION> &6(" + Game.getGame().getGameShard().getShardId() + ") " + GameChat.getPreMessage(p) + "&e" + message);
 
         } else sender.sendMessage("/ask|a [message]");
 

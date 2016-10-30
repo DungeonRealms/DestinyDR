@@ -36,6 +36,7 @@ import net.dungeonrealms.old.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.old.game.world.entity.util.MountUtils;
 import net.dungeonrealms.old.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
+import net.dungeonrealms.vgame.Game;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -138,7 +139,7 @@ public class MainListener implements Listener {
     public void onPing(ServerListPingEvent event) {
         if (!DungeonRealms.getInstance().canAcceptPlayers()) event.setMotd("offline");
         else
-            event.setMotd(DungeonRealms.getInstance().shardid + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER);
+            event.setMotd(Game.getGame().getGameShard().getShardId() + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER);
     }
 
     /**
@@ -177,7 +178,7 @@ public class MainListener implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
-            if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
+            if (!shard.equals("") && shard != null && !Game.getGame().getGameShard().getShardId().equals(shard)) {
                 event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
 
                         + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
