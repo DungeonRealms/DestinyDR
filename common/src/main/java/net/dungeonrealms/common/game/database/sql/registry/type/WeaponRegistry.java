@@ -9,7 +9,7 @@ import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;
 import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.weapon.WeaponItem;
-import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttibute;
+import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -105,8 +105,8 @@ public class WeaponRegistry implements DataRegistry
                     List<String> attributeStrings = gson.fromJson(set.getString("attributes"), List.class);
 
                     // Convert the attribute names to the actual attribute
-                    List<EnumWeaponAttibute> attibuteList = Lists.newArrayList();
-                    attibuteList.addAll(attributeStrings.stream().map(EnumWeaponAttibute::valueOf).collect(Collectors.toList()));
+                    List<EnumWeaponAttribute> attibuteList = Lists.newArrayList();
+                    attibuteList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
                     // TODO construct weapon
                 }
             } catch (SQLException e)

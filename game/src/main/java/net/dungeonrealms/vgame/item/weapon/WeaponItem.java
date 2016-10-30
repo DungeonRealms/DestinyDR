@@ -6,7 +6,7 @@ import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;
 import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.IStack;
-import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttibute;
+import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,7 +41,7 @@ public class WeaponItem implements IStack
     private int durability = 100; // Default value ?
 
     @Getter
-    private List<EnumWeaponAttibute> weaponAttibutes;
+    private List<EnumWeaponAttribute> weaponAttibutes;
 
     @Getter
     private String name;
@@ -52,7 +52,7 @@ public class WeaponItem implements IStack
 
         this.itemType = EnumItemType.randomItem(false); // Random weapon item
 
-        this.weaponAttibutes = EnumWeaponAttibute.random(this.itemTier.getMaxAttributes()); // Random collection of attributes
+        this.weaponAttibutes = EnumWeaponAttribute.random(this.itemTier.getMaxAttributes()); // Random collection of attributes
         this.itemRarity = EnumItemRarity.random(); // Random rarity upon generation
         this.itemTier = EnumItemTier.random(); // Random tier upon generation
 
@@ -73,7 +73,7 @@ public class WeaponItem implements IStack
         }
 
         // Add weapon attributes to the lore
-        lore.addAll(weaponAttibutes.stream().map(EnumWeaponAttibute::getName).collect(Collectors.toList()));
+        lore.addAll(weaponAttibutes.stream().map(EnumWeaponAttribute::getName).collect(Collectors.toList()));
 
         itemMeta.setLore(lore);
 

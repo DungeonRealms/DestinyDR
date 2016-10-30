@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumWeaponAttibute
+public enum EnumWeaponAttribute
 {
     /**
      * % List
@@ -54,39 +54,39 @@ public enum EnumWeaponAttibute
     @Getter
     private String name;
 
-    private static AtomicCollection<EnumWeaponAttibute> atomicCollection = new AtomicCollection<>();
+    private static AtomicCollection<EnumWeaponAttribute> atomicCollection = new AtomicCollection<>();
 
     private static boolean loaded;
 
-    EnumWeaponAttibute(String name)
+    EnumWeaponAttribute(String name)
     {
         this.name = ChatColor.RED + name;
     }
 
-    public static List<EnumWeaponAttibute> random(int maxAttibutes)
+    public static List<EnumWeaponAttribute> random(int maxAttributes)
     {
-        AtomicReference<List<EnumWeaponAttibute>> attibuteList;
+        AtomicReference<List<EnumWeaponAttribute>> attributeList;
         if (loaded)
         {
-            attibuteList = new AtomicReference<List<EnumWeaponAttibute>>(); // Create a new list per process
-            attibuteList.set(Lists.newArrayList());
-            if (attibuteList.get().isEmpty()) // Better be safe than sorry
+            attributeList = new AtomicReference<List<EnumWeaponAttribute>>(); // Create a new list per process
+            attributeList.set(Lists.newArrayList());
+            if (attributeList.get().isEmpty()) // Better be safe than sorry
             {
-                IntStream.range(0, maxAttibutes).parallel().forEach(max -> {
-                    attibuteList.get().add(atomicCollection.next());
+                IntStream.range(0, maxAttributes).parallel().forEach(max -> {
+                    attributeList.get().add(atomicCollection.next());
                 });
-                return attibuteList.get();
+                return attributeList.get();
             }
         } else
         {
             // Weight is not final
-            for (EnumWeaponAttibute enumWeaponAttibute : EnumWeaponAttibute.values())
+            for (EnumWeaponAttribute enumWeaponAttibute : EnumWeaponAttribute.values())
                 atomicCollection.getMap().get().put(0.5, enumWeaponAttibute);
 
             // Always add an empty entry
             atomicCollection.getMap().get().put(0.8, null);
             loaded = true;
-            return random(maxAttibutes); // Redo the process
+            return random(maxAttributes); // Redo the process
         }
         return null;
     }
