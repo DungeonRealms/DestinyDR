@@ -1,6 +1,7 @@
 package net.dungeonrealms.vgame.item.weapon.handle;
 
 import net.dungeonrealms.awt.SuperHandler;
+import net.dungeonrealms.vgame.Game;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -13,6 +14,6 @@ public class BowHandler implements SuperHandler.ListeningHandler
     @Override
     public void prepare()
     {
-
+        Game.getGame().getServer().getPluginManager().registerEvents(this, Game.getGame());
     }
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.dungeonrealms.awt.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;
 import net.dungeonrealms.common.game.database.sql.handle.SQLHandler;
+import net.dungeonrealms.common.game.database.sql.handle.SaveHandler;
 import net.dungeonrealms.vgame.item.weapon.handle.BowHandler;
 import net.dungeonrealms.vgame.item.weapon.handle.WeaponHandler;
 import org.bukkit.ChatColor;
@@ -45,6 +46,7 @@ public class GameHandler implements Handler
         this.handlerMap.put(UUID.randomUUID(), this.registryHandler = new RegistryHandler());
         this.handlerMap.put(UUID.randomUUID(), new WeaponHandler());
         this.handlerMap.put(UUID.randomUUID(), new BowHandler());
+        this.handlerMap.put(UUID.randomUUID(), new SaveHandler());
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers provided");
 
         // Register them

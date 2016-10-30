@@ -2,6 +2,7 @@ package net.dungeonrealms.vgame.item.weapon.handle;
 
 import net.dungeonrealms.awt.SuperHandler;
 import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.weapon.WeaponItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,20 +32,24 @@ public class WeaponHandler implements SuperHandler.ListeningHandler
         {
             Player player = (Player) event.getDamager();
             if (player.getItemInHand() != null)
-            {
-                if (Game.getGame().getRegistryHandler().getWeaponRegistry().getMap().containsKey(player.getItemInHand()))
+                if (Game.getGame().getRegistryHandler().getWeaponRegistry().getMap().containsKey(player.getItemInHand())) // Check if it's a weapon.
                 {
-                    double actualDamage = 0;
                     WeaponItem weaponItem = Game.getGame().getRegistryHandler().getWeaponRegistry().getMap().get(player.getItemInHand());
-                    // Add default weapon damage, a random double between min and max
-                    actualDamage += ThreadLocalRandom.current().nextDouble(weaponItem.getMinDmg(), weaponItem.getMaxDmg());
+                    if (!(weaponItem.getType() == EnumItemType.BOW))
+                    {
+                        double actualDamage = 0;
+                        // Add default weapon damage, a random double between min and max
+                        actualDamage += ThreadLocalRandom.current().nextDouble(weaponItem.getMinDmg(), weaponItem.getMaxDmg());
 
-                    event.setDamage(Math.round(actualDamage));
+                        event.setDamage(Math.round(actualDamage));
+                    } else
+                    {
+                        event.setDamage(0); // Don't damage an entity if they just punch with a bow
+                    }
                 } else
                 {
                     return;
                 }
-            }
         }
     }
 }

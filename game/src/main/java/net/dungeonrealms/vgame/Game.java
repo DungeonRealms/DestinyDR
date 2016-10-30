@@ -2,6 +2,8 @@ package net.dungeonrealms.vgame;
 
 import lombok.Getter;
 import net.dungeonrealms.backend.GameShard;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.common.game.database.sql.handle.SQLHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,5 +57,11 @@ public class Game extends JavaPlugin
         //** Registries **//
         this.registryHandler = new RegistryHandler();
         this.registryHandler.prepare();
+    }
+
+    // Quick access to MySQL
+    public SQLDatabase getSQLDatabase()
+    {
+        return this.handlerCore.getSqlHandler().getSqlDatabase();
     }
 }

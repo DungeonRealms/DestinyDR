@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -161,7 +162,7 @@ public class SQLDatabase
     /**
      * Setters in database
      */
-    public void set(String table, HashMap<String, Object> map, String whereClause, String whereValue)
+    public void set(String table, ConcurrentHashMap<String, Object> map, String whereClause, String whereValue)
     {
         try
         {
@@ -213,7 +214,7 @@ public class SQLDatabase
             {
                 current += set.getInt(col);
             }
-            HashMap<String, Object> map = Maps.newHashMap();
+            ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<>();
             map.put(col, current);
 
             set(table, map, whereClause, whereValue);

@@ -54,7 +54,10 @@ public class GameShard
     private ShardInfo shardInfo;
 
     @Getter
-    private int rebootTime; // Not being randomized anymore
+    private int rebootTime = 7200; // 2 hours by default.
+
+    @Getter
+    private int saveTime = 1800; // 30 minutes by default.
 
     public GameShard(FileReader fileReader)
     {
@@ -121,6 +124,7 @@ public class GameShard
 
             this.shardType = EnumShardType.valueOf(ini.get("Settings", "shard"));
             this.rebootTime = ini.get("Settings", "rebootTime", Integer.class);
+            this.saveTime = ini.get("Settings", "saveTime", Integer.class);
         } catch (Exception e) // No multi exception catching here
         {
             e.printStackTrace();

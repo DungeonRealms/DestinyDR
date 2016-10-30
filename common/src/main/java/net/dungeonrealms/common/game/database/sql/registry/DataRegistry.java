@@ -13,7 +13,11 @@ public interface DataRegistry
 {
     void prepare();
 
+    void save();
+
     AtomicBoolean atomicPreference();
 
     ConcurrentHashMap getMap();
+
+    void createData();
 }

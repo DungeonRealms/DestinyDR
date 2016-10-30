@@ -28,9 +28,10 @@ public class RebootHandler implements SuperHandler.Handler
         this.rebootTask = Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () -> {
             if (this.rebootTime <= 0)
             {
-                // TODO save all player data
-                // TODO save all item data
-                // TODO clear entities (drops, creatures etc)
+                // Save all data, handled by registries
+                Game.getGame().getRegistryHandler().getRegistryMap().values().forEach((dataRegistry) -> dataRegistry.save());
+
+                // Shutdown
                 Game.getGame().getGameShard().manageSimpleStop();
                 Game.getGame().getServer().shutdown();
             } else
