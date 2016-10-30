@@ -36,4 +36,16 @@ public class PlayerRegistry implements DataRegistry
     {
 
     }
+
+    @Override
+    public void save()
+    {
+
+    }
+
+    @Override
+    public void collect()
+    {
+
+    }
 }
