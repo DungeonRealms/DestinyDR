@@ -42,7 +42,7 @@ public class Constants {
     public static final String BUILD_VERSION = "v1.0";
 
     // BUILD NUMBER //
-    public static final String BUILD_NUMBER = "#1";
+    public static final String BUILD_NUMBER = "&6&lAS OF OCT. 2016!";
 
     // FTP INFO //
     public static final String FTP_HOST_NAME = "167.114.65.102";

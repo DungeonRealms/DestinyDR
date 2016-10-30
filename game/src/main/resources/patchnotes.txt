@@ -1,22 +1,14 @@
-Build <build>
-
-&a&lThe new & actual recoded Dungeon Realms!
-As of October 2016.
-
-&8&lDevelopers/Authors:
-- Vawke
-- matt11matthew
+<build>
 
 &4&lChangelog
-- New developers
-- New item system implemented
-- New creature system implemented
-- New dungeon system implemented
-- New networking implementation
-- Global atomic references for sharding
-- Performance improvements
-- Better & efficient code!
+-New developers
+-New item system
+-New creature system
+-New dungeon system
+-Improved networking
+-New & efficient code!
 
-&7If you are missing your SUB rank, contact support.
-
-&6www.dungeonrealms.net
+&c&l<3
+- Vawke
+- matt11matthew
+&6dungeonrealms.net
