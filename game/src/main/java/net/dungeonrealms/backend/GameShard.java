@@ -7,6 +7,7 @@ import net.dungeonrealms.backend.enumeration.EnumShardType;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.updater.UpdateTask;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.network.GameClient;
@@ -38,7 +39,7 @@ public class GameShard
     private String shardId = "Giovanni-01"; // Default
 
     @Getter
-    private String bungeeIdentifier;
+    private String bungeeIdentifier = "Lobby"; // Default
 
     @Getter
     private boolean instanceServer;
@@ -74,6 +75,8 @@ public class GameShard
             this.connect();
             this.clearPlayerData();
             this.managePlayerData();
+
+            new UpdateTask(Game.getGame()); // Init the updater
         } catch (Exception e)
         {
             e.printStackTrace();
