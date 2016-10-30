@@ -144,7 +144,6 @@ public class DungeonRealms extends JavaPlugin {
         return SERVER_START_TIME;
     }
 
-
     public void onLoad() {
         Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
         instance = this;
@@ -154,6 +153,10 @@ public class DungeonRealms extends JavaPlugin {
 
     public List<String> getDevelopers() {
         return Arrays.asList(Constants.DEVELOPERS);
+    }
+
+    public List<String> getPreviousDevelopers() {
+        return Arrays.asList(Constants.PREVIOUS_DEVELOPERS);
     }
 
     public boolean canAcceptPlayers() {

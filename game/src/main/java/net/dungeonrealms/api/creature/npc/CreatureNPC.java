@@ -1,5 +1,6 @@
 package net.dungeonrealms.api.creature.npc;
 
+import net.dungeonrealms.api.creature.CreatureType;
 import net.dungeonrealms.api.creature.ICreature;
 import net.minecraft.server.v1_9_R2.Entity;
 
@@ -11,5 +12,10 @@ public class CreatureNPC implements ICreature {
     @Override
     public Entity getEntity() {
         return null;
+    }
+
+    @Override
+    public CreatureType getCreatureType() {
+        return CreatureType.NPC;
     }
 }
