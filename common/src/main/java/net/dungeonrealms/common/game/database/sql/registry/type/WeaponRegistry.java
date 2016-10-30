@@ -1,5 +1,6 @@
-package net.dungeonrealms.vgame.item.weapon;
+package net.dungeonrealms.common.game.database.sql.registry.type;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import lombok.Getter;
 import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
@@ -7,6 +8,7 @@ import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;
 import net.dungeonrealms.vgame.item.EnumItemType;
+import net.dungeonrealms.vgame.item.weapon.WeaponItem;
 import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttibute;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,6 +22,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -97,7 +100,13 @@ public class WeaponRegistry implements DataRegistry
                     EnumItemTier itemTier = EnumItemTier.valueOf(set.getString("tier"));
                     int durability = set.getInt("durability");
                     String name = set.getString("name");
-                    List<EnumWeaponAttibute> attibuteList = gson.fromJson(set.getString("attributes"), List.class);
+
+                    // JSON conversion
+                    List<String> attributeStrings = gson.fromJson(set.getString("attributes"), List.class);
+
+                    // Convert the attribute names to the actual attribute
+                    List<EnumWeaponAttibute> attibuteList = Lists.newArrayList();
+                    attibuteList.addAll(attributeStrings.stream().map(EnumWeaponAttibute::valueOf).collect(Collectors.toList()));
                     // TODO construct weapon
                 }
             } catch (SQLException e)
