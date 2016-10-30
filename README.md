@@ -2,13 +2,12 @@
 
 Dungeon Realms
 ==========
-The repository for the re-code of DungeonRealms.
+The branch for the new Dungeon Realms re-code, as of October 2016.
 
 DungeonRealms is a Premium, Action RPG, Minecraft Experience. Delve into a fascinating world full of dark dungeons, evil monsters and extraordinary treasure.
 
-
 Authors:
-apollosoftware, Bradez1571, EtherealTemplar, Proxying, Xwaffle, Necrone_, matt11matthew, VawkeIO
+matt11matthew, VawkeIO
 
 
 © Keeling Systems LLC 
