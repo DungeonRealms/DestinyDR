@@ -24,4 +24,6 @@ public interface ICreature
         getEntity().setLocation(location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw());
         ((CraftWorld) location.getWorld()).getHandle().addEntity(this.getEntity());
     }
+
+    CreatureType getCreatureType();
 }
