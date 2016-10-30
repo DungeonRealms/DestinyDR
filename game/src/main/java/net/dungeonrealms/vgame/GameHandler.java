@@ -42,7 +42,7 @@ public class GameHandler implements Handler
         // Provide handlers
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Collecting handlers for atomic reference..");
         this.handlerMap.put(UUID.randomUUID(), new RebootHandler()); // The first handler to ever exist for the recode! yay!
-        this.handlerMap.put(UUID.randomUUID(), this.sqlHandler = new SQLHandler()); // From DungeonRealms-common
+        this.handlerMap.put(UUID.randomUUID(), (Handler) (this.sqlHandler = new SQLHandler())); // From DungeonRealms-common
         this.handlerMap.put(UUID.randomUUID(), this.registryHandler = new RegistryHandler());
         this.handlerMap.put(UUID.randomUUID(), new WeaponHandler());
         this.handlerMap.put(UUID.randomUUID(), new BowHandler());

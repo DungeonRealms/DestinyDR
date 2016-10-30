@@ -29,9 +29,9 @@ public enum EnumWeaponAttribute
 
     PURE_DAMAGE("PURE DMG"),
 
-    CRIT("CRIT"),
+    CRIT("CRITICAL HIT"),
 
-    PENETATION("ARMOR PENETATION"),
+    PENETRATION("ARMOR PENETRATION"),
 
     MON_DMG("MONSTER DMG"),
 
@@ -41,7 +41,7 @@ public enum EnumWeaponAttribute
 
     ICE_DAMAGE("ICE DMG"),
 
-    FIRE_DAMAGE("POISONG DMG"),
+    FIRE_DAMAGE("POISON DMG"),
 
     POISON_DAMAGE("POISON DMG"),
 
