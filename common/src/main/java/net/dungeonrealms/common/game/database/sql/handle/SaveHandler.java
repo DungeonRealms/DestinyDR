@@ -19,7 +19,7 @@ public class SaveHandler implements SuperHandler.Handler
     @Override
     public void prepare()
     {
-        this.saveTask = Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () -> {
+        this.saveTask = Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () -> {
             for (Player player : Game.getGame().getServer().getOnlinePlayers())
             {
                 player.sendMessage((new String[]{"", "", ChatColor.YELLOW.toString() + ChatColor.BOLD + "SAVING ALL DATA, PLEASE WAIT.."}));
@@ -28,6 +28,6 @@ public class SaveHandler implements SuperHandler.Handler
 
             // Save all data, handled by registries
             Game.getGame().getRegistryHandler().getRegistryMap().values().forEach((dataRegistry) -> dataRegistry.save());
-        }, 20 * Game.getGame().getGameShard().getRebootTime());
+        }, 0L, 20 * Game.getGame().getGameShard().getRebootTime());
     }
 }
