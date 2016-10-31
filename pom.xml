@@ -48,10 +48,6 @@
             </snapshots>
         </repository>
         <repository>
-            <id>codingforcookies-releases</id>
-            <url>http://repo.codingforcookies.com/content/repositories/releases/</url>
-        </repository>
-        <repository>
             <id>codecrafter47-repo</id>
             <url>http://nexus.codecrafter47.dyndns.eu/content/repositories/public/</url>
         </repository>

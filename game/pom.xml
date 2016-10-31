@@ -108,13 +108,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.codingforcookies</groupId>
-            <artifactId>ArmorEquipEvent</artifactId>
-            <version>1.6.3</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.inventivetalent</groupId>
             <artifactId>bossbarapi</artifactId>
             <version>2.4.1</version>
@@ -202,11 +195,21 @@
             <scope>system</scope>
         </dependency>
 
+        <!-- Local dependency required -->
+        <dependency>
+            <groupId>com.codingforcookies</groupId>
+            <artifactId>ArmorEquipEvent</artifactId>
+            <version>1.6.3</version>
+            <systemPath>${project.basedir}/lib/ArmorEquipEvent-1.6.3.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.6</version>
         </dependency>
+
     </dependencies>
 
 </project>
