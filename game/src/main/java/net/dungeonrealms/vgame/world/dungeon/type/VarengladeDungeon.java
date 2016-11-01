@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.instance.dungeon;
+package net.dungeonrealms.vgame.world.dungeon.type;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.util.AsyncUtils;
@@ -11,6 +11,9 @@ import net.dungeonrealms.old.game.world.entity.type.monster.boss.type.Burick;
 import net.dungeonrealms.old.game.world.entity.util.EntityStats;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
 import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.world.dungeon.EnumDungeonEndReason;
+import net.dungeonrealms.vgame.world.dungeon.EnumDungeon;
+import net.dungeonrealms.vgame.world.dungeon.IDungeon;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
@@ -28,16 +31,17 @@ import java.util.zip.ZipFile;
  * <p>
  * Created by Matthew E on 11/1/2016 at 2:35 PM.
  */
-public class VarenGladeDungeon implements IDungeon {
+public class VarengladeDungeon implements IDungeon
+{
 
     private Party party;
     private String name;
-    private DungeonEnum dungeonEnum;
+    private EnumDungeon dungeonEnum;
     private World world;
     private File worldZip;
 
-    public VarenGladeDungeon(Party party) {
-        this.dungeonEnum = DungeonEnum.VARENGLADE;
+    public VarengladeDungeon(Party party) {
+        this.dungeonEnum = EnumDungeon.VARENGLADE;
         this.name = dungeonEnum.getName();
         this.party = party;
         this.worldZip = new File(Game.getGame().getDataFolder() + File.separator + "dungeons" + File.separator  + name + ".zip");
@@ -92,7 +96,7 @@ public class VarenGladeDungeon implements IDungeon {
     }
 
     @Override
-    public void endDungeon(DungeonEndReason dungeonEndReason) {
+    public void endDungeon(EnumDungeonEndReason dungeonEndReason) {
         switch (dungeonEndReason) {
             case COMPLETE:
                 getParty().getMembers().forEach(player -> {
@@ -122,7 +126,7 @@ public class VarenGladeDungeon implements IDungeon {
     }
 
     @Override
-    public DungeonEnum getDungeonEnum() {
+    public EnumDungeon getDungeonEnum() {
         return dungeonEnum;
     }
 

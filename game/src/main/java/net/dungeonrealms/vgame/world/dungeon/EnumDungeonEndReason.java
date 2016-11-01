@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.instance.dungeon;
+package net.dungeonrealms.vgame.world.dungeon;
 
 /**
  * Copyright © 2016 Matthew E Development - All Rights Reserved
@@ -6,7 +6,8 @@ package net.dungeonrealms.vgame.instance.dungeon;
  * <p>
  * Created by Matthew E on 11/1/2016 at 2:45 PM.
  */
-public enum DungeonEndReason {
+public enum EnumDungeonEndReason
+{
 
     COMPLETE, LOSE
 }

@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.instance.dungeon;
+package net.dungeonrealms.vgame.world.dungeon;
 
 /**
  * Copyright © 2016 Matthew E Development - All Rights Reserved
@@ -6,14 +6,15 @@ package net.dungeonrealms.vgame.instance.dungeon;
  * <p>
  * Created by Matthew E on 11/1/2016 at 2:38 PM.
  */
-public enum DungeonEnum {
+public enum EnumDungeon
+{
 
     VARENGLADE(3, "Varenglade");
 
     private int tier;
     private String name;
 
-    DungeonEnum(int tier, String name) {
+    EnumDungeon(int tier, String name) {
         this.tier = tier;
         this.name = name;
     }

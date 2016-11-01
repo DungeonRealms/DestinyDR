@@ -1,7 +1,8 @@
-package net.dungeonrealms.vgame.instance.dungeon;
+package net.dungeonrealms.vgame.world.dungeon.handle;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.awt.SuperHandler;
+import net.dungeonrealms.common.awt.BungeeHandler;
+import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
@@ -12,7 +13,7 @@ import org.bukkit.Bukkit;
  * <p>
  * Created by Matthew E on 11/1/2016 at 2:33 PM.
  */
-public class DungeonManager implements SuperHandler.ListeningHandler {
+public class DungeonHandler implements SuperHandler.ListeningHandler {
 
     @Override
     public void prepare() {

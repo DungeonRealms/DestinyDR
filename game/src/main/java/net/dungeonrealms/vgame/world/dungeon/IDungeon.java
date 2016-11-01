@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.instance.dungeon;
+package net.dungeonrealms.vgame.world.dungeon;
 
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.party.Party;
@@ -25,13 +25,13 @@ public interface IDungeon {
 
     void startDungeon();
 
-    void endDungeon(DungeonEndReason dungeonEndReason);
+    void endDungeon(EnumDungeonEndReason dungeonEndReason);
 
     void teleportOut();
 
     void spawnBoss(Location location);
 
-    DungeonEnum getDungeonEnum();
+    EnumDungeon getDungeonEnum();
 
     String getName();
 
