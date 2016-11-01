@@ -24,3 +24,11 @@ tools/pushBuildToServer/pushUS3.bat
 /lobby/target
 /common/target
 /bootstrap/target
+/devtools/
+/pom.xml
+/deployment/pom.xml
+/deployment/src
+/tools
+/devtools
+/deployment
+
