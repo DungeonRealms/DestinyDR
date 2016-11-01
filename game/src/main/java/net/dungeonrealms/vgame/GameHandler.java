@@ -1,7 +1,7 @@
 package net.dungeonrealms.vgame;
 
 import lombok.Getter;
-import net.dungeonrealms.awt.SuperHandler;
+import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;
 import net.dungeonrealms.common.game.database.sql.handle.SQLHandler;
 import net.dungeonrealms.common.game.database.sql.handle.SaveHandler;
@@ -12,7 +12,7 @@ import org.bukkit.ChatColor;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static net.dungeonrealms.awt.SuperHandler.*;
+import static net.dungeonrealms.common.awt.SuperHandler.*;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -34,7 +34,7 @@ public class GameHandler implements Handler
     @Override
     public void prepare()
     {
-        Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ HANDLER CORE ]");
+        Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ GAME HANDLER ]");
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Creating atomic reference..");
         this.handlerMap = new ConcurrentHashMap<>();
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Atomic reference created");

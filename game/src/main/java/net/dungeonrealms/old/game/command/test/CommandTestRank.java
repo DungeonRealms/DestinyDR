@@ -1,7 +1,6 @@
 package net.dungeonrealms.old.game.command.test;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.backend.enumeration.EnumShardType;
+import net.dungeonrealms.common.network.enumeration.EnumShardType;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.vgame.Game;

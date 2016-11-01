@@ -3,7 +3,7 @@ package net.dungeonrealms.backend;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
-import net.dungeonrealms.backend.enumeration.EnumShardType;
+import net.dungeonrealms.common.network.enumeration.EnumShardType;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumOperators;

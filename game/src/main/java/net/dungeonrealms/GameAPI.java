@@ -2,7 +2,6 @@ package net.dungeonrealms;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,7 +13,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import net.dungeonrealms.backend.enumeration.EnumShardType;
+import net.dungeonrealms.common.network.enumeration.EnumShardType;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
@@ -1516,7 +1515,7 @@ public class GameAPI
      * type used to switch shard
      *
      * @param player           Player
-     * @param serverBungeeName Bungee name
+     * @param serverBungeeName KryoHandler name
      */
     public static void moveToShard(Player player, String serverBungeeName)
     {

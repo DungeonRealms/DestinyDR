@@ -1,4 +1,4 @@
-package net.dungeonrealms.backend.enumeration;
+package net.dungeonrealms.common.network.enumeration;
 
 /**
  * Created by Giovanni on 29-10-2016.
