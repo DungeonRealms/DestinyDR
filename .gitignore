@@ -10,7 +10,6 @@ resources/META_INF/MANIFEST.MF
 .project
 /target
 .settings
-tools/*
 tools/pushBuildToServer/pushDev.bat
 tools/pushBuildToServer/pushDeploymentServer.bat
 tools/pushBuildToServer/WinSCP.com
@@ -26,9 +25,6 @@ tools/pushBuildToServer/pushUS3.bat
 /bootstrap/target
 /devtools/
 /pom.xml
-/deployment/pom.xml
-/deployment/src
 /tools
-/devtools
 /deployment
 
