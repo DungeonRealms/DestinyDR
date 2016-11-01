@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.database.sql.registry;
+package net.dungeonrealms.api.sql.registry;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -1,7 +1,7 @@
 package net.dungeonrealms.common.lib.scoreboard;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.Game;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -32,7 +32,7 @@ public class ScoreboardBuilder
     public ScoreboardBuilder(String displayName)
     {
         this.displayName = displayName;
-        this.scoreboardManager = Game.getGame().getServer().getScoreboardManager();
+        this.scoreboardManager = Bukkit.getServer().getScoreboardManager();
         this.board = getScoreboardManager().getNewScoreboard();
         this.objective = getBoard().registerNewObjective("ronaldo", "bestPlayer"); // None cares
 

@@ -1,8 +1,7 @@
-package net.dungeonrealms.common.game.database.sql;
+package net.dungeonrealms.api.sql;
 
-import com.google.common.collect.Maps;
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.sql.enumeration.EnumSQLPurpose;
+import net.dungeonrealms.api.sql.enumeration.EnumSQLPurpose;
 import net.dungeonrealms.vgame.Game;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.ChatColor;

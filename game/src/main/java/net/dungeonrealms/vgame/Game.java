@@ -3,7 +3,7 @@ package net.dungeonrealms.vgame;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
-import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.api.sql.SQLDatabase;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;

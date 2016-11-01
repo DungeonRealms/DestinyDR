@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.database.sql.enumeration;
+package net.dungeonrealms.api.sql.enumeration;
 
 /**
  * Created by Giovanni on 29-10-2016.

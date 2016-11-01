@@ -751,7 +751,6 @@ public class DungeonManager implements GenericMechanic {
         player.updateInventory();*/
     }
 
-
     private void deleteFolder(File folder) {
         try {
             if (folder == null) return;

@@ -1,9 +1,9 @@
-package net.dungeonrealms.common.game.database.sql.registry.type;
+package net.dungeonrealms.api.sql.registry.type;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
+import net.dungeonrealms.api.sql.registry.DataRegistry;
 import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;

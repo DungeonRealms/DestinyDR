@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.game.database.sql.handle;
+package net.dungeonrealms.api.sql.handle;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.awt.SuperHandler;

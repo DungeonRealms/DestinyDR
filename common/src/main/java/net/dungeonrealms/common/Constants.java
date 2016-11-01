@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/7/2016
  */
-
 public class Constants {
 
     public static final Logger log = Logger.getLogger("DungeonRealms");
@@ -59,5 +58,4 @@ public class Constants {
     public static final String SQL_DATABASE = "dungeonrealms";
     public static final String SQL_PASSWORD = "";
     public static final String SQL_USERNAME = "";
-
 }

@@ -54,12 +54,7 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>net.dungeonrealms</groupId>
-            <artifactId>DungeonRealms-game</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
+
 
         <dependency>
             <groupId>net.md-5</groupId>

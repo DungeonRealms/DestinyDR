@@ -78,7 +78,7 @@
         <dependency>
             <groupId>net.dungeonrealms</groupId>
             <artifactId>DungeonRealms-network</artifactId>
-            <version>${project.parent.version}</version>
+            <version>5.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
