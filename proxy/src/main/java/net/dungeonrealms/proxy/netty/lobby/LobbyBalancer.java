@@ -1,9 +1,7 @@
 package net.dungeonrealms.proxy.netty.lobby;
 
 import lombok.Getter;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.proxy.DungeonBungee;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
