@@ -129,10 +129,10 @@ public class PunishAPI {
     }
 
     /**
-     * Kicks player from proxy
+     * Kicks player from channel
      *
      * @param playerName  Target
-     * @param kickMessage Kick message for player if they're connected to the proxy
+     * @param kickMessage Kick message for player if they're connected to the channel
      */
     public void kick(String playerName, String kickMessage, Consumer<UUID> doBefore) {
         String uuidString = DatabaseAPI.getInstance().getUUIDFromName(playerName);

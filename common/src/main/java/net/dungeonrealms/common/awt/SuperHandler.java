@@ -1,4 +1,4 @@
-package net.dungeonrealms.awt;
+package net.dungeonrealms.common.awt;
 
 import org.bukkit.event.Listener;
 

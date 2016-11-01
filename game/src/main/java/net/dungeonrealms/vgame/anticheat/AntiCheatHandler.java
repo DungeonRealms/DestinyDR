@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame.anticheat;
 
-import net.dungeonrealms.awt.SuperHandler;
+import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.vgame.anticheat.movement.MovementBase;
 import net.dungeonrealms.vgame.anticheat.movement.watch.SpeedWatch;
 

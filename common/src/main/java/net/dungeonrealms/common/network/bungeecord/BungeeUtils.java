@@ -71,7 +71,7 @@ public class BungeeUtils {
     }
 
     /**
-     * Send a player a message through the Bungee channel.
+     * Send a player a message through the KryoHandler channel.
      *
      * @param playerName Player to send message to.
      * @param message    Message to send to the player specified above.

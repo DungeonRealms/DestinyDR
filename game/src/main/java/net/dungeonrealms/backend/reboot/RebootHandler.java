@@ -1,7 +1,7 @@
 package net.dungeonrealms.backend.reboot;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.awt.SuperHandler;
+import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
