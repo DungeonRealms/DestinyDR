@@ -17,4 +17,8 @@ public interface IStack
     ItemStack getItemStack();
 
     EnumItemType getType();
+
+    boolean isSoulbound();
+
+    boolean isTradeable();
 }

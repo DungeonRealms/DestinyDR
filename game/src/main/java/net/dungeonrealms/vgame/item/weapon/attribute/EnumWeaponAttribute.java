@@ -80,8 +80,8 @@ public enum EnumWeaponAttribute
         } else
         {
             // Weight is not final
-            for (EnumWeaponAttribute enumWeaponAttibute : EnumWeaponAttribute.values())
-                atomicCollection.getMap().get().put(0.5, enumWeaponAttibute);
+            for (EnumWeaponAttribute enumWeaponAttribute : EnumWeaponAttribute.values())
+                atomicCollection.getMap().get().put(0.5, enumWeaponAttribute);
 
             // Always add an empty entry
             atomicCollection.getMap().get().put(0.8, null);

@@ -27,10 +27,6 @@ public class WeaponItem implements IStack
 
     private UUID uuid;
 
-    private ItemStack itemStack;
-
-    private EnumItemType itemType;
-
     @Getter
     private Material material;
 
@@ -52,7 +48,15 @@ public class WeaponItem implements IStack
     @Getter
     private String name;
 
-    public WeaponItem()
+    private ItemStack itemStack;
+
+    private EnumItemType itemType;
+
+    private boolean soulbound;
+
+    private boolean tradeable;
+
+    public WeaponItem(boolean soulbound, boolean tradeable)
     {
         this.uuid = UUID.randomUUID();
 
@@ -62,6 +66,9 @@ public class WeaponItem implements IStack
         this.itemRarity = EnumItemRarity.random(); // Random rarity upon generation
         this.itemTier = EnumItemTier.random(); // Random tier upon generation
         this.material = this.itemTier.getMaterial(this.itemType);
+
+        this.soulbound = soulbound;
+        this.tradeable = tradeable;
 
         this.createKey(); // Actual item
     }
@@ -107,39 +114,59 @@ public class WeaponItem implements IStack
         return itemType;
     }
 
+    @Override
+    public boolean isSoulbound()
+    {
+        return soulbound;
+    }
+
+    @Override
+    public boolean isTradeable()
+    {
+        return tradeable;
+    }
+
     private void calculateAttributes()
     {
-        if(this.weaponAttributes.contains(EnumWeaponAttribute.PURE_DAMAGE))
-        {
 
-        }
     }
 
     private void createKey()
     {
         // Create the atomic key (bukkit itemstack)
-        this.itemStack = new ItemStack(material);
+        this.itemStack = new ItemStack(this.material);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
         itemMeta.setDisplayName(this.itemRarity.getColor() + "Test Object");
 
         // Attach the lore
-        List<String> lore = Lists.newArrayList();
-
-        // Add lore pieces {1, 2, 3, etc}
-        for (String string : new String[]{"",
-                ChatColor.RED + "DMG: " + ChatColor.WHITE + minDmg + " - " + maxDmg,
-                this.itemRarity.getColor() + this.itemRarity.getName()})
-        {
-            lore.add(string);
-        }
-
-        // Add weapon attributes to the lore
-        lore.addAll(weaponAttributes.stream().map(EnumWeaponAttribute::getName).collect(Collectors.toList()));
-
-        itemMeta.setLore(lore);
+        itemMeta.setLore(this.generateLore());
 
         itemMeta.getItemFlags().clear();
         this.itemStack.setItemMeta(itemMeta);
         this.itemStack.setDurability((short) durability);
+    }
+
+    private List<String> generateLore()
+    {
+        // Attach the lore
+        List<String> lore = Lists.newArrayList();
+
+        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + ChatColor.WHITE + minDmg + " - " + maxDmg, "");
+
+        // Add lore pieces {1, 2, 3, etc}
+        if (!this.weaponAttributes.isEmpty())
+        {
+            lore.addAll(this.weaponAttributes.stream().map(attribute -> attribute.getName() + ": VALUE").collect(Collectors.toList()));
+            // TODO ^
+        }
+        if (this.soulbound)
+        {
+            Collections.addAll(lore, "", ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
+        }
+        if (!this.tradeable)
+        {
+            Collections.addAll(lore, "", ChatColor.GRAY.toString() + ChatColor.ITALIC + "Untradeable");
+        }
+        return lore;
     }
 }
