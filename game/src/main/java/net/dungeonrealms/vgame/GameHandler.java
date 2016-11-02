@@ -3,8 +3,7 @@ package net.dungeonrealms.vgame;
 import lombok.Getter;
 import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;
-import net.dungeonrealms.api.sql.handle.SQLHandler;
-import net.dungeonrealms.api.sql.handle.SaveHandler;
+import net.dungeonrealms.backend.backup.SaveHandler;
 import net.dungeonrealms.vgame.item.weapon.handle.BowHandler;
 import net.dungeonrealms.vgame.item.weapon.handle.WeaponHandler;
 import org.bukkit.ChatColor;
@@ -26,9 +25,6 @@ public class GameHandler implements Handler
     protected ConcurrentHashMap<UUID, SuperHandler.Handler> handlerMap;
 
     @Getter
-    private SQLHandler sqlHandler;
-
-    @Getter
     private RegistryHandler registryHandler;
 
     @Override
@@ -42,7 +38,6 @@ public class GameHandler implements Handler
         // Provide handlers
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Collecting handlers for atomic reference..");
         this.handlerMap.put(UUID.randomUUID(), new RebootHandler()); // The first handler to ever exist for the recode! yay!
-        this.handlerMap.put(UUID.randomUUID(), this.sqlHandler = new SQLHandler()); // From DungeonRealms-common
         this.handlerMap.put(UUID.randomUUID(), this.registryHandler = new RegistryHandler());
         this.handlerMap.put(UUID.randomUUID(), new WeaponHandler());
         this.handlerMap.put(UUID.randomUUID(), new BowHandler());

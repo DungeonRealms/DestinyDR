@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.world.item.repairing;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.old.game.mastery.Utils;

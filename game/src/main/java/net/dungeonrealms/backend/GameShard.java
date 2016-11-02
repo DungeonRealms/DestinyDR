@@ -3,6 +3,9 @@ package net.dungeonrealms.backend;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
+import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.common.game.database.sql.enumeration.EnumSQLPurpose;
 import net.dungeonrealms.common.network.enumeration.EnumShardType;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
@@ -65,8 +68,12 @@ public class GameShard
     @Getter
     private int saveTime = 1800; // 30 minutes by default.
 
+    @Getter
+    private SQLDatabase sqlDatabase;
+
     public GameShard(FileReader fileReader)
     {
+        Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "[ DUNGEON REALMS SHARD, INIT]");
         try
         {
             this.loadShardData(fileReader);
@@ -104,7 +111,7 @@ public class GameShard
                 new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
         if (playerFixResult.wasAcknowledged())
         {
-            Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Update online player results");
+            Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Updated online player results");
         }
     }
 
@@ -130,13 +137,24 @@ public class GameShard
         {
             e.printStackTrace();
         }
-
     }
 
     private void setupDatabase()
     {
         DatabaseInstance.getInstance().startInitialization(true);
         DatabaseAPI.getInstance().startInitialization(bungeeIdentifier);
+
+        // MySQL for items
+        this.sqlDatabase = new SQLDatabase(Constants.SQL_HOSTNAME, Constants.SQL_PORT,
+                Constants.SQL_DATABASE, Constants.SQL_PASSWORD,
+                Constants.SQL_USERNAME, EnumSQLPurpose.ITEM);
+        Game.getGame().getInstanceLogger().sendMessage(new String[]{"",
+                ChatColor.YELLOW + "[ v-ITEM DATABASE ]",
+                ChatColor.GREEN + "IP: " + Constants.SQL_HOSTNAME,
+                ChatColor.GREEN + "Port: " + Constants.SQL_PORT,
+                ChatColor.GREEN + "Database: " + Constants.SQL_DATABASE,
+                ChatColor.GREEN + "Username: " + Constants.SQL_USERNAME,
+                ChatColor.GREEN + "Purpose: " + EnumSQLPurpose.ITEM.name(), ""}); // {0}
     }
 
     private void loadShardData(FileReader fileReader)

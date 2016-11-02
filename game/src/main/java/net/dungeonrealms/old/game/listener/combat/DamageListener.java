@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.listener.combat;
 
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;

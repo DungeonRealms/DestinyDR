@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.command.guild;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.old.game.guild.GuildDatabaseAPI;

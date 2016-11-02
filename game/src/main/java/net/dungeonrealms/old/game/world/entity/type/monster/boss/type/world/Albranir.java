@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.world.entity.type.monster.boss.type.world;
 
 import lombok.Getter;
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.old.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.DRPigman;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.WorldBoss;

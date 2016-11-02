@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.mechanic;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;

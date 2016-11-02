@@ -1,4 +1,4 @@
-package net.dungeonrealms.api.sql;
+package net.dungeonrealms.common.game.database.sql;
 
 import lombok.Getter;
 

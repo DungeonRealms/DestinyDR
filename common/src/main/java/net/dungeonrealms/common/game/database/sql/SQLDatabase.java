@@ -1,10 +1,8 @@
-package net.dungeonrealms.api.sql;
+package net.dungeonrealms.common.game.database.sql;
 
 import lombok.Getter;
-import net.dungeonrealms.api.sql.enumeration.EnumSQLPurpose;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.common.game.database.sql.enumeration.EnumSQLPurpose;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.bukkit.ChatColor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,31 +24,26 @@ public class SQLDatabase
 
     public SQLDatabase(String ip, String port, String dbName, String pass, String user, EnumSQLPurpose sqlPurpose)
     {
-        database = new MySQL(ip, port, dbName, pass, user);
-        try
+        if (sqlPurpose == EnumSQLPurpose.ITEM) // Only allow item connections
         {
-            database.openConnection();
-        } catch (ClassNotFoundException | SQLException e)
-        {
-            e.printStackTrace();
-            Game.getGame().getServer().shutdown(); // Without the SQL for items, the server has no purpose.
+            this.database = new MySQL(ip, port, dbName, user, pass);
+            try
+            {
+                this.database.openConnection();
+            } catch (ClassNotFoundException | SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
-        Game.getGame().getInstanceLogger().sendMessage(new String[]{ChatColor.YELLOW + "[ MYSQL DATABASE ]",
-                ChatColor.GREEN + "> Connected to the database, details below",
-                ChatColor.GREEN + "IP: " + ip,
-                ChatColor.GREEN + "Port: " + port,
-                ChatColor.GREEN + "Database: " + dbName,
-                ChatColor.GREEN + "Username: " + user,
-                ChatColor.GREEN + "Purpose: " + sqlPurpose.name(), ""});
     }
 
     public void closeConnection()
     {
-        if (database.connection == null)
+        if (this.database.connection == null)
             return;
         try
         {
-            database.connection.close();
+            this.database.connection.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -64,7 +57,7 @@ public class SQLDatabase
     {
         try
         {
-            ResultSet set = database.query("SELECT * FROM " + table + " WHERE UUID = '" + uuid + "';");
+            ResultSet set = this.database.query("SELECT * FROM " + table + " WHERE UUID = '" + uuid + "';");
             return set.getInt(columnName);
         } catch (Exception e)
         {
@@ -77,7 +70,7 @@ public class SQLDatabase
     {
         try
         {
-            ResultSet set = database.query("SELECT * FROM " + table + " WHERE UUID = '" + uuid + "';");
+            ResultSet set = this.database.query("SELECT * FROM " + table + " WHERE UUID = '" + uuid + "';");
             return set.getString(columnName);
         } catch (Exception e)
         {
@@ -90,7 +83,7 @@ public class SQLDatabase
     {
         try
         {
-            ResultSet set = database.query("SELECT * FROM " + table + " WHERE UUID = '" + uuid + "';");
+            ResultSet set = this.database.query("SELECT * FROM " + table + " WHERE UUID = '" + uuid + "';");
             return set.getObject(columnName);
         } catch (Exception e)
         {
@@ -103,7 +96,7 @@ public class SQLDatabase
     {
         try
         {
-            ResultSet set = database.query("SELECT * FROM " + table + " WHERE UUID = '" + uuid + "';");
+            ResultSet set = this.database.query("SELECT * FROM " + table + " WHERE UUID = '" + uuid + "';");
             return set;
         } catch (Exception e)
         {
@@ -117,7 +110,7 @@ public class SQLDatabase
         try
         {
             System.out.println(query);
-            return database.query(query);
+            return this.database.query(query);
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -129,7 +122,7 @@ public class SQLDatabase
     {
         try
         {
-            return database.query(
+            return this.database.query(
                     "SELECT * FROM " + table + " WHERE " + column + " = '" + StringEscapeUtils.escapeSql(value) + "';")
                     .next();
         } catch (Exception e)
@@ -151,7 +144,7 @@ public class SQLDatabase
                 query += ", `" + s[0] + "` " + s[1];
             }
             query += String.format(", PRIMARY KEY(`%s`));", keys.get(0).split(Pattern.quote(";"))[0]);
-            database.update(query);
+            this.database.update(query);
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -194,7 +187,7 @@ public class SQLDatabase
                 query += ");";
             }
 
-            database.update(query);
+            this.database.update(query);
         } catch (Exception e)
         {
             System.out.println("Vawke test 123");
@@ -245,7 +238,7 @@ public class SQLDatabase
 
         try
         {
-            database.update(query);
+            this.database.update(query);
         } catch (ClassNotFoundException | SQLException e)
         {
             e.printStackTrace();
@@ -257,7 +250,7 @@ public class SQLDatabase
     {
         try
         {
-            database.update(string);
+            this.database.update(string);
         } catch (ClassNotFoundException | SQLException e)
         {
             e.printStackTrace();

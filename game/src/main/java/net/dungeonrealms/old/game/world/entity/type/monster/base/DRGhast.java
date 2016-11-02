@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.world.entity.type.monster.base;
 
 import lombok.Getter;
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.world.entity.type.monster.DRMonster;

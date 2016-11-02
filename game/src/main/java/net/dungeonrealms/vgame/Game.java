@@ -3,7 +3,7 @@ package net.dungeonrealms.vgame;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
-import net.dungeonrealms.api.sql.SQLDatabase;
+import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,11 +69,5 @@ public class Game extends JavaPlugin
     public void onDisable()
     {
         GameAPI.stopGame();
-    }
-
-    // Quick access to MySQL
-    public SQLDatabase getSQLDatabase()
-    {
-        return this.handlerCore.getSqlHandler().getSqlDatabase();
     }
 }

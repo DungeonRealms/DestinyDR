@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame.anticheat.movement;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.vgame.anticheat.utils.AntiCheatUtils;
 import net.dungeonrealms.vgame.anticheat.utils.MathUtils;
 import org.bukkit.Bukkit;

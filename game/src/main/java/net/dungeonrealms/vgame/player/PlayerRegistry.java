@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame.player;
 
-import net.dungeonrealms.api.sql.registry.DataRegistry;
+import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;

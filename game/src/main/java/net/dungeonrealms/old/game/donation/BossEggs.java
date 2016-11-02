@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.donation;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.common.game.database.player.CachedClientProvider;
 import net.dungeonrealms.old.game.donation.eggs.WBInstance;
 import net.dungeonrealms.old.game.listener.world.BossEggListener;

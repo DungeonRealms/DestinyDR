@@ -1,4 +1,4 @@
-package net.dungeonrealms;
+package net.dungeonrealms.old;
 
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;

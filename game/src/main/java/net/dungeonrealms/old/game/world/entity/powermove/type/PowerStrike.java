@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.world.entity.powermove.type;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.old.game.world.entity.powermove.PowerMove;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;

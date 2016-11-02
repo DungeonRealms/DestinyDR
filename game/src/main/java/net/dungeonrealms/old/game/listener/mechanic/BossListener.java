@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.listener.mechanic;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.old.game.mechanic.DungeonManager;
 import net.dungeonrealms.old.game.mechanic.DungeonManager.DungeonObject;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.DungeonBoss;

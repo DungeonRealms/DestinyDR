@@ -1,8 +1,8 @@
 package net.dungeonrealms.vgame;
 
 import lombok.Getter;
-import net.dungeonrealms.api.sql.registry.DataRegistry;
-import net.dungeonrealms.api.sql.registry.type.WeaponRegistry;
+import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
+import net.dungeonrealms.backend.registry.WeaponRegistry;
 import net.dungeonrealms.common.awt.SuperHandler;
 import org.bukkit.ChatColor;
 

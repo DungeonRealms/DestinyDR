@@ -1,7 +1,7 @@
 package net.dungeonrealms.vgame.anticheat.flag;
 
 import com.google.common.collect.Maps;
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;

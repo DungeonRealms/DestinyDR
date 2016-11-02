@@ -1,9 +1,9 @@
-package net.dungeonrealms.api.sql.registry.type;
+package net.dungeonrealms.backend.registry;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import lombok.Getter;
-import net.dungeonrealms.api.sql.registry.DataRegistry;
+import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;
@@ -78,7 +78,7 @@ public class WeaponRegistry implements DataRegistry
             map.put("attributes", gson.toJson(weaponItem.getWeaponAttributes()));
 
             // Set into the database
-            Game.getGame().getSQLDatabase().set(table, map, "UUID", weaponItem.getUniqueID().toString());
+            Game.getGame().getGameShard().getSqlDatabase().set(table, map, "UUID", weaponItem.getUniqueID().toString());
         }
     }
 
@@ -88,8 +88,7 @@ public class WeaponRegistry implements DataRegistry
     {
         Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () -> {
             Gson gson = new Gson();
-            ResultSet set = Game.getGame().getSQLDatabase().getSet("SELECT * FROM " + table);
-            try
+            try (ResultSet set = Game.getGame().getGameShard().getSqlDatabase().getSet("SELECT * FROM " + table))
             {
                 while (set.next())
                 {
@@ -107,7 +106,7 @@ public class WeaponRegistry implements DataRegistry
 
                     // Convert the attribute names to the actual attribute
                     List<EnumWeaponAttribute> attributeList = Lists.newArrayList();
-                    attributeList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
+                    attributeList.addAll(attributeStrings.stream().map((attributeBlob) -> EnumWeaponAttribute.valueOf(attributeBlob)).collect(Collectors.toList()));
                     // TODO construct weapon
                 }
             } catch (SQLException e)
@@ -133,7 +132,7 @@ public class WeaponRegistry implements DataRegistry
     @Override
     public void createData()
     {
-        Game.getGame().getSQLDatabase().createTable(table,
+        Game.getGame().getGameShard().getSqlDatabase().createTable(table,
                 Arrays.asList("UUID;VARCHAR(50)",
                         "material;TEXT",
                         "type;TEXT",

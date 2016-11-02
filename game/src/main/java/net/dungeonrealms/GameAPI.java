@@ -25,6 +25,7 @@ import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.old.game.achievements.AchievementManager;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.party.PartyMechanics;

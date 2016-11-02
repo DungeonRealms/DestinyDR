@@ -54,7 +54,7 @@ public class Constants {
 
     //MySQL INFO
     public static final String SQL_HOSTNAME = "";
-    public static final int SQL_PORT = 3306;
+    public static final String SQL_PORT = "3306";
     public static final String SQL_DATABASE = "dungeonrealms";
     public static final String SQL_PASSWORD = "";
     public static final String SQL_USERNAME = "";

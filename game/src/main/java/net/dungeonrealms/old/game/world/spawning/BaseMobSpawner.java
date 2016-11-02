@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.world.spawning;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;

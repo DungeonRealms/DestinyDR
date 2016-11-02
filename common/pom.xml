@@ -54,8 +54,6 @@
             <scope>compile</scope>
         </dependency>
 
-
-
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
