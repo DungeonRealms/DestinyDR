@@ -2,6 +2,7 @@ package net.dungeonrealms.backend.backup;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -17,11 +18,19 @@ public class SaveHandler implements SuperHandler.Handler
 {
     private int saveItemTask;
 
+    private int secondHandle; // In case of a disaster.
+
     @Override
     public void prepare()
     {
         // Backup database
         Game.getGame().getServer().getScheduler().runTaskTimerAsynchronously(Game.getGame(), GameAPI::backupDatabase, 0L, 12000L);
+
+        this.secondHandle = Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () ->
+        {
+            // Save all data, handled by registries
+            Game.getGame().getRegistryHandler().getRegistryMap().values().forEach(DataRegistry::save);
+        }, 0L, 20 * 530);
 
         // Save all items
         this.saveItemTask = Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () -> {
