@@ -26,8 +26,11 @@ import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.zip.ZipFile;
 
 /**
@@ -47,6 +50,7 @@ public class VarengladeDungeon implements IDungeon {
     private int aliveMobs;
     private int maxAlive;
     private EnumDungeonStage dungeonStage;
+    private HashMap<String, HashMap<Location, String>> instance_mob_spawns = new HashMap<>();
 
     public VarengladeDungeon(Party party) {
         this.dungeonStage = EnumDungeonStage.SETUP;
@@ -182,7 +186,35 @@ public class VarengladeDungeon implements IDungeon {
 
     @Override
     public void spawnInMobs() {
-        int count = 0;
+
+    }
+
+    public void loadMobs() {
+        for (File file : new File("plugins/DungeonRealms/dungeonSpawns/").listFiles()) {
+            String fileName = file.getName().replaceAll(".dat", "");
+            if (fileName.equalsIgnoreCase(name)) {
+                DungeonRealms.getInstance().getLogger().info("Found Dungeon Spawn Template for " + name);
+                HashMap<Location, String> dungeonMobData = new HashMap<>();
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    for (String line; (line = br.readLine()) != null; ) {
+                        if (line.equalsIgnoreCase("null")) {
+                            continue;
+                        }
+                        if (line.contains("=")) {
+                            String[] coordinates = line.split("=")[0].split(",");
+                            Location location = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(coordinates[0]), Double.parseDouble(coordinates[1]),
+                                    Double.parseDouble(coordinates[2]));
+                            String spawnData = line.split("=")[1];
+                            dungeonMobData.put(location, spawnData);
+                        }
+                    }
+                    br.close();
+                    instance_mob_spawns.put(name, dungeonMobData);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
+        }
     }
 
     public void actionBar() {
