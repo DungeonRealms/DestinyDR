@@ -1,18 +1,23 @@
 package net.dungeonrealms.vgame.world.dungeon.type;
 
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
+import net.dungeonrealms.old.DungeonRealms;
 import net.dungeonrealms.old.game.achievements.Achievements;
+import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mastery.MetadataUtils;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.party.Party;
+import net.dungeonrealms.old.game.party.PartyMechanics;
+import net.dungeonrealms.old.game.title.TitleAPI;
 import net.dungeonrealms.old.game.world.entity.EnumEntityType;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.type.Burick;
 import net.dungeonrealms.old.game.world.entity.util.EntityStats;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
 import net.dungeonrealms.vgame.Game;
-import net.dungeonrealms.vgame.world.dungeon.EnumDungeonEndReason;
 import net.dungeonrealms.vgame.world.dungeon.EnumDungeon;
+import net.dungeonrealms.vgame.world.dungeon.EnumDungeonEndReason;
+import net.dungeonrealms.vgame.world.dungeon.EnumDungeonStage;
 import net.dungeonrealms.vgame.world.dungeon.IDungeon;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.apache.commons.io.FileUtils;
@@ -31,21 +36,34 @@ import java.util.zip.ZipFile;
  * <p>
  * Created by Matthew E on 11/1/2016 at 2:35 PM.
  */
-public class VarengladeDungeon implements IDungeon
-{
+public class VarengladeDungeon implements IDungeon {
 
     private Party party;
     private String name;
     private EnumDungeon dungeonEnum;
     private World world;
     private File worldZip;
+    private int time;
+    private int aliveMobs;
+    private int maxAlive;
+    private EnumDungeonStage dungeonStage;
 
     public VarengladeDungeon(Party party) {
+        this.dungeonStage = EnumDungeonStage.SETUP;
         this.dungeonEnum = EnumDungeon.VARENGLADE;
         this.name = dungeonEnum.getName();
         this.party = party;
-        this.worldZip = new File(Game.getGame().getDataFolder() + File.separator + "dungeons" + File.separator  + name + ".zip");
+        this.worldZip = new File(Game.getGame().getDataFolder() + File.separator + "dungeons" + File.separator + name + ".zip");
         setupInstance();
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Game.getGame(), this::actionBar, 5L, 5L);
+    }
+
+    public VarengladeDungeon(Player player) {
+        GamePlayer gp = GameAPI.getGamePlayer(player);
+        if (!gp.isInParty()) {
+            PartyMechanics.getInstance().createParty(player);
+        }
+        new VarengladeDungeon(PartyMechanics.getInstance().getParty(player).get());
     }
 
     private void setupInstance() {
@@ -83,6 +101,7 @@ public class VarengladeDungeon implements IDungeon
             Bukkit.getWorlds().add(world);
             this.world = world;
         }, 60L);
+        startDungeon();
     }
 
     @Override
@@ -92,7 +111,7 @@ public class VarengladeDungeon implements IDungeon
 
     @Override
     public void startDungeon() {
-
+        this.dungeonStage = EnumDungeonStage.STARTED;
     }
 
     @Override
@@ -110,7 +129,7 @@ public class VarengladeDungeon implements IDungeon
 
     @Override
     public void teleportOut() {
-        getParty().getMembers().forEach(player -> player.teleport(Teleportation.Cyrennica));
+        party.getMembers().forEach(player -> player.teleport(Teleportation.Cyrennica));
     }
 
     @Override
@@ -144,5 +163,20 @@ public class VarengladeDungeon implements IDungeon
     @Override
     public World getDungeonWorld() {
         return world;
+    }
+
+    @Override
+    public void spawnInMobs() {
+        int count = 0;
+    }
+
+    public void actionBar() {
+        if ((dungeonStage == EnumDungeonStage.STARTED) || (dungeonStage == EnumDungeonStage.BOSS)) {
+            party.getMembers().forEach(player -> {
+                TitleAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD
+                        + (time / 60) + "/120" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (aliveMobs) + ChatColor.GRAY
+                        + "/" + ChatColor.RED + maxAlive);
+            });
+        }
     }
 }

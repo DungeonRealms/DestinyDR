@@ -43,6 +43,8 @@ public interface IDungeon {
 
     World getDungeonWorld();
 
+    void spawnInMobs();
+
     default void unZip(ZipFile zipFile, String worldName) {
         Utils.log.info("[DUNGEON] Unzipping instance for " + worldName);
         new File(worldName).mkdir();
