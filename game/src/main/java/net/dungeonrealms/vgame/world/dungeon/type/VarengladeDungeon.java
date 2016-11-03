@@ -52,10 +52,25 @@ public class VarengladeDungeon implements IDungeon {
         this.dungeonStage = EnumDungeonStage.SETUP;
         this.dungeonEnum = EnumDungeon.VARENGLADE;
         this.name = dungeonEnum.getName();
+        this.time = 0;
+        this.aliveMobs = 0;
+        this.maxAlive = 0;
         this.party = party;
         this.worldZip = new File(Game.getGame().getDataFolder() + File.separator + "dungeons" + File.separator + name + ".zip");
         setupInstance();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(Game.getGame(), this::actionBar, 5L, 5L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Game.getGame(), this::timeTask, 20L, 20L);
+    }
+
+
+    private void timeTask() {
+        time++;
+        switch (time) {
+            case 7200:
+                endDungeon(EnumDungeonEndReason.LOSE);
+                break;
+
+        }
     }
 
     public VarengladeDungeon(Player player) {
