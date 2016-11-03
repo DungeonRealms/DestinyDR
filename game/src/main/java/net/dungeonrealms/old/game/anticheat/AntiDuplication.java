@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.anticheat;
 
 import com.google.common.collect.HashMultimap;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
 import net.dungeonrealms.common.game.database.DatabaseAPI;

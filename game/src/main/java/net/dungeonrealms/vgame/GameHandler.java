@@ -45,8 +45,8 @@ public class GameHandler implements Handler
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers provided");
 
         // Register them
-        Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Preparing live handers..");
-        handlerMap.values().forEach((handler) -> handler.prepare());
+        Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Preparing live handlers..");
+        this.handlerMap.values().forEach((handler) -> handler.prepare());
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Live handlers prepared");
 
         if (this.handlerMap.size() > 0)

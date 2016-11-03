@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.world.entity;
 
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.old.game.mastery.NMSUtils;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;

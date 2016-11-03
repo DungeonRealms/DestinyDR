@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.guild.banner.selectors;
 
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.game.menu.item.GUIButton;

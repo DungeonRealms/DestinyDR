@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.old.game.player.json.JsonBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;

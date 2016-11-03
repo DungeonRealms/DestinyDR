@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.handler;
 
 import lombok.Getter;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;

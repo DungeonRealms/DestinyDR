@@ -2,7 +2,7 @@ package net.dungeonrealms.old.game.listener.network;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;

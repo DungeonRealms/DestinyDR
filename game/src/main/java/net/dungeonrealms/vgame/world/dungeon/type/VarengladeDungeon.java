@@ -2,7 +2,7 @@ package net.dungeonrealms.vgame.world.dungeon.type;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mastery.MetadataUtils;

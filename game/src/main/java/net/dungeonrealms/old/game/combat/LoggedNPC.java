@@ -5,7 +5,7 @@ import lombok.Setter;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Equipment;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.old.game.handler.KarmaHandler;

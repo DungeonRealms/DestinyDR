@@ -2,10 +2,8 @@ package net.dungeonrealms.vgame.item.weapon;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import net.dungeonrealms.vgame.item.EnumItemRarity;
-import net.dungeonrealms.vgame.item.EnumItemTier;
-import net.dungeonrealms.vgame.item.EnumItemType;
-import net.dungeonrealms.vgame.item.IStack;
+import net.dungeonrealms.api.creature.EnumCreatureType;
+import net.dungeonrealms.vgame.item.*;
 import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -35,6 +33,9 @@ public class WeaponItem implements IStack
 
     @Getter
     private EnumItemTier itemTier;
+
+    @Getter
+    private EnumItemTier attributeTier;
 
     @Getter
     private double minDmg, maxDmg; // TODO
@@ -65,6 +66,7 @@ public class WeaponItem implements IStack
         this.weaponAttributes = EnumWeaponAttribute.random(this.itemTier.getMaxAttributes()); // Random collection of attributes
         this.itemRarity = EnumItemRarity.random(); // Random rarity upon generation
         this.itemTier = EnumItemTier.random(); // Random tier upon generation
+        this.attributeTier = EnumItemTier.random(); // Random attribute tier, different than the item tier
         this.material = this.itemTier.getMaterial(this.itemType);
 
         this.soulbound = soulbound;
@@ -78,19 +80,25 @@ public class WeaponItem implements IStack
                       Material material,
                       EnumItemRarity rarity,
                       EnumItemTier itemTier,
+                      EnumItemTier attributeTier,
                       EnumItemType type,
                       int durability,
                       String name,
-                      List<EnumWeaponAttribute> attributes)
+                      List<EnumWeaponAttribute> attributes,
+                      boolean soulbound,
+                      boolean tradeable)
     {
         this.uuid = uuid;
         this.material = material;
         this.itemRarity = rarity;
         this.itemTier = itemTier;
+        this.attributeTier = attributeTier;
         this.itemType = type;
         this.durability = durability;
         this.name = name;
         this.weaponAttributes = attributes;
+        this.soulbound = soulbound;
+        this.tradeable = tradeable;
 
         this.createKey(); // Actual item
 
@@ -126,11 +134,6 @@ public class WeaponItem implements IStack
         return tradeable;
     }
 
-    private void calculateAttributes()
-    {
-
-    }
-
     private void createKey()
     {
         // Create the atomic key (bukkit itemstack)
@@ -151,12 +154,19 @@ public class WeaponItem implements IStack
         // Attach the lore
         List<String> lore = Lists.newArrayList();
 
-        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + ChatColor.WHITE + minDmg + " - " + maxDmg, "");
+        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + ChatColor.WHITE + Math.round(minDmg) + " - " + Math.round(maxDmg), "");
 
         // Add lore pieces {1, 2, 3, etc}
         if (!this.weaponAttributes.isEmpty())
         {
-            lore.addAll(this.weaponAttributes.stream().map(attribute -> attribute.getName() + ": VALUE").collect(Collectors.toList()));
+            for (EnumWeaponAttribute weaponAttribute : this.weaponAttributes)
+            {
+                for (AttributeMeta attributeMeta : weaponAttribute.getAttributeMetas())
+                    if (attributeMeta.isPercentage())
+                        Collections.addAll(lore, "", weaponAttribute.getName() + ": " + attributeMeta.getValueY() + "%");
+                    else
+                        Collections.addAll(lore, "", weaponAttribute.getName() + ": " + attributeMeta.getValueX() + "-" + attributeMeta.getValueY());
+            }
             // TODO ^
         }
         if (this.soulbound)
@@ -168,5 +178,53 @@ public class WeaponItem implements IStack
             Collections.addAll(lore, "", ChatColor.GRAY.toString() + ChatColor.ITALIC + "Untradeable");
         }
         return lore;
+    }
+
+    public double calculateDamage(EnumCreatureType enumCreatureType)
+    {
+        double damage = 0;
+
+        // Generate a random double between min & max DMG
+        damage += ThreadLocalRandom.current().nextDouble(this.minDmg, this.maxDmg);
+
+        // Calculate additional attribute data
+        for (EnumWeaponAttribute attribute : this.weaponAttributes)
+            for (AttributeMeta attributeMeta : attribute.getAttributeMetas())
+            {
+                if (attributeMeta.getItemTier() == this.attributeTier)
+                {
+                    if (attributeMeta.isPercentage()) // Is it a percentage?
+                    {
+                        // Add % damage, if Y = 50 & damage = 2 it would be 50 / 100 * 2 = 1
+                        damage += attributeMeta.getValueY() / 100 * damage;
+                    } else
+                    {
+                        // Is the attribute a vs Player or vs Monster attribute?
+                        if (attribute != EnumWeaponAttribute.MON_DMG || attribute != EnumWeaponAttribute.PLAYER_DMG)
+                        {
+                            damage += attributeMeta.returnRandomValue();
+                        } else
+                        {
+                            // Is the attribute vs Players & is the target creature a player?
+                            if (attribute == EnumWeaponAttribute.PLAYER_DMG)
+                            {
+                                if (enumCreatureType == EnumCreatureType.PLAYER)
+                                {
+                                    damage += attributeMeta.returnRandomValue();
+                                }
+                            }
+                            // Is the attribute vs Monsters & is the target creature a monster?
+                            if (attribute == EnumWeaponAttribute.MON_DMG)
+                            {
+                                if (enumCreatureType == EnumCreatureType.ENTITY)
+                                {
+                                    damage += attributeMeta.returnRandomValue();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        return damage;
     }
 }

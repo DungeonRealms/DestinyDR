@@ -7,7 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.old.game.mechanic.ItemManager;
 import net.dungeonrealms.old.game.player.combat.CombatLog;
 import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;

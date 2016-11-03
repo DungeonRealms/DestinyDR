@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.party;
 
 import lombok.Getter;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.achievements.Achievements;

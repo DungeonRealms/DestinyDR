@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.world.entity.type;
 
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

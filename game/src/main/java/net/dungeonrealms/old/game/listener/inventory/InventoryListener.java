@@ -2,7 +2,7 @@ package net.dungeonrealms.old.game.listener.inventory;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.google.common.collect.Lists;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;

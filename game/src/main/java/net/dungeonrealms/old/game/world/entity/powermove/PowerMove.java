@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.world.entity.powermove;
 
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.old.game.mechanic.ParticleAPI;
 import net.dungeonrealms.old.game.world.entity.powermove.type.PowerStrike;
 import net.dungeonrealms.old.game.world.entity.powermove.type.WhirlWind;

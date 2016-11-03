@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.tab;
 
 import codecrafter47.bungeetablistplus.api.bukkit.BungeeTabListPlusBukkitAPI;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;

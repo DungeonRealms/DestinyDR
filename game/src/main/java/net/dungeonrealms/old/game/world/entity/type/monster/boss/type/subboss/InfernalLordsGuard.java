@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.world.entity.type.monster.boss.type.subboss;
 
 import lombok.Getter;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.mastery.MetadataUtils;
 import net.dungeonrealms.old.game.world.entity.EnumEntityType;

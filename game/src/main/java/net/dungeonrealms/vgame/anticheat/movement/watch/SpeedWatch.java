@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame.anticheat.movement.watch;
 
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.vgame.anticheat.flag.FlagHandler;
 import net.dungeonrealms.vgame.anticheat.flag.Hack;

@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.mastery;
 
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.world.entity.EnumEntityType;
 import net.dungeonrealms.old.game.world.entity.type.monster.DRMonster;

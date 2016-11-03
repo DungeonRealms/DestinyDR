@@ -3,7 +3,7 @@ package net.dungeonrealms.old.game.player.combat;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.RequiredArgsConstructor;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.handler.KarmaHandler;
 import net.dungeonrealms.old.game.mastery.GamePlayer;

@@ -1,9 +1,11 @@
 package net.dungeonrealms.vgame.item.weapon.handle;
 
+import net.dungeonrealms.api.creature.EnumCreatureType;
 import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.weapon.WeaponItem;
+import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -38,8 +40,8 @@ public class WeaponHandler implements SuperHandler.ListeningHandler
                     if (!(weaponItem.getType() == EnumItemType.BOW))
                     {
                         double actualDamage = 0;
-                        // Add default weapon damage, a random double between min and max
-                        actualDamage += ThreadLocalRandom.current().nextDouble(weaponItem.getMinDmg(), weaponItem.getMaxDmg());
+                        // Calculate the weapon damage based upon the damaged creature
+                        actualDamage += weaponItem.calculateDamage(event.getEntity() instanceof Player ? EnumCreatureType.PLAYER : EnumCreatureType.ENTITY);
 
                         event.setDamage(Math.round(actualDamage));
                     } else

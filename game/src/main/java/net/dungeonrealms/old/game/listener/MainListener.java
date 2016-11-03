@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;

@@ -14,6 +14,8 @@ public interface ICreature
 {
     Entity getEntity();
 
+    CreatureType getCreatureType();
+
     default void kill()
     {
         this.getEntity().getWorld().removeEntity(this.getEntity());
@@ -24,6 +26,4 @@ public interface ICreature
         getEntity().setLocation(location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw());
         ((CraftWorld) location.getWorld()).getHandle().addEntity(this.getEntity());
     }
-
-    CreatureType getCreatureType();
 }

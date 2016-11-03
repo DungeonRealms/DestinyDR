@@ -3,6 +3,8 @@ package net.dungeonrealms.vgame.item.weapon.attribute;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.api.collection.AtomicCollection;
+import net.dungeonrealms.vgame.item.EnumItemTier;
+import net.dungeonrealms.vgame.item.AttributeMeta;
 import org.bukkit.ChatColor;
 
 import java.util.List;
@@ -27,40 +29,91 @@ public enum EnumWeaponAttribute
      * ACCURACY
      */
 
-    PURE_DAMAGE("PURE DMG"),
+    PURE_DAMAGE("PURE DMG",
+            new AttributeMeta(EnumItemTier.ONE, 1, 5),
+            new AttributeMeta(EnumItemTier.TWO, 1, 8),
+            new AttributeMeta(EnumItemTier.THREE, 1, 15),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 25),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 45)),
 
-    CRITICAL_HIT("CRITICAL HIT"),
+    CRITICAL_HIT("CRIT. CHANCE",
+            new AttributeMeta(EnumItemTier.ONE, 1, 2, true),
+            new AttributeMeta(EnumItemTier.TWO, 1, 4, true),
+            new AttributeMeta(EnumItemTier.THREE, 1, 5, true),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 7, true),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 10, true)),
 
-    PENETRATION("ARMOR PENETRATION"),
 
-    MON_DMG("MONSTER DMG"),
+    PENETRATION("ARMOR PEN.",
+            new AttributeMeta(EnumItemTier.ONE, 1, 1, true),
+            new AttributeMeta(EnumItemTier.TWO, 1, 3, true),
+            new AttributeMeta(EnumItemTier.THREE, 1, 5, true),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 8, true),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 10, true)),
 
-    PLAYER_DMG("PLAYER DMG"),
+    MON_DMG("MONSTER DMG",
+            new AttributeMeta(EnumItemTier.ONE, 1, 10),
+            new AttributeMeta(EnumItemTier.TWO, 1, 12),
+            new AttributeMeta(EnumItemTier.THREE, 1, 15),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 20),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 27)),
 
-    LIFE_STEAL("LIFE STEAL"),
+    PLAYER_DMG("PLAYER DMG",
+            new AttributeMeta(EnumItemTier.ONE, 1, 10),
+            new AttributeMeta(EnumItemTier.TWO, 1, 12),
+            new AttributeMeta(EnumItemTier.THREE, 1, 15),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 20),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 27)),
 
-    ICE_DAMAGE("ICE DMG"),
+    LIFE_STEAL("LIFE STEAL",
+            new AttributeMeta(EnumItemTier.ONE, 1, 30),
+            new AttributeMeta(EnumItemTier.TWO, 1, 15),
+            new AttributeMeta(EnumItemTier.THREE, 1, 12),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 7),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 8)),
 
-    FIRE_DAMAGE("POISON DMG"),
+    ICE_DAMAGE("ICE DMG",
+            new AttributeMeta(EnumItemTier.ONE, 1, 4),
+            new AttributeMeta(EnumItemTier.TWO, 1, 9),
+            new AttributeMeta(EnumItemTier.THREE, 1, 15),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 25),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 55)),
 
-    POISON_DAMAGE("POISON DMG"),
+    FIRE_DAMAGE("FIRE DMG",
+            new AttributeMeta(EnumItemTier.ONE, 1, 4),
+            new AttributeMeta(EnumItemTier.TWO, 1, 9),
+            new AttributeMeta(EnumItemTier.THREE, 1, 15),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 25),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 55)),
 
-    ACCURACY("ACCURACY"),
+    POISON_DAMAGE("POISON DMG",
+            new AttributeMeta(EnumItemTier.ONE, 1, 4),
+            new AttributeMeta(EnumItemTier.TWO, 1, 9),
+            new AttributeMeta(EnumItemTier.THREE, 1, 15),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 25),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 55)),
 
-    INTELLECT("INT"),
-
-    VITALITY("VIT");
+    ACCURACY("ACCURACY",
+            new AttributeMeta(EnumItemTier.ONE, 1, 10),
+            new AttributeMeta(EnumItemTier.TWO, 1, 12),
+            new AttributeMeta(EnumItemTier.THREE, 1, 25),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 28),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 35));
 
     @Getter
     private String name;
+
+    @Getter
+    private AttributeMeta[] attributeMetas;
 
     private static AtomicCollection<EnumWeaponAttribute> atomicCollection = new AtomicCollection<>();
 
     private static boolean loaded;
 
-    EnumWeaponAttribute(String name)
+    EnumWeaponAttribute(String name, AttributeMeta... metas)
     {
         this.name = ChatColor.RED + name;
+        this.attributeMetas = metas;
     }
 
     public static List<EnumWeaponAttribute> random(int maxAttributes)

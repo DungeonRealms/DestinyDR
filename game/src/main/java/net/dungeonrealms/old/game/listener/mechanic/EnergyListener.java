@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.listener.mechanic;
 
-import net.dungeonrealms.old.DungeonRealms;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.handler.EnergyHandler;
 import net.dungeonrealms.old.game.mechanic.ParticleAPI;

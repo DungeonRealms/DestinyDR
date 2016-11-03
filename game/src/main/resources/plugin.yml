@@ -1,7 +1,7 @@
 name: DungeonRealms
-main: net.dungeonrealms.old.DungeonRealms
+main: net.dungeonrealms.vgame.Game
 version: ${project.parent.version}
-authors: [apollosoftware, Bradez1571, EtherealTemplar, Proxying, Xwaffle, Necrone_]
+authors: [Vawke, Atlas__]
 website: http://www.dungeonrealms.net
 depend: [WorldGuard, BossBarAPI, ProtocolLib, BungeeTabListPlus]
 description: The new and improved DungeonRealms!
