@@ -8,7 +8,6 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.awt.EnumProxyHolder;
 import net.dungeonrealms.network.awt.Proxy;
-import net.dungeonrealms.proxy.constant.ProxyConstants;
 import net.dungeonrealms.proxy.handle.ProxyHandler;
 import net.dungeonrealms.proxy.netty.lobby.ProxyLobby;
 import net.dungeonrealms.proxy.netty.shard.ProxyShard;
@@ -55,18 +54,26 @@ public class NetworkProxy implements Proxy
     @Getter
     private String proxyName = ChatColor.translateAlternateColorCodes('&', "&cLIMBO > ");
 
+    @Getter
     private EnumProxyHolder proxyHolder;
 
-    protected NetworkProxy deploy(Configuration configuration)
+    @Getter
+    private Configuration configuration;
+
+    public NetworkProxy(Configuration configuration)
     {
-        this.connect();
-        this.readConfiguration(configuration);
-        this.handlerCore = new ProxyHandler();
-        this.handlerCore.prepare();
-        return this;
+        this.configuration = configuration;
     }
 
-    protected NetworkProxy undeploy(Configuration configuration)
+    public void deploy()
+    {
+        this.readConfiguration();
+        this.connect();
+        this.handlerCore = new ProxyHandler();
+        this.handlerCore.prepare();
+    }
+
+    protected void undeploy()
     {
         configuration.set("network.maintenance", this.maintenance);
         configuration.set("network.holder", this.proxyHolder.name());
@@ -75,15 +82,14 @@ public class NetworkProxy implements Proxy
         try
         {
             // Save the configuration
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, ProxyConstants.proxyConfiguration);
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, DungeonBungee.getDungeonBungee().getChannelFile());
         } catch (IOException e)
         {
             e.printStackTrace();
         }
-        return this;
     }
 
-    private void readConfiguration(Configuration configuration)
+    private void readConfiguration()
     {
         DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Reading proxy configuration..");
         if (!configuration.getKeys().isEmpty())
@@ -96,11 +102,11 @@ public class NetworkProxy implements Proxy
         {
             configuration.set("network.maintenance", false);
             configuration.set("network.holder", EnumProxyHolder.MASTER.name());
-            configuration.set("channel.developers", Arrays.asList("Atlas__", "Vawke", "matt11matthew"));
+            configuration.set("channel.developers", Arrays.asList("Atlas__", "Vawke"));
             configuration.set("channel.proxyName", "&cLIMBO > ");
             try
             {
-                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, ProxyConstants.proxyConfiguration);
+                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, DungeonBungee.getDungeonBungee().getChannelFile());
             } catch (IOException e)
             {
                 e.printStackTrace();
@@ -117,8 +123,7 @@ public class NetworkProxy implements Proxy
         try
         {
             DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Connecting to the master server..");
-            this.gameClient.connect();
-            // Collect all shard, connect them
+            // Collect all shards, connect them
             Arrays.asList(ShardInfo.values()).stream().forEach(info -> {
                         ServerInfo serverInfo;
                         serverInfo = ProxyServer.getInstance().constructServerInfo(info.getPseudoName(),
@@ -126,10 +131,10 @@ public class NetworkProxy implements Proxy
                         ProxyServer.getInstance().getServers().put(info.getPseudoName(), serverInfo);
                     }
             );
+            this.gameClient.connect();
             DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "> Connected");
         } catch (IOException e)
         {
-            e.printStackTrace();
             // DungeonBungee.getDungeonBungee().getProxy().stop(); Disabled for now > No master server, no purpose
         }
     }

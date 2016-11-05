@@ -9,7 +9,7 @@ import net.dungeonrealms.proxy.handle.network.NetworkHandler;
 import net.dungeonrealms.proxy.handle.channel.ChannelHandler;
 import net.dungeonrealms.proxy.netty.command.CommandAlert;
 import net.dungeonrealms.proxy.netty.command.CommandMaintenance;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

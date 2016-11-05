@@ -13,13 +13,13 @@ public class Constants {
 
     public static final String DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
 
-    public static final String[] DEVELOPERS = new String[]{"Atlas__", "Vawke", "matt11matthew"};
+    public static final String[] DEVELOPERS = new String[]{"Atlas__", "Vawke"};
 
     public static final String[] PREVIOUS_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
 
-    public static final String MOTD = "&6Dungeon Realms™ &8- &a• The #1 Minecraft MMORPG •    \n                      &eHuge rework";
+    public static final String MOTD = "&6Dungeon Realms &8- &a• A new beginning.. •    \n                &8- &e&nwww.dungeonrealms.net&r &8-";
 
-    public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
+    public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &a• A new beginning.. •    \n                &8- &e&nwww.dungeonrealms.net&r &8-";
 
     public static final long MIN_GAME_TIME = 14100000L;
 
