@@ -126,20 +126,20 @@ public class LobbyShard
         return count;
     }
 
-    private ItemStack getShardItem(String shardID)
+    public ItemStack getShardItem(String shardID)
     {
         shardID = shardID.toUpperCase();
 
         if (shardID.equals("US-0")) return new ItemStack(Material.DIAMOND);
         else if (shardID.startsWith("CS-")) return new ItemStack(Material.PRISMARINE_SHARD);
-        else if (shardID.startsWith("YT-")) return new ItemStack(Material.GOLD_NUGGET);
+        else if (shardID.startsWith("YT-")) return new ItemStack(Material.SPECKLED_MELON);
         else if (shardID.startsWith("BR-")) return new ItemStack(Material.SAPLING, 1, (byte) 3);
         else if (shardID.startsWith("SUB-")) return new ItemStack(Material.EMERALD);
 
         return new ItemStack(Material.END_CRYSTAL);
     }
 
-    private ChatColor getShardColour(String shardID)
+    public ChatColor getShardColour(String shardID)
     {
         shardID = shardID.toUpperCase();
 

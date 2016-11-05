@@ -1,4 +1,4 @@
-package net.dungeonrealms.lobby.ol.effect;
+package net.dungeonrealms.lobby.misc.ghost;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

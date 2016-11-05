@@ -5,7 +5,7 @@ import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.handle.LobbyHandler;
-import net.dungeonrealms.lobby.ol.effect.GhostFactory;
+import net.dungeonrealms.lobby.misc.ghost.GhostFactory;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 

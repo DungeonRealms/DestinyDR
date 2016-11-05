@@ -1,10 +1,10 @@
-package net.dungeonrealms.lobby.ol.commands;
+package net.dungeonrealms.lobby.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-import net.dungeonrealms.lobby.ol.Lobby;
-import net.dungeonrealms.lobby.ol.ShardSelector;
+import net.dungeonrealms.lobby.ServerLobby;
+import net.dungeonrealms.lobby.misc.gui.ShardGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -32,7 +32,7 @@ public class CommandShard extends BaseCommand
 
         if (args.length == 0 || !Rank.isGM(player))
         {
-            new ShardSelector(player).open(player);
+            new ShardGUI(player).openInventory(player);
             return true;
         }
 
@@ -41,7 +41,7 @@ public class CommandShard extends BaseCommand
         {
             player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Lobby.getInstance(),
+            Bukkit.getScheduler().scheduleSyncDelayedTask(ServerLobby.getServerLobby(),
                     () -> BungeeUtils.sendToServer(player.getName(), args[0]), 10);
         }
 
