@@ -3,14 +3,16 @@ package net.dungeonrealms.proxy.handle.connection;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.awt.BungeeHandler;
 import net.dungeonrealms.proxy.DungeonBungee;
-import net.dungeonrealms.proxy.netty.lobby.LobbyBalancer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+
+import java.util.Iterator;
 
 /**
  * Created by Giovanni on 1-11-2016.
@@ -41,7 +43,30 @@ public class ConnectionHandler implements BungeeHandler.ListeningHandler
             // Connect them to a lobby
             if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby"))
             {
-                new LobbyBalancer(event.getPlayer()).handle();
+                Iterator<ServerInfo> optimalLobbies = DungeonBungee.getDungeonBungee().getNetworkProxy().getProxyLobby().bufferLobbies().iterator();
+                while (optimalLobbies.hasNext())
+                {
+                    ServerInfo target = optimalLobbies.next();
+
+                    if (!(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target)))
+                    {
+                        try
+                        {
+                            event.setTarget(target);
+                        } catch (Exception e)
+                        {
+                            if (!optimalLobbies.hasNext())
+                                event.getPlayer().disconnect(ChatColor.RED + "No lobby session found, please retry");
+                            else continue;
+                        }
+                        break;
+                    } else if (!optimalLobbies.hasNext())
+                    {
+                        event.getPlayer().disconnect(ChatColor.RED + "No lobby session found, please retry");
+                        return;
+                    }
+
+                }
             }
         }
     }
