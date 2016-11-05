@@ -52,7 +52,8 @@ public class ScoreboardBuilder
         return this;
     }
 
-    public ScoreboardBuilder setLine(int line, String value) {
+    public ScoreboardBuilder setLine(int line, String value)
+    {
         getObjective().getScore(ChatColor.translateAlternateColorCodes('&', value)).setScore(line);
         return this;
     }

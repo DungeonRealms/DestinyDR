@@ -1,4 +1,4 @@
-package net.dungeonrealms.lobby;
+package net.dungeonrealms.lobby.ol;
 
 
 import net.dungeonrealms.common.game.database.DatabaseAPI;

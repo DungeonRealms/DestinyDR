@@ -41,7 +41,7 @@ public class ProxyHandler implements BungeeHandler
         DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Handlers provided");
 
         // Register them
-        DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Preparing live handers..");
+        DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Preparing live handlers..");
         handlerMap.values().forEach((handler) -> handler.prepare());
         DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Live handlers prepared");
 

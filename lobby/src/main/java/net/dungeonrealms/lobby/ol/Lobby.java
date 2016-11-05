@@ -1,4 +1,4 @@
-package net.dungeonrealms.lobby;
+package net.dungeonrealms.lobby.ol;
 
 import lombok.Getter;
 import net.dungeonrealms.common.game.command.CommandManager;
@@ -11,8 +11,8 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
-import net.dungeonrealms.lobby.commands.CommandShard;
-import net.dungeonrealms.lobby.effect.GhostFactory;
+import net.dungeonrealms.lobby.ol.commands.CommandShard;
+import net.dungeonrealms.lobby.ol.effect.GhostFactory;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -33,7 +33,8 @@ import java.util.*;
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/11/2016
  */
-public class Lobby extends JavaPlugin implements Listener {
+public class Lobby extends JavaPlugin implements Listener
+{
 
     @Getter
     private static Lobby instance;
@@ -42,7 +43,8 @@ public class Lobby extends JavaPlugin implements Listener {
     private GhostFactory ghostFactory;
 
     @Override
-    public void onEnable() {
+    public void onEnable()
+    {
         instance = this;
 
         BungeeUtils.setPlugin(this);
@@ -68,8 +70,10 @@ public class Lobby extends JavaPlugin implements Listener {
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onAsyncJoin(AsyncPlayerPreLoginEvent event) throws InterruptedException {
-        if (PunishAPI.getInstance().isBanned(event.getUniqueId())) {
+    public void onAsyncJoin(AsyncPlayerPreLoginEvent event) throws InterruptedException
+    {
+        if (PunishAPI.getInstance().isBanned(event.getUniqueId()))
+        {
             String bannedMessage = PunishAPI.getInstance().getBannedMessage(event.getUniqueId());
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.setKickMessage(bannedMessage);
@@ -84,7 +88,8 @@ public class Lobby extends JavaPlugin implements Listener {
 
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
+    public void onJoin(PlayerJoinEvent event)
+    {
         Bukkit.getScheduler().runTask(this, () -> {
             Player player = event.getPlayer();
 
@@ -106,10 +111,12 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
+    public void onQuit(PlayerQuitEvent event)
+    {
         final Player player = event.getPlayer();
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lobby.getInstance(), () -> {
-            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId()))
+            {
                 DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
             }
         }, 1L);
@@ -117,28 +124,33 @@ public class Lobby extends JavaPlugin implements Listener {
 
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onClick(InventoryClickEvent event) {
+    public void onClick(InventoryClickEvent event)
+    {
         if (!event.getWhoClicked().isOp())
             event.setCancelled(true);
     }
 
     @EventHandler
-    public void onItemDrop(PlayerDropItemEvent e) {
+    public void onItemDrop(PlayerDropItemEvent e)
+    {
         if (!e.getPlayer().isOp())
             e.setCancelled(true);
 
     }
 
     @EventHandler
-    public void onMove(PlayerMoveEvent event) {
+    public void onMove(PlayerMoveEvent event)
+    {
         if ((event.getPlayer().getGameMode() != GameMode.CREATIVE) && (event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR))
             event.getPlayer().setAllowFlight(true);
     }
 
     @EventHandler
-    public void onFly(PlayerToggleFlightEvent event) {
+    public void onFly(PlayerToggleFlightEvent event)
+    {
         Player player = event.getPlayer();
-        if (player.getGameMode() != GameMode.CREATIVE) {
+        if (player.getGameMode() != GameMode.CREATIVE)
+        {
             event.setCancelled(true);
             player.setAllowFlight(false);
             player.setFlying(false);
@@ -149,9 +161,11 @@ public class Lobby extends JavaPlugin implements Listener {
 
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onItemClick(PlayerInteractEvent e) {
+    public void onItemClick(PlayerInteractEvent e)
+    {
         final Player p = e.getPlayer();
-        if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK))
+        {
 
             if (!e.hasItem()) return;
             if (e.getItem().getType() != Material.COMPASS) return;
@@ -162,7 +176,8 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
 
-    private ItemStack getShardSelector() {
+    private ItemStack getShardSelector()
+    {
         ItemStack navigator = new ItemStack(Material.COMPASS);
         ItemMeta navigatorMeta = navigator.getItemMeta();
         navigatorMeta.setDisplayName(ChatColor.GREEN + "Shard Selector");
@@ -171,20 +186,24 @@ public class Lobby extends JavaPlugin implements Listener {
         return navigator;
     }
 
-    private boolean hasItem(PlayerInventory inventory, ItemStack item) {
+    private boolean hasItem(PlayerInventory inventory, ItemStack item)
+    {
 
         if (!item.hasItemMeta()) return false;
         if (!item.getItemMeta().hasDisplayName()) return false;
 
-        for (ItemStack i : inventory.getContents()) {
-            if (i != null && i.hasItemMeta() && i.getItemMeta().getDisplayName().contains(item.getItemMeta().getDisplayName())) {
+        for (ItemStack i : inventory.getContents())
+        {
+            if (i != null && i.hasItemMeta() && i.getItemMeta().getDisplayName().contains(item.getItemMeta().getDisplayName()))
+            {
                 return true;
             }
         }
         return false;
     }
 
-    public void scoreboardTask() {
+    public void scoreboardTask()
+    {
         Bukkit.getOnlinePlayers().forEach(player -> {
             ScoreboardBuilder builder = new ScoreboardBuilder(ChatColor.YELLOW + ChatColor.BOLD.toString() + "  Shards  ");
             builder.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -194,7 +213,8 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
 
-    public HashMap<Integer, String> getShardInfo(Player player) {
+    public HashMap<Integer, String> getShardInfo(Player player)
+    {
         List<BungeeServerInfo> servers = new ArrayList<>(getFilteredServers().values());
 
         Collections.sort(servers, (o1, o2) -> {
@@ -209,39 +229,48 @@ public class Lobby extends JavaPlugin implements Listener {
         });
 
         // DISPLAY AVAILABLE SHARDS //
-        for (BungeeServerInfo info : servers) {
+        for (BungeeServerInfo info : servers)
+        {
             String bungeeName = info.getServerName();
             String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
 
             // Do not show YT / CS shards unless they've got the appropriate permission to see them.
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player))) {
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)))
+            {
                 continue;
             }
         }
         HashMap<Integer, String> map = new HashMap<>();
         int i = 0;
-        for (BungeeServerInfo server : servers) {
+        for (BungeeServerInfo server : servers)
+        {
             String shardID = ShardInfo.getByPseudoName(server.getServerName()).getShardID();
             String load = server.getMotd1().replace("}", "").replace("\"", "").split(",")[1];
             int minPlayers = server.getOnlinePlayers();
             int maxPlayers = server.getMaxPlayers();
             String color = "";
-            if (shardID.contains("SUB")) {
+            if (shardID.contains("SUB"))
+            {
                 color = "&a";
             }
-            if (shardID.contains("BR")) {
+            if (shardID.contains("BR"))
+            {
                 color = "&3";
             }
-            if (shardID.contains("US")) {
+            if (shardID.contains("US"))
+            {
                 color = "&e";
             }
-            if (shardID.contains("YT")) {
+            if (shardID.contains("YT"))
+            {
                 color = "&6";
             }
-            if (shardID.contains("EU")) {
+            if (shardID.contains("EU"))
+            {
                 color = "&6";
             }
-            if (shardID.contains("CS")) {
+            if (shardID.contains("CS"))
+            {
                 color = "&c";
             }
             String shardString = color + shardID + " " + load + " &7(" + minPlayers + "/" + maxPlayers + ") ";
@@ -251,10 +280,12 @@ public class Lobby extends JavaPlugin implements Listener {
         return map;
     }
 
-    private int getNormalServers() {
+    private int getNormalServers()
+    {
         int count = 0;
 
-        for (String bungeeName : getFilteredServers().keySet()) {
+        for (String bungeeName : getFilteredServers().keySet())
+        {
             String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
             if (getServerType(shardID).equals(""))
                 count++;
@@ -269,7 +300,8 @@ public class Lobby extends JavaPlugin implements Listener {
      * @param shardID
      * @return Material
      */
-    private ItemStack getShardItem(String shardID) {
+    private ItemStack getShardItem(String shardID)
+    {
         shardID = shardID.toUpperCase();
 
         if (shardID.equals("US-0")) return new ItemStack(Material.DIAMOND);
@@ -287,7 +319,8 @@ public class Lobby extends JavaPlugin implements Listener {
      * @param shardID
      * @return ChatColor
      */
-    private ChatColor getShardColour(String shardID) {
+    private ChatColor getShardColour(String shardID)
+    {
         shardID = shardID.toUpperCase();
 
         if (shardID.equals("US-0")) return ChatColor.AQUA;
@@ -298,10 +331,12 @@ public class Lobby extends JavaPlugin implements Listener {
         return ChatColor.YELLOW;
     }
 
-    private static Map<String, BungeeServerInfo> getFilteredServers() {
+    private static Map<String, BungeeServerInfo> getFilteredServers()
+    {
         Map<String, BungeeServerInfo> filteredServers = new HashMap<>();
 
-        for (Map.Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet()) {
+        for (Map.Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet())
+        {
             String bungeeName = e.getKey();
             if (ShardInfo.getByPseudoName(bungeeName) == null) continue;
             BungeeServerInfo info = e.getValue();
@@ -315,7 +350,8 @@ public class Lobby extends JavaPlugin implements Listener {
         return filteredServers;
     }
 
-    public String getServerType(String shardID) {
+    public String getServerType(String shardID)
+    {
         if (shardID.contains("SUB")) return "Subscribers Only";
         if (shardID.contains("YT")) return "YouTubers Only";
         if (shardID.contains("BR")) return "Brazilian Shard";
