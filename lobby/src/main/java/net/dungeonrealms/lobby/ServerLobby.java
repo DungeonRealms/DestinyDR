@@ -39,7 +39,6 @@ public class ServerLobby extends JavaPlugin
         // Backend
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(3L);
-        DatabaseInstance.getInstance().startInitialization(true);
 
         this.instanceLogger = this.getServer().getConsoleSender();
 
@@ -48,5 +47,7 @@ public class ServerLobby extends JavaPlugin
         this.lobbyShard = new LobbyShard(UUID.randomUUID());
 
         new LobbyHandler().prepare();
+
+        DatabaseInstance.getInstance().startInitialization(true);
     }
 }
