@@ -5,7 +5,6 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.lobby.ServerLobby;
-import net.dungeonrealms.lobby.ol.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -3,5 +3,5 @@ main: net.dungeonrealms.lobby.ServerLobby
 version: ${project.parent.version}
 authors: [apollosoftware, Vawke]
 website: http://www.dungeonrealms.net
-depend: [WorldGuard, BossBarAPI, ProtocolLib]
+depend: [BossBarAPI, ProtocolLib]
 description: The new and improved DungeonRealms!

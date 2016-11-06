@@ -45,8 +45,8 @@ public class ServerLobby extends JavaPlugin
 
         this.ghostFactory = new GhostFactory(this);
 
-        new LobbyHandler().prepare();
-
         this.lobbyShard = new LobbyShard(UUID.randomUUID());
+
+        new LobbyHandler().prepare();
     }
 }
