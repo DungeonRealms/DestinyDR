@@ -48,7 +48,7 @@ public class Constants {
 
     public static final String FTP_USER_NAME = "dungeonrealms.53";
 
-    public static final String FTP_PASSWORD = "KNlZmiaNUp0B";
+    public static final String FTP_PASSWORD = "CXxbpBbWdyekJtyv";
 
     public static final int FTP_PORT = 21;
 
