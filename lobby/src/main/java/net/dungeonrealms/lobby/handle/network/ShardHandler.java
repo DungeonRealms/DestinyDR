@@ -80,10 +80,9 @@ public class ShardHandler implements SuperHandler.ListeningHandler
                     if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName())
                     {
                         ItemMeta itemMeta = event.getCurrentItem().getItemMeta();
-
-                        // Check if the player has been combat logged first
                         try
                         {
+                            // Check if the player has been combat logged first
                             if (((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, player.getUniqueId())))
                             {
                                 player.sendMessage("");
@@ -94,58 +93,73 @@ public class ShardHandler implements SuperHandler.ListeningHandler
                                         () -> BungeeUtils.sendToServer(player.getName(),
                                                 ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, player.getUniqueId())).getShardID()), 20 * 5);
                                 player.closeInventory();
-                            }
-                        } catch (NullPointerException ignored)
-                        {
-                        }
-
-                        // First check if the requested shard is full
-                        if (BungeeServerTracker.getPlayersOnline(ChatColor.stripColor(itemMeta.getDisplayName()))
-                                >= BungeeServerTracker.getMaxPlayers(ChatColor.stripColor(itemMeta.getDisplayName())))
-                        {
-                            if (Rank.isSubscriber(player)) // Allow subscribers to bypass this
-                            {
-                                BungeeUtils.sendToServer(player.getName(), ChatColor.stripColor(itemMeta.getDisplayName()));
                             } else
                             {
-                                player.sendMessage("");
-                                CenteredMessage.sendCenteredMessage(player, "&c&lFULL SHARD");
-                                CenteredMessage.sendCenteredMessage(player, "&7This shard is full!");
-                                CenteredMessage.sendCenteredMessage(player, "&7Subscribe @ &b&nhttp://shop.dungeonrealms.net&r &7to bypass");
-                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
-                                player.closeInventory();
+                                String shardID = ChatColor.stripColor(itemMeta.getDisplayName()).replaceAll("[^a-zA-Z0-9]+", ""); // Remove the "-"
+                                // Collect target shard data
+                                BungeeServerInfo serverInfo = ServerLobby.getServerLobby().getLobbyShard().getServerInfo(shardID.toLowerCase());
+                                // Is the target shard full?
+                                if (serverInfo.getOnlinePlayers() >= serverInfo.getMaxPlayers())
+                                {
+                                    if (Rank.isSubscriber(player)) // Allow subscribers to bypass full shards joining
+                                    {
+                                        BungeeUtils.sendToServer(player.getName(), shardID);
+                                    } else
+                                    {
+                                        player.sendMessage("");
+                                        CenteredMessage.sendCenteredMessage(player, "&c&lFULL SHARD");
+                                        CenteredMessage.sendCenteredMessage(player, "&7This shard is full!");
+                                        CenteredMessage.sendCenteredMessage(player, "&7Subscribe @ &b&nhttp://shop.dungeonrealms.net&r &7to bypass");
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
+                                        player.closeInventory();
+                                    }
+                                } else
+                                {
+                                    if (shardID.contains("US") || shardID.contains("BR"))
+                                    {
+                                        if (!shardID.contains("US-0"))
+                                        {
+                                            BungeeUtils.sendToServer(player.getName(), shardID);
+                                        } else
+                                        {
+                                            player.sendMessage("");
+                                            CenteredMessage.sendCenteredMessage(player, "&c&lNOT AUTHORIZED");
+                                            CenteredMessage.sendCenteredMessage(player, "&7You are not allowed to join this shard!");
+                                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
+                                            player.closeInventory();
+                                        }
+                                    }
+                                    if (shardID.contains("YT") && Rank.isYouTuber(player) || shardID.contains("CS") && Rank.isSupport(player))
+                                    {
+                                        BungeeUtils.sendToServer(player.getName(), shardID);
+                                    } else if (shardID.contains("YT") && !Rank.isYouTuber(player) || shardID.contains("CS") && !Rank.isSupport(player))
+                                    {
+                                        player.sendMessage("");
+                                        CenteredMessage.sendCenteredMessage(player, "&c&lNOT AUTHORIZED");
+                                        CenteredMessage.sendCenteredMessage(player, "&7You are not allowed to join this shard!");
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
+                                        player.closeInventory();
+                                    }
+                                    if (shardID.contains("SUB"))
+                                    {
+                                        if (Rank.isSubscriber(player))
+                                        {
+                                            BungeeUtils.sendToServer(player.getName(), shardID);
+                                        } else
+                                        {
+                                            player.sendMessage("");
+                                            CenteredMessage.sendCenteredMessage(player, "&c&lSUBSCRIBER SHARD");
+                                            CenteredMessage.sendCenteredMessage(player, "&7This is a subscriber only shard!");
+                                            CenteredMessage.sendCenteredMessage(player, "&7Purchase @ &b&nhttp://shop.dungeonrealms.net&r &7to access");
+                                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
+                                            player.closeInventory();
+                                        }
+                                    }
+                                }
                             }
-                        } else
+                        } catch (NullPointerException e)
                         {
-                            BungeeUtils.sendToServer(player.getName(), ChatColor.stripColor(itemMeta.getDisplayName()));
-                        }
-
-                        if (itemMeta.getDisplayName().contains("YT") && Rank.isYouTuber(player) || itemMeta.getDisplayName().contains("CS") && Rank.isSupport(player))
-                        {
-                            BungeeUtils.sendToServer(player.getName(), ChatColor.stripColor(itemMeta.getDisplayName()));
-                        } else if (itemMeta.getDisplayName().contains("YT") && !Rank.isYouTuber(player) || itemMeta.getDisplayName().contains("CS") && !Rank.isSupport(player))
-                        {
-                            player.sendMessage("");
-                            CenteredMessage.sendCenteredMessage(player, "&c&lNOT AUTHORIZED");
-                            CenteredMessage.sendCenteredMessage(player, "&7You are not allowed to join this shard!");
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
-                            player.closeInventory();
-                        }
-
-                        if (itemMeta.getDisplayName().contains("SUB"))
-                        {
-                            if (Rank.isSubscriber(player))
-                            {
-                                BungeeUtils.sendToServer(player.getName(), ChatColor.stripColor(itemMeta.getDisplayName()));
-                            } else
-                            {
-                                player.sendMessage("");
-                                CenteredMessage.sendCenteredMessage(player, "&c&lSUBSCRIBER SHARD");
-                                CenteredMessage.sendCenteredMessage(player, "&7This is a subscriber only shard!");
-                                CenteredMessage.sendCenteredMessage(player, "&7Purchase @ &b&nhttp://shop.dungeonrealms.net&r &7to access");
-                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
-                                player.closeInventory();
-                            }
+                            e.printStackTrace();
                         }
                     }
                 }

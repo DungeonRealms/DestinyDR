@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Giovanni on 5-11-2016.
@@ -29,12 +30,27 @@ public class LobbyShard
         this.uuid = uuid;
     }
 
+    public ConcurrentHashMap<String, BungeeServerInfo> collectShards()
+    {
+        ConcurrentHashMap<String, BungeeServerInfo> collectedShards = new ConcurrentHashMap<>();
+        for (BungeeServerInfo serverInfo : getShardData())
+        {
+            collectedShards.put(serverInfo.getServerName(), serverInfo);
+        }
+        return collectedShards;
+    }
+
+    public BungeeServerInfo getServerInfo(String shard)
+    {
+        return collectShards().get(shard);
+    }
+
     public List<BungeeServerInfo> getShardData()
     {
         List<BungeeServerInfo> servers = new ArrayList<>(ServerLobby.getServerLobby().getLobbyShard().getFilteredServers().values());
 
-        Collections.sort(servers, (o1, o2) -> {
-
+        Collections.sort(servers, (o1, o2) ->
+        {
             int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
             int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
 
@@ -44,86 +60,6 @@ public class LobbyShard
             return o1num - o2num;
         });
         return servers;
-    }
-
-    public HashMap<Integer, String> getShardInfo(Player player)
-    {
-        List<BungeeServerInfo> servers = new ArrayList<>(getFilteredServers().values());
-
-        Collections.sort(servers, (o1, o2) -> {
-
-            int o1num = Integer.parseInt(o1.getServerName().substring(o1.getServerName().length() - 1));
-            int o2num = Integer.parseInt(o2.getServerName().substring(o2.getServerName().length() - 1));
-
-            if (!o1.getServerName().contains("us"))
-                return -1;
-
-            return o1num - o2num;
-        });
-
-        for (BungeeServerInfo info : servers)
-        {
-            String bungeeName = info.getServerName();
-            String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
-
-            // Do not show YT / CS shards unless they've got the appropriate permission to see them.
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)))
-            {
-                continue;
-            }
-        }
-        HashMap<Integer, String> map = new HashMap<>();
-        int i = 0;
-        for (BungeeServerInfo server : servers)
-        {
-            String shardID = ShardInfo.getByPseudoName(server.getServerName()).getShardID();
-            String load = server.getMotd1().replace("}", "").replace("\"", "").split(",")[1];
-            int minPlayers = server.getOnlinePlayers();
-            int maxPlayers = server.getMaxPlayers();
-            String color = "";
-            if (shardID.contains("SUB"))
-            {
-                color = "&a";
-            }
-            if (shardID.contains("BR"))
-            {
-                color = "&3";
-            }
-            if (shardID.contains("US"))
-            {
-                color = "&e";
-            }
-            if (shardID.contains("YT"))
-            {
-                color = "&6";
-            }
-            if (shardID.contains("EU"))
-            {
-                color = "&6";
-            }
-            if (shardID.contains("CS"))
-            {
-                color = "&c";
-            }
-            String shardString = color + shardID + " " + load + " &7(" + minPlayers + "/" + maxPlayers + ") ";
-            map.put(i, ChatColor.translateAlternateColorCodes('&', shardString));
-            i++;
-        }
-        return map;
-    }
-
-    private int getNormalServers()
-    {
-        int count = 0;
-
-        for (String bungeeName : getFilteredServers().keySet())
-        {
-            String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
-            if (getServerType(shardID).equals(""))
-                count++;
-        }
-
-        return count;
     }
 
     public ItemStack getShardItem(String shardID)
@@ -168,15 +104,5 @@ public class LobbyShard
         }
 
         return filteredServers;
-    }
-
-    public EnumShardType getServerType(String shardID)
-    {
-        if (shardID.contains("SUB")) return EnumShardType.SUBSCRIBER;
-        if (shardID.contains("YT")) return EnumShardType.YOUTUBE;
-        if (shardID.contains("BR")) return EnumShardType.BRAZILLIAN;
-        if (shardID.contains("RP")) return EnumShardType.ROLEPLAY;
-        if (shardID.contains("CS")) return EnumShardType.SUPPORT;
-        return null;
     }
 }
