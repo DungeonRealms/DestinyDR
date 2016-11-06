@@ -103,7 +103,7 @@ public class ShardHandler implements SuperHandler.ListeningHandler
                         if (BungeeServerTracker.getPlayersOnline(ChatColor.stripColor(itemMeta.getDisplayName()))
                                 >= BungeeServerTracker.getMaxPlayers(ChatColor.stripColor(itemMeta.getDisplayName())))
                         {
-                            if (!Rank.isSubscriber(player)) // Allow subscribers to bypass this
+                            if (Rank.isSubscriber(player)) // Allow subscribers to bypass this
                             {
                                 BungeeUtils.sendToServer(player.getName(), ChatColor.stripColor(itemMeta.getDisplayName()));
                             } else
@@ -115,6 +115,9 @@ public class ShardHandler implements SuperHandler.ListeningHandler
                                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
                                 player.closeInventory();
                             }
+                        } else
+                        {
+                            BungeeUtils.sendToServer(player.getName(), ChatColor.stripColor(itemMeta.getDisplayName()));
                         }
 
                         if (itemMeta.getDisplayName().contains("YT") && Rank.isYouTuber(player) || itemMeta.getDisplayName().contains("CS") && Rank.isSupport(player))

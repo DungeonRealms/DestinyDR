@@ -67,10 +67,10 @@ public class ShardGUI extends BasicGUI
 
                     ItemStack itemStack = new ItemStack(ServerLobby.getServerLobby().getLobbyShard().getShardItem(identifier));
                     ItemMeta itemMeta = itemStack.getItemMeta();
-                    itemMeta.setDisplayName(ServerLobby.getServerLobby().getLobbyShard().getShardColour(identifier).toString() + ChatColor.BOLD + identifier);
+                    itemMeta.setDisplayName(ServerLobby.getServerLobby().getLobbyShard().getShardColour(identifier).toString() + ChatColor.BOLD + name);
 
                     // Check if the player has the required rank to view specific shards
-                    if (identifier.contains("YT") && !Rank.isYouTuber(player) || identifier.contains("CS") && !Rank.isSupport(player) || identifier.contains("US-0") && !Rank.isDev(player))
+                    if (identifier.contains("YT") && !Rank.isYouTuber(player) || identifier.contains("CS") && !Rank.isSupport(player) || identifier.contains("US0") && !Rank.isDev(player))
                     {
                         connectionLore.clear();
                         connectionLore.add(ChatColor.GRAY + "You can't connect to this shard");
