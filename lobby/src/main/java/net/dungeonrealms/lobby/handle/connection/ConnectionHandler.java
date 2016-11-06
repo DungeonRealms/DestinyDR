@@ -4,14 +4,18 @@ import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.lib.message.CenteredMessage;
 import net.dungeonrealms.lobby.ServerLobby;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Arrays;
 
 /**
  * Created by Giovanni on 5-11-2016.
@@ -49,8 +53,9 @@ public class ConnectionHandler implements SuperHandler.ListeningHandler
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
+        event.setJoinMessage(null);
+        Player player = event.getPlayer();
         Bukkit.getScheduler().runTask(ServerLobby.getServerLobby(), () -> {
-            Player player = event.getPlayer();
 
             player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
             player.setDisplayName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
@@ -58,20 +63,32 @@ public class ConnectionHandler implements SuperHandler.ListeningHandler
 
             player.teleport(new Location(player.getWorld(), -972.5, 13.5, -275.5));
 
-            if (!player.isOp())
-            {
-                player.getInventory().clear();
-            }
-
             ServerLobby.getServerLobby().getGhostFactory().addPlayer(player);
             ServerLobby.getServerLobby().getGhostFactory().setGhost(player, !Rank.isGM(player) && !Rank.isSubscriber(player));
 
         });
+
+        player.getInventory().clear();
+        ItemStack itemStack = new ItemStack(Material.COMPASS);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.YELLOW + "Shard Selector");
+        itemMeta.setLore(Arrays.asList("", ChatColor.GRAY.toString() + ChatColor.ITALIC + "Browse all available shards"));
+        itemStack.setItemMeta(itemMeta);
+        player.getInventory().setItem(0, itemStack);
+
+        player.sendMessage("");
+        CenteredMessage.sendCenteredMessage(player, ChatColor.GOLD.toString() + ChatColor.BOLD + "DUNGEON REALMS");
+        player.sendMessage(new String[]{
+                ChatColor.AQUA + "• " + ChatColor.DARK_AQUA + "Website: www.dungeonrealms.net",
+                ChatColor.AQUA + "• " + ChatColor.DARK_AQUA + "Store: http://shop.dungeonrealms.net",
+                ChatColor.AQUA + "• " + ChatColor.DARK_AQUA + "Select a shard to play on using your" + ChatColor.YELLOW + " Shard Selector"});
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
+        event.setQuitMessage(null);
         Player player = event.getPlayer();
         Bukkit.getScheduler().scheduleSyncDelayedTask(ServerLobby.getServerLobby(), () -> {
             if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId()))

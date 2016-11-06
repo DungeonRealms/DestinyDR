@@ -1,5 +1,6 @@
 package net.dungeonrealms.lobby.misc.gui;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.menu.AbstractMenu;
 import net.dungeonrealms.common.game.menu.construct.BasicGUI;
@@ -25,7 +26,7 @@ public class ShardGUI extends BasicGUI
 {
     public ShardGUI(Player player)
     {
-        super(null, "Shard Selector", AbstractMenu.round(ServerLobby.getServerLobby().getLobbyShard().getShardData().size()));
+        super(null, "Shard Selector", 9);
 
         List<BungeeServerInfo> servers = ServerLobby.getServerLobby().getLobbyShard().getShardData();
 
@@ -39,8 +40,11 @@ public class ShardGUI extends BasicGUI
                 if (serverInfo.isOnline() && !serverInfo.getMotd1().contains("offline"))
                 {
                     // Construct the lore
-                    List<String> defaultLore = Arrays.asList(ChatColor.GREEN + "Shard is online!", "");
-                    List<String> connectionLore = Arrays.asList(ChatColor.GREEN + "Click to connect");
+                    List<String> defaultLore = Lists.newArrayList();
+                    defaultLore.add(ChatColor.GREEN + "Shard is online!");
+                    defaultLore.add("");
+                    List<String> connectionLore = Lists.newArrayList();
+                    connectionLore.add(ChatColor.GREEN + "▶ Click to connect");
                     ChatColor countColor = ChatColor.GREEN;
                     if (serverInfo.getOnlinePlayers() > serverInfo.getMaxPlayers() - 11)
                     {
@@ -58,7 +62,7 @@ public class ShardGUI extends BasicGUI
                         countColor = ChatColor.DARK_RED;
                     }
 
-                    defaultLore.add(ChatColor.GREEN + "Players: " + countColor + serverInfo.getOnlinePlayers() + ChatColor.GRAY + "/" + serverInfo.getMaxPlayers());
+                    defaultLore.add(ChatColor.GRAY + "Players: " + countColor + serverInfo.getOnlinePlayers() + ChatColor.DARK_GRAY + "/" + ChatColor.GRAY + serverInfo.getMaxPlayers());
                     defaultLore.add("");
 
                     ItemStack itemStack = new ItemStack(ServerLobby.getServerLobby().getLobbyShard().getShardItem(identifier));
@@ -76,10 +80,7 @@ public class ShardGUI extends BasicGUI
                     itemMeta.setLore(defaultLore);
                     itemStack.setItemMeta(itemMeta);
 
-                    this.addItem(itemStack, this.getSlots());
-
-                    // Handle the task
-
+                    this.addItem(itemStack, this.getInventory().firstEmpty());
                 }
             }
         }

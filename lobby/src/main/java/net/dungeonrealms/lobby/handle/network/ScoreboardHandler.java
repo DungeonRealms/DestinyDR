@@ -27,43 +27,51 @@ public class ScoreboardHandler implements SuperHandler.ListeningHandler
     {
         ServerLobby.getServerLobby().getServer().getPluginManager().registerEvents(this, ServerLobby.getServerLobby());
 
-        this.task = ServerLobby.getServerLobby().getServer().getScheduler().scheduleAsyncRepeatingTask(ServerLobby.getServerLobby(), () ->
+        this.task = ServerLobby.getServerLobby().getServer().getScheduler().scheduleSyncRepeatingTask(ServerLobby.getServerLobby(), () ->
         {
-            ScoreboardBuilder scoreboardBuilder = new ScoreboardBuilder(ChatColor.GOLD.toString() + ChatColor.BOLD + " DUNGEON REALMS ");
+            ScoreboardBuilder scoreboardBuilder = new ScoreboardBuilder(ChatColor.YELLOW.toString() + ChatColor.BOLD + " DUNGEON REALMS ");
             scoreboardBuilder.setDisplaySlot(DisplaySlot.SIDEBAR);
 
             List<BungeeServerInfo> servers = ServerLobby.getServerLobby().getLobbyShard().getShardData();
 
-            if (!servers.isEmpty())
+            if (!servers.isEmpty() && servers.size() != 1) // We don't want to include the lobby
             {
-                scoreboardBuilder.setLine(0, ChatColor.YELLOW + "www.dungeonrealms.net");
+                scoreboardBuilder.setLine(3, "");
+                scoreboardBuilder.setLine(2, ChatColor.GREEN + "Online shards: " + ChatColor.GREEN.toString() + ChatColor.BOLD + servers.size());
                 scoreboardBuilder.setLine(1, "");
-                scoreboardBuilder.setLine(2, ChatColor.YELLOW + "Online shards: " + ChatColor.GREEN + servers.size());
+                scoreboardBuilder.setLine(0,ChatColor.GOLD + "www.dungeonrealms.net");
             } else
             {
+                scoreboardBuilder.setLine(3, "");
                 scoreboardBuilder.setLine(2, ChatColor.RED + "No shards found!");
+                scoreboardBuilder.setLine(1, "");
+                scoreboardBuilder.setLine(0, ChatColor.GOLD + "www.dungeonrealms.net");
             }
 
             ServerLobby.getServerLobby().getServer().getOnlinePlayers().forEach(scoreboardBuilder::send);
-        }, 0L, 20); // Update each second
+        }, 0L, 20 * 10); // Update each 10 seconds
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        ScoreboardBuilder scoreboardBuilder = new ScoreboardBuilder(ChatColor.GOLD.toString() + ChatColor.BOLD + " DUNGEON REALMS ");
+        ScoreboardBuilder scoreboardBuilder = new ScoreboardBuilder(ChatColor.YELLOW.toString() + ChatColor.BOLD + " DUNGEON REALMS ");
         scoreboardBuilder.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         List<BungeeServerInfo> servers = ServerLobby.getServerLobby().getLobbyShard().getShardData();
 
-        if (!servers.isEmpty())
+        if (!servers.isEmpty() && servers.size() != 1) // We don't want to include the lobby
         {
-            scoreboardBuilder.setLine(0, ChatColor.YELLOW + "www.dungeonrealms.net");
+            scoreboardBuilder.setLine(3, "");
+            scoreboardBuilder.setLine(2, ChatColor.GREEN + "Online shards: " + ChatColor.GREEN.toString() + ChatColor.BOLD + servers.size());
             scoreboardBuilder.setLine(1, "");
-            scoreboardBuilder.setLine(2, ChatColor.YELLOW + "Online shards: " + ChatColor.GREEN + servers.size());
+            scoreboardBuilder.setLine(0,ChatColor.GOLD + "www.dungeonrealms.net");
         } else
         {
+            scoreboardBuilder.setLine(3, "");
             scoreboardBuilder.setLine(2, ChatColor.RED + "No shards found!");
+            scoreboardBuilder.setLine(1, "");
+            scoreboardBuilder.setLine(0, ChatColor.GOLD + "www.dungeonrealms.net");
         }
 
         scoreboardBuilder.send(event.getPlayer());

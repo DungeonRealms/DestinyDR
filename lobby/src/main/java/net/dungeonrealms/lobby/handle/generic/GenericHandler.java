@@ -106,7 +106,7 @@ public class GenericHandler implements SuperHandler.ListeningHandler
     @EventHandler
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-        Arrays.asList("/pl", "/help", "/bukkit", "/ver", "/icanhasbukkit").stream().filter(string -> event.getMessage().toLowerCase().startsWith(string)).forEach(string -> {
+        Arrays.asList("/pl", "/help", "/bukkit", "/ver", "/icanhasbukkit", "/about").stream().filter(string -> event.getMessage().toLowerCase().startsWith(string)).forEach(string -> {
             event.setCancelled(true);
         });
     }
