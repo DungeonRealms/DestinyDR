@@ -75,7 +75,7 @@ public class ShardHandler implements SuperHandler.ListeningHandler
             {
                 event.setCancelled(true); // Cancel it no matter what
                 Player player = (Player) event.getWhoClicked();
-                if (event.getCurrentItem().getType() != Material.AIR || event.getCurrentItem() != null)
+                if (event.getCurrentItem() != null || event.getCurrentItem().getType() != Material.AIR)
                 {
                     if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName())
                     {
