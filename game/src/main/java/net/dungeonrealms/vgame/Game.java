@@ -24,7 +24,6 @@ public class Game extends JavaPlugin
      * if (realmnumber >= 0) mm.registerMechanic(Realms.getInstance());
      * pseudo
      */
-
     @Getter
     private static Game game;
 

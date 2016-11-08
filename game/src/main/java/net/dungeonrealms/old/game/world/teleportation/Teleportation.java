@@ -152,7 +152,7 @@ public class Teleportation implements GenericMechanic {
         } else if (location.equals(Crestguard_Keep)) {
             message += "Crestguard Keep";
         } else if (location.equals(Tutorial)) {
-            message += "Tutorial Island";
+            message += "TutorialQuest Island";
         }
 
         player.sendMessage(message);

@@ -14,7 +14,7 @@ public interface ICreature
 {
     Entity getEntity();
 
-    CreatureType getCreatureType();
+    EnumCreatureType getCreatureType();
 
     default void kill()
     {

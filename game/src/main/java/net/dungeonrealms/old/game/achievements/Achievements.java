@@ -120,8 +120,8 @@ public class Achievements {
                 "Welcome to Dungeon Realms!",
         }, 100, "achievement.first_login", false),
 
-        TUTORIAL_ISLAND("Tutorial Island", new String[]{
-                "Explorer: Tutorial Island",
+        TUTORIAL_ISLAND("TutorialQuest Island", new String[]{
+                "Explorer: TutorialQuest Island",
         }, 100, "achievement.explorer_tutorial_island", false),
 
         HARRISONS_FIELD("Harrisons Fields", new String[]{

@@ -234,7 +234,7 @@ public class TeleportAPI {
     public static String getDisplayNameOfLocation(String location) {
         switch (location.toLowerCase()) {
             case "starter": {
-                return "Tutorial Island";
+                return "TutorialQuest Island";
             }
             case "cyrennica": {
                 return "City of Cyrennica";

@@ -86,7 +86,9 @@ public class WeaponItem implements IStack
                       String name,
                       List<EnumWeaponAttribute> attributes,
                       boolean soulbound,
-                      boolean tradeable)
+                      boolean tradeable,
+                      int minDmg,
+                      int maxDmg)
     {
         this.uuid = uuid;
         this.material = material;
@@ -99,6 +101,8 @@ public class WeaponItem implements IStack
         this.weaponAttributes = attributes;
         this.soulbound = soulbound;
         this.tradeable = tradeable;
+        this.minDmg = minDmg;
+        this.maxDmg = maxDmg;
 
         this.createKey(); // Actual item
 

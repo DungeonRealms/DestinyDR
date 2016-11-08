@@ -42,7 +42,7 @@ public class GameShard
     private String shardId = "Giovanni-01"; // Default
 
     @Getter
-    private String bungeeIdentifier = "Lobby"; // Default
+    private String bungeeIdentifier = "US-0"; // Default
 
     @Getter
     private boolean instanceServer;

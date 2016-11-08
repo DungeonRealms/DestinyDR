@@ -1,6 +1,7 @@
 package net.dungeonrealms.vgame;
 
 import lombok.Getter;
+import net.dungeonrealms.backend.registry.PlayerRegistry;
 import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.backend.registry.WeaponRegistry;
 import net.dungeonrealms.common.awt.SuperHandler;
@@ -23,6 +24,9 @@ public class RegistryHandler implements SuperHandler.Handler
     @Getter
     private WeaponRegistry weaponRegistry;
 
+    @Getter
+    private PlayerRegistry playerRegistry;
+
     @Override
     public void prepare()
     {
@@ -34,6 +38,7 @@ public class RegistryHandler implements SuperHandler.Handler
         // Provide registries
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Connecting & collecting registries for atomic reference..");
         this.registryMap.put(UUID.randomUUID(), this.weaponRegistry = new WeaponRegistry());
+        this.registryMap.put(UUID.randomUUID(), this.playerRegistry = new PlayerRegistry());
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers connected & collected");
 
         // Register them

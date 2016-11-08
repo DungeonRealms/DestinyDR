@@ -60,7 +60,7 @@ public class CommandSkip extends BaseCommand {
                         }, 40);
                     });
                 }
-            }, p -> p.sendMessage(ChatColor.RED + "Tutorial Skip - " + ChatColor.BOLD + "CANCELLED"));
+            }, p -> p.sendMessage(ChatColor.RED + "TutorialQuest Skip - " + ChatColor.BOLD + "CANCELLED"));
         } else {
             player.sendMessage(ChatColor.RED + "You are not on the tutorial island.");
         }

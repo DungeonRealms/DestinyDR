@@ -234,7 +234,7 @@ public class ItemListener implements Listener {
 
             if (GameAPI.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial_island")) {
                 p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
-                        + " open a portal to your realm until you have completed Tutorial Island.");
+                        + " open a portal to your realm until you have completed TutorialQuest Island.");
                 return;
             }
 

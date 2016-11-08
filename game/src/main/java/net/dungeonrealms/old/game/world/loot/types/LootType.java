@@ -46,7 +46,7 @@ public enum LootType {
     NPCChest12("npchest12.loot");
 //	PotTest("pot_test.loot"),
 //	Test("test.loot"),
-//	Tutorial("tutorial.loot");
+//	TutorialQuest("tutorial.loot");
 
     public String fileName;
     public HashMap<ItemStack, Double> loot = new HashMap<>();

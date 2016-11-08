@@ -157,7 +157,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
                 pl.sendMessage(ChatColor.YELLOW + "                    Welcome to " + ChatColor.UNDERLINE + "Dungeon Realms!");
 
 
-                pl.sendMessage(ChatColor.GRAY + "Before you dive into the mystical world of Andalucia and discover all of its wonders, you are encouraged to go through this short introductory " + ChatColor.YELLOW + "Tutorial Island.");
+                pl.sendMessage(ChatColor.GRAY + "Before you dive into the mystical world of Andalucia and discover all of its wonders, you are encouraged to go through this short introductory " + ChatColor.YELLOW + "TutorialQuest Island.");
                 pl.sendMessage("");
                 pl.sendMessage(ChatColor.GRAY + "You'll get a crash course on game mechanics and " + ChatColor.UNDERLINE + "get free loot" + ChatColor.GRAY + " just for completing it!");
                 pl.sendMessage("");

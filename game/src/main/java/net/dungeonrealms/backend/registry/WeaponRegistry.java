@@ -106,8 +106,8 @@ public class WeaponRegistry implements DataRegistry
                     String name = set.getString("name");
                     SQLBoolean soulbound = SQLBoolean.valueOf(set.getString("soulbound"));
                     SQLBoolean tradeable = SQLBoolean.valueOf(set.getString("tradeable"));
-
-                    // TODO min, max dmg
+                    int minDmg = set.getInt("minDmg");
+                    int maxDmg = set.getInt("maxDmg");
 
                     // JSON conversion
                     List<String> attributeStrings = gson.fromJson(set.getString("attributes"), List.class);
@@ -116,7 +116,7 @@ public class WeaponRegistry implements DataRegistry
                     List<EnumWeaponAttribute> attributeList = Lists.newArrayList();
                     attributeList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
                     WeaponItem weaponItem = new WeaponItem(uuid, material, rarity, itemTier, attributeTier, itemType, durability, name, attributeList,
-                            soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false);
+                            soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false, minDmg, maxDmg);
                     this.getMap().put(weaponItem.getItemStack(), weaponItem);
                 }
             } catch (SQLException e)
