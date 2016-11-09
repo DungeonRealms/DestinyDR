@@ -2,9 +2,6 @@ package net.dungeonrealms.vgame.player;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.vgame.quest.Quest;
-import net.dungeonrealms.vgame.quest.QuestPhase;
-import net.dungeonrealms.vgame.tutorial.TutorialQuest;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -34,16 +31,6 @@ public class GamePlayer implements IPlayer
     @Getter
     private int level;
 
-    @Setter
-    @Getter
-    private Quest quest;
-    @Getter
-    @Setter
-    private QuestPhase questPhase;
-    @Setter
-    @Getter
-    private int questPhaseId;
-
     @Getter
     private Player player;
 
@@ -53,7 +40,6 @@ public class GamePlayer implements IPlayer
         this.gems = 0;
         this.exp = 0;
         this.level = 0;
-        this.quest = new TutorialQuest();
         this.player = Bukkit.getPlayer(uuid);
     }
 
