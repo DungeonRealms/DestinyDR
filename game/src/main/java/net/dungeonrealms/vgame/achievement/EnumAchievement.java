@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 public enum EnumAchievement
 {
-    ANDALUCIA(0, "&a&lWELCOME TO ANDALUCIA", new String[]{"&7Welcome to the province of Andalucia.."}, "world.achievements.start", 0);
+    ANDALUCIA(0, "&a&lWELCOME TO ANDALUCIA", new String[]{"&7Discovered the province of Andalucia"}, "world.achievements.start", 0);
 
     @Getter
     private String name;

@@ -9,15 +9,15 @@ import java.util.concurrent.Executors;
 public class AsyncUtils {
 
 
-    /*
-    The amount of threads available on the machine
+    /**
+     * The person who made this class is officially autistic, runtime will always be null. Commons is not a fucking runnable jar file.
+     * - Vawke
      */
-    public static int threadCount = Runtime.getRuntime().availableProcessors();
+    public static int threadCount = 0;
 
     /*
     We'll use this instead of new Thread().start(); every time we want
     something to be on a different thread..
      */
     public static ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-
 }

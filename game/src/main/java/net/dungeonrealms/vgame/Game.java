@@ -1,10 +1,12 @@
 package net.dungeonrealms.vgame;
 
+import io.vawke.skelframe.SkelRuntime;
 import io.vawke.skelframe.bootstrap.IOBootstrap;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
 import net.dungeonrealms.common.game.database.sql.SQLDatabase;
+import net.dungeonrealms.common.game.util.AsyncUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,6 +47,12 @@ public class Game extends JavaPlugin
     {
         game = this;
 
+        // Get the available processors, otherwise hyper-threading is not available
+        AsyncUtils.threadCount = SkelRuntime.getSkelRuntime().processors();
+
+        // Start the old Dungeon Realms
+        SkelRuntime.getSkelRuntime().bootstrap().perform();
+
         //** Logger **//
         this.instanceLogger = this.getServer().getConsoleSender();
         // ** Init shard **//
@@ -63,9 +71,6 @@ public class Game extends JavaPlugin
         //** Registries **//
         this.registryHandler = new RegistryHandler();
         this.registryHandler.prepare();
-
-        // Start the old Dungeon Realms
-        new IOBootstrap().perform();
     }
 
     @Override

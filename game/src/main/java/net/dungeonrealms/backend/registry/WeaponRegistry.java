@@ -50,13 +50,16 @@ public class WeaponRegistry implements DataRegistry
     {
         this.table = this.yamlConfiguration.getString("registry.table");
 
-        createData();
+        // Testing
+        //createData();
+
+        this.connected = true;
 
         if (connected)
         {
             this.itemMap = new AtomicReference<ConcurrentHashMap<ItemStack, WeaponItem>>();
             this.itemMap.set(new ConcurrentHashMap<>());
-            this.collect();
+            //this.collect();
         }
     }
 
@@ -90,7 +93,8 @@ public class WeaponRegistry implements DataRegistry
     @Override
     public void collect()
     {
-        Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () -> {
+        Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () ->
+        {
             Gson gson = new Gson();
             try (ResultSet set = Game.getGame().getGameShard().getSqlDatabase().getSet("SELECT * FROM " + table))
             {

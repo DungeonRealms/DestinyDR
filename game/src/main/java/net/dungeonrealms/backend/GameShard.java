@@ -77,12 +77,10 @@ public class GameShard
         try
         {
             this.loadShardData(fileReader);
-            this.shardInfo = ShardInfo.getByShardID(shardId);
             this.setupDatabase();
             this.connect();
             this.clearPlayerData();
             this.managePlayerData();
-
             new UpdateTask(Game.getGame()); // Init the updater
         } catch (Exception e)
         {
@@ -145,13 +143,16 @@ public class GameShard
         this.sqlDatabase = new SQLDatabase(Constants.SQL_HOSTNAME, Constants.SQL_PORT,
                 Constants.SQL_DATABASE, Constants.SQL_PASSWORD,
                 Constants.SQL_USERNAME, EnumSQLPurpose.ITEM);
-        Game.getGame().getInstanceLogger().sendMessage(new String[]{"",
-                ChatColor.YELLOW + "[ v-ITEM DATABASE ]",
-                ChatColor.GREEN + "IP: " + Constants.SQL_HOSTNAME,
-                ChatColor.GREEN + "Port: " + Constants.SQL_PORT,
-                ChatColor.GREEN + "Database: " + Constants.SQL_DATABASE,
-                ChatColor.GREEN + "Username: " + Constants.SQL_USERNAME,
-                ChatColor.GREEN + "Purpose: " + EnumSQLPurpose.ITEM.name(), ""}); // {0}
+        if (!(this.getShardType() == EnumShardType.BRAZILLIAN))
+        {
+            Game.getGame().getInstanceLogger().sendMessage(new String[]{"",
+                    ChatColor.YELLOW + "[ v-ITEM DATABASE ]",
+                    ChatColor.GREEN + "IP: " + Constants.SQL_HOSTNAME,
+                    ChatColor.GREEN + "Port: " + Constants.SQL_PORT,
+                    ChatColor.GREEN + "Database: " + Constants.SQL_DATABASE,
+                    ChatColor.GREEN + "Username: " + Constants.SQL_USERNAME,
+                    ChatColor.GREEN + "Purpose: " + EnumSQLPurpose.ITEM.name(), ""}); // {0}
+        }
     }
 
     private void loadShardData(FileReader fileReader)
@@ -173,6 +174,8 @@ public class GameShard
             this.shardType = EnumShardType.valueOf(ini.get("Settings", "shard"));
             this.rebootTime = ini.get("Settings", "rebootTime", Integer.class);
             this.saveTime = ini.get("Settings", "saveTime", Integer.class);
+
+            this.shardInfo = ShardInfo.getByShardID(shardId);
         } catch (Exception e) // No multi exception catching here
         {
             e.printStackTrace();

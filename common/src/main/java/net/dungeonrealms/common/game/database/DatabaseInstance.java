@@ -4,11 +4,11 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.concurrent.MongoAccessThread;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import org.bson.Document;
-
 /**
  * Created by Nick on 8/29/2015.
  */
@@ -58,9 +58,8 @@ public class DatabaseInstance
 
     private static void createMongoAccessThreads()
     {
-        int threads = AsyncUtils.threadCount;
-
-        for (int i = 0; i < threads; i++)
+        System.out.println("JVM returns " + AsyncUtils.threadCount + " processors!");
+        for (int i = 0; i < AsyncUtils.threadCount; i++)
         {
             accessThreads[i] = new MongoAccessThread();
             accessThreads[i].start();
