@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -47,14 +48,17 @@ public class Game extends JavaPlugin
     {
         game = this;
 
-        // Get the available processors, otherwise hyper-threading is not available
-        AsyncUtils.threadCount = SkelRuntime.getSkelRuntime().processors();
-
-        // Start the old Dungeon Realms
-        SkelRuntime.getSkelRuntime().bootstrap().perform();
-
         //** Logger **//
         this.instanceLogger = this.getServer().getConsoleSender();
+
+        // Start the skeleton runtime
+        SkelRuntime skelRuntime = new SkelRuntime();
+        skelRuntime.init();
+
+        // Get the available processors, otherwise hyper-threading is not available
+        AsyncUtils.threadCount = skelRuntime.processors();
+        AsyncUtils.pool = Executors.newFixedThreadPool(AsyncUtils.threadCount);
+
         // ** Init shard **//
         try
         {

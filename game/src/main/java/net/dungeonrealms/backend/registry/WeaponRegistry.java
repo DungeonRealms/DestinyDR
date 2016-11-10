@@ -48,7 +48,7 @@ public class WeaponRegistry implements DataRegistry
     @Override
     public void prepare()
     {
-        this.table = this.yamlConfiguration.getString("registry.table");
+        //this.table = this.yamlConfiguration.getString("registry.table");
 
         // Testing
         //createData();

@@ -34,6 +34,7 @@ import net.dungeonrealms.old.game.world.entity.util.MountUtils;
 import net.dungeonrealms.old.game.world.entity.util.PetUtils;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.vgame.Game;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
@@ -392,7 +393,7 @@ public class ClickHandler {
                         if (player_Inv_Available < inv_Needed) {
                             player.sendMessage(ChatColor.RED + "Inventory is full.");
                             player.sendMessage(ChatColor.GRAY + "You require " + ChatColor.BOLD + (inv_Needed - player_Inv_Available) + ChatColor.GRAY + " more free slots to complete this trade!");
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> {
                                 InventoryCloseEvent closeEvent = new InventoryCloseEvent(player.getOpenInventory());
                                 Bukkit.getServer().getPluginManager().callEvent(closeEvent);
                             }, 2L);
@@ -425,7 +426,7 @@ public class ClickHandler {
                         player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 1F);
                         tradeWindow.clear();
 
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> {
                             player.updateInventory();
                             player.closeInventory();
                         }, 2L);
@@ -662,7 +663,7 @@ public class ClickHandler {
                     final int[] count = {0};
                     Location startingLocation = player.getLocation();
                     final boolean[] cancelled = {false};
-                    int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                    int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Game.getGame(), () -> {
                         if (!EntityAPI.hasMountOut(player.getUniqueId())) {
                             if (player.getLocation().distanceSquared(startingLocation) <= 4) {
                                 if (!CombatLog.isInCombat(player)) {
@@ -689,7 +690,7 @@ public class ClickHandler {
                             }
                         }
                     }, 0L, 20L);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
                 }
                 break;
             case "Player Effect Selection":
@@ -780,7 +781,7 @@ public class ClickHandler {
                             return;
                         }
                         player.sendMessage(ChatColor.GREEN + "Please wait whilst your storage mule is summoned...");
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> {
                             if (!EntityAPI.hasMountOut(player.getUniqueId())) {
                                 MountUtils.spawnMount(player.getUniqueId(), "MULE", "");
                             } else {

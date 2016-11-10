@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -48,14 +49,14 @@ public class ProtectionHandler implements GenericMechanic, Listener {
                 int remainingHours = 24 - (int) hours;
                 player.sendMessage("");
                 player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + remainingHours + "h " + ChatColor.RED + "left in your 'Newbie Protection'. After this time expires, you will lose items as you normally would when PK'd.");
-                player.setMetadata("newbie_protection", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+                player.setMetadata("newbie_protection", new FixedMetadataValue(Game.getGame(), true));
             }
         }
     }
 
     public void removePlayerProtection(Player player) {
         if (player.hasMetadata("newbie_protection")) {
-            player.removeMetadata("newbie_protection", DungeonRealms.getInstance());
+            player.removeMetadata("newbie_protection", Game.getGame());
             player.sendMessage("");
             player.sendMessage(ChatColor.RED + "You have forfeited your 'Newbie protection' by killing another Player.");
             player.playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 1F, 1F);

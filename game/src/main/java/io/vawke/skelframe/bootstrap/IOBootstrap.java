@@ -77,13 +77,15 @@ import java.util.Collections;
  */
 public class IOBootstrap
 {
-    public void perform()
+    public void perform(String bungeeId)
     {
+        Game.getGame().getInstanceLogger().sendMessage("SKELETON BOOTSTRAP FOR: " + bungeeId);
+
         PluginManager pluginManager = Game.getGame().getServer().getPluginManager();
         
         // OLD DUNGEON REALMS BOOTSTRAP //
         DatabaseInstance.getInstance().startInitialization(true);
-        DatabaseAPI.getInstance().startInitialization(Game.getGame().getGameShard().getBungeeIdentifier());
+        DatabaseAPI.getInstance().startInitialization(bungeeId);
         AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();

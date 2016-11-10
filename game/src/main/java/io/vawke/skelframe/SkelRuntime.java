@@ -1,6 +1,8 @@
 package io.vawke.skelframe;
 
 import io.vawke.skelframe.bootstrap.IOBootstrap;
+import lombok.Getter;
+import net.dungeonrealms.vgame.Game;
 
 import java.io.IOException;
 
@@ -12,14 +14,13 @@ import java.io.IOException;
  */
 public class SkelRuntime
 {
+    @Getter
     private static SkelRuntime skelRuntime;
 
-    public static SkelRuntime getSkelRuntime()
+    public void init()
     {
-        if (skelRuntime != null)
-            return skelRuntime;
-        else
-            return skelRuntime = new SkelRuntime();
+        Game.getGame().getInstanceLogger().sendMessage("[ Starting (Skeleton Runtime) by Vawke.. ]");
+        skelRuntime = this;
     }
 
     public int processors()

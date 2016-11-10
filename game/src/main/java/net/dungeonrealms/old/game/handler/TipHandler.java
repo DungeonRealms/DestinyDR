@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -40,7 +41,7 @@ public class TipHandler implements GenericMechanic {
     @Override
     public void startInitialization() {
         loadTips();
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::displayTipToPlayers, 8000L, 6000L);
+        Bukkit.getScheduler().runTaskTimer(Game.getGame(), this::displayTipToPlayers, 8000L, 6000L);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class TipHandler implements GenericMechanic {
                     count++;
                 }
                 br.close();
-                DungeonRealms.getInstance().getLogger().info("[TipMechanics] " + count + " Gameplay Tips have been LOADED.");
+                Game.getGame().getLogger().info("[TipMechanics] " + count + " Gameplay Tips have been LOADED.");
             } catch (Exception err) {
                 err.printStackTrace();
             }

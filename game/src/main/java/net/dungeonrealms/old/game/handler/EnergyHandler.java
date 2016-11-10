@@ -11,6 +11,7 @@ import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -44,10 +45,10 @@ public class EnergyHandler implements GenericMechanic {
 
     @Override
 	public void startInitialization() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 1L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 10L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateFoodInSafezones, 40, 40L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Game.getGame(), this::regenerateAllPlayerEnergy, 40, 1L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Game.getGame(), this::removePlayerEnergySprint, 40, 10L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Game.getGame(), this::addStarvingPotionEffect, 40, 15L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Game.getGame(), this::regenerateFoodInSafezones, 40, 40L);
     }
 
     @Override
@@ -64,10 +65,10 @@ public class EnergyHandler implements GenericMechanic {
      */
     public void handleLogoutEvents(Player player) {
         if (player.hasMetadata("starving")) {
-            player.removeMetadata("starving", DungeonRealms.getInstance());
+            player.removeMetadata("starving", Game.getGame());
         }
         if (player.hasMetadata("sprinting")) {
-            player.removeMetadata("sprinting", DungeonRealms.getInstance());
+            player.removeMetadata("sprinting", Game.getGame());
         }
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), true);
     }
@@ -91,8 +92,8 @@ public class EnergyHandler implements GenericMechanic {
                 return;
             }
             if (!(player.hasMetadata("starving"))) {
-                player.setMetadata("starving", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**STARVING**"), 20L);
+                player.setMetadata("starving", new FixedMetadataValue(Game.getGame(), "true"));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**STARVING**"), 20L);
             }
         }
     }
@@ -205,7 +206,7 @@ public class EnergyHandler implements GenericMechanic {
             removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.15F);
             if (getPlayerCurrentEnergy(player) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
-                player.removeMetadata("sprinting", DungeonRealms.getInstance());
+                player.removeMetadata("sprinting", Game.getGame());
                 if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
                     int foodLevel = player.getFoodLevel();
                     if (player.getFoodLevel() > 1) {
@@ -213,7 +214,7 @@ public class EnergyHandler implements GenericMechanic {
                     }
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
                     if (foodLevel > 1) {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setFoodLevel(foodLevel), 40L);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> player.setFoodLevel(foodLevel), 40L);
                     }
                 }
             }
@@ -243,12 +244,12 @@ public class EnergyHandler implements GenericMechanic {
                 return;
             }
         }
-        player.setMetadata("last_energy_remove", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        player.setMetadata("last_energy_remove", new FixedMetadataValue(Game.getGame(), System.currentTimeMillis()));
         if (getPlayerCurrentEnergy(player) <= 0) return;
         if ((getPlayerCurrentEnergy(player) - amountToRemove) <= 0) {
             player.setExp(0.0F);
             updatePlayerEnergyBar(player);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 50, 4)), 0L);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 50, 4)), 0L);
             return;
         }
         player.setExp(getPlayerCurrentEnergy(player) - amountToRemove);
@@ -265,10 +266,10 @@ public class EnergyHandler implements GenericMechanic {
     private void addStarvingPotionEffect() {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.hasPotionEffect(PotionEffectType.HUNGER) && player.hasMetadata("starving")).forEach(player -> {
             if (player.getFoodLevel() <= 0) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 40, 0)), 0L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 40, 0)), 0L);
             } else {
-                player.removeMetadata("starving", DungeonRealms.getInstance());
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.removePotionEffect(PotionEffectType.HUNGER), 0L);
+                player.removeMetadata("starving", Game.getGame());
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> player.removePotionEffect(PotionEffectType.HUNGER), 0L);
             }
         });
     }

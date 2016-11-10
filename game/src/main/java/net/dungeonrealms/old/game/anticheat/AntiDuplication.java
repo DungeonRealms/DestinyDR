@@ -34,7 +34,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 /**
  * Created by Nick on 10/1/2015.
  */
@@ -64,7 +63,7 @@ public class AntiDuplication implements GenericMechanic {
 
     @Override
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(),
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(Game.getGame(),
                 () -> Bukkit.getOnlinePlayers().stream().forEach(p -> checkForSuspiciousDupedItems(p, new HashSet<>(Collections.singletonList(p.getInventory())))), 0, CHECK_TICK_FREQUENCY);
     }
 

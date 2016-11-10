@@ -2,6 +2,7 @@ package net.dungeonrealms.backend;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
+import io.vawke.skelframe.SkelRuntime;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.sql.SQLDatabase;
@@ -36,13 +37,13 @@ public class GameShard
     private GameClient gameClient;
 
     @Getter
-    private EnumShardType shardType = EnumShardType.BETA; // Default
+    private EnumShardType shardType;
 
     @Getter
-    private String shardId = "Giovanni-01"; // Default
+    private String shardId;
 
     @Getter
-    private String bungeeIdentifier = "US-0"; // Default
+    private String bungeeIdentifier;
 
     @Getter
     private boolean instanceServer;
@@ -76,7 +77,11 @@ public class GameShard
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "[ DUNGEON REALMS SHARD, INIT]");
         try
         {
+            // Load shard data
             this.loadShardData(fileReader);
+            // Start the old Dungeon Realms
+            SkelRuntime.getSkelRuntime().bootstrap().perform(this.bungeeIdentifier);
+            // The new Dungeon Realms
             this.setupDatabase();
             this.connect();
             this.clearPlayerData();
@@ -140,11 +145,13 @@ public class GameShard
     private void setupDatabase()
     {
         // MySQL for items
-        this.sqlDatabase = new SQLDatabase(Constants.SQL_HOSTNAME, Constants.SQL_PORT,
-                Constants.SQL_DATABASE, Constants.SQL_PASSWORD,
-                Constants.SQL_USERNAME, EnumSQLPurpose.ITEM);
+
+        // Testing
         if (!(this.getShardType() == EnumShardType.BRAZILLIAN))
         {
+            this.sqlDatabase = new SQLDatabase(Constants.SQL_HOSTNAME, Constants.SQL_PORT,
+                    Constants.SQL_DATABASE, Constants.SQL_PASSWORD,
+                    Constants.SQL_USERNAME, EnumSQLPurpose.ITEM);
             Game.getGame().getInstanceLogger().sendMessage(new String[]{"",
                     ChatColor.YELLOW + "[ v-ITEM DATABASE ]",
                     ChatColor.GREEN + "IP: " + Constants.SQL_HOSTNAME,

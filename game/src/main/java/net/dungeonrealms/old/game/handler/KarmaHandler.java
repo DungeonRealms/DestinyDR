@@ -9,6 +9,7 @@ import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -84,7 +85,7 @@ public class KarmaHandler implements GenericMechanic {
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -330, 65, 898));
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -419, 61, 830));
 
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updateAllPlayerAlignments, 100L, 20L);
+        Bukkit.getScheduler().runTaskTimer(Game.getGame(), this::updateAllPlayerAlignments, 100L, 20L);
     }
 
     @Override
@@ -140,7 +141,7 @@ public class KarmaHandler implements GenericMechanic {
         if (PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
             PLAYER_ALIGNMENT_TIMES.remove(player);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> setPlayerAlignment(player, EnumPlayerAlignments.getByName(getAlignmentOnLogin(player.getUniqueId())), null, true), 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Game.getGame(), () -> setPlayerAlignment(player, EnumPlayerAlignments.getByName(getAlignmentOnLogin(player.getUniqueId())), null, true), 20L);
     }
 
     /**
