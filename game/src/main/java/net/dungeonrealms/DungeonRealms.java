@@ -369,8 +369,8 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
         cm.registerCommand(new CommandPDecline("pdecline", "/<command> [args]", "Decline a party invitation."));
 
-        cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to test dr soundtrack."));
-        cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
+        cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to skelframe dr soundtrack."));
+        cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command skelframe dupe."));
         cm.registerCommand(new CommandAlbranir("albranir", "/<command> [args]", "Command to spawn albranir."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
 
@@ -470,8 +470,8 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandEcash("ecash", "/<command> [args]", "Opens the E-Cash vendor menu.", Arrays.asList("shop", "buy")));
             cm.registerCommand(new CommandPatchNotes("patchnotes", "/<command>", "Shows patch for current build", Collections.singletonList("patch")));
 
-            cm.registerCommand(new CommandTestRank("testrank", "/<command> [args]", "This is a test command."));
-            cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a test command.", Collections.singletonList("testinghall")));
+            cm.registerCommand(new CommandTestRank("testrank", "/<command> [args]", "This is a skelframe command."));
+            cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a skelframe command.", Collections.singletonList("testinghall")));
 
             cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Provides a player with the starter kit."));
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server."));

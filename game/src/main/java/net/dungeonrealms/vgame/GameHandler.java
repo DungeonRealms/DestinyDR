@@ -1,5 +1,6 @@
 package net.dungeonrealms.vgame;
 
+import io.vawke.skelframe.GameTest;
 import lombok.Getter;
 import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;
@@ -42,6 +43,9 @@ public class GameHandler implements Handler
         this.handlerMap.put(UUID.randomUUID(), new WeaponHandler());
         this.handlerMap.put(UUID.randomUUID(), new BowHandler());
         this.handlerMap.put(UUID.randomUUID(), new SaveHandler());
+
+        // skelframe
+        this.handlerMap.put(UUID.randomUUID(), new GameTest());
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers provided");
 
         // Register them

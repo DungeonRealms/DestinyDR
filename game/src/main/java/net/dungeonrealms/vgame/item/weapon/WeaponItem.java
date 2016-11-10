@@ -3,7 +3,9 @@ package net.dungeonrealms.vgame.item.weapon;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.api.creature.EnumCreatureType;
+import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.item.*;
+import net.dungeonrealms.vgame.item.attribute.AttributeMeta;
 import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -73,6 +75,8 @@ public class WeaponItem implements IStack
         this.tradeable = tradeable;
 
         this.createKey(); // Actual item
+
+        Game.getGame().getRegistryHandler().getWeaponRegistry().getMap().put(getItemStack(), this);
     }
 
     // Constructing a new weapon out of the database

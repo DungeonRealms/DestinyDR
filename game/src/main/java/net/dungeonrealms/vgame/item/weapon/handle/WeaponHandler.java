@@ -32,7 +32,6 @@ public class WeaponHandler implements SuperHandler.ListeningHandler
         Game.getGame().getServer().getPluginManager().registerEvents(this, Game.getGame());
     }
 
-    // TODO check party
     @EventHandler
     public void onAttack(EntityDamageByEntityEvent event)
     {

@@ -24,9 +24,9 @@ public class CommandPurchase extends BaseCommand {
             /*TextComponent bungeeMessage = new TextComponent(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
             bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
             bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view shop!").create()));
-            TextComponent test = new TextComponent(ChatColor.GRAY + "Thank you " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + args[0] + ChatColor.RESET + ChatColor.GRAY + " for donating @ shop ");
-            test.addExtra(bungeeMessage);
-            Bukkit.spigot().broadcast(test);*/
+            TextComponent skelframe = new TextComponent(ChatColor.GRAY + "Thank you " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + args[0] + ChatColor.RESET + ChatColor.GRAY + " for donating @ shop ");
+            skelframe.addExtra(bungeeMessage);
+            Bukkit.spigot().broadcast(skelframe);*/
         } else {
             return false;
         }

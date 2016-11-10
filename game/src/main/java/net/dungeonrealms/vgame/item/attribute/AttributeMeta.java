@@ -1,6 +1,7 @@
-package net.dungeonrealms.vgame.item;
+package net.dungeonrealms.vgame.item.attribute;
 
 import lombok.Getter;
+import net.dungeonrealms.vgame.item.EnumItemTier;
 
 import java.util.concurrent.ThreadLocalRandom;
 

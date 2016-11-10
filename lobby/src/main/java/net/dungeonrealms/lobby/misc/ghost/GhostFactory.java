@@ -97,7 +97,7 @@ public class GhostFactory {
     /**
      * Determine if the given player is tracked by this ghost manager and is a ghost.
      *
-     * @param player - the player to test.
+     * @param player - the player to skelframe.
      * @return TRUE if it is, FALSE otherwise.
      */
     public boolean isGhost(Player player) {

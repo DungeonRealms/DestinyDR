@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.api.collection.AtomicCollection;
 import net.dungeonrealms.vgame.item.EnumItemTier;
-import net.dungeonrealms.vgame.item.AttributeMeta;
+import net.dungeonrealms.vgame.item.attribute.AttributeMeta;
 import org.bukkit.ChatColor;
 
 import java.util.List;

@@ -45,7 +45,7 @@ public enum LootType {
     NPCChest11("npchest11.loot"),
     NPCChest12("npchest12.loot");
 //	PotTest("pot_test.loot"),
-//	Test("test.loot"),
+//	Test("skelframe.loot"),
 //	TutorialQuest("tutorial.loot");
 
     public String fileName;

@@ -190,7 +190,7 @@ public class SQLDatabase
             this.database.update(query);
         } catch (Exception e)
         {
-            System.out.println("Vawke test 123");
+            System.out.println("Vawke skelframe 123");
             e.printStackTrace();
         }
     }

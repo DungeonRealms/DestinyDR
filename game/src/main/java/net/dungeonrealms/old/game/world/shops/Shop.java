@@ -225,10 +225,10 @@ public class Shop {
                 TextComponent bungeeMessage = new TextComponent(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + ChatColor.BOLD + "SHOP");
                 bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net/category/566366"));
                 bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view shop!").create()));
-                TextComponent test = new TextComponent(ChatColor.RED + "Purchase Subscriber @ ");
-                test.addExtra(bungeeMessage);
-                test.addExtra(ChatColor.RED + " to upgrade further.");
-                p.spigot().sendMessage(test);
+                TextComponent skelframe = new TextComponent(ChatColor.RED + "Purchase Subscriber @ ");
+                skelframe.addExtra(bungeeMessage);
+                skelframe.addExtra(ChatColor.RED + " to upgrade further.");
+                p.spigot().sendMessage(skelframe);
                 return;
             }
         }*/

@@ -141,9 +141,6 @@ public class GameShard
 
     private void setupDatabase()
     {
-        DatabaseInstance.getInstance().startInitialization(true);
-        DatabaseAPI.getInstance().startInitialization(bungeeIdentifier);
-
         // MySQL for items
         this.sqlDatabase = new SQLDatabase(Constants.SQL_HOSTNAME, Constants.SQL_PORT,
                 Constants.SQL_DATABASE, Constants.SQL_PASSWORD,

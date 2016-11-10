@@ -211,7 +211,7 @@ public class CommandAdd extends BaseCommand {
                     player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.RARE));
                     player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.UNIQUE));
                     break;
-                case "test":
+                case "skelframe":
                     Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getEquipment().getItemInMainHand())));
                     break;
                 case "orb":

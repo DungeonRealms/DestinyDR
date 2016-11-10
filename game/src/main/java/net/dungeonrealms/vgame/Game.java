@@ -1,5 +1,6 @@
 package net.dungeonrealms.vgame;
 
+import io.vawke.skelframe.bootstrap.IOBootstrap;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
@@ -62,6 +63,9 @@ public class Game extends JavaPlugin
         //** Registries **//
         this.registryHandler = new RegistryHandler();
         this.registryHandler.prepare();
+
+        // Start the old Dungeon Realms
+        new IOBootstrap().perform();
     }
 
     @Override
