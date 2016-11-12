@@ -45,7 +45,7 @@ public enum EnumItemRarity
         } else
         {
             // Weight is not final
-            atomicCollection.add(0.8, COMMON);
+            atomicCollection.add(1, COMMON);
             atomicCollection.add(0.6, UNCOMMON);
             atomicCollection.add(0.4, RARE);
             atomicCollection.add(0.2, UNIQUE);

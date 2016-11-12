@@ -600,7 +600,7 @@ public class GameAPI
      */
     public static void sendNetworkMessage(String task, String message, String... contents)
     {
-        getClient().sendNetworkMessage(task, message, contents);
+        getClient().sendNetworkMessage(task, message, false, contents);
     }
 
     /**

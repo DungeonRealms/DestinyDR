@@ -89,7 +89,7 @@ public class WeaponItem implements IStack
 
         this.createKey(); // Actual item
 
-        Game.getGame().getRegistryHandler().getWeaponRegistry().getMap().put(getItemStack(), this);
+        Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
     }
 
     // Constructing a new weapon out of the database
@@ -122,7 +122,6 @@ public class WeaponItem implements IStack
         this.maxDmg = maxDmg;
 
         this.createKey(); // Actual item
-
     }
 
     private void createKey()
@@ -145,7 +144,7 @@ public class WeaponItem implements IStack
         // Attach the lore
         List<String> lore = Lists.newArrayList();
 
-        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg));
+        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg), "");
 
         // Add lore pieces {1, 2, 3, etc}
         if (!this.weaponAttributes.isEmpty())
@@ -156,9 +155,9 @@ public class WeaponItem implements IStack
                     if (attributeMeta.getItemTier() == this.itemTier)
                     {
                         if (attributeMeta.isPercentage())
-                            Collections.addAll(lore, "", weaponAttribute.getName() + ": " + Math.round(attributeMeta.getValueY()) + "%");
+                            Collections.addAll(lore, weaponAttribute.getName() + ": " + Math.round(attributeMeta.getValueY()) + "%");
                         else
-                            Collections.addAll(lore, "",  weaponAttribute.getName() + ": " + "+" + Math.round(attributeMeta.getValueY()));
+                            Collections.addAll(lore, weaponAttribute.getName() + ": " + "+" + Math.round(attributeMeta.getValueY()));
                     }
             });
         }

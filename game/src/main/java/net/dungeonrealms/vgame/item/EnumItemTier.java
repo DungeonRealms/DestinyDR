@@ -77,16 +77,6 @@ public enum EnumItemTier
                 this.materialMap.put(EnumItemType.BOOTS, Material.IRON_BOOTS);
                 break;
             case 3:
-                this.materialMap.put(EnumItemType.SWORD, Material.GOLD_SWORD);
-                this.materialMap.put(EnumItemType.POLE_ARM, Material.GOLD_SPADE);
-                this.materialMap.put(EnumItemType.AXE, Material.GOLD_AXE);
-                this.materialMap.put(EnumItemType.STAFF, Material.GOLD_HOE);
-                this.materialMap.put(EnumItemType.HELMET, Material.GOLD_HELMET);
-                this.materialMap.put(EnumItemType.CHESTPLATE, Material.GOLD_CHESTPLATE);
-                this.materialMap.put(EnumItemType.LEGGINGS, Material.GOLD_LEGGINGS);
-                this.materialMap.put(EnumItemType.BOOTS, Material.GOLD_BOOTS);
-                break;
-            case 4:
                 this.materialMap.put(EnumItemType.SWORD, Material.DIAMOND_SWORD);
                 this.materialMap.put(EnumItemType.POLE_ARM, Material.DIAMOND_SPADE);
                 this.materialMap.put(EnumItemType.AXE, Material.DIAMOND_AXE);
@@ -95,6 +85,16 @@ public enum EnumItemTier
                 this.materialMap.put(EnumItemType.CHESTPLATE, Material.DIAMOND_CHESTPLATE);
                 this.materialMap.put(EnumItemType.LEGGINGS, Material.DIAMOND_LEGGINGS);
                 this.materialMap.put(EnumItemType.BOOTS, Material.DIAMOND_BOOTS);
+                break;
+            case 4:
+                this.materialMap.put(EnumItemType.SWORD, Material.GOLD_SWORD);
+                this.materialMap.put(EnumItemType.POLE_ARM, Material.GOLD_SPADE);
+                this.materialMap.put(EnumItemType.AXE, Material.GOLD_AXE);
+                this.materialMap.put(EnumItemType.STAFF, Material.GOLD_HOE);
+                this.materialMap.put(EnumItemType.HELMET, Material.GOLD_HELMET);
+                this.materialMap.put(EnumItemType.CHESTPLATE, Material.GOLD_CHESTPLATE);
+                this.materialMap.put(EnumItemType.LEGGINGS, Material.GOLD_LEGGINGS);
+                this.materialMap.put(EnumItemType.BOOTS, Material.GOLD_BOOTS);
                 break;
         }
     }

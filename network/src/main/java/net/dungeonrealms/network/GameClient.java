@@ -13,6 +13,7 @@ import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.network.packet.Packet;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
+import net.dungeonrealms.network.packet.type.MonoPacket;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 
 import java.io.IOException;
@@ -92,7 +93,7 @@ public class GameClient extends Listener
         sendUDP(packet);
     }
 
-    public void sendNetworkMessage(String task, String message, String... contents)
+    public void sendNetworkMessage(String task, String message, boolean mono, String... contents)
     {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(task);
@@ -101,7 +102,16 @@ public class GameClient extends Listener
         for (String s : contents)
             out.writeUTF(s);
 
-        sendTCP(out.toByteArray());
+        if(!mono)
+        {
+            sendTCP(out.toByteArray());
+        } else
+        {
+            MonoPacket monoPacket = new MonoPacket();
+            monoPacket.uniqueId = UUID.fromString(message);
+            monoPacket.data = out.toByteArray();
+            sendTCP(monoPacket);
+        }
     }
 
     private static void registerClasses(Kryo kryo)
@@ -168,6 +178,4 @@ public class GameClient extends Listener
             Log.info("Connection reestablished!");
         }
     }
-
-
 }

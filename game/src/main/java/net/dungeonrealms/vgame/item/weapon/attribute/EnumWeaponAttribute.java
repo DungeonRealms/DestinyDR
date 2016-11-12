@@ -91,14 +91,14 @@ public enum EnumWeaponAttribute
     POISON_DAMAGE("POISON DMG",
             new AttributeMeta(EnumItemTier.ONE, 1, 4),
             new AttributeMeta(EnumItemTier.TWO, 1, 9),
-            new AttributeMeta(EnumItemTier.THREE, 1, 15),
-            new AttributeMeta(EnumItemTier.FOUR, 1, 25),
+            new AttributeMeta(EnumItemTier.THREE, 1, 14),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 26),
             new AttributeMeta(EnumItemTier.FIVE, 1, 55)),
 
     ACCURACY("ACCURACY",
             new AttributeMeta(EnumItemTier.ONE, 1, 10),
             new AttributeMeta(EnumItemTier.TWO, 1, 12),
-            new AttributeMeta(EnumItemTier.THREE, 1, 25),
+            new AttributeMeta(EnumItemTier.THREE, 1, 24),
             new AttributeMeta(EnumItemTier.FOUR, 1, 28),
             new AttributeMeta(EnumItemTier.FIVE, 1, 35));
 
@@ -136,11 +136,16 @@ public enum EnumWeaponAttribute
             }
         } else
         {
-            for (EnumWeaponAttribute enumWeaponAttribute : values())
+            EnumWeaponAttribute[] simpleAtomics = {PURE_DAMAGE, CRITICAL_HIT, MON_DMG, ICE_DAMAGE, POISON_DAMAGE, ACCURACY};
+            for (EnumWeaponAttribute enumWeaponAttribute : simpleAtomics)
             {
                 atomicCollection.add(0.5, enumWeaponAttribute);
             }
+            // Heavy atomics
             atomicCollection.add(0.8, EMPTY);
+            atomicCollection.add(0.3, PLAYER_DMG);
+            atomicCollection.add(0.4, PENETRATION);
+            atomicCollection.add(0.2, FIRE_DAMAGE);
             loaded = true;
             return random(maxAttributes); // Redo the process
         }
