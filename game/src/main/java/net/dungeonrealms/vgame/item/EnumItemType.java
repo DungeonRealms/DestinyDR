@@ -1,5 +1,7 @@
 package net.dungeonrealms.vgame.item;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -12,9 +14,17 @@ import java.util.Random;
  */
 public enum EnumItemType
 {
-    SWORD, POLE_ARM, AXE, BOW, STAFF,
+    SWORD("Sword"), POLE_ARM("Polearm"), AXE("Axe"), BOW("Bow"), STAFF("Staff"),
 
-    HELMET, CHESTPLATE, LEGGINGS, BOOTS;
+    HELMET("Helmet"), CHESTPLATE("Chestplate"), LEGGINGS("Leggings"), BOOTS("Boots");
+
+    @Getter
+    private String name;
+
+    EnumItemType(String name)
+    {
+        this.name = name;
+    }
 
     public static EnumItemType randomItem(boolean armor)
     {

@@ -145,21 +145,16 @@ public class GameShard
     private void setupDatabase()
     {
         // MySQL for items
-
-        // Testing
-        if (!(this.getShardType() == EnumShardType.BRAZILLIAN))
-        {
-            this.sqlDatabase = new SQLDatabase(Constants.SQL_HOSTNAME, Constants.SQL_PORT,
-                    Constants.SQL_DATABASE, Constants.SQL_PASSWORD,
-                    Constants.SQL_USERNAME, EnumSQLPurpose.ITEM);
-            Game.getGame().getInstanceLogger().sendMessage(new String[]{"",
-                    ChatColor.YELLOW + "[ v-ITEM DATABASE ]",
-                    ChatColor.GREEN + "IP: " + Constants.SQL_HOSTNAME,
-                    ChatColor.GREEN + "Port: " + Constants.SQL_PORT,
-                    ChatColor.GREEN + "Database: " + Constants.SQL_DATABASE,
-                    ChatColor.GREEN + "Username: " + Constants.SQL_USERNAME,
-                    ChatColor.GREEN + "Purpose: " + EnumSQLPurpose.ITEM.name(), ""}); // {0}
-        }
+        this.sqlDatabase = new SQLDatabase(Constants.SQL_HOSTNAME, Constants.SQL_PORT,
+                Constants.SQL_DATABASE, Constants.SQL_PASSWORD,
+                Constants.SQL_USERNAME, EnumSQLPurpose.ITEM);
+        Game.getGame().getInstanceLogger().sendMessage(new String[]{"",
+                ChatColor.YELLOW + "[ v-ITEM DATABASE ]",
+                ChatColor.GREEN + "IP: " + Constants.SQL_HOSTNAME,
+                ChatColor.GREEN + "Port: " + Constants.SQL_PORT,
+                ChatColor.GREEN + "Database: " + Constants.SQL_DATABASE,
+                ChatColor.GREEN + "Username: " + Constants.SQL_USERNAME,
+                ChatColor.GREEN + "Purpose: " + EnumSQLPurpose.ITEM.name(), ""}); // {0}
     }
 
     private void loadShardData(FileReader fileReader)

@@ -69,9 +69,7 @@ public class DatabaseInstance
         System.out.println("JVM returns " + count + " processors!");
 
         // Keep a thread open
-        IntStream.range(0, count - 1).forEach(c ->{
-            accessThreads.add(new MongoAccessThread());
-        });
+        IntStream.range(0, count - 1).forEach(c -> accessThreads.add(new MongoAccessThread()));
         accessThreads.forEach(Thread::start);
 
         Constants.log.info("DungeonRealms Database mongo access threads ... STARTED ...");

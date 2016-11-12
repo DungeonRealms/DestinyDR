@@ -1,6 +1,5 @@
 package net.dungeonrealms.backend.backup;
 
-import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.awt.SuperHandler;import net.dungeonrealms.vgame.Game;
 
@@ -21,13 +20,6 @@ public class SaveHandler implements SuperHandler.Handler
     {
         // Backup database
         Game.getGame().getServer().getScheduler().runTaskTimerAsynchronously(Game.getGame(), GameAPI::backupDatabase, 0L, 12000L);
-
-        this.secondHandle = Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () ->
-        {
-            // Get all weapons out of the database
-            Game.getGame().getRegistryHandler().getWeaponRegistry().getMap().clear();
-            Game.getGame().getRegistryHandler().getWeaponRegistry().collect();
-        }, 0L, 20 * 600);
 
         this.saveItemTask = Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () -> {
             // Save all data, handled by registries

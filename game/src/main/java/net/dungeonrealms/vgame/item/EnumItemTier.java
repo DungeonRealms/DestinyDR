@@ -113,9 +113,9 @@ public enum EnumItemTier
         {
             // Weight is not final
             atomicCollection.add(0.8, ONE);
-            atomicCollection.add(0.6, TWO);
-            atomicCollection.add(0.4, THREE);
-            atomicCollection.add(0.2, FOUR);
+            atomicCollection.add(0.4, TWO);
+            atomicCollection.add(0.2, THREE);
+            atomicCollection.add(0.08, FOUR);
             atomicCollection.add(0.05, FIVE);
             loaded = true;
             return atomicCollection.next();

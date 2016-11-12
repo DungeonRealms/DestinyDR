@@ -89,7 +89,8 @@ public class WeaponItem implements IStack
 
         this.createKey(); // Actual item
 
-        Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
+        // Send the item to all shards
+        // Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
     }
 
     // Constructing a new weapon out of the database
@@ -121,6 +122,8 @@ public class WeaponItem implements IStack
         this.minDmg = minDmg;
         this.maxDmg = maxDmg;
 
+        // Don't send this object to all shards, as this is already collected from the database.
+
         this.createKey(); // Actual item
     }
 
@@ -129,7 +132,7 @@ public class WeaponItem implements IStack
         // Create the atomic key (bukkit itemstack)
         this.itemStack = new ItemStack(this.material);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
-        itemMeta.setDisplayName(this.itemTier.getChatColor() + "Test Object");
+        itemMeta.setDisplayName(this.itemTier.getChatColor() + this.generateName());
         for (ItemFlag itemFlag : ItemFlag.values())
         {
             itemMeta.addItemFlags(itemFlag);
@@ -139,36 +142,114 @@ public class WeaponItem implements IStack
         this.itemStack.setItemMeta(itemMeta);
     }
 
+    private String generateName()
+    {
+        String name = this.itemType.getName();
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.ACCURACY))
+        {
+            name = "Accurate " + name;
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.CRITICAL_HIT))
+        {
+            name = "Deadly " + name;
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.PENETRATION))
+        {
+            name = "Penetrating " + name;
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.PURE_DAMAGE))
+        {
+            if (this.itemType != EnumItemType.BOW)
+                name = "Sharpened " + name;
+            else name = "Pure " + name;
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.LIFE_STEAL))
+        {
+            if (this.itemType != EnumItemType.BOW)
+                name = "Vampyric " + name;
+            else name = "Lifestealing " + name;
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.MON_DMG))
+        {
+            if (name.contains("of"))
+                name += " Slaying";
+            else name += " of Slaying";
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.PLAYER_DMG))
+        {
+            if (name.contains("of"))
+                name += " Slaughter";
+            else name += " of Slaughter";
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.FIRE_DAMAGE))
+        {
+            if (name.contains("of"))
+                name += " Fire";
+            else name += " of Fire";
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.POISON_DAMAGE))
+        {
+            if (name.contains("of"))
+                name = "Poisonous " + name;
+            else name += " of Poison";
+        }
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.POISON_DAMAGE))
+        {
+            if (name.contains("of"))
+                name += " Ice";
+            else name += " of Ice";
+        }
+        return name;
+    }
+
     private List<String> generateLore()
     {
         // Attach the lore
         List<String> lore = Lists.newArrayList();
-
-        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg), "");
+        boolean emptyOnly = EnumWeaponAttribute.containsSpecificOnly(EnumWeaponAttribute.EMPTY, this.weaponAttributes);
+        if (!emptyOnly)
+            Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg), "");
+        else Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg));
 
         // Add lore pieces {1, 2, 3, etc}
         if (!this.weaponAttributes.isEmpty())
         {
-            this.weaponAttributes.stream().filter(weaponAttribute -> weaponAttribute != EnumWeaponAttribute.EMPTY).forEach(weaponAttribute ->
+            if (!emptyOnly) // Does it only contain empty attributes?
             {
-                for (AttributeMeta attributeMeta : weaponAttribute.getAttributeMetas())
-                    if (attributeMeta.getItemTier() == this.itemTier)
-                    {
-                        if (attributeMeta.isPercentage())
-                            Collections.addAll(lore, weaponAttribute.getName() + ": " + Math.round(attributeMeta.getValueY()) + "%");
-                        else
-                            Collections.addAll(lore, weaponAttribute.getName() + ": " + "+" + Math.round(attributeMeta.getValueY()));
-                    }
-            });
+                this.weaponAttributes.stream().filter(weaponAttribute -> weaponAttribute != EnumWeaponAttribute.EMPTY).forEach(weaponAttribute ->
+                {
+                    for (AttributeMeta attributeMeta : weaponAttribute.getAttributeMetas())
+                        if (attributeMeta.getItemTier() == this.itemTier)
+                        {
+                            if (attributeMeta.isPercentage())
+                                Collections.addAll(lore, weaponAttribute.getName() + ": " + Math.round(attributeMeta.getValueY()) + "%");
+                            else
+                                Collections.addAll(lore, weaponAttribute.getName() + ": " + "+" + Math.round(attributeMeta.getValueY()));
+                        }
+                });
+            }
         }
-        Collections.addAll(lore, "", this.itemRarity.getColor() + this.itemRarity.getName());
-        if (this.soulbound)
-        {
-            Collections.addAll(lore, "", ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
-        }
+        if (!emptyOnly)
+            Collections.addAll(lore, "", this.itemRarity.getColor() + this.itemRarity.getName(), "");
+        else Collections.addAll(lore, this.itemRarity.getColor() + this.itemRarity.getName(), "");
+
         if (!this.tradeable)
         {
             Collections.addAll(lore, ChatColor.GRAY.toString() + ChatColor.ITALIC + "Untradeable");
+        }
+        if (this.soulbound)
+        {
+            Collections.addAll(lore, ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
+        }
+
+        // Clean up
+        if (emptyOnly)
+        {
+            lore.remove(2);
+            if (weaponAttributes.size() > 1)
+            {
+                lore.remove(3);
+            }
         }
         return lore;
     }

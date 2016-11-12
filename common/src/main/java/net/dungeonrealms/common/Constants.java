@@ -28,7 +28,7 @@ public class Constants {
     public static final int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //
-    public static final String MASTER_SERVER_IP = "158.69.122.139";
+    public static final String MASTER_SERVER_IP = "131.153.25.42";
 
     // BACKEND SERVER SERVER PORT //
     public static final int MASTER_SERVER_PORT = 22964;
@@ -53,9 +53,9 @@ public class Constants {
     public static final int FTP_PORT = 21;
 
     //MySQL INFO
-    public static final String SQL_HOSTNAME = "";
+    public static final String SQL_HOSTNAME = "131.153.27.42";
     public static final String SQL_PORT = "3306";
     public static final String SQL_DATABASE = "dungeonrealms";
-    public static final String SQL_PASSWORD = "";
-    public static final String SQL_USERNAME = "";
+    public static final String SQL_PASSWORD = "CXxbpBbWdyekJtyv";
+    public static final String SQL_USERNAME = "root";
 }

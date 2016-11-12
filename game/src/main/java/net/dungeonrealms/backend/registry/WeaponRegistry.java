@@ -40,9 +40,6 @@ public class WeaponRegistry implements DataRegistry
     // Time to hold up to thousands of entries
 
     @Getter
-    private YamlConfiguration yamlConfiguration; // Registry configuration
-
-    @Getter
     private String table;
 
     @Getter
@@ -51,18 +48,15 @@ public class WeaponRegistry implements DataRegistry
     @Override
     public void prepare()
     {
-        //this.table = this.yamlConfiguration.getString("registry.table");
+        this.table = "atomicR-Weapon";
 
-        // Testing
-        //createData();
-
-        this.connected = true;
+        createData();
 
         if (connected)
         {
             this.itemMap = new AtomicReference<ConcurrentHashMap<ItemStack, WeaponItem>>();
             this.itemMap.set(new ConcurrentHashMap<>());
-            //this.collect();
+            this.collect();
         }
     }
 
@@ -92,7 +86,7 @@ public class WeaponRegistry implements DataRegistry
         }
     }
 
-    // Must be ran async!
+    // Ran upon preparation
     @Override
     public void collect()
     {
@@ -164,6 +158,7 @@ public class WeaponRegistry implements DataRegistry
         this.connected = true;
     }
 
+    // Ran if a new weaponItem has been generated
     public void store(WeaponItem weaponItem)
     {
         this.itemMap.get().put(weaponItem.getItemStack(), weaponItem);
@@ -189,6 +184,7 @@ public class WeaponRegistry implements DataRegistry
         new MonoPacket(weaponItem.getUniqueId(), EnumMonoType.SEND_WEAPON).send();
     }
 
+    // Ran if a MonoPacket for a weaponItem is being received
     public void receive(UUID uuid)
     {
         Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () ->
@@ -224,6 +220,6 @@ public class WeaponRegistry implements DataRegistry
             {
                 Game.getGame().getInstanceLogger().sendMessage(ChatColor.RED + "Mono Packet[WEAPON], failed to read raw byte data");
             }
-        }, 20 * 2); // Delay it, lets make sure it actually exists..
+        }, 20 * 5); // Delay it, lets make sure it actually exists..
     }
 }
