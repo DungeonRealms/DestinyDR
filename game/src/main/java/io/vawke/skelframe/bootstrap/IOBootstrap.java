@@ -73,7 +73,7 @@ import java.util.Collections;
  * Created by Giovanni on 10-11-2016.
  * <p>
  * This file is part of the Dungeon Realms project.
- * Copyright (c) 2016 Dungeon Realms;www.vawke.io / developluginManagerent@vawke.io
+ * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class IOBootstrap
 {
@@ -82,14 +82,15 @@ public class IOBootstrap
         Game.getGame().getInstanceLogger().sendMessage("SKELETON BOOTSTRAP FOR: " + bungeeId);
 
         PluginManager pluginManager = Game.getGame().getServer().getPluginManager();
-        
-        // OLD DUNGEON REALMS BOOTSTRAP //
+
         DatabaseInstance.getInstance().startInitialization(true);
         DatabaseAPI.getInstance().startInitialization(bungeeId);
+
+        // OLD DUNGEON REALMS BOOTSTRAP
+        /*
         AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
-        ItemGenerator.loadModifiers();
         PowerMove.registerPowerMoves();
         ItemGenerator.loadModifiers();
         MechanicManager mechanicManager = new MechanicManager();
@@ -280,5 +281,6 @@ public class IOBootstrap
 
         cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
         cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
+        **/
     }
 }

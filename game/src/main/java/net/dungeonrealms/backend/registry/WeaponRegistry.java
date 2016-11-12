@@ -72,9 +72,9 @@ public class WeaponRegistry implements DataRegistry
         for (WeaponItem weaponItem : getMap().values())
         {
             ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<>();
-            map.put("UUID", weaponItem.getUniqueID());
+            map.put("UUID", weaponItem.getUniqueId());
             map.put("material", weaponItem.getItemStack().getType().name());
-            map.put("type", weaponItem.getType().name());
+            map.put("type", weaponItem.getItemType().name());
             map.put("rarity", weaponItem.getItemRarity().name());
             map.put("tier", weaponItem.getItemTier().name());
             map.put("attributeTier", weaponItem.getAttributeTier().name());
@@ -85,7 +85,7 @@ public class WeaponRegistry implements DataRegistry
             map.put("attributes", gson.toJson(weaponItem.getWeaponAttributes()));
 
             // Set into the database
-            Game.getGame().getGameShard().getSqlDatabase().set(table, map, "UUID", weaponItem.getUniqueID().toString());
+            Game.getGame().getGameShard().getSqlDatabase().set(table, map, "UUID", weaponItem.getUniqueId().toString());
         }
     }
 

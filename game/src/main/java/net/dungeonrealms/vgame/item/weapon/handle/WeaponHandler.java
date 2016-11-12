@@ -57,7 +57,7 @@ public class WeaponHandler implements SuperHandler.ListeningHandler
                         if (Game.getGame().getRegistryHandler().getWeaponRegistry().getMap().containsKey(player.getItemInHand())) // Check if it's a weapon.
                         {
                             WeaponItem weaponItem = Game.getGame().getRegistryHandler().getWeaponRegistry().getMap().get(player.getItemInHand());
-                            if (weaponItem.getType() != EnumItemType.BOW || weaponItem.getType() != EnumItemType.STAFF)
+                            if (weaponItem.getItemType() != EnumItemType.BOW || weaponItem.getItemType() != EnumItemType.STAFF)
                             {
                                 // Calculate the weapon damage based upon the damaged creature
                                 event.setDamage(Math.round(weaponItem.calculateDamage(event.getEntity() instanceof Player ? EnumCreatureType.PLAYER : EnumCreatureType.ENTITY)));

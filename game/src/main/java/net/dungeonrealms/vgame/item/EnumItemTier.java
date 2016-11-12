@@ -3,6 +3,7 @@ package net.dungeonrealms.vgame.item;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.dungeonrealms.api.collection.AtomicCollection;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import java.util.Map;
@@ -16,7 +17,11 @@ import java.util.Map;
  */
 public enum EnumItemTier
 {
-    ONE(0, 2), TWO(1, 3), THREE(2, 4), FOUR(3, 5), FIVE(4, 6);
+    ONE(0, 2, ChatColor.GRAY),
+    TWO(1, 3, ChatColor.GREEN),
+    THREE(2, 4, ChatColor.AQUA),
+    FOUR(3, 5, ChatColor.LIGHT_PURPLE),
+    FIVE(4, 6, ChatColor.YELLOW);
 
     @Getter
     private int maxAttributes;
@@ -24,14 +29,18 @@ public enum EnumItemTier
     @Getter
     private Map<EnumItemType, Material> materialMap;
 
+    @Getter
+    private ChatColor chatColor;
+
     private static AtomicCollection<EnumItemTier> atomicCollection = new AtomicCollection<>();
 
     private static boolean loaded;
 
-    EnumItemTier(int id, int maxAttributes)
+    EnumItemTier(int id, int maxAttributes, ChatColor chatColor)
     {
         this.maxAttributes = maxAttributes;
         this.materialMap = Maps.newHashMap();
+        this.chatColor = chatColor;
 
         this.materialMap.put(EnumItemType.BOW, Material.BOW);
 
@@ -103,11 +112,11 @@ public enum EnumItemTier
         } else
         {
             // Weight is not final
-            atomicCollection.getMap().get().put(0.8, ONE);
-            atomicCollection.getMap().get().put(0.6, TWO);
-            atomicCollection.getMap().get().put(0.4, THREE);
-            atomicCollection.getMap().get().put(0.2, FOUR);
-            atomicCollection.getMap().get().put(0.05, FIVE);
+            atomicCollection.add(0.8, ONE);
+            atomicCollection.add(0.6, TWO);
+            atomicCollection.add(0.4, THREE);
+            atomicCollection.add(0.2, FOUR);
+            atomicCollection.add(0.05, FIVE);
             loaded = true;
             return atomicCollection.next();
         }

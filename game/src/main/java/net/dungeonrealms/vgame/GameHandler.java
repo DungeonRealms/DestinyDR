@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame;
 
-import io.vawke.skelframe.GameTest;
+import test.GameTest;
 import lombok.Getter;
 import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;

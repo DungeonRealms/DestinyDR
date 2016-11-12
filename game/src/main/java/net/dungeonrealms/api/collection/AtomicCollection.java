@@ -15,19 +15,7 @@ import java.util.TreeMap;
 public class AtomicCollection<E>
 {
     @Getter
-    private final ThreadLocal<NavigableMap<Double, E>> map;
-
-    // Using atomic references to prevent the duplication of objects within an atomic collection.
-    {
-        map = new ThreadLocal<NavigableMap<Double, E>>()
-        {
-            @Override
-            protected NavigableMap<Double, E> initialValue()
-            {
-                return new TreeMap<>();
-            }
-        };
-    }
+    private final NavigableMap<Double, E> map = new TreeMap<>();
 
     private final Random random;
     private double total = 0;
@@ -46,13 +34,13 @@ public class AtomicCollection<E>
     {
         if (weight <= 0) return;
         total += weight;
-        map.get().put(total, result);
+        map.put(total, result);
     }
 
     public E next()
     {
         double value = random.nextDouble() * total;
-        return map.get().ceilingEntry(value).getValue();
+        return map.ceilingEntry(value).getValue();
     }
 
     public class Entry

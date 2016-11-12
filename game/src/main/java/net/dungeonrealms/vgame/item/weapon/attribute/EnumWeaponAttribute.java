@@ -29,6 +29,8 @@ public enum EnumWeaponAttribute
      * ACCURACY
      */
 
+    EMPTY("", null),
+
     PURE_DAMAGE("PURE DMG",
             new AttributeMeta(EnumItemTier.ONE, 1, 5),
             new AttributeMeta(EnumItemTier.TWO, 1, 8),
@@ -44,21 +46,21 @@ public enum EnumWeaponAttribute
             new AttributeMeta(EnumItemTier.FIVE, 1, 10, true)),
 
 
-    PENETRATION("ARMOR PEN.",
+    PENETRATION("ARMOR PENETRATION",
             new AttributeMeta(EnumItemTier.ONE, 1, 1, true),
             new AttributeMeta(EnumItemTier.TWO, 1, 3, true),
             new AttributeMeta(EnumItemTier.THREE, 1, 5, true),
             new AttributeMeta(EnumItemTier.FOUR, 1, 8, true),
             new AttributeMeta(EnumItemTier.FIVE, 1, 10, true)),
 
-    MON_DMG("MONSTER DMG",
+    MON_DMG("vs. MONSTERS",
             new AttributeMeta(EnumItemTier.ONE, 1, 10),
             new AttributeMeta(EnumItemTier.TWO, 1, 12),
             new AttributeMeta(EnumItemTier.THREE, 1, 15),
             new AttributeMeta(EnumItemTier.FOUR, 1, 20),
             new AttributeMeta(EnumItemTier.FIVE, 1, 27)),
 
-    PLAYER_DMG("PLAYER DMG",
+    PLAYER_DMG("vs. PLAYERS",
             new AttributeMeta(EnumItemTier.ONE, 1, 10),
             new AttributeMeta(EnumItemTier.TWO, 1, 12),
             new AttributeMeta(EnumItemTier.THREE, 1, 15),
@@ -66,11 +68,11 @@ public enum EnumWeaponAttribute
             new AttributeMeta(EnumItemTier.FIVE, 1, 27)),
 
     LIFE_STEAL("LIFE STEAL",
-            new AttributeMeta(EnumItemTier.ONE, 1, 30),
-            new AttributeMeta(EnumItemTier.TWO, 1, 15),
-            new AttributeMeta(EnumItemTier.THREE, 1, 12),
-            new AttributeMeta(EnumItemTier.FOUR, 1, 7),
-            new AttributeMeta(EnumItemTier.FIVE, 1, 8)),
+            new AttributeMeta(EnumItemTier.ONE, 1, 30, true),
+            new AttributeMeta(EnumItemTier.TWO, 1, 15, true),
+            new AttributeMeta(EnumItemTier.THREE, 1, 12, true),
+            new AttributeMeta(EnumItemTier.FOUR, 1, 7, true),
+            new AttributeMeta(EnumItemTier.FIVE, 1, 8, true)),
 
     ICE_DAMAGE("ICE DMG",
             new AttributeMeta(EnumItemTier.ONE, 1, 4),
@@ -118,6 +120,7 @@ public enum EnumWeaponAttribute
 
     public static List<EnumWeaponAttribute> random(int maxAttributes)
     {
+        //test
         AtomicReference<List<EnumWeaponAttribute>> attributeList;
         if (loaded)
         {
@@ -125,19 +128,19 @@ public enum EnumWeaponAttribute
             attributeList.set(Lists.newArrayList());
             if (attributeList.get().isEmpty()) // Better be safe than sorry
             {
-                IntStream.range(0, maxAttributes).parallel().forEach(max -> {
+                IntStream.range(1, maxAttributes).parallel().forEach(max ->
+                {
                     attributeList.get().add(atomicCollection.next());
                 });
                 return attributeList.get();
             }
         } else
         {
-            // Weight is not final
-            for (EnumWeaponAttribute enumWeaponAttribute : EnumWeaponAttribute.values())
-                atomicCollection.getMap().get().put(0.5, enumWeaponAttribute);
-
-            // Always add an empty entry
-            atomicCollection.getMap().get().put(0.8, null);
+            for (EnumWeaponAttribute enumWeaponAttribute : values())
+            {
+                atomicCollection.add(0.5, enumWeaponAttribute);
+            }
+            atomicCollection.add(0.8, EMPTY);
             loaded = true;
             return random(maxAttributes); // Redo the process
         }

@@ -1,6 +1,7 @@
 package net.dungeonrealms.vgame.item.weapon;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import net.dungeonrealms.api.creature.EnumCreatureType;
 import net.dungeonrealms.vgame.Game;
@@ -9,6 +10,7 @@ import net.dungeonrealms.vgame.item.attribute.AttributeMeta;
 import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,7 +27,8 @@ public class WeaponItem implements IStack
 {
     // TODO weapon min & max dmg
 
-    private UUID uuid;
+    @Getter
+    private UUID uniqueId;
 
     @Getter
     private Material material;
@@ -51,28 +54,38 @@ public class WeaponItem implements IStack
     @Getter
     private String name;
 
+    @Getter
     private ItemStack itemStack;
 
+    @Getter
     private EnumItemType itemType;
 
+    @Getter
     private boolean soulbound;
 
+    @Getter
     private boolean tradeable;
 
     public WeaponItem(boolean soulbound, boolean tradeable)
     {
-        this.uuid = UUID.randomUUID();
+        this.uniqueId = UUID.randomUUID();
 
         this.itemType = EnumItemType.randomItem(false); // Random weapon item
+        this.itemTier = EnumItemTier.random(); // Random tier upon generation
 
         this.weaponAttributes = EnumWeaponAttribute.random(this.itemTier.getMaxAttributes()); // Random collection of attributes
         this.itemRarity = EnumItemRarity.random(); // Random rarity upon generation
-        this.itemTier = EnumItemTier.random(); // Random tier upon generation
         this.attributeTier = EnumItemTier.random(); // Random attribute tier, different than the item tier
         this.material = this.itemTier.getMaterial(this.itemType);
 
         this.soulbound = soulbound;
         this.tradeable = tradeable;
+
+        // Remove duplicated attributes
+        Set<EnumWeaponAttribute> attributeSet = Sets.newHashSet();
+        attributeSet.addAll(this.weaponAttributes);
+        this.weaponAttributes.clear();
+        this.weaponAttributes.addAll(attributeSet);
 
         this.createKey(); // Actual item
 
@@ -94,7 +107,7 @@ public class WeaponItem implements IStack
                       int minDmg,
                       int maxDmg)
     {
-        this.uuid = uuid;
+        this.uniqueId = uuid;
         this.material = material;
         this.itemRarity = rarity;
         this.itemTier = itemTier;
@@ -112,49 +125,19 @@ public class WeaponItem implements IStack
 
     }
 
-    @Override
-    public UUID getUniqueID()
-    {
-        return uuid;
-    }
-
-    @Override
-    public ItemStack getItemStack()
-    {
-        return itemStack;
-    }
-
-    @Override
-    public EnumItemType getType()
-    {
-        return itemType;
-    }
-
-    @Override
-    public boolean isSoulbound()
-    {
-        return soulbound;
-    }
-
-    @Override
-    public boolean isTradeable()
-    {
-        return tradeable;
-    }
-
     private void createKey()
     {
         // Create the atomic key (bukkit itemstack)
         this.itemStack = new ItemStack(this.material);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
-        itemMeta.setDisplayName(this.itemRarity.getColor() + "Test Object");
-
+        itemMeta.setDisplayName(this.itemTier.getChatColor() + "Test Object");
+        for (ItemFlag itemFlag : ItemFlag.values())
+        {
+            itemMeta.addItemFlags(itemFlag);
+        }
         // Attach the lore
         itemMeta.setLore(this.generateLore());
-
-        itemMeta.getItemFlags().clear();
         this.itemStack.setItemMeta(itemMeta);
-        this.itemStack.setDurability((short) durability);
     }
 
     private List<String> generateLore()
@@ -162,28 +145,31 @@ public class WeaponItem implements IStack
         // Attach the lore
         List<String> lore = Lists.newArrayList();
 
-        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + ChatColor.WHITE + Math.round(minDmg) + " - " + Math.round(maxDmg), "");
+        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg));
 
         // Add lore pieces {1, 2, 3, etc}
         if (!this.weaponAttributes.isEmpty())
         {
-            for (EnumWeaponAttribute weaponAttribute : this.weaponAttributes)
+            this.weaponAttributes.stream().filter(weaponAttribute -> weaponAttribute != EnumWeaponAttribute.EMPTY).forEach(weaponAttribute ->
             {
                 for (AttributeMeta attributeMeta : weaponAttribute.getAttributeMetas())
-                    if (attributeMeta.isPercentage())
-                        Collections.addAll(lore, "", weaponAttribute.getName() + ": " + attributeMeta.getValueY() + "%");
-                    else
-                        Collections.addAll(lore, "", weaponAttribute.getName() + ": " + attributeMeta.getValueX() + "-" + attributeMeta.getValueY());
-            }
-            // TODO ^
+                    if (attributeMeta.getItemTier() == this.itemTier)
+                    {
+                        if (attributeMeta.isPercentage())
+                            Collections.addAll(lore, "", weaponAttribute.getName() + ": " + Math.round(attributeMeta.getValueY()) + "%");
+                        else
+                            Collections.addAll(lore, "",  weaponAttribute.getName() + ": " + "+" + Math.round(attributeMeta.getValueY()));
+                    }
+            });
         }
+        Collections.addAll(lore, "", this.itemRarity.getColor() + this.itemRarity.getName());
         if (this.soulbound)
         {
             Collections.addAll(lore, "", ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
         }
         if (!this.tradeable)
         {
-            Collections.addAll(lore, "", ChatColor.GRAY.toString() + ChatColor.ITALIC + "Untradeable");
+            Collections.addAll(lore, ChatColor.GRAY.toString() + ChatColor.ITALIC + "Untradeable");
         }
         return lore;
     }

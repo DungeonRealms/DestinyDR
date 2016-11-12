@@ -12,11 +12,11 @@ import java.util.UUID;
  */
 public interface IStack
 {
-    UUID getUniqueID();
+    UUID getUniqueId();
 
     ItemStack getItemStack();
 
-    EnumItemType getType();
+    EnumItemType getItemType();
 
     boolean isSoulbound();
 

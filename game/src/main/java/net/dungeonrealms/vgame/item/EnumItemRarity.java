@@ -45,10 +45,10 @@ public enum EnumItemRarity
         } else
         {
             // Weight is not final
-            atomicCollection.getMap().get().put(0.8, COMMON);
-            atomicCollection.getMap().get().put(0.6, UNCOMMON);
-            atomicCollection.getMap().get().put(0.4, RARE);
-            atomicCollection.getMap().get().put(0.2, UNIQUE);
+            atomicCollection.add(0.8, COMMON);
+            atomicCollection.add(0.6, UNCOMMON);
+            atomicCollection.add(0.4, RARE);
+            atomicCollection.add(0.2, UNIQUE);
             loaded = true;
             return atomicCollection.next();
         }
