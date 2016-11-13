@@ -135,7 +135,11 @@ public class WeaponItem implements IStack
         // Create the atomic key (bukkit itemstack)
         this.itemStack = new ItemStack(this.material);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
-        itemMeta.setDisplayName(this.name == null ? this.itemTier.getChatColor() + this.generateName() : this.itemTier.getChatColor() + this.name);
+        if (this.name == null)
+        {
+            this.name = this.itemTier.getChatColor() + this.generateName();
+            itemMeta.setDisplayName(this.name);
+        } else itemMeta.setDisplayName(this.itemTier.getChatColor() + this.name);
         for (ItemFlag itemFlag : ItemFlag.values())
         {
             itemMeta.addItemFlags(itemFlag);

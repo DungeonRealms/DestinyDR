@@ -188,7 +188,7 @@ public class SQLDatabase
                 query += ");";
             }
 
-            this.database.query(query);
+            this.database.update(query);
         } catch (Exception e)
         {
             e.printStackTrace();
