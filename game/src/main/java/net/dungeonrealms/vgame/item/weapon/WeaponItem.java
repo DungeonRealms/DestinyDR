@@ -6,7 +6,8 @@ import lombok.Getter;
 import net.dungeonrealms.api.creature.EnumCreatureType;
 import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.item.*;
-import net.dungeonrealms.vgame.item.attribute.AttributeMeta;
+import net.dungeonrealms.vgame.item.meta.AttributeMeta;
+import net.dungeonrealms.vgame.item.meta.DamageMeta;
 import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -87,6 +88,9 @@ public class WeaponItem implements IStack
         this.weaponAttributes.clear();
         this.weaponAttributes.addAll(attributeSet);
 
+        this.minDmg = new DamageMeta(this.itemType, this.itemTier).x();
+        this.maxDmg = new DamageMeta(this.itemType, this.itemTier).y();
+
         this.createKey(); // Actual item
 
         // Send the item to all shards
@@ -105,8 +109,8 @@ public class WeaponItem implements IStack
                       List<EnumWeaponAttribute> attributes,
                       boolean soulbound,
                       boolean tradeable,
-                      int minDmg,
-                      int maxDmg,
+                      double minDmg,
+                      double maxDmg,
                       boolean packet)
     {
         this.uniqueId = uuid;
@@ -200,7 +204,7 @@ public class WeaponItem implements IStack
                 name = "Poisonous " + name;
             else name += " of Poison";
         }
-        if (this.weaponAttributes.contains(EnumWeaponAttribute.POISON_DAMAGE))
+        if (this.weaponAttributes.contains(EnumWeaponAttribute.ICE_DAMAGE))
         {
             if (name.contains("of"))
                 name += " Ice";

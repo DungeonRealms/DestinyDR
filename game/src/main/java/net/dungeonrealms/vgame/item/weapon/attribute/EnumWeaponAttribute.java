@@ -1,16 +1,14 @@
 package net.dungeonrealms.vgame.item.weapon.attribute;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.dungeonrealms.api.collection.AtomicCollection;
 import net.dungeonrealms.vgame.item.EnumItemTier;
-import net.dungeonrealms.vgame.item.attribute.AttributeMeta;
+import net.dungeonrealms.vgame.item.meta.AttributeMeta;
 import org.bukkit.ChatColor;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 

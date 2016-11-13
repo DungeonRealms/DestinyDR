@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.item.attribute;
+package net.dungeonrealms.vgame.item.meta;
 
 import lombok.Getter;
 import net.dungeonrealms.vgame.item.EnumItemTier;

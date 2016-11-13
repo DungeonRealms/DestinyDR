@@ -154,6 +154,8 @@ public class WeaponRegistry implements DataRegistry
                         "name;TEXT",
                         "soulbound;TEXT",
                         "tradeable;TEXT",
+                        "minDmg;DOUBLE",
+                        "maxDmg;DOUBLE",
                         "attributes;TEXT"));
         this.connected = true;
     }
@@ -177,6 +179,8 @@ public class WeaponRegistry implements DataRegistry
             map.put("name", weaponItem.getName());
             map.put("soulbound", weaponItem.isSoulbound() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
             map.put("tradeable", weaponItem.isTradeable() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
+            map.put("minDmg", weaponItem.getMinDmg());
+            map.put("maxDmg", weaponItem.getMaxDmg());
             map.put("attributes", gson.toJson(weaponItem.getWeaponAttributes()));
 
             // Set into the database
@@ -206,8 +210,8 @@ public class WeaponRegistry implements DataRegistry
                     String name = set.getString("name");
                     SQLBoolean soulbound = SQLBoolean.valueOf(set.getString("soulbound"));
                     SQLBoolean tradeable = SQLBoolean.valueOf(set.getString("tradeable"));
-                    int minDmg = set.getInt("minDmg");
-                    int maxDmg = set.getInt("maxDmg");
+                    double minDmg = set.getDouble("minDmg");
+                    double maxDmg = set.getDouble("maxDmg");
 
                     // JSON conversion
                     List<String> attributeStrings = gson.fromJson(set.getString("attributes"), List.class);
