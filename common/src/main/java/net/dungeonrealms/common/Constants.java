@@ -17,9 +17,9 @@ public class Constants {
 
     public static final String[] PREVIOUS_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
 
-    public static final String MOTD = "&6Dungeon Realms &8- &a• A new beginning.. •    \n                &8- &e&nwww.dungeonrealms.net&r &8-";
+    public static final String MOTD = "                    &a• &6&lDUNGEON REALMS&r &a•    \n            &8- &e&nwww.dungeonrealms.net&r &a- &cIn development &8-";
 
-    public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &a• A new beginning.. •    \n                &8- &e&nwww.dungeonrealms.net&r &8-";
+    public static final String MAINTENANCE_MOTD = "                      &a• &6&lDUNGEON REALMS&r &a•    \n            &8- &e&nwww.dungeonrealms.net&r &a- &cIn development &8-";
 
     public static final long MIN_GAME_TIME = 14100000L;
 

@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.awt.EnumProxyHolder;
@@ -71,6 +72,7 @@ public class NetworkProxy implements Proxy
         this.connect();
         this.handlerCore = new ProxyHandler();
         this.handlerCore.prepare();
+        DungeonBungee.getDungeonBungee().getConsole().sendMessage("DEBUG: " + Constants.MOTD);
     }
 
     protected void undeploy()
@@ -124,18 +126,19 @@ public class NetworkProxy implements Proxy
         {
             DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Connecting to the master server..");
             // Collect all shards, connect them
-            Arrays.asList(ShardInfo.values()).stream().forEach(info -> {
+            Arrays.stream(ShardInfo.values()).forEach(info -> {
                         ServerInfo serverInfo;
                         serverInfo = ProxyServer.getInstance().constructServerInfo(info.getPseudoName(),
                                 new InetSocketAddress(info.getAddress().getAddress(), info.getAddress().getPort()), "", false);
                         ProxyServer.getInstance().getServers().put(info.getPseudoName(), serverInfo);
+                DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.YELLOW + "Shard info constructed for: " + serverInfo.getName().toUpperCase());
                     }
             );
             this.gameClient.connect();
             DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "> Connected");
         } catch (IOException e)
         {
-            // DungeonBungee.getDungeonBungee().getProxy().stop(); Disabled for now > No master server, no purpose
+            e.printStackTrace();
         }
     }
 
