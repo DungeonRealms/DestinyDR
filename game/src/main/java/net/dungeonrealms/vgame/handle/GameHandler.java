@@ -1,8 +1,9 @@
-package net.dungeonrealms.vgame;
+package net.dungeonrealms.vgame.handle;
 
 import net.dungeonrealms.backend.PacketHandler;
 import net.dungeonrealms.backend.bungee.BungeeHandler;
 import net.dungeonrealms.backend.packet.handle.MonoPacketHandler;
+import net.dungeonrealms.vgame.Game;
 import test.GameTest;
 import lombok.Getter;
 import net.dungeonrealms.common.awt.SuperHandler;

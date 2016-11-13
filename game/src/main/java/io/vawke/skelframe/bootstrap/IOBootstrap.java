@@ -86,6 +86,8 @@ public class IOBootstrap
         DatabaseInstance.getInstance().startInitialization(true);
         DatabaseAPI.getInstance().startInitialization(bungeeId);
 
+        new CommandManager().registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
+
         // OLD DUNGEON REALMS BOOTSTRAP
         /*
         AntiDuplication.getInstance().startInitialization();

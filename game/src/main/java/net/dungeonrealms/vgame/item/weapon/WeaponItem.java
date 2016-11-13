@@ -135,9 +135,7 @@ public class WeaponItem implements IStack
         // Create the atomic key (bukkit itemstack)
         this.itemStack = new ItemStack(this.material);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
-        if (this.name.isEmpty())
-            itemMeta.setDisplayName(this.itemTier.getChatColor() + this.generateName());
-        else itemMeta.setDisplayName(this.itemTier.getChatColor() + this.name);
+        itemMeta.setDisplayName(this.name == null ? this.itemTier.getChatColor() + this.generateName() : this.itemTier.getChatColor() + this.name);
         for (ItemFlag itemFlag : ItemFlag.values())
         {
             itemMeta.addItemFlags(itemFlag);
@@ -211,32 +209,24 @@ public class WeaponItem implements IStack
     {
         // Attach the lore
         List<String> lore = Lists.newArrayList();
-        boolean emptyOnly = EnumWeaponAttribute.containsSpecificOnly(EnumWeaponAttribute.EMPTY, this.weaponAttributes);
-        if (!emptyOnly)
-            Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg), "");
-        else Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg));
+        Collections.addAll(lore, "", ChatColor.RED + "DMG: " + Math.round(minDmg) + " - " + Math.round(maxDmg));
 
         // Add lore pieces {1, 2, 3, etc}
         if (!this.weaponAttributes.isEmpty())
         {
-            if (!emptyOnly) // Does it only contain empty attributes?
+            this.weaponAttributes.stream().filter(weaponAttribute -> weaponAttribute != EnumWeaponAttribute.EMPTY).forEach(weaponAttribute ->
             {
-                this.weaponAttributes.stream().filter(weaponAttribute -> weaponAttribute != EnumWeaponAttribute.EMPTY).forEach(weaponAttribute ->
-                {
-                    for (AttributeMeta attributeMeta : weaponAttribute.getAttributeMetas())
-                        if (attributeMeta.getItemTier() == this.itemTier)
-                        {
-                            if (attributeMeta.isPercentage())
-                                Collections.addAll(lore, weaponAttribute.getName() + ": " + Math.round(attributeMeta.getValueY()) + "%");
-                            else
-                                Collections.addAll(lore, weaponAttribute.getName() + ": " + "+" + Math.round(attributeMeta.getValueY()));
-                        }
-                });
-            }
+                for (AttributeMeta attributeMeta : weaponAttribute.getAttributeMetas())
+                    if (attributeMeta.getItemTier() == this.itemTier)
+                    {
+                        if (attributeMeta.isPercentage())
+                            Collections.addAll(lore, weaponAttribute.getName() + ": " + Math.round(attributeMeta.getValueY()) + "%");
+                        else
+                            Collections.addAll(lore, weaponAttribute.getName() + ": " + "+" + Math.round(attributeMeta.getValueY()));
+                    }
+            });
         }
-        if (!emptyOnly)
-            Collections.addAll(lore, "", this.itemRarity.getColor() + this.itemRarity.getName(), "");
-        else Collections.addAll(lore, this.itemRarity.getColor() + this.itemRarity.getName(), "");
+        Collections.addAll(lore, this.itemRarity.getColor() + this.itemRarity.getName(), "");
 
         if (!this.tradeable)
         {
@@ -245,16 +235,6 @@ public class WeaponItem implements IStack
         if (this.soulbound)
         {
             Collections.addAll(lore, ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
-        }
-
-        // Clean up
-        if (emptyOnly)
-        {
-            lore.remove(2);
-            if (weaponAttributes.size() > 1)
-            {
-                lore.remove(3);
-            }
         }
         return lore;
     }

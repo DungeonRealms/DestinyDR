@@ -148,7 +148,7 @@ public class SQLDatabase
             this.database.update(query);
         } catch (Exception e)
         {
-            e.printStackTrace();
+           System.out.println(query);
         }
     }
 

@@ -48,7 +48,7 @@ public class WeaponRegistry implements DataRegistry
     @Override
     public void prepare()
     {
-        this.table = "atomicR-Weapon";
+        this.table = "atomicRWeapon";
 
         createData();
 

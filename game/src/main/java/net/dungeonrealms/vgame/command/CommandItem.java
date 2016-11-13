@@ -21,9 +21,9 @@ import java.util.List;
  */
 public class CommandItem extends BaseCommand
 {
-    public CommandItem(String command, String usage, String description, List<String> aliases)
+    public CommandItem(String command, String usage, String description)
     {
-        super(command, usage, description, aliases);
+        super(command, usage, description);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CommandItem extends BaseCommand
         if (sender instanceof Player)
         {
             Player player = (Player) sender;
-            if (Rank.isDev(player))
+            if (Rank.isDev(player) || player.isOp())
             {
                 // Prepare construction
                 EnumItemType itemType;
@@ -43,14 +43,14 @@ public class CommandItem extends BaseCommand
                 boolean soulbound;
 
                 // Alright..
-                if (args.length < 0)
+                if (args.length < 1)
                 {
                     player.getInventory().addItem(new WeaponItem(true, false).getItemStack());
                     player.sendMessage(ChatColor.RED + "Custom item generation:");
                     player.sendMessage(ChatColor.RED + "Usage: /item <type> [tier] [rarity] [name] [tradeable] [soulbound]");
                 } else
                 {
-                    if (args.length == 0)
+                    if (args.length == 1)
                     {
                         try
                         {
@@ -60,24 +60,12 @@ public class CommandItem extends BaseCommand
                             player.sendMessage(ChatColor.RED + "Unknown item type.");
                         }
                     }
-                    if (args.length == 1)
-                    {
-                        try
-                        {
-                            itemType = EnumItemType.valueOf(args[0]);
-                            itemTier = EnumItemTier.valueOf(args[1]);
-                        } catch (Exception e)
-                        {
-                            player.sendMessage(ChatColor.RED + "Arguments are unknown.");
-                        }
-                    }
                     if (args.length == 2)
                     {
                         try
                         {
                             itemType = EnumItemType.valueOf(args[0]);
                             itemTier = EnumItemTier.valueOf(args[1]);
-                            itemRarity = EnumItemRarity.valueOf(args[2]);
                         } catch (Exception e)
                         {
                             player.sendMessage(ChatColor.RED + "Arguments are unknown.");
@@ -90,7 +78,6 @@ public class CommandItem extends BaseCommand
                             itemType = EnumItemType.valueOf(args[0]);
                             itemTier = EnumItemTier.valueOf(args[1]);
                             itemRarity = EnumItemRarity.valueOf(args[2]);
-                            customName = ChatColor.translateAlternateColorCodes('&', args[3]);
                         } catch (Exception e)
                         {
                             player.sendMessage(ChatColor.RED + "Arguments are unknown.");
@@ -104,13 +91,26 @@ public class CommandItem extends BaseCommand
                             itemTier = EnumItemTier.valueOf(args[1]);
                             itemRarity = EnumItemRarity.valueOf(args[2]);
                             customName = ChatColor.translateAlternateColorCodes('&', args[3]);
-                            tradeable = Boolean.valueOf(args[4]);
                         } catch (Exception e)
                         {
                             player.sendMessage(ChatColor.RED + "Arguments are unknown.");
                         }
                     }
                     if (args.length == 5)
+                    {
+                        try
+                        {
+                            itemType = EnumItemType.valueOf(args[0]);
+                            itemTier = EnumItemTier.valueOf(args[1]);
+                            itemRarity = EnumItemRarity.valueOf(args[2]);
+                            customName = ChatColor.translateAlternateColorCodes('&', args[3]);
+                            tradeable = Boolean.valueOf(args[4]);
+                        } catch (Exception e)
+                        {
+                            player.sendMessage(ChatColor.RED + "Arguments are unknown.");
+                        }
+                    }
+                    if (args.length == 6)
                     {
                         try
                         {

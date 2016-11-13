@@ -1,12 +1,13 @@
 package net.dungeonrealms.vgame;
 
 import io.vawke.skelframe.SkelRuntime;
-import io.vawke.skelframe.bootstrap.IOBootstrap;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
-import net.dungeonrealms.common.game.database.sql.SQLDatabase;
 import net.dungeonrealms.common.game.util.AsyncUtils;
+import net.dungeonrealms.vgame.handle.CommandHandler;
+import net.dungeonrealms.vgame.handle.GameHandler;
+import net.dungeonrealms.vgame.handle.RegistryHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -75,6 +76,9 @@ public class Game extends JavaPlugin
         //** Registries **//
         this.registryHandler = new RegistryHandler();
         this.registryHandler.prepare();
+
+        // ** Commands **//
+        new CommandHandler().prepare();
     }
 
     @Override
