@@ -30,7 +30,7 @@ public class RegistryHandler implements SuperHandler.Handler
     @Override
     public void prepare()
     {
-        Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ HANDLER CORE ]");
+        Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ REGISTRIES ]");
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Creating atomic reference..");
         this.registryMap = new ConcurrentHashMap<>();
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Atomic reference created");
@@ -39,7 +39,7 @@ public class RegistryHandler implements SuperHandler.Handler
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Connecting & collecting registries for atomic reference..");
         this.registryMap.put(UUID.randomUUID(), this.weaponRegistry = new WeaponRegistry());
         this.registryMap.put(UUID.randomUUID(), this.playerRegistry = new PlayerRegistry());
-        Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers connected & collected");
+        Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Registries connected & collected");
 
         // Register them
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Preparing connected registries..");

@@ -50,7 +50,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>net.dungeonrealms.network.Boostrap</mainClass>
+              <mainClass>net.dungeonrealms.network.MasterServerLauncher</mainClass>
             </manifest>
           </archive>
         </configuration>

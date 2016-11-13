@@ -16,7 +16,6 @@
         <module>game</module>
         <module>lobby</module>
         <module>bootstrap</module>
-        <module>system</module>
     </modules>
 
     <build>
