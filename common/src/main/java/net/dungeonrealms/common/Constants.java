@@ -57,5 +57,5 @@ public class Constants {
     public static final String SQL_PORT = "3306";
     public static final String SQL_DATABASE = "dungeonrealms";
     public static final String SQL_PASSWORD = "CXxbpBbWdyekJtyv";
-    public static final String SQL_USERNAME = "root";
+    public static final String SQL_USERNAME = "dungeonrealms";
 }

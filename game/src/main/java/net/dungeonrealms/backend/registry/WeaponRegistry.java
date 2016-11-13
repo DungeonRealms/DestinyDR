@@ -153,7 +153,7 @@ public class WeaponRegistry implements DataRegistry
                         "durability;INT(11)",
                         "name;TEXT",
                         "soulbound;TEXT",
-                        "tradeale;TEXT",
+                        "tradeable;TEXT",
                         "attributes;TEXT"));
         this.connected = true;
     }

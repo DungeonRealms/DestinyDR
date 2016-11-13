@@ -136,14 +136,15 @@ public class SQLDatabase
         String query = "";
         try
         {
-            query = String.format("CREATE TABLE IF NOT EXISTS %s(`%s` %s", table, keys.get(0).split(Pattern.quote(";"))[0], keys.get(0).split(Pattern.quote(";"))[1]);
+            query = "CREATE TABLE IF NOT EXISTS " + table + "(`" + keys.get(0).split(Pattern.quote(";"))[0] + "` "
+                    + keys.get(0).split(Pattern.quote(";"))[1];
 
             for (int i = 1; i < keys.size(); i++)
             {
                 String[] s = keys.get(i).split(Pattern.quote(";"));
                 query += ", `" + s[0] + "` " + s[1];
             }
-            query += String.format(", PRIMARY KEY(`%s`));", keys.get(0).split(Pattern.quote(";"))[0]);
+            query += ", PRIMARY KEY(`" + keys.get(0).split(Pattern.quote(";"))[0] + "`));";
             this.database.update(query);
         } catch (Exception e)
         {
@@ -162,23 +163,23 @@ public class SQLDatabase
             String query = "";
             if (exists(table, whereClause, whereValue))
             {
-                query = String.format("UPDATE %s SET %s = '%s'", table, keySet[0], map.get(keySet[0]));
+                query = "UPDATE " + table + " SET " + keySet[0] + " = '" + map.get(keySet[0]) + "'";
                 for (int i = 1; i < map.keySet().size(); i++)
                 {
                     String s = keySet[i];
                     query += ", " + s + " = '" + map.get(s) + "'";
                 }
 
-                query += String.format(" WHERE %s = '%s';", whereClause, whereValue);
+                query += " WHERE " + whereClause + " = '" + whereValue + "';";
             } else
             {
-                query = String.format("INSERT INTO %s (`%s`", table, keySet[0]);
+                query = "INSERT INTO " + table + " (`" + keySet[0] + "`";
                 for (int i = 1; i < map.keySet().size(); i++)
                 {
                     String s = keySet[i];
                     query += ", `" + s + "`";
                 }
-                query += String.format(") VALUES ('%s'", map.get(keySet[0]));
+                query += ") VALUES ('" + map.get(keySet[0]) + "'";
                 for (int i = 1; i < map.keySet().size(); i++)
                 {
                     String s = keySet[i];
@@ -187,10 +188,9 @@ public class SQLDatabase
                 query += ");";
             }
 
-            this.database.update(query);
+            this.database.query(query);
         } catch (Exception e)
         {
-            System.out.println("Vawke skelframe 123");
             e.printStackTrace();
         }
     }
@@ -199,7 +199,6 @@ public class SQLDatabase
     {
         try
         {
-
             int current = val;
             ResultSet set = getSet("SELECT * FROM " + table + "WHERE " + whereClause + "='" + whereValue + "';");
             if (set.next())
@@ -222,20 +221,19 @@ public class SQLDatabase
         String query;
         String[] keySet = map.keySet().toArray(new String[map.keySet().size()]);
 
-        query = String.format("INSERT INTO %s (`%s`", table, keySet[0]);
+        query = "INSERT INTO " + table + " (`" + keySet[0] + "`";
         for (int i = 1; i < map.keySet().size(); i++)
         {
             String s = keySet[i];
             query += ", `" + s + "`";
         }
-        query += String.format(") VALUES ('%s'", map.get(keySet[0]));
+        query += ") VALUES ('" + map.get(keySet[0]) + "'";
         for (int i = 1; i < map.keySet().size(); i++)
         {
             String s = keySet[i];
             query += ", '" + map.get(s) + "'";
         }
         query += ");";
-
         try
         {
             this.database.update(query);
@@ -243,7 +241,6 @@ public class SQLDatabase
         {
             e.printStackTrace();
         }
-
     }
 
     public void update(String string)
