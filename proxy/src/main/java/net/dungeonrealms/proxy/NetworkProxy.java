@@ -126,12 +126,13 @@ public class NetworkProxy implements Proxy
         {
             DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Connecting to the master server..");
             // Collect all shards, connect them
-            Arrays.stream(ShardInfo.values()).forEach(info -> {
+            Arrays.stream(ShardInfo.values()).forEach(info ->
+                    {
                         ServerInfo serverInfo;
                         serverInfo = ProxyServer.getInstance().constructServerInfo(info.getPseudoName(),
                                 new InetSocketAddress(info.getAddress().getAddress(), info.getAddress().getPort()), "", false);
                         ProxyServer.getInstance().getServers().put(info.getPseudoName(), serverInfo);
-                DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.YELLOW + "Shard info constructed for: " + serverInfo.getName().toUpperCase());
+                        DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.YELLOW + "Shard info constructed for: " + serverInfo.getName().toUpperCase());
                     }
             );
             this.gameClient.connect();
