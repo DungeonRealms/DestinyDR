@@ -117,7 +117,7 @@ public class WeaponRegistry implements DataRegistry
                     List<EnumWeaponAttribute> attributeList = Lists.newArrayList();
                     attributeList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
                     WeaponItem weaponItem = new WeaponItem(uuid, material, rarity, itemTier, attributeTier, itemType, durability, name, attributeList,
-                            soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false, minDmg, maxDmg);
+                            soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false, minDmg, maxDmg, false);
                     this.getMap().put(weaponItem.getItemStack(), weaponItem);
                 }
             } catch (SQLException e)
@@ -161,27 +161,30 @@ public class WeaponRegistry implements DataRegistry
     // Ran if a new weaponItem has been generated
     public void store(WeaponItem weaponItem)
     {
-        this.itemMap.get().put(weaponItem.getItemStack(), weaponItem);
+        Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () ->
+        {
+            this.itemMap.get().put(weaponItem.getItemStack(), weaponItem);
 
-        Gson gson = new Gson();
-        ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<>();
-        map.put("UUID", weaponItem.getUniqueId());
-        map.put("material", weaponItem.getItemStack().getType().name());
-        map.put("type", weaponItem.getItemType().name());
-        map.put("rarity", weaponItem.getItemRarity().name());
-        map.put("tier", weaponItem.getItemTier().name());
-        map.put("attributeTier", weaponItem.getAttributeTier().name());
-        map.put("durability", weaponItem.getDurability());
-        map.put("name", weaponItem.getName());
-        map.put("soulbound", weaponItem.isSoulbound() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
-        map.put("tradeable", weaponItem.isTradeable() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
-        map.put("attributes", gson.toJson(weaponItem.getWeaponAttributes()));
+            Gson gson = new Gson();
+            ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<>();
+            map.put("UUID", weaponItem.getUniqueId());
+            map.put("material", weaponItem.getItemStack().getType().name());
+            map.put("type", weaponItem.getItemType().name());
+            map.put("rarity", weaponItem.getItemRarity().name());
+            map.put("tier", weaponItem.getItemTier().name());
+            map.put("attributeTier", weaponItem.getAttributeTier().name());
+            map.put("durability", weaponItem.getDurability());
+            map.put("name", weaponItem.getName());
+            map.put("soulbound", weaponItem.isSoulbound() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
+            map.put("tradeable", weaponItem.isTradeable() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
+            map.put("attributes", gson.toJson(weaponItem.getWeaponAttributes()));
 
-        // Set into the database
-        Game.getGame().getGameShard().getSqlDatabase().set(table, map, "UUID", weaponItem.getUniqueId().toString());
+            // Set into the database
+            Game.getGame().getGameShard().getSqlDatabase().set(table, map, "UUID", weaponItem.getUniqueId().toString());
 
-        // Send to all shards
-        new MonoPacket(weaponItem.getUniqueId(), EnumMonoType.SEND_WEAPON).send();
+            // Send to all shards
+            new MonoPacket(weaponItem.getUniqueId(), EnumMonoType.SEND_WEAPON).send();
+        }, 20 * 2);
     }
 
     // Ran if a MonoPacket for a weaponItem is being received
@@ -213,7 +216,7 @@ public class WeaponRegistry implements DataRegistry
                     List<EnumWeaponAttribute> attributeList = Lists.newArrayList();
                     attributeList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
                     WeaponItem weaponItem = new WeaponItem(uuid, material, rarity, itemTier, attributeTier, itemType, durability, name, attributeList,
-                            soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false, minDmg, maxDmg);
+                            soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false, minDmg, maxDmg, false);
                     this.getMap().put(weaponItem.getItemStack(), weaponItem);
                 }
             } catch (SQLException e)

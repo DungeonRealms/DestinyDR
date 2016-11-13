@@ -90,7 +90,7 @@ public class WeaponItem implements IStack
         this.createKey(); // Actual item
 
         // Send the item to all shards
-        // Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
+        Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
     }
 
     // Constructing a new weapon out of the database
@@ -106,7 +106,8 @@ public class WeaponItem implements IStack
                       boolean soulbound,
                       boolean tradeable,
                       int minDmg,
-                      int maxDmg)
+                      int maxDmg,
+                      boolean packet)
     {
         this.uniqueId = uuid;
         this.material = material;
@@ -122,9 +123,11 @@ public class WeaponItem implements IStack
         this.minDmg = minDmg;
         this.maxDmg = maxDmg;
 
-        // Don't send this object to all shards, as this is already collected from the database.
-
         this.createKey(); // Actual item
+
+        if (packet)
+            Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
+        else return;
     }
 
     private void createKey()
@@ -132,7 +135,9 @@ public class WeaponItem implements IStack
         // Create the atomic key (bukkit itemstack)
         this.itemStack = new ItemStack(this.material);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
-        itemMeta.setDisplayName(this.itemTier.getChatColor() + this.generateName());
+        if (this.name.isEmpty())
+            itemMeta.setDisplayName(this.itemTier.getChatColor() + this.generateName());
+        else itemMeta.setDisplayName(this.itemTier.getChatColor() + this.name);
         for (ItemFlag itemFlag : ItemFlag.values())
         {
             itemMeta.addItemFlags(itemFlag);

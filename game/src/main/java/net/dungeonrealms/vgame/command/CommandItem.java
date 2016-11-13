@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;
 import net.dungeonrealms.vgame.item.EnumItemType;
+import net.dungeonrealms.vgame.item.weapon.WeaponItem;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,7 +45,8 @@ public class CommandItem extends BaseCommand
                 // Alright..
                 if (args.length < 0)
                 {
-                    player.sendMessage(ChatColor.RED + "Not enough arguments!");
+                    player.getInventory().addItem(new WeaponItem(true, false).getItemStack());
+                    player.sendMessage(ChatColor.RED + "Custom item generation:");
                     player.sendMessage(ChatColor.RED + "Usage: /item <type> [tier] [rarity] [name] [tradeable] [soulbound]");
                 } else
                 {

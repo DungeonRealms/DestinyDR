@@ -8,7 +8,6 @@ import net.dungeonrealms.vgame.item.weapon.WeaponItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
  * Created by Giovanni on 9-11-2016.
@@ -22,12 +21,6 @@ public class GameTest implements SuperHandler.ListeningHandler
     public void prepare()
     {
         Game.getGame().getServer().getPluginManager().registerEvents(this, Game.getGame());
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event)
-    {
-        event.getPlayer().getInventory().addItem(new WeaponItem(true, true).getItemStack());
     }
 
     @EventHandler
