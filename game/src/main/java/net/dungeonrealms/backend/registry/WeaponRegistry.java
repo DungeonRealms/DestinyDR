@@ -2,6 +2,7 @@ package net.dungeonrealms.backend.registry;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.dungeonrealms.backend.packet.mono.EnumMonoType;
 import net.dungeonrealms.backend.packet.mono.MonoPacket;
@@ -17,6 +18,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -66,7 +70,7 @@ public class WeaponRegistry implements DataRegistry
     @Override
     public void save()
     {
-        // Save all existant weapon items into the database
+        // Save all existent weapon items into the database
         Gson gson = new Gson();
         for (WeaponItem weaponItem : getMap().values())
         {
@@ -75,11 +79,12 @@ public class WeaponRegistry implements DataRegistry
 
             // Set into the database
             Game.getGame().getGameShard().getSqlDatabase().set(table, map, "UUID", weaponItem.getUniqueId().toString());
+
+            map.clear();
         }
     }
 
     // Ran upon preparation
-    // TODO JSON conversion
     @Override
     public void collect()
     {
@@ -90,35 +95,22 @@ public class WeaponRegistry implements DataRegistry
             {
                 while (set.next())
                 {
-                    UUID uuid = UUID.fromString(set.getString("UUID"));
-                    Material material = Material.valueOf(set.getString("material"));
-                    EnumItemRarity rarity = EnumItemRarity.valueOf(set.getString("rarity"));
-                    EnumItemType itemType = EnumItemType.valueOf(set.getString("type"));
-                    EnumItemTier itemTier = EnumItemTier.valueOf(set.getString("tier"));
-                    EnumItemTier attributeTier = EnumItemTier.valueOf(set.getString("attributeTier"));
-                    int durability = set.getInt("durability");
-                    String name = set.getString("name");
-                    SQLBoolean soulbound = SQLBoolean.valueOf(set.getString("soulbound"));
-                    SQLBoolean tradeable = SQLBoolean.valueOf(set.getString("tradeable"));
-                    int minDmg = set.getInt("minDmg");
-                    int maxDmg = set.getInt("maxDmg");
-
-                    // JSON conversion
-                    List<String> attributeStrings = gson.fromJson(set.getString("attributes"), List.class);
-
-                    // Convert the attribute names to the actual attribute
-                    List<EnumWeaponAttribute> attributeList = Lists.newArrayList();
-                    attributeList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
-                    WeaponItem weaponItem = new WeaponItem(uuid, material, rarity, itemTier, attributeTier, itemType, durability, name, attributeList,
-                            soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false, minDmg, maxDmg, false);
-                    this.getMap().put(weaponItem.getItemStack(), weaponItem);
+                    try
+                    {
+                        JsonObject jsonObject = (JsonObject) new JSONParser().parse(set.getString("atomic"));
+                        WeaponItem weaponItem = gson.fromJson(jsonObject, WeaponItem.class);
+                        this.getMap().put(weaponItem.getItemStack(), weaponItem);
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             } catch (SQLException e)
             {
                 e.printStackTrace();
                 Game.getGame().getServer().shutdown(); // No weapons, no purpose.
             }
-        }, 20L);
+        }, 60L); // Start collecting after 3 sec
     }
 
     @Override
@@ -161,7 +153,6 @@ public class WeaponRegistry implements DataRegistry
     }
 
     // Ran if a MonoPacket for a weaponItem is being received
-    // TODO JSON conversion
     public void receive(UUID uuid)
     {
         Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () ->
@@ -171,28 +162,15 @@ public class WeaponRegistry implements DataRegistry
             {
                 while (set.next())
                 {
-                    Material material = Material.valueOf(set.getString("material"));
-                    EnumItemRarity rarity = EnumItemRarity.valueOf(set.getString("rarity"));
-                    EnumItemType itemType = EnumItemType.valueOf(set.getString("type"));
-                    EnumItemTier itemTier = EnumItemTier.valueOf(set.getString("tier"));
-                    EnumItemTier attributeTier = EnumItemTier.valueOf(set.getString("attributeTier"));
-                    int durability = set.getInt("durability");
-                    String name = set.getString("name");
-                    SQLBoolean soulbound = SQLBoolean.valueOf(set.getString("soulbound"));
-                    SQLBoolean tradeable = SQLBoolean.valueOf(set.getString("tradeable"));
-                    double minDmg = set.getDouble("minDmg");
-                    double maxDmg = set.getDouble("maxDmg");
-
-                    // JSON conversion
-                    List<String> attributeStrings = gson.fromJson(set.getString("attributes"), List.class);
-
-                    // Convert the attribute names to the actual attribute
-                    List<EnumWeaponAttribute> attributeList = Lists.newArrayList();
-                    attributeList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
-
-                    WeaponItem weaponItem = new WeaponItem(uuid, material, rarity, itemTier, attributeTier, itemType, durability, name, attributeList,
-                            soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false, minDmg, maxDmg, false);
-                    this.getMap().put(weaponItem.getItemStack(), weaponItem);
+                    try
+                    {
+                        JsonObject jsonObject = (JsonObject) new JSONParser().parse(set.getString("atomic"));
+                        WeaponItem weaponItem = gson.fromJson(jsonObject, WeaponItem.class);
+                        this.getMap().put(weaponItem.getItemStack(), weaponItem);
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             } catch (SQLException e)
             {

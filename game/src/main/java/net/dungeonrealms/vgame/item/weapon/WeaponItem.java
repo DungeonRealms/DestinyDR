@@ -56,7 +56,7 @@ public class WeaponItem implements IStack
     private String name;
 
     @Getter
-    private ItemStack itemStack;
+    private transient ItemStack itemStack; // Do not serialize this variable, as we don't want to store an itemstack
 
     @Getter
     private EnumItemType itemType;
