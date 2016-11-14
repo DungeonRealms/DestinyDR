@@ -18,6 +18,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -69,17 +71,7 @@ public class WeaponRegistry implements DataRegistry
         for (WeaponItem weaponItem : getMap().values())
         {
             ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<>();
-            map.put("UUID", weaponItem.getUniqueId());
-            map.put("material", weaponItem.getItemStack().getType().name());
-            map.put("type", weaponItem.getItemType().name());
-            map.put("rarity", weaponItem.getItemRarity().name());
-            map.put("tier", weaponItem.getItemTier().name());
-            map.put("attributeTier", weaponItem.getAttributeTier().name());
-            map.put("durability", weaponItem.getDurability());
-            map.put("name", weaponItem.getName());
-            map.put("soulbound", weaponItem.isSoulbound() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
-            map.put("tradeable", weaponItem.isTradeable() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
-            map.put("attributes", gson.toJson(weaponItem.getWeaponAttributes()));
+            map.put("atomic", gson.toJson(weaponItem));
 
             // Set into the database
             Game.getGame().getGameShard().getSqlDatabase().set(table, map, "UUID", weaponItem.getUniqueId().toString());
@@ -87,6 +79,7 @@ public class WeaponRegistry implements DataRegistry
     }
 
     // Ran upon preparation
+    // TODO JSON conversion
     @Override
     public void collect()
     {
@@ -143,20 +136,8 @@ public class WeaponRegistry implements DataRegistry
     @Override
     public void createData()
     {
-        Game.getGame().getGameShard().getSqlDatabase().createTable(table,
-                Arrays.asList("UUID;VARCHAR(50)",
-                        "material;TEXT",
-                        "type;TEXT",
-                        "rarity;TEXT",
-                        "tier;TEXT",
-                        "attributeTier;TEXT",
-                        "durability;INT(11)",
-                        "name;TEXT",
-                        "soulbound;TEXT",
-                        "tradeable;TEXT",
-                        "minDmg;DOUBLE",
-                        "maxDmg;DOUBLE",
-                        "attributes;TEXT"));
+        Game.getGame().getGameShard().getSqlDatabase().createTable(this.table,
+                Arrays.asList("UUID;VARCHAR(50)", "atomic;TEXT"));
         this.connected = true;
     }
 
@@ -169,22 +150,10 @@ public class WeaponRegistry implements DataRegistry
 
             Gson gson = new Gson();
             ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<>();
-            map.put("UUID", weaponItem.getUniqueId());
-            map.put("material", weaponItem.getItemStack().getType().name());
-            map.put("type", weaponItem.getItemType().name());
-            map.put("rarity", weaponItem.getItemRarity().name());
-            map.put("tier", weaponItem.getItemTier().name());
-            map.put("attributeTier", weaponItem.getAttributeTier().name());
-            map.put("durability", weaponItem.getDurability());
-            map.put("name", weaponItem.getName());
-            map.put("soulbound", weaponItem.isSoulbound() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
-            map.put("tradeable", weaponItem.isTradeable() ? SQLBoolean.TRUE.name() : SQLBoolean.FALSE.name());
-            map.put("minDmg", weaponItem.getMinDmg());
-            map.put("maxDmg", weaponItem.getMaxDmg());
-            map.put("attributes", gson.toJson(weaponItem.getWeaponAttributes()));
+            map.put("atomic", gson.toJson(weaponItem));
 
             // Set into the database
-            Game.getGame().getGameShard().getSqlDatabase().set(table, map, "UUID", weaponItem.getUniqueId().toString());
+            Game.getGame().getGameShard().getSqlDatabase().set(this.table, map, "UUID", weaponItem.getUniqueId().toString());
 
             // Send to all shards
             new MonoPacket(weaponItem.getUniqueId(), EnumMonoType.SEND_WEAPON).send();
@@ -192,6 +161,7 @@ public class WeaponRegistry implements DataRegistry
     }
 
     // Ran if a MonoPacket for a weaponItem is being received
+    // TODO JSON conversion
     public void receive(UUID uuid)
     {
         Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () ->
@@ -219,6 +189,7 @@ public class WeaponRegistry implements DataRegistry
                     // Convert the attribute names to the actual attribute
                     List<EnumWeaponAttribute> attributeList = Lists.newArrayList();
                     attributeList.addAll(attributeStrings.stream().map(EnumWeaponAttribute::valueOf).collect(Collectors.toList()));
+
                     WeaponItem weaponItem = new WeaponItem(uuid, material, rarity, itemTier, attributeTier, itemType, durability, name, attributeList,
                             soulbound == SQLBoolean.TRUE ? true : false, tradeable == SQLBoolean.TRUE ? true : false, minDmg, maxDmg, false);
                     this.getMap().put(weaponItem.getItemStack(), weaponItem);

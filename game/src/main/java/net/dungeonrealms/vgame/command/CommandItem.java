@@ -45,6 +45,7 @@ public class CommandItem extends BaseCommand
                 // Alright..
                 if (args.length < 1)
                 {
+                    // Test
                     player.getInventory().addItem(new WeaponItem(true, false).getItemStack());
                     player.sendMessage(ChatColor.RED + "Custom item generation:");
                     player.sendMessage(ChatColor.RED + "Usage: /item <type> [tier] [rarity] [name] [tradeable] [soulbound]");

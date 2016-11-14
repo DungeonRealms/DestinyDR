@@ -116,15 +116,15 @@ class DamageCalculator
             switch (itemTier)
             {
                 case ONE:
-                    return 8;
+                    return 2;
                 case TWO:
-                    return 17;
+                    return 12;
                 case THREE:
-                    return 45;
+                    return 30;
                 case FOUR:
-                    return 125;
+                    return 80;
                 case FIVE:
-                    return 210;
+                    return 140;
                 default:
                     break;
             }
@@ -134,15 +134,15 @@ class DamageCalculator
             switch (itemTier)
             {
                 case ONE:
-                    return 4;
+                    return 1;
                 case TWO:
-                    return 9;
+                    return 6;
                 case THREE:
-                    return 23;
+                    return 15;
                 case FOUR:
-                    return 63;
+                    return 40;
                 case FIVE:
-                    return 115;
+                    return 70;
                 default:
                     break;
             }
@@ -152,15 +152,15 @@ class DamageCalculator
             switch (itemTier)
             {
                 case ONE:
-                    return 5;
+                    return 2;
                 case TWO:
-                    return 17;
+                    return 12;
                 case THREE:
-                    return 45;
+                    return 30;
                 case FOUR:
-                    return 125;
+                    return 80;
                 case FIVE:
-                    return 210;
+                    return 140;
                 default:
                     break;
             }
