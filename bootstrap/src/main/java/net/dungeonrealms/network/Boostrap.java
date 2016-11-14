@@ -29,6 +29,9 @@ public class Boostrap
     @Getter
     private static boolean canRelay = false;
 
+    @Getter
+    private static MasterServer masterServer;
+
     public static void main(String[] par)
     {
         for (String string : new String[]{
@@ -41,9 +44,16 @@ public class Boostrap
 
         try
         {
-            MasterServer masterServer = new MasterServer();
+            masterServer = new MasterServer();
             kryonet = masterServer.getKryo();
             register();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        if (masterServer != null && kryonet != null)
+        {
             for (String string : new String[]{
                     "Connection established with " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT,
                     "", "Developed by Vawke", "www.dungeonrealms.net"})
@@ -51,9 +61,9 @@ public class Boostrap
                 Log.info(string);
             }
             canRelay = true;
-        } catch (IOException e)
+        } else
         {
-            e.printStackTrace();
+            Runtime.getRuntime().exit(0);
         }
     }
 
