@@ -26,8 +26,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class WeaponItem implements IStack
 {
-    // TODO weapon min & max dmg
-
     @Getter
     private UUID uniqueId;
 
@@ -44,7 +42,7 @@ public class WeaponItem implements IStack
     private EnumItemTier attributeTier;
 
     @Getter
-    private double minDmg, maxDmg; // TODO
+    private double minDmg, maxDmg;
 
     @Getter
     private int durability = 100; // Default value ?
@@ -97,7 +95,6 @@ public class WeaponItem implements IStack
         Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
     }
 
-    // Constructing a new weapon out of the database
     public WeaponItem(UUID uuid,
                       Material material,
                       EnumItemRarity rarity,
@@ -266,13 +263,11 @@ public class WeaponItem implements IStack
                         damage += attributeMeta.getValueY() / 100 * damage;
                     } else
                     {
-                        // Is the attribute a vs Player or vs Monster attribute?
                         if (attribute != EnumWeaponAttribute.MON_DMG || attribute != EnumWeaponAttribute.PLAYER_DMG)
                         {
                             damage += attributeMeta.returnRandomValue();
                         } else
                         {
-                            // Is the attribute vs Players & is the target creature a player?
                             if (attribute == EnumWeaponAttribute.PLAYER_DMG)
                             {
                                 if (enumCreatureType == EnumCreatureType.PLAYER)
@@ -280,7 +275,6 @@ public class WeaponItem implements IStack
                                     damage += attributeMeta.returnRandomValue();
                                 }
                             }
-                            // Is the attribute vs Monsters & is the target creature a monster?
                             if (attribute == EnumWeaponAttribute.MON_DMG)
                             {
                                 if (enumCreatureType == EnumCreatureType.ENTITY)
