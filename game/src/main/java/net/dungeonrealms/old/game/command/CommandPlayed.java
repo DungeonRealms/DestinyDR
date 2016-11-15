@@ -1,8 +1,8 @@
 package net.dungeonrealms.old.game.command;
 
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

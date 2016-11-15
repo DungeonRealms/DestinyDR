@@ -2,10 +2,10 @@ package net.dungeonrealms.old.game.tab.column;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import net.dungeonrealms.common.Tuple;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.player.PlayerToken;
-import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.player.PlayerToken;
+import net.dungeonrealms.common.old.network.ShardInfo;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.old.game.handler.FriendHandler;
 import net.dungeonrealms.old.game.tab.Column;
 import net.dungeonrealms.vgame.Game;

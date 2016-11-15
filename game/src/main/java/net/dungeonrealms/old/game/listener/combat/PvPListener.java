@@ -2,8 +2,8 @@ package net.dungeonrealms.old.game.listener.combat;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.old.game.handler.EnergyHandler;
 import net.dungeonrealms.old.game.handler.HealthHandler;
 import net.dungeonrealms.old.game.handler.KarmaHandler;

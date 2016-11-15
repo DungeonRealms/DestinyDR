@@ -1,10 +1,10 @@
 package net.dungeonrealms.lobby.handle.connection;
 
 import net.dungeonrealms.common.awt.SuperHandler;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
-import net.dungeonrealms.common.lib.message.CenteredMessage;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.common.old.game.punishment.PunishAPI;
+import net.dungeonrealms.common.frontend.lib.message.CenteredMessage;
 import net.dungeonrealms.lobby.ServerLobby;
 import org.bukkit.*;
 import org.bukkit.entity.Player;

@@ -1,10 +1,10 @@
 package net.dungeonrealms.old.game.command;
 
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.punishment.PunishAPI;
 import net.dungeonrealms.old.game.mechanic.TutorialIsland;
 import net.dungeonrealms.old.game.player.chat.GameChat;
 import org.bukkit.Bukkit;

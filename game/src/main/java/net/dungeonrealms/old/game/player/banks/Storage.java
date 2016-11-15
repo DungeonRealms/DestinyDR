@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.player.banks;
 
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.old.game.mastery.ItemSerialization;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

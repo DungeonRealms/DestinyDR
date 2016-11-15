@@ -1,38 +1,24 @@
 package net.dungeonrealms.backend.registry;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.dungeonrealms.backend.packet.mono.EnumMonoType;
 import net.dungeonrealms.backend.packet.mono.MonoPacket;
-import net.dungeonrealms.common.game.database.sql.SQLBoolean;
-import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
+import net.dungeonrealms.common.old.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.vgame.Game;
-import net.dungeonrealms.vgame.item.EnumItemRarity;
-import net.dungeonrealms.vgame.item.EnumItemTier;
-import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.weapon.WeaponItem;
-import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -91,7 +77,7 @@ public class WeaponRegistry implements DataRegistry
         Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () ->
         {
             Gson gson = new Gson();
-            try (ResultSet set = Game.getGame().getGameShard().getSqlDatabase().getSet("SELECT * FROM " + table))
+            try (ResultSet set = Game.getGame().getGameShard().getSqlDatabase().getSet("SELECT * FROM " + this.table))
             {
                 while (set.next())
                 {

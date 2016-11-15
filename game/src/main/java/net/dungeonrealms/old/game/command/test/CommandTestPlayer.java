@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.command.test;
 
-import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
 import net.dungeonrealms.old.game.soundtrack.EnumSong;
 import net.dungeonrealms.old.game.soundtrack.SongPlayer;
 import net.dungeonrealms.old.game.soundtrack.Soundtrack;

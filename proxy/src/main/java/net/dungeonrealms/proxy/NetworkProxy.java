@@ -5,7 +5,7 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.old.network.ShardInfo;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.awt.EnumProxyHolder;
 import net.dungeonrealms.network.awt.Proxy;

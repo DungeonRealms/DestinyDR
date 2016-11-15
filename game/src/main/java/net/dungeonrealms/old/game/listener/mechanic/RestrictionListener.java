@@ -2,10 +2,10 @@ package net.dungeonrealms.old.game.listener.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.util.CooldownProvider;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.common.old.game.util.CooldownProvider;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.guild.GuildDatabaseAPI;

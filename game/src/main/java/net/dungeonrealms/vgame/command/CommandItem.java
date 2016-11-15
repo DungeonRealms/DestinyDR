@@ -1,7 +1,7 @@
 package net.dungeonrealms.vgame.command;
 
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.vgame.item.EnumItemRarity;
 import net.dungeonrealms.vgame.item.EnumItemTier;
 import net.dungeonrealms.vgame.item.EnumItemType;
@@ -10,8 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 /**
  * Created by Giovanni on 4-11-2016.

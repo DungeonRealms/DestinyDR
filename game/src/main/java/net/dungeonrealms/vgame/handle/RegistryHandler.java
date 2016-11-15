@@ -2,7 +2,7 @@ package net.dungeonrealms.vgame.handle;
 
 import lombok.Getter;
 import net.dungeonrealms.backend.registry.PlayerRegistry;
-import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
+import net.dungeonrealms.common.old.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.backend.registry.WeaponRegistry;
 import net.dungeonrealms.common.awt.SuperHandler;
 import net.dungeonrealms.vgame.Game;

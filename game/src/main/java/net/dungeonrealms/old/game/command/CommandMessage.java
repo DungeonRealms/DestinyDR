@@ -1,8 +1,8 @@
 package net.dungeonrealms.old.game.command;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
+import net.dungeonrealms.common.old.game.punishment.PunishAPI;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.player.chat.Chat;
 import org.bukkit.command.Command;

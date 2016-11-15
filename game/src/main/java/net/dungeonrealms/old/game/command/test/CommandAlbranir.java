@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.command.test;
 
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.mastery.NMSUtils;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.type.world.Albranir;
 import net.minecraft.server.v1_9_R2.EntityPigZombie;

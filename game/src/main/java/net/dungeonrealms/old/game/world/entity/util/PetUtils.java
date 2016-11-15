@@ -2,7 +2,7 @@ package net.dungeonrealms.old.game.world.entity.util;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;

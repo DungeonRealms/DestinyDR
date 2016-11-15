@@ -1,9 +1,9 @@
 package net.dungeonrealms.proxy.netty.shard;
 
 import lombok.Getter;
-import net.dungeonrealms.common.network.ServerAddress;
-import net.dungeonrealms.common.network.ping.PingResponse;
-import net.dungeonrealms.common.network.ping.ServerPinger;
+import net.dungeonrealms.common.old.network.ServerAddress;
+import net.dungeonrealms.common.old.network.ping.PingResponse;
+import net.dungeonrealms.common.old.network.ping.ServerPinger;
 import net.dungeonrealms.proxy.DungeonBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.config.ServerInfo;

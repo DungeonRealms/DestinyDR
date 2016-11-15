@@ -1,11 +1,11 @@
 package net.dungeonrealms.old.game.listener.network;
 
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.punishment.PunishAPI;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerInfo;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;

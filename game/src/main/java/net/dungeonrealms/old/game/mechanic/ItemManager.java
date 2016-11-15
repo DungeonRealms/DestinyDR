@@ -1,8 +1,8 @@
 package net.dungeonrealms.old.game.mechanic;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.handler.FriendHandler;
 import net.dungeonrealms.old.game.handler.HealthHandler;

@@ -1,14 +1,11 @@
 package net.dungeonrealms.lobby;
 
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
-import net.dungeonrealms.common.network.enumeration.EnumShardType;
+import net.dungeonrealms.common.old.network.ShardInfo;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerInfo;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerTracker;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;

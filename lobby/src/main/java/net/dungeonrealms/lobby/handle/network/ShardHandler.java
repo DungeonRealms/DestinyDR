@@ -1,14 +1,13 @@
 package net.dungeonrealms.lobby.handle.network;
 
 import net.dungeonrealms.common.awt.SuperHandler;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.lib.message.CenteredMessage;
-import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
-import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.common.frontend.lib.message.CenteredMessage;
+import net.dungeonrealms.common.old.network.ShardInfo;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerInfo;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.ServerLobby;
 import net.dungeonrealms.lobby.misc.gui.ShardGUI;
 import org.bukkit.ChatColor;
@@ -19,11 +18,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.List;
 
 /**
  * Created by Giovanni on 5-11-2016.

@@ -1,8 +1,8 @@
 package net.dungeonrealms.old.game.command;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;

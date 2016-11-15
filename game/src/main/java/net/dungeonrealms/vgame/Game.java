@@ -4,7 +4,7 @@ import io.vawke.skelframe.SkelRuntime;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
-import net.dungeonrealms.common.game.util.AsyncUtils;
+import net.dungeonrealms.common.old.game.util.AsyncUtils;
 import net.dungeonrealms.vgame.handle.CommandHandler;
 import net.dungeonrealms.vgame.handle.GameHandler;
 import net.dungeonrealms.vgame.handle.RegistryHandler;

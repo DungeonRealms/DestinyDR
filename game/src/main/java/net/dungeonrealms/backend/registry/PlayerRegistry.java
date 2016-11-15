@@ -1,7 +1,7 @@
 package net.dungeonrealms.backend.registry;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.sql.registry.DataRegistry;
+import net.dungeonrealms.common.old.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.vgame.player.GamePlayer;
 
 import java.util.UUID;

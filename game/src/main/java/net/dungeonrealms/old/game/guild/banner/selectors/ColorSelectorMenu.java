@@ -1,9 +1,9 @@
 package net.dungeonrealms.old.game.guild.banner.selectors;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.menu.AbstractMenu;
-import net.dungeonrealms.common.game.menu.gui.GUIButtonClickEvent;
-import net.dungeonrealms.common.game.menu.item.GUIButton;
+import net.dungeonrealms.common.frontend.menu.AbstractMenu;
+import net.dungeonrealms.common.frontend.menu.gui.GUIButtonClickEvent;
+import net.dungeonrealms.common.frontend.menu.item.GUIButton;
 import net.dungeonrealms.old.game.guild.GuildMechanics;
 import net.dungeonrealms.old.game.guild.banner.BannerCreatorMenu;
 import net.dungeonrealms.old.game.miscellaneous.ColorConverter;

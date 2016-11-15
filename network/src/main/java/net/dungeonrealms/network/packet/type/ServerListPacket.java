@@ -1,7 +1,7 @@
 package net.dungeonrealms.network.packet.type;
 
-import net.dungeonrealms.common.game.database.player.PlayerToken;
-import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.old.game.database.player.PlayerToken;
+import net.dungeonrealms.common.old.network.ShardInfo;
 import net.dungeonrealms.network.packet.Packet;
 
 /**

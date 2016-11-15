@@ -1,9 +1,9 @@
 package net.dungeonrealms.old.game.handler;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.old.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bson.Document;

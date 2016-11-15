@@ -1,10 +1,10 @@
 package net.dungeonrealms.old.game.handler;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.old.game.mastery.ItemSerialization;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;

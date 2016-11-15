@@ -1,6 +1,6 @@
 package net.dungeonrealms.old.game.player.chat;
 
-import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.old.game.punishment.PunishAPI;
 import net.dungeonrealms.old.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

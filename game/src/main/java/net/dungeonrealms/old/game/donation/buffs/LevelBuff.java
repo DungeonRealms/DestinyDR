@@ -1,7 +1,7 @@
 package net.dungeonrealms.old.game.donation.buffs;
 
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.vgame.Game;

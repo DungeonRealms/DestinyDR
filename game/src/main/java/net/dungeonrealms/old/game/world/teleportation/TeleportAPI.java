@@ -1,8 +1,8 @@
 package net.dungeonrealms.old.game.world.teleportation;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.handler.KarmaHandler;
 import net.dungeonrealms.old.game.mastery.Utils;

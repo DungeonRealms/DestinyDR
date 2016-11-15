@@ -1,9 +1,9 @@
 package net.dungeonrealms.old.game.player.stats;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.old.game.mechanic.ItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

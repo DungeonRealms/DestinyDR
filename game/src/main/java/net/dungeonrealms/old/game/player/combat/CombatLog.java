@@ -3,9 +3,9 @@ package net.dungeonrealms.old.game.player.combat;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.old.game.handler.HealthHandler;
 import net.dungeonrealms.old.game.handler.KarmaHandler;
 import net.dungeonrealms.old.game.mastery.MetadataUtils;

@@ -2,7 +2,7 @@ package net.dungeonrealms.old.game.tab;
 
 import codecrafter47.bungeetablistplus.api.bukkit.Variable;
 import lombok.Getter;
-import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.old.network.ShardInfo;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
 

@@ -1,11 +1,10 @@
 package net.dungeonrealms.lobby.handle.network;
 
 import net.dungeonrealms.common.awt.SuperHandler;
-import net.dungeonrealms.common.lib.scoreboard.ScoreboardBuilder;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
+import net.dungeonrealms.common.frontend.lib.scoreboard.ScoreboardBuilder;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.lobby.ServerLobby;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.DisplaySlot;

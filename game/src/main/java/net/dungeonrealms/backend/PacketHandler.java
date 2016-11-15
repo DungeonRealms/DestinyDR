@@ -1,7 +1,7 @@
 package net.dungeonrealms.backend;
 
 import net.dungeonrealms.common.awt.SuperHandler;
-import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.old.game.database.player.PlayerToken;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;

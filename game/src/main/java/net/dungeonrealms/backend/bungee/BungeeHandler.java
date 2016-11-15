@@ -1,12 +1,12 @@
 package net.dungeonrealms.backend.bungee;
 
 import net.dungeonrealms.common.awt.SuperHandler;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.punishment.PunishAPI;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerInfo;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.vgame.Game;
 import org.bson.Document;
 import org.bukkit.entity.Player;

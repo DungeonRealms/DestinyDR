@@ -1,9 +1,9 @@
 package net.dungeonrealms.lobby;
 
 import lombok.Getter;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
-import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.old.game.database.DatabaseInstance;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.handle.LobbyHandler;
 import net.dungeonrealms.lobby.misc.ghost.GhostFactory;
 import org.bukkit.Bukkit;

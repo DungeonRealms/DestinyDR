@@ -1,19 +1,16 @@
 package net.dungeonrealms.lobby.misc.gui;
 
 import com.google.common.collect.Lists;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.menu.AbstractMenu;
-import net.dungeonrealms.common.game.menu.construct.BasicGUI;
-import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.common.frontend.menu.construct.BasicGUI;
+import net.dungeonrealms.common.old.network.ShardInfo;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.lobby.ServerLobby;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**

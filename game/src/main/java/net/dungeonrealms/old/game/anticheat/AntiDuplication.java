@@ -1,15 +1,14 @@
 package net.dungeonrealms.old.game.anticheat;
 
 import com.google.common.collect.HashMultimap;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
-import net.dungeonrealms.common.game.util.AsyncUtils;
-import net.dungeonrealms.common.game.util.CooldownProvider;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.common.old.game.punishment.PunishAPI;
+import net.dungeonrealms.common.old.game.util.AsyncUtils;
+import net.dungeonrealms.common.old.game.util.CooldownProvider;
 import net.dungeonrealms.old.game.mastery.NBTItem;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.mechanic.ItemManager;
@@ -84,6 +83,9 @@ public class AntiDuplication implements GenericMechanic {
      * when detected.
      *
      * @author APOLLOSOFTWARE
+     *
+     * Well this didn't fucking work now did it.
+     * - Vawke
      */
     private static void checkForDuplications(Player p, HashMultimap<Inventory, Tuple<ItemStack, String>> map) {
         Set<String> duplicates = Utils.findDuplicates(map.values().stream().map(Tuple::b).collect(Collectors.toList()));

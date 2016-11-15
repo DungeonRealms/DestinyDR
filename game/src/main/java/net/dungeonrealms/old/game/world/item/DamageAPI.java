@@ -2,8 +2,8 @@ package net.dungeonrealms.old.game.world.item;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.old.game.handler.EnergyHandler;

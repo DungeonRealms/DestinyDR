@@ -2,8 +2,8 @@ package net.dungeonrealms.old.tool;
 
 import com.mongodb.Block;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.DatabaseInstance;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.mastery.ItemSerialization;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;

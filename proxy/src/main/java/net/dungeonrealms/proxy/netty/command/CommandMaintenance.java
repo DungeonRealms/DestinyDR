@@ -1,7 +1,7 @@
 package net.dungeonrealms.proxy.netty.command;
 
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.old.network.ShardInfo;
 import net.dungeonrealms.proxy.DungeonBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;

@@ -1,8 +1,7 @@
 package net.dungeonrealms.old.game.handler;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.vgame.Game;

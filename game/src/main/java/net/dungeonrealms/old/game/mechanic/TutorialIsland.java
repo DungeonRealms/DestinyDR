@@ -2,7 +2,7 @@ package net.dungeonrealms.old.game.mechanic;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.achievements.AchievementManager;
 import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;

@@ -1,8 +1,8 @@
 package net.dungeonrealms.lobby.command;
 
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.common.old.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.ServerLobby;
 import net.dungeonrealms.lobby.misc.gui.ShardGUI;
 import org.bukkit.Bukkit;

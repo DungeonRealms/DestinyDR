@@ -2,8 +2,8 @@ package net.dungeonrealms.proxy.netty.shard;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import net.dungeonrealms.common.network.ShardInfo;
-import net.dungeonrealms.common.network.enumeration.EnumShardType;
+import net.dungeonrealms.common.old.network.ShardInfo;
+import net.dungeonrealms.common.old.network.enumeration.EnumShardType;
 import net.dungeonrealms.proxy.DungeonBungee;
 import net.md_5.bungee.api.config.ServerInfo;
 

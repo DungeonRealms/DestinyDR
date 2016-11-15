@@ -2,9 +2,9 @@ package net.dungeonrealms.old.game.player.statistics;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 
 import java.util.UUID;
 

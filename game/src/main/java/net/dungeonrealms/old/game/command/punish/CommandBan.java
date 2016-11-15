@@ -1,9 +1,9 @@
 package net.dungeonrealms.old.game.command.punish;
 
-import net.dungeonrealms.common.game.command.BaseCommand;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.common.game.punishment.PunishAPI;
-import net.dungeonrealms.common.game.punishment.TimeFormat;
+import net.dungeonrealms.common.frontend.command.BaseCommand;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.common.old.game.punishment.PunishAPI;
+import net.dungeonrealms.common.old.game.punishment.TimeFormat;
 import net.dungeonrealms.old.game.mastery.UUIDFetcher;
 import net.dungeonrealms.old.game.mastery.Utils;
 import org.bukkit.Bukkit;

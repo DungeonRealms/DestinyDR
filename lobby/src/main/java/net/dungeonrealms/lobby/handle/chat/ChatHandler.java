@@ -1,7 +1,7 @@
 package net.dungeonrealms.lobby.handle.chat;
 
 import net.dungeonrealms.common.awt.SuperHandler;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.lobby.ServerLobby;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
