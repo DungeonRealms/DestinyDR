@@ -1,7 +1,7 @@
 package net.dungeonrealms.control.database;
 
 import com.zaxxer.hikari.HikariDataSource;
-import net.dungeonrealms.control.Control;
+import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.utils.UtilLogger;
 
 import java.sql.Connection;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
  */
 public class Database {
 
-    private Control control;
+    private DRControl control;
 
     private String host;
     private String port;
@@ -22,7 +22,7 @@ public class Database {
 
     private HikariDataSource source;
 
-    public Database(Control control) {
+    public Database(DRControl control) {
         this.control = control;
 
         this.host = control.getConfiguration().getSetting("db-host");

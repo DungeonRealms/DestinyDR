@@ -8,6 +8,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import net.dungeonrealms.control.config.Configuration;
 import net.dungeonrealms.control.database.Database;
 import net.dungeonrealms.control.netty.ServerInitializer;
+import net.dungeonrealms.control.player.PlayerManager;
+import net.dungeonrealms.control.server.ServerManager;
 import net.dungeonrealms.control.utils.UtilLogger;
 
 import java.io.File;
@@ -16,9 +18,9 @@ import java.io.IOException;
 /**
  * Created by Evoltr on 11/15/2016.
  */
-public class Control {
+public class DRControl {
 
-    private static Control instance;
+    private static DRControl instance;
     private long uptime;
     private Channel channel = null;
     private boolean running = true;
@@ -26,7 +28,10 @@ public class Control {
     private Database database;
     private Configuration configuration;
 
-    public Control() {
+    private PlayerManager playerManager;
+    private ServerManager serverManager;
+
+    public DRControl() {
         instance = this;
         uptime = System.currentTimeMillis();
 
@@ -41,13 +46,17 @@ public class Control {
         // Connect to the database.
         database = new Database(this);
         database.setup();
+
+        // Setup managers.
+        playerManager = new PlayerManager(this);
+        this.serverManager = new ServerManager(this);
     }
 
     public static void main(String[] args) {
-        new Control().run();
+        new DRControl().run();
     }
 
-    public static Control getInstance() {
+    public static DRControl getInstance() {
         return instance;
     }
 
@@ -113,5 +122,13 @@ public class Control {
 
     public long getUptime() {
         return uptime;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
+    public ServerManager getServerManager() {
+        return serverManager;
     }
 }
