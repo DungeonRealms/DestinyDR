@@ -1,6 +1,6 @@
 package net.dungeonrealms.control.config;
 
-import net.dungeonrealms.control.Control;
+import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.utils.UtilLogger;
 
 import java.io.*;
@@ -22,7 +22,7 @@ public class Configuration {
     public void load() throws IOException {
         // If file does not exist we create one.
         if (!file.exists()) {
-            Files.copy(Control.class.getResourceAsStream("/config.properties"), file.toPath());
+            Files.copy(DRControl.class.getResourceAsStream("/config.properties"), file.toPath());
         }
 
         // Convert the file to an input stream.
