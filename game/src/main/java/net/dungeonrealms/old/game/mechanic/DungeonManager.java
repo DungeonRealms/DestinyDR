@@ -479,6 +479,7 @@ public class DungeonManager implements GenericMechanic {
             time += second;
         }
 
+        // WHO THOUGHT IT WAS A GREAT IDEA TO IMPLEMENT THIS? - Vawke
         void load() {
             AsyncUtils.pool.submit(() -> {
                 try {

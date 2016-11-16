@@ -1,7 +1,7 @@
 package net.dungeonrealms.common.backend.database.sql.connection;
 
 import lombok.Getter;
-import net.dungeonrealms.control.database.EnumDatabase;
+import net.dungeonrealms.common.backend.database.EnumDatabase;
 import net.dungeonrealms.common.backend.database.IConnection;
 import net.dungeonrealms.common.backend.database.sql.MySQL;
 import net.dungeonrealms.common.backend.database.sql.exception.ConnectionRunningException;
