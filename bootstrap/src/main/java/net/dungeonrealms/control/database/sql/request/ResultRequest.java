@@ -1,8 +1,10 @@
-package net.dungeonrealms.common.backend.database.sql.request;
+package net.dungeonrealms.control.database.sql.request;
 
-import net.dungeonrealms.common.backend.database.sql.MySQL;
-import net.dungeonrealms.common.backend.database.sql.connection.EnumConnectionResult;
-import net.dungeonrealms.common.backend.database.sql.request.result.RawResult;
+import net.dungeonrealms.control.database.sql.MySQL;
+import net.dungeonrealms.control.database.sql.connection.EnumConnectionResult;
+import net.dungeonrealms.control.database.sql.request.enumeration.EnumClauseType;
+import net.dungeonrealms.control.database.sql.request.enumeration.EnumRequestType;
+import net.dungeonrealms.control.database.sql.request.result.RawResult;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,7 +19,7 @@ import java.util.UUID;
 public class ResultRequest
 {
     /**
-     * RawResult result = new ResultRequest(INTEGER, UUID).fromTable("eggs").fromColumn("yolkLevel").asData(Integer).send(MySQL).get();
+     * RawResult result = new ResultRequest(INTEGER, UUID).fromTable("eggs").fromColumn("yolkLevel"). fromValue(5).send(MySQL).get();
      * int level = result.toInteger();
      */
 
@@ -51,14 +53,13 @@ public class ResultRequest
         return this;
     }
 
-    public ResultRequest asData(Object object)
+    public ResultRequest fromValue(Object object)
     {
         this.clause = object;
         return this;
     }
 
     // TODO on a different thread 4 safety
-    // TODO all clause types
     public ResultRequest send(MySQL from) throws SQLException, ClassNotFoundException
     {
         switch (this.clauseType)
@@ -66,7 +67,7 @@ public class ResultRequest
             case UUID:
                 UUID uuid = UUID.fromString(String.valueOf(this.clause));
                 ResultSet resultSet = from.query("SELECT * FROM " + this.table + " WHERE UUID = '" + uuid + "';");
-                this.rawResult = new RawResult(resultSet.getObject(column));
+                this.rawResult = new RawResult(resultSet.getObject(column), this.requestType);
                 break;
             default:
                 break;

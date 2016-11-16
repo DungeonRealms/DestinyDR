@@ -1,11 +1,13 @@
-package net.dungeonrealms.common.backend.database.sql.connection;
+package net.dungeonrealms.control.database.sql.connection;
 
 import lombok.Getter;
-import net.dungeonrealms.common.backend.database.sql.MySQL;
-import net.dungeonrealms.common.backend.database.sql.exception.ConnectionRunningException;
-import net.dungeonrealms.common.backend.database.sql.request.EnumClauseType;
-import net.dungeonrealms.common.backend.database.sql.request.EnumRequestType;
-import net.dungeonrealms.common.backend.database.sql.request.ResultRequest;
+import net.dungeonrealms.control.database.EnumDatabase;
+import net.dungeonrealms.control.database.IConnection;
+import net.dungeonrealms.control.database.sql.MySQL;
+import net.dungeonrealms.control.database.sql.exception.ConnectionRunningException;
+import net.dungeonrealms.control.database.sql.request.enumeration.EnumClauseType;
+import net.dungeonrealms.control.database.sql.request.enumeration.EnumRequestType;
+import net.dungeonrealms.control.database.sql.request.ResultRequest;
 
 import java.sql.SQLException;
 
@@ -15,9 +17,12 @@ import java.sql.SQLException;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class SQLConnection
+public class SQLConnection implements IConnection
 {
     private MySQL mySQL;
+
+    @Getter
+    private EnumDatabase databaseType = EnumDatabase.SQL;
 
     @Getter
     private boolean running = false;
