@@ -1,7 +1,7 @@
-package net.dungeonrealms.common.backend.database.sql.request.result;
+package net.dungeonrealms.control.database.sql.request.result;
 
 import lombok.Getter;
-import net.dungeonrealms.common.backend.database.sql.request.EnumRequestType;
+import net.dungeonrealms.control.database.sql.request.enumeration.EnumRequestType;
 
 /**
  * Created by Giovanni on 15-11-2016.
@@ -16,9 +16,10 @@ public class RawResult
 
     private Object result;
 
-    public RawResult(Object object)
+    public RawResult(Object object, EnumRequestType requestType)
     {
         this.result = object;
+        this.requestType = requestType;
     }
 
     public String toString()
