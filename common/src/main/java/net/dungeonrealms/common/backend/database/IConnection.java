@@ -1,4 +1,4 @@
-package net.dungeonrealms.control.database;
+package net.dungeonrealms.common.backend.database;
 /**
  * Created by Giovanni on 16-11-2016.
  * <p>

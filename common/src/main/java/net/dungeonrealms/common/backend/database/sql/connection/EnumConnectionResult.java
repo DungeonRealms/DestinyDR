@@ -1,4 +1,4 @@
-package net.dungeonrealms.control.database.sql.request;
+package net.dungeonrealms.common.backend.database.sql.connection;
 
 /**
  * Created by Giovanni on 15-11-2016.
@@ -6,7 +6,7 @@ package net.dungeonrealms.control.database.sql.request;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class UnsafeRequest
+public enum EnumConnectionResult
 {
-    // TODO
+    SUCCESS, FAIL;
 }

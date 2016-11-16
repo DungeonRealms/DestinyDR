@@ -1,13 +1,13 @@
-package net.dungeonrealms.control.database.sql.connection;
+package net.dungeonrealms.common.backend.database.sql.connection;
 
 import lombok.Getter;
 import net.dungeonrealms.control.database.EnumDatabase;
-import net.dungeonrealms.control.database.IConnection;
-import net.dungeonrealms.control.database.sql.MySQL;
-import net.dungeonrealms.control.database.sql.exception.ConnectionRunningException;
-import net.dungeonrealms.control.database.sql.request.enumeration.EnumClauseType;
-import net.dungeonrealms.control.database.sql.request.enumeration.EnumRequestType;
-import net.dungeonrealms.control.database.sql.request.ResultRequest;
+import net.dungeonrealms.common.backend.database.IConnection;
+import net.dungeonrealms.common.backend.database.sql.MySQL;
+import net.dungeonrealms.common.backend.database.sql.exception.ConnectionRunningException;
+import net.dungeonrealms.common.backend.database.sql.request.enumeration.EnumClauseType;
+import net.dungeonrealms.common.backend.database.sql.request.enumeration.EnumRequestType;
+import net.dungeonrealms.common.backend.database.sql.request.ResultRequest;
 
 import java.sql.SQLException;
 

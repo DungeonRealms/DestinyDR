@@ -1,4 +1,4 @@
-package net.dungeonrealms.control.database.sql.exception;
+package net.dungeonrealms.common.backend.database.sql.exception;
 
 /**
  * Created by Giovanni on 15-11-2016.

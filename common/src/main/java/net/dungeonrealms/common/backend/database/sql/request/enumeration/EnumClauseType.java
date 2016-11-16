@@ -1,4 +1,4 @@
-package net.dungeonrealms.control.database.sql.connection;
+package net.dungeonrealms.common.backend.database.sql.request.enumeration;
 
 /**
  * Created by Giovanni on 15-11-2016.
@@ -6,7 +6,7 @@ package net.dungeonrealms.control.database.sql.connection;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumConnectionResult
+public enum EnumClauseType
 {
-    SUCCESS, FAIL;
+    UUID;
 }

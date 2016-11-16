@@ -1,7 +1,7 @@
-package net.dungeonrealms.control.database.sql.request.result;
+package net.dungeonrealms.common.backend.database.sql.request.result;
 
 import lombok.Getter;
-import net.dungeonrealms.control.database.sql.request.enumeration.EnumRequestType;
+import net.dungeonrealms.common.backend.database.sql.request.enumeration.EnumRequestType;
 
 /**
  * Created by Giovanni on 15-11-2016.

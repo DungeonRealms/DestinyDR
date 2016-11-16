@@ -1,4 +1,4 @@
-package net.dungeonrealms.control.database.sql;
+package net.dungeonrealms.common.backend.database.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

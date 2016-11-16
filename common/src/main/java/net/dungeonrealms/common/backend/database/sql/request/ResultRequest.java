@@ -1,10 +1,10 @@
-package net.dungeonrealms.control.database.sql.request;
+package net.dungeonrealms.common.backend.database.sql.request;
 
-import net.dungeonrealms.control.database.sql.MySQL;
-import net.dungeonrealms.control.database.sql.connection.EnumConnectionResult;
-import net.dungeonrealms.control.database.sql.request.enumeration.EnumClauseType;
-import net.dungeonrealms.control.database.sql.request.enumeration.EnumRequestType;
-import net.dungeonrealms.control.database.sql.request.result.RawResult;
+import net.dungeonrealms.common.backend.database.sql.MySQL;
+import net.dungeonrealms.common.backend.database.sql.connection.EnumConnectionResult;
+import net.dungeonrealms.common.backend.database.sql.request.enumeration.EnumClauseType;
+import net.dungeonrealms.common.backend.database.sql.request.enumeration.EnumRequestType;
+import net.dungeonrealms.common.backend.database.sql.request.result.RawResult;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
