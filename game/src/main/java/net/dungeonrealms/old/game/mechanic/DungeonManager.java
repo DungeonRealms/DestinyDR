@@ -42,6 +42,10 @@ import java.util.zip.ZipFile;
  */
 public class DungeonManager implements GenericMechanic {
 
+    /**
+     * Holy fucking shit, this is one way to crash your server.
+     */
+
     static DungeonManager instance = null;
 
     public static DungeonManager getInstance() {
