@@ -4,6 +4,9 @@ import net.dungeonrealms.backend.PacketHandler;
 import net.dungeonrealms.backend.bungee.BungeeHandler;
 import net.dungeonrealms.backend.packet.handle.MonoPacketHandler;
 import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.security.NUAIHolder;
+import net.dungeonrealms.vgame.security.handle.AtomicHandler;
+import net.dungeonrealms.vgame.security.handle.NeutronHandler;
 import test.GameTest;
 import lombok.Getter;
 import net.dungeonrealms.common.awt.handler.SuperHandler;
@@ -50,6 +53,9 @@ public class GameHandler implements Handler
         this.handlerMap.put(UUID.randomUUID(), new MonoPacketHandler());
         this.handlerMap.put(UUID.randomUUID(), new BungeeHandler());
         this.handlerMap.put(UUID.randomUUID(), new PacketHandler());
+        this.handlerMap.put(UUID.randomUUID(), new NUAIHolder());
+        this.handlerMap.put(UUID.randomUUID(), new AtomicHandler());
+        this.handlerMap.put(UUID.randomUUID(), new NeutronHandler());
 
         // skelframe
         this.handlerMap.put(UUID.randomUUID(), new GameTest());
