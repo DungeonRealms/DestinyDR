@@ -35,7 +35,7 @@ public class DRPlayer {
     }
 
     public boolean isOnline() {
-        return getProxy()!= null;
+        return getProxy() != null;
     }
 
     public GameServer getServer() {
