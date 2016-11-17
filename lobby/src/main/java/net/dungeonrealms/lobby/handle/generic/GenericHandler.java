@@ -1,6 +1,6 @@
 package net.dungeonrealms.lobby.handle.generic;
 
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.lobby.ServerLobby;
 import org.bukkit.GameMode;
 import org.bukkit.Material;

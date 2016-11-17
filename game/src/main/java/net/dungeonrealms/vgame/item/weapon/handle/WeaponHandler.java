@@ -1,22 +1,18 @@
 package net.dungeonrealms.vgame.item.weapon.handle;
 
 import net.dungeonrealms.api.creature.EnumCreatureType;
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.old.game.handler.EnergyHandler;
-import net.dungeonrealms.old.game.party.Party;
 import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.weapon.WeaponItem;
-import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Giovanni on 29-10-2016.

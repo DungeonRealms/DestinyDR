@@ -6,7 +6,7 @@ import net.dungeonrealms.backend.packet.handle.MonoPacketHandler;
 import net.dungeonrealms.vgame.Game;
 import test.GameTest;
 import lombok.Getter;
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;
 import net.dungeonrealms.backend.backup.SaveHandler;
 import net.dungeonrealms.vgame.item.weapon.handle.BowHandler;
@@ -16,7 +16,7 @@ import org.bukkit.ChatColor;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static net.dungeonrealms.common.awt.SuperHandler.*;
+import static net.dungeonrealms.common.awt.handler.SuperHandler.*;
 
 /**
  * Created by Giovanni on 29-10-2016.

@@ -1,6 +1,6 @@
 package net.dungeonrealms.proxy.handle.channel;
 
-import net.dungeonrealms.common.awt.BungeeHandler;
+import net.dungeonrealms.common.awt.handler.BungeeHandler;
 import net.dungeonrealms.proxy.DungeonBungee;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.event.EventHandler;

@@ -1,7 +1,7 @@
 package test;
 
 import net.dungeonrealms.api.creature.EnumCreatureType;
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.item.EnumItemType;
 import net.dungeonrealms.vgame.item.weapon.WeaponItem;

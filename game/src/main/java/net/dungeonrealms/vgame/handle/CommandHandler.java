@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame.handle;
 
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.common.frontend.command.CommandManager;
 import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.command.CommandItem;

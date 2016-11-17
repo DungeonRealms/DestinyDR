@@ -1,7 +1,7 @@
 package net.dungeonrealms.proxy.handle.connection;
 
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.awt.BungeeHandler;
+import net.dungeonrealms.common.awt.handler.BungeeHandler;
 import net.dungeonrealms.proxy.DungeonBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;

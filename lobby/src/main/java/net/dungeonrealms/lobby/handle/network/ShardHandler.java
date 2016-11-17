@@ -1,6 +1,6 @@
 package net.dungeonrealms.lobby.handle.network;
 
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;

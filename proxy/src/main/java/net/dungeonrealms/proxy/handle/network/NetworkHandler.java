@@ -2,7 +2,7 @@ package net.dungeonrealms.proxy.handle.network;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import net.dungeonrealms.common.awt.BungeeHandler;
+import net.dungeonrealms.common.awt.handler.BungeeHandler;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.proxy.DungeonBungee;
 import net.dungeonrealms.proxy.netty.shard.ShardBalancer;
