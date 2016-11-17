@@ -1,7 +1,7 @@
 package net.dungeonrealms.lobby.handle;
 
 import lombok.Getter;
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.lobby.ServerLobby;
 import net.dungeonrealms.lobby.handle.chat.ChatHandler;
 import net.dungeonrealms.lobby.handle.connection.ConnectionHandler;

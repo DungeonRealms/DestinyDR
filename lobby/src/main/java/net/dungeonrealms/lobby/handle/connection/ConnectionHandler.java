@@ -1,6 +1,6 @@
 package net.dungeonrealms.lobby.handle.connection;
 
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.common.old.game.punishment.PunishAPI;

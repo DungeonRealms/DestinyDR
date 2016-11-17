@@ -2,7 +2,7 @@ package net.dungeonrealms.backend.packet.handle;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.network.packet.type.MonoPacket;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;

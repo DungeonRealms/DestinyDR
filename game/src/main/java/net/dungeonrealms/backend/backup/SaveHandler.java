@@ -1,7 +1,7 @@
 package net.dungeonrealms.backend.backup;
 
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.awt.SuperHandler;import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.common.awt.handler.SuperHandler;import net.dungeonrealms.vgame.Game;
 
 /**
  * Created by Giovanni on 30-10-2016.

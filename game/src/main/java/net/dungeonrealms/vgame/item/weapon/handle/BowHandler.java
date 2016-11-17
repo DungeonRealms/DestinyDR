@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame.item.weapon.handle;
 
-import net.dungeonrealms.common.awt.SuperHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.vgame.Game;
 
 /**
