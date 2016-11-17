@@ -8,6 +8,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import net.dungeonrealms.control.config.Configuration;
 import net.dungeonrealms.control.database.Database;
 import net.dungeonrealms.control.netty.ServerInitializer;
+import net.dungeonrealms.control.party.PartyManager;
 import net.dungeonrealms.control.player.PlayerManager;
 import net.dungeonrealms.control.server.ServerManager;
 import net.dungeonrealms.control.utils.UtilLogger;
@@ -30,6 +31,7 @@ public class DRControl {
 
     private PlayerManager playerManager;
     private ServerManager serverManager;
+    private PartyManager partyManager;
 
     public DRControl() {
         instance = this;
@@ -50,6 +52,7 @@ public class DRControl {
         // Setup managers.
         playerManager = new PlayerManager(this);
         this.serverManager = new ServerManager(this);
+        this.partyManager = new PartyManager(this);
     }
 
     public static void main(String[] args) {
@@ -130,5 +133,9 @@ public class DRControl {
 
     public ServerManager getServerManager() {
         return serverManager;
+    }
+
+    public PartyManager getPartyManager() {
+        return partyManager;
     }
 }
