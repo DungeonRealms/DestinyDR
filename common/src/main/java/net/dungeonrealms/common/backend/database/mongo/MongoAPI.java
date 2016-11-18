@@ -2,22 +2,30 @@ package net.dungeonrealms.common.backend.database.mongo;
 
 import com.mongodb.client.model.Filters;
 import lombok.Getter;
+import net.dungeonrealms.common.backend.database.mongo.nest.EnumNestType;
+import net.dungeonrealms.common.backend.database.mongo.nest.NestDocument;
 import net.dungeonrealms.common.backend.player.DataPlayer;
 import org.bson.Document;
 
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Giovanni on 18-11-2016.
- *
+ * <p>
  * All API methods must be handled async/hyper-threaded
- *
+ * <p>
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class MongoAPI
 {
+    // DataPlayer dataPlayer = #requestPlayerData($).getPlayer();
+
     @Getter
     private Mongo mongo;
 
@@ -39,9 +47,16 @@ public class MongoAPI
     public MongoAPI requestPlayerData(UUID uniqueId)
     {
         Document document = this.mongo.getCollection("playerData").find(Filters.eq("pinfo.uniqueId", uniqueId.toString())).first();
-        if (document != null && !document.isEmpty())
+        if (document != null && !document.isEmpty()) // Does the dataplayer exist?
         {
-            this.dataPlayerMap.put(uniqueId, null);
+            // Cache the player
+            this.dataPlayerMap.put(uniqueId, new DataPlayer(uniqueId, document));
+        } else
+        {
+            // Send to mongo
+            this.mongo.getCollection("playerData").insertOne(new NestDocument(EnumNestType.PLAYER).generate(uniqueId));
+            // Retry
+            this.requestPlayerData(uniqueId);
         }
         return this;
     }

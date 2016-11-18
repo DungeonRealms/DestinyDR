@@ -27,6 +27,7 @@ public class MongoConnection
         {
             this.mongo = new Mongo(URI, fromDatabase);
             this.api = new MongoAPI(this.mongo);
+            this.running = true;
         } else
             throw new ConnectionRunningException();
     }

@@ -2,9 +2,11 @@ package net.dungeonrealms.common.backend.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +18,9 @@ import java.util.UUID;
  */
 public class DataPlayer
 {
-    // This must be attached to a GamePlayer
+    // This must be attached to a GamePlayer, all data in this is RAW, it must be converted first.
+
+    // TODO realm stuff, more collectible data & clean up sections
 
     @Getter
     private UUID uniqueId;
@@ -29,18 +33,6 @@ public class DataPlayer
 
     @Getter
     @Setter
-    private long firstLogin;
-
-    @Getter
-    @Setter
-    private long lastLogin;
-
-    @Getter
-    @Setter
-    private long lastLogout;
-
-    @Getter
-    @Setter
     private boolean isPlaying;
 
     @Getter
@@ -48,7 +40,7 @@ public class DataPlayer
     private int level;
     @Getter
     @Setter
-    private int exp;
+    private double exp;
 
     @Getter
     @Setter
@@ -64,17 +56,17 @@ public class DataPlayer
 
     @Getter
     @Setter
-    private List friends;
+    private List<String> friends;
     @Getter
     @Setter
-    private List friendRequests;
+    private List<String> friendRequests;
 
     @Getter
     @Setter
     private String guild;
     @Getter
     @Setter
-    private List guildInvities;
+    private List<String> guildInvites;
 
     @Getter
     @Setter
@@ -102,12 +94,32 @@ public class DataPlayer
     private String rank;
     @Getter
     @Setter
-    private long lastPurchase;
-    @Getter
-    @Setter
-    private List purchaseHistory;
+    private int expirationDate;
 
     // Attributes are removed, so no need to hold them here
+
+    // Settings
+    @Getter
+    @Setter
+    private boolean globalChat;
+    @Getter
+    @Setter
+    private boolean tradeChat;
+    @Getter
+    @Setter
+    private boolean trading;
+    @Getter
+    @Setter
+    private boolean receiveMessage;
+    @Getter
+    @Setter
+    private boolean pvp;
+    @Getter
+    @Setter
+    private boolean chaoticPrevention;
+    @Getter
+    @Setter
+    private boolean allowDuels;
 
     // Storage
     @Getter
@@ -130,7 +142,7 @@ public class DataPlayer
     private boolean hasShop;
     @Getter
     @Setter
-    private List armorContents;
+    private List<String> armorContents;
 
     // Portal key shards
     @Getter
@@ -152,11 +164,37 @@ public class DataPlayer
     // Misc
     @Getter
     @Setter
-    private List achievements;
+    private List<String> achievements;
 
-    public DataPlayer(UUID uuid)
+    public DataPlayer(UUID uuid, Document document)
     {
         this.uniqueId = uuid;
         this.player = Bukkit.getPlayer(uuid);
+        // Alright, here we go..
+        Document playerInfo = (Document) document.get("pinfo");
+        this.health = playerInfo.getInteger("health");
+        this.ecash = playerInfo.getInteger("ecash");
+        this.gems = playerInfo.getInteger("gems");
+        this.level = playerInfo.getInteger("netLevel");
+        this.exp = playerInfo.getDouble("experience");
+        this.hearthstoneLocation = playerInfo.getString("hearthstone");
+        this.currentLocation = playerInfo.getString("currentLocation");
+        this.isPlaying = playerInfo.getBoolean("isPlaying");
+        this.friends = playerInfo.get("friends", ArrayList.class);
+        this.alignment = playerInfo.getString("alignment");
+        this.guild = playerInfo.getString("guild");
+        this.hasShop = playerInfo.getBoolean("shopOpen");
+        this.currentFood = playerInfo.getInteger("foodLevel");
+        this.shopLevel = playerInfo.getInteger("shopLevel");
+        this.loggerDead = playerInfo.getBoolean("deadLogger");
+
+        Document collectibles = (Document) document.get("collectibles");
+        this.achievements = collectibles.get("achievements", ArrayList.class);
+
+        Document group = (Document) document.get("group");
+        this.rank = group.getString("currentRank");
+        this.expirationDate = group.getInteger("expirationDate");
+
+        // TODO
     }
 }
