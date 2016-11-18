@@ -37,7 +37,6 @@ public class MonoPacketHandler extends Listener implements SuperHandler.Handler
                 if (dataInputStream.readUTF().equals("SEND_WEAPON"))
                 {
                     UUID item = UUID.fromString(dataInputStream.readUTF());
-                    Game.getGame().getRegistryHandler().getWeaponRegistry().receive(item);
                 }
                 if (dataInputStream.readUTF().equals("SEND_ARMOR"))
                 {
