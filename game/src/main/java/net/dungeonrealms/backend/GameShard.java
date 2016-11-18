@@ -79,8 +79,6 @@ public class GameShard
         {
             // Load shard data
             this.loadShardData(fileReader);
-            // Start the old Dungeon Realms
-            SkelRuntime.getSkelRuntime().bootstrap().perform(this.bungeeIdentifier);
             // The new Dungeon Realms
             this.setupDatabase();
             this.connect();

@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.item.armor;
+package net.dungeonrealms.vgame.stash.item.armor;
 
 /**
  * Created by Giovanni on 3-11-2016.

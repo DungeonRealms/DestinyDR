@@ -1,10 +1,10 @@
-package net.dungeonrealms.vgame.item.weapon.attribute;
+package net.dungeonrealms.vgame.stash.item.weapon.attribute;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.api.collection.AtomicCollection;
-import net.dungeonrealms.vgame.item.EnumItemTier;
-import net.dungeonrealms.vgame.item.meta.AttributeMeta;
+import net.dungeonrealms.vgame.stash.item.EnumItemTier;
+import net.dungeonrealms.vgame.stash.item.meta.AttributeMeta;
 import org.bukkit.ChatColor;
 
 import java.util.Collection;

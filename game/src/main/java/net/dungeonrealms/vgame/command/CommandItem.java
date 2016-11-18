@@ -2,10 +2,10 @@ package net.dungeonrealms.vgame.command;
 
 import net.dungeonrealms.common.frontend.command.BaseCommand;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;
-import net.dungeonrealms.vgame.item.EnumItemRarity;
-import net.dungeonrealms.vgame.item.EnumItemTier;
-import net.dungeonrealms.vgame.item.EnumItemType;
-import net.dungeonrealms.vgame.item.weapon.WeaponItem;
+import net.dungeonrealms.vgame.stash.item.EnumItemRarity;
+import net.dungeonrealms.vgame.stash.item.EnumItemTier;
+import net.dungeonrealms.vgame.stash.item.EnumItemType;
+import net.dungeonrealms.vgame.stash.item.weapon.WeaponItem;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

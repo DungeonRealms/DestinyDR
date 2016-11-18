@@ -1,14 +1,17 @@
-package net.dungeonrealms.vgame.item.weapon;
+package net.dungeonrealms.vgame.stash.item.weapon;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import net.dungeonrealms.api.creature.EnumCreatureType;
 import net.dungeonrealms.vgame.Game;
-import net.dungeonrealms.vgame.item.*;
-import net.dungeonrealms.vgame.item.meta.AttributeMeta;
-import net.dungeonrealms.vgame.item.meta.DamageMeta;
-import net.dungeonrealms.vgame.item.weapon.attribute.EnumWeaponAttribute;
+import net.dungeonrealms.vgame.stash.item.EnumItemRarity;
+import net.dungeonrealms.vgame.stash.item.EnumItemTier;
+import net.dungeonrealms.vgame.stash.item.EnumItemType;
+import net.dungeonrealms.vgame.stash.item.IStack;
+import net.dungeonrealms.vgame.stash.item.meta.AttributeMeta;
+import net.dungeonrealms.vgame.stash.item.meta.DamageMeta;
+import net.dungeonrealms.vgame.stash.item.weapon.attribute.EnumWeaponAttribute;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
@@ -92,7 +95,7 @@ public class WeaponItem implements IStack
         this.createKey(); // Actual item
 
         // Send the item to all shards
-        Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
+        // Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
     }
 
     public WeaponItem(UUID uuid,
@@ -125,10 +128,6 @@ public class WeaponItem implements IStack
         this.maxDmg = maxDmg;
 
         this.createKey(); // Actual item
-
-        if (packet)
-            Game.getGame().getRegistryHandler().getWeaponRegistry().store(this);
-        else return;
     }
 
     private void createKey()

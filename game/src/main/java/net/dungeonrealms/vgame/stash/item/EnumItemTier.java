@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.item;
+package net.dungeonrealms.vgame.stash.item;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
