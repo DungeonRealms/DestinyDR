@@ -5,10 +5,13 @@ package net.dungeonrealms.control.player.rank;
  */
 public enum Rank {
 
-    // I dont know all ranks so this will suffice for now
-    OWNER(3, "Owner", "&c"),
-    DEV(2, "Dev", "&c"),
-    DEFAULT(1, "Default", "&7");
+    DEFAULT(0, "", "&7"),
+    SUB(1, "S", "&a&l"),
+    SUB_2(2, "S+", "&6&"),
+    SUB_3(3, "S++", "&e&l"),
+    PMOD(4, "PMOD", "&f&l"),
+    GM(5, "GM", "&b&l"),
+    DEV(6, "DEV", "&b&l");
 
     private int id;
     private String name;

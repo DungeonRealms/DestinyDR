@@ -37,7 +37,7 @@ public class Party {
     }
 
     public boolean containsPlayer(DRPlayer player) {
-        return players.contains(player.getUuid());
+        return players.contains(player.getDataPlayer().getUniqueId());
     }
 
 }
