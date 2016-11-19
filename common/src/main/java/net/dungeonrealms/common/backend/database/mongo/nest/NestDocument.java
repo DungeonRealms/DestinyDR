@@ -14,7 +14,7 @@ import java.util.UUID;
  */
 public class NestDocument
 {
-    // TODO realm stuff, more collectible data & clean up sections
+    // TODO realm stuff & more collectible data
 
     @Getter
     private EnumNestType nestType;
@@ -30,25 +30,25 @@ public class NestDocument
         switch (this.nestType)
         {
             case PLAYER:
-                document = new Document("pinfo", new Document("uniqueId", uuid.toString())
-                        // 1
-                        .append("health", 50).append("ecash", 0).append("gems", 0).append("netLevel", 1).append("experience", 0D)
-                        .append("hearthstone", "CYRENNICA").append("currentLocation", "").append("isPlaying", true).append("friends", Lists.newArrayList())
-                        .append("alignment", "LAWFUL").append("guild", "").append("shopOpen", false).append("foodLevel", 20).append("shopLevel", 1).append("deadLogger", false))
-                        // 2
-                        .append("collectibles", new Document("achievements", Lists.newArrayList()))
-                        // 3
-                        .append("group", new Document("expirationDate", 0).append("currentRank", "DEFAULT"))
-                        // 4
-                        .append("settings", new Document("pvp", false).append("duel", false).append("receiveMessage", true).append("trading", true).append("tradeChat", true)
-                                .append("chaoticPrevention", true).append("globalChat", true))
-                        // 5
-                        .append("notifications", new Document("guildInvitations", Lists.newArrayList()).append("friendRequests", Lists.newArrayList()))
-                        // 6
-                        .append("keyShards", new Document("tier1", 0).append("tier2", 0).append("tier3", 0).append("tier4", 0).append("tier5", 0))
-                        // 7
-                        .append("inventory", new Document("collectionBin", "").append("player", "").append("mule", "empty").append("storage", "").append("storageLvl", 0)
-                                .append("armorContents", ""));
+                document = new Document("genericData",
+                        new Document("uniqueId", uuid.toString()).append("online", true).append("hasDeadLogger", false)
+                                .append("hearthstoneLocation", "CYRENNICA").append("currentAlignment", "LAWFUL").append("currentLocation", "")
+                                .append("level", 1).append("experience", 0.0).append("gems", 0).append("currentFoodLevel", 20).append("ecash", 0).append("health", 50))
+                        // Guild data
+                        .append("guildData", new Document("guild", "").append("guildInvitations", Lists.newArrayList()))
+                        // Friend data
+                        .append("friendData", new Document("friends", Lists.newArrayList()).append("friendRequests", Lists.newArrayList()))
+                        // Inventory data
+                        .append("inventoryData", new Document("inventory", "").append("storageLevel", 1).append("collectionBin", "").append("armorContents", Lists.newArrayList())
+                                .append("mule", "empty").append("muleLevel", 0).append("storage", "").append("hasOpenShop", false).append("shopLevel", 0))
+                        // Collection data & Keyshard data
+                        .append("collectionData", new Document("achievements", Lists.newArrayList()))
+                        .append("keyShardData", new Document("tier1", 0).append("tier2", 0).append("tier3", 0).append("tier4", 0).append("tier5", 0))
+                        // Rank data
+                        .append("rankData", new Document("currentRank", "DEFAULT"))
+                        // Settings data
+                        .append("settingsData", new Document("enabledGlobalChat", true).append("enabledTradeChat", true).append("tradingEnabled", false).append("receiveMessages", true)
+                                .append("pvp", false).append("enabledChaoticPrevention", true).append("duels", true).append("tips", true));
                 break;
             default:
                 break;
