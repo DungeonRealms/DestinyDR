@@ -21,7 +21,6 @@ public class GameData implements IData
     public GameData(UUID uuid, Document document)
     {
         this.owner = uuid;
-        this.isPlaying = document.getBoolean("online");
         this.hasDeadLogger = document.getBoolean("hasDeadLogger");
         this.hearthstoneLocationBlob = document.getString("hearthstoneLocation");
         this.alignmentBlob = document.getString("currentAlignment");
@@ -34,10 +33,6 @@ public class GameData implements IData
         this.health = document.getInteger("health");
     }
 
-    // Boolean
-    @Getter
-    @Setter
-    private boolean isPlaying;
     @Getter
     @Setter
     private boolean hasDeadLogger;

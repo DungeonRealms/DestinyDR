@@ -1,6 +1,8 @@
 package net.dungeonrealms.common.backend.player;
 
 import lombok.Getter;
+import net.dungeonrealms.common.backend.database.mongo.nest.EnumNestType;
+import net.dungeonrealms.common.backend.database.mongo.nest.NestDocument;
 import net.dungeonrealms.common.backend.player.data.type.*;
 import net.dungeonrealms.common.backend.player.data.type.GameData;
 import org.bson.Document;
@@ -65,5 +67,19 @@ public class DataPlayer
         {
             e.printStackTrace();
         }
+    }
+
+    public Document constructRawDocument()
+    {
+        Document document = null;
+        try
+        {
+            document = new NestDocument(EnumNestType.PLAYER).generateExistent(this);
+        } catch (Exception e)
+        {
+            System.out.println("Failed to construct a raw document for: " + this.uniqueId);
+            e.printStackTrace();
+        }
+        return document;
     }
 }
