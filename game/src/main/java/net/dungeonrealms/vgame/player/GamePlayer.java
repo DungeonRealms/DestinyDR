@@ -1,11 +1,8 @@
 package net.dungeonrealms.vgame.player;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.Bukkit;
+import net.dungeonrealms.common.backend.player.DataPlayer;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 /**
  * Created by Giovanni on 8-11-2016.
@@ -15,51 +12,15 @@ import java.util.UUID;
  */
 public class GamePlayer implements IPlayer
 {
-    @Setter
     @Getter
-    private UUID uuid;
-
-    @Setter
-    @Getter
-    private int gems;
-
-    @Setter
-    @Getter
-    private int exp;
-
-    @Setter
-    @Getter
-    private int level;
+    private DataPlayer data; // All raw data
 
     @Getter
     private Player player;
 
-    public GamePlayer(UUID uuid)
+    public GamePlayer(DataPlayer dataPlayer)
     {
-        this.uuid = uuid;
-        this.gems = 0;
-        this.exp = 0;
-        this.level = 0;
-        this.player = Bukkit.getPlayer(uuid);
-    }
-
-    public void addExp(int par1)
-    {
-        this.exp += par1;
-    }
-
-    public void removeExp(int par1)
-    {
-        this.exp -= par1;
-    }
-
-    public void addGems(int par1)
-    {
-        this.gems += par1;
-    }
-
-    public void removeGems(int par1)
-    {
-        this.gems -= par1;
+        this.data = dataPlayer;
+        this.player = dataPlayer.getPlayer();
     }
 }

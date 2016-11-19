@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.item.weapon.handle;
+package net.dungeonrealms.vgame.stash.item.weapon.handle;
 
 import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.vgame.Game;

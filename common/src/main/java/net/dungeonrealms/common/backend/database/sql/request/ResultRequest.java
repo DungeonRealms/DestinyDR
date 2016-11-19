@@ -1,7 +1,7 @@
 package net.dungeonrealms.common.backend.database.sql.request;
 
+import net.dungeonrealms.common.backend.database.connection.EnumConnectionResult;
 import net.dungeonrealms.common.backend.database.sql.MySQL;
-import net.dungeonrealms.common.backend.database.sql.connection.EnumConnectionResult;
 import net.dungeonrealms.common.backend.database.sql.request.enumeration.EnumClauseType;
 import net.dungeonrealms.common.backend.database.sql.request.enumeration.EnumRequestType;
 import net.dungeonrealms.common.backend.database.sql.request.result.RawResult;

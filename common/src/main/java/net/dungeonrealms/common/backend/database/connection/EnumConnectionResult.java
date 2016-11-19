@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.backend.database.sql.connection;
+package net.dungeonrealms.common.backend.database.connection;
 
 /**
  * Created by Giovanni on 15-11-2016.

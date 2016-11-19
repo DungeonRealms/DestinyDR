@@ -4,13 +4,13 @@ import net.dungeonrealms.backend.PacketHandler;
 import net.dungeonrealms.backend.bungee.BungeeHandler;
 import net.dungeonrealms.backend.packet.handle.MonoPacketHandler;
 import net.dungeonrealms.vgame.Game;
-import test.GameTest;
+import net.dungeonrealms.vgame.security.NUAIHolder;
+import net.dungeonrealms.vgame.security.handle.AtomicHandler;
+import net.dungeonrealms.vgame.security.handle.NeutronHandler;
 import lombok.Getter;
 import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.backend.reboot.RebootHandler;
 import net.dungeonrealms.backend.backup.SaveHandler;
-import net.dungeonrealms.vgame.item.weapon.handle.BowHandler;
-import net.dungeonrealms.vgame.item.weapon.handle.WeaponHandler;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
@@ -44,15 +44,14 @@ public class GameHandler implements Handler
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Collecting handlers for atomic reference..");
         this.handlerMap.put(UUID.randomUUID(), new RebootHandler()); // The first handler to ever exist for the recode! yay!
         this.handlerMap.put(UUID.randomUUID(), this.registryHandler = new RegistryHandler());
-        this.handlerMap.put(UUID.randomUUID(), new WeaponHandler());
-        this.handlerMap.put(UUID.randomUUID(), new BowHandler());
         this.handlerMap.put(UUID.randomUUID(), new SaveHandler());
         this.handlerMap.put(UUID.randomUUID(), new MonoPacketHandler());
         this.handlerMap.put(UUID.randomUUID(), new BungeeHandler());
         this.handlerMap.put(UUID.randomUUID(), new PacketHandler());
+        this.handlerMap.put(UUID.randomUUID(), new NUAIHolder());
+        this.handlerMap.put(UUID.randomUUID(), new AtomicHandler());
+        this.handlerMap.put(UUID.randomUUID(), new NeutronHandler());
 
-        // skelframe
-        this.handlerMap.put(UUID.randomUUID(), new GameTest());
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers provided");
 
         // Register them

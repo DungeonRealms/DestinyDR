@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.backend.database.sql.exception;
+package net.dungeonrealms.common.backend.database.connection.exception;
 
 /**
  * Created by Giovanni on 15-11-2016.
@@ -10,6 +10,6 @@ public class ConnectionRunningException extends Exception
 {
     public ConnectionRunningException()
     {
-        super("Double handle requested for a MySQL connection");
+        super("Double handle requested for a database connection");
     }
 }

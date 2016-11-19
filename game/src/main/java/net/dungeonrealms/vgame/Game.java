@@ -4,6 +4,9 @@ import io.vawke.skelframe.SkelRuntime;
 import lombok.Getter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
+import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.backend.database.connection.exception.ConnectionRunningException;
+import net.dungeonrealms.common.backend.database.mongo.connection.MongoConnection;
 import net.dungeonrealms.common.old.game.util.AsyncUtils;
 import net.dungeonrealms.vgame.handle.CommandHandler;
 import net.dungeonrealms.vgame.handle.GameHandler;
@@ -44,6 +47,9 @@ public class Game extends JavaPlugin
     @Getter
     private GameShard gameShard;
 
+    @Getter
+    private MongoConnection mongoConnection;
+
     @Override
     public void onEnable()
     {
@@ -52,13 +58,15 @@ public class Game extends JavaPlugin
         //** Logger **//
         this.instanceLogger = this.getServer().getConsoleSender();
 
-        // Start the skeleton runtime
-        SkelRuntime skelRuntime = new SkelRuntime();
-        skelRuntime.init();
-
-        // Get the available processors, otherwise hyper-threading is not available
-        AsyncUtils.threadCount = skelRuntime.processors();
-        AsyncUtils.pool = Executors.newFixedThreadPool(AsyncUtils.threadCount);
+        // ** Init the mongo ** //
+        this.mongoConnection = new MongoConnection();
+        try
+        {
+            this.mongoConnection.runOn(Constants.DATABASE_URI, "dungeonrealms");
+        } catch (ConnectionRunningException e)
+        {
+            e.printStackTrace(); // This will never happen
+        }
 
         // ** Init shard **//
         try

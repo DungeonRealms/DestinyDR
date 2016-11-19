@@ -1,7 +1,7 @@
-package net.dungeonrealms.vgame.item.meta;
+package net.dungeonrealms.vgame.stash.item.meta;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.item.EnumItemTier;
+import net.dungeonrealms.vgame.stash.item.EnumItemTier;
 
 import java.util.concurrent.ThreadLocalRandom;
 

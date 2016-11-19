@@ -1,4 +1,4 @@
-package net.dungeonrealms.backend.registry;
+package net.dungeonrealms.vgame.stash.registry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -7,7 +7,7 @@ import net.dungeonrealms.backend.packet.mono.EnumMonoType;
 import net.dungeonrealms.backend.packet.mono.MonoPacket;
 import net.dungeonrealms.common.old.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.vgame.Game;
-import net.dungeonrealms.vgame.item.weapon.WeaponItem;
+import net.dungeonrealms.vgame.stash.item.weapon.WeaponItem;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.json.simple.parser.JSONParser;
