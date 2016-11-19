@@ -2,6 +2,7 @@ package net.dungeonrealms.control.party;
 
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
+import net.dungeonrealms.control.player.rank.Rank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +31,65 @@ public class Party {
         return DRControl.getInstance().getPlayerManager().getPlayerByUUID(owner);
     }
 
+    public void setOwner(DRPlayer player) {
+        if (player.getRank() == Rank.DEFAULT) {
+            broadcast(player.getRank().getColor() + player.getName() + " &eis now the party leader.", true);
+        } else {
+            broadcast(player.getRank().getColor() + "[" + player.getRank().getName() + "] " + player.getName() + " &eis now the party leader.", true);
+        }
+        this.owner = player.getUuid();
+    }
+
     public List<DRPlayer> getPlayers() {
         List<DRPlayer> playerList = players.stream().map(uuid -> DRControl.getInstance().getPlayerManager().getPlayerByUUID(uuid)).collect(Collectors.toList());
 
         return playerList;
     }
 
+    public void addPlayer(DRPlayer player) {
+        if (isInvited(player)) {
+            invited.remove(player.getUuid());
+        }
+
+        players.add(player.getUuid());
+    }
+
+    public void removePlayer(DRPlayer player) {
+        players.remove(player.getUuid());
+
+        //Assign a new party leader.
+        if (isOwner(player)) {
+
+            if (getPlayers().size() >= 1) {
+                setOwner(getPlayers().get(0));
+            } else {
+                DRControl.getInstance().getPartyManager().removeParty(this);
+            }
+
+        }
+    }
+
+
     public boolean containsPlayer(DRPlayer player) {
         return players.contains(player.getUuid());
+    }
+
+    public boolean isOwner(DRPlayer player) {
+        return getOwner().equals(player);
+    }
+
+    public boolean isInvited(DRPlayer player) {
+        return invited.contains(player.getUuid());
+    }
+
+    public void invitePlayer(DRPlayer player) {
+        invited.add(player.getUuid());
+    }
+
+    public void broadcast(String msg, boolean prefix) {
+        for (DRPlayer player : getPlayers()) {
+            player.sendMessage(msg, prefix);
+        }
     }
 
 }

@@ -4,6 +4,7 @@ import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.rank.Rank;
 import net.dungeonrealms.control.server.types.GameServer;
 import net.dungeonrealms.control.server.types.ProxyServer;
+import net.dungeonrealms.packet.player.PacketMessage;
 
 import java.util.List;
 
@@ -60,5 +61,13 @@ public class DRPlayer {
             }
         }
         return null;
+    }
+
+    public void sendMessage(String msg, boolean prefix) {
+        ProxyServer proxyServer = getProxy();
+
+        if (proxyServer != null) {
+            proxyServer.sendPacket(new PacketMessage(getName(), (prefix ? "" : "") + msg));
+        }
     }
 }

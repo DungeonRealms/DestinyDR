@@ -3,7 +3,7 @@ package net.dungeonrealms.control.server;
 import io.netty.channel.Channel;
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
-import net.dungeonrealms.network.packet.Packet;
+import net.dungeonrealms.packet.Packet;
 
 import java.util.ArrayList;
 import java.util.List;

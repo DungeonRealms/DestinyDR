@@ -1,4 +1,4 @@
-package net.dungeonrealms.packets;
+package net.dungeonrealms.packet;
 
 import java.io.Serializable;
 
