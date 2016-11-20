@@ -38,8 +38,6 @@ public class NestDocument
                                 .append("level", 1).append("experience", 0.0).append("gems", 0).append("currentFoodLevel", 20).append("ecash", 0).append("health", 50))
                         // Guild data
                         .append("guildData", new Document("guild", "").append("guildInvitations", Lists.newArrayList()))
-                        // Friend data
-                        .append("friendData", new Document("friends", Lists.newArrayList()).append("friendRequests", Lists.newArrayList()))
                         // Inventory data
                         .append("inventoryData", new Document("inventory", "").append("storageLevel", 1).append("collectionBin", "").append("armorContents", Lists.newArrayList())
                                 .append("mule", "empty").append("muleLevel", 0).append("storage", "").append("hasOpenShop", false).append("shopLevel", 0))
@@ -71,9 +69,6 @@ public class NestDocument
                 // Guild data
                 .append("guildData", new Document("guild", dataPlayer.getGuildData().getGuild())
                         .append("guildInvitations", dataPlayer.getGuildData().getGuildInvitations()))
-                // Friend data
-                .append("friendData", new Document("friends", dataPlayer.getFriendData().getFriends())
-                        .append("friendRequests", dataPlayer.getFriendData().getFriendRequesters()))
                 // Inventory data
                 .append("inventoryData", new Document("inventory", dataPlayer.getInventoryData().getGameInventoryBlob())
                         .append("storageLevel", dataPlayer.getInventoryData().getStorageLevel())

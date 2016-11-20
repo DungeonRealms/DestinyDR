@@ -36,9 +36,6 @@ public class DataPlayer
     private GuildData guildData;
 
     @Getter
-    private FriendData friendData;
-
-    @Getter
     private InventoryData inventoryData;
 
     @Getter
@@ -58,7 +55,6 @@ public class DataPlayer
         {
             this.gameData = new GameData(uuid, (Document) document.get("genericData"));
             this.guildData = new GuildData(uuid, (Document) document.get("guildData"));
-            this.friendData = new FriendData(uuid, (Document) document.get("friendData"));
             this.inventoryData = new InventoryData(uuid, (Document) document.get("inventoryData"));
             this.rankData = new RankData(uuid, (Document) document.get("rankData"));
             this.settingsData = new SettingsData(uuid, (Document) document.get("settingsData"));
