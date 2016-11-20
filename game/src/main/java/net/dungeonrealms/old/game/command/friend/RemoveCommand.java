@@ -38,13 +38,13 @@ public class RemoveCommand extends BaseCommand {
         UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name));
 
         if (!FriendHandler.getInstance().areFriends(player, uuid)) {
-            player.sendMessage(ChatColor.RED + "You're not friends with that user.");
+            player.sendMessage(ChatColor.RED + "You're not friend with that user.");
             return false;
         }
 
 
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, uuid.toString(), true);
-        player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " from your friends list!");
+        player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + name + ChatColor.GREEN + " from your friend list!");
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
 
 

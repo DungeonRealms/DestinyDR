@@ -578,7 +578,7 @@ public class RealmListener implements Listener {
 
         if (!(FriendHandler.getInstance().areFriends(p, target.getUniqueId()))) {
             p.sendMessage(ChatColor.RED + "Cannot add a non-buddy to realm build list.");
-            p.sendMessage(ChatColor.GRAY + "Goto your friends list in the character profile to add '" + ChatColor.BOLD + target.getName() + ChatColor.GRAY
+            p.sendMessage(ChatColor.GRAY + "Goto your friend list in the character profile to add '" + ChatColor.BOLD + target.getName() + ChatColor.GRAY
                     + "' as friend.");
             return;
         }

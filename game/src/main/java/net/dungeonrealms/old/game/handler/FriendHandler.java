@@ -53,7 +53,7 @@ public class FriendHandler {
                 player.closeInventory();
                 DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.getUniqueId().toString(), true);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true);
-                player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + " from your friends list!");
+                player.sendMessage(ChatColor.GREEN + "You have deleted " + ChatColor.BOLD + ChatColor.UNDERLINE + itemStack.getItemMeta().getDisplayName().split("'")[0] + ChatColor.GREEN + " from your friend list!");
                 PlayerMenus.openFriendInventory(player);
 
                 break;
@@ -112,7 +112,7 @@ public class FriendHandler {
             return;
         }
         if (areFriends(player, friend.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You are already friends with " + ChatColor.BOLD + ChatColor.UNDERLINE + friend.getDisplayName() + ChatColor.RED + ".");
+            player.sendMessage(ChatColor.RED + "You are already friend with " + ChatColor.BOLD + ChatColor.UNDERLINE + friend.getDisplayName() + ChatColor.RED + ".");
             return;
         }
 
@@ -144,7 +144,7 @@ public class FriendHandler {
 
 
     /**
-     * Will check and determine if the players are friends or have a pending
+     * Will check and determine if the players are friend or have a pending
      * friend request.
      *
      * @param player Main player
@@ -169,7 +169,7 @@ public class FriendHandler {
     }
 
     /**
-     * Will check and determine if the players are friends or have a pending
+     * Will check and determine if the players are friend or have a pending
      * friend request.
      *
      * @param player Main player

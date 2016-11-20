@@ -180,7 +180,7 @@ public class DataPlayer
         this.hearthstoneLocation = playerInfo.getString("hearthstone");
         this.currentLocation = playerInfo.getString("currentLocation");
         this.isPlaying = playerInfo.getBoolean("isPlaying");
-        this.friends = playerInfo.get("friends", ArrayList.class);
+        this.friends = playerInfo.get("friend", ArrayList.class);
         this.alignment = playerInfo.getString("alignment");
         this.guild = playerInfo.getString("guild");
         this.hasShop = playerInfo.getBoolean("shopOpen");

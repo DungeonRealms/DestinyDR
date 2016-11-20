@@ -38,7 +38,7 @@ public class AddCommand extends BaseCommand {
         if (Bukkit.getPlayer(playerName) != null) {
             Player friend = Bukkit.getPlayer(playerName);
             if (FriendHandler.getInstance().areFriends(player, friend.getUniqueId())) {
-                player.sendMessage(ChatColor.RED + "You're already friends.");
+                player.sendMessage(ChatColor.RED + "You're already friend.");
                 return false;
             }
             FriendHandler.getInstance().sendRequest(player, friend);
@@ -59,7 +59,7 @@ public class AddCommand extends BaseCommand {
         String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
 
         if (FriendHandler.getInstance().areFriends(player, UUID.fromString(uuid))) {
-            player.sendMessage(ChatColor.RED + "You're already friends.");
+            player.sendMessage(ChatColor.RED + "You're already friend.");
             return false;
         }
         ArrayList<String> requests = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUESTS, UUID.fromString(uuid));

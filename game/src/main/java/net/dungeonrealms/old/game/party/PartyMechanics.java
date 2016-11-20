@@ -92,7 +92,7 @@ public class PartyMechanics implements GenericMechanic {
                         Score score = objective.getScore(player.getName());
                         score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
 
-                        //Only set the scoreboard if we need to as setScoreboard will send packets and also cause the sb to flicker
+                        //Only set the scoreboard if we need to as setScoreboard will send packet and also cause the sb to flicker
                         if (player.getScoreboard() != board) {
                             player.setScoreboard(board);
                         }

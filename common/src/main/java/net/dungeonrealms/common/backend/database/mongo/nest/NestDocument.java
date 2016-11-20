@@ -33,7 +33,7 @@ public class NestDocument
                 document = new Document("pinfo", new Document("uniqueId", uuid.toString())
                         // 1
                         .append("health", 50).append("ecash", 0).append("gems", 0).append("netLevel", 1).append("experience", 0D)
-                        .append("hearthstone", "CYRENNICA").append("currentLocation", "").append("isPlaying", true).append("friends", Lists.newArrayList())
+                        .append("hearthstone", "CYRENNICA").append("currentLocation", "").append("isPlaying", true).append("friend", Lists.newArrayList())
                         .append("alignment", "LAWFUL").append("guild", "").append("shopOpen", false).append("foodLevel", 20).append("shopLevel", 1).append("deadLogger", false))
                         // 2
                         .append("collectibles", new Document("achievements", Lists.newArrayList()))
