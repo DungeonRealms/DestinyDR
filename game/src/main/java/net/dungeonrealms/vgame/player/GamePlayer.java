@@ -2,6 +2,7 @@ package net.dungeonrealms.vgame.player;
 
 import lombok.Getter;
 import net.dungeonrealms.common.backend.player.DataPlayer;
+import net.dungeonrealms.vgame.achievement.EnumAchievement;
 import org.bukkit.entity.Player;
 
 /**
@@ -22,5 +23,10 @@ public class GamePlayer implements IPlayer
     {
         this.data = dataPlayer;
         this.player = dataPlayer.getPlayer();
+    }
+
+    public boolean hasAchievement(EnumAchievement achievement)
+    {
+        return this.data.getCollectionData().getAchievements().contains(achievement.name());
     }
 }

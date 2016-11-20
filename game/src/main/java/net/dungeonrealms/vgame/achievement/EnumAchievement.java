@@ -10,7 +10,42 @@ import lombok.Getter;
  */
 public enum EnumAchievement
 {
-    ANDALUCIA(0, "&a&lWELCOME TO ANDALUCIA", new String[]{"&7Discovered the province of Andalucia"}, "world.achievements.start", 0);
+    EXPLORER_ANDALUCIA(0, "&a&lWELCOME TO ANDALUCIA", new String[]{"&7> Discover the province of Andalucia", "&7[Discovered the province of Andalucia]"}, 100),
+    EXPLORER_CYRENE_PLAINS(1, "&a&lGREAT PLAINS OF CYRENE", new String[]{"&7> Discover the plains of Cyrene", "&7[Discovered the plains of Cyrene]"}, 500),
+    EXPLORER_HARRISONS(2, "&a&lHARRISONS FIELDS", new String[]{"&7> Discover Harrisons Fields", "&7[Discovered Harrisons Fields]"}, 500),
+    EXPLORER_DARKOAK(3, "&a&lDARKOAK", new String[]{"&7> Discover Darkoak", "&7[Discovered Darkoak]"}, 500),
+    EXPLORER_JAGGED(4, "&a&lJAGGED ROCKS", new String[]{"&7> Discover Jagged Rocks", "&7[Discovered Jagged Rocks]"}, 500),
+    EXPLORER_SKULLNECK(5, "&a&lSKULLNECK", new String[]{"&7> Discover Skullneck", "&7[Discovered Skullneck]"}, 1000),
+    EXPLORER_TROLLINGOR(6, "&a&lTROLLINGOR", new String[]{"&7> Discover Trollingor", "&7[Discovered Trollingor]"}, 2500),
+    EXPLORER_CRYSTALPEAK(7, "&a&lCRYSTALPEAK TOWER", new String[]{"&7> Discover the Crystalpeak Tower", "&7[Discovered the Crystalpeak Tower]"}, 5000),
+    EXPLORER_HELMCHEN(8, "&a&lHELMCHEN", new String[]{"&7> Discover Helmchen", "&7[Discovered Helmchen]"}, 1000),
+    EXPLORER_AL_SAHRA(9, "&a&lAL SAHRA", new String[]{"&7> Discover Al Sahra", "&7[Discovered Al Sahra]"}, 1000),
+    EXPLORER_TRIPOLI(10, "&a&lTRIPOLI", new String[]{"&7> Discover Tripoli", "&7[Discovered Tripoli]"}, 1000),
+    EXPLORER_DREADWOOD(11, "&a&lDREADWOOD", new String[]{"&7> Discover Dreadwood", "&7[Discovered Dreadwood]"}, 500),
+    EXPLORER_GLOOMY(12, "&a&lGLOOMY HALLOWS", new String[]{"&7> Discover Gloomy Hallows", "&7[Discovered Gloomy Hallows]"}, 1000),
+    EXPLORER_CRESTGAURD(13, "&a&lCREST GAURD", new String[]{"&7> Discover Crest Gaurd", "&7[Discovered Crest Gaurd]"}, 2500),
+    EXPLORER_FROZEN_NORTH(14, "&5&lTHE FROZEN NORTH", new String[]{"&7> Discover the Frozen North", "&7[Discovered the Frozen North]"}, 5000),
+    EXPLORER_AVALON(15, "&5&lLOST CITY OF AVALON", new String[]{"&7> Discover the Lost city of Avalon", "&7[Discovered the Lost city of Avalon]"}, 10000),
+    EXPLORER_CHIEFS(16, "&a&lCHIEF'S GLORY", new String[]{"&7> Discover Chief's Glory", "&7[Discovered Chief's Glory]"}, 7500),
+    EXPLORER_DEADPEAKS(17, "&a&lDEADPEAKS", new String[]{"&7> Discover Deadpeaks", "&7[Discovered Deadpeaks]"}, 1000),
+    EXPLORER_MURE(18, "&a&lMURE", new String[]{"&7> Discover Mule", "&7[Discovered Mure]"}, 1000),
+    EXPLORER_SEBRATA(19, "&a&lSEBRATA", new String[]{"&7> Discover Sebrata", "&7[Discovered Sebrata]"}, 1000),
+    EXPLORER_AWK(20, "&5&lGREAT GATE OF AWK", new String[]{"&7> Discover the Great Gate of Awk", "&7[Discovered the Great Gate of Awk]"}, 45000),
+
+    COMBAT_MAYEL(21, "&a&lDEFEAT MAYEL THE CRUEL", new String[]{"&7> Defeat Mayel the Cruel", "&7[Defeated Mayel the Cruel]"}, 15000),
+    COMBAT_BURICK(22, "&a&lDEFEAT BURICK THE FANATIC", new String[]{"&7> Defeat Burick the Fanatic", "&7[Defeated Burick the Fanatic]"}, 50000),
+    COMBAT_ABYSS(23, "&a&lDEFEAT INFERNAL ABYSS", new String[]{"&7> Defeat the Infernal Abyss", "&7[Defeated the Infernal Abyss]"}, 75000),
+    COMBAT_MONSTER_I(24, "&a&lMONSTER HUNTER I", new String[]{"&7> Defeat 100 monsters", "&7[Defeated 100 monsters]"}, 250),
+    COMBAT_MONSTER_II(25, "&a&lMONSTER HUNTER II", new String[]{"&7> Defeat 300 monsters", "&7[Defeated 300 monsters]"}, 500),
+    COMBAT_MONSTER_III(26, "&a&lMONSTER HUNTER III", new String[]{"&7> Defeat 500 monsters", "&7[Defeated 500 monsters]"}, 1000),
+    COMBAT_MONSTER_IV(27, "&a&lMONSTER HUNTER IV", new String[]{"&7> Defeat 1000 monsters", "&7[Defeated 1000 monsters]"}, 3000),
+    COMBAT_MONSTER_V(28, "&a&lMONSTER HUNTER V", new String[]{"&7> Defeat 1500 monsters", "&7[Defeated 1500 monsters]"}, 6000),
+    COMBAT_GATEKEEPER(29, "&5&lDEFEAT GREAT GATEKEEPER", new String[]{"&7> Defeat the Great Gatekeeper of Awk", "&7[Defeated the Great Gatekeeper of Awk]"}, 100000),
+    COMBAT_MAN_I(30, "&a&lMAN HUNTER I", new String[]{"&7> Defeat 1 player", "&7[Defeated 1 player]"}, 250),
+    COMBAT_MAN_II(31, "&a&lMAN HUNTER II", new String[]{"&7> Defeat 3 player", "&7[Defeated 3 players]"}, 500),
+    COMBAT_MAN_III(32, "&a&lMAN HUNTER III", new String[]{"&7> Defeat 5 player", "&7[Defeated 5 players]"}, 1000),
+    COMBAT_MAN_IV(33, "&a&lMAN HUNTER IV", new String[]{"&7> Defeat 10 player", "&7[Defeated 10 players]"}, 3000),
+    COMBAT_MAN_V(34, "&a&lMAN HUNTER V", new String[]{"&7> Defeat 15 player", "&7[Defeated 15 players]"}, 6000);
 
     @Getter
     private String name;
@@ -20,19 +55,26 @@ public enum EnumAchievement
 
     @Getter
     private int id;
-
-    @Getter
-    private String databaseIdentifier;
-
     @Getter
     private int expReward;
 
-    EnumAchievement(int id, String name, String[] description, String databaseIdentifier, int expReward)
+    EnumAchievement(int id, String name, String[] description, int expReward)
     {
         this.name = name;
         this.id = id;
         this.description = description;
-        this.databaseIdentifier = databaseIdentifier;
         this.expReward = expReward;
+    }
+
+    public static EnumAchievement getByID(int id)
+    {
+        for (EnumAchievement enumAchievement : values())
+        {
+            if (enumAchievement.getId() == id)
+            {
+                return enumAchievement;
+            }
+        }
+        return null;
     }
 }
