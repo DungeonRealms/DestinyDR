@@ -37,8 +37,8 @@ public enum EnumAchievement
     COMBAT_ABYSS(23, "&a&lDEFEAT INFERNAL ABYSS", new String[]{"&7> Defeat the Infernal Abyss", "&7[Defeated the Infernal Abyss]"}, 75000),
     COMBAT_MONSTER_I(24, "&a&lMONSTER HUNTER I", new String[]{"&7> Defeat 100 monsters", "&7[Defeated 100 monsters]"}, 250),
     COMBAT_MONSTER_II(25, "&a&lMONSTER HUNTER II", new String[]{"&7> Defeat 300 monsters", "&7[Defeated 300 monsters]"}, 500),
-    COMBAT_MONSTER_III(26, "&a&lMONSTER HUNTER III", new String[]{"&7> Defeat 500 monsters","&7[Defeated 500 monsters]"}, 1000),
-    COMBAT_MONSTER_IV(27, "&a&lMONSTER HUNTER IV", new String[]{"&7> Defeat 1000 monsters","&7[Defeated 1000 monsters]"}, 3000),
+    COMBAT_MONSTER_III(26, "&a&lMONSTER HUNTER III", new String[]{"&7> Defeat 500 monsters", "&7[Defeated 500 monsters]"}, 1000),
+    COMBAT_MONSTER_IV(27, "&a&lMONSTER HUNTER IV", new String[]{"&7> Defeat 1000 monsters", "&7[Defeated 1000 monsters]"}, 3000),
     COMBAT_MONSTER_V(28, "&a&lMONSTER HUNTER V", new String[]{"&7> Defeat 1500 monsters", "&7[Defeated 1500 monsters]"}, 6000),
     COMBAT_GATEKEEPER(29, "&5&lDEFEAT GREAT GATEKEEPER", new String[]{"&7> Defeat the Great Gatekeeper of Awk", "&7[Defeated the Great Gatekeeper of Awk]"}, 100000),
     COMBAT_MAN_I(30, "&a&lMAN HUNTER I", new String[]{"&7> Defeat 1 player", "&7[Defeated 1 player]"}, 250),
@@ -64,5 +64,17 @@ public enum EnumAchievement
         this.id = id;
         this.description = description;
         this.expReward = expReward;
+    }
+
+    public static EnumAchievement getByID(int id)
+    {
+        for (EnumAchievement enumAchievement : values())
+        {
+            if (enumAchievement.getId() == id)
+            {
+                return enumAchievement;
+            }
+        }
+        return null;
     }
 }

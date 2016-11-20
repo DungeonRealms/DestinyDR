@@ -5,9 +5,9 @@ import net.dungeonrealms.backend.GameShard;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.backend.database.connection.exception.ConnectionRunningException;
 import net.dungeonrealms.common.backend.database.mongo.connection.MongoConnection;
-import net.dungeonrealms.vgame.handle.CommandHandler;
-import net.dungeonrealms.vgame.handle.GameHandler;
-import net.dungeonrealms.vgame.handle.RegistryHandler;
+import net.dungeonrealms.vgame.core.handle.CommandHandler;
+import net.dungeonrealms.vgame.core.handle.GameHandler;
+import net.dungeonrealms.vgame.core.handle.RegistryHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,11 +23,6 @@ import java.io.FileReader;
  */
 public class Game extends JavaPlugin
 {
-    /**
-     * TODO keep in mind to register the realms mechanic.
-     * if (realmnumber >= 0) mm.registerMechanic(Realms.getInstance());
-     * pseudo
-     */
     @Getter
     private static Game game;
 
