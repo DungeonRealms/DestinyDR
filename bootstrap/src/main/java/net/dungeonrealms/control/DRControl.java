@@ -5,8 +5,10 @@ import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import net.dungeonrealms.control.command.CommandManager;
 import net.dungeonrealms.control.config.Configuration;
 import net.dungeonrealms.control.database.Database;
+import net.dungeonrealms.control.friend.FriendManager;
 import net.dungeonrealms.control.netty.ServerInitializer;
 import net.dungeonrealms.control.party.PartyManager;
 import net.dungeonrealms.control.player.PlayerManager;
@@ -17,6 +19,7 @@ import net.dungeonrealms.packet.network.PacketPlayerCount;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,6 +38,8 @@ public class DRControl {
     private PlayerManager playerManager;
     private ServerManager serverManager;
     private PartyManager partyManager;
+    private CommandManager commandManager;
+    private FriendManager friendManager;
 
     public DRControl() {
         instance = this;
@@ -53,9 +58,11 @@ public class DRControl {
         database.setup();
 
         // Setup managers.
-        playerManager = new PlayerManager(this);
+        this.playerManager = new PlayerManager(this);
         this.serverManager = new ServerManager(this);
         this.partyManager = new PartyManager(this);
+        this.commandManager = new CommandManager(this);
+        this.friendManager = new FriendManager(this);
     }
 
     public static void main(String[] args) {
@@ -98,6 +105,17 @@ public class DRControl {
 
 
             }, 0L, 1L, TimeUnit.SECONDS);
+
+            // Listen for user  input and pass to the command manager.
+            Scanner scanner = new Scanner(System.in);
+
+            while (isRunning()) {
+                try {
+                    commandManager.handle(scanner.nextLine());
+                } catch (Exception e) {
+                    UtilLogger.warn("Error executing command: " + e.getMessage());
+                }
+            }
 
             channel.closeFuture().sync();
         } catch (Exception e) {
@@ -164,5 +182,13 @@ public class DRControl {
 
     public PartyManager getPartyManager() {
         return partyManager;
+    }
+
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
+
+    public FriendManager getFriendManager() {
+        return friendManager;
     }
 }
