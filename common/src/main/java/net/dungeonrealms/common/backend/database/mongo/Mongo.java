@@ -37,7 +37,6 @@ public class Mongo
 
             this.mongoCollectionHolder = new ConcurrentHashMap<>();
             this.mongoCollectionHolder.put("playerData", this.mongoDatabase.getCollection("player_data"));
-            this.mongoCollectionHolder.put("shardData", this.mongoDatabase.getCollection("shard_data"));
             this.mongoCollectionHolder.put("banData", this.mongoDatabase.getCollection("bans"));
             this.mongoCollectionHolder.put("guildData", this.mongoDatabase.getCollection("guilds"));
         } catch (Exception e)
