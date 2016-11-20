@@ -5,12 +5,19 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
+import net.dungeonrealms.control.player.rank.Rank;
 import net.dungeonrealms.control.server.Server;
 import net.dungeonrealms.control.server.types.GameServer;
 import net.dungeonrealms.control.server.types.ProxyServer;
 import net.dungeonrealms.control.utils.UtilLogger;
+import net.dungeonrealms.packet.Packet;
 import net.dungeonrealms.packet.connect.PacketConnect;
 import net.dungeonrealms.packet.network.PacketMOTD;
+import net.dungeonrealms.packet.party.*;
+import net.dungeonrealms.packet.player.PacketPlayerConnect;
+import net.dungeonrealms.packet.player.PacketPlayerJoin;
+import net.dungeonrealms.packet.player.PacketPlayerQuit;
+import net.dungeonrealms.packet.server.PacketServerPing;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -52,6 +59,98 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 }
             }
             return;
+        }
+
+        // Convert the received message into a packet.
+        Packet packet = (Packet) object;
+
+        // Handle join packet.
+        if (packet instanceof PacketPlayerJoin) {
+            PacketPlayerJoin packetPlayerJoin = (PacketPlayerJoin) packet;
+
+            // Update the player's data in the player manager.
+            if (packetPlayerJoin.getRank() != null && Rank.getRank(packetPlayerJoin.getRank()) != null) {
+                DRControl.getInstance().getPlayerManager().updatePlayer(packetPlayerJoin.getUUID(), packetPlayerJoin.getName(), Rank.getRank(packetPlayerJoin.getRank()));
+            }
+            server.addPlayer(packetPlayerJoin.getUUID());
+
+            // Send the new player count to the lobbies and proxies.
+            if (server instanceof GameServer) {
+                ((GameServer) server).sendInfoToServers();
+            }
+        }
+
+        // Handle quit packet.
+        if (packet instanceof PacketPlayerQuit) {
+            PacketPlayerQuit packetPlayerQuit = (PacketPlayerQuit) packet;
+
+            server.removePlayer(packetPlayerQuit.getUUID());
+
+            // Send the new player count to the lobbies and proxies.
+            if (server instanceof GameServer) {
+                ((GameServer) server).sendInfoToServers();
+            }
+        }
+
+        // Handle server ping packet.
+        if (packet instanceof PacketServerPing) {
+            PacketServerPing packetServerPing = (PacketServerPing) packet;
+
+            if (server instanceof GameServer) {
+                GameServer gameServer = (GameServer) server;
+
+                gameServer.setGame(packetServerPing.getGame());
+                gameServer.setMap(packetServerPing.getMap());
+                gameServer.setState(packetServerPing.getState());
+
+                gameServer.sendInfoToServers();
+            }
+        }
+
+        // Handle player connect packet.
+        if (packet instanceof PacketPlayerConnect) {
+            PacketPlayerConnect packetPlayerConnect = (PacketPlayerConnect) packet;
+
+            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPlayerConnect.getPlayer());
+            String serverName = packetPlayerConnect.getServer();
+
+            GameServer gameServer = DRControl.getInstance().getServerManager().getGameServer(serverName);
+
+            if (GameServer.ServerType.getByName(serverName) != null) {
+                gameServer = DRControl.getInstance().getServerManager().getBestServer(GameServer.ServerType.getByName(serverName), player);
+            }
+
+            player.connect(gameServer);
+        }
+
+        // Handle party invite packet.
+        if (packet instanceof PacketPartyInvite) {
+            DRControl.getInstance().getPartyManager().handleInvite((PacketPartyInvite) packet);
+        }
+
+        // Handle party accept packet.
+        if (packet instanceof PacketPartyAccept) {
+            DRControl.getInstance().getPartyManager().handleAccept((PacketPartyAccept) packet);
+        }
+
+        // Handle party leave packet.
+        if (packet instanceof PacketPartyLeave) {
+            DRControl.getInstance().getPartyManager().handleLeave((PacketPartyLeave) packet);
+        }
+
+        // Handle party chat packet.
+        if (packet instanceof PacketPartyChat) {
+            DRControl.getInstance().getPartyManager().handleChat((PacketPartyChat) packet);
+        }
+
+        // Handle party warp packet.
+        if (packet instanceof PacketPartyWarp) {
+            DRControl.getInstance().getPartyManager().handleWarp((PacketPartyWarp) packet);
+        }
+
+        // Handle party disband packet.
+        if (packet instanceof PacketPartyDisband) {
+            DRControl.getInstance().getPartyManager().handleDisband((PacketPartyDisband) packet);
         }
     }
 

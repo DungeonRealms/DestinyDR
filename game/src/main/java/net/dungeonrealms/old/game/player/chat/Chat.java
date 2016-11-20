@@ -96,7 +96,7 @@ public class Chat {
 
         if (!FriendHandler.getInstance().areFriends(player, UUID.fromString(testUUID), document) && !Rank.isGM(player))
             if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, document)) {
-                player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
+                player.sendMessage(ChatColor.RED + "This user is only accepting messages from friend.");
                 return;
             }
 

@@ -28,7 +28,7 @@ public class FriendTabColumn extends Column {
     public Column register() {
         for (int i = 0; i < 18; i++) {
             int cursor = i;
-            variablesToRegister.add(new Variable("friends." + cursor) {
+            variablesToRegister.add(new Variable("friend." + cursor) {
                 @Override
                 public String getReplacement(Player player) {
                     if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) return "";
@@ -74,7 +74,7 @@ public class FriendTabColumn extends Column {
                     });
 
                     if (onlineFriends.isEmpty()) if (cursor == 0)
-                        return ChatColor.RED + "No friends online!";
+                        return ChatColor.RED + "No friend online!";
                     else return "";
                     try {
                         if (onlineFriends.get(cursor) == null)

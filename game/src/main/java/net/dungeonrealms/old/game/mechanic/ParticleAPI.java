@@ -161,7 +161,7 @@ public class ParticleAPI {
     }
 
     /**
-     * Sets the packets value so that the location etc registers correctly
+     * Sets the packet value so that the location etc registers correctly
      *
      * @param instance
      * @param fieldName

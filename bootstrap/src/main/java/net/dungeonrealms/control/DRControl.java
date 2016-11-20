@@ -11,10 +11,13 @@ import net.dungeonrealms.control.netty.ServerInitializer;
 import net.dungeonrealms.control.party.PartyManager;
 import net.dungeonrealms.control.player.PlayerManager;
 import net.dungeonrealms.control.server.ServerManager;
+import net.dungeonrealms.control.server.types.ProxyServer;
 import net.dungeonrealms.control.utils.UtilLogger;
+import net.dungeonrealms.packet.network.PacketPlayerCount;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Evoltr on 11/15/2016.
@@ -80,6 +83,22 @@ public class DRControl {
             // Bind to port, for now we use port 8192.
             channel = serverBootstrap.bind(8192).sync().channel();
 
+            // Send the current player count to the proxies every second.
+            channel.eventLoop().scheduleAtFixedRate(() -> {
+                int onlinePlayers = getServerManager().getOnlinePlayers();
+                int maxPlayers = getServerManager().getMaxPlayers();
+
+                // Save the player record in the config.
+                if (onlinePlayers > getPlayerRecord()) {
+                    getConfiguration().setSetting("player-record", String.valueOf(onlinePlayers));
+                }
+                for (ProxyServer proxyServer : getServerManager().getProxyServers()) {
+                    proxyServer.sendPacket(new PacketPlayerCount(onlinePlayers, maxPlayers));
+                }
+
+
+            }, 0L, 1L, TimeUnit.SECONDS);
+
             channel.closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,6 +140,14 @@ public class DRControl {
 
     public boolean isRunning() {
         return running;
+    }
+
+    public String getMOTD() {
+        return getConfiguration().getSetting("motd");
+    }
+
+    public int getPlayerRecord() {
+        return Integer.valueOf(getConfiguration().getSetting("player-record"));
     }
 
     public long getUptime() {

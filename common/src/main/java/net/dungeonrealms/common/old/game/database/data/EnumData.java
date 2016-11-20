@@ -21,7 +21,7 @@ public enum EnumData {
     GEMS("info.gems"),
     HEARTHSTONE("info.hearthstone"),
     ECASH("info.ecash"),
-    FRIENDS("info.friends"),
+    FRIENDS("info.friend"),
     ALIGNMENT("info.alignment"),
     ALIGNMENT_TIME("info.alignmentTime"),
     CURRENT_LOCATION("info.currentLocation"),

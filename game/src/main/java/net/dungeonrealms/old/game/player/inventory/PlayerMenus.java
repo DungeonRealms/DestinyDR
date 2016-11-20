@@ -86,7 +86,7 @@ public class PlayerMenus {
         }));
 
         inv.setItem(1, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "View Friend", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to view friends!",
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to view friend!",
                 ChatColor.GRAY + "Display Item"
         }));
 
@@ -616,7 +616,7 @@ public class PlayerMenus {
         }));
         inv.setItem(1, editItem("Shrek", ChatColor.GOLD + "Friend List", new String[]{
                 "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Add or remove friends.",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Add or remove friend.",
                 "",
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View Friend list.",
                 ChatColor.GRAY + "Display Item"

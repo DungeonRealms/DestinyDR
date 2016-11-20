@@ -3,6 +3,7 @@ package net.dungeonrealms.control.server;
 import io.netty.channel.Channel;
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
+import net.dungeonrealms.control.server.types.GameServer;
 import net.dungeonrealms.packet.Packet;
 
 import java.util.ArrayList;
@@ -94,6 +95,10 @@ public class Server {
 
     public boolean isOnline() {
         return getChannel() != null;
+    }
+
+    public boolean isFull() {
+        return getPlayers().size() >= (this instanceof GameServer ? ((GameServer) this).getMaxPlayers() : 500);
     }
 
     public long getTimeOnline() {

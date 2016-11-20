@@ -3,6 +3,7 @@ package net.dungeonrealms.control.party;
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
 import net.dungeonrealms.control.player.rank.Rank;
+import net.dungeonrealms.control.server.types.GameServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,6 @@ public class Party {
         }
     }
 
-
     public boolean containsPlayer(DRPlayer player) {
         return players.contains(player.getUuid());
     }
@@ -84,6 +84,12 @@ public class Party {
 
     public void invitePlayer(DRPlayer player) {
         invited.add(player.getUuid());
+    }
+
+    public void warp(GameServer server) {
+        for (DRPlayer player : getPlayers()) {
+            player.connect(server, false);
+        }
     }
 
     public void broadcast(String msg, boolean prefix) {

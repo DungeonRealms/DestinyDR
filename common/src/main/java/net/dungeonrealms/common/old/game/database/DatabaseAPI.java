@@ -446,7 +446,7 @@ public class DatabaseAPI {
                                 .append("hearthstone", "Cyrennica")
                                 .append("currentLocation", "")
                                 .append("isPlaying", true)
-                                .append("friends", new ArrayList<>())
+                                .append("friend", new ArrayList<>())
                                 .append("alignment", "lawful")
                                 .append("alignmentTime", 0)
                                 .append("guild", "")
