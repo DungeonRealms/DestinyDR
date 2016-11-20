@@ -31,4 +31,9 @@ public class MongoConnection
         } else
             throw new ConnectionRunningException();
     }
+
+    public void closeConnection()
+    {
+        this.mongo.getMongoClient().close();
+    }
 }

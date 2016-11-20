@@ -7,10 +7,6 @@ import net.dungeonrealms.common.backend.database.mongo.nest.NestDocument;
 import net.dungeonrealms.common.backend.player.DataPlayer;
 import org.bson.Document;
 
-import java.text.DecimalFormat;
-import java.text.FieldPosition;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MongoAPI
 {
     // DataPlayer dataPlayer = #requestPlayerData($).getPlayer();
+    // quitEvent -> $mongoapi.removeDataPlayer(event.getPlayer().getUniqueId(), true);
 
     @Getter
     private Mongo mongo;
@@ -46,7 +43,7 @@ public class MongoAPI
      */
     public MongoAPI requestPlayerData(UUID uniqueId)
     {
-        Document document = this.mongo.getCollection("playerData").find(Filters.eq("pinfo.uniqueId", uniqueId.toString())).first();
+        Document document = this.mongo.getCollection("playerData").find(Filters.eq("genericData.uniqueId", uniqueId.toString())).first();
         if (document != null && !document.isEmpty()) // Does the dataplayer exist?
         {
             // Cache the player
@@ -63,14 +60,27 @@ public class MongoAPI
 
     /**
      * Removes a dataplayer from the dataPlayerMap & updates the document
+     * <p>
+     * Called when a player logs out of a gameshard
      *
      * @param uniqueId
      * @return this
      */
-    public MongoAPI removePlayerData(UUID uniqueId)
+    public MongoAPI removeDataPlayer(UUID uniqueId, boolean save)
     {
         if (this.dataPlayerMap.containsKey(uniqueId))
         {
+            if (save)
+            {
+                // Instead of bulk writing, we'll use something performance safer.
+                DataPlayer dataPlayer = this.dataPlayerMap.get(uniqueId);
+                Document document = dataPlayer.constructRawDocument();
+                // Insert the raw document of the DataPlayer
+                if (!(document != null && document.isEmpty()))
+                    this.mongo.getCollection("playerData").updateOne(Filters.eq("genericData.uniqueId", uniqueId.toString()), document);
+                else
+                    System.out.println("Failed to remove the player data of: " + uniqueId + " > Document is empty/non-existent");
+            }
             this.dataPlayerMap.remove(uniqueId);
         }
         return this;
