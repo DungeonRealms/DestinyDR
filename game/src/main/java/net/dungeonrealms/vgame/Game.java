@@ -1,13 +1,10 @@
 package net.dungeonrealms.vgame;
 
-import io.vawke.skelframe.SkelRuntime;
 import lombok.Getter;
-import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.backend.GameShard;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.backend.database.connection.exception.ConnectionRunningException;
 import net.dungeonrealms.common.backend.database.mongo.connection.MongoConnection;
-import net.dungeonrealms.common.old.game.util.AsyncUtils;
 import net.dungeonrealms.vgame.handle.CommandHandler;
 import net.dungeonrealms.vgame.handle.GameHandler;
 import net.dungeonrealms.vgame.handle.RegistryHandler;
@@ -17,7 +14,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.concurrent.Executors;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -92,6 +88,5 @@ public class Game extends JavaPlugin
     @Override
     public void onDisable()
     {
-        GameAPI.stopGame();
     }
 }
