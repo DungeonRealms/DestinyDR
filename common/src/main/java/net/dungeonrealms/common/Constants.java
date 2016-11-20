@@ -13,7 +13,7 @@ public class Constants {
 
     public static final String DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
 
-    public static final String[] DEVELOPERS = new String[]{"Atlas__", "Vawke"};
+    public static final String[] DEVELOPERS = new String[]{"Atlas__", "Vawke", "Evoltr"};
 
     public static final String[] PREVIOUS_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
 
