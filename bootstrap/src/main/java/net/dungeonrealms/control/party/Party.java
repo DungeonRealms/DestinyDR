@@ -82,7 +82,7 @@ public class Party {
         return invited.contains(player.getUuid());
     }
 
-    public boolean isFull() { return players.size() >= 8; }
+    public boolean isFull() { return players.size() >= 5; }
 
     public void invitePlayer(DRPlayer player) {
         invited.add(player.getUuid());
