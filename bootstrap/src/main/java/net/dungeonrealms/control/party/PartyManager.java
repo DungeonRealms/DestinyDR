@@ -1,5 +1,7 @@
 package net.dungeonrealms.control.party;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
 import net.dungeonrealms.control.player.rank.Rank;
@@ -7,7 +9,11 @@ import net.dungeonrealms.control.server.types.GameServer;
 import net.dungeonrealms.packet.party.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Evoltr on 11/17/2016.
@@ -59,6 +65,18 @@ public class PartyManager {
 
         Party party = getParty(sender);
 
+        if (!party.isOwner(sender)) {
+            sender.sendMessage("&cYou need to be the party leader to invite players", true);
+            return;
+        }
+
+        // Is the party full?
+        if(party.isFull())
+        {
+            sender.sendMessage("&cThe party is full!", true);
+            return;
+        }
+
         // Check if sender and receiver are a different player.
         if (sender == receiver) {
             sender.sendMessage("&cYou can not invite yourself", true);
@@ -80,11 +98,6 @@ public class PartyManager {
         // If sender is not already in a party, create one.
         if (party == null) {
             party = createParty(sender);
-        }
-
-        if (!party.isOwner(sender)) {
-            sender.sendMessage("&cYou need to be the party leader to invite players", true);
-            return;
         }
 
         // Check if the receiver isnt already in the party.
@@ -115,6 +128,12 @@ public class PartyManager {
         DRPlayer receiver = DRControl.getInstance().getPlayerManager().getPlayerByName(accept.getReceiver());
 
         Party party = getParty(receiver);
+
+        if(party.isFull())
+        {
+            sender.sendMessage("&c&l" + receiver.getName() + "&c's party is full", true);
+            return;
+        }
 
         if (receiver == null) {
             sender.sendMessage("&c&l" + receiver.getName() + " &cis not online", true);
@@ -209,4 +228,55 @@ public class PartyManager {
         parties.remove(party);
     }
 
+    public void handleList(PacketPartyList packetPartyList)
+    {
+        DRPlayer drPlayer = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyList.getPlayer());
+        drPlayer.sendMessage("&aDisplaying the ideal parties", true);
+        if(this.parties.size() >= 6)
+        {
+            List<Party> applicableParties = Lists.newArrayList();
+            // Show parties with the least players, but only show 6
+            applicableParties.addAll(this.parties.stream().filter(party -> party.getPlayers().size() <= 3).limit(6).collect(Collectors.toList()));
+            for(Party party : applicableParties)
+            {
+                drPlayer.sendMessage("&c" + party.getOwner().getName() + "'s Party &b[&9" + party.getPlayers() + "&b/8]", true);
+            }
+        } else
+        {
+            for(Party party : this.parties)
+            {
+                drPlayer.sendMessage("&c" + party.getOwner().getName() + "'s Party &b[&9" + party.getPlayers() + "&b/8]", true);
+            }
+        }
+        drPlayer.sendMessage("&aThere currently are &e" + this.parties.size() + " &aglobal parties", false);
+    }
+
+    public Map<String, Object> handleInfo(PacketPartyInfo packetPartyInfo, boolean asData)
+    {
+        DRPlayer partyOwner = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyInfo.getPartyOwner());
+        Party party = getParty(partyOwner);
+        if(!asData)
+        {
+            DRPlayer drPlayer = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyInfo.getPlayer());
+            if (party != null && partyOwner != null)
+            {
+                drPlayer.sendMessage("&e&l" + partyOwner.getName() + "&e's Party", true);
+                drPlayer.sendMessage("&7Players: &a" + party.getPlayers().size() + "&8/&78", true);
+            } else
+            {
+                drPlayer.sendMessage("&cParty doesn't exist", true);
+            }
+            return null;
+        } else
+        {
+            HashMap<String, Object> partyInfo = Maps.newHashMap();
+            partyInfo.put("owner", party.getOwner().getName());
+            partyInfo.put("playersSize", party.getPlayers().size());
+            partyInfo.put("players", party.getPlayers().toArray());
+            // Expecting that all members are on the same proxy & shard as the party owner
+            partyInfo.put("currentShard", party.getOwner().getServer().getName());
+            partyInfo.put("currentProxy", party.getOwner().getProxy());
+            return partyInfo;
+        }
+    }
 }
