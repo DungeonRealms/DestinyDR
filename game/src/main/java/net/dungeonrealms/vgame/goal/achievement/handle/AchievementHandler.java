@@ -1,7 +1,9 @@
-package net.dungeonrealms.vgame.goal.achievement;
+package net.dungeonrealms.vgame.goal.achievement.handle;
 
 import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.goal.achievement.EnumAchievement;
+import net.dungeonrealms.vgame.goal.achievement.combat.CombatAchievement;
 import net.dungeonrealms.vgame.goal.achievement.explorer.ExplorerAchievement;
 import org.bukkit.ChatColor;
 
@@ -24,6 +26,11 @@ public class AchievementHandler implements SuperHandler.Handler
             {
                 ExplorerAchievement explorerAchievement = (ExplorerAchievement) enumAchievement.getAchievement();
                 explorerAchievement.register();
+            }
+            if(enumAchievement.getAchievement() instanceof CombatAchievement)
+            {
+                CombatAchievement combatAchievement = (CombatAchievement) enumAchievement.getAchievement();
+                combatAchievement.register();
             }
         }
     }

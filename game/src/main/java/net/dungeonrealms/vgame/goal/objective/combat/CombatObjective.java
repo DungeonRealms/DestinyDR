@@ -3,6 +3,8 @@ package net.dungeonrealms.vgame.goal.objective.combat;
 import lombok.Getter;
 import net.dungeonrealms.vgame.goal.objective.EnumObjectiveType;
 import net.dungeonrealms.vgame.goal.objective.Objective;
+import net.dungeonrealms.vgame.world.entity.boss.EnumBossType;
+import net.dungeonrealms.vgame.world.entity.boss.EnumDungeonBoss;
 
 /**
  * Created by Giovanni on 22-11-2016.
@@ -16,6 +18,12 @@ public class CombatObjective extends Objective
     private EnumCombatGoal combatGoal;
 
     @Getter
+    private EnumBossType bossType;
+
+    @Getter
+    private EnumDungeonBoss dungeonBoss;
+
+    @Getter
     private int objective;
 
     public CombatObjective(EnumCombatGoal combatGoal, int goal)
@@ -23,5 +31,19 @@ public class CombatObjective extends Objective
         super("newObjective", EnumObjectiveType.COMBAT, true);
         this.combatGoal = combatGoal;
         this.objective = goal;
+    }
+
+    public CombatObjective(EnumBossType bossType)
+    {
+        super("newObjective", EnumObjectiveType.COMBAT, true);
+        this.bossType = bossType;
+        this.combatGoal = EnumCombatGoal.BOSS;
+    }
+
+    public CombatObjective(EnumDungeonBoss dungeonBoss)
+    {
+        super("newObjective", EnumObjectiveType.COMBAT, true);
+        this.dungeonBoss = dungeonBoss;
+        this.combatGoal = EnumCombatGoal.BOSS;
     }
 }

@@ -10,5 +10,5 @@ public enum EnumCreatureType
 {
     PLAYER, ENTITY, // Global selection
 
-    NPC, TROLL, WOLF, GOLEM, NPC_VILLAGER, GOBLIN;
+    ZOMBIE, SKELETON, CREEPER, COW, CHICKEN, PIG;
 }

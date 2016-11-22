@@ -1,14 +1,20 @@
 package net.dungeonrealms.vgame.goal.achievement;
 
 import lombok.Getter;
+import net.dungeonrealms.vgame.goal.achievement.combat.CombatAchievement;
 import net.dungeonrealms.vgame.goal.achievement.explorer.ExplorerAchievement;
+import net.dungeonrealms.vgame.goal.objective.combat.CombatObjective;
+import net.dungeonrealms.vgame.goal.objective.combat.EnumCombatGoal;
+import net.dungeonrealms.vgame.world.entity.boss.EnumBossType;
+import net.dungeonrealms.vgame.world.entity.boss.EnumDungeonBoss;
 
 /**
- * Created by Giovanni on 8-11-2016.
+ * Created by Giovanni on 22-11-2016.
  * <p>
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
+
 public enum EnumAchievement
 {
     EXPLORER_ANDALUCIA(0, new ExplorerAchievement("&a&lWELCOME TO ANDALUCIA",
@@ -22,6 +28,7 @@ public enum EnumAchievement
 
     EXPLORER_DARKOAK(3, new ExplorerAchievement("&a&lDARKOAK",
             new String[]{"&7> Discover Darkoak", "&7[Discovered Darkoak]"}, 500, "darkOak", "explorer.darkOak")),
+
     EXPLORER_JAGGED(4, new ExplorerAchievement("&a&lJAGGED ROCKS",
             new String[]{"&7> Discover Jagged Rocks", "&7[Discovered Jagged Rocks]"}, 500, "jaggedRocks", "explorer.jaggedRocks")),
 
@@ -71,24 +78,50 @@ public enum EnumAchievement
             new String[]{"&7> Discover Sebrata", "&7[Discovered Sebrata]"}, 1000, "sebrata", "explorer.sebrata")),
 
     EXPLORER_AWK(20, new ExplorerAchievement("&5&lGREAT GATE OF AWK",
-            new String[]{"&7> Discover the Great Gate of Awk", "&7[Discovered the Great Gate of Awk]"}, 45000, "gateAwk", "explorer.gateAwk"));
+            new String[]{"&7> Discover the Great Gate of Awk", "&7[Discovered the Great Gate of Awk]"}, 45000, "gateAwk", "explorer.gateAwk")),
 
-    /**
-     * COMBAT_MAYEL(21, "&a&lDEFEAT MAYEL THE CRUEL", new String[]{"&7> Defeat Mayel the Cruel", "&7[Defeated Mayel the Cruel]"}, 15000),
-     * COMBAT_BURICK(22, "&a&lDEFEAT BURICK THE FANATIC", new String[]{"&7> Defeat Burick the Fanatic", "&7[Defeated Burick the Fanatic]"}, 50000),
-     * COMBAT_ABYSS(23, "&a&lDEFEAT INFERNAL ABYSS", new String[]{"&7> Defeat the Infernal Abyss", "&7[Defeated the Infernal Abyss]"}, 75000),
-     * COMBAT_MONSTER_I(24, "&a&lMONSTER HUNTER I", new String[]{"&7> Defeat 100 monsters", "&7[Defeated 100 monsters]"}, 250),
-     * COMBAT_MONSTER_II(25, "&a&lMONSTER HUNTER II", new String[]{"&7> Defeat 300 monsters", "&7[Defeated 300 monsters]"}, 500),
-     * COMBAT_MONSTER_III(26, "&a&lMONSTER HUNTER III", new String[]{"&7> Defeat 500 monsters", "&7[Defeated 500 monsters]"}, 1000),
-     * COMBAT_MONSTER_IV(27, "&a&lMONSTER HUNTER IV", new String[]{"&7> Defeat 1000 monsters", "&7[Defeated 1000 monsters]"}, 3000),
-     * COMBAT_MONSTER_V(28, "&a&lMONSTER HUNTER V", new String[]{"&7> Defeat 1500 monsters", "&7[Defeated 1500 monsters]"}, 6000),
-     * COMBAT_GATEKEEPER(29, "&5&lDEFEAT GREAT GATEKEEPER", new String[]{"&7> Defeat the Great Gatekeeper of Awk", "&7[Defeated the Great Gatekeeper of Awk]"}, 100000),
-     * COMBAT_MAN_I(30, "&a&lMAN HUNTER I", new String[]{"&7> Defeat 1 player", "&7[Defeated 1 player]"}, 250),
-     * COMBAT_MAN_II(31, "&a&lMAN HUNTER II", new String[]{"&7> Defeat 3 player", "&7[Defeated 3 players]"}, 500),
-     * COMBAT_MAN_III(32, "&a&lMAN HUNTER III", new String[]{"&7> Defeat 5 player", "&7[Defeated 5 players]"}, 1000),
-     * COMBAT_MAN_IV(33, "&a&lMAN HUNTER IV", new String[]{"&7> Defeat 10 player", "&7[Defeated 10 players]"}, 3000),
-     * COMBAT_MAN_V(34, "&a&lMAN HUNTER V", new String[]{"&7> Defeat 15 player", "&7[Defeated 15 players]"}, 6000);
-     **/
+    COMBAT_MAYEL(21, new CombatAchievement("&a&lDEFEAT MAYEL THE CRUEL",
+            new String[]{"&7> Defeat Mayel the Cruel", "&7[Defeated Mayel the Cruel]"}, 15000, "combat.mayel", new CombatObjective(EnumDungeonBoss.MAYEL))),
+
+    COMBAT_BURICK(22, new CombatAchievement("&a&lDEFEAT BURICK THE FANATIC",
+            new String[]{"&7> Defeat Burick the Fanatic", "&7[Defeated Burick the Fanatic]"}, 50000, "combat.burick", new CombatObjective(EnumDungeonBoss.BURICK))),
+
+    COMBAT_ABYSS(23, new CombatAchievement("&a&lDEFEAT INFERNAL ABYSS",
+            new String[]{"&7> Defeat the Infernal Abyss", "&7[Defeated the Infernal Abyss]"}, 75000, "combat.abyss", new CombatObjective(EnumDungeonBoss.INFERNAL_ABYSS))),
+
+    COMBAT_MONSTER_I(24, new CombatAchievement("&a&lMONSTER HUNTER I",
+            new String[]{"&7> Defeat 100 monsters", "&7[Defeated 100 monsters]"}, 250, "combat.monster_1", new CombatObjective(EnumCombatGoal.MONSTER, 100))),
+
+    COMBAT_MONSTER_II(25, new CombatAchievement("&a&lMONSTER HUNTER II",
+            new String[]{"&7> Defeat 300 monsters", "&7[Defeated 300 monsters]"}, 500, "combat.monster_2", new CombatObjective(EnumCombatGoal.MONSTER, 300))),
+
+    COMBAT_MONSTER_III(26,new CombatAchievement("&a&lMONSTER HUNTER III",
+            new String[]{"&7> Defeat 500 monsters", "&7[Defeated 500 monsters]"}, 1000, "combat.monster_3", new CombatObjective(EnumCombatGoal.MONSTER, 500))),
+
+    COMBAT_MONSTER_IV(27, new CombatAchievement("&a&lMONSTER HUNTER IV",
+            new String[]{"&7> Defeat 1000 monsters", "&7[Defeated 1000 monsters]"}, 3000, "combat.monster_4", new CombatObjective(EnumCombatGoal.MONSTER, 1000))),
+
+    COMBAT_MONSTER_V(28, new CombatAchievement("&a&lMONSTER HUNTER V",
+            new String[]{"&7> Defeat 1500 monsters", "&7[Defeated 1500 monsters]"}, 6000, "combat.monster_5", new CombatObjective(EnumCombatGoal.MONSTER, 1500))),
+
+    COMBAT_GATEKEEPER(29, new CombatAchievement("&5&lDEFEAT GREAT GATEKEEPER",
+            new String[]{"&7> Defeat the Great Gatekeeper of Awk", "&7[Defeated the Great Gatekeeper of Awk]"}, 100000, "combat.awkKeeper",
+            new CombatObjective(EnumBossType.GATEKEEPER))),
+
+    COMBAT_MAN_I(30, new CombatAchievement("&a&lMAN HUNTER I",
+            new String[]{"&7> Defeat 1 player", "&7[Defeated 1 player]"}, 250, "combat.player.1", new CombatObjective(EnumCombatGoal.PLAYER, 1))),
+
+    COMBAT_MAN_II(31, new CombatAchievement("&a&lMAN HUNTER II",
+                    new String[]{"&7> Defeat 3 players", "&7[Defeated 3 player]"}, 500, "combat.player.2", new CombatObjective(EnumCombatGoal.PLAYER, 3))),
+
+    COMBAT_MAN_III(32, new CombatAchievement("&a&lMAN HUNTER III",
+                    new String[]{"&7> Defeat 5 players", "&7[Defeated 5 player]"}, 1000, "combat.player.3", new CombatObjective(EnumCombatGoal.PLAYER, 5))),
+
+    COMBAT_MAN_IV(33, new CombatAchievement("&a&lMAN HUNTER IV",
+            new String[]{"&7> Defeat 10 players", "&7[Defeated 10 player]"}, 3000, "combat.player.4", new CombatObjective(EnumCombatGoal.PLAYER, 10))),
+
+    COMBAT_MAN_V(34, new CombatAchievement("&a&lMAN HUNTER V",
+            new String[]{"&7> Defeat 15 players", "&7[Defeated 15 player]"}, 6000, "combat.player.5", new CombatObjective(EnumCombatGoal.PLAYER, 15)));
 
 
     @Getter

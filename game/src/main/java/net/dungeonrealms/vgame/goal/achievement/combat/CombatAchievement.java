@@ -31,7 +31,22 @@ public class CombatAchievement extends Achievement implements IAchievement
             switch (this.objective.getCombatGoal())
             {
                 case BOSS:
-
+                    // Dungeon boss?
+                    if (this.objective.getDungeonBoss() != null)
+                    {
+                        Game.getGame().getRegistryHandler().getPlayerRegistry().getMap().values()
+                                .stream().filter(gamePlayer -> !gamePlayer.getData().getCollectionData().getAchievements()
+                                .contains(this.getCollectionName()))
+                                .filter(gamePlayer -> gamePlayer.getData().getGameData().getKilledBosses().contains(this.objective.getDungeonBoss().name())).forEach(this::reward);
+                    }
+                    // World boss?
+                    if (this.objective.getBossType() != null)
+                    {
+                        Game.getGame().getRegistryHandler().getPlayerRegistry().getMap().values()
+                                .stream().filter(gamePlayer -> !gamePlayer.getData().getCollectionData().getAchievements()
+                                .contains(this.getCollectionName()))
+                                .filter(gamePlayer -> gamePlayer.getData().getGameData().getKilledBosses().contains(this.objective.getBossType().name())).forEach(this::reward);
+                    }
                     break;
                 case PLAYER:
                     Game.getGame().getRegistryHandler().getPlayerRegistry().getMap().values()
