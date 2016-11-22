@@ -72,6 +72,8 @@ public class AchievementCommand extends BaseCommand
                             if (gamePlayer.hasAchievement(achievement))
                             {
                                 gamePlayer.getData().getCollectionData().getAchievements().remove(achievement.name());
+                                player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + achievement.name()
+                                        + ChatColor.GREEN + " has been removed from " + ChatColor.GREEN.toString() + ChatColor.BOLD + args[1]);
                             } else
                                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + args[1] + ChatColor.RED + " does not own: " + achievement.name());
                         }

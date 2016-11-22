@@ -1,6 +1,8 @@
 package net.dungeonrealms.control.party;
 
+import lombok.Getter;
 import net.dungeonrealms.control.DRControl;
+import net.dungeonrealms.control.party.type.EnumPartyType;
 import net.dungeonrealms.control.player.DRPlayer;
 import net.dungeonrealms.control.player.rank.Rank;
 import net.dungeonrealms.control.server.types.GameServer;
@@ -19,13 +21,31 @@ public class Party {
     private List<String> players;
     private List<String> invited;
 
+    @Getter
+    private EnumPartyType partyType;
+
     public Party(DRPlayer owner) {
         this.owner = owner.getUuid();
 
         // Create the players list.
         this.players = new ArrayList<>();
         this.invited = new ArrayList<>();
-
+        if(owner.getRank().hasRank(Rank.DEV))
+        {
+            this.partyType = EnumPartyType.DEV;
+        } else
+        {
+            // Only for default sub, sub_2, sub_3
+            if(owner.getRank().hasRank(Rank.DEFAULT) && !owner.getRank().hasRank(Rank.PMOD))
+            {
+                this.partyType = EnumPartyType.valueOf(owner.getRank().name());
+            }
+            // Only for pmods and gms
+            else if(owner.getRank().hasRank(Rank.PMOD) && !owner.getRank().hasRank(Rank.DEV))
+            {
+                this.partyType = EnumPartyType.SUB_2;
+            }
+        }
     }
 
     public DRPlayer getOwner() {
@@ -82,7 +102,7 @@ public class Party {
         return invited.contains(player.getUuid());
     }
 
-    public boolean isFull() { return players.size() >= 5; }
+    public boolean isFull() { return players.size() >= this.partyType.getPartySlots(); }
 
     public void invitePlayer(DRPlayer player) {
         invited.add(player.getUuid());

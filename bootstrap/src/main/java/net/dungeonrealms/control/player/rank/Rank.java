@@ -7,7 +7,7 @@ public enum Rank {
 
     DEFAULT(0, "", "&7"),
     SUB(1, "S", "&a&l"),
-    SUB_2(2, "S+", "&6&"),
+    SUB_2(2, "S+", "&6&l"),
     SUB_3(3, "S++", "&e&l"),
     PMOD(4, "PMOD", "&f&l"),
     GM(5, "GM", "&b&l"),

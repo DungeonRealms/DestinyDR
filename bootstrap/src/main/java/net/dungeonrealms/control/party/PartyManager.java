@@ -260,8 +260,9 @@ public class PartyManager {
             DRPlayer drPlayer = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyInfo.getPlayer());
             if (party != null && partyOwner != null)
             {
-                drPlayer.sendMessage("&e&l" + partyOwner.getName() + "&e's Party", true);
-                drPlayer.sendMessage("&7Players: &a" + party.getPlayers().size() + "&8/&78", true);
+                drPlayer.sendMessage("&e&l" + partyOwner.getName() + "&e's Party", false);
+                drPlayer.sendMessage("&7Players: &a" + party.getPlayers().size() + "&8/&7" + party.getPartyType().getPartySlots(), false);
+                drPlayer.sendMessage("&7Party type: " + party.getPartyType().getName(), false);
             } else
             {
                 drPlayer.sendMessage("&cParty doesn't exist", true);

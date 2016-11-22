@@ -1,9 +1,7 @@
 package net.dungeonrealms.vgame.party;
 
 import net.dungeonrealms.common.frontend.command.BaseCommand;
-import net.dungeonrealms.packet.party.PacketPartyDisband;
-import net.dungeonrealms.packet.party.PacketPartyInvite;
-import net.dungeonrealms.packet.party.PacketPartyLeave;
+import net.dungeonrealms.packet.party.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -35,7 +33,7 @@ public class PartyCommand extends BaseCommand
             Player player = (Player) sender;
             if (args.length == 0)
             {
-                player.sendMessage(ChatColor.RED + "Usage: /party <invite/join/leave/disband>");
+                player.sendMessage(ChatColor.RED + "Usage: /party <invite/join/leave/info/disband>");
                 player.sendMessage(ChatColor.RED + "Example usage: /party join Evoltr");
             }
             if (args.length == 1)
@@ -43,11 +41,9 @@ public class PartyCommand extends BaseCommand
                 if (args[0].equalsIgnoreCase("disband"))
                 {
                     new PacketPartyDisband(player.getName());
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                 } else if (args[0].equalsIgnoreCase("leave"))
                 {
                     new PacketPartyLeave(player.getName());
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                 }
             }
             if (args.length == 2)
@@ -56,9 +52,20 @@ public class PartyCommand extends BaseCommand
                 {
                     if (!args[1].isEmpty())
                     {
-                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                         new PacketPartyInvite(player.getName(), args[1]);
                     } else player.sendMessage(ChatColor.RED + "You must specify a player to invite!");
+                } else if (args[0].equalsIgnoreCase("info"))
+                {
+                    if (!args[1].isEmpty())
+                    {
+                        new PacketPartyInfo(player.getName(), args[1]);
+                    } else player.sendMessage(ChatColor.RED + "You must specify a player to view the party of!");
+                } else if (args[0].equalsIgnoreCase("join"))
+                {
+                    if (!args[1].isEmpty())
+                    {
+                        new PacketPartyJoin(player.getName(), args[1]);
+                    } else player.sendMessage(ChatColor.RED + "You must specify a player to join the party of!");
                 }
             }
         } else
