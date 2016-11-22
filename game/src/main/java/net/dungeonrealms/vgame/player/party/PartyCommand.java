@@ -1,9 +1,8 @@
-package net.dungeonrealms.vgame.party;
+package net.dungeonrealms.vgame.player.party;
 
 import net.dungeonrealms.common.frontend.command.BaseCommand;
 import net.dungeonrealms.packet.party.*;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

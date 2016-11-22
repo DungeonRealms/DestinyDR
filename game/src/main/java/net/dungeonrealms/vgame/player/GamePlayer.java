@@ -1,8 +1,12 @@
 package net.dungeonrealms.vgame.player;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.common.backend.player.DataPlayer;
-import net.dungeonrealms.vgame.achievement.EnumAchievement;
+import net.dungeonrealms.vgame.goal.achievement.EnumAchievement;
+import net.dungeonrealms.vgame.goal.objective.Objective;
+import net.dungeonrealms.vgame.player.scoreboard.EnumScoreboardType;
+import net.dungeonrealms.vgame.player.scoreboard.GameScoreboard;
 import org.bukkit.entity.Player;
 
 /**
@@ -19,6 +23,14 @@ public class GamePlayer implements IPlayer
     @Getter
     private Player player;
 
+    @Setter
+    @Getter
+    private Objective currentObjective;
+
+    @Getter
+    @Setter
+    private GameScoreboard gameScoreboard;
+
     public GamePlayer(DataPlayer dataPlayer)
     {
         this.data = dataPlayer;
@@ -28,5 +40,11 @@ public class GamePlayer implements IPlayer
     public boolean hasAchievement(EnumAchievement achievement)
     {
         return this.data.getCollectionData().getAchievements().contains(achievement.name());
+    }
+
+    public void updateScoreboard(EnumScoreboardType to)
+    {
+        this.gameScoreboard = new GameScoreboard(to);
+        this.gameScoreboard.getScoreboardHolder().send(this.player);
     }
 }

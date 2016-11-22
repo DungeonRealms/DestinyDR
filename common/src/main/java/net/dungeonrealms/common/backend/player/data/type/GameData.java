@@ -5,6 +5,8 @@ import lombok.Setter;
 import net.dungeonrealms.common.backend.player.data.IData;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,6 +33,9 @@ public class GameData implements IData
         this.currentFood = document.getInteger("currentFoodLevel");
         this.ecash = document.getInteger("ecash");
         this.health = document.getInteger("health");
+        this.playerKills = document.getInteger("playerKills");
+        this.monsterKills = document.getInteger("monsterKills");
+        this.killedBosses = document.get("bossKills", ArrayList.class);
     }
 
     @Getter
@@ -66,4 +71,13 @@ public class GameData implements IData
     @Getter
     @Setter
     private int health;
+    @Getter
+    @Setter
+    private int playerKills;
+    @Getter
+    @Setter
+    private int monsterKills;
+    @Getter
+    @Setter
+    private List<String> killedBosses;
 }
