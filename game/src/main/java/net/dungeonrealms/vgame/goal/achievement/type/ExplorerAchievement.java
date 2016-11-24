@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.goal.achievement.explorer;
+package net.dungeonrealms.vgame.goal.achievement.type;
 
 import lombok.Getter;
 import net.dungeonrealms.vgame.Game;

@@ -3,16 +3,19 @@ package net.dungeonrealms.vgame.goal.achievement.gui;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.dungeonrealms.common.frontend.menu.construct.BasicGUI;
+import net.dungeonrealms.common.frontend.menu.construct.action.GUIAction;
 import net.dungeonrealms.vgame.goal.achievement.EnumAchievementGroup;
 import net.dungeonrealms.vgame.player.GamePlayer;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -27,22 +30,9 @@ public class AchievementGUI extends BasicGUI
     {
         super(null, "Achievements", 18);
 
-        Map<Integer, ItemStack> itemStackMap = Maps.newHashMap();
-
         // Calculate achievement group count
         int combatAchievements = 0;
         int explorerAchievements = 0;
-
-        for (String collectionName : gamePlayer.getData().getCollectionData().getAchievements())
-            if (collectionName.contains("combat"))
-            {
-                explorerAchievements++;
-            }
-        for (String collectionName : gamePlayer.getData().getCollectionData().getAchievements())
-            if (collectionName.contains("explorer"))
-            {
-                explorerAchievements++;
-            }
 
         for (EnumAchievementGroup achievementGroup : EnumAchievementGroup.values())
         {
@@ -65,16 +55,19 @@ public class AchievementGUI extends BasicGUI
             itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             itemStack.setItemMeta(itemMeta);
 
-            itemStackMap.put(achievementGroup.getSlot(), itemStack);
-        }
-        this.addItems(itemStackMap);
-    }
-
-    class CombatAchievementGUI extends BasicGUI
-    {
-        public CombatAchievementGUI(GamePlayer gamePlayer)
-        {
-            super(null, "Achievements: Combat", 54);
+            this.addAction(new GUIAction(itemStack)
+            {
+                @Override
+                public void perform(Player player, InventoryClickEvent event)
+                {
+                    if(event.getCurrentItem() == this.getItemStack())
+                    {
+                        if(this.getItemStack().hasItemMeta())
+                        {
+                        }
+                    }
+                }
+            }, achievementGroup.getSlot());
         }
     }
 }

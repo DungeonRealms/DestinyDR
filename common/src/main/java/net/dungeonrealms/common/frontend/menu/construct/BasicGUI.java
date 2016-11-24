@@ -1,8 +1,13 @@
 package net.dungeonrealms.common.frontend.menu.construct;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
+import net.dungeonrealms.common.frontend.menu.construct.action.GUIAction;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -26,11 +31,21 @@ public class BasicGUI implements IGUI
     @Getter
     private int slots;
 
+    @Getter
+    private Map<Integer, GUIAction> actionMap;
+
     public BasicGUI(InventoryHolder inventoryHolder, String name, int slots)
     {
         this.inventory = Bukkit.createInventory(inventoryHolder, slots, name);
         this.name = name;
         this.slots = slots;
+        this.actionMap = Maps.newHashMap();
+    }
+
+    public BasicGUI addAction(GUIAction action, int index)
+    {
+        this.actionMap.put(index, action);
+        return this;
     }
 
     public void addItem(ItemStack itemStack, int slot)
@@ -70,5 +85,23 @@ public class BasicGUI implements IGUI
     {
         player.openInventory(this.inventory);
         return this.inventory;
+    }
+
+    @EventHandler
+    public void onAction(InventoryClickEvent event)
+    {
+        if (event.getInventory().getName().equalsIgnoreCase(this.name))
+        {
+            if (event.getInventory().getContents() != null)
+            {
+                if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR)
+                {
+                    if (this.actionMap.containsKey(event.getRawSlot())) // It's an action item
+                    {
+                        this.actionMap.get(event.getRawSlot()).perform((Player) event.getWhoClicked(), event);
+                    }
+                }
+            }
+        }
     }
 }

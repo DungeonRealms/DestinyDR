@@ -1,8 +1,8 @@
 package net.dungeonrealms.vgame.goal.achievement;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.goal.achievement.combat.CombatAchievement;
-import net.dungeonrealms.vgame.goal.achievement.explorer.ExplorerAchievement;
+import net.dungeonrealms.vgame.goal.achievement.type.CombatAchievement;
+import net.dungeonrealms.vgame.goal.achievement.type.ExplorerAchievement;
 import net.dungeonrealms.vgame.goal.objective.combat.CombatObjective;
 import net.dungeonrealms.vgame.goal.objective.combat.EnumCombatGoal;
 import net.dungeonrealms.vgame.world.entity.boss.EnumBossType;
@@ -104,7 +104,7 @@ public enum EnumAchievement
     COMBAT_MONSTER_V(28, new CombatAchievement("&a&lMONSTER HUNTER V",
             new String[]{"&7> Defeat 1500 monsters", "&7[Defeated 1500 monsters]"}, 6000, "combat.monster_5", new CombatObjective(EnumCombatGoal.MONSTER, 1500))),
 
-    COMBAT_GATEKEEPER(29, new CombatAchievement("&5&lDEFEAT GREAT GATEKEEPER",
+    COMBAT_GATEKEEPER(29, new CombatAchievement("&5&lTHE GREAT GATEKEEPER",
             new String[]{"&7> Defeat the Great Gatekeeper of Awk", "&7[Defeated the Great Gatekeeper of Awk]"}, 100000, "combat.awkKeeper",
             new CombatObjective(EnumBossType.GATEKEEPER))),
 
