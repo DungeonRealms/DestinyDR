@@ -1,5 +1,6 @@
 package net.dungeonrealms.vgame.player;
 
+import net.dungeonrealms.api.creature.damage.IDamageSource;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -10,7 +11,7 @@ import org.bukkit.potion.PotionEffectType;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public interface IPlayer
+public interface IPlayer extends IDamageSource
 {
     Player getPlayer();
 

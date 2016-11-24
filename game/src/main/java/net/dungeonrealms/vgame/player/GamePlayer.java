@@ -2,6 +2,7 @@ package net.dungeonrealms.vgame.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.api.creature.damage.EnumDamageSource;
 import net.dungeonrealms.common.backend.player.DataPlayer;
 import net.dungeonrealms.vgame.goal.achievement.EnumAchievement;
 import net.dungeonrealms.vgame.goal.objective.Objective;
@@ -30,6 +31,9 @@ public class GamePlayer implements IPlayer
     @Getter
     @Setter
     private GameScoreboard gameScoreboard;
+
+    @Getter
+    private EnumDamageSource damageSource = EnumDamageSource.PLAYER;
 
     public GamePlayer(DataPlayer dataPlayer)
     {

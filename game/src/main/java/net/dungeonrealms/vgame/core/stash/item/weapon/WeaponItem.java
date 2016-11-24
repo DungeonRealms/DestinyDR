@@ -3,7 +3,6 @@ package net.dungeonrealms.vgame.core.stash.item.weapon;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
-import net.dungeonrealms.api.creature.EnumCreatureType;
 import net.dungeonrealms.vgame.core.stash.item.EnumItemRarity;
 import net.dungeonrealms.vgame.core.stash.item.EnumItemTier;
 import net.dungeonrealms.vgame.core.stash.item.EnumItemType;
@@ -242,7 +241,7 @@ public class WeaponItem implements IStack
         return lore;
     }
 
-    public double calculateDamage(EnumCreatureType enumCreatureType)
+    public double calculateDamage()
     {
         double damage = 0;
 
@@ -268,17 +267,9 @@ public class WeaponItem implements IStack
                         {
                             if (attribute == EnumWeaponAttribute.PLAYER_DMG)
                             {
-                                if (enumCreatureType == EnumCreatureType.PLAYER)
-                                {
-                                    damage += attributeMeta.returnRandomValue();
-                                }
                             }
                             if (attribute == EnumWeaponAttribute.MON_DMG)
                             {
-                                if (enumCreatureType == EnumCreatureType.ENTITY)
-                                {
-                                    damage += attributeMeta.returnRandomValue();
-                                }
                             }
                         }
                     }
