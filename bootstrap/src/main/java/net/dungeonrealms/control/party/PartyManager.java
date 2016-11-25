@@ -251,11 +251,11 @@ public class PartyManager {
         drPlayer.sendMessage("&aThere currently are &e" + this.parties.size() + " &aglobal parties", false);
     }
 
-    public Map<String, Object> handleInfo(PacketPartyInfo packetPartyInfo, boolean asData)
+    public Map<String, Object> handleInfo(PacketPartyInfo packetPartyInfo)
     {
         DRPlayer partyOwner = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyInfo.getPartyOwner());
         Party party = getParty(partyOwner);
-        if(!asData)
+        if(!packetPartyInfo.isData())
         {
             DRPlayer drPlayer = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyInfo.getPlayer());
             if (party != null && partyOwner != null)

@@ -57,7 +57,7 @@ public class PartyCommand extends BaseCommand
                 {
                     if (!args[1].isEmpty())
                     {
-                        new PacketPartyInfo(player.getName(), args[1]);
+                        new PacketPartyInfo(player.getName(), args[1], false);
                     } else player.sendMessage(ChatColor.RED + "You must specify a player to view the party of!");
                 } else if (args[0].equalsIgnoreCase("join"))
                 {

@@ -1,5 +1,6 @@
 package net.dungeonrealms.packet.party;
 
+import lombok.Getter;
 import net.dungeonrealms.packet.Packet;
 
 /**
@@ -11,9 +12,13 @@ public class PacketPartyInfo implements Packet {
 
     private String partyOwner;
 
-    public PacketPartyInfo(String player, String partyOwner) {
+    @Getter
+    private boolean data;
+
+    public PacketPartyInfo(String player, String partyOwner, boolean data) {
         this.player = player;
         this.partyOwner = partyOwner;
+        this.data = data;
     }
 
     public String getPlayer() {

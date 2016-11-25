@@ -35,6 +35,10 @@ public class GamePlayer implements IPlayer
     @Getter
     private EnumDamageSource damageSource = EnumDamageSource.PLAYER;
 
+    @Setter
+    @Getter
+    private boolean inParty;
+
     public GamePlayer(DataPlayer dataPlayer)
     {
         this.data = dataPlayer;
@@ -48,7 +52,7 @@ public class GamePlayer implements IPlayer
 
     public void updateScoreboard(EnumScoreboardType to)
     {
-        this.gameScoreboard = new GameScoreboard(to);
+        this.gameScoreboard = new GameScoreboard(this, to);
         this.gameScoreboard.getScoreboardHolder().send(this.player);
     }
 }
