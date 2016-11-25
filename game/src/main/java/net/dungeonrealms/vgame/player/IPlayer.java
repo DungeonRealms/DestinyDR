@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame.player;
 
-import net.dungeonrealms.api.creature.damage.IDamageSource;
+import net.dungeonrealms.api.creature.lib.damage.IDamageSource;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;

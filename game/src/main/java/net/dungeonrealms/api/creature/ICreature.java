@@ -1,11 +1,10 @@
 package net.dungeonrealms.api.creature;
 
-import net.dungeonrealms.api.creature.intelligence.EnumIntelligenceType;
-import net.dungeonrealms.api.creature.meta.LivingMeta;
-import net.minecraft.server.v1_9_R2.Entity;
+import net.dungeonrealms.api.creature.lib.EnumEntityType;
+import net.dungeonrealms.api.creature.lib.intelligence.EnumIntelligenceType;
+import net.dungeonrealms.api.creature.lib.meta.LivingMeta;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import net.minecraft.server.v1_9_R2.PathfinderGoalNearestAttackableTarget;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -31,14 +30,23 @@ public interface ICreature extends IEntity
         this.getEntityInsentient().getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(value);
     }
 
-    default void addTarget(Entity entity)
+    default void setMaxHealth(double value)
+    {
+        this.getEntityInsentient().getAttributeInstance(GenericAttributes.maxHealth).setValue(value);
+    }
+
+    default void addTarget(Class clazz)
+    {
+        this.getEntityInsentient().goalSelector.a(1, new PathfinderGoalNearestAttackableTarget(this.getEntityCreature(), clazz, true));
+    }
+
+    default void setWeapon()
     {
 
     }
 
-    default void spawn(Location location)
+    default void setArmorContents()
     {
-        this.getEntity().setLocation(location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw());
-        ((CraftWorld) location.getWorld()).getHandle().addEntity(this.getEntity());
+
     }
 }

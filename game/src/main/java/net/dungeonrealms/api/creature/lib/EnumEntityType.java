@@ -1,4 +1,4 @@
-package net.dungeonrealms.api.creature;
+package net.dungeonrealms.api.creature.lib;
 
 /**
  * Created by Giovanni on 24-11-2016.

@@ -1,4 +1,4 @@
-package net.dungeonrealms.api.creature.intelligence;
+package net.dungeonrealms.api.creature.lib.damage;
 
 /**
  * Created by Giovanni on 24-11-2016.
@@ -6,7 +6,7 @@ package net.dungeonrealms.api.creature.intelligence;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumIntelligenceType
+public enum EnumDamageSource
 {
-    HOSTILE, PASSIVE;
+    PLAYER, PROJECTILE, CREATURE;
 }

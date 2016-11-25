@@ -1,15 +1,12 @@
-package net.dungeonrealms.api.creature.type;
+package net.dungeonrealms.api.creature.lib.craft;
 
 import lombok.Getter;
-import net.dungeonrealms.api.creature.EnumEntityType;
+import net.dungeonrealms.api.creature.lib.EnumEntityType;
 import net.dungeonrealms.api.creature.ICreature;
-import net.dungeonrealms.api.creature.intelligence.EnumIntelligenceType;
-import net.dungeonrealms.api.creature.damage.EnumDamageSource;
-import net.dungeonrealms.api.creature.meta.LivingMeta;
-import net.minecraft.server.v1_9_R2.Entity;
-import net.minecraft.server.v1_9_R2.EntityInsentient;
-import net.minecraft.server.v1_9_R2.EntityOcelot;
-import net.minecraft.server.v1_9_R2.World;
+import net.dungeonrealms.api.creature.lib.intelligence.EnumIntelligenceType;
+import net.dungeonrealms.api.creature.lib.damage.EnumDamageSource;
+import net.dungeonrealms.api.creature.lib.meta.LivingMeta;
+import net.minecraft.server.v1_9_R2.*;
 
 /**
  * Created by Giovanni on 24-11-2016.
@@ -24,6 +21,9 @@ public class CreatureOcelot extends EntityOcelot implements ICreature
 
     @Getter
     private Entity entity;
+
+    @Getter
+    private EntityCreature entityCreature;
 
     @Getter
     private EntityInsentient entityInsentient;
@@ -44,7 +44,12 @@ public class CreatureOcelot extends EntityOcelot implements ICreature
 
         this.entity = this;
         this.entityInsentient = this;
+        this.entityCreature = this;
 
         this.livingMeta = new LivingMeta(this);
+        if (this.intelligenceType != null)
+        {
+            this.clearIntelligence();
+        }
     }
 }

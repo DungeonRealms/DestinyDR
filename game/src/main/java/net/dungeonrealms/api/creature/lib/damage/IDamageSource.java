@@ -1,4 +1,4 @@
-package net.dungeonrealms.api.creature.damage;
+package net.dungeonrealms.api.creature.lib.damage;
 
 /**
  * Created by Giovanni on 24-11-2016.

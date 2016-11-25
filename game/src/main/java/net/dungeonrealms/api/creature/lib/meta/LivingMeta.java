@@ -1,11 +1,11 @@
-package net.dungeonrealms.api.creature.meta;
+package net.dungeonrealms.api.creature.lib.meta;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
-import lombok.Getter;
-import net.dungeonrealms.api.creature.damage.IDamageSource;
+import net.dungeonrealms.api.creature.lib.damage.IDamageSource;
 import net.dungeonrealms.vgame.player.GamePlayer;
+import net.minecraft.server.v1_9_R2.DamageSource;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
 
 /**
@@ -16,10 +16,7 @@ import net.minecraft.server.v1_9_R2.EntityInsentient;
  */
 public class LivingMeta
 {
-    private BiMap<IDamageSource, Double> damage;
-
-    @Getter
-    private double attackDamage;
+    private BiMap<IDamageSource, Float> damage;
 
     private EntityInsentient insentient;
 
@@ -36,9 +33,17 @@ public class LivingMeta
         return this;
     }
 
-    public LivingMeta damage(IDamageSource damageSource, double value)
+    public LivingMeta setHealth(float value)
+    {
+        if (value < this.insentient.getMaxHealth() && value > 0)
+            this.insentient.setHealth(value);
+        return this;
+    }
+
+    public LivingMeta damage(IDamageSource damageSource, float value)
     {
         this.damage.put(damageSource, value);
+        this.insentient.damageEntity(DamageSource.GENERIC, value);
         return this;
     }
 
