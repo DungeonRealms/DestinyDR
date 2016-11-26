@@ -49,4 +49,9 @@ interface IEntity extends IDamageSource
         // Keep always
         this.getEntityInsentient().goalSelector.a(7, new PathfinderGoalRandomStroll(this.getEntityCreature(), 1.0D));
     }
+
+    default void register()
+    {
+
+    }
 }

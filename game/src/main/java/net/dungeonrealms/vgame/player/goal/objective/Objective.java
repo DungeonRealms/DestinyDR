@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.goal.objective;
+package net.dungeonrealms.vgame.player.goal.objective;
 
 import lombok.Getter;
 import net.dungeonrealms.vgame.player.GamePlayer;

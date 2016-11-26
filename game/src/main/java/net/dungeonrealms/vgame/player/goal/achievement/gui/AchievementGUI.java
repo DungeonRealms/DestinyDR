@@ -1,13 +1,11 @@
-package net.dungeonrealms.vgame.goal.achievement.gui;
+package net.dungeonrealms.vgame.player.goal.achievement.gui;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.dungeonrealms.common.frontend.menu.construct.BasicGUI;
 import net.dungeonrealms.common.frontend.menu.construct.action.GUIAction;
-import net.dungeonrealms.vgame.goal.achievement.EnumAchievementGroup;
+import net.dungeonrealms.vgame.player.goal.achievement.EnumAchievementGroup;
 import net.dungeonrealms.vgame.player.GamePlayer;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;

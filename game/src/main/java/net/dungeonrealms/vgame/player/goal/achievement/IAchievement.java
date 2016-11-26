@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.goal.objective.combat;
+package net.dungeonrealms.vgame.player.goal.achievement;
 
 /**
  * Created by Giovanni on 22-11-2016.
@@ -6,7 +6,7 @@ package net.dungeonrealms.vgame.goal.objective.combat;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumCombatGoal
+public interface IAchievement
 {
-    BOSS, MONSTER, PLAYER;
+    void register();
 }

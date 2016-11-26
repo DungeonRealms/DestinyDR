@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.goal.achievement;
+package net.dungeonrealms.vgame.player.goal.achievement;
 
 import lombok.Getter;
 import org.bukkit.Material;

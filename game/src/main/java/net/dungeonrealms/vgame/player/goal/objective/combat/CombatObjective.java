@@ -1,8 +1,8 @@
-package net.dungeonrealms.vgame.goal.objective.combat;
+package net.dungeonrealms.vgame.player.goal.objective.combat;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.goal.objective.EnumObjectiveType;
-import net.dungeonrealms.vgame.goal.objective.Objective;
+import net.dungeonrealms.vgame.player.goal.objective.EnumObjectiveType;
+import net.dungeonrealms.vgame.player.goal.objective.Objective;
 import net.dungeonrealms.vgame.world.entity.boss.EnumBossType;
 import net.dungeonrealms.vgame.world.entity.boss.EnumDungeonBoss;
 

@@ -6,6 +6,8 @@ import net.dungeonrealms.api.creature.lib.meta.LivingMeta;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.PathfinderGoalNearestAttackableTarget;
 
+import java.util.List;
+
 /**
  * Created by Giovanni on 29-10-2016.
  * <p>
@@ -35,9 +37,10 @@ public interface ICreature extends IEntity
         this.getEntityInsentient().getAttributeInstance(GenericAttributes.maxHealth).setValue(value);
     }
 
-    default void addTarget(Class clazz)
+    default void addTargets(List<Class> classList)
     {
-        this.getEntityInsentient().goalSelector.a(1, new PathfinderGoalNearestAttackableTarget(this.getEntityCreature(), clazz, true));
+        for (Class clazz : classList)
+            this.getEntityInsentient().goalSelector.a(1, new PathfinderGoalNearestAttackableTarget(this.getEntityCreature(), clazz, true));
     }
 
     default void setWeapon()

@@ -1,9 +1,9 @@
-package net.dungeonrealms.vgame.goal.achievement.type;
+package net.dungeonrealms.vgame.player.goal.achievement.type;
 
 import lombok.Getter;
 import net.dungeonrealms.vgame.Game;
-import net.dungeonrealms.vgame.goal.achievement.Achievement;
-import net.dungeonrealms.vgame.goal.achievement.IAchievement;
+import net.dungeonrealms.vgame.player.goal.achievement.Achievement;
+import net.dungeonrealms.vgame.player.goal.achievement.IAchievement;
 import net.dungeonrealms.vgame.player.GamePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

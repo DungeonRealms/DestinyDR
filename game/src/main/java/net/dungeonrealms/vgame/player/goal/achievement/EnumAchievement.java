@@ -1,10 +1,10 @@
-package net.dungeonrealms.vgame.goal.achievement;
+package net.dungeonrealms.vgame.player.goal.achievement;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.goal.achievement.type.CombatAchievement;
-import net.dungeonrealms.vgame.goal.achievement.type.ExplorerAchievement;
-import net.dungeonrealms.vgame.goal.objective.combat.CombatObjective;
-import net.dungeonrealms.vgame.goal.objective.combat.EnumCombatGoal;
+import net.dungeonrealms.vgame.player.goal.achievement.type.CombatAchievement;
+import net.dungeonrealms.vgame.player.goal.achievement.type.ExplorerAchievement;
+import net.dungeonrealms.vgame.player.goal.objective.combat.CombatObjective;
+import net.dungeonrealms.vgame.player.goal.objective.combat.EnumCombatGoal;
 import net.dungeonrealms.vgame.world.entity.boss.EnumBossType;
 import net.dungeonrealms.vgame.world.entity.boss.EnumDungeonBoss;
 
