@@ -1,6 +1,6 @@
 package net.dungeonrealms.vgame.world.entity.generic;
 
-import net.dungeonrealms.vgame.world.entity.generic.construct.EnumEntityTier;
+import net.dungeonrealms.vgame.world.entity.generic.construct.EntityData;
 
 /**
  * Created by Giovanni on 26-11-2016.
@@ -10,5 +10,5 @@ import net.dungeonrealms.vgame.world.entity.generic.construct.EnumEntityTier;
  */
 public interface IGameEntity
 {
-    EnumEntityTier getEntityTier();
+    EntityData getEntityData();
 }

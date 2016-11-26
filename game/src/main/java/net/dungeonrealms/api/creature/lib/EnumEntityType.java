@@ -1,5 +1,7 @@
 package net.dungeonrealms.api.creature.lib;
 
+import lombok.Getter;
+
 /**
  * Created by Giovanni on 24-11-2016.
  * <p>
@@ -8,17 +10,26 @@ package net.dungeonrealms.api.creature.lib;
  */
 public enum EnumEntityType
 {
-    OCELOT,
-    SPIDER,
-    SKELETON,
-    WITHER_SKELETON,
-    PIG,
-    COW,
-    SHEEP,
-    IRON_GOLEM,
-    SNOW_GOLEM,
-    HORSE,
-    ZOMBIE,
-    WITHER,
-    END_DRAGON;
+    OCELOT(EnumEquipmentType.NONE),
+    SPIDER(EnumEquipmentType.NONE),
+    SKELETON(EnumEquipmentType.GENERIC),
+    WITHER_SKELETON(EnumEquipmentType.GENERIC),
+    PIG(EnumEquipmentType.SADDLE),
+    COW(EnumEquipmentType.NONE),
+    SHEEP(EnumEquipmentType.NONE),
+    IRON_GOLEM(EnumEquipmentType.NONE),
+    SNOW_GOLEM(EnumEquipmentType.NONE),
+    HORSE(EnumEquipmentType.SADDLE),
+    ZOMBIE(EnumEquipmentType.GENERIC),
+    WITHER(EnumEquipmentType.NONE),
+    END_DRAGON(EnumEquipmentType.NONE),
+    CRYSTAL(EnumEquipmentType.NONE);
+
+    @Getter
+    private EnumEquipmentType equipmentType;
+
+    EnumEntityType(EnumEquipmentType equipmentType)
+    {
+        this.equipmentType = equipmentType;
+    }
 }

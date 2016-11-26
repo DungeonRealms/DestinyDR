@@ -1,23 +1,23 @@
 package net.dungeonrealms.api.creature.lib.craft;
 
 import lombok.Getter;
-import net.dungeonrealms.api.creature.lib.EnumEntityType;
 import net.dungeonrealms.api.creature.ICreature;
-import net.dungeonrealms.api.creature.lib.intelligence.EnumIntelligenceType;
+import net.dungeonrealms.api.creature.lib.EnumEntityType;
 import net.dungeonrealms.api.creature.lib.damage.EnumDamageSource;
+import net.dungeonrealms.api.creature.lib.intelligence.EnumIntelligenceType;
 import net.dungeonrealms.api.creature.lib.meta.LivingMeta;
 import net.minecraft.server.v1_9_R2.*;
 
 /**
- * Created by Giovanni on 24-11-2016.
+ * Created by Giovanni on 26-11-2016.
  * <p>
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CreatureOcelot extends EntityOcelot implements ICreature
+public class CreatureEndCrystal extends EntityEnderCrystal implements ICreature
 {
     @Getter
-    private EnumEntityType entityType = EnumEntityType.OCELOT;
+    private EnumEntityType entityType = EnumEntityType.CRYSTAL;
 
     @Getter
     private Entity entity;
@@ -36,20 +36,12 @@ public class CreatureOcelot extends EntityOcelot implements ICreature
 
     @Getter
     private LivingMeta livingMeta;
-    
-    public CreatureOcelot(World world, EnumIntelligenceType intelligenceType)
+
+    public CreatureEndCrystal(World world, EnumIntelligenceType intelligenceType)
     {
         super(world);
         this.intelligenceType = intelligenceType;
 
         this.entity = this;
-        this.entityInsentient = this;
-        this.entityCreature = this;
-
-        this.livingMeta = new LivingMeta(this);
-        if (this.intelligenceType != null)
-        {
-            this.clearIntelligence();
-        }
     }
 }

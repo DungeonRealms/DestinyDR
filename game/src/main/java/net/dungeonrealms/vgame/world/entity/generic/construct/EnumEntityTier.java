@@ -1,5 +1,8 @@
 package net.dungeonrealms.vgame.world.entity.generic.construct;
 
+import lombok.Getter;
+import org.bukkit.ChatColor;
+
 /**
  * Created by Giovanni on 26-11-2016.
  * <p>
@@ -8,5 +11,13 @@ package net.dungeonrealms.vgame.world.entity.generic.construct;
  */
 public enum EnumEntityTier
 {
-    ONE, TWO, THREE, FOUR, FIVE;
+    ONE(ChatColor.WHITE), TWO(ChatColor.GREEN), THREE(ChatColor.AQUA), FOUR(ChatColor.LIGHT_PURPLE), FIVE(ChatColor.YELLOW);
+
+    @Getter
+    private ChatColor color;
+
+    EnumEntityTier(ChatColor color)
+    {
+        this.color = color;
+    }
 }

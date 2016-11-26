@@ -36,7 +36,7 @@ public class CreatureHorse extends EntityHorse implements IHorse
 
     @Getter
     private LivingMeta livingMeta;
-
+    
     public CreatureHorse(World world, EnumIntelligenceType intelligenceType)
     {
         super(world);

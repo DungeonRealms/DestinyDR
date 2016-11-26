@@ -3,7 +3,8 @@ package net.dungeonrealms.vgame.world.entity.generic.type;
 import lombok.Getter;
 import net.dungeonrealms.api.creature.lib.craft.CreatureCow;
 import net.dungeonrealms.api.creature.lib.craft.CreaturePig;
-import net.dungeonrealms.api.creature.lib.craft.CreatureZombie;
+import net.dungeonrealms.api.creature.lib.craft.CreatureSkeleton;
+import net.dungeonrealms.api.creature.lib.craft.skeleton.EnumSkeletonType;
 import net.dungeonrealms.api.creature.lib.intelligence.EnumIntelligenceType;
 import net.dungeonrealms.vgame.world.entity.generic.EnumGameEntity;
 import net.dungeonrealms.vgame.world.entity.generic.IGameEntity;
@@ -16,30 +17,30 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * Created by Giovanni on 25-11-2016.
+ * Created by Giovanni on 26-11-2016.
  * <p>
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class EntityBandit extends CreatureZombie implements IGameEntity
+public class EntitySkeleton extends CreatureSkeleton implements IGameEntity
 {
     @Getter
     private EntityData entityData;
 
-    public EntityBandit(World world, EntityData entityData)
+    public EntitySkeleton(World world, EnumSkeletonType skeletonType, EntityData entityData)
     {
-        super(world, EnumIntelligenceType.HOSTILE);
+        super(world, EnumIntelligenceType.HOSTILE, skeletonType);
 
         this.entityData = entityData;
 
-        if(!this.entityData.isNull())
+        if (!this.entityData.isNull())
         {
-            String simpleName = EnumGameEntity.BANDIT.getSimpleNames().get(new Random().nextInt(EnumGameEntity.BANDIT.getSimpleNames().size()));
+            String simpleName = EnumGameEntity.SKELETON.getSimpleNames().get(new Random().nextInt(EnumGameEntity.SKELETON.getSimpleNames().size()));
 
             this.setCustomName(ChatColor.GOLD + "[Lvl. " + this.entityData.getLevel() + "]"
-                    + this.entityData.getEntityTier().getColor() + simpleName + " Bandit");
+                    + this.entityData.getEntityTier().getColor() + simpleName + " Skeleton");
 
-            this.addTargets(Arrays.asList(EntityHuman.class, CreatureCow.class, CreaturePig.class, EntitySkeleton.class));
+            this.addTargets(Arrays.asList(EntityHuman.class, CreatureCow.class, CreaturePig.class, EntityBandit.class));
         }
     }
 }
