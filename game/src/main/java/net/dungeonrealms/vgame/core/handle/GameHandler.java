@@ -43,6 +43,7 @@ public class GameHandler implements Handler
         this.handlerMap.put(UUID.randomUUID(), new NUAIHolder());
         this.handlerMap.put(UUID.randomUUID(), new AtomicHandler());
         this.handlerMap.put(UUID.randomUUID(), new NeutronHandler());
+        this.handlerMap.put(UUID.randomUUID(), new CommandHandler());
 
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Handlers provided");
 

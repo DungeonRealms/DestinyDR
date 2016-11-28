@@ -11,13 +11,17 @@ import org.bukkit.ChatColor;
  */
 public enum EnumEntityTier
 {
-    ONE(ChatColor.WHITE), TWO(ChatColor.GREEN), THREE(ChatColor.AQUA), FOUR(ChatColor.LIGHT_PURPLE), FIVE(ChatColor.YELLOW);
+    ONE(ChatColor.WHITE, 25), TWO(ChatColor.GREEN, 30), THREE(ChatColor.AQUA, 35), FOUR(ChatColor.LIGHT_PURPLE, 40), FIVE(ChatColor.YELLOW, 45);
 
     @Getter
     private ChatColor color;
 
-    EnumEntityTier(ChatColor color)
+    @Getter
+    private int healthSize;
+
+    EnumEntityTier(ChatColor color, int healthSize)
     {
         this.color = color;
+        this.healthSize = healthSize;
     }
 }
