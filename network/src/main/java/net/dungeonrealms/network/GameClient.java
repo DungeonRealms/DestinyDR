@@ -19,14 +19,12 @@ import net.dungeonrealms.network.packet.type.ServerListPacket;
 import java.io.IOException;
 import java.util.UUID;
 
-public class GameClient extends Listener
-{
+public class GameClient extends Listener {
     private Client client;
     private Runnable reconnected;
     private boolean isConnected = false;
 
-    public GameClient()
-    {
+    public GameClient() {
         this.client = new Client(Constants.NET_WRITE_BUFFER_SIZE, Constants.NET_READ_BUFFER_SIZE);
         this.client.addListener(this);
         this.client.setKeepAliveTCP(1000);
@@ -35,33 +33,27 @@ public class GameClient extends Listener
         registerClasses(client.getKryo());
     }
 
-    public void setReconnector(Runnable reconnector)
-    {
+    public void setReconnector(Runnable reconnector) {
         this.reconnected = reconnector;
     }
 
-    public void registerListener(Listener listener)
-    {
+    public void registerListener(Listener listener) {
         client.addListener(listener);
     }
 
-    public void removeListener(Listener listener)
-    {
+    public void removeListener(Listener listener) {
         client.removeListener(listener);
     }
 
-    public Client getClient()
-    {
+    public Client getClient() {
         return this.client;
     }
 
-    public boolean isConnected()
-    {
+    public boolean isConnected() {
         return isConnected;
     }
 
-    public void connect() throws IOException
-    {
+    public void connect() throws IOException {
         Log.info("Connecting to " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT);
         this.client.connect(500000, Constants.MASTER_SERVER_IP, Constants.MASTER_SERVER_PORT);
         isConnected = true;
@@ -69,32 +61,27 @@ public class GameClient extends Listener
         Log.info("Master server connection established!");
     }
 
-    public void kill()
-    {
-        if (this.client != null)
-        {
+    public void kill() {
+        if (this.client != null) {
             this.client.stop();
         }
     }
 
-    public void sendTCP(byte[] data)
-    {
+    public void sendTCP(byte[] data) {
         BasicMessagePacket packet = new BasicMessagePacket();
 
         packet.data = data;
         sendTCP(packet);
     }
 
-    public void sendUDP(byte[] data)
-    {
+    public void sendUDP(byte[] data) {
         BasicMessagePacket packet = new BasicMessagePacket();
 
         packet.data = data;
         sendUDP(packet);
     }
 
-    public void sendNetworkMessage(String task, String message, boolean mono, String... contents)
-    {
+    public void sendNetworkMessage(String task, String message, boolean mono, String... contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(task);
         out.writeUTF(message);
@@ -102,11 +89,9 @@ public class GameClient extends Listener
         for (String s : contents)
             out.writeUTF(s);
 
-        if(!mono)
-        {
+        if (!mono) {
             sendTCP(out.toByteArray());
-        } else
-        {
+        } else {
             MonoPacket monoPacket = new MonoPacket();
             monoPacket.uniqueId = UUID.fromString(message);
             monoPacket.data = out.toByteArray();
@@ -114,8 +99,7 @@ public class GameClient extends Listener
         }
     }
 
-    private static void registerClasses(Kryo kryo)
-    {
+    private static void registerClasses(Kryo kryo) {
         kryo.register(Packet.class);
         kryo.register(byte.class);
         kryo.register(byte[].class);
@@ -131,18 +115,15 @@ public class GameClient extends Listener
     }
 
 
-    public void sendTCP(Packet packet)
-    {
+    public void sendTCP(Packet packet) {
         this.client.sendTCP(packet);
     }
 
-    public void sendUDP(Packet packet)
-    {
+    public void sendUDP(Packet packet) {
         this.client.sendUDP(packet);
     }
 
-    public void disconnected(Connection c)
-    {
+    public void disconnected(Connection c) {
         Log.warn("Connection lost between master server. Attempting to reestablish connection...");
         Runnable run = new DefaultReconnector();
         if (reconnected != null) run = reconnected;
@@ -150,26 +131,18 @@ public class GameClient extends Listener
     }
 
     public class DefaultReconnector
-            implements Runnable
-    {
-        public DefaultReconnector()
-        {
+            implements Runnable {
+        public DefaultReconnector() {
         }
 
-        public void run()
-        {
-            while (!GameClient.this.getClient().isConnected())
-            {
-                try
-                {
+        public void run() {
+            while (!GameClient.this.getClient().isConnected()) {
+                try {
                     GameClient.this.client.reconnect();
-                } catch (Exception ex)
-                {
-                    try
-                    {
+                } catch (Exception ex) {
+                    try {
                         Thread.sleep(5000L);
-                    } catch (InterruptedException ex1)
-                    {
+                    } catch (InterruptedException ex1) {
                         ex.printStackTrace();
                     }
                 }

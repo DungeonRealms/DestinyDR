@@ -39,7 +39,7 @@ public class CommandPRemove extends BaseCommand {
                     PartyMechanics.getInstance().removeMember(Bukkit.getPlayer(args[0]), true);
                 }
             } else {
-                player.sendMessage(new String[] {
+                player.sendMessage(new String[]{
                         ChatColor.RED + "You are NOT the leader of your party.",
                         ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party."
                 });

@@ -23,7 +23,7 @@ public class CommandTestingHall extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player player = (Player)sender;
+        Player player = (Player) sender;
 
         if (!Rank.isDev(player)) return false;
 

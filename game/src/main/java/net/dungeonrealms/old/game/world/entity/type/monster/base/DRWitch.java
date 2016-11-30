@@ -94,7 +94,8 @@ public class DRWitch extends EntityWitch implements DRMonster {
     }
 
     @Override
-    public void collide(Entity e) {}
+    public void collide(Entity e) {
+    }
 
     @Override
     public void onMonsterAttack(Player p) {
@@ -102,7 +103,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     @Override
     public void onMonsterDeath(Player killer) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monster, this.getBukkitEntity(), killer);
         });
     }

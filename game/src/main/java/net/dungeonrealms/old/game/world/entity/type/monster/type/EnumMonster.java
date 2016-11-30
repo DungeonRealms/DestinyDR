@@ -21,10 +21,10 @@ public enum EnumMonster {
     Pirate("pirate", "Pirate", "samsamsam1234", new String[]{""}, new String[]{""}),
     RangedPirate("rangedpirate", "Ranged Pirate", "samsamsam1234", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}),
     MayelPirate("mayelpirate", "Pirate", "samsamsam1234", new String[]{"Mayel"}, new String[]{""}),
-    Naga("naga","Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}, Collections.singletonList("ice"), 25),
-    Tripoli("tripoli","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}, Collections.singletonList("fire"), 3),
-    Tripoli1("tripoli1","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}, Collections.singletonList("fire"), 3),
-    Golem("golem","Golem", "Steve", new String[]{"Enchanted", "Ironclad", "Enchanted"}, new String[]{""}, Collections.singletonList("ice"), 30),
+    Naga("naga", "Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}, Collections.singletonList("ice"), 25),
+    Tripoli("tripoli", "Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}, Collections.singletonList("fire"), 3),
+    Tripoli1("tripoli1", "Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}, Collections.singletonList("fire"), 3),
+    Golem("golem", "Golem", "Steve", new String[]{"Enchanted", "Ironclad", "Enchanted"}, new String[]{""}, Collections.singletonList("ice"), 30),
     Spider1("spider1", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy", "Giant"}, new String[]{""}, Collections.singletonList("ice"), 10),
     Spider2("spider2", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy", "Giant"}, new String[]{""}, Collections.singletonList("ice"), 10),
     FireImp("imp", "Fire Imp", "Devil", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 15),
@@ -32,16 +32,16 @@ public enum EnumMonster {
     Mage("mage", "Mage", "Mage", new String[]{""}, new String[]{""}),
     Skeleton("skeleton", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
     Skeleton1("skeleton1", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
-    Skeleton2("skeleton2", "Chaos Skeleton", "",  new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 5),
+    Skeleton2("skeleton2", "Chaos Skeleton", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 5),
     MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}, Collections.singletonList("fire"), 15),
     Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 5),
     Daemon("daemon", "Daemon", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 10),
     Silverfish("silverfish", "Silverfish", "Steve", new String[]{""}, new String[]{""}, Collections.singletonList("ice"), 15),
-	SpawnOfInferno("spawnofinferno", "Spawn of Inferno", "Steve", new String[]{""},new String[]{""}, Collections.singletonList("fire"), 10),
-	GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[] {""}),
-	Monk("monk", "Crimson Crusader", "Yhmen", new String[] {""}, new String[] {""}, Collections.singletonList("poison"), 15),
-	Lizardman("lizardman", "Lizardman", "Steve", new String[] {"Giant", "Tough"}, new String[] {""}, Collections.singletonList("fire"), 10),
-	Zombie("zombie", "Greater Zombie", "Steve", new String[]{""}, new String[] {""}, Collections.singletonList("fire"), 10),
+    SpawnOfInferno("spawnofinferno", "Spawn of Inferno", "Steve", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 10),
+    GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[]{""}),
+    Monk("monk", "Crimson Crusader", "Yhmen", new String[]{""}, new String[]{""}, Collections.singletonList("poison"), 15),
+    Lizardman("lizardman", "Lizardman", "Steve", new String[]{"Giant", "Tough"}, new String[]{""}, Collections.singletonList("fire"), 10),
+    Zombie("zombie", "Greater Zombie", "Steve", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 10),
     Wolf("wolf", "Fierce Wolf", "", new String[]{""}, new String[]{""}, Collections.singletonList("ice"), 10),
     Undead("undead", "Undead", "", new String[]{""}, new String[]{""}),
     FrozenSkeleton("frozenskeleton", "Mountain Walker", "", new String[]{""}, new String[]{""}, Collections.singletonList("ice"), 15),
@@ -54,7 +54,7 @@ public enum EnumMonster {
     Cow("cow", "Cow", "", new String[]{""}, new String[]{""}),
     Ocelot("ocelot", "Ocelot", "", new String[]{""}, new String[]{""});
 
-	public String idName;
+    public String idName;
     public String name;
     public String mobHead;
     public String[] prefix;
@@ -63,7 +63,7 @@ public enum EnumMonster {
     public int elementalChance;
 
     EnumMonster(String idname, String name, String mobHead, String[] prefix, String[] suffix) {
-    	this.idName = idname;
+        this.idName = idname;
         this.name = name;
         this.mobHead = mobHead;
         this.prefix = prefix;
@@ -106,18 +106,18 @@ public enum EnumMonster {
         return list.get(0);
     }
 
-	/**
-	 * @param mob
-	 * @return
-	 */
-	public static EnumMonster getMonsterByString(String mob) {
-		for (EnumMonster mons : values()) {
-			if (mob.equalsIgnoreCase(mons.idName)) {
+    /**
+     * @param mob
+     * @return
+     */
+    public static EnumMonster getMonsterByString(String mob) {
+        for (EnumMonster mons : values()) {
+            if (mob.equalsIgnoreCase(mons.idName)) {
                 return mons;
             }
-		}
-		return null;
-	}
+        }
+        return null;
+    }
 
     public String getRandomElement() {
         return possibleElementalTypes.get(new Random().nextInt(possibleElementalTypes.size()));

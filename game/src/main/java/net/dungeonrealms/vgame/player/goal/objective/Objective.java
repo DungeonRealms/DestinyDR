@@ -9,8 +9,7 @@ import net.dungeonrealms.vgame.player.GamePlayer;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class Objective
-{
+public class Objective {
     @Getter
     private String name;
 
@@ -20,17 +19,14 @@ public class Objective
     @Getter
     private EnumObjectiveType objectiveType;
 
-    public Objective(String name, EnumObjectiveType objectiveType, boolean achievement)
-    {
+    public Objective(String name, EnumObjectiveType objectiveType, boolean achievement) {
         this.name = name;
         this.objectiveType = objectiveType;
         this.achievement = achievement;
     }
 
-    public void send(GamePlayer gamePlayer)
-    {
-        if(!achievement)
-        {
+    public void send(GamePlayer gamePlayer) {
+        if (!achievement) {
             gamePlayer.setCurrentObjective(this);
         }
     }

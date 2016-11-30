@@ -6,7 +6,6 @@ package net.dungeonrealms.api.creature.lib.craft.skeleton;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumSkeletonType
-{
+public enum EnumSkeletonType {
     WITHER, GENERIC;
 }

@@ -6,7 +6,6 @@ package net.dungeonrealms.common.backend.database.connection;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumConnectionResult
-{
+public enum EnumConnectionResult {
     SUCCESS, FAIL;
 }

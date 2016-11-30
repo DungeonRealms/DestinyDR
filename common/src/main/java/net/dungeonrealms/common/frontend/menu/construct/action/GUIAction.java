@@ -11,13 +11,11 @@ import org.bukkit.inventory.ItemStack;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public abstract class GUIAction
-{
+public abstract class GUIAction {
     @Getter
     private ItemStack itemStack;
 
-    public GUIAction(ItemStack itemStack)
-    {
+    public GUIAction(ItemStack itemStack) {
         this.itemStack = itemStack;
     }
 

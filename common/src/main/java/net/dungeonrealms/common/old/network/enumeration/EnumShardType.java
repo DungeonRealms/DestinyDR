@@ -6,7 +6,6 @@ package net.dungeonrealms.common.old.network.enumeration;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumShardType
-{
+public enum EnumShardType {
     MASTER, SUBSCRIBER, SUPPORT, YOUTUBE, BRAZILLIAN, ROLEPLAY, BETA;
 }

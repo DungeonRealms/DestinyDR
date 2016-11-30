@@ -1,4 +1,3 @@
-
 package net.dungeonrealms.old.game.miscellaneous;
 
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -28,8 +27,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setName(String name)
-    {
+    public ItemBuilder setName(String name) {
         ItemStack item = itemStack;
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
@@ -37,6 +35,7 @@ public class ItemBuilder {
         this.itemStack = item;
         return this;
     }
+
     public ItemBuilder setItem(Material material, short shortID, String name, String[] lore) {
         ItemStack tempItem = new ItemStack(material, 1, shortID);
         tempItem.setDurability(shortID);

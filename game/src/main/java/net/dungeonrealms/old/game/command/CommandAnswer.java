@@ -41,7 +41,7 @@ public class CommandAnswer extends BaseCommand {
 
         GameAPI.sendNetworkMessage("BroadcastSoundPlayer", other, Sound.BLOCK_NOTE_PLING.toString(), "1.0f", "1.0f");
 
-        GameAPI.sendNetworkMessage("StaffMessage", "&a<ANSWERED: " + other + "> &6(" +Game.getGame().getGameShard().getShardId() + ") " + GameChat.getPreMessage(p) + "&e" + message);
+        GameAPI.sendNetworkMessage("StaffMessage", "&a<ANSWERED: " + other + "> &6(" + Game.getGame().getGameShard().getShardId() + ") " + GameChat.getPreMessage(p) + "&e" + message);
 
         PlayerManager.PlayerToggles toggle = PlayerManager.PlayerToggles.RECEIVE_MESSAGES;
 

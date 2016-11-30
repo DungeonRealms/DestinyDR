@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class NUAIHolder implements SuperHandler.Handler
-{
+public class NUAIHolder implements SuperHandler.Handler {
+
     @Getter
     private static NUAIHolder holder;
 
@@ -23,14 +23,12 @@ public class NUAIHolder implements SuperHandler.Handler
     private final AtomicReference<List<ItemStack>> atomicList = new AtomicReference<>();
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         holder = this;
         this.atomicList.set(Lists.newArrayList());
     }
 
-    public void flush()
-    {
+    public void flush() {
         this.atomicList.get().clear();
     }
 }

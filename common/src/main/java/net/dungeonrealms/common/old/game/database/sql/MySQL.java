@@ -11,8 +11,7 @@ import java.sql.SQLException;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class MySQL
-{
+public class MySQL {
     /**
      * Used for the new item system
      */
@@ -24,8 +23,7 @@ public class MySQL
     private final String port;
     private final String hostname;
 
-    public MySQL(String hostname, String port, String database, String username, String password)
-    {
+    public MySQL(String hostname, String port, String database, String username, String password) {
         this.hostname = hostname;
         this.port = port;
         this.database = database;
@@ -33,44 +31,36 @@ public class MySQL
         this.password = password;
     }
 
-    public boolean checkConnection() throws SQLException
-    {
+    public boolean checkConnection() throws SQLException {
         return connection != null && !connection.isClosed();
     }
 
-    public void updateConnection() throws SQLException, ClassNotFoundException
-    {
+    public void updateConnection() throws SQLException, ClassNotFoundException {
         if (!checkConnection())
             openConnection();
     }
 
-    public Connection getConnection()
-    {
+    public Connection getConnection() {
         return connection;
     }
 
-    public void closeConnection() throws SQLException
-    {
+    public void closeConnection() throws SQLException {
         if (connection != null)
             connection.close();
     }
 
-    public ResultSet query(String query) throws SQLException, ClassNotFoundException
-    {
+    public ResultSet query(String query) throws SQLException, ClassNotFoundException {
         updateConnection();
         return connection.createStatement().executeQuery(query);
     }
 
-    public int update(String query) throws SQLException, ClassNotFoundException
-    {
+    public int update(String query) throws SQLException, ClassNotFoundException {
         updateConnection();
         return connection.createStatement().executeUpdate(query);
     }
 
-    public Connection openConnection() throws SQLException, ClassNotFoundException
-    {
-        if (checkConnection())
-        {
+    public Connection openConnection() throws SQLException, ClassNotFoundException {
+        if (checkConnection()) {
             return connection;
         }
         connection = DriverManager.getConnection(

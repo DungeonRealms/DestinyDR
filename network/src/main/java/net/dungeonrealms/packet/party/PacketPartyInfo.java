@@ -25,8 +25,7 @@ public class PacketPartyInfo implements Packet {
         return player;
     }
 
-    public String getPartyOwner()
-    {
+    public String getPartyOwner() {
         return partyOwner;
     }
 

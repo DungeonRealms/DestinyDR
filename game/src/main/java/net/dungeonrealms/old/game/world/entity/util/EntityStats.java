@@ -98,7 +98,7 @@ public class EntityStats {
         return new Stats(def, hp, atk, spd);
     }
 
-    public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier, EnumMonster monster, int lvl, boolean isDungeon) {
+    public static void setMonsterElite(Entity entity, EnumNamedElite namedElite, int tier, EnumMonster monster, int lvl, boolean isDungeon) {
         //TODO confirm working for elites of all types
         if (namedElite == EnumNamedElite.NONE) {
             Item.ItemType weaponType;
@@ -190,7 +190,7 @@ public class EntityStats {
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
     }
-    
+
     public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, lvl);
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
@@ -218,12 +218,12 @@ public class EntityStats {
         HealthHandler.getInstance().setMonsterHPLive(livingEntity, maxHp);
     }
 
-	/**
-	 * @param entity
-	 * @param level
-	 * @param tier
-	 */
-	public static void setBossRandomStats(Entity entity, int level, int tier) {
+    /**
+     * @param entity
+     * @param level
+     * @param tier
+     */
+    public static void setBossRandomStats(Entity entity, int level, int tier) {
         final CraftEntity bukkitEntity = entity.getBukkitEntity();
         bukkitEntity.setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
         bukkitEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) bukkitEntity)));
@@ -235,6 +235,6 @@ public class EntityStats {
         EnchantmentAPI.addGlow(((LivingEntity) bukkitEntity).getEquipment().getItemInMainHand());
         ((LivingEntity) bukkitEntity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) bukkitEntity, HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) bukkitEntity));
-	}
+    }
 
 }

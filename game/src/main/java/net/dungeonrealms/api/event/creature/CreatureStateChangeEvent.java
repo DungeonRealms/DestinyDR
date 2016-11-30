@@ -12,8 +12,7 @@ import org.bukkit.event.HandlerList;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CreatureStateChangeEvent extends Event
-{
+public class CreatureStateChangeEvent extends Event {
     @Getter
     private static final HandlerList handlers = new HandlerList();
 
@@ -26,8 +25,7 @@ public class CreatureStateChangeEvent extends Event
     @Getter
     private EnumCreatureState oldState;
 
-    public CreatureStateChangeEvent(IGameEntity gameEntity, EnumCreatureState newState, EnumCreatureState oldState)
-    {
+    public CreatureStateChangeEvent(IGameEntity gameEntity, EnumCreatureState newState, EnumCreatureState oldState) {
         this.gameEntity = gameEntity;
         this.newState = newState;
         this.oldState = oldState;

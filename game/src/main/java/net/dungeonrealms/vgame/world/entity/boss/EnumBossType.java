@@ -6,8 +6,7 @@ package net.dungeonrealms.vgame.world.entity.boss;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumBossType
-{
+public enum EnumBossType {
     // Not dungeon bosses
     MITSUKI,
     COP_JAK,

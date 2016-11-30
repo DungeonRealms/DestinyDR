@@ -16,8 +16,7 @@ import org.bukkit.entity.Player;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class GamePlayer implements IPlayer
-{
+public class GamePlayer implements IPlayer {
     @Getter
     private DataPlayer data; // All raw data
 
@@ -39,19 +38,20 @@ public class GamePlayer implements IPlayer
     @Getter
     private boolean inParty;
 
-    public GamePlayer(DataPlayer dataPlayer)
-    {
+    @Getter
+    @Setter
+    private boolean teleporting;
+
+    public GamePlayer(DataPlayer dataPlayer) {
         this.data = dataPlayer;
         this.player = dataPlayer.getPlayer();
     }
 
-    public boolean hasAchievement(EnumAchievement achievement)
-    {
+    public boolean hasAchievement(EnumAchievement achievement) {
         return this.data.getCollectionData().getAchievements().contains(achievement.name());
     }
 
-    public void updateScoreboard(EnumScoreboardType to)
-    {
+    public void updateScoreboard(EnumScoreboardType to) {
         this.gameScoreboard = new GameScoreboard(this, to);
         this.gameScoreboard.getScoreboardHolder().send(this.player);
     }

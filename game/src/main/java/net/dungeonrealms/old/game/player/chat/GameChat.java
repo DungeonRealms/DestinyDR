@@ -58,7 +58,7 @@ public final class GameChat {
         }
 
         // We're using global chat, append global prefix.
-        boolean gChat =  isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
+        boolean gChat = isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
         if (gChat) {
             // Determine which global type we should use, default is GLOBAL.
             switch (globalType.toLowerCase()) {
@@ -119,7 +119,7 @@ public final class GameChat {
             case "youtube":
             case "pmod":
             default:
-                String alignmentName = (String)DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name)));
+                String alignmentName = (String) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name)));
                 return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + name + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
         }
     }
@@ -174,7 +174,7 @@ public final class GameChat {
 
     /**
      * Returns a player's guild and rank prefix if any followed by a space followed by their username with the correct color
-     * 
+     *
      * @param player
      * @return
      */

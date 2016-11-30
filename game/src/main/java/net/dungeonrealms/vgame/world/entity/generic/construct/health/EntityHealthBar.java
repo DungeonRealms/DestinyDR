@@ -12,13 +12,11 @@ import java.text.DecimalFormat;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class EntityHealthBar
-{
+public class EntityHealthBar {
     @Getter
     private String asString;
 
-    public EntityHealthBar(IGameEntity gameEntity)
-    {
+    public EntityHealthBar(IGameEntity gameEntity) {
         // [Lvl. $] {health in bar format}
         DecimalFormat decimalFormat = new DecimalFormat("##.#");
 
@@ -28,12 +26,10 @@ public class EntityHealthBar
         float percentageX = Math.round(100.0F * Float.parseFloat(formattedHealth)); // as %
 
         ChatColor chatColor = ChatColor.GREEN; // Default
-        if (percentageX <= 50)
-        {
+        if (percentageX <= 50) {
             chatColor = ChatColor.YELLOW;
         }
-        if (percentageX <= 25)
-        {
+        if (percentageX <= 25) {
             chatColor = ChatColor.RED;
         }
 
@@ -43,8 +39,7 @@ public class EntityHealthBar
 
         defaultName += chatColor + ChatColor.BOLD.toString() + "║" + ChatColor.RESET.toString() + chatColor + "";
 
-        while (percentageX > 0 && healthBars < displaySize)
-        {
+        while (percentageX > 0 && healthBars < displaySize) {
             percentageX -= (100.0F / displaySize);
             healthBars++;
             defaultName += "|";

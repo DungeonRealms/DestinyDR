@@ -2,18 +2,17 @@ package net.dungeonrealms.backend;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
-import io.vawke.skelframe.SkelRuntime;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.old.game.database.sql.SQLDatabase;
-import net.dungeonrealms.common.old.game.database.sql.enumeration.EnumSQLPurpose;
-import net.dungeonrealms.common.old.network.enumeration.EnumShardType;
 import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.DatabaseInstance;
 import net.dungeonrealms.common.old.game.database.data.EnumOperators;
+import net.dungeonrealms.common.old.game.database.sql.SQLDatabase;
+import net.dungeonrealms.common.old.game.database.sql.enumeration.EnumSQLPurpose;
 import net.dungeonrealms.common.old.game.updater.UpdateTask;
 import net.dungeonrealms.common.old.network.ShardInfo;
 import net.dungeonrealms.common.old.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.common.old.network.enumeration.EnumShardType;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.vgame.Game;
 import org.apache.commons.io.FileUtils;
@@ -31,8 +30,7 @@ import java.io.IOException;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class GameShard
-{
+public class GameShard {
     @Getter
     private GameClient gameClient;
 
@@ -72,11 +70,9 @@ public class GameShard
     @Getter
     private SQLDatabase sqlDatabase;
 
-    public GameShard(FileReader fileReader)
-    {
+    public GameShard(FileReader fileReader) {
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "[ DUNGEON REALMS SHARD, INIT]");
-        try
-        {
+        try {
             // Load shard data
             this.loadShardData(fileReader);
             // The new Dungeon Realms
@@ -85,12 +81,10 @@ public class GameShard
             this.clearPlayerData();
             this.managePlayerData();
             new UpdateTask(Game.getGame()); // Init the updater
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             Game.getGame().getInstanceLogger().sendMessage(ChatColor.RED + "Failed to load the GameShard, shutting down.. (10)");
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 Game.getGame().getServer().shutdown();
             }
         }
@@ -98,50 +92,40 @@ public class GameShard
         Game.getGame().getServer().setWhitelist(false);
     }
 
-    public void manageSimpleStop()
-    {
+    public void manageSimpleStop() {
         // Just for instances/handlers that require a manual stop, no saving of data will take place here
         DatabaseAPI.getInstance().stopInvocation();
 
         // TODO stop all mechanics
     }
 
-    private void managePlayerData()
-    {
+    private void managePlayerData() {
         UpdateResult playerFixResult = DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shardInfo.getPseudoName()),
                 new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
-        if (playerFixResult.wasAcknowledged())
-        {
+        if (playerFixResult.wasAcknowledged()) {
             Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Updated online player results");
         }
     }
 
-    private void clearPlayerData()
-    {
-        try
-        {
+    private void clearPlayerData() {
+        try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void connect()
-    {
+    private void connect() {
         BungeeUtils.setPlugin(Game.getGame());
         this.gameClient = new GameClient();
-        try
-        {
+        try {
             this.gameClient.connect();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void setupDatabase()
-    {
+    private void setupDatabase() {
         // MySQL for items
         this.sqlDatabase = new SQLDatabase(Constants.SQL_HOSTNAME, Constants.SQL_PORT,
                 Constants.SQL_DATABASE, Constants.SQL_PASSWORD,
@@ -155,11 +139,9 @@ public class GameShard
                 ChatColor.GREEN + "Purpose: " + EnumSQLPurpose.ITEM.name(), ""}); // {0}
     }
 
-    private void loadShardData(FileReader fileReader)
-    {
+    private void loadShardData(FileReader fileReader) {
         Ini ini = new Ini();
-        try
-        {
+        try {
             ini.load(fileReader);
 
             this.instanceServer = ini.get("Backend", "instance", Boolean.class);

@@ -57,7 +57,7 @@ public class ServerManager {
     public List<GameServer> getOnlineGames() {
         List<GameServer> servers = new ArrayList<>();
 
-        // Loop through all game instances and check if they're online.
+        // Loop through all interactable instances and check if they're online.
         servers.addAll(getGameServers().stream().filter(server -> server.isOnline()).collect(Collectors.toList()));
 
         return servers;

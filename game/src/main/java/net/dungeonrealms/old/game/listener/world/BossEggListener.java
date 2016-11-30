@@ -9,5 +9,4 @@ import org.bukkit.event.Listener;
 public class BossEggListener implements Listener {
 
 
-
 }

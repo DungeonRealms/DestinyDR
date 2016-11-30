@@ -2,13 +2,13 @@ package net.dungeonrealms.old.game.player.menu;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.old.game.database.DatabaseAPI;
-import net.dungeonrealms.common.old.game.database.data.EnumData;
-import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.common.frontend.menu.AbstractMenu;
 import net.dungeonrealms.common.frontend.menu.gui.GUIButtonClickEvent;
 import net.dungeonrealms.common.frontend.menu.gui.VolatileGUI;
 import net.dungeonrealms.common.frontend.menu.item.GUIButton;
+import net.dungeonrealms.common.old.game.database.DatabaseAPI;
+import net.dungeonrealms.common.old.game.database.data.EnumData;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.common.old.game.updater.Updater;
 import net.dungeonrealms.common.old.game.util.Cooldown;
 import net.dungeonrealms.common.old.network.ShardInfo;
@@ -101,7 +101,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                     player.sendMessage(ChatColor.GRAY + "Retrieving relevant server information...");
                     player.sendMessage(" ");
                     player.sendMessage("                     " + ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...");
-                    player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
+                    player.sendMessage(ChatColor.GRAY + "Your current interactable session has been paused while you are transferred.");
 
                     final Location startingLocation = player.getLocation();
 

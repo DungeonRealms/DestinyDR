@@ -208,7 +208,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         // If the server is a proxy or lobby we need to send the latest server info.
         if (server instanceof ProxyServer || ((GameServer) server).getType() == GameServer.ServerType.LOBBY) {
 
-            // Send info for all game servers.
+            // Send info for all interactable servers.
             for (GameServer gameServer : DRControl.getInstance().getServerManager().getGameServers()) {
                 server.sendPacket(gameServer.createInfoPacket());
             }

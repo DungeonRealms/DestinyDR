@@ -11,11 +11,9 @@ import org.bukkit.ChatColor;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CommandHandler implements SuperHandler.Handler
-{
+public class CommandHandler implements SuperHandler.Handler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ COMMAND HANDLER ]");
 
         // Register commands

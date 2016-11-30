@@ -43,7 +43,7 @@ public class CommandPl extends BaseCommand {
                  */
                     if (PartyMechanics.getInstance().isOwner(player)) {
 
-                        if(PartyMechanics.getInstance().getParty(player).get().getMembers().size() >= 7) {
+                        if (PartyMechanics.getInstance().getParty(player).get().getMembers().size() >= 7) {
                             player.sendMessage(ChatColor.RED + "Your party has reached the max player count!");
                             return true;
                         }
@@ -55,7 +55,7 @@ public class CommandPl extends BaseCommand {
                             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is OFFLINE!");
                         }
                     } else {
-                        player.sendMessage(new String[] {
+                        player.sendMessage(new String[]{
                                 ChatColor.RED + "You are NOT the leader of your party.",
                                 ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party."
                         });
@@ -81,7 +81,7 @@ public class CommandPl extends BaseCommand {
             }
 
         } else {
-            player.sendMessage(new String[] {
+            player.sendMessage(new String[]{
                     ChatColor.RED + ChatColor.BOLD.toString() + "Invalid Syntax." + ChatColor.RED + " /plinvite <player>",
                     ChatColor.GRAY + "You can also " + ChatColor.UNDERLINE + "LEFT CLICK" + ChatColor.GRAY + " players with your " + ChatColor.ITALIC + "Character Journal" + ChatColor.GRAY + " to invite them."
             });

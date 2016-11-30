@@ -15,8 +15,7 @@ import net.dungeonrealms.vgame.world.entity.boss.EnumDungeonBoss;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 
-public enum EnumAchievement
-{
+public enum EnumAchievement {
     EXPLORER_ANDALUCIA(0, new ExplorerAchievement("&a&lWELCOME TO ANDALUCIA",
             new String[]{"&7> Discover the province of Andalucia", "&7[Discovered the province of Andalucia]"}, 100, "cyrennica", "explorer.andalucia")),
 
@@ -95,7 +94,7 @@ public enum EnumAchievement
     COMBAT_MONSTER_II(25, new CombatAchievement("&a&lMONSTER HUNTER II",
             new String[]{"&7> Defeat 300 monsters", "&7[Defeated 300 monsters]"}, 500, "combat.monster_2", new CombatObjective(EnumCombatGoal.MONSTER, 300))),
 
-    COMBAT_MONSTER_III(26,new CombatAchievement("&a&lMONSTER HUNTER III",
+    COMBAT_MONSTER_III(26, new CombatAchievement("&a&lMONSTER HUNTER III",
             new String[]{"&7> Defeat 500 monsters", "&7[Defeated 500 monsters]"}, 1000, "combat.monster_3", new CombatObjective(EnumCombatGoal.MONSTER, 500))),
 
     COMBAT_MONSTER_IV(27, new CombatAchievement("&a&lMONSTER HUNTER IV",
@@ -112,10 +111,10 @@ public enum EnumAchievement
             new String[]{"&7> Defeat 1 player", "&7[Defeated 1 player]"}, 250, "combat.player.1", new CombatObjective(EnumCombatGoal.PLAYER, 1))),
 
     COMBAT_MAN_II(31, new CombatAchievement("&a&lMAN HUNTER II",
-                    new String[]{"&7> Defeat 3 players", "&7[Defeated 3 player]"}, 500, "combat.player.2", new CombatObjective(EnumCombatGoal.PLAYER, 3))),
+            new String[]{"&7> Defeat 3 players", "&7[Defeated 3 player]"}, 500, "combat.player.2", new CombatObjective(EnumCombatGoal.PLAYER, 3))),
 
     COMBAT_MAN_III(32, new CombatAchievement("&a&lMAN HUNTER III",
-                    new String[]{"&7> Defeat 5 players", "&7[Defeated 5 player]"}, 1000, "combat.player.3", new CombatObjective(EnumCombatGoal.PLAYER, 5))),
+            new String[]{"&7> Defeat 5 players", "&7[Defeated 5 player]"}, 1000, "combat.player.3", new CombatObjective(EnumCombatGoal.PLAYER, 5))),
 
     COMBAT_MAN_IV(33, new CombatAchievement("&a&lMAN HUNTER IV",
             new String[]{"&7> Defeat 10 players", "&7[Defeated 10 player]"}, 3000, "combat.player.4", new CombatObjective(EnumCombatGoal.PLAYER, 10))),
@@ -130,18 +129,14 @@ public enum EnumAchievement
     @Getter
     private Achievement achievement;
 
-    EnumAchievement(int id, Achievement achievement)
-    {
+    EnumAchievement(int id, Achievement achievement) {
         this.id = id;
         this.achievement = achievement;
     }
 
-    public static EnumAchievement getByID(int id)
-    {
-        for (EnumAchievement enumAchievement : values())
-        {
-            if (enumAchievement.getId() == id)
-            {
+    public static EnumAchievement getByID(int id) {
+        for (EnumAchievement enumAchievement : values()) {
+            if (enumAchievement.getId() == id) {
                 return enumAchievement;
             }
         }

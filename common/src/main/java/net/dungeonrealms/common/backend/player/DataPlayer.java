@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.dungeonrealms.common.backend.database.mongo.nest.EnumNestType;
 import net.dungeonrealms.common.backend.database.mongo.nest.NestDocument;
 import net.dungeonrealms.common.backend.player.data.type.*;
-import net.dungeonrealms.common.backend.player.data.type.GameData;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,8 +16,7 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class DataPlayer
-{
+public class DataPlayer {
     /*
      A container of all data of a specific Dungeon Realms player.
      A DataPlayer container must be attached to a GamePlayer.
@@ -47,32 +45,26 @@ public class DataPlayer
     @Getter
     private CollectionData collectionData;
 
-    public DataPlayer(UUID uuid, Document document)
-    {
+    public DataPlayer(UUID uuid, Document document) {
         this.uniqueId = uuid;
         this.player = Bukkit.getPlayer(uuid);
-        try
-        {
+        try {
             this.gameData = new GameData(uuid, (Document) document.get("genericData"));
             this.guildData = new GuildData(uuid, (Document) document.get("guildData"));
             this.inventoryData = new InventoryData(uuid, (Document) document.get("inventoryData"));
             this.rankData = new RankData(uuid, (Document) document.get("rankData"));
             this.settingsData = new SettingsData(uuid, (Document) document.get("settingsData"));
             this.collectionData = new CollectionData(uuid, (Document) document.get("keyShardData"), (Document) document.get("collectionData"));
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public Document constructRawDocument()
-    {
+    public Document constructRawDocument() {
         Document document = null;
-        try
-        {
+        try {
             document = new NestDocument(EnumNestType.PLAYER).generateExistent(this);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Failed to construct a raw document for: " + this.uniqueId);
             e.printStackTrace();
         }

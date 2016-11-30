@@ -12,8 +12,7 @@ import java.util.List;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumEntityElement
-{
+public enum EnumEntityElement {
     POISON(ChatColor.DARK_GREEN, Arrays.asList("Poison", "Poisonous")),
     FIRE(ChatColor.RED, Arrays.asList("Pyromaniac", "Fire", "Inferno")),
     ICE(ChatColor.BLUE, Arrays.asList("Ice")),
@@ -26,8 +25,7 @@ public enum EnumEntityElement
     @Getter
     private List<String> simpleNames;
 
-    EnumEntityElement(ChatColor chatColor, List<String> simpleNames)
-    {
+    EnumEntityElement(ChatColor chatColor, List<String> simpleNames) {
         this.color = chatColor;
         this.simpleNames = simpleNames;
     }

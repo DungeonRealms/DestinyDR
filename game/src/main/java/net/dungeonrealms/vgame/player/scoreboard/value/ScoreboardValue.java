@@ -13,19 +13,16 @@ import java.util.Map;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ScoreboardValue
-{
+public class ScoreboardValue {
     @Getter
     @Setter
     private Map<Integer, String> dataMap;
 
-    public ScoreboardValue(EnumScoreboardType scoreboardType)
-    {
+    public ScoreboardValue(EnumScoreboardType scoreboardType) {
         this.dataMap = Maps.newHashMap();
     }
 
-    public ScoreboardValue plus(int key, String value)
-    {
+    public ScoreboardValue plus(int key, String value) {
         this.dataMap.put(key, value);
         return this;
     }

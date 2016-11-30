@@ -48,9 +48,9 @@ public class CombatLogger {
 
     private void setRespawnLocation() {
         if (playerAlignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-            Location loc =  KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
+            Location loc = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
             if (loc != null) {
-                String locString = loc.getBlockX() +"," + loc.getBlockY() + 3 + "," + loc.getBlockZ() + "," + "0,0";
+                String locString = loc.getBlockX() + "," + loc.getBlockY() + 3 + "," + loc.getBlockZ() + "," + "0,0";
                 DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locString, true);
             } else {
                 DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);

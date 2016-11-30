@@ -30,7 +30,7 @@ public class CommandSetRank extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (!(sender instanceof ConsoleCommandSender) && !(Rank.isGM((Player) sender))) return false;
 
-        String[] ranks = new String[] { "DEV", "HEADGM", "GM", "PMOD", "SUPPORT", "YOUTUBE", "BUILDER", "SUB++", "SUB+", "SUB", "DEFAULT" };
+        String[] ranks = new String[]{"DEV", "HEADGM", "GM", "PMOD", "SUPPORT", "YOUTUBE", "BUILDER", "SUB++", "SUB+", "SUB", "DEFAULT"};
 
         // If the user isn't a dev and they're at this point, it means they're a GM.
         // We can't allow for SUB ranks because they need more technical execution & that's for a support agent.
@@ -40,10 +40,10 @@ public class CommandSetRank extends BaseCommand {
         boolean isHeadGM = false;
         if (!(sender instanceof ConsoleCommandSender) && !(Rank.isDev((Player) sender))) {
             if (Rank.isHeadGM((Player) sender)) {
-                ranks = new String[] { "GM", "PMOD", "BUILDER", "DEFAULT" };
+                ranks = new String[]{"GM", "PMOD", "BUILDER", "DEFAULT"};
                 isHeadGM = true;
             } else {
-                ranks = new String[] { "PMOD", "DEFAULT" };
+                ranks = new String[]{"PMOD", "DEFAULT"};
                 isGM = true;
             }
         }
@@ -73,8 +73,7 @@ public class CommandSetRank extends BaseCommand {
                         Player player = Bukkit.getPlayer(args[0]);
                         Rank.getInstance().setRank(uuid, rank);
                         ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, GameAPI.getGamePlayer(player).getLevel());
-                    }
-                    else {
+                    } else {
                         GameAPI.updatePlayerData(uuid);
                     }
                     sender.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + rank + ChatColor.GREEN + ".");

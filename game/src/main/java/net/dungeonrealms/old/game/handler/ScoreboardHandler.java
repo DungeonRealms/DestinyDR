@@ -112,7 +112,7 @@ public class ScoreboardHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
-      PartyMechanics partyMechanics = PartyMechanics.getInstance();
+        PartyMechanics partyMechanics = PartyMechanics.getInstance();
         for (Player player1 : Bukkit.getOnlinePlayers()) {
 
             //Party support.

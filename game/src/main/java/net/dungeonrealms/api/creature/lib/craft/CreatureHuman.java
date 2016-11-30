@@ -6,6 +6,5 @@ package net.dungeonrealms.api.creature.lib.craft;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CreatureHuman
-{
+public class CreatureHuman {
 }

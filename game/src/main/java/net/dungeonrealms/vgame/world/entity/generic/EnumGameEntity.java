@@ -13,8 +13,7 @@ import java.util.List;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumGameEntity
-{
+public enum EnumGameEntity {
     BANDIT(EntityBandit.class, Arrays.asList("Lazy", "Old", "Starving", "Clumsy")),
     SKELETON(EntitySkeleton.class, Arrays.asList("Broken", "Rotting"));
 
@@ -24,8 +23,7 @@ public enum EnumGameEntity
     @Getter
     private List<String> simpleNames;
 
-    EnumGameEntity(Class clazz, List<String> simpleNames)
-    {
+    EnumGameEntity(Class clazz, List<String> simpleNames) {
         this.entityClass = clazz;
         this.simpleNames = simpleNames;
     }

@@ -2,7 +2,6 @@ package net.dungeonrealms.control.friend;
 
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
-import net.dungeonrealms.control.player.rank.Rank;
 import net.dungeonrealms.control.server.types.GameServer;
 import net.dungeonrealms.control.utils.UtilLogger;
 import org.bukkit.entity.Player;
@@ -10,7 +9,6 @@ import org.bukkit.entity.Player;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -146,7 +144,7 @@ public class FriendManager {
             ps.setBoolean(3, accepted);
 
             ps.execute();
-        } catch(Exception e) {
+        } catch (Exception e) {
             UtilLogger.warn("Database error: " + e.getMessage());
         } finally {
             if (ps != null) try {

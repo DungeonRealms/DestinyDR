@@ -89,7 +89,8 @@ public class DRWolf extends EntityWolf implements DRMonster {
     }
 
     @Override
-    public void collide(Entity e) {}
+    public void collide(Entity e) {
+    }
 
     @Override
     public void onMonsterAttack(Player p) {

@@ -21,83 +21,77 @@ import java.util.List;
  */
 public class CommandCheck extends BaseCommand {
 
-	public CommandCheck(String command, String usage, String description) {
-		super(command, usage, description);
-	}
+    public CommandCheck(String command, String usage, String description) {
+        super(command, usage, description);
+    }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-		if (!(sender instanceof Player)) {
-			return false;
-		}
+        if (!(sender instanceof Player)) {
+            return false;
+        }
 
-		Player player = (Player) sender;
+        Player player = (Player) sender;
 
-		if (!Rank.isGM(player)) {
-			return true;
-		}
+        if (!Rank.isGM(player)) {
+            return true;
+        }
 
-		if (player.getInventory().getItemInMainHand() == null) {
-			player.sendMessage(ChatColor.RED + "There is nothing in your hand.");
-			return true;
-		}
+        if (player.getInventory().getItemInMainHand() == null) {
+            player.sendMessage(ChatColor.RED + "There is nothing in your hand.");
+            return true;
+        }
 
-		ItemStack inHand = player.getInventory().getItemInMainHand();
+        ItemStack inHand = player.getInventory().getItemInMainHand();
 
-		NBTTagCompound tag = CraftItemStack.asNMSCopy(inHand).getTag();
+        NBTTagCompound tag = CraftItemStack.asNMSCopy(inHand).getTag();
 
-		if (args.length == 1) {
-			if(args[0].equalsIgnoreCase("nbt")){
-				List<String> modifiers = GameAPI.getModifiers(inHand);
+        if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("nbt")) {
+                List<String> modifiers = GameAPI.getModifiers(inHand);
 
-				if (GameAPI.isWeapon(inHand)) {
-					Item.WeaponAttributeType attributeType;
-					for (String mod : modifiers) {
-						attributeType = Item.WeaponAttributeType.getByNBTName(mod);
-						if (attributeType.isRange()) { // ranged value
-							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod + "Min") + " - "
-									+ tag.getInt(mod + "Max"));
-						}
-						else { // static value
-							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod));
-						}
-					}
-				}
-				else if (GameAPI.isArmor(inHand)) {
-					Item.ArmorAttributeType attributeType;
-					for (String mod : modifiers) {
-						attributeType = Item.ArmorAttributeType.getByNBTName(mod);
-						if (attributeType.isRange()) { // ranged value
-							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod + "Min") + " - "
-									+ tag.getInt(mod + "Max"));
-						}
-						else { // static value
-							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod));
-						}
-					}
-				}
-				else {
-					player.sendMessage("Listing All NBT...");
-					// get all the nbt tags of the item
-					tag.c().forEach(key -> player.sendMessage(key + ": " + tag.get(key).toString()));
-				}
-			}
-		}
-		else if (args.length == 2) { // check player attributes
-			Player attributePlayer = Bukkit.getPlayer(args[1]);
-			if (args[0].equalsIgnoreCase("attributes") && attributePlayer != null) {
-				GamePlayer gp = GameAPI.getGamePlayer(attributePlayer);
-				gp.getAttributes().entrySet().forEach(entry -> {
+                if (GameAPI.isWeapon(inHand)) {
+                    Item.WeaponAttributeType attributeType;
+                    for (String mod : modifiers) {
+                        attributeType = Item.WeaponAttributeType.getByNBTName(mod);
+                        if (attributeType.isRange()) { // ranged value
+                            sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod + "Min") + " - "
+                                    + tag.getInt(mod + "Max"));
+                        } else { // static value
+                            sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod));
+                        }
+                    }
+                } else if (GameAPI.isArmor(inHand)) {
+                    Item.ArmorAttributeType attributeType;
+                    for (String mod : modifiers) {
+                        attributeType = Item.ArmorAttributeType.getByNBTName(mod);
+                        if (attributeType.isRange()) { // ranged value
+                            sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod + "Min") + " - "
+                                    + tag.getInt(mod + "Max"));
+                        } else { // static value
+                            sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod));
+                        }
+                    }
+                } else {
+                    player.sendMessage("Listing All NBT...");
+                    // get all the nbt tags of the item
+                    tag.c().forEach(key -> player.sendMessage(key + ": " + tag.get(key).toString()));
+                }
+            }
+        } else if (args.length == 2) { // check player attributes
+            Player attributePlayer = Bukkit.getPlayer(args[1]);
+            if (args[0].equalsIgnoreCase("attributes") && attributePlayer != null) {
+                GamePlayer gp = GameAPI.getGamePlayer(attributePlayer);
+                gp.getAttributes().entrySet().forEach(entry -> {
                     player.sendMessage(entry.getKey() + ": " + entry.getValue()[0] + " - " + entry.getValue()[1]);
                 });
-				return true;
-			}
-		}
-		else {
-			player.sendMessage(ChatColor.RED + "EpochIdentifier: " + tag.getString("u"));
-			return true;
-		}
-		return false;
-	}
+                return true;
+            }
+        } else {
+            player.sendMessage(ChatColor.RED + "EpochIdentifier: " + tag.getString("u"));
+            return true;
+        }
+        return false;
+    }
 }

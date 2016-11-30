@@ -172,7 +172,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
                 });
 
             } catch (InterruptedException | ExecutionException e) {
-                player.sendMessage(ChatColor.RED + "There was an error whilst trying to download your realm! Please contact a game master to solve this issue");
+                player.sendMessage(ChatColor.RED + "There was an error whilst trying to download your realm! Please contact a interactable master to solve this issue");
                 Constants.log.warning("Unable to download " + player.getName() + "'s realm");
                 delete(player.getUniqueId());
                 e.printStackTrace();
@@ -257,7 +257,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
                             }
                     );
                 } catch (InterruptedException | ExecutionException e) {
-                    player.sendMessage(ChatColor.RED + "There was an error whilst trying to load your realm! Please contact a game master to solve this issue");
+                    player.sendMessage(ChatColor.RED + "There was an error whilst trying to load your realm! Please contact a interactable master to solve this issue");
                     Constants.log.warning("Unable to load " + player.getName() + "'s realm");
                     delete(player.getUniqueId());
                     e.printStackTrace();

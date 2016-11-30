@@ -34,7 +34,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
 
     protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         this(world);
-        this.tier  = tier;
+        this.tier = tier;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
         this.getAttributeInstance(GenericAttributes.c).setValue(1.00d);
         this.monsterType = monster;
@@ -96,21 +96,22 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
     }
 
     @Override
-    public void collide(Entity e) {}
+    public void collide(Entity e) {
+    }
 
-	@Override
-	public void onMonsterAttack(Player p) {
-	}
-	
-	@Override
-	public abstract EnumMonster getEnum();
-	
-	@Override
-	public void onMonsterDeath(Player killer) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
-		});
-	}
+    @Override
+    public void onMonsterAttack(Player p) {
+    }
+
+    @Override
+    public abstract EnumMonster getEnum();
+
+    @Override
+    public void onMonsterDeath(Player killer) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
+        });
+    }
 
     @Override
     public void enderTeleportTo(double d0, double d1, double d2) {

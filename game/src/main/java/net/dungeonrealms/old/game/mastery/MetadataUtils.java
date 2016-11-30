@@ -48,7 +48,7 @@ public class MetadataUtils {
                 entity.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "hostile"));
                 entity.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), entityTier));
                 entity.getBukkitEntity().setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
-                GameAPI.calculateAllAttributes((LivingEntity)entity.getBukkitEntity(), ((DRMonster) entity).getAttributes());
+                GameAPI.calculateAllAttributes((LivingEntity) entity.getBukkitEntity(), ((DRMonster) entity).getAttributes());
                 break;
             }
         }

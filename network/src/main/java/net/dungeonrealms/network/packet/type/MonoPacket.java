@@ -11,8 +11,7 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class MonoPacket extends Packet
-{
+public class MonoPacket extends Packet {
     @Getter
     public UUID uniqueId;
 

@@ -21,8 +21,7 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class Boostrap
-{
+public class Boostrap {
     @Getter
     private static Kryo kryonet;
 
@@ -32,43 +31,35 @@ public class Boostrap
     @Getter
     private static MasterServer masterServer;
 
-    public static void main(String[] par)
-    {
+    public static void main(String[] par) {
         for (String string : new String[]{
                 "",
                 "------ MASTER SERVER ------",
-                "Attempting to connect to " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT + ".."})
-        {
+                "Attempting to connect to " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT + ".."}) {
             Log.info(string);
         }
 
-        try
-        {
+        try {
             masterServer = new MasterServer();
             kryonet = masterServer.getKryo();
             register();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (masterServer != null && kryonet != null)
-        {
+        if (masterServer != null && kryonet != null) {
             for (String string : new String[]{
                     "Connection established with " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT,
-                    "", "Developed by Vawke", "www.dungeonrealms.net"})
-            {
+                    "", "Developed by Vawke", "www.dungeonrealms.net"}) {
                 Log.info(string);
             }
             canRelay = true;
-        } else
-        {
+        } else {
             Runtime.getRuntime().exit(0);
         }
     }
 
-    private static void register()
-    {
+    private static void register() {
         kryonet.register(Packet.class);
         kryonet.register(byte.class);
         kryonet.register(byte[].class);

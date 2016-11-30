@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * A compilation of enumerations related to items including
- * ItemType, ItemTier, and ItemRarity along with convenience 
+ * ItemType, ItemTier, and ItemRarity along with convenience
  * functions
  *
  * @author Nick 9/19/2015
@@ -62,22 +62,24 @@ public class Item {
 
         /**
          * Gets the ItemType from the specified Material
+         *
          * @param m - the Material of the item
          * @return
          */
         public static ItemType getTypeFromMaterial(Material m) {
-            for(ItemType i : values()) {
-                if(i.t1 == m) return i;
-                if(i.t2 == m) return i;
-                if(i.t3 == m) return i;
-                if(i.t4 == m) return i;
-                if(i.t5 == m) return i;
+            for (ItemType i : values()) {
+                if (i.t1 == m) return i;
+                if (i.t2 == m) return i;
+                if (i.t3 == m) return i;
+                if (i.t4 == m) return i;
+                if (i.t5 == m) return i;
             }
             return null;
         }
 
         /**
          * Determines if an ItemStack is a weapon
+         *
          * @param is - the ItemStack to check
          * @return - whether the ItemStack is a weapon or not
          */
@@ -88,6 +90,7 @@ public class Item {
 
         /**
          * Determines if an ItemStack is armor
+         *
          * @param is - the ItemStack to check
          * @return - whether the ItemStack is armor or not
          */
@@ -98,29 +101,31 @@ public class Item {
 
         /**
          * Gets the material of the specified ItemTier
+         *
          * @param tier - the ItemTier of the item
          * @return
          */
         public Material getTier(ItemTier tier) {
-            if(tier == ItemTier.TIER_1) return t1;
-            if(tier == ItemTier.TIER_2) return t2;
-            if(tier == ItemTier.TIER_3) return t3;
-            if(tier == ItemTier.TIER_4) return t4;
-            if(tier == ItemTier.TIER_5) return t5;
+            if (tier == ItemTier.TIER_1) return t1;
+            if (tier == ItemTier.TIER_2) return t2;
+            if (tier == ItemTier.TIER_3) return t3;
+            if (tier == ItemTier.TIER_4) return t4;
+            if (tier == ItemTier.TIER_5) return t5;
             return null;
         }
 
         /**
          * Gets the tier name of the specified ItemTier
+         *
          * @param tier - the ItemTier of the item
          * @return
          */
-        public String getTierName(ItemTier tier){
-            if(tier == ItemTier.TIER_1) return t1Name;
-            if(tier == ItemTier.TIER_2) return t2Name;
-            if(tier == ItemTier.TIER_3) return t3Name;
-            if(tier == ItemTier.TIER_4) return t4Name;
-            if(tier == ItemTier.TIER_5) return t5Name;
+        public String getTierName(ItemTier tier) {
+            if (tier == ItemTier.TIER_1) return t1Name;
+            if (tier == ItemTier.TIER_2) return t2Name;
+            if (tier == ItemTier.TIER_3) return t3Name;
+            if (tier == ItemTier.TIER_4) return t4Name;
+            if (tier == ItemTier.TIER_5) return t5Name;
             return null;
         }
 
@@ -180,8 +185,8 @@ public class Item {
             return attributeRange;
         }
 
-        public ChatColor getTierColor(){
-            switch(this){
+        public ChatColor getTierColor() {
+            switch (this) {
                 case TIER_1:
                     return ChatColor.WHITE;
                 case TIER_2:
@@ -273,9 +278,13 @@ public class Item {
 
     public interface AttributeType {
         int getId();
+
         String getName();
+
         String getNBTName();
+
         boolean isPercentage();
+
         boolean isRange();
     }
 
@@ -489,6 +498,7 @@ public class Item {
     }
 
     // UTILITY FUNCTIONS
+
     /**
      * Returns ItemStack Material based on item type and tier.
      *
@@ -617,16 +627,17 @@ public class Item {
 
     /**
      * Gets the ItemTier from a material
+     *
      * @param m
      * @return
      */
     public static ItemTier getTierFromMaterial(Material m) {
-        for(ItemType i : ItemType.values()) {
-            if(i.t1 == m) return ItemTier.TIER_1;
-            if(i.t2 == m) return ItemTier.TIER_2;
-            if(i.t3 == m) return ItemTier.TIER_3;
-            if(i.t4 == m) return ItemTier.TIER_4;
-            if(i.t5 == m) return ItemTier.TIER_5;
+        for (ItemType i : ItemType.values()) {
+            if (i.t1 == m) return ItemTier.TIER_1;
+            if (i.t2 == m) return ItemTier.TIER_2;
+            if (i.t3 == m) return ItemTier.TIER_3;
+            if (i.t4 == m) return ItemTier.TIER_4;
+            if (i.t5 == m) return ItemTier.TIER_5;
         }
         return null;
     }

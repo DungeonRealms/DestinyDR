@@ -264,8 +264,8 @@ public class Achievements {
                 "Vote for Dungeon Realms while being a Subscriber+"
         }, 1000, "achievement.character_vote_as_subscriber+", false),
 
-        PM_DEV( "Message a Developer", new String[]{
-                "You attempted to message a Developer, please contact a Game Master for game assistance."
+        PM_DEV("Message a Developer", new String[]{
+                "You attempted to message a Developer, please contact a Game Master for interactable assistance."
         }, 450, "achievement.social_pmdev", false),
 
         CREATE_A_GUILD("Create a Guild", new String[]{
@@ -506,15 +506,15 @@ public class Achievements {
         }, 10000, "achievement.combat_man_hunter_vi", false),
 
         ENFORCER_OF_JUSTICE_I("Enforcer of Justice I", new String[]{
-            "Defeated 1 chaotic player."
+                "Defeated 1 chaotic player."
         }, 300, "achievement.combat_enforcer_of_justice_i", false),
 
         ENFORCER_OF_JUSTICE_iI("Enforcer of Justice II", new String[]{
-            "Defeated 3 chaotic players."
+                "Defeated 3 chaotic players."
         }, 2500, "achievement.combat_enforcer_of_justice_ii", false),
 
         ENFORCER_OF_JUSTICE_Iii("Enforcer of Justice III", new String[]{
-            "Defeated 5 chaotic players."
+                "Defeated 5 chaotic players."
         }, 5000, "achievement.combat_enforcer_of_justice_iii", false),
 
         HERO("Hero", new String[]{
@@ -522,7 +522,7 @@ public class Achievements {
         }, 250, "achievement.combat_hero_i", false),
 
         PICKAXE_LEVEL_I("Pickaxe Level I", new String[]{
-            "Obtained a level 20 Pickaxe."
+                "Obtained a level 20 Pickaxe."
         }, 500, "achievement.character_pickaxe_level_i", false),
 
         PICKAXE_LEVEL_II("Pickaxe Level II", new String[]{
@@ -562,7 +562,7 @@ public class Achievements {
         }, 5000, "achievement.character_fishingrod_level_v", false),
 
         SKILL_MASTER("Skill Master", new String[]{
-            "Obtained both a level 100 Fishing Rod and Pickaxe."
+                "Obtained both a level 100 Fishing Rod and Pickaxe."
         }, 25000, "achievement.character_skill_master", false);
 
         private String name;

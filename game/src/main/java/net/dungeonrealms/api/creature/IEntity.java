@@ -14,33 +14,28 @@ import java.util.List;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-interface IEntity extends IDamageSource
-{
+interface IEntity extends IDamageSource {
     Entity getEntity();
 
     EntityCreature getEntityCreature();
 
     EntityInsentient getEntityInsentient();
 
-    default void kill()
-    {
+    default void kill() {
         this.getEntity().getWorld().removeEntity(this.getEntity());
     }
 
-    default void respawn(Location location)
-    {
+    default void respawn(Location location) {
         kill();
         spawn(location);
     }
 
-    default void spawn(Location location)
-    {
+    default void spawn(Location location) {
         this.getEntity().setLocation(location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw());
         ((CraftWorld) location.getWorld()).getHandle().addEntity(this.getEntity());
     }
 
-    default void clearIntelligence()
-    {
+    default void clearIntelligence() {
         ((List) BasicReflection.accessFieldObject("c", this.getEntityInsentient().goalSelector, PathfinderGoalSelector.class)).clear();
         ((List) BasicReflection.accessFieldObject("b", this.getEntityInsentient().goalSelector, PathfinderGoalSelector.class)).clear();
         ((List) BasicReflection.accessFieldObject("c", this.getEntityInsentient().targetSelector, PathfinderGoalSelector.class)).clear();
@@ -50,8 +45,7 @@ interface IEntity extends IDamageSource
         this.getEntityInsentient().goalSelector.a(7, new PathfinderGoalRandomStroll(this.getEntityCreature(), 1.0D));
     }
 
-    default void register()
-    {
+    default void register() {
 
     }
 }

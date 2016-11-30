@@ -3,7 +3,7 @@ package io.vawke.skelframe.bootstrap;
 import net.dungeonrealms.common.frontend.command.CommandManager;
 import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.DatabaseInstance;
-import net.dungeonrealms.old.game.command.*;
+import net.dungeonrealms.old.game.command.CommandLag;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.plugin.PluginManager;
 
@@ -13,10 +13,8 @@ import org.bukkit.plugin.PluginManager;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class IOBootstrap
-{
-    public void perform(String bungeeId)
-    {
+public class IOBootstrap {
+    public void perform(String bungeeId) {
         Game.getGame().getInstanceLogger().sendMessage("SKELETON BOOTSTRAP FOR: " + bungeeId);
 
         PluginManager pluginManager = Game.getGame().getServer().getPluginManager();

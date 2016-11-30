@@ -24,33 +24,28 @@ import java.util.Random;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class EntityBandit extends CreatureZombie implements IGameEntity
-{
+public class EntityBandit extends CreatureZombie implements IGameEntity {
     @Getter
     private EntityData entityData;
 
     @Getter
     private Entity entity;
 
-    public EntityBandit(World world, EntityData entityData) throws InvalidEntityDataException
-    {
+    public EntityBandit(World world, EntityData entityData) throws InvalidEntityDataException {
         super(world, EnumIntelligenceType.HOSTILE);
 
         this.entityData = entityData;
         this.entity = this;
 
-        if (!this.entityData.isNull())
-        {
+        if (!this.entityData.isNull()) {
             String elementName = null;
-            if (this.entityData.getEntityElement() != EnumEntityElement.EMPTY)
-            {
+            if (this.entityData.getEntityElement() != EnumEntityElement.EMPTY) {
                 elementName = this.entityData.getEntityElement().getColor() +
                         this.entityData.getEntityElement().getSimpleNames()
                                 .get(new Random().nextInt(this.getEntityData().getEntityElement().getSimpleNames().size()));
             }
             String simpleName;
-            if (elementName != null)
-            {
+            if (elementName != null) {
                 simpleName = EnumGameEntity.BANDIT.getSimpleNames().get(new Random().nextInt(EnumGameEntity.BANDIT.getSimpleNames().size())) + elementName;
             } else
                 simpleName = EnumGameEntity.BANDIT.getSimpleNames().get(new Random().nextInt(EnumGameEntity.BANDIT.getSimpleNames().size()));
@@ -60,8 +55,7 @@ public class EntityBandit extends CreatureZombie implements IGameEntity
             this.entityData.setName(this.getCustomName());
 
             this.addTargets(Arrays.asList(EntityHuman.class, CreatureCow.class, CreaturePig.class, EntitySkeleton.class));
-        }
-        else
+        } else
             throw new InvalidEntityDataException(this.entityData);
     }
 }

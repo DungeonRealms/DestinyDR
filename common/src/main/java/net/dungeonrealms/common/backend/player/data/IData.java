@@ -8,7 +8,6 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public interface IData
-{
+public interface IData {
     UUID getOwner();
 }

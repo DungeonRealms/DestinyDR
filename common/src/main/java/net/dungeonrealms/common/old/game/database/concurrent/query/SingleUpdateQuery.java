@@ -19,7 +19,7 @@ public class SingleUpdateQuery<UpdateResult> extends Query<UpdateResult> {
     private final Bson newDocument;
 
     /**
-     * @param collection  Database collection
+     * @param collection      Database collection
      * @param searchQuery     Search query
      * @param newDocument     New Document to replace
      * @param doAfterOptional Consumer task to do after query is complete.

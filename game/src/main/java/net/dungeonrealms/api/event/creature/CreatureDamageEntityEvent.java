@@ -12,8 +12,7 @@ import org.bukkit.event.HandlerList;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CreatureDamageEntityEvent extends Event
-{
+public class CreatureDamageEntityEvent extends Event {
     @Getter
     private static final HandlerList handlers = new HandlerList();
 
@@ -26,8 +25,7 @@ public class CreatureDamageEntityEvent extends Event
     @Getter
     private double damage;
 
-    public CreatureDamageEntityEvent(IGameEntity gameEntity, Entity entity, double damage)
-    {
+    public CreatureDamageEntityEvent(IGameEntity gameEntity, Entity entity, double damage) {
         this.gameEntity = gameEntity;
         this.entity = entity;
         this.damage = damage;

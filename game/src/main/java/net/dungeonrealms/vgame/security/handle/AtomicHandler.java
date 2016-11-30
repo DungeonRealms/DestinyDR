@@ -17,25 +17,18 @@ import org.bukkit.inventory.ItemStack;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class AtomicHandler implements SuperHandler.Handler
-{
+public class AtomicHandler implements SuperHandler.Handler {
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         // Check if a player has duped an item
         DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () ->
         {
-            for (Player player : Bukkit.getOnlinePlayers())
-            {
-                for (ItemStack itemStack : player.getInventory().getContents())
-                {
-                    if (itemStack != null)
-                    {
-                        for (ItemStack itemStack1 : player.getInventory().getContents())
-                        {
-                            if (itemStack1 != null)
-                            {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    if (itemStack != null) {
+                        for (ItemStack itemStack1 : player.getInventory().getContents()) {
+                            if (itemStack1 != null) {
                                 // Does the player have 2 of the exact same items?
                                 if (itemStack.equals(itemStack1)) continue; // Suspicious
                                 this.checkAtomics(itemStack, itemStack1);
@@ -49,18 +42,12 @@ public class AtomicHandler implements SuperHandler.Handler
         // Check if another player has a duped item from another player
         DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () ->
         {
-            for (Player player : Bukkit.getOnlinePlayers())
-            {
-                for (Player player1 : Bukkit.getOnlinePlayers())
-                {
-                    for (ItemStack itemStack : player.getInventory().getContents())
-                    {
-                        if (itemStack != null)
-                        {
-                            for (ItemStack itemStack1 : player1.getInventory().getContents())
-                            {
-                                if (itemStack1 != null)
-                                {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                for (Player player1 : Bukkit.getOnlinePlayers()) {
+                    for (ItemStack itemStack : player.getInventory().getContents()) {
+                        if (itemStack != null) {
+                            for (ItemStack itemStack1 : player1.getInventory().getContents()) {
+                                if (itemStack1 != null) {
                                     // Does player 1 have an item player 2 has too?
                                     if (itemStack.equals(itemStack1)) continue; // Suspicious
                                     this.checkAtomics(itemStack, itemStack1);
@@ -75,14 +62,10 @@ public class AtomicHandler implements SuperHandler.Handler
         // Second handle
         DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () ->
         {
-            for (Player player : Bukkit.getOnlinePlayers())
-            {
-                for (ItemStack itemStack : player.getInventory().getContents())
-                {
-                    if (itemStack != null)
-                    {
-                        if (CraftItemStack.asNMSCopy(itemStack).getTag() != null && (CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("duplicated")))
-                        {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    if (itemStack != null) {
+                        if (CraftItemStack.asNMSCopy(itemStack).getTag() != null && (CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("duplicated"))) {
                             player.getInventory().removeItem(itemStack);
                             player.updateInventory();
                         }
@@ -92,37 +75,29 @@ public class AtomicHandler implements SuperHandler.Handler
         }, 0L, 20 * 5);
     }
 
-    protected EnumCheckResult checkAtomics(ItemStack itemStack, ItemStack itemStack1)
-    {
-        try
-        {
-            if ((CraftItemStack.asNMSCopy(itemStack).getTag() != null || CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("atomic")))
-            {
+    protected EnumCheckResult checkAtomics(ItemStack itemStack, ItemStack itemStack1) {
+        try {
+            if ((CraftItemStack.asNMSCopy(itemStack).getTag() != null || CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("atomic"))) {
                 NBTTagCompound tagCompound = CraftItemStack.asNMSCopy(itemStack).getTag();
-                if ((tagCompound != null || tagCompound.hasKey("atomic")))
-                {
+                if ((tagCompound != null || tagCompound.hasKey("atomic"))) {
                     NBTTagCompound tagCompound1 = CraftItemStack.asNMSCopy(itemStack1).getTag();
-                    if (tagCompound.getString("atomic").equals(tagCompound1.getString("atomic")))
-                    {
+                    if (tagCompound.getString("atomic").equals(tagCompound1.getString("atomic"))) {
                         tagCompound1.set("duplicated", new NBTTagString("you_are_a_twat")); // Second handle
                         NUAIHolder.getHolder().getAtomicList().get().add(itemStack1);
                         this.removeCompound(itemStack1);
                         return EnumCheckResult.TRUE;
-                    } else
-                    {
+                    } else {
                         return EnumCheckResult.FALSE; // Wait how?
                     }
                 }
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             // Well, this shouldn't happen
         }
         return EnumCheckResult.TRUE;
     }
 
-    private void removeCompound(ItemStack itemStack)
-    {
+    private void removeCompound(ItemStack itemStack) {
         Bukkit.getOnlinePlayers().stream().filter(player ->
         {
             // Well damn, how did you get that, mate?
@@ -135,7 +110,7 @@ public class AtomicHandler implements SuperHandler.Handler
                 {
                     player.getInventory().removeItem(itemStack1);
                     player.updateInventory();
-                    if(NUAIHolder.getHolder().getAtomicList().get().contains(itemStack1)) // If it doesn't, wat?
+                    if (NUAIHolder.getHolder().getAtomicList().get().contains(itemStack1)) // If it doesn't, wat?
                     {
                         NUAIHolder.getHolder().getAtomicList().get().remove(itemStack1);
                     }

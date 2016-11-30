@@ -21,7 +21,7 @@ public class BulkWriteQuery<BulkWriteResult> extends Query<BulkWriteResult> {
     private final List<UpdateOneModel<Document>> models;
 
     /**
-     * @param collection  Database collection
+     * @param collection      Database collection
      * @param doAfterOptional Consumer task to do after query is complete.
      * @param models          Write models
      */

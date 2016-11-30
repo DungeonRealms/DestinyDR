@@ -4,9 +4,9 @@ import lombok.Getter;
 import net.dungeonrealms.common.awt.handler.BungeeHandler;
 import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.proxy.DungeonBungee;
+import net.dungeonrealms.proxy.handle.channel.ChannelHandler;
 import net.dungeonrealms.proxy.handle.connection.ConnectionHandler;
 import net.dungeonrealms.proxy.handle.network.NetworkHandler;
-import net.dungeonrealms.proxy.handle.channel.ChannelHandler;
 import net.dungeonrealms.proxy.netty.command.CommandAlert;
 import net.dungeonrealms.proxy.netty.command.CommandMaintenance;
 import net.md_5.bungee.api.ChatColor;
@@ -20,14 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ProxyHandler implements BungeeHandler
-{
+public class ProxyHandler implements BungeeHandler {
     @Getter
     protected ConcurrentHashMap<UUID, SuperHandler.Handler> handlerMap;
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.YELLOW + "[ PROXY HANDLER ]");
         DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Creating atomic reference..");
         this.handlerMap = new ConcurrentHashMap<>();

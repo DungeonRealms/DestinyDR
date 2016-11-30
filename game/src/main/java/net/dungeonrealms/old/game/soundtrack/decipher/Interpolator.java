@@ -87,15 +87,15 @@ public class Interpolator {
         if (xy.length % 2 != 0) {
             throw new IllegalArgumentException("XY must be divisible by two.");
         }
-        double[] x = new double[xy.length/2];
+        double[] x = new double[xy.length / 2];
         double[] y = new double[x.length];
         for (int i = 0; i < xy.length; i++) {
             if (i % 2 == 0) {
-                x[i/2] = xy[i];
+                x[i / 2] = xy[i];
             } else {
-                y[i/2] = xy[i];
+                y[i / 2] = xy[i];
             }
         }
-        return interpLinear(x, y, new double[] {xx})[0];
+        return interpLinear(x, y, new double[]{xx})[0];
     }
 }

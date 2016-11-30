@@ -8,8 +8,7 @@ package net.dungeonrealms.common.frontend.lib.message;
  *
  * @apiNote https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/
  */
-public enum DefaultFontInfo
-{
+public enum DefaultFontInfo {
     A('A', 5),
     a('a', 5),
     B('B', 5),
@@ -110,32 +109,26 @@ public enum DefaultFontInfo
     private char character;
     private int length;
 
-    DefaultFontInfo(char character, int length)
-    {
+    DefaultFontInfo(char character, int length) {
         this.character = character;
         this.length = length;
     }
 
-    public char getCharacter()
-    {
+    public char getCharacter() {
         return this.character;
     }
 
-    public int getLength()
-    {
+    public int getLength() {
         return this.length;
     }
 
-    public int getBoldLength()
-    {
+    public int getBoldLength() {
         if (this == DefaultFontInfo.SPACE) return this.getLength();
         return this.length + 1;
     }
 
-    public static DefaultFontInfo getDefaultFontInfo(char c)
-    {
-        for (DefaultFontInfo dFI : DefaultFontInfo.values())
-        {
+    public static DefaultFontInfo getDefaultFontInfo(char c) {
+        for (DefaultFontInfo dFI : DefaultFontInfo.values()) {
             if (dFI.getCharacter() == c) return dFI;
         }
         return DefaultFontInfo.DEFAULT;

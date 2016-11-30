@@ -15,13 +15,11 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class GameData implements IData
-{
+public class GameData implements IData {
     @Getter
     private UUID owner;
 
-    public GameData(UUID uuid, Document document)
-    {
+    public GameData(UUID uuid, Document document) {
         this.owner = uuid;
         this.hasDeadLogger = document.getBoolean("hasDeadLogger");
         this.hearthstoneLocationBlob = document.getString("hearthstoneLocation");

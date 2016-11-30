@@ -56,21 +56,21 @@ public class PathFinderShootBow extends PathfinderGoal {
 
     public void e() {
         EntityLiving var1 = this.a.getGoalTarget();
-        if(var1 != null) {
+        if (var1 != null) {
             double var2 = this.a.e(var1.locX, var1.getBoundingBox().b, var1.locZ);
             boolean var4 = this.a.getEntitySenses().a(var1);
             boolean var5 = this.f > 0;
-            if(var4 != var5) {
+            if (var4 != var5) {
                 this.f = 0;
             }
 
-            if(var4) {
+            if (var4) {
                 ++this.f;
             } else {
                 --this.f;
             }
 
-            if(var2 <= (double)this.d && this.f >= 20) {
+            if (var2 <= (double) this.d && this.f >= 20) {
                 this.a.getNavigation().o();
                 ++this.i;
             } else {
@@ -78,43 +78,43 @@ public class PathFinderShootBow extends PathfinderGoal {
                 this.i = -1;
             }
 
-            if(this.i >= 20) {
-                if((double)this.a.getRandom().nextFloat() < 0.3D) {
+            if (this.i >= 20) {
+                if ((double) this.a.getRandom().nextFloat() < 0.3D) {
                     this.g = !this.g;
                 }
 
-                if((double)this.a.getRandom().nextFloat() < 0.3D) {
+                if ((double) this.a.getRandom().nextFloat() < 0.3D) {
                     this.h = !this.h;
                 }
 
                 this.i = 0;
             }
 
-            if(this.i > -1) {
-                if(var2 > (double)(this.d * 0.75F)) {
+            if (this.i > -1) {
+                if (var2 > (double) (this.d * 0.75F)) {
                     this.h = false;
-                } else if(var2 < (double)(this.d * 0.25F)) {
+                } else if (var2 < (double) (this.d * 0.25F)) {
                     this.h = true;
                 }
 
-                this.a.getControllerMove().a(this.h?-0.5F:0.5F, this.g?0.5F:-0.5F);
+                this.a.getControllerMove().a(this.h ? -0.5F : 0.5F, this.g ? 0.5F : -0.5F);
                 this.a.a(var1, 30.0F, 30.0F);
             } else {
                 this.a.getControllerLook().a(var1, 30.0F, 30.0F);
             }
 
-            if(this.a.ct()) {
-                if(!var4 && this.f < -60) {
+            if (this.a.ct()) {
+                if (!var4 && this.f < -60) {
                     this.a.cA();
-                } else if(var4) {
+                } else if (var4) {
                     int var6 = this.a.cy();
-                    if(var6 >= 20) {
+                    if (var6 >= 20) {
                         this.a.cA();
                         this.a.a(var1, ItemBow.b(var6));
                         this.e = this.c;
                     }
                 }
-            } else if(--this.e <= 0 && this.f >= -60) {
+            } else if (--this.e <= 0 && this.f >= -60) {
                 this.a.c(EnumHand.MAIN_HAND);
             }
 

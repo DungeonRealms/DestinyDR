@@ -12,34 +12,28 @@ import java.io.IOException;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class SkelRuntime
-{
+public class SkelRuntime {
     @Getter
     private static SkelRuntime skelRuntime;
 
-    public void init()
-    {
+    public void init() {
         Game.getGame().getInstanceLogger().sendMessage("[ Starting (Skeleton Runtime) by Vawke.. ]");
         skelRuntime = this;
     }
 
-    public int processors()
-    {
+    public int processors() {
         return Runtime.getRuntime().availableProcessors();
     }
 
-    public long memory()
-    {
+    public long memory() {
         return Runtime.getRuntime().totalMemory();
     }
 
-    public void executeCommand(String par1) throws IOException
-    {
+    public void executeCommand(String par1) throws IOException {
         Runtime.getRuntime().exec(par1);
     }
 
-    public IOBootstrap bootstrap()
-    {
+    public IOBootstrap bootstrap() {
         return new IOBootstrap();
     }
 }

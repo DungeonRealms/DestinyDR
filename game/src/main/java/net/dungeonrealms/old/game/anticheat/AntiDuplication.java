@@ -33,6 +33,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
 /**
  * Created by Nick on 10/1/2015.
  */
@@ -83,7 +84,7 @@ public class AntiDuplication implements GenericMechanic {
      * when detected.
      *
      * @author APOLLOSOFTWARE
-     *
+     * <p>
      * Well this didn't fucking work now did it.
      * - Vawke
      */

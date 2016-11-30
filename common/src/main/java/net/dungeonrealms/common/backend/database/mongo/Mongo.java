@@ -15,8 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class Mongo
-{
+public class Mongo {
 
     // new Mongo(uri, database);
 
@@ -28,10 +27,8 @@ public class Mongo
 
     private ConcurrentHashMap<String, MongoCollection<Document>> mongoCollectionHolder;
 
-    public Mongo(String URI, String database)
-    {
-        try
-        {
+    public Mongo(String URI, String database) {
+        try {
             this.mongoClient = new MongoClient(new MongoClientURI(URI));
             this.mongoDatabase = this.mongoClient.getDatabase(database);
 
@@ -39,15 +36,13 @@ public class Mongo
             this.mongoCollectionHolder.put("playerData", this.mongoDatabase.getCollection("player_data"));
             this.mongoCollectionHolder.put("banData", this.mongoDatabase.getCollection("bans"));
             this.mongoCollectionHolder.put("guildData", this.mongoDatabase.getCollection("guilds"));
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Failed to setup the Mongo database");
             e.printStackTrace();
         }
     }
 
-    public MongoCollection<Document> getCollection(String identifier)
-    {
+    public MongoCollection<Document> getCollection(String identifier) {
         return this.mongoCollectionHolder.get(identifier);
     }
 }

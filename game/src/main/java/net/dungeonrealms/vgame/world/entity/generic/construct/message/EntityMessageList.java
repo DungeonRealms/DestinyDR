@@ -12,13 +12,11 @@ import java.util.List;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class EntityMessageList
-{
+public class EntityMessageList {
     @Getter
     private List<String> messageList;
 
-    public EntityMessageList(String... messages)
-    {
+    public EntityMessageList(String... messages) {
         this.messageList = Lists.newArrayList();
         Collections.addAll(this.messageList, messages);
     }

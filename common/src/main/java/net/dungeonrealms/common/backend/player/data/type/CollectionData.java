@@ -17,13 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CollectionData implements IData
-{
+public class CollectionData implements IData {
     @Getter
     private UUID owner;
 
-    public CollectionData(UUID uuid, Document keyShards, Document collectibles)
-    {
+    public CollectionData(UUID uuid, Document keyShards, Document collectibles) {
         this.owner = uuid;
         this.keyShardMap = new ConcurrentHashMap<>();
         this.keyShardMap.put(EnumKeyShardTier.T1, keyShards.getInteger("tier1"));
@@ -41,8 +39,7 @@ public class CollectionData implements IData
     @Getter
     private ConcurrentHashMap<EnumKeyShardTier, Integer> keyShardMap;
 
-    public int getKeyShards(EnumKeyShardTier keyShardTier)
-    {
+    public int getKeyShards(EnumKeyShardTier keyShardTier) {
         return this.keyShardMap.get(keyShardTier);
     }
 }

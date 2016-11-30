@@ -14,23 +14,19 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class NestDocument
-{
+public class NestDocument {
     // TODO realm stuff & more collectible data
 
     @Getter
     private EnumNestType nestType;
 
-    public NestDocument(EnumNestType nestType)
-    {
+    public NestDocument(EnumNestType nestType) {
         this.nestType = nestType;
     }
 
-    public Document generate(UUID uuid)
-    {
+    public Document generate(UUID uuid) {
         Document document = null;
-        switch (this.nestType)
-        {
+        switch (this.nestType) {
             case PLAYER:
                 document = new Document("genericData",
                         new Document("uniqueId", uuid.toString()).append("hasDeadLogger", false)
@@ -56,8 +52,7 @@ public class NestDocument
         return document;
     }
 
-    public Document generateExistent(DataPlayer dataPlayer)
-    {
+    public Document generateExistent(DataPlayer dataPlayer) {
         Document document = new Document("genericData",
                 new Document("uniqueId", dataPlayer.getUniqueId().toString()).append("hasDeadLogger", dataPlayer.getGameData().isHasDeadLogger())
                         .append("hearthstoneLocation", dataPlayer.getGameData().getHearthstoneLocationBlob())

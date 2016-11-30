@@ -9,8 +9,7 @@ import org.bukkit.Material;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumAchievementGroup
-{
+public enum EnumAchievementGroup {
     COMBAT("Combat", Material.STONE_SWORD, 14, 12), EXPLORER("Exploration", Material.MAP, 21, 14);
 
     @Getter
@@ -25,8 +24,7 @@ public enum EnumAchievementGroup
     @Getter
     private int slot;
 
-    EnumAchievementGroup(String name, Material material, int size, int slot)
-    {
+    EnumAchievementGroup(String name, Material material, int size, int slot) {
         this.material = material;
         this.name = name;
         this.size = size;

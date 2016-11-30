@@ -147,10 +147,10 @@ public abstract class BaseCommand implements CommandExecutor, TabExecutor {
     }
 
     @Override
-	public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
+    public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
 
     @Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         return null;
     }
 }

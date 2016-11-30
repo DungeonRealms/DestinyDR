@@ -14,23 +14,18 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ChatHandler implements SuperHandler.ListeningHandler
-{
+public class ChatHandler implements SuperHandler.ListeningHandler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         ServerLobby.getServerLobby().getServer().getPluginManager().registerEvents(this, ServerLobby.getServerLobby());
     }
 
     @EventHandler
-    public void onAsyncChat(AsyncPlayerChatEvent event)
-    {
-        if (!Rank.isDev(event.getPlayer()))
-        {
+    public void onAsyncChat(AsyncPlayerChatEvent event) {
+        if (!Rank.isDev(event.getPlayer())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "Chat has been disabled in the lobby");
-        } else
-        {
+        } else {
             Player player = event.getPlayer();
             event.setFormat(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "DEV " + ChatColor.RESET + player.getName() + ": " + ChatColor.GRAY + event.getMessage());
         }

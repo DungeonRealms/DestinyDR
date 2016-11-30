@@ -85,7 +85,7 @@ public interface DRMonster {
                 chance = ent.hasMetadata("elite") ? 10 : 4; // 1%, 0.4%
                 break;
         }
-        if (ent.hasMetadata("namedElite")) {//java.lang.NullPointerException at net.dungeonrealms.old.game.world.entities.types.monsters.DRMonster.checkItemDrop(DRMonster.java:90) ~[?:?]
+        if (ent.hasMetadata("namedElite")) {//java.lang.NullPointerException at net.dungeonrealms.old.interactable.world.entities.types.monsters.DRMonster.checkItemDrop(DRMonster.java:90) ~[?:?]
             /*for (String s : SpawningMechanics.customMobLootTables.get(ChatColor.stripColor(ent.getMetadata("namedElite").get(0).asString()))) {
                 String customItemName = s.substring(1, s.indexOf(":"));
                 int namedEliteChance = (int)Math.round(Double.parseDouble(s.substring(s.lastIndexOf('%') + 1)) * 10d);
@@ -177,8 +177,7 @@ public interface DRMonster {
                 if (weapon != null && weapon.getType() != Material.AIR) {
                     drop = weapon;
                 }
-            }
-            else {
+            } else {
                 drop = toDrop.get(random.nextInt(toDrop.size()));
             }
             if (drop != null && drop.getType() != Material.AIR) {

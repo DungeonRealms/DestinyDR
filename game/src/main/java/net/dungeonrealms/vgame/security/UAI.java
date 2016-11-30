@@ -14,31 +14,25 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class UAI
-{
+public class UAI {
+
     private UUID uniqueId;
 
-    public UAI()
-    {
+    public UAI() {
         this.uniqueId = UUID.randomUUID();
     }
 
-    public org.bukkit.inventory.ItemStack attachTo(ItemStack itemStack) throws CompoundException
-    {
+    public org.bukkit.inventory.ItemStack attachTo(ItemStack itemStack) throws CompoundException {
         NBTTagCompound tagCompound = itemStack.getTag();
-        if (tagCompound != null)
-        {
-            if (!tagCompound.hasKey("atomic"))
-            {
+        if (tagCompound != null) {
+            if (!tagCompound.hasKey("atomic")) {
                 tagCompound.set("atomic", new NBTTagString(this.uniqueId.toString()));
                 itemStack.setTag(tagCompound);
                 return CraftItemStack.asBukkitCopy(itemStack);
-            } else
-            {
+            } else {
                 throw new CompoundException(itemStack);
             }
-        } else
-        {
+        } else {
             throw new CompoundException(itemStack);
         }
     }

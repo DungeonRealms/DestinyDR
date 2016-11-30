@@ -6,7 +6,6 @@ package net.dungeonrealms.vgame.player.scoreboard;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumScoreboardType
-{
+public enum EnumScoreboardType {
     DEFAULT, OBJECTIVE, PARTY;
 }

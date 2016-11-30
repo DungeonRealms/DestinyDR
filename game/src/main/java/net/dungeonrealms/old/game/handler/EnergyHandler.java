@@ -43,7 +43,7 @@ public class EnergyHandler implements GenericMechanic {
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Game.getGame(), this::regenerateAllPlayerEnergy, 40, 1L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(Game.getGame(), this::removePlayerEnergySprint, 40, 10L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(Game.getGame(), this::addStarvingPotionEffect, 40, 15L);

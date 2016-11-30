@@ -14,31 +14,24 @@ import java.io.DataInputStream;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ChannelHandler implements BungeeHandler.ListeningHandler
-{
+public class ChannelHandler implements BungeeHandler.ListeningHandler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         DungeonBungee.getDungeonBungee().getProxy().getPluginManager().registerListener(DungeonBungee.getDungeonBungee(), this);
     }
 
     @EventHandler
-    public void onPluginMessageReceived(PluginMessageEvent event)
-    {
-        if (event.getTag().equals("BungeeCord"))
-        {
-            try (DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(event.getData())))
-            {
-                if (dataInputStream.readUTF().equals("Alert"))
-                {
+    public void onPluginMessageReceived(PluginMessageEvent event) {
+        if (event.getTag().equals("BungeeCord")) {
+            try (DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(event.getData()))) {
+                if (dataInputStream.readUTF().equals("Alert")) {
                     String message = dataInputStream.readUTF();
 
                     DungeonBungee.getDungeonBungee().getProxy().getPlayers().stream().forEach(player -> {
                         player.sendMessage(message);
                     });
                 }
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 // Well damn, how did this happen?
             }
         }

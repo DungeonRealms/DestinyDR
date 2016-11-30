@@ -23,9 +23,9 @@ public class CommandVote extends BaseCommand {
 
         int ecashAmount = 15;
         if (Rank.isSubscriberPlus(player)) {
-           ecashAmount = 25;
+            ecashAmount = 25;
         } else if (Rank.isSubscriber(player)) {
-           ecashAmount = 20;
+            ecashAmount = 20;
         }
 
         final JSONMessage message = new JSONMessage("To vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.AQUA);

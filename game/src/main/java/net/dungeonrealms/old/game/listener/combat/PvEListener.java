@@ -2,10 +2,10 @@ package net.dungeonrealms.old.game.listener.combat;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.handler.EnergyHandler;
 import net.dungeonrealms.old.game.handler.HealthHandler;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
+import net.dungeonrealms.old.game.party.PartyMechanics;
 import net.dungeonrealms.old.game.player.combat.CombatLog;
 import net.dungeonrealms.old.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.old.game.world.entity.EntityMechanics;
@@ -404,8 +404,7 @@ public class PvEListener implements Listener {
             if (receiver instanceof CraftLivingEntity) {
                 DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) receiver).getHandle();
                 b.onBossAttack(event);
-            }
-            else
+            } else
                 return;
             powerChance = 3;
             if (rand.nextInt(100) <= powerChance) {

@@ -24,33 +24,28 @@ import java.util.Random;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class EntitySkeleton extends CreatureSkeleton implements IGameEntity
-{
+public class EntitySkeleton extends CreatureSkeleton implements IGameEntity {
     @Getter
     private EntityData entityData;
 
     @Getter
     private Entity entity;
 
-    public EntitySkeleton(World world, EnumSkeletonType skeletonType, EntityData entityData) throws InvalidEntityDataException
-    {
+    public EntitySkeleton(World world, EnumSkeletonType skeletonType, EntityData entityData) throws InvalidEntityDataException {
         super(world, EnumIntelligenceType.HOSTILE, skeletonType);
 
         this.entityData = entityData;
         this.entity = this;
 
-        if (!this.entityData.isNull())
-        {
+        if (!this.entityData.isNull()) {
             String elementName = null;
-            if (this.isElemental())
-            {
+            if (this.isElemental()) {
                 elementName = this.entityData.getEntityElement().getColor() +
                         this.entityData.getEntityElement().getSimpleNames()
                                 .get(new Random().nextInt(this.getEntityData().getEntityElement().getSimpleNames().size()));
             }
             String simpleName;
-            if (elementName != null)
-            {
+            if (elementName != null) {
                 simpleName = EnumGameEntity.SKELETON.getSimpleNames().get(new Random().nextInt(EnumGameEntity.SKELETON.getSimpleNames().size())) + elementName;
             } else
                 simpleName = EnumGameEntity.SKELETON.getSimpleNames().get(new Random().nextInt(EnumGameEntity.SKELETON.getSimpleNames().size()));
@@ -60,8 +55,7 @@ public class EntitySkeleton extends CreatureSkeleton implements IGameEntity
             this.entityData.setName(this.getCustomName());
 
             this.addTargets(Arrays.asList(EntityHuman.class, CreatureCow.class, CreaturePig.class, EntityBandit.class));
-        }
-        else
+        } else
             throw new InvalidEntityDataException(this.entityData);
     }
 }

@@ -6,10 +6,8 @@ package net.dungeonrealms.common.frontend.menu.construct.exception;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ItemStackAssignException extends Exception
-{
-    public ItemStackAssignException()
-    {
+public class ItemStackAssignException extends Exception {
+    public ItemStackAssignException() {
         super("No itemstack assigned, can't assign to slot");
     }
 }

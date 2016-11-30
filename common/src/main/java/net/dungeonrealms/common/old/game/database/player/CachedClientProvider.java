@@ -26,7 +26,7 @@ public abstract class CachedClientProvider<D> {
     }
 
 
-    public Map<UUID, D> getCache(){
+    public Map<UUID, D> getCache() {
         return PLAYER_DATA_CACHE;
     }
 
@@ -51,8 +51,8 @@ public abstract class CachedClientProvider<D> {
      * @param uuid UUID
      */
     public void delete(UUID uuid) {
-        if(PLAYER_DATA_CACHE.containsKey(uuid))
-        PLAYER_DATA_CACHE.remove(uuid);
+        if (PLAYER_DATA_CACHE.containsKey(uuid))
+            PLAYER_DATA_CACHE.remove(uuid);
     }
 
     /**

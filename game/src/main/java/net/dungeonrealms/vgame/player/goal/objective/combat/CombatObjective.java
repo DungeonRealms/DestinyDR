@@ -12,8 +12,7 @@ import net.dungeonrealms.vgame.world.entity.boss.EnumDungeonBoss;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CombatObjective extends Objective
-{
+public class CombatObjective extends Objective {
     @Getter
     private EnumCombatGoal combatGoal;
 
@@ -26,22 +25,19 @@ public class CombatObjective extends Objective
     @Getter
     private int objective;
 
-    public CombatObjective(EnumCombatGoal combatGoal, int goal)
-    {
+    public CombatObjective(EnumCombatGoal combatGoal, int goal) {
         super("newObjective", EnumObjectiveType.COMBAT, true);
         this.combatGoal = combatGoal;
         this.objective = goal;
     }
 
-    public CombatObjective(EnumBossType bossType)
-    {
+    public CombatObjective(EnumBossType bossType) {
         super("newObjective", EnumObjectiveType.COMBAT, true);
         this.bossType = bossType;
         this.combatGoal = EnumCombatGoal.BOSS;
     }
 
-    public CombatObjective(EnumDungeonBoss dungeonBoss)
-    {
+    public CombatObjective(EnumDungeonBoss dungeonBoss) {
         super("newObjective", EnumObjectiveType.COMBAT, true);
         this.dungeonBoss = dungeonBoss;
         this.combatGoal = EnumCombatGoal.BOSS;

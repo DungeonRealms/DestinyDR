@@ -141,9 +141,9 @@ public interface Realms extends GenericMechanic {
      * This function uploads the player's realm to master ftp server for it to be downloaded
      * by the other shards
      *
-     * @param runAsync Should execute on async pool?
+     * @param runAsync          Should execute on async pool?
      * @param removeCacheFolder Removed cached folder
-     * @param uuid     Owner of realm
+     * @param uuid              Owner of realm
      */
     void uploadRealm(UUID uuid, boolean removeCacheFolder, boolean runAsync, Consumer<Boolean> doAfter);
 

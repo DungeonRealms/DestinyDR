@@ -93,7 +93,7 @@ public class GUI implements Listener {
         private boolean close;
         private boolean destroy;
         private Inventory inv;
-        
+
         public OptionClickEvent(Player player, int position, String name, Inventory inventory) {
             this.player = player;
             this.position = position;
@@ -131,12 +131,12 @@ public class GUI implements Listener {
             this.destroy = destroy;
         }
 
-		/**
-		 * @return inv of clicked event
-		 */
-		public Inventory getInventory() {
-			return inv;
-		}
+        /**
+         * @return inv of clicked event
+         */
+        public Inventory getInventory() {
+            return inv;
+        }
     }
 
     private ItemStack setItemNameAndLore(ItemStack item, String name, String[] lore) {

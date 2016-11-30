@@ -24,15 +24,15 @@ import java.util.concurrent.ExecutionException;
  */
 public class CommandPlayerFix extends BaseCommand {
 
-	public CommandPlayerFix(String command, String usage, String description, List<String> aliases) {
-		super(command, usage, description, aliases);
-	}
+    public CommandPlayerFix(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
+    }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !Rank.isGM((Player) sender)) {
-			return true;
-		}
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (sender instanceof Player && !Rank.isGM((Player) sender)) {
+            return true;
+        }
 
         if (args.length != 1) {
             sender.sendMessage(ChatColor.RED + "Syntax: /pfix <playername|shard|all>");
@@ -90,6 +90,6 @@ public class CommandPlayerFix extends BaseCommand {
                     });
         }
 
-		return false;
-	}
+        return false;
+    }
 }

@@ -171,8 +171,7 @@ public class CommandSet extends BaseCommand {
                 case "combatoff":
                     if (Bukkit.getPlayer(args[1]) != null) {
                         CombatLog.removeFromCombat(Bukkit.getPlayer(args[1]));
-                    }
-                    else {
+                    } else {
                         player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
                     }
                     break;

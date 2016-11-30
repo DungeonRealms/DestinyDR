@@ -65,7 +65,7 @@ public final class VectorUtils {
 
     /**
      * This handles non-unit vectors, with yaw and pitch instead of X,Y,Z angles.
-     *
+     * <p>
      * Thanks to SexyToad!
      *
      * @param v

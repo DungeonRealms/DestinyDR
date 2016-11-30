@@ -8,8 +8,7 @@ import lombok.Getter;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumEntityType
-{
+public enum EnumEntityType {
     OCELOT(EnumEquipmentType.NONE),
     SPIDER(EnumEquipmentType.NONE),
     SKELETON(EnumEquipmentType.GENERIC),
@@ -28,8 +27,7 @@ public enum EnumEntityType
     @Getter
     private EnumEquipmentType equipmentType;
 
-    EnumEntityType(EnumEquipmentType equipmentType)
-    {
+    EnumEntityType(EnumEquipmentType equipmentType) {
         this.equipmentType = equipmentType;
     }
 }

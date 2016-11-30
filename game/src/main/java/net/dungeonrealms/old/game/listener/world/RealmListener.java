@@ -587,9 +587,9 @@ public class RealmListener implements Listener {
             p.sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "ADDED " + ChatColor.RESET + ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
                     + ChatColor.GREEN + " to your realm builder list.");
             p.sendMessage(ChatColor.GRAY + target.getName()
-                    + " can now place/destroy blocks in your realm until you logout of your current game session.");
+                    + " can now place/destroy blocks in your realm until you logout of your current interactable session.");
             target.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "ADDED" + ChatColor.GREEN + " to " + p.getName() + "'s build list.");
-            target.sendMessage(ChatColor.GRAY + "You can now place/destroy blocks in their realm until the end of their game session.");
+            target.sendMessage(ChatColor.GRAY + "You can now place/destroy blocks in their realm until the end of their interactable session.");
 
             realm.getBuilders().add(target.getUniqueId());
 

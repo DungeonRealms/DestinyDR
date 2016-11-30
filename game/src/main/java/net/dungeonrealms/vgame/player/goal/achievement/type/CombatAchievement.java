@@ -12,36 +12,30 @@ import net.dungeonrealms.vgame.player.goal.objective.combat.CombatObjective;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CombatAchievement extends Achievement implements IAchievement
-{
+public class CombatAchievement extends Achievement implements IAchievement {
     @Getter
     private CombatObjective objective;
 
-    public CombatAchievement(String name, String[] description, int expReward, String collectionName, CombatObjective combatObjective)
-    {
+    public CombatAchievement(String name, String[] description, int expReward, String collectionName, CombatObjective combatObjective) {
         super(name, expReward, description, collectionName);
         this.objective = combatObjective;
     }
 
     @Override
-    public void register()
-    {
+    public void register() {
         Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () ->
         {
-            switch (this.objective.getCombatGoal())
-            {
+            switch (this.objective.getCombatGoal()) {
                 case BOSS:
                     // Dungeon boss?
-                    if (this.objective.getDungeonBoss() != null)
-                    {
+                    if (this.objective.getDungeonBoss() != null) {
                         Game.getGame().getRegistryHandler().getPlayerRegistry().getMap().values()
                                 .stream().filter(gamePlayer -> !gamePlayer.getData().getCollectionData().getAchievements()
                                 .contains(this.getCollectionName()))
                                 .filter(gamePlayer -> gamePlayer.getData().getGameData().getKilledBosses().contains(this.objective.getDungeonBoss().name())).forEach(this::reward);
                     }
                     // World boss?
-                    if (this.objective.getBossType() != null)
-                    {
+                    if (this.objective.getBossType() != null) {
                         Game.getGame().getRegistryHandler().getPlayerRegistry().getMap().values()
                                 .stream().filter(gamePlayer -> !gamePlayer.getData().getCollectionData().getAchievements()
                                 .contains(this.getCollectionName()))

@@ -8,9 +8,7 @@ import net.md_5.bungee.api.plugin.Listener;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public interface BungeeHandler extends SuperHandler.Handler
-{
-    interface ListeningHandler extends BungeeHandler, Listener
-    {
+public interface BungeeHandler extends SuperHandler.Handler {
+    interface ListeningHandler extends BungeeHandler, Listener {
     }
 }

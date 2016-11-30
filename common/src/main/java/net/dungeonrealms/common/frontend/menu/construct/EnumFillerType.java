@@ -11,8 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumFillerType
-{
+public enum EnumFillerType {
     YELLOW((byte) 4),
     ORANGE((byte) 1),
     GREEN((byte) 13),
@@ -24,8 +23,7 @@ public enum EnumFillerType
     @Getter
     private ItemStack itemStack;
 
-    EnumFillerType(byte _byte)
-    {
+    EnumFillerType(byte _byte) {
         this.itemStack = new ItemStack(Material.THIN_GLASS, _byte);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
         itemMeta.setDisplayName("");

@@ -35,7 +35,7 @@ public class CommandHead extends BaseCommand {
         item.setItemMeta(meta);
         player.getInventory().addItem(item);
 
-        player.sendMessage(ChatColor.GREEN + "Successfully given you the head of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + "." );
+        player.sendMessage(ChatColor.GREEN + "Successfully given you the head of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.GREEN + ".");
         return true;
     }
 }

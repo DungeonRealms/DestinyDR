@@ -31,8 +31,7 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class NetworkProxy implements Proxy
-{
+public class NetworkProxy implements Proxy {
     @Getter
     private GameClient gameClient;
 
@@ -61,13 +60,11 @@ public class NetworkProxy implements Proxy
     @Getter
     private Configuration configuration;
 
-    public NetworkProxy(Configuration configuration)
-    {
+    public NetworkProxy(Configuration configuration) {
         this.configuration = configuration;
     }
 
-    public void deploy()
-    {
+    public void deploy() {
         this.readConfiguration();
         this.connect();
         this.handlerCore = new ProxyHandler();
@@ -75,55 +72,45 @@ public class NetworkProxy implements Proxy
         DungeonBungee.getDungeonBungee().getConsole().sendMessage("DEBUG: " + Constants.MOTD);
     }
 
-    protected void undeploy()
-    {
+    protected void undeploy() {
         configuration.set("network.maintenance", this.maintenance);
         configuration.set("network.holder", this.proxyHolder.name());
         configuration.set("channel.developers", this.whitelist);
         configuration.set("channel.proxyName", this.proxyName);
-        try
-        {
+        try {
             // Save the configuration
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, DungeonBungee.getDungeonBungee().getChannelFile());
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void readConfiguration()
-    {
+    private void readConfiguration() {
         DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Reading proxy configuration..");
-        if (!configuration.getKeys().isEmpty())
-        {
+        if (!configuration.getKeys().isEmpty()) {
             this.maintenance = configuration.getBoolean("network.maintenance");
             this.proxyHolder = EnumProxyHolder.valueOf(configuration.getString("network.holder"));
             this.whitelist = configuration.getStringList("channel.developers");
             this.proxyName = ChatColor.translateAlternateColorCodes('&', configuration.getString("channel.proxyName"));
-        } else
-        {
+        } else {
             configuration.set("network.maintenance", false);
             configuration.set("network.holder", EnumProxyHolder.MASTER.name());
             configuration.set("channel.developers", Arrays.asList("Atlas__", "Vawke"));
             configuration.set("channel.proxyName", "&cLIMBO > ");
-            try
-            {
+            try {
                 ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, DungeonBungee.getDungeonBungee().getChannelFile());
-            } catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "> Finished");
     }
 
-    private void connect()
-    {
+    private void connect() {
         this.gameClient = new GameClient();
         this.proxyShard = new ProxyShard(UUID.randomUUID());
         this.proxyLobby = new ProxyLobby(UUID.randomUUID());
-        try
-        {
+        try {
             DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "Connecting to the master server..");
             // Collect all shards, connect them
             Arrays.stream(ShardInfo.values()).forEach(info ->
@@ -137,20 +124,17 @@ public class NetworkProxy implements Proxy
             );
             this.gameClient.connect();
             DungeonBungee.getDungeonBungee().getConsole().sendMessage(ChatColor.GREEN + "> Connected");
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void sendGlobalPacket(String task, String... contents)
-    {
+    public void sendGlobalPacket(String task, String... contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(task);
 
-        for (String s : contents)
-        {
+        for (String s : contents) {
             out.writeUTF(s);
         }
 
@@ -158,8 +142,7 @@ public class NetworkProxy implements Proxy
     }
 
     @Override
-    public EnumProxyHolder getProxyHolder()
-    {
+    public EnumProxyHolder getProxyHolder() {
         return proxyHolder;
     }
 }

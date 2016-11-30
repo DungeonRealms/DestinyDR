@@ -11,8 +11,7 @@ import net.dungeonrealms.common.backend.database.mongo.MongoAPI;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class MongoConnection
-{
+public class MongoConnection {
     @Getter
     private Mongo mongo;
 
@@ -21,10 +20,8 @@ public class MongoConnection
 
     private boolean running = false;
 
-    public void runOn(String URI, String fromDatabase) throws ConnectionRunningException
-    {
-        if (!running)
-        {
+    public void runOn(String URI, String fromDatabase) throws ConnectionRunningException {
+        if (!running) {
             this.mongo = new Mongo(URI, fromDatabase);
             this.api = new MongoAPI(this.mongo);
             this.running = true;
@@ -32,8 +29,7 @@ public class MongoConnection
             throw new ConnectionRunningException();
     }
 
-    public void closeConnection()
-    {
+    public void closeConnection() {
         this.mongo.getMongoClient().close();
     }
 }

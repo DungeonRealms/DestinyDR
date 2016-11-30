@@ -237,7 +237,7 @@ public class PunishAPI {
     }
 
     public static PunishAPI getInstance() {
-        if (instance ==  null) {
+        if (instance == null) {
             instance = new PunishAPI();
         }
         return instance;

@@ -17,13 +17,11 @@ import java.util.List;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ScoreboardHandler implements SuperHandler.ListeningHandler
-{
+public class ScoreboardHandler implements SuperHandler.ListeningHandler {
     private int task;
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         ServerLobby.getServerLobby().getServer().getPluginManager().registerEvents(this, ServerLobby.getServerLobby());
 
         this.task = ServerLobby.getServerLobby().getServer().getScheduler().scheduleSyncRepeatingTask(ServerLobby.getServerLobby(), () ->
@@ -38,9 +36,8 @@ public class ScoreboardHandler implements SuperHandler.ListeningHandler
                 scoreboardBuilder.setLine(3, "");
                 scoreboardBuilder.setLine(2, ChatColor.GREEN + "Online shards: " + ChatColor.GREEN.toString() + ChatColor.BOLD + servers.size());
                 scoreboardBuilder.setLine(1, "");
-                scoreboardBuilder.setLine(0,ChatColor.GOLD + "www.dungeonrealms.net");
-            } else
-            {
+                scoreboardBuilder.setLine(0, ChatColor.GOLD + "www.dungeonrealms.net");
+            } else {
                 scoreboardBuilder.setLine(3, "");
                 scoreboardBuilder.setLine(2, ChatColor.RED + "No shards found!");
                 scoreboardBuilder.setLine(1, "");
@@ -52,8 +49,7 @@ public class ScoreboardHandler implements SuperHandler.ListeningHandler
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event)
-    {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         ScoreboardBuilder scoreboardBuilder = new ScoreboardBuilder(ChatColor.YELLOW.toString() + ChatColor.BOLD + " DUNGEON REALMS ");
         scoreboardBuilder.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -64,9 +60,8 @@ public class ScoreboardHandler implements SuperHandler.ListeningHandler
             scoreboardBuilder.setLine(3, "");
             scoreboardBuilder.setLine(2, ChatColor.GREEN + "Online shards: " + ChatColor.GREEN.toString() + ChatColor.BOLD + servers.size());
             scoreboardBuilder.setLine(1, "");
-            scoreboardBuilder.setLine(0,ChatColor.GOLD + "www.dungeonrealms.net");
-        } else
-        {
+            scoreboardBuilder.setLine(0, ChatColor.GOLD + "www.dungeonrealms.net");
+        } else {
             scoreboardBuilder.setLine(3, "");
             scoreboardBuilder.setLine(2, ChatColor.RED + "No shards found!");
             scoreboardBuilder.setLine(1, "");

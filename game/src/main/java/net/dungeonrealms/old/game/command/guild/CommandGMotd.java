@@ -29,7 +29,7 @@ public class CommandGMotd extends BaseCommand {
             player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to view " + ChatColor.BOLD + "/gmotd.");
             return true;
         }
-        
+
         String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
 
         if (args.length == 0) {

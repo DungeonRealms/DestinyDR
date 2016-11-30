@@ -2,8 +2,8 @@ package net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.staff;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.world.entity.EnumEntityType;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.DRZombie;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.item.DamageAPI;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.item.itemgenerator.ItemGenerator;

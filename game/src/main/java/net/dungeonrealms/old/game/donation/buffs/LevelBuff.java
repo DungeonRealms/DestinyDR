@@ -15,7 +15,8 @@ import org.bukkit.ChatColor;
 public class LevelBuff extends Buff {
 
     // empty constructor is needed for generic instantiation during deserialization
-    public LevelBuff() {}
+    public LevelBuff() {
+    }
 
     public LevelBuff(int duration, float bonusAmount, String activatingPlayer, String fromServer) {
         this.duration = duration;

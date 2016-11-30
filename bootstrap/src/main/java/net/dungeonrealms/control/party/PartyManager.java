@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Evoltr on 11/17/2016.
@@ -71,8 +70,7 @@ public class PartyManager {
         }
 
         // Is the party full?
-        if(party.isFull())
-        {
+        if (party.isFull()) {
             sender.sendMessage("&cThe party is full!", true);
             return;
         }
@@ -129,8 +127,7 @@ public class PartyManager {
 
         Party party = getParty(receiver);
 
-        if(party.isFull())
-        {
+        if (party.isFull()) {
             sender.sendMessage("&c&l" + receiver.getName() + "&c's party is full", true);
             return;
         }
@@ -228,48 +225,38 @@ public class PartyManager {
         parties.remove(party);
     }
 
-    public void handleList(PacketPartyList packetPartyList)
-    {
+    public void handleList(PacketPartyList packetPartyList) {
         DRPlayer drPlayer = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyList.getPlayer());
         drPlayer.sendMessage("&aDisplaying the ideal parties", true);
-        if(this.parties.size() >= 6)
-        {
+        if (this.parties.size() >= 6) {
             List<Party> applicableParties = Lists.newArrayList();
             // Show parties with the least players, but only show 6
             applicableParties.addAll(this.parties.stream().filter(party -> party.getPlayers().size() <= 3).limit(6).collect(Collectors.toList()));
-            for(Party party : applicableParties)
-            {
+            for (Party party : applicableParties) {
                 drPlayer.sendMessage("&c" + party.getOwner().getName() + "'s Party &b[&9" + party.getPlayers() + "&b/8]", true);
             }
-        } else
-        {
-            for(Party party : this.parties)
-            {
+        } else {
+            for (Party party : this.parties) {
                 drPlayer.sendMessage("&c" + party.getOwner().getName() + "'s Party &b[&9" + party.getPlayers() + "&b/8]", true);
             }
         }
         drPlayer.sendMessage("&aThere currently are &e" + this.parties.size() + " &aglobal parties", false);
     }
 
-    public Map<String, Object> handleInfo(PacketPartyInfo packetPartyInfo)
-    {
+    public Map<String, Object> handleInfo(PacketPartyInfo packetPartyInfo) {
         DRPlayer partyOwner = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyInfo.getPartyOwner());
         Party party = getParty(partyOwner);
-        if(!packetPartyInfo.isData())
-        {
+        if (!packetPartyInfo.isData()) {
             DRPlayer drPlayer = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPartyInfo.getPlayer());
-            if (party != null && partyOwner != null)
-            {
+            if (party != null && partyOwner != null) {
                 drPlayer.sendMessage("&e&l" + partyOwner.getName() + "&e's Party", false);
                 drPlayer.sendMessage("&7Players: &a" + party.getPlayers().size() + "&8/&7" + party.getPartyType().getPartySlots(), false);
                 drPlayer.sendMessage("&7Party type: " + party.getPartyType().getName(), false);
-            } else
-            {
+            } else {
                 drPlayer.sendMessage("&cParty doesn't exist", true);
             }
             return null;
-        } else
-        {
+        } else {
             HashMap<String, Object> partyInfo = Maps.newHashMap();
             partyInfo.put("owner", party.getOwner().getName());
             partyInfo.put("playersSize", party.getPlayers().size());

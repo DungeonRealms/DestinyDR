@@ -30,19 +30,15 @@ public class Party {
         // Create the players list.
         this.players = new ArrayList<>();
         this.invited = new ArrayList<>();
-        if(owner.getRank().hasRank(Rank.DEV))
-        {
+        if (owner.getRank().hasRank(Rank.DEV)) {
             this.partyType = EnumPartyType.DEV;
-        } else
-        {
+        } else {
             // Only for default sub, sub_2, sub_3
-            if(owner.getRank().hasRank(Rank.DEFAULT) && !owner.getRank().hasRank(Rank.PMOD))
-            {
+            if (owner.getRank().hasRank(Rank.DEFAULT) && !owner.getRank().hasRank(Rank.PMOD)) {
                 this.partyType = EnumPartyType.valueOf(owner.getRank().name());
             }
             // Only for pmods and gms
-            else if(owner.getRank().hasRank(Rank.PMOD) && !owner.getRank().hasRank(Rank.DEV))
-            {
+            else if (owner.getRank().hasRank(Rank.PMOD) && !owner.getRank().hasRank(Rank.DEV)) {
                 this.partyType = EnumPartyType.SUB_2;
             }
         }
@@ -102,7 +98,9 @@ public class Party {
         return invited.contains(player.getUuid());
     }
 
-    public boolean isFull() { return players.size() >= this.partyType.getPartySlots(); }
+    public boolean isFull() {
+        return players.size() >= this.partyType.getPartySlots();
+    }
 
     public void invitePlayer(DRPlayer player) {
         invited.add(player.getUuid());

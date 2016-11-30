@@ -15,8 +15,7 @@ import net.minecraft.server.v1_9_R2.*;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CreatureSkeleton extends EntitySkeleton implements ICreature
-{
+public class CreatureSkeleton extends EntitySkeleton implements ICreature {
     @Getter
     private EnumEntityType entityType = EnumEntityType.SKELETON;
 
@@ -38,8 +37,7 @@ public class CreatureSkeleton extends EntitySkeleton implements ICreature
     @Getter
     private LivingMeta livingMeta;
 
-    public CreatureSkeleton(World world, EnumIntelligenceType intelligenceType, EnumSkeletonType skeletonType)
-    {
+    public CreatureSkeleton(World world, EnumIntelligenceType intelligenceType, EnumSkeletonType skeletonType) {
         super(world);
         this.intelligenceType = intelligenceType;
 
@@ -48,8 +46,7 @@ public class CreatureSkeleton extends EntitySkeleton implements ICreature
         this.entityCreature = this;
 
         this.livingMeta = new LivingMeta(this);
-        if (this.intelligenceType != null)
-        {
+        if (this.intelligenceType != null) {
             this.clearIntelligence();
         }
 

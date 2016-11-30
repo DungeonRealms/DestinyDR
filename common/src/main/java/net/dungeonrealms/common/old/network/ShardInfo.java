@@ -13,8 +13,7 @@ import java.util.Optional;
  */
 
 @NoArgsConstructor
-public enum ShardInfo implements Serializable
-{
+public enum ShardInfo implements Serializable {
     // DEVELOPMENT SHARD //
     US0("US-0", "us0", EnumShardType.MASTER, new ServerAddress("158.69.122.139", 40007)),
 
@@ -55,8 +54,7 @@ public enum ShardInfo implements Serializable
     @Getter
     private EnumShardType shardType;
 
-    ShardInfo(String shardID, String pseudoName, EnumShardType enumShardType, ServerAddress address)
-    {
+    ShardInfo(String shardID, String pseudoName, EnumShardType enumShardType, ServerAddress address) {
         this.shardID = shardID;
         this.pseudoName = pseudoName;
         this.shardType = enumShardType;
@@ -64,24 +62,21 @@ public enum ShardInfo implements Serializable
     }
 
 
-    public static ShardInfo getByPseudoName(String pseudoName)
-    {
+    public static ShardInfo getByPseudoName(String pseudoName) {
         Optional<ShardInfo> query = Arrays.asList(ShardInfo.values()).stream().
                 filter(info -> info.getPseudoName().equals(pseudoName)).findFirst();
 
         return query.isPresent() ? query.get() : null;
     }
 
-    public static ShardInfo getByShardID(String shardID)
-    {
+    public static ShardInfo getByShardID(String shardID) {
         Optional<ShardInfo> query = Arrays.asList(ShardInfo.values()).stream().
                 filter(info -> info.getShardID().equals(shardID)).findFirst();
 
         return query.isPresent() ? query.get() : null;
     }
 
-    public static ShardInfo getByAddress(ServerAddress address)
-    {
+    public static ShardInfo getByAddress(ServerAddress address) {
         Optional<ShardInfo> query = Arrays.asList(ShardInfo.values()).stream().
                 filter(info -> info.getAddress().toString().equals(address.toString())).findFirst();
 

@@ -2,8 +2,8 @@ package net.dungeonrealms.vgame.core.handle;
 
 import lombok.Getter;
 import net.dungeonrealms.backend.registry.PlayerRegistry;
-import net.dungeonrealms.common.old.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.old.game.database.sql.registry.DataRegistry;
 import net.dungeonrealms.vgame.Game;
 import org.bukkit.ChatColor;
 
@@ -16,8 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class RegistryHandler implements SuperHandler.Handler
-{
+public class RegistryHandler implements SuperHandler.Handler {
     @Getter
     private ConcurrentHashMap<UUID, DataRegistry> registryMap;
 
@@ -25,8 +24,7 @@ public class RegistryHandler implements SuperHandler.Handler
     private PlayerRegistry playerRegistry;
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ REGISTRIES ]");
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Creating atomic reference..");
         this.registryMap = new ConcurrentHashMap<>();

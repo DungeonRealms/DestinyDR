@@ -7,12 +7,10 @@ import java.util.logging.Logger;
 /**
  * Created by Giovanni on 29-10-2016.
  */
-public interface SuperHandler
-{
+public interface SuperHandler {
     SuperHandler prepare();
 
-    interface Handler
-    {
+    interface Handler {
         void prepare();
 
         default Logger getLogger() {
@@ -20,7 +18,6 @@ public interface SuperHandler
         }
     }
 
-    interface ListeningHandler extends Handler, Listener
-    {
+    interface ListeningHandler extends Handler, Listener {
     }
 }

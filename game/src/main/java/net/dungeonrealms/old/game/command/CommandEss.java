@@ -160,9 +160,9 @@ public class CommandEss extends BaseCommand {
                                 }
                             }
                             GameAPI.submitAsyncCallback(() -> {
-                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailType.toUpperCase(), false);
-                                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_TRAIL, trailType.toUpperCase(), false);
-                                    return true;
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.PARTICLES, trailType.toUpperCase(), false);
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ACTIVE_TRAIL, trailType.toUpperCase(), false);
+                                return true;
                             }, result -> {
                                 commandSender.sendMessage(ChatColor.GREEN + "Successfully added the " + ChatColor.BOLD + ChatColor.UNDERLINE + trailFriendly + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
                                 GameAPI.updatePlayerData(uuid);
@@ -311,7 +311,7 @@ public class CommandEss extends BaseCommand {
                     }
                     break;
                 case "resetmule":
-                    DatabaseAPI.getInstance().update(((Player)commandSender).getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
+                    DatabaseAPI.getInstance().update(((Player) commandSender).getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
                     commandSender.sendMessage(ChatColor.GREEN + "Your mule level has been reset.");
                     break;
                 case "buff":
@@ -325,8 +325,7 @@ public class CommandEss extends BaseCommand {
                         Integer.parseInt(args[2]);
                         //noinspection ResultOfMethodCallIgnored
                         Float.parseFloat(args[3]);
-                    }
-                    catch (NumberFormatException ex) {
+                    } catch (NumberFormatException ex) {
                         commandSender.sendMessage(ChatColor.RED + "Invalid duration or bonus amount! Syntax: /dr buff <level|loot|profession> <duration in s> <bonusAmount>");
                         break;
                     }
@@ -335,17 +334,17 @@ public class CommandEss extends BaseCommand {
                     switch (buffType) {
                         case "level":
                             GameAPI.sendNetworkMessage("levelBuff", duration, bonusAmount, commandSender instanceof
-                                    Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
+                                            Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
                                     Game.getGame().getGameShard().getBungeeIdentifier());
                             break;
                         case "loot":
                             GameAPI.sendNetworkMessage("lootBuff", duration, bonusAmount, commandSender instanceof
-                                    Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
+                                            Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
                                     Game.getGame().getGameShard().getBungeeIdentifier());
                             break;
                         case "profession":
                             GameAPI.sendNetworkMessage("professionBuff", duration, bonusAmount, commandSender instanceof
-                                    Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
+                                            Player ? GameChat.getFormattedName((Player) commandSender) : commandSender.getName(),
                                     Game.getGame().getGameShard().getBungeeIdentifier());
                             break;
                         default:

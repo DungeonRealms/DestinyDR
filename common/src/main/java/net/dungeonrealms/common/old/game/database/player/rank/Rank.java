@@ -31,7 +31,7 @@ public class Rank {
     }
 
 
-    public static boolean isRank(OfflinePlayer player, String name){
+    public static boolean isRank(OfflinePlayer player, String name) {
         return isRank(player, null, name);
     }
 
@@ -44,10 +44,10 @@ public class Rank {
     public static boolean isRank(OfflinePlayer player, Document document, String name) {
         String rank;
 
-        if(document == null)
-          rank = Rank.getInstance().getRank(player.getUniqueId());
+        if (document == null)
+            rank = Rank.getInstance().getRank(player.getUniqueId());
         else
-          rank = Rank.getInstance().getRank(document);
+            rank = Rank.getInstance().getRank(document);
 
         switch (name) {
             case "dev":

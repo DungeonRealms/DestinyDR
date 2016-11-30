@@ -90,8 +90,7 @@ public class CommandModeration extends BaseCommand {
                     }
                     inv.setItem(8, player.getEquipment().getItemInMainHand());
                     sender.openInventory(inv);
-                }
-                else {
+                } else {
                     if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {
                         sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
                         return true;
@@ -139,8 +138,7 @@ public class CommandModeration extends BaseCommand {
                 if (Bukkit.getPlayer(playerName) != null) {
                     Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
                     sender.openInventory(storage.inv);
-                }
-                else {
+                } else {
                     if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {
                         sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
                         return true;
@@ -149,7 +147,7 @@ public class CommandModeration extends BaseCommand {
                     UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
 
                     // check if they're logged in on another shard
-                    if ((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, p_uuid)) {
+                    if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, p_uuid)) {
                         String shard = DatabaseAPI.getInstance().getFormattedShardName(p_uuid);
                         sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + shard + ". " +
                                 "Please banksee on that shard to avoid concurrent modification.");
@@ -174,8 +172,7 @@ public class CommandModeration extends BaseCommand {
                 if (Bukkit.getPlayer(playerName) != null) {
                     Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
                     sender.openInventory(storage.collection_bin);
-                }
-                else {
+                } else {
                     if (DatabaseAPI.getInstance().getUUIDFromName(playerName).equals("")) {
                         sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + playerName + ChatColor.RED + " does not exist in our database.");
                         return true;
@@ -184,7 +181,7 @@ public class CommandModeration extends BaseCommand {
                     UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
 
                     // check if they're logged in on another shard
-                    if ((Boolean)DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, p_uuid)) {
+                    if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, p_uuid)) {
                         String shard = DatabaseAPI.getInstance().getFormattedShardName(p_uuid);
                         sender.sendMessage(ChatColor.RED + "That player is currently playing on shard " + shard + ". " +
                                 "Please banksee on that shard to avoid concurrent modification.");
@@ -203,8 +200,7 @@ public class CommandModeration extends BaseCommand {
                         Player p = Bukkit.getPlayer(p_uuid);
                         if (p != null)
                             p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
-                    }
-                    else {
+                    } else {
                         sender.sendMessage(ChatColor.RED + "That player's collection bin is empty.");
                         break;
                     }

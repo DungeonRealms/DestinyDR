@@ -49,7 +49,7 @@ public class ParticleAPI {
         private org.bukkit.inventory.ItemStack selectionItem;
         private String displayName;
 
-        ParticleEffect(int id, String rawName, EnumParticle particle,  org.bukkit.inventory.ItemStack selectionItem, String displayName) {
+        ParticleEffect(int id, String rawName, EnumParticle particle, org.bukkit.inventory.ItemStack selectionItem, String displayName) {
             this.id = id;
             this.rawName = rawName;
             this.particle = particle;

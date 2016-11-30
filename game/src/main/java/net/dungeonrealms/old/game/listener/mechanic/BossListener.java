@@ -16,21 +16,21 @@ import org.bukkit.event.entity.EntityDeathEvent;
  */
 public class BossListener implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onBossDeath(EntityDeathEvent event) {
-		if (event.getEntity().hasMetadata("boss")) {
-			event.getEntity().removeMetadata("boss", DungeonRealms.getInstance());
-			if (event.getEntity() instanceof CraftLivingEntity) {
-				DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) event.getEntity()).getHandle();
-				if (b.getEnumBoss() != EnumDungeonBoss.Pyromancer && b.getEnumBoss() != EnumDungeonBoss.InfernalGhast && b.getEnumBoss()!= EnumDungeonBoss.LordsGuard)
-				if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) != null) {
-					DungeonObject dungeon = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
-					dungeon.teleportPlayersOut(false);
-					dungeon.giveShards();
-				}
-				b.onBossDeath();
-			}
-		}
-	}
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBossDeath(EntityDeathEvent event) {
+        if (event.getEntity().hasMetadata("boss")) {
+            event.getEntity().removeMetadata("boss", DungeonRealms.getInstance());
+            if (event.getEntity() instanceof CraftLivingEntity) {
+                DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) event.getEntity()).getHandle();
+                if (b.getEnumBoss() != EnumDungeonBoss.Pyromancer && b.getEnumBoss() != EnumDungeonBoss.InfernalGhast && b.getEnumBoss() != EnumDungeonBoss.LordsGuard)
+                    if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) != null) {
+                        DungeonObject dungeon = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
+                        dungeon.teleportPlayersOut(false);
+                        dungeon.giveShards();
+                    }
+                b.onBossDeath();
+            }
+        }
+    }
 
 }
