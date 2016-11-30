@@ -164,24 +164,6 @@ public class ServerManager {
             }
         }
 
-        //Restart any game server that has been online for more than 4 hours (wait for it to finish).
-        //Don't restart in the middle of a game.
-        getGameServers().stream().filter(server -> server.getType() != GameServer.ServerType.LOBBY && server.getTimeOnline() >= 14400000L).forEach(server -> {
-
-            final List<DRPlayer> players = server.getPlayers();
-
-            //Don't restart in the middle of a game.
-            if (server.getState().contains("Waiting for players")) {
-                server.restart();
-
-                control.getChannel().eventLoop().schedule(() -> {
-                    for (DRPlayer player : players) {
-                        player.sendMessage("&cThe server you were on (&6" + server.getDisplayName() + "&c) restarted for an update!", true);
-                    }
-                }, 3, TimeUnit.SECONDS);
-            }
-        });
-
     }
 
     public void loadProxies() throws SQLException {
