@@ -10,7 +10,6 @@ import org.bukkit.inventory.Inventory;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public interface IGUI extends Listener
-{
+public interface IGUI extends Listener {
     Inventory openInventory(Player player);
 }

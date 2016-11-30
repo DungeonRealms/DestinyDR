@@ -11,12 +11,10 @@ import org.bukkit.entity.Player;
  *
  * @apiNote https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/
  */
-public class CenteredMessage
-{
+public class CenteredMessage {
     private final static int CENTER_PX = 154;
 
-    public static void sendCenteredMessage(Player player, String message)
-    {
+    public static void sendCenteredMessage(Player player, String message) {
         if (message == null || message.equals("")) player.sendMessage("");
         message = ChatColor.translateAlternateColorCodes('&', message);
 
@@ -24,22 +22,17 @@ public class CenteredMessage
         boolean previousCode = false;
         boolean isBold = false;
 
-        for (char c : message.toCharArray())
-        {
-            if (c == '§')
-            {
+        for (char c : message.toCharArray()) {
+            if (c == '§') {
                 previousCode = true;
                 continue;
-            } else if (previousCode == true)
-            {
+            } else if (previousCode == true) {
                 previousCode = false;
-                if (c == 'l' || c == 'L')
-                {
+                if (c == 'l' || c == 'L') {
                     isBold = true;
                     continue;
                 } else isBold = false;
-            } else
-            {
+            } else {
                 DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
                 messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
                 messagePxSize++;
@@ -51,8 +44,7 @@ public class CenteredMessage
         int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
         int compensated = 0;
         StringBuilder sb = new StringBuilder();
-        while (compensated < toCompensate)
-        {
+        while (compensated < toCompensate) {
             sb.append(" ");
             compensated += spaceLength;
         }

@@ -6,7 +6,6 @@ package net.dungeonrealms.common.backend.database.sql.request.enumeration;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumRequestType
-{
+public enum EnumRequestType {
     INTEGER, OBJECT, STRING, RESULT_SET;
 }

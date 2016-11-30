@@ -17,132 +17,129 @@ import java.util.UUID;
 
 public class DuelingMechanics {
 
-	public static ArrayList<DuelOffer> duels = new ArrayList<>();
-	public static HashMap<UUID, UUID> pending = new HashMap<>();
-	public static ArrayList<UUID> cooldown = new ArrayList<>();
+    public static ArrayList<DuelOffer> duels = new ArrayList<>();
+    public static HashMap<UUID, UUID> pending = new HashMap<>();
+    public static ArrayList<UUID> cooldown = new ArrayList<>();
 
-	public static void startDuel(Player p1, Player p2) {
-		duels.add(new DuelOffer(p1, p2));
-	}
+    public static void startDuel(Player p1, Player p2) {
+        duels.add(new DuelOffer(p1, p2));
+    }
 
-	/**
-	 * 
-	 * @param sender
-	 * @param requested
-	 */
-	public static void sendDuelRequest(Player sender, Player requested) {
-		if (isOnCooldown(sender.getUniqueId())) {
-			sender.sendMessage(ChatColor.RED + "You're currently on cooldown for sending duel requests!");
-			return;
-		}
-		if (isDueling(requested.getUniqueId())){
-			sender.sendMessage(ChatColor.RED + "That player is already dueling!");
-			return;
-		}
-		
-		if (isPending(requested.getUniqueId()) && getPendingPartner(requested.getUniqueId()).toString().equalsIgnoreCase(sender.getUniqueId().toString())) {
-			startDuel(sender, requested);
-			return;
-		}
+    /**
+     * @param sender
+     * @param requested
+     */
+    public static void sendDuelRequest(Player sender, Player requested) {
+        if (isOnCooldown(sender.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + "You're currently on cooldown for sending duel requests!");
+            return;
+        }
+        if (isDueling(requested.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + "That player is already dueling!");
+            return;
+        }
 
-		if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, requested.getUniqueId())) {
-			pending.put(sender.getUniqueId(), requested.getUniqueId());
-			cooldown.add(sender.getUniqueId());
-			sender.sendMessage(ChatColor.GREEN + "Duel request sent!");
-			requested.sendMessage(ChatColor.YELLOW + "Duel request received from " + sender.getName() + "");
-			requested.sendMessage(ChatColor.YELLOW + "Punch them back to accept");
-			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-				if (pending.containsKey(sender.getUniqueId()))
-					pending.remove(sender.getUniqueId());
-				cooldown.remove(sender.getUniqueId());
-			} , 100L);// Remove Pending Request after 10 seconds.
-		} else {
-			sender.sendMessage(ChatColor.RED + "That player has duels toggled off!");
-		}
-	}
+        if (isPending(requested.getUniqueId()) && getPendingPartner(requested.getUniqueId()).toString().equalsIgnoreCase(sender.getUniqueId().toString())) {
+            startDuel(sender, requested);
+            return;
+        }
 
-	/**
-	 * @param uuid
-	 * @return UUID
-	 */
-	public static UUID getPendingPartner(UUID uuid) {
-		if (pending.containsKey(uuid)) {
-			for (UUID id : pending.keySet()) {
-				if (id.toString().equalsIgnoreCase(uuid.toString()))
-					return pending.get(id);
-			}
-		}
+        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, requested.getUniqueId())) {
+            pending.put(sender.getUniqueId(), requested.getUniqueId());
+            cooldown.add(sender.getUniqueId());
+            sender.sendMessage(ChatColor.GREEN + "Duel request sent!");
+            requested.sendMessage(ChatColor.YELLOW + "Duel request received from " + sender.getName() + "");
+            requested.sendMessage(ChatColor.YELLOW + "Punch them back to accept");
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                if (pending.containsKey(sender.getUniqueId()))
+                    pending.remove(sender.getUniqueId());
+                cooldown.remove(sender.getUniqueId());
+            }, 100L);// Remove Pending Request after 10 seconds.
+        } else {
+            sender.sendMessage(ChatColor.RED + "That player has duels toggled off!");
+        }
+    }
 
-		if (pending.containsValue(uuid)) {
-			for (UUID id : pending.values()) {
-				if (id.toString().equalsIgnoreCase(uuid.toString())) {
-					for (UUID uniqueId : pending.keySet()) {
-						if (uniqueId.toString().equalsIgnoreCase(id.toString()))
-							return uniqueId;
-					}
-				}
-			}
-		}
+    /**
+     * @param uuid
+     * @return UUID
+     */
+    public static UUID getPendingPartner(UUID uuid) {
+        if (pending.containsKey(uuid)) {
+            for (UUID id : pending.keySet()) {
+                if (id.toString().equalsIgnoreCase(uuid.toString()))
+                    return pending.get(id);
+            }
+        }
 
-		return null;
-	}
+        if (pending.containsValue(uuid)) {
+            for (UUID id : pending.values()) {
+                if (id.toString().equalsIgnoreCase(uuid.toString())) {
+                    for (UUID uniqueId : pending.keySet()) {
+                        if (uniqueId.toString().equalsIgnoreCase(id.toString()))
+                            return uniqueId;
+                    }
+                }
+            }
+        }
 
-	/**
-	 * 
-	 * @param uuid
-	 * @return boolean
-	 */
-	public static boolean isOnCooldown(UUID uuid) {
-		return cooldown.contains(uuid);
-	}
+        return null;
+    }
 
-	/**
-	 * 
-	 * @param uuid
-	 * @return boolean
-	 */
-	public static boolean isPending(UUID uuid) {
-		return pending.containsKey(uuid) || pending.containsValue(uuid);
-	}
+    /**
+     * @param uuid
+     * @return boolean
+     */
+    public static boolean isOnCooldown(UUID uuid) {
+        return cooldown.contains(uuid);
+    }
 
-	/**
-	 * @param uuid
-	 * @return boolean
-	 */
-	public static boolean isDueling(UUID uuid) {
-		return !duels.isEmpty() && (uuid.equals(duels.get(0).player1) || uuid.equals(duels.get(0).player2));
-	}
+    /**
+     * @param uuid
+     * @return boolean
+     */
+    public static boolean isPending(UUID uuid) {
+        return pending.containsKey(uuid) || pending.containsValue(uuid);
+    }
 
-	/**
-	 * @return Duel offer
-	 */
-	public static DuelOffer getOffer(UUID id) {
-		for (DuelOffer offer : duels) {
-			if (offer.player1.toString().equalsIgnoreCase(id.toString())
-			        || offer.player2.toString().equalsIgnoreCase(id.toString()))
-				return offer;
-		}
-		return null;
-	}
+    /**
+     * @param uuid
+     * @return boolean
+     */
+    public static boolean isDueling(UUID uuid) {
+        return !duels.isEmpty() && (uuid.equals(duels.get(0).player1) || uuid.equals(duels.get(0).player2));
+    }
 
-	/**
-	 * @param offer
-	 */
-	public static void removeOffer(DuelOffer offer) {
-		if (offer.timerID != -1) {
-			Bukkit.getScheduler().cancelTask(offer.timerID);
-		}
-		duels.remove(offer);
+    /**
+     * @return Duel offer
+     */
+    public static DuelOffer getOffer(UUID id) {
+        for (DuelOffer offer : duels) {
+            if (offer.player1.toString().equalsIgnoreCase(id.toString())
+                    || offer.player2.toString().equalsIgnoreCase(id.toString()))
+                return offer;
+        }
+        return null;
+    }
 
-	}
+    /**
+     * @param offer
+     */
+    public static void removeOffer(DuelOffer offer) {
+        if (offer.timerID != -1) {
+            Bukkit.getScheduler().cancelTask(offer.timerID);
+        }
+        duels.remove(offer);
 
-	/**
-	 * @param uniqueId
-	 * @param uniqueId2
-	 * @return
-	 */
-	public static boolean isDuelPartner(UUID uniqueId, UUID uniqueId2) {
-		return !duels.isEmpty() && (duels.get(0).player1.equals(uniqueId) || duels.get(0).player2.equals(uniqueId))
-				&& (duels.get(0).player1.equals(uniqueId2) || duels.get(0).player2.equals(uniqueId2));
-	}
+    }
+
+    /**
+     * @param uniqueId
+     * @param uniqueId2
+     * @return
+     */
+    public static boolean isDuelPartner(UUID uniqueId, UUID uniqueId2) {
+        return !duels.isEmpty() && (duels.get(0).player1.equals(uniqueId) || duels.get(0).player2.equals(uniqueId))
+                && (duels.get(0).player1.equals(uniqueId2) || duels.get(0).player2.equals(uniqueId2));
+    }
 }

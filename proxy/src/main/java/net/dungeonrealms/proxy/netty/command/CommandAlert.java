@@ -11,39 +11,29 @@ import net.md_5.bungee.api.plugin.Command;
 
 import java.util.Arrays;
 
-public class CommandAlert extends Command
-{
-    public CommandAlert()
-    {
+public class CommandAlert extends Command {
+    public CommandAlert() {
         super("alert");
     }
 
-    public void execute(CommandSender sender, String[] args)
-    {
-        if (sender instanceof ProxiedPlayer)
-        {
-            if (!Arrays.asList(Constants.DEVELOPERS).contains(sender.getName()))
-            {
+    public void execute(CommandSender sender, String[] args) {
+        if (sender instanceof ProxiedPlayer) {
+            if (!Arrays.asList(Constants.DEVELOPERS).contains(sender.getName())) {
                 return;
             }
         }
 
-        if (args.length == 0)
-        {
+        if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "You must add a message!");
-        } else
-        {
+        } else {
             StringBuilder builder = new StringBuilder();
-            if (args[0].startsWith("&h"))
-            {
+            if (args[0].startsWith("&h")) {
                 args[0] = args[0].substring(2, args[0].length());
-            } else
-            {
+            } else {
                 builder.append(ChatColor.translateAlternateColorCodes('&', "&b>> &6DungeonRealms " + ChatColor.RED));
             }
 
-            for (String s : args)
-            {
+            for (String s : args) {
                 builder.append(ChatColor.translateAlternateColorCodes('&', s));
                 builder.append(" ");
             }
@@ -56,8 +46,7 @@ public class CommandAlert extends Command
 
             String[] arrayOfString;
             int j = (arrayOfString = args).length;
-            for (int i = 0; i < j; i++)
-            {
+            for (int i = 0; i < j; i++) {
                 String s = arrayOfString[i];
                 titleBuilder.append(ChatColor.translateAlternateColorCodes('&', s)).append(" ");
             }
@@ -75,8 +64,7 @@ public class CommandAlert extends Command
 
             title.title(titleComp).subTitle(titleSubComp).fadeIn(40).stay(100).fadeOut(40);
 
-            for (ProxiedPlayer proxiedPlayer : ProxyServer.getInstance().getPlayers())
-            {
+            for (ProxiedPlayer proxiedPlayer : ProxyServer.getInstance().getPlayers()) {
                 proxiedPlayer.sendTitle(title);
             }
         }

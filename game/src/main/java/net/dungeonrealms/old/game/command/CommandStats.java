@@ -14,18 +14,18 @@ import java.util.List;
  */
 public class CommandStats extends BaseCommand {
 
-	public CommandStats(String command, String usage, String description, List<String> aliases) {
-		super(command, usage, description, aliases);
-	}
+    public CommandStats(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
+    }
 
-	@Override
-	public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
-		if (s instanceof ConsoleCommandSender)
-			return false;
+    @Override
+    public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
+        if (s instanceof ConsoleCommandSender)
+            return false;
 
 
-		Player player = (Player) s;
-		player.openInventory(StatsManager.getInventory(player));
-		return true;
-	}
+        Player player = (Player) s;
+        player.openInventory(StatsManager.getInventory(player));
+        return true;
+    }
 }

@@ -19,14 +19,14 @@ public class TextLine implements ILine {
     @Override
     public Packet[] getSpawnPackets(Location location) {
         Packet spawnPacket = UtilEntity.spawnArmorStand(location, text, entityID);
-        return new Packet[] {
+        return new Packet[]{
                 spawnPacket
         };
     }
 
     @Override
     public Packet[] getDespawnPackets() {
-        return new Packet[] {
+        return new Packet[]{
                 UtilEntity.destroyEntity(entityID)
         };
     }

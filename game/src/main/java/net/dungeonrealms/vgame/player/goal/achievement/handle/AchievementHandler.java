@@ -13,22 +13,17 @@ import org.bukkit.ChatColor;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class AchievementHandler implements SuperHandler.Handler
-{
+public class AchievementHandler implements SuperHandler.Handler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Registering " + ChatColor.YELLOW
                 + EnumAchievement.values().length + ChatColor.GREEN + " achievements");
-        for (EnumAchievement enumAchievement : EnumAchievement.values())
-        {
-            if(enumAchievement.getAchievement() instanceof ExplorerAchievement)
-            {
+        for (EnumAchievement enumAchievement : EnumAchievement.values()) {
+            if (enumAchievement.getAchievement() instanceof ExplorerAchievement) {
                 ExplorerAchievement explorerAchievement = (ExplorerAchievement) enumAchievement.getAchievement();
                 explorerAchievement.register();
             }
-            if(enumAchievement.getAchievement() instanceof CombatAchievement)
-            {
+            if (enumAchievement.getAchievement() instanceof CombatAchievement) {
                 CombatAchievement combatAchievement = (CombatAchievement) enumAchievement.getAchievement();
                 combatAchievement.register();
             }

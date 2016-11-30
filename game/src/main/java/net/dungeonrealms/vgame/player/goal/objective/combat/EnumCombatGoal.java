@@ -6,7 +6,6 @@ package net.dungeonrealms.vgame.player.goal.objective.combat;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumCombatGoal
-{
+public enum EnumCombatGoal {
     BOSS, MONSTER, PLAYER;
 }

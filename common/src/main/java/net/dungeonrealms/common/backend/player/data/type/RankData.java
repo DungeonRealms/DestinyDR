@@ -14,13 +14,11 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class RankData implements IData
-{
+public class RankData implements IData {
     @Getter
     private UUID owner;
 
-    public RankData(UUID owner, Document document)
-    {
+    public RankData(UUID owner, Document document) {
         this.owner = owner;
         this.rank = EnumPlayerRank.valueOf(document.getString("currentRank"));
     }

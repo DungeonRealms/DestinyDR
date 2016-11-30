@@ -16,8 +16,7 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ResultRequest
-{
+public class ResultRequest {
     /**
      * RawResult result = new ResultRequest(INTEGER, UUID).fromTable("eggs").fromColumn("yolkLevel"). fromValue(5).send(MySQL).get();
      * int level = result.toInteger();
@@ -35,35 +34,29 @@ public class ResultRequest
 
     private Object clause;
 
-    public ResultRequest(EnumRequestType requestType, EnumClauseType clauseType)
-    {
+    public ResultRequest(EnumRequestType requestType, EnumClauseType clauseType) {
         this.requestType = requestType;
         this.clauseType = clauseType;
     }
 
-    public ResultRequest fromTable(String table)
-    {
+    public ResultRequest fromTable(String table) {
         this.table = table;
         return this;
     }
 
-    public ResultRequest fromColumn(String column)
-    {
+    public ResultRequest fromColumn(String column) {
         this.column = column;
         return this;
     }
 
-    public ResultRequest fromValue(Object object)
-    {
+    public ResultRequest fromValue(Object object) {
         this.clause = object;
         return this;
     }
 
     // TODO on a different thread 4 safety
-    public ResultRequest send(MySQL from) throws SQLException, ClassNotFoundException
-    {
-        switch (this.clauseType)
-        {
+    public ResultRequest send(MySQL from) throws SQLException, ClassNotFoundException {
+        switch (this.clauseType) {
             case UUID:
                 UUID uuid = UUID.fromString(String.valueOf(this.clause));
                 ResultSet resultSet = from.query("SELECT * FROM " + this.table + " WHERE UUID = '" + uuid + "';");
@@ -75,10 +68,8 @@ public class ResultRequest
         return null;
     }
 
-    public RawResult get()
-    {
-        if (this.result == EnumConnectionResult.SUCCESS)
-        {
+    public RawResult get() {
+        if (this.result == EnumConnectionResult.SUCCESS) {
             return rawResult;
         }
         return null;

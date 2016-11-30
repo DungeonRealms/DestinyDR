@@ -17,33 +17,27 @@ import java.util.concurrent.ConcurrentHashMap;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class LobbyShard
-{
+public class LobbyShard {
     @Getter
     private UUID uuid;
 
-    public LobbyShard(UUID uuid)
-    {
+    public LobbyShard(UUID uuid) {
         this.uuid = uuid;
     }
 
-    public ConcurrentHashMap<String, BungeeServerInfo> collectShards()
-    {
+    public ConcurrentHashMap<String, BungeeServerInfo> collectShards() {
         ConcurrentHashMap<String, BungeeServerInfo> collectedShards = new ConcurrentHashMap<>();
-        for (BungeeServerInfo serverInfo : getShardData())
-        {
+        for (BungeeServerInfo serverInfo : getShardData()) {
             collectedShards.put(serverInfo.getServerName(), serverInfo);
         }
         return collectedShards;
     }
 
-    public BungeeServerInfo getServerInfo(String shard)
-    {
+    public BungeeServerInfo getServerInfo(String shard) {
         return collectShards().get(shard);
     }
 
-    public List<BungeeServerInfo> getShardData()
-    {
+    public List<BungeeServerInfo> getShardData() {
         List<BungeeServerInfo> servers = new ArrayList<>(ServerLobby.getServerLobby().getLobbyShard().getFilteredServers().values());
 
         Collections.sort(servers, (o1, o2) ->
@@ -59,8 +53,7 @@ public class LobbyShard
         return servers;
     }
 
-    public ItemStack getShardItem(String shardID)
-    {
+    public ItemStack getShardItem(String shardID) {
         shardID = shardID.toUpperCase();
 
         if (shardID.equals("US-0")) return new ItemStack(Material.DIAMOND);
@@ -72,8 +65,7 @@ public class LobbyShard
         return new ItemStack(Material.END_CRYSTAL);
     }
 
-    public ChatColor getShardColour(String shardID)
-    {
+    public ChatColor getShardColour(String shardID) {
         shardID = shardID.toUpperCase();
 
         if (shardID.equals("US-0")) return ChatColor.AQUA;
@@ -84,12 +76,10 @@ public class LobbyShard
         return ChatColor.YELLOW;
     }
 
-    public Map<String, BungeeServerInfo> getFilteredServers()
-    {
+    public Map<String, BungeeServerInfo> getFilteredServers() {
         Map<String, BungeeServerInfo> filteredServers = new HashMap<>();
 
-        for (Map.Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet())
-        {
+        for (Map.Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet()) {
             String bungeeName = e.getKey();
             if (ShardInfo.getByPseudoName(bungeeName) == null) continue;
             BungeeServerInfo info = e.getValue();

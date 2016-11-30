@@ -3,8 +3,8 @@ package net.dungeonrealms.old.game.world.entity.type.monster.type.ranged;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.world.entity.EnumEntityType;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.DRZombie;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.entity.util.pathfinders.PathFinderShootBow;
 import net.dungeonrealms.old.game.world.item.DamageAPI;
 import net.dungeonrealms.old.game.world.item.Item;
@@ -83,7 +83,7 @@ public class RangedZombie extends DRZombie implements IRangedEntity {
             b.setAccessible(true);
             ((LinkedHashSet) a.get(this.goalSelector)).clear();
             ((LinkedHashSet) b.get(this.goalSelector)).clear();
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }

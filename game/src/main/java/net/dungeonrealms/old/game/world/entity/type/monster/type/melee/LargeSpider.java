@@ -1,8 +1,8 @@
 package net.dungeonrealms.old.game.world.entity.type.monster.type.melee;
 
 import net.dungeonrealms.old.game.miscellaneous.SkullTextures;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.DRSpider;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;

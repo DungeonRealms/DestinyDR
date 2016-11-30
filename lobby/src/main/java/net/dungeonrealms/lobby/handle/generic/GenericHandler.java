@@ -26,75 +26,60 @@ import java.util.Arrays;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class GenericHandler implements SuperHandler.ListeningHandler
-{
+public class GenericHandler implements SuperHandler.ListeningHandler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         ServerLobby.getServerLobby().getServer().getPluginManager().registerEvents(this, ServerLobby.getServerLobby());
     }
 
     @EventHandler
-    public void onItemDrop(PlayerDropItemEvent event)
-    {
-        if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
-        {
+    public void onItemDrop(PlayerDropItemEvent event) {
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onFoodChange(FoodLevelChangeEvent event)
-    {
+    public void onFoodChange(FoodLevelChangeEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void onDamage(EntityDamageEvent event)
-    {
+    public void onDamage(EntityDamageEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event)
-    {
-        if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
-        {
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onBlockBreak(BlockBreakEvent event)
-    {
-        if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
-        {
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event)
-    {
-        if (!event.getWhoClicked().isOp())
-        {
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!event.getWhoClicked().isOp()) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onMove(PlayerMoveEvent event)
-    {
+    public void onMove(PlayerMoveEvent event) {
         if ((event.getPlayer().getGameMode() != GameMode.CREATIVE) && (event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR))
             event.getPlayer().setAllowFlight(true);
     }
 
     @EventHandler
-    public void onFly(PlayerToggleFlightEvent event)
-    {
+    public void onFly(PlayerToggleFlightEvent event) {
         Player player = event.getPlayer();
-        if (player.getGameMode() != GameMode.CREATIVE)
-        {
+        if (player.getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
             player.setAllowFlight(false);
             player.setFlying(false);
@@ -104,8 +89,7 @@ public class GenericHandler implements SuperHandler.ListeningHandler
     }
 
     @EventHandler
-    public void onCommandPreprocess(PlayerCommandPreprocessEvent event)
-    {
+    public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Arrays.asList("/pl", "/help", "/bukkit", "/ver", "/icanhasbukkit", "/about").stream().filter(string -> event.getMessage().toLowerCase().startsWith(string)).forEach(string -> {
             event.setCancelled(true);
         });

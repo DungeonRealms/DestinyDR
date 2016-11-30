@@ -70,7 +70,7 @@ public class Teleportation implements GenericMechanic {
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Cyrennica = new Location(Bukkit.getWorlds().get(0), -378, 85, 357);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 59, 687, 92.0F, 1F);
         Dark_Oak_Tavern = new Location(Bukkit.getWorlds().get(0), 280, 59, 1132, 2.0F, 1F);
@@ -133,7 +133,7 @@ public class Teleportation implements GenericMechanic {
 
         assert location != null;
 
-        String message = ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING" +  " - " + ChatColor.AQUA + "";
+        String message = ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING" + " - " + ChatColor.AQUA + "";
 
         if (location.equals(Cyrennica)) {
             message += "Cyrennica";

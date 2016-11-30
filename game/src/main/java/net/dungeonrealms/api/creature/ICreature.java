@@ -14,42 +14,35 @@ import java.util.List;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public interface ICreature extends IEntity
-{
+public interface ICreature extends IEntity {
     EnumEntityType getEntityType();
 
     EnumIntelligenceType getIntelligenceType();
 
     LivingMeta getLivingMeta();
 
-    default void setMovementSpeed(double value)
-    {
+    default void setMovementSpeed(double value) {
         this.getEntityInsentient().getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(value / 10);
     }
 
-    default void setFollowingRange(double value)
-    {
+    default void setFollowingRange(double value) {
         this.getEntityInsentient().getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(value);
     }
 
-    default void setMaxHealth(double value)
-    {
+    default void setMaxHealth(double value) {
         this.getEntityInsentient().getAttributeInstance(GenericAttributes.maxHealth).setValue(value);
     }
 
-    default void addTargets(List<Class> classList)
-    {
+    default void addTargets(List<Class> classList) {
         for (Class clazz : classList)
             this.getEntityInsentient().goalSelector.a(1, new PathfinderGoalNearestAttackableTarget(this.getEntityCreature(), clazz, true));
     }
 
-    default void setWeapon()
-    {
+    default void setWeapon() {
 
     }
 
-    default void setArmorContents()
-    {
+    default void setArmorContents() {
 
     }
 }

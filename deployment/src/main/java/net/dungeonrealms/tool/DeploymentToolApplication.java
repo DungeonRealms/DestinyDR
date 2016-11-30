@@ -9,7 +9,6 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.jpaste.exceptions.PasteException;
 import org.jpaste.pastebin.Pastebin;
 
-import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -31,7 +30,7 @@ public class DeploymentToolApplication {
                 SILENT_DEPLOYMENT = true;
         }
 
-        File BUILD_JAR = new File(System.getProperty("user.dir"), "game/target/DungeonRealms.jar");
+        File BUILD_JAR = new File(System.getProperty("user.dir"), "interactable/target/DungeonRealms.jar");
         String REMOTE_LOCATION = !DEV_DEPLOYMENT ? "/update/DungeonRealms.jar" : "/development/DungeonRealms.jar";
         String[] NOTIFICATION_CHANNELS = new String[]{"G191V775M", "C1H00KN6S"};
 
@@ -95,7 +94,7 @@ public class DeploymentToolApplication {
 
 
     public static URL getPatchNotes() throws IOException, PasteException {
-        File PATCH_NOTES = new File(System.getProperty("user.dir"), "game/src/main/resources/patchnotes.txt");
+        File PATCH_NOTES = new File(System.getProperty("user.dir"), "interactable/src/main/resources/patchnotes.txt");
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(PATCH_NOTES)));
         StringBuilder builder = new StringBuilder();

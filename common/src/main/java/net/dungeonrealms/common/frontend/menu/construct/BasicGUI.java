@@ -20,8 +20,7 @@ import java.util.Map;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class BasicGUI implements IGUI
-{
+public class BasicGUI implements IGUI {
     @Getter
     private Inventory inventory;
 
@@ -34,46 +33,36 @@ public class BasicGUI implements IGUI
     @Getter
     private Map<Integer, GUIAction> actionMap;
 
-    public BasicGUI(InventoryHolder inventoryHolder, String name, int slots)
-    {
+    public BasicGUI(InventoryHolder inventoryHolder, String name, int slots) {
         this.inventory = Bukkit.createInventory(inventoryHolder, slots, name);
         this.name = name;
         this.slots = slots;
         this.actionMap = Maps.newHashMap();
     }
 
-    public BasicGUI addAction(GUIAction action, int index)
-    {
+    public BasicGUI addAction(GUIAction action, int index) {
         this.actionMap.put(index, action);
         return this;
     }
 
-    public void addItem(ItemStack itemStack, int slot)
-    {
+    public void addItem(ItemStack itemStack, int slot) {
         this.inventory.setItem(slot, itemStack);
     }
 
-    public void addItems(Map<Integer, ItemStack> itemStacks)
-    {
+    public void addItems(Map<Integer, ItemStack> itemStacks) {
         for (int i : itemStacks.keySet())
             this.inventory.setItem(i, itemStacks.get(i));
     }
 
-    public void fillSlots(boolean emptyOnly, int valueX, int valueY, EnumFillerType fillerType)
-    {
-        if (!emptyOnly)
-        {
-            for (int i = 0; i < this.slots; i++)
-            {
+    public void fillSlots(boolean emptyOnly, int valueX, int valueY, EnumFillerType fillerType) {
+        if (!emptyOnly) {
+            for (int i = 0; i < this.slots; i++) {
                 if ((i >= valueX && (i <= valueY)))
                     this.inventory.setItem(i, fillerType.getItemStack());
             }
-        } else
-        {
-            for (int i = 0; i < this.slots; i++)
-            {
-                if (this.inventory.getContents()[i] == null)
-                {
+        } else {
+            for (int i = 0; i < this.slots; i++) {
+                if (this.inventory.getContents()[i] == null) {
                     this.inventory.setItem(i, fillerType.getItemStack());
                 }
             }
@@ -81,21 +70,16 @@ public class BasicGUI implements IGUI
     }
 
     @Override
-    public Inventory openInventory(Player player)
-    {
+    public Inventory openInventory(Player player) {
         player.openInventory(this.inventory);
         return this.inventory;
     }
 
     @EventHandler
-    public void onAction(InventoryClickEvent event)
-    {
-        if (event.getInventory().getName().equalsIgnoreCase(this.name))
-        {
-            if (event.getInventory().getContents() != null)
-            {
-                if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR)
-                {
+    public void onAction(InventoryClickEvent event) {
+        if (event.getInventory().getName().equalsIgnoreCase(this.name)) {
+            if (event.getInventory().getContents() != null) {
+                if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
                     if (this.actionMap.containsKey(event.getRawSlot())) // It's an action item
                     {
                         this.actionMap.get(event.getRawSlot()).perform((Player) event.getWhoClicked(), event);

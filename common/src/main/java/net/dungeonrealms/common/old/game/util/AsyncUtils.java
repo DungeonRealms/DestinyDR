@@ -11,7 +11,7 @@ public class AsyncUtils {
     /**
      * The person who made this class is officially autistic, runtime will always be null. Commons is not a fucking runnable jar file.
      * - Vawke
-     *
+     * <p>
      * public static int threadCount = Runtime.getRuntime().availableProcessors();
      */
     public static int threadCount;

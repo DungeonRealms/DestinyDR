@@ -6,19 +6,19 @@ import net.dungeonrealms.old.game.mastery.Utils;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.old.game.world.entity.powermove.PowerMove;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.RangedSkeleton;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.RangedZombie;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.melee.*;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.*;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.type.Burick;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.type.InfernalAbyss;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.type.Mayel;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
 import net.dungeonrealms.old.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.melee.*;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.RangedSkeleton;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.RangedZombie;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
 import net.dungeonrealms.old.game.world.entity.type.mounts.EnderDragon;
 import net.dungeonrealms.old.game.world.entity.type.mounts.Horse;
 import net.dungeonrealms.old.game.world.entity.type.pet.*;
@@ -68,7 +68,7 @@ public class EntityMechanics implements GenericMechanic {
         //MELEE MONSTERS
         nmsUtils.registerEntity("MeleeGolem", 99, EntityGolem.class, MeleeGolem.class);
         nmsUtils.registerEntity("LargeSpider", 52, EntitySpider.class, LargeSpider.class);
-        nmsUtils.registerEntity("SmallSpider",59, EntityCaveSpider.class, SmallSpider.class);
+        nmsUtils.registerEntity("SmallSpider", 59, EntityCaveSpider.class, SmallSpider.class);
         nmsUtils.registerEntity("MeleeZombie", 54, EntityZombie.class, MeleeZombie.class);
         nmsUtils.registerEntity("MeleeWitherSkeleton", 51, EntitySkeleton.class, MeleeWitherSkeleton.class);
         nmsUtils.registerEntity("MeleeSkeleton", 51, EntitySkeleton.class, MeleeSkeleton.class);
@@ -263,7 +263,7 @@ public class EntityMechanics implements GenericMechanic {
         }
 
 
-        if(PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId())){
+        if (PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId())) {
             cc = ChatColor.LIGHT_PURPLE;
         }
 

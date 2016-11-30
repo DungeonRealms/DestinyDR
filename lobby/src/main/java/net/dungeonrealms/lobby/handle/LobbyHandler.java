@@ -19,14 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class LobbyHandler implements SuperHandler.Handler
-{
+public class LobbyHandler implements SuperHandler.Handler {
     @Getter
     protected ConcurrentHashMap<UUID, SuperHandler.Handler> handlerMap;
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         ServerLobby.getServerLobby().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ LOBBY HANDLER ]");
         ServerLobby.getServerLobby().getInstanceLogger().sendMessage(ChatColor.GREEN + "Creating atomic reference..");
         this.handlerMap = new ConcurrentHashMap<>();

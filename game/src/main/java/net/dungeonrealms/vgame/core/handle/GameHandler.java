@@ -1,18 +1,18 @@
 package net.dungeonrealms.vgame.core.handle;
 
+import lombok.Getter;
 import net.dungeonrealms.backend.PacketHandler;
+import net.dungeonrealms.common.awt.handler.SuperHandler;
 import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.security.NUAIHolder;
 import net.dungeonrealms.vgame.security.handle.AtomicHandler;
 import net.dungeonrealms.vgame.security.handle.NeutronHandler;
-import lombok.Getter;
-import net.dungeonrealms.common.awt.handler.SuperHandler;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static net.dungeonrealms.common.awt.handler.SuperHandler.*;
+import static net.dungeonrealms.common.awt.handler.SuperHandler.Handler;
 
 /**
  * Created by Giovanni on 29-10-2016.
@@ -20,8 +20,7 @@ import static net.dungeonrealms.common.awt.handler.SuperHandler.*;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class GameHandler implements Handler
-{
+public class GameHandler implements Handler {
     @Getter
     protected ConcurrentHashMap<UUID, SuperHandler.Handler> handlerMap;
 
@@ -29,8 +28,7 @@ public class GameHandler implements Handler
     private RegistryHandler registryHandler;
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.YELLOW + "[ GAME HANDLER ]");
         Game.getGame().getInstanceLogger().sendMessage(ChatColor.GREEN + "Creating atomic reference..");
         this.handlerMap = new ConcurrentHashMap<>();

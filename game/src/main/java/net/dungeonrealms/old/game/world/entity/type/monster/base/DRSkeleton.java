@@ -52,7 +52,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
     }
-    
+
     protected DRSkeleton(World world) {
         super(world);
     }
@@ -98,21 +98,22 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     }
 
     @Override
-    public void collide(Entity e) {}
+    public void collide(Entity e) {
+    }
 
     @Override
-	public void onMonsterAttack(Player p) {
+    public void onMonsterAttack(Player p) {
     }
-    
-	@Override
-	public abstract EnumMonster getEnum();
 
-	@Override
-	public void onMonsterDeath(Player killer) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
-		});
-	}
+    @Override
+    public abstract EnumMonster getEnum();
+
+    @Override
+    public void onMonsterDeath(Player killer) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
+        });
+    }
 
     @Override
     public void enderTeleportTo(double d0, double d1, double d2) {

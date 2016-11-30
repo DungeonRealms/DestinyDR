@@ -18,8 +18,7 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ServerLobby extends JavaPlugin
-{
+public class ServerLobby extends JavaPlugin {
     @Getter
     private static ServerLobby serverLobby;
 
@@ -33,8 +32,7 @@ public class ServerLobby extends JavaPlugin
     private LobbyShard lobbyShard;
 
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         serverLobby = this;
 
         // Backend

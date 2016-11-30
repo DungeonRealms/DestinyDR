@@ -169,8 +169,7 @@ public class DupedItemsRemover implements GenericMechanic {
                 uids.put(uniqueEpochIdentifier, strings);
                 dupedItemsFound++;
                 dupedItems.put(i, strings);
-            }
-            else {
+            } else {
                 uids.put(uniqueEpochIdentifier, new HashSet<>(Arrays.asList(name)));
             }
         }
@@ -210,8 +209,7 @@ public class DupedItemsRemover implements GenericMechanic {
                 uids.put(uniqueEpochIdentifier, strings);
                 dupedItemsFound++;
                 dupedItems.put(items[i], strings);
-            }
-            else {
+            } else {
                 uids.put(uniqueEpochIdentifier, new HashSet<>(Arrays.asList(name)));
             }
         }

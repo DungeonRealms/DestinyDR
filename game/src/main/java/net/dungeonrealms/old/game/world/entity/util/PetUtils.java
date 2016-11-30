@@ -27,7 +27,7 @@ import java.util.UUID;
 /**
  * Created by Kieran on 9/18/2015.
  */
-public class PetUtils implements GenericMechanic{
+public class PetUtils implements GenericMechanic {
 
     private static PetUtils instance = null;
 
@@ -61,7 +61,7 @@ public class PetUtils implements GenericMechanic{
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<UUID, Entity> entry : EntityMechanics.PLAYER_PETS.entrySet()) {
                 Entity pet = entry.getValue();
@@ -83,7 +83,6 @@ public class PetUtils implements GenericMechanic{
     }
 
     /**
-     *
      * @param e
      * @param toFollow
      * @since 1.0
@@ -195,7 +194,6 @@ public class PetUtils implements GenericMechanic{
     }
 
     /**
-     *
      * @param uuid
      * @param petType
      * @param name

@@ -6,7 +6,6 @@ package net.dungeonrealms.api.creature.lib.damage;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumDamageSource
-{
+public enum EnumDamageSource {
     PLAYER, PROJECTILE, CREATURE;
 }

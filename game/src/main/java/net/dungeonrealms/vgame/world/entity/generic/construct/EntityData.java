@@ -14,8 +14,7 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class EntityData
-{
+public class EntityData {
     @Getter
     private UUID uniqueId;
 
@@ -43,14 +42,12 @@ public class EntityData
     @Setter
     private EnumCreatureState creatureState;
 
-    public EntityData(UUID uuid)
-    {
+    public EntityData(UUID uuid) {
         this.uniqueId = uuid;
         this.creatureState = EnumCreatureState.LIVING;
     }
 
-    public boolean isNull()
-    {
+    public boolean isNull() {
         return entityElement == null || entityTier == null;
     }
 }

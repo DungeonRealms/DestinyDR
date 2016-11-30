@@ -15,8 +15,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ScoreboardBuilder
-{
+public class ScoreboardBuilder {
     @Getter
     private String displayName = "HELLO";
 
@@ -29,8 +28,7 @@ public class ScoreboardBuilder
     @Getter
     private Objective objective;
 
-    public ScoreboardBuilder(String displayName)
-    {
+    public ScoreboardBuilder(String displayName) {
         this.displayName = displayName;
         this.scoreboardManager = Bukkit.getServer().getScoreboardManager();
         this.board = getScoreboardManager().getNewScoreboard();
@@ -40,32 +38,27 @@ public class ScoreboardBuilder
         setDisplayName(displayName);
     }
 
-    public ScoreboardBuilder setDisplaySlot(DisplaySlot displaySlot)
-    {
+    public ScoreboardBuilder setDisplaySlot(DisplaySlot displaySlot) {
         getObjective().setDisplaySlot(displaySlot);
         return this;
     }
 
-    public ScoreboardBuilder setDisplayName(String name)
-    {
+    public ScoreboardBuilder setDisplayName(String name) {
         getObjective().setDisplayName(name);
         return this;
     }
 
-    public ScoreboardBuilder setLine(int line, String value)
-    {
+    public ScoreboardBuilder setLine(int line, String value) {
         getObjective().getScore(ChatColor.translateAlternateColorCodes('&', value)).setScore(line);
         return this;
     }
 
-    public ScoreboardBuilder setScore(String key, int value)
-    {
+    public ScoreboardBuilder setScore(String key, int value) {
         getObjective().getScore(key).setScore(value);
         return this;
     }
 
-    public ScoreboardBuilder send(Player player)
-    {
+    public ScoreboardBuilder send(Player player) {
         player.setScoreboard(getBoard());
         return this;
     }

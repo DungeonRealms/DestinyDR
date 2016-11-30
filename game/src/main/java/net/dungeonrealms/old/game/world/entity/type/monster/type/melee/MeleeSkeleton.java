@@ -3,8 +3,8 @@ package net.dungeonrealms.old.game.world.entity.type.monster.type.melee;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.world.entity.EnumEntityType;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.DRSkeleton;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EntityLiving;
@@ -21,7 +21,7 @@ import java.util.Random;
  */
 public class MeleeSkeleton extends DRSkeleton {
 
-    public MeleeSkeleton(World world, EnumMonster monsterType , EnumEntityType entityType, int tier) {
+    public MeleeSkeleton(World world, EnumMonster monsterType, EnumEntityType entityType, int tier) {
         super(world, monsterType, tier, entityType);
         this.entityType = entityType;
         setWeapon(tier);

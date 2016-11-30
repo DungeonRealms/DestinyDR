@@ -15,18 +15,15 @@ import java.util.stream.Collectors;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ProxyLobby
-{
+public class ProxyLobby {
     @Getter
     private UUID uniqueId;
 
-    public ProxyLobby(UUID uuid)
-    {
+    public ProxyLobby(UUID uuid) {
         this.uniqueId = uuid;
     }
 
-    public List<ServerInfo> bufferLobbies()
-    {
+    public List<ServerInfo> bufferLobbies() {
         List<ServerInfo> servers = DungeonBungee.getDungeonBungee().getProxy().getServers().values().stream().filter(server -> {
             return server.getName().contains("Lobby");
         }).collect(Collectors.toList());

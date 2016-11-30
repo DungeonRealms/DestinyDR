@@ -13,29 +13,24 @@ import org.bukkit.event.EventHandler;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class GenericEntityHandler implements SuperHandler.ListeningHandler
-{
+public class GenericEntityHandler implements SuperHandler.ListeningHandler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         Game.getGame().getServer().getPluginManager().registerEvents(this, Game.getGame());
     }
 
     @EventHandler
-    public void onCreatureDamageEntity(CreatureDamageEntityEvent event)
-    {
+    public void onCreatureDamageEntity(CreatureDamageEntityEvent event) {
         event.getEntity().getBukkitEntity().sendMessage("");
     }
 
     @EventHandler
-    public void onEntityDamageCreature(EntityDamageCreatureEvent event)
-    {
+    public void onEntityDamageCreature(EntityDamageCreatureEvent event) {
         event.getGameEntity().displayHealth();
     }
 
     @EventHandler
-    public void onCreatureStateChange(CreatureStateChangeEvent event)
-    {
+    public void onCreatureStateChange(CreatureStateChangeEvent event) {
         event.getGameEntity().getEntityData().setCreatureState(event.getNewState());
     }
 }

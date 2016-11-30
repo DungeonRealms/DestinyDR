@@ -15,8 +15,7 @@ import java.io.*;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class DungeonBungee extends Plugin
-{
+public class DungeonBungee extends Plugin {
     @Getter
     private static DungeonBungee dungeonBungee;
 
@@ -30,42 +29,33 @@ public class DungeonBungee extends Plugin
     private File channelFile;
 
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         dungeonBungee = this;
 
         this.console = this.getProxy().getConsole();
 
-        if (!this.getDataFolder().exists())
-        {
+        if (!this.getDataFolder().exists()) {
             this.getDataFolder().mkdir();
         }
 
         this.channelFile = new File(DungeonBungee.getDungeonBungee().getDataFolder().getPath(), "channel.yml");
 
-        if (!this.channelFile.exists())
-        {
-            try
-            {
+        if (!this.channelFile.exists()) {
+            try {
                 this.channelFile.createNewFile();
-                try (InputStream inputStream = getResourceAsStream("channel.yml"))
-                {
-                    try (OutputStream outputStream = new FileOutputStream(this.channelFile))
-                    {
+                try (InputStream inputStream = getResourceAsStream("channel.yml")) {
+                    try (OutputStream outputStream = new FileOutputStream(this.channelFile)) {
                         ByteStreams.copy(inputStream, outputStream);
                     }
                 }
-            } catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        try
-        {
+        try {
             this.networkProxy = new NetworkProxy(ConfigurationProvider.getProvider(YamlConfiguration.class).load(this.channelFile));
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             this.getProxy().stop(); // No channel configuration, no purpose
         }
@@ -74,8 +64,7 @@ public class DungeonBungee extends Plugin
     }
 
     @Override
-    public void onDisable()
-    {
+    public void onDisable() {
         this.networkProxy.undeploy();
     }
 }

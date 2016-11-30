@@ -22,8 +22,12 @@ public class ReplaceNear extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(args.length != 3) { return true; }
-        if(!(sender instanceof BlockCommandSender)) { return true; }
+        if (args.length != 3) {
+            return true;
+        }
+        if (!(sender instanceof BlockCommandSender)) {
+            return true;
+        }
 
         BlockCommandSender cb = (BlockCommandSender) sender;
 
@@ -31,8 +35,8 @@ public class ReplaceNear extends BaseCommand {
         int from_id = Integer.parseInt(args[1]);
         int to_id = Integer.parseInt(args[2]);
 
-        for(Block b : getNearbyBlocks(cb.getBlock().getLocation(), radius)) {
-            if(b.getTypeId() == from_id) {
+        for (Block b : getNearbyBlocks(cb.getBlock().getLocation(), radius)) {
+            if (b.getTypeId() == from_id) {
                 b.setType(Material.getMaterial(to_id));
             }
         }
@@ -41,8 +45,8 @@ public class ReplaceNear extends BaseCommand {
 
     private List<Block> getNearbyBlocks(Location loc, int maxradius) {
         List<Block> return_list = new ArrayList<>();
-        BlockFace[] faces = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST };
-        BlockFace[][] orth = { { BlockFace.NORTH, BlockFace.EAST }, { BlockFace.UP, BlockFace.EAST }, { BlockFace.NORTH, BlockFace.UP } };
+        BlockFace[] faces = {BlockFace.UP, BlockFace.NORTH, BlockFace.EAST};
+        BlockFace[][] orth = {{BlockFace.NORTH, BlockFace.EAST}, {BlockFace.UP, BlockFace.EAST}, {BlockFace.NORTH, BlockFace.UP}};
         for (int r = 0; r <= maxradius; r++) {
             for (int s = 0; s < 6; s++) {
                 BlockFace f = faces[s % 3];

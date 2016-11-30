@@ -1,10 +1,10 @@
 package net.dungeonrealms.lobby.handle.connection;
 
 import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.frontend.lib.message.CenteredMessage;
 import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.common.old.game.punishment.PunishAPI;
-import net.dungeonrealms.common.frontend.lib.message.CenteredMessage;
 import net.dungeonrealms.lobby.ServerLobby;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -23,36 +23,29 @@ import java.util.Arrays;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ConnectionHandler implements SuperHandler.ListeningHandler
-{
+public class ConnectionHandler implements SuperHandler.ListeningHandler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         ServerLobby.getServerLobby().getServer().getPluginManager().registerEvents(this, ServerLobby.getServerLobby());
     }
 
     @EventHandler
-    public void onPreLogin(AsyncPlayerPreLoginEvent event)
-    {
-        if (!PunishAPI.getInstance().isBanned(event.getUniqueId()))
-        {
+    public void onPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (!PunishAPI.getInstance().isBanned(event.getUniqueId())) {
             DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
-        } else
-        {
+        } else {
             String bannedMessage = PunishAPI.getInstance().getBannedMessage(event.getUniqueId());
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.setKickMessage(bannedMessage);
 
-            if (DatabaseAPI.getInstance().PLAYERS.containsKey(event.getUniqueId()))
-            {
+            if (DatabaseAPI.getInstance().PLAYERS.containsKey(event.getUniqueId())) {
                 DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
             }
         }
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event)
-    {
+    public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTask(ServerLobby.getServerLobby(), () -> {
@@ -86,13 +79,11 @@ public class ConnectionHandler implements SuperHandler.ListeningHandler
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent event)
-    {
+    public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         Player player = event.getPlayer();
         Bukkit.getScheduler().scheduleSyncDelayedTask(ServerLobby.getServerLobby(), () -> {
-            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId()))
-            {
+            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
                 DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
             }
         }, 1L);

@@ -46,7 +46,7 @@ public class CommandLogout extends BaseCommand {
                     return true;
                 }
 
-                player.sendMessage(ChatColor.RED + "You will be " + ChatColor.BOLD + "LOGGED OUT" + ChatColor.RED + " of the game world shortly.");
+                player.sendMessage(ChatColor.RED + "You will be " + ChatColor.BOLD + "LOGGED OUT" + ChatColor.RED + " of the interactable world shortly.");
                 final int[] taskTimer = {5};
                 int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                     if (taskTimer[0] <= 0) {

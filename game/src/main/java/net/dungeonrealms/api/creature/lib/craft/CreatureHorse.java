@@ -14,8 +14,7 @@ import net.minecraft.server.v1_9_R2.*;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CreatureHorse extends EntityHorse implements IHorse
-{
+public class CreatureHorse extends EntityHorse implements IHorse {
     @Getter
     private EnumEntityType entityType = EnumEntityType.HORSE;
 
@@ -36,9 +35,8 @@ public class CreatureHorse extends EntityHorse implements IHorse
 
     @Getter
     private LivingMeta livingMeta;
-    
-    public CreatureHorse(World world, EnumIntelligenceType intelligenceType)
-    {
+
+    public CreatureHorse(World world, EnumIntelligenceType intelligenceType) {
         super(world);
         this.intelligenceType = intelligenceType;
 
@@ -47,8 +45,7 @@ public class CreatureHorse extends EntityHorse implements IHorse
         this.entityCreature = this;
 
         this.livingMeta = new LivingMeta(this);
-        if (this.intelligenceType != null)
-        {
+        if (this.intelligenceType != null) {
             this.clearIntelligence();
         }
     }

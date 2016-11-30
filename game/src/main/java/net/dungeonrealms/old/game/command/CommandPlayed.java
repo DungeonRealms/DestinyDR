@@ -31,6 +31,6 @@ public class CommandPlayed extends BaseCommand {
     }
 
     private String convertMins(int mins) {
-        return ChatColor.YELLOW.toString() + mins/24/60 + ChatColor.BOLD + "d " + ChatColor.YELLOW + mins/60%24 + ChatColor.BOLD + "h " + ChatColor.YELLOW + mins%60 + ChatColor.BOLD + "m";
+        return ChatColor.YELLOW.toString() + mins / 24 / 60 + ChatColor.BOLD + "d " + ChatColor.YELLOW + mins / 60 % 24 + ChatColor.BOLD + "h " + ChatColor.YELLOW + mins % 60 + ChatColor.BOLD + "m";
     }
 }

@@ -9,8 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public interface DataRegistry
-{
+public interface DataRegistry {
     void prepare();
 
     void save();

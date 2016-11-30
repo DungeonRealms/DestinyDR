@@ -21,8 +21,7 @@ import java.io.FileReader;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class Game extends JavaPlugin
-{
+public class Game extends JavaPlugin {
     @Getter
     private static Game game;
 
@@ -42,8 +41,7 @@ public class Game extends JavaPlugin
     private MongoConnection mongoConnection;
 
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         game = this;
 
         //** Logger **//
@@ -51,20 +49,16 @@ public class Game extends JavaPlugin
 
         // ** Init the mongo ** //
         this.mongoConnection = new MongoConnection();
-        try
-        {
+        try {
             this.mongoConnection.runOn(Constants.DATABASE_URI, "dungeonrealms");
-        } catch (ConnectionRunningException e)
-        {
+        } catch (ConnectionRunningException e) {
             e.printStackTrace(); // This will never happen
         }
 
         // ** Init shard **//
-        try
-        {
+        try {
             this.gameShard = new GameShard(new FileReader("shardConfig.ini"));
-        } catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             this.instanceLogger.sendMessage(ChatColor.RED + "ShardConfiguration not found, shutting down..");
             Game.getGame().getServer().shutdown();
         }
@@ -81,7 +75,6 @@ public class Game extends JavaPlugin
     }
 
     @Override
-    public void onDisable()
-    {
+    public void onDisable() {
     }
 }

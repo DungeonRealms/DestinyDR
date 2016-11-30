@@ -34,7 +34,7 @@ public class PlayerEnterRegionEvent extends Event {
     }
 
     @Override
-	public HandlerList getHandlers() {
+    public HandlerList getHandlers() {
         return handlers;
     }
 

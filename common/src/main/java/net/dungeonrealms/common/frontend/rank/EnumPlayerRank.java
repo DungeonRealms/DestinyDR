@@ -3,8 +3,7 @@ package net.dungeonrealms.common.frontend.rank;
 /**
  * Created by Evoltr on 11/15/2016.
  */
-public enum EnumPlayerRank
-{
+public enum EnumPlayerRank {
     DEFAULT(0, "", "&7"),
     SUB(1, "S", "&a&l"),
     SUB_2(2, "S+", "&6&"),
@@ -17,42 +16,34 @@ public enum EnumPlayerRank
     private String name;
     private String color;
 
-    EnumPlayerRank(int id, String name, String color)
-    {
+    EnumPlayerRank(int id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public static EnumPlayerRank getRank(String name)
-    {
-        for (EnumPlayerRank rank : values())
-        {
-            if (rank.getName().equalsIgnoreCase(name))
-            {
+    public static EnumPlayerRank getRank(String name) {
+        for (EnumPlayerRank rank : values()) {
+            if (rank.getName().equalsIgnoreCase(name)) {
                 return rank;
             }
         }
         return null;
     }
 
-    public int getID()
-    {
+    public int getID() {
         return id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String getColor()
-    {
+    public String getColor() {
         return color;
     }
 
-    public boolean hasRank(EnumPlayerRank rank)
-    {
+    public boolean hasRank(EnumPlayerRank rank) {
         return compareTo(rank) >= 0;
     }
 }

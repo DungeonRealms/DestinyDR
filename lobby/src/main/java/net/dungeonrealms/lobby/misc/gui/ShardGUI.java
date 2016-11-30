@@ -1,8 +1,8 @@
 package net.dungeonrealms.lobby.misc.gui;
 
 import com.google.common.collect.Lists;
-import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.common.frontend.menu.construct.BasicGUI;
+import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.common.old.network.ShardInfo;
 import net.dungeonrealms.common.old.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.lobby.ServerLobby;
@@ -19,23 +19,18 @@ import java.util.List;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ShardGUI extends BasicGUI
-{
-    public ShardGUI(Player player)
-    {
+public class ShardGUI extends BasicGUI {
+    public ShardGUI(Player player) {
         super(null, "Shard Selector", 9);
 
         List<BungeeServerInfo> servers = ServerLobby.getServerLobby().getLobbyShard().getShardData();
 
-        if (!servers.isEmpty())
-        {
-            for (BungeeServerInfo serverInfo : servers)
-            {
+        if (!servers.isEmpty()) {
+            for (BungeeServerInfo serverInfo : servers) {
                 String name = serverInfo.getServerName();
                 String identifier = ShardInfo.getByPseudoName(name).getShardID();
 
-                if (serverInfo.isOnline() && !serverInfo.getMotd1().contains("offline"))
-                {
+                if (serverInfo.isOnline() && !serverInfo.getMotd1().contains("offline")) {
                     // Construct the lore
                     List<String> defaultLore = Lists.newArrayList();
                     defaultLore.add(ChatColor.GREEN + "Shard is online!");
@@ -43,16 +38,13 @@ public class ShardGUI extends BasicGUI
                     List<String> connectionLore = Lists.newArrayList();
                     connectionLore.add(ChatColor.GREEN + "▶ Click to connect");
                     ChatColor countColor = ChatColor.GREEN;
-                    if (serverInfo.getOnlinePlayers() > serverInfo.getMaxPlayers() - 11)
-                    {
+                    if (serverInfo.getOnlinePlayers() > serverInfo.getMaxPlayers() - 11) {
                         countColor = ChatColor.RED;
                     }
-                    if (serverInfo.getOnlinePlayers() > serverInfo.getMaxPlayers() - 18)
-                    {
+                    if (serverInfo.getOnlinePlayers() > serverInfo.getMaxPlayers() - 18) {
                         countColor = ChatColor.YELLOW;
                     }
-                    if (serverInfo.getOnlinePlayers() >= serverInfo.getMaxPlayers())
-                    {
+                    if (serverInfo.getOnlinePlayers() >= serverInfo.getMaxPlayers()) {
                         connectionLore.clear();
                         connectionLore.add(ChatColor.RED + "Shard is full!");
                         connectionLore.add(ChatColor.RED + "Purchase subscriber to join full shards");
@@ -67,8 +59,7 @@ public class ShardGUI extends BasicGUI
                     itemMeta.setDisplayName(ServerLobby.getServerLobby().getLobbyShard().getShardColour(identifier).toString() + ChatColor.BOLD + identifier);
 
                     // Check if the player has the required rank to view specific shards
-                    if (identifier.contains("YT") && !Rank.isYouTuber(player) || identifier.contains("CS") && !Rank.isSupport(player) || identifier.contains("US0") && !Rank.isDev(player))
-                    {
+                    if (identifier.contains("YT") && !Rank.isYouTuber(player) || identifier.contains("CS") && !Rank.isSupport(player) || identifier.contains("US0") && !Rank.isDev(player)) {
                         connectionLore.clear();
                         connectionLore.add(ChatColor.GRAY + "You can't connect to this shard");
                     }

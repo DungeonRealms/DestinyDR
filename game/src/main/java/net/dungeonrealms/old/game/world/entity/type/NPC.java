@@ -46,7 +46,7 @@ public abstract class NPC implements Listener {
         villager = (Villager) location.getWorld().spawnEntity(location.clone(), EntityType.VILLAGER);
         villager.setCustomName(name);
         villager.setCustomNameVisible(visibleName);
-		villager.setRemoveWhenFarAway(false);
+        villager.setRemoveWhenFarAway(false);
         EntityVillager entity = ((CraftVillager) villager).getHandle();
         try {
             Field goalSelector = EntityInsentient.class.getDeclaredField("goalSelector");

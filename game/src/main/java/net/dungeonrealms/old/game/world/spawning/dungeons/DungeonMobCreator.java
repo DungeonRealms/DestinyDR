@@ -119,7 +119,7 @@ public class DungeonMobCreator {
                     }
                 }
                 entity.setLocation(toSpawnLocation.getX(), toSpawnLocation.getY(), toSpawnLocation.getZ(), 1, 1);
-                ((LivingEntity)entity.getBukkitEntity()).setRemoveWhenFarAway(false);
+                ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
                 ((EntityInsentient) entity).persistent = true;
                 toSpawn.put(entity, toSpawnLocation);
             }

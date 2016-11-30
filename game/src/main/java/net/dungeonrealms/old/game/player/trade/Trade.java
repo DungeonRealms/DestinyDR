@@ -120,12 +120,12 @@ public class Trade {
             }
         }
 
-        if(p1.getItemOnCursor() != null){
+        if (p1.getItemOnCursor() != null) {
             ItemStack item = p1.getItemOnCursor().clone();
             p1.setItemOnCursor(null);
             p1.getInventory().addItem(item);
         }
-        if(p2.getInventory() != null){
+        if (p2.getInventory() != null) {
             ItemStack item = p2.getItemOnCursor().clone();
             p2.setItemOnCursor(null);
             p2.getInventory().addItem(item);

@@ -3,8 +3,8 @@ package net.dungeonrealms.old.game.world.entity.type.monster.type.melee;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.world.entity.EnumEntityType;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.DRGolem;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EntityHuman;
@@ -45,10 +45,10 @@ public class MeleeGolem extends DRGolem {
         return item;
     }
 
-	@Override
-	public EnumMonster getEnum() {
-		return this.monsterType;
-	}
+    @Override
+    public EnumMonster getEnum() {
+        return this.monsterType;
+    }
 
 
     @Override

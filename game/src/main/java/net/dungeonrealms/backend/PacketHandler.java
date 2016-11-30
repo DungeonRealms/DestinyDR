@@ -16,16 +16,12 @@ import java.util.TimerTask;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class PacketHandler implements SuperHandler.Handler
-{
+public class PacketHandler implements SuperHandler.Handler {
     @Override
-    public void prepare()
-    {
-        new Timer().scheduleAtFixedRate(new TimerTask()
-        {
+    public void prepare() {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
-            public void run()
-            {
+            public void run() {
                 ServerListPacket packet = new ServerListPacket();
 
                 final Player[] onlinePlayers = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
@@ -34,8 +30,7 @@ public class PacketHandler implements SuperHandler.Handler
                 packet.tokens = new PlayerToken[onlinePlayers.length];
 
 
-                for (int i = 0; i < onlinePlayers.length; i++)
-                {
+                for (int i = 0; i < onlinePlayers.length; i++) {
                     Player player = onlinePlayers[i];
                     packet.tokens[i] = new PlayerToken(player.getUniqueId().toString(), player.getName());
                 }

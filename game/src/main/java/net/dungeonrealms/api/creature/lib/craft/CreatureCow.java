@@ -14,8 +14,7 @@ import net.minecraft.server.v1_9_R2.*;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class CreatureCow extends EntityCow implements ICreature
-{
+public class CreatureCow extends EntityCow implements ICreature {
     @Getter
     private EnumEntityType entityType = EnumEntityType.COW;
 
@@ -37,8 +36,7 @@ public class CreatureCow extends EntityCow implements ICreature
     @Getter
     private LivingMeta livingMeta;
 
-    public CreatureCow(World world, EnumIntelligenceType intelligenceType)
-    {
+    public CreatureCow(World world, EnumIntelligenceType intelligenceType) {
         super(world);
         this.intelligenceType = intelligenceType;
 
@@ -47,8 +45,7 @@ public class CreatureCow extends EntityCow implements ICreature
         this.entityCreature = this;
 
         this.livingMeta = new LivingMeta(this);
-        if (this.intelligenceType != null)
-        {
+        if (this.intelligenceType != null) {
             this.clearIntelligence();
         }
     }

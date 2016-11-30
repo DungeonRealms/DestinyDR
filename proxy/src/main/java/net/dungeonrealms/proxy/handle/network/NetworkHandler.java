@@ -18,23 +18,18 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class NetworkHandler extends Listener implements BungeeHandler
-{
+public class NetworkHandler extends Listener implements BungeeHandler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         DungeonBungee.getDungeonBungee().getNetworkProxy().getGameClient().registerListener(this);
     }
 
     @Override
-    public void received(Connection connection, Object object)
-    {
-        if (object instanceof BasicMessagePacket)
-        {
+    public void received(Connection connection, Object object) {
+        if (object instanceof BasicMessagePacket) {
             BasicMessagePacket packet = (BasicMessagePacket) object;
 
-            try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(packet.data)))
-            {
+            try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(packet.data))) {
                 String task = in.readUTF();
 
                 if (task.equals("MoveSessionToken")) // Move that lad
@@ -42,8 +37,7 @@ public class NetworkHandler extends Listener implements BungeeHandler
                     // Call the shard balancer & move them to a new session
                     new ShardBalancer(UUID.fromString(in.readUTF()), false, Boolean.valueOf(in.readUTF()), true).handle();
                 }
-            } catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

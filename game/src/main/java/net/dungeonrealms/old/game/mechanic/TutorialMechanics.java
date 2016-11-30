@@ -44,7 +44,7 @@ public class TutorialMechanics implements GenericMechanic, Listener {
 
             p.sendMessage(ChatColor.GRAY + "Dive into the mystical world of Andalucia and discover all of its wonders.");
             p.sendMessage("");
-            p.sendMessage(ChatColor.GRAY + "You'll get a crash course on game mechanics and " + ChatColor.UNDERLINE + "get free loot" + ChatColor.GRAY + " just for completing it!");
+            p.sendMessage(ChatColor.GRAY + "You'll get a crash course on interactable mechanics and " + ChatColor.UNDERLINE + "get free loot" + ChatColor.GRAY + " just for completing it!");
             p.sendMessage("");
         }, 80L);
     }

@@ -15,7 +15,8 @@ import org.bukkit.ChatColor;
 public class LootBuff extends Buff {
 
     // empty constructor is needed for generic instantiation during deserialization
-    public LootBuff() {}
+    public LootBuff() {
+    }
 
     public LootBuff(int duration, float bonusAmount, String activatingPlayer, String fromServer) {
         this.duration = duration;

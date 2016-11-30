@@ -26,7 +26,7 @@ public class CommandList extends BaseCommand {
             return false;
 
         if (args.length > 0 && (args[0].equals("-h") || args[0].equals("-help"))) {
-            commandSender.sendMessage(new String[] {
+            commandSender.sendMessage(new String[]{
                     ChatColor.YELLOW + ChatColor.BOLD.toString() + "Displays a list of online users: /list [-s|-m|-h]",
                     ChatColor.YELLOW + "-s: Display only staff members.",
                     ChatColor.YELLOW + "-m: Display only player moderators.",

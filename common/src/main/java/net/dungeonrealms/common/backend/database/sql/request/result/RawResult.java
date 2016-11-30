@@ -9,39 +9,32 @@ import net.dungeonrealms.common.backend.database.sql.request.enumeration.EnumReq
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class RawResult
-{
+public class RawResult {
     @Getter
     private EnumRequestType requestType;
 
     private Object result;
 
-    public RawResult(Object object, EnumRequestType requestType)
-    {
+    public RawResult(Object object, EnumRequestType requestType) {
         this.result = object;
         this.requestType = requestType;
     }
 
-    public String toString()
-    {
-        if (this.requestType == EnumRequestType.STRING)
-        {
+    public String toString() {
+        if (this.requestType == EnumRequestType.STRING) {
             return String.valueOf(result);
         }
         return null;
     }
 
-    public int toInteger()
-    {
-        if (this.requestType == EnumRequestType.INTEGER)
-        {
+    public int toInteger() {
+        if (this.requestType == EnumRequestType.INTEGER) {
             return Integer.valueOf(String.valueOf(result));
         }
         return 0;
     }
 
-    public Object toObject()
-    {
+    public Object toObject() {
         return result;
     }
 }

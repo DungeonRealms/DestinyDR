@@ -115,25 +115,25 @@ public class Profile implements Listener {
                 switch (event.getRawSlot()) {
                     case 6:
                         event.setCancelled(true);
-                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"trail")) {
-                        addTrailItem((Player) event.getWhoClicked());
+                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "trail")) {
+                            addTrailItem((Player) event.getWhoClicked());
                         }
-                    break;
+                        break;
                     case 7:
                         event.setCancelled(true);
-                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mount")) {
+                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mount")) {
                             addMountItem((Player) event.getWhoClicked());
                         }
                         break;
                     case 8:
                         event.setCancelled(true);
-                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"pet")) {
+                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "pet")) {
                             addPetItem((Player) event.getWhoClicked());
                         }
                         break;
                     case 16:
                         event.setCancelled(true);
-                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(),"mule")) {
+                        if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mule")) {
                             addMuleItem((Player) event.getWhoClicked());
                         }
                         break;

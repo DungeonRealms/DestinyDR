@@ -95,7 +95,8 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
     }
 
     @Override
-    public void collide(Entity e) {}
+    public void collide(Entity e) {
+    }
 
     @Override
     public void onMonsterDeath(Player killer) {

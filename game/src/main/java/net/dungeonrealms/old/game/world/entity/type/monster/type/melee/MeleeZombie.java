@@ -3,8 +3,8 @@ package net.dungeonrealms.old.game.world.entity.type.monster.type.melee;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
 import net.dungeonrealms.old.game.world.entity.EnumEntityType;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.DRZombie;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
@@ -20,8 +20,8 @@ import java.util.Random;
  */
 public class MeleeZombie extends DRZombie {
 
-	public EnumMonster monsterType;
-	
+    public EnumMonster monsterType;
+
     public MeleeZombie(World world, EnumMonster type, int tier) {
         super(world, type, tier, EnumEntityType.HOSTILE_MOB);
         setWeapon(tier);
@@ -60,10 +60,10 @@ public class MeleeZombie extends DRZombie {
         return item;
     }
 
-	@Override
-	public EnumMonster getEnum() {
-		return this.monsterType;
-	}
+    @Override
+    public EnumMonster getEnum() {
+        return this.monsterType;
+    }
 
     @Override
     protected void setStats() {

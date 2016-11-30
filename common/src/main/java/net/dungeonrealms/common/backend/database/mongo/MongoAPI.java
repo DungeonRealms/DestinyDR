@@ -18,8 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class MongoAPI
-{
+public class MongoAPI {
     // DataPlayer dataPlayer = #requestPlayerData($).getPlayer();
     // quitEvent -> $mongoapi.removeDataPlayer(event.getPlayer().getUniqueId(), true);
 
@@ -29,8 +28,7 @@ public class MongoAPI
     @Getter
     private ConcurrentHashMap<UUID, DataPlayer> dataPlayerMap;
 
-    public MongoAPI(Mongo mongo)
-    {
+    public MongoAPI(Mongo mongo) {
         this.mongo = mongo;
         this.dataPlayerMap = new ConcurrentHashMap<>();
     }
@@ -41,15 +39,13 @@ public class MongoAPI
      * @param uniqueId
      * @return this
      */
-    public MongoAPI requestPlayerData(UUID uniqueId)
-    {
+    public MongoAPI requestPlayerData(UUID uniqueId) {
         Document document = this.mongo.getCollection("playerData").find(Filters.eq("genericData.uniqueId", uniqueId.toString())).first();
         if (document != null && !document.isEmpty()) // Does the dataplayer exist?
         {
             // Cache the player
             this.dataPlayerMap.put(uniqueId, new DataPlayer(uniqueId, document));
-        } else
-        {
+        } else {
             // Send to mongo
             this.mongo.getCollection("playerData").insertOne(new NestDocument(EnumNestType.PLAYER).generate(uniqueId));
             // Retry
@@ -66,12 +62,9 @@ public class MongoAPI
      * @param uniqueId
      * @return this
      */
-    public MongoAPI removeDataPlayer(UUID uniqueId, boolean save)
-    {
-        if (this.dataPlayerMap.containsKey(uniqueId))
-        {
-            if (save)
-            {
+    public MongoAPI removeDataPlayer(UUID uniqueId, boolean save) {
+        if (this.dataPlayerMap.containsKey(uniqueId)) {
+            if (save) {
                 // Instead of bulk writing, we'll use something performance safer.
                 DataPlayer dataPlayer = this.dataPlayerMap.get(uniqueId);
                 Document document = dataPlayer.constructRawDocument();
@@ -93,8 +86,7 @@ public class MongoAPI
      * @param uniqueId
      * @return the dataplayer
      */
-    public DataPlayer getPlayer(UUID uniqueId)
-    {
+    public DataPlayer getPlayer(UUID uniqueId) {
         return this.dataPlayerMap.get(uniqueId);
     }
 }

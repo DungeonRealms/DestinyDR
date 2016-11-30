@@ -133,10 +133,10 @@ public class LoggedNPC {
     private void spawnNPC() {
         this.npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, name);
         npc.addTrait(Equipment.class);
-        npc.getTrait(Equipment.class).set(1, (armor[1] != null) ?  armor[1] : new ItemStack(Material.AIR));
-        npc.getTrait(Equipment.class).set(2, (armor[2] != null) ?  armor[2] : new ItemStack(Material.AIR));
-        npc.getTrait(Equipment.class).set(3, (armor[3] != null) ?  armor[3] : new ItemStack(Material.AIR));
-        npc.getTrait(Equipment.class).set(4, (armor[4] != null) ?  armor[4] : new ItemStack(Material.AIR));
+        npc.getTrait(Equipment.class).set(1, (armor[1] != null) ? armor[1] : new ItemStack(Material.AIR));
+        npc.getTrait(Equipment.class).set(2, (armor[2] != null) ? armor[2] : new ItemStack(Material.AIR));
+        npc.getTrait(Equipment.class).set(3, (armor[3] != null) ? armor[3] : new ItemStack(Material.AIR));
+        npc.getTrait(Equipment.class).set(4, (armor[4] != null) ? armor[4] : new ItemStack(Material.AIR));
         npc.getTrait(Equipment.class).set(Equipment.EquipmentSlot.OFF_HAND, (offhand != null) ? offhand : new ItemStack(Material.AIR));
         npc.getTrait(net.citizensnpcs.api.trait.trait.Inventory.class).setContents(contents);
         npc.data().setPersistent("combat_log_npc", true);

@@ -18,8 +18,7 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class ShardBalancer
-{
+public class ShardBalancer {
     @Getter
     private UUID uniqueId;
 
@@ -32,42 +31,33 @@ public class ShardBalancer
     @Getter
     private boolean lobbyRedirector;
 
-    public ShardBalancer(UUID uuid, boolean populated, boolean premium, boolean sendToLobby)
-    {
+    public ShardBalancer(UUID uuid, boolean populated, boolean premium, boolean sendToLobby) {
         this.uniqueId = uuid;
         this.populatedHolder = populated;
         this.premiumHolder = premium;
         this.lobbyRedirector = sendToLobby;
     }
 
-    public void handle()
-    {
+    public void handle() {
         DungeonBungee.getDungeonBungee().getProxy().getScheduler().runAsync(DungeonBungee.getDungeonBungee(), () -> {
             ProxiedPlayer player = DungeonBungee.getDungeonBungee().getProxy().getPlayer(this.uniqueId);
             Iterator<ServerInfo> optimalShardFinder = DungeonBungee.getDungeonBungee().getNetworkProxy().getProxyShard().bufferShards(this.premiumHolder, this.populatedHolder).iterator();
-            while (optimalShardFinder.hasNext())
-            {
+            while (optimalShardFinder.hasNext()) {
                 ServerInfo target = optimalShardFinder.next();
 
-                try
-                {
+                try {
                     PingResponse ping = null;
                     boolean isOnline = true;
 
-                    try
-                    {
+                    try {
                         ping = ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 024); // Octal
-                    } catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         isOnline = true;
                     }
                     // No sessions, back to the lobby
-                    if ((ping != null ? ping.getDescription().getText().contains("offline") : false))
-                    {
-                        if (!optimalShardFinder.hasNext())
-                        {
-                            if (this.lobbyRedirector)
-                            {
+                    if ((ping != null ? ping.getDescription().getText().contains("offline") : false)) {
+                        if (!optimalShardFinder.hasNext()) {
+                            if (this.lobbyRedirector) {
                                 player.connect(DungeonBungee.getDungeonBungee().getProxy().getServerInfo("Lobby"));
                             }
                             player.sendMessage(DungeonBungee.getDungeonBungee().getNetworkProxy().getProxyName()
@@ -75,12 +65,9 @@ public class ShardBalancer
                             return;
                         }
                         continue;
-                    } else if (!isOnline)
-                    {
-                        if (!optimalShardFinder.hasNext())
-                        {
-                            if (this.lobbyRedirector)
-                            {
+                    } else if (!isOnline) {
+                        if (!optimalShardFinder.hasNext()) {
+                            if (this.lobbyRedirector) {
                                 player.connect(DungeonBungee.getDungeonBungee().getProxy().getServerInfo("Lobby"));
                             }
                             player.sendMessage(DungeonBungee.getDungeonBungee().getNetworkProxy().getProxyName()
@@ -89,12 +76,9 @@ public class ShardBalancer
                         }
                         continue;
                     }
-                } catch (Exception e)
-                {
-                    if (!optimalShardFinder.hasNext())
-                    {
-                        if (this.lobbyRedirector)
-                        {
+                } catch (Exception e) {
+                    if (!optimalShardFinder.hasNext()) {
+                        if (this.lobbyRedirector) {
                             player.connect(DungeonBungee.getDungeonBungee().getProxy().getServerInfo("Lobby"));
                         }
                         player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unable to find a session for you.");
@@ -103,17 +87,13 @@ public class ShardBalancer
                     continue;
                 }
                 if (!(player.getServer() != null && player.getServer().getInfo().equals(target)))
-                    if (target.canAccess(player))
-                    {
+                    if (target.canAccess(player)) {
                         player.sendMessage(DungeonBungee.getDungeonBungee().getNetworkProxy().getProxyName() + ChatColor.GRAY.toString() + ChatColor.BOLD + "Moving your current session...");
                         player.connect(target);
                         break;
-                    } else
-                    {
-                        if (!optimalShardFinder.hasNext())
-                        {
-                            if (this.lobbyRedirector)
-                            {
+                    } else {
+                        if (!optimalShardFinder.hasNext()) {
+                            if (this.lobbyRedirector) {
                                 player.connect(DungeonBungee.getDungeonBungee().getProxy().getServerInfo("Lobby"));
                             }
                             player.sendMessage(DungeonBungee.getDungeonBungee().getNetworkProxy().getProxyName()
@@ -121,12 +101,9 @@ public class ShardBalancer
                             return;
                         }
                     }
-                else
-                {
-                    if (!optimalShardFinder.hasNext())
-                    {
-                        if (this.lobbyRedirector)
-                        {
+                else {
+                    if (!optimalShardFinder.hasNext()) {
+                        if (this.lobbyRedirector) {
                             player.connect(DungeonBungee.getDungeonBungee().getProxy().getServerInfo("Lobby"));
                         }
                         player.sendMessage(DungeonBungee.getDungeonBungee().getNetworkProxy().getProxyName()

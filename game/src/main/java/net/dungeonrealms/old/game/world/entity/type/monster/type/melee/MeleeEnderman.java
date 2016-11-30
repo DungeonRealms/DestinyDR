@@ -2,8 +2,8 @@ package net.dungeonrealms.old.game.world.entity.type.monster.type.melee;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.old.game.anticheat.AntiDuplication;
-import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.entity.type.monster.base.DREnderman;
+import net.dungeonrealms.old.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;

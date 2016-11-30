@@ -16,29 +16,23 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class NeutronHandler implements SuperHandler.ListeningHandler
-{
+public class NeutronHandler implements SuperHandler.ListeningHandler {
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         DungeonRealms.getInstance().getServer().getPluginManager().registerEvents(this, DungeonRealms.getInstance());
     }
 
     @EventHandler
-    public void onItemPickup(PlayerPickupItemEvent event)
-    {
-        if (NUAIHolder.getHolder().getAtomicList().get().contains(event.getItem().getItemStack()))
-        {
+    public void onItemPickup(PlayerPickupItemEvent event) {
+        if (NUAIHolder.getHolder().getAtomicList().get().contains(event.getItem().getItemStack())) {
             event.setCancelled(true);
             event.getItem().remove();
         }
     }
 
     @EventHandler
-    public void onItemDrop(PlayerDropItemEvent event)
-    {
-        if (NUAIHolder.getHolder().getAtomicList().get().contains(event.getItemDrop()))
-        {
+    public void onItemDrop(PlayerDropItemEvent event) {
+        if (NUAIHolder.getHolder().getAtomicList().get().contains(event.getItemDrop())) {
             event.setCancelled(true);
             event.getItemDrop().remove();
             event.getPlayer().updateInventory();
@@ -46,12 +40,9 @@ public class NeutronHandler implements SuperHandler.ListeningHandler
     }
 
     @EventHandler
-    public void onItemHeld(PlayerItemHeldEvent event)
-    {
-        if (event.getPlayer().getItemInHand() != null)
-        {
-            if (NUAIHolder.getHolder().getAtomicList().get().contains(event.getPlayer().getItemInHand()))
-            {
+    public void onItemHeld(PlayerItemHeldEvent event) {
+        if (event.getPlayer().getItemInHand() != null) {
+            if (NUAIHolder.getHolder().getAtomicList().get().contains(event.getPlayer().getItemInHand())) {
                 event.setCancelled(true);
                 event.getPlayer().getItemInHand().setType(Material.AIR);
                 event.getPlayer().updateInventory();
@@ -60,10 +51,8 @@ public class NeutronHandler implements SuperHandler.ListeningHandler
     }
 
     @EventHandler
-    public void onArmorEquip(ArmorEquipEvent event)
-    {
-        if (NUAIHolder.getHolder().getAtomicList().get().contains(event.getNewArmorPiece()))
-        {
+    public void onArmorEquip(ArmorEquipEvent event) {
+        if (NUAIHolder.getHolder().getAtomicList().get().contains(event.getNewArmorPiece())) {
             event.setCancelled(true);
             event.getNewArmorPiece().setType(Material.AIR);
             event.getPlayer().updateInventory();

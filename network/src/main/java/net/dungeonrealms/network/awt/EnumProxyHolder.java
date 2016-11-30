@@ -6,7 +6,6 @@ package net.dungeonrealms.network.awt;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public enum EnumProxyHolder
-{
+public enum EnumProxyHolder {
     MASTER, CLIENT;
 }

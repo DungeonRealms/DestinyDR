@@ -15,13 +15,11 @@ import java.util.UUID;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class GuildData implements IData
-{
+public class GuildData implements IData {
     @Getter
     private UUID owner;
 
-    public GuildData(UUID uuid, Document document)
-    {
+    public GuildData(UUID uuid, Document document) {
         this.owner = uuid;
         this.guild = document.getString("guild");
         this.guildInvitations = document.get("guildInvitations", ArrayList.class);

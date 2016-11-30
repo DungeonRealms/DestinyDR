@@ -29,21 +29,21 @@ import java.io.IOException;
 import java.util.*;
 
 public class ItemGenerator {
-	
-	public static HashMap<Class<? extends ItemModifier>, ItemModifier> modifiers = new HashMap<>();
-	public static List<ItemModifier> modifierObjects = new ArrayList<>();
-	
-	private Item.ItemType type;
-	private Item.ItemTier tier;
-	private Item.ItemRarity rarity;
-	
-	private int mobTier = -1;
-	private boolean isReroll = false;
-	@SuppressWarnings("unused")
-	private int pLevel;
-	
-	private ItemStack item;
-	private ItemStack origItem; // for rerolling
+
+    public static HashMap<Class<? extends ItemModifier>, ItemModifier> modifiers = new HashMap<>();
+    public static List<ItemModifier> modifierObjects = new ArrayList<>();
+
+    private Item.ItemType type;
+    private Item.ItemTier tier;
+    private Item.ItemRarity rarity;
+
+    private int mobTier = -1;
+    private boolean isReroll = false;
+    @SuppressWarnings("unused")
+    private int pLevel;
+
+    private ItemStack item;
+    private ItemStack origItem; // for rerolling
 
     private boolean isSoulbound;
     private boolean isUntradeable;
@@ -51,32 +51,32 @@ public class ItemGenerator {
 
     private static Random rand = new Random();
 
-	public ItemGenerator setType(Item.ItemType type){
-		this.type = type;
-		return this;
-	}
-	
-	public ItemGenerator setTier(Item.ItemTier tier){
-		this.tier = tier;
-		return this;
-	}
-	
-	public ItemGenerator setRarity(Item.ItemRarity rarity){
-		this.rarity = rarity;
-		return this;
-	}
-	
-	public ItemGenerator setMobTier(int mobTier){
-		this.mobTier = mobTier;
-		return this;
-	}
-	
-	public ItemGenerator setReroll(boolean reroll) {
-	    this.isReroll = reroll;
-	    return this;
-	}
-	
-	public ItemGenerator setOrigItem(ItemStack origItem) {
+    public ItemGenerator setType(Item.ItemType type) {
+        this.type = type;
+        return this;
+    }
+
+    public ItemGenerator setTier(Item.ItemTier tier) {
+        this.tier = tier;
+        return this;
+    }
+
+    public ItemGenerator setRarity(Item.ItemRarity rarity) {
+        this.rarity = rarity;
+        return this;
+    }
+
+    public ItemGenerator setMobTier(int mobTier) {
+        this.mobTier = mobTier;
+        return this;
+    }
+
+    public ItemGenerator setReroll(boolean reroll) {
+        this.isReroll = reroll;
+        return this;
+    }
+
+    public ItemGenerator setOrigItem(ItemStack origItem) {
         this.origItem = origItem;
         return this;
     }
@@ -85,7 +85,7 @@ public class ItemGenerator {
         this.pLevel = level;
         return this;
     }
-    
+
     public ItemGenerator setItem(ItemStack item) {
         this.item = item;
         return this;
@@ -105,18 +105,19 @@ public class ItemGenerator {
         this.isPermanentlyUntradeable = permanentlyUntradeable;
         return this;
     }
-    
+
     /**
      * Generates an item with the given tier, type, and rarity. If the
      * tier, type, and rarity instance variables do not have values,
      * this will generate an item with random tier, type, and rarity.
-     * @return - an instance of the current ItemGenerator 
+     *
+     * @return - an instance of the current ItemGenerator
      * (call getItem() for the ItemStack)
      * @since 1.0
      */
     @SuppressWarnings("unchecked")
-	public ItemGenerator generateItem(){
-	    Item.ItemTier tier = this.tier;
+    public ItemGenerator generateItem() {
+        Item.ItemTier tier = this.tier;
         Item.ItemType type = this.type;
         Item.ItemRarity rarity = this.rarity;
 
@@ -128,11 +129,11 @@ public class ItemGenerator {
             rarity = Item.ItemRarity.getById(tag.getInt("itemRarity"));
             this.isSoulbound = tag.getInt("soulbound") == 1;
         }
-        
+
         // if no values given, generate a random item
-        if(tier == null) tier = Item.ItemTier.values()[rand.nextInt(Item.ItemTier.values().length - 1)];
-        if(type == null) type = Item.ItemType.values()[rand.nextInt(Item.ItemType.values().length - 1)];
-        if(rarity == null) rarity = Item.ItemRarity.values()[rand.nextInt(Item.ItemRarity.values().length - 1)];
+        if (tier == null) tier = Item.ItemTier.values()[rand.nextInt(Item.ItemTier.values().length - 1)];
+        if (type == null) type = Item.ItemType.values()[rand.nextInt(Item.ItemType.values().length - 1)];
+        if (rarity == null) rarity = Item.ItemRarity.values()[rand.nextInt(Item.ItemRarity.values().length - 1)];
 
         ItemStack item = isReroll && origItem != null && (RepairAPI.isItemArmorOrWeapon(origItem)) ? origItem : new ItemStack(type.getTier(tier));
         ItemMeta meta = item.getItemMeta().clone();
@@ -145,70 +146,69 @@ public class ItemGenerator {
             else if (Item.ItemType.isArmor(origItem))
                 meta.setLore(meta.getLore().subList(0, 3)); // strips everything except for dps/armor, hp, and energy/hp regen
         }
-		
-		final HashMap<ModifierCondition, ItemModifier> conditions = new HashMap<>();
-		
-		Collections.shuffle(modifierObjects);
-		
-		for(ItemModifier modifier : modifierObjects){
-			if(modifier.canApply(type)){
+
+        final HashMap<ModifierCondition, ItemModifier> conditions = new HashMap<>();
+
+        Collections.shuffle(modifierObjects);
+
+        for (ItemModifier modifier : modifierObjects) {
+            if (modifier.canApply(type)) {
                 if (isReroll && !modifier.isIncludeOnReroll()) continue;
-				ModifierCondition mc = modifier.tryModifier(meta, tier, rarity, type, mobTier);
-				if(mc != null){
-					conditions.put(mc, modifier);
-					ModifierCondition bonus = mc.getBonus();
-					while(bonus != null){
-						String prefix = modifier.getPrefix(meta);
-						String suffix = modifier.getSuffix(meta);
-						
-						if(bonus.getReplacement() != null && bonus.getReplacement().size() > 0){
-							ItemModifier replacement = ItemGenerator.modifiers.get(bonus.getReplacement().get(rand.nextInt(bonus.getReplacement().size())));
-							prefix = replacement.getPrefix(meta);
-							suffix = replacement.getSuffix(meta);
-						}
-						
-						bonus.setChosenPrefix(prefix);
-						bonus.setChosenSuffix(suffix);
-						
-						conditions.put(bonus, modifier);
-						
-						bonus = bonus.getBonus();
-					}
-				}
-			}
-		}
+                ModifierCondition mc = modifier.tryModifier(meta, tier, rarity, type, mobTier);
+                if (mc != null) {
+                    conditions.put(mc, modifier);
+                    ModifierCondition bonus = mc.getBonus();
+                    while (bonus != null) {
+                        String prefix = modifier.getPrefix(meta);
+                        String suffix = modifier.getSuffix(meta);
 
-		List<ModifierCondition> order = new ArrayList<>();
-		
-		for(Object ob : Arrays.asList(conditions.keySet().toArray())){
-			ModifierCondition mc = (ModifierCondition) ob;
-			if(!mc.canApply(conditions.keySet())){
-				conditions.remove(mc);
-			}else{
-			    ItemModifier im = conditions.get(mc);
-	            
-	            int belowChance = (mc.getChance() < 0) ? im.getChance() : mc.getChance();
+                        if (bonus.getReplacement() != null && bonus.getReplacement().size() > 0) {
+                            ItemModifier replacement = ItemGenerator.modifiers.get(bonus.getReplacement().get(rand.nextInt(bonus.getReplacement().size())));
+                            prefix = replacement.getPrefix(meta);
+                            suffix = replacement.getSuffix(meta);
+                        }
 
-	            if (rand.nextInt(100) < belowChance) {
-	                order.add(mc);
-	            }
-	            else {
-	                conditions.remove(mc);
-	            }
-			}
-		}
-		
-		for (ItemModifier modifier : conditions.values()) {
-		    for (ModifierCondition mc : (List<ModifierCondition>) ((ArrayList<ModifierCondition>) order).clone()) {
-		        if (!(mc.checkCantContain(modifier.getClass()))) {
-		            order.remove(mc);
-		        }
-		    }
+                        bonus.setChosenPrefix(prefix);
+                        bonus.setChosenSuffix(suffix);
+
+                        conditions.put(bonus, modifier);
+
+                        bonus = bonus.getBonus();
+                    }
+                }
+            }
         }
-		
-		Collections.sort(order, (mc1, mc2) -> conditions.get(mc1).getOrderPriority() - conditions.get(mc2).getOrderPriority());
-		
-		String modName = "";
+
+        List<ModifierCondition> order = new ArrayList<>();
+
+        for (Object ob : Arrays.asList(conditions.keySet().toArray())) {
+            ModifierCondition mc = (ModifierCondition) ob;
+            if (!mc.canApply(conditions.keySet())) {
+                conditions.remove(mc);
+            } else {
+                ItemModifier im = conditions.get(mc);
+
+                int belowChance = (mc.getChance() < 0) ? im.getChance() : mc.getChance();
+
+                if (rand.nextInt(100) < belowChance) {
+                    order.add(mc);
+                } else {
+                    conditions.remove(mc);
+                }
+            }
+        }
+
+        for (ItemModifier modifier : conditions.values()) {
+            for (ModifierCondition mc : (List<ModifierCondition>) ((ArrayList<ModifierCondition>) order).clone()) {
+                if (!(mc.checkCantContain(modifier.getClass()))) {
+                    order.remove(mc);
+                }
+            }
+        }
+
+        Collections.sort(order, (mc1, mc2) -> conditions.get(mc1).getOrderPriority() - conditions.get(mc2).getOrderPriority());
+
+        String modName = "";
         String name = tier.getTierColor().toString();
         String[] bonuses = new String[24];
         Arrays.fill(bonuses, "");
@@ -230,105 +230,105 @@ public class ItemGenerator {
             }
 
         }
-        
+
         // NBT tag write and name the item
-		for (ModifierCondition mc : order) {
-		    ItemModifier im = conditions.get(mc);
-		    meta = im.applyModifier(mc, meta);
-		    
-		    // write NBT tags
+        for (ModifierCondition mc : order) {
+            ItemModifier im = conditions.get(mc);
+            meta = im.applyModifier(mc, meta);
+
+            // write NBT tags
             if (mc.getRange().getModifierType() == ModifierType.TRIPLE || mc.getRange().getModifierType() == ModifierType.RANGE) {
                 NBTModifiers.put(im.getNBTName() + "Min", mc.getRange().getValLow());
                 NBTModifiers.put(im.getNBTName() + "Max", mc.getRange().getValHigh());
-		    } else {
-		        NBTModifiers.put(im.getNBTName(), mc.getRange().getValLow());
-		    }
-		    
-		    modName = ChatColor.stripColor(mc.getChosenPrefix().substring(0, mc.getChosenPrefix().indexOf(":")));
-		    
-            // apply the prefixes/suffixes to priority array
-		    // prefixes need to go before suffixes
-            switch (modName) {
-            // ARMOR PREFIXES
-            case "DODGE":
-                bonuses[0] = "DODGE";
-                break;
-            case "REFLECTION":
-                bonuses[1] = "REFLECTION";
-                break;
-            case "HP REGEN":
-                bonuses[2] = "HP REGEN";
-                break;
-            case "BLOCK":
-                bonuses[3] = "BLOCK";
-                break;
-            // WEAPON PREFIXES
-            case "PURE DMG":
-                bonuses[4] = "PURE DMG";
-                break;
-            case "ACCURACY":
-                bonuses[5] = "ACCURACY";
-                break;
-            case "KNOCKBACK":
-                bonuses[6] = "KNOCKBACK";
-                break;
-            case "SLOW":
-                bonuses[7] = "SLOW";
-                break;
-            case "LIFE STEAL":
-                bonuses[8] = "LIFE STEAL";
-                break;
-            case "CRITICAL HIT":
-                bonuses[9] = "CRITICAL HIT";
-                break;
-            case "ARMOR PENETRATION":
-                bonuses[10] = "ARMOR PENETRATION";
-                break;
-            // ARMOR SUFFIXES
-            case "ENERGY REGEN":
-                bonuses[11] = "ENERGY REGEN";
-                break;
-            case "FIRE RESISTANCE":
-                bonuses[12] = "FIRE RESISTANCE";
-                break;
-            case "ICE RESISTANCE":
-                bonuses[13] = "ICE RESISTANCE";
-                break;
-            case "POISON RESISTANCE":
-                bonuses[14] = "POISON RESISTANCE";
-                break;
-            case "GEM FIND":
-                bonuses[15] = "GEM FIND";
-                break;
-            case "ITEM FIND":
-                bonuses[16] = "ITEM FIND";
-                break;
-            case "THORNS":
-                bonuses[17] = "THORNS";
-                break;
-            // WEAPON SUFFIXES
-            case "BLIND":
-                bonuses[18] = "BLIND";
-                break;
-            case "vs. MONSTERS":
-                bonuses[19] = "vs. MONSTERS";
-                break;
-            case "vs. PLAYERS":
-                bonuses[20] = "vs. PLAYERS";
-                break;
-            case "FIRE DMG":
-                bonuses[21] = "FIRE DMG";
-                break;
-            case "ICE DMG":
-                bonuses[22] = "ICE DMG";
-                break;
-            case "POISON DMG":
-                bonuses[23] = "POISON DMG";
-                break;
-            default:
-                break;
+            } else {
+                NBTModifiers.put(im.getNBTName(), mc.getRange().getValLow());
             }
-		}
+
+            modName = ChatColor.stripColor(mc.getChosenPrefix().substring(0, mc.getChosenPrefix().indexOf(":")));
+
+            // apply the prefixes/suffixes to priority array
+            // prefixes need to go before suffixes
+            switch (modName) {
+                // ARMOR PREFIXES
+                case "DODGE":
+                    bonuses[0] = "DODGE";
+                    break;
+                case "REFLECTION":
+                    bonuses[1] = "REFLECTION";
+                    break;
+                case "HP REGEN":
+                    bonuses[2] = "HP REGEN";
+                    break;
+                case "BLOCK":
+                    bonuses[3] = "BLOCK";
+                    break;
+                // WEAPON PREFIXES
+                case "PURE DMG":
+                    bonuses[4] = "PURE DMG";
+                    break;
+                case "ACCURACY":
+                    bonuses[5] = "ACCURACY";
+                    break;
+                case "KNOCKBACK":
+                    bonuses[6] = "KNOCKBACK";
+                    break;
+                case "SLOW":
+                    bonuses[7] = "SLOW";
+                    break;
+                case "LIFE STEAL":
+                    bonuses[8] = "LIFE STEAL";
+                    break;
+                case "CRITICAL HIT":
+                    bonuses[9] = "CRITICAL HIT";
+                    break;
+                case "ARMOR PENETRATION":
+                    bonuses[10] = "ARMOR PENETRATION";
+                    break;
+                // ARMOR SUFFIXES
+                case "ENERGY REGEN":
+                    bonuses[11] = "ENERGY REGEN";
+                    break;
+                case "FIRE RESISTANCE":
+                    bonuses[12] = "FIRE RESISTANCE";
+                    break;
+                case "ICE RESISTANCE":
+                    bonuses[13] = "ICE RESISTANCE";
+                    break;
+                case "POISON RESISTANCE":
+                    bonuses[14] = "POISON RESISTANCE";
+                    break;
+                case "GEM FIND":
+                    bonuses[15] = "GEM FIND";
+                    break;
+                case "ITEM FIND":
+                    bonuses[16] = "ITEM FIND";
+                    break;
+                case "THORNS":
+                    bonuses[17] = "THORNS";
+                    break;
+                // WEAPON SUFFIXES
+                case "BLIND":
+                    bonuses[18] = "BLIND";
+                    break;
+                case "vs. MONSTERS":
+                    bonuses[19] = "vs. MONSTERS";
+                    break;
+                case "vs. PLAYERS":
+                    bonuses[20] = "vs. PLAYERS";
+                    break;
+                case "FIRE DMG":
+                    bonuses[21] = "FIRE DMG";
+                    break;
+                case "ICE DMG":
+                    bonuses[22] = "ICE DMG";
+                    break;
+                case "POISON DMG":
+                    bonuses[23] = "POISON DMG";
+                    break;
+                default:
+                    break;
+            }
+        }
 
         for (String bonus : bonuses) {
             if (bonus == null) continue;
@@ -414,9 +414,9 @@ public class ItemGenerator {
                     break;
             }
         }
-		
-		// if no extra attributes, then make sure the item has the basic name
-	    if (!(name.contains(type.getTierName(tier)))) name += type.getTierName(tier);
+
+        // if no extra attributes, then make sure the item has the basic name
+        if (!(name.contains(type.getTierName(tier)))) name += type.getTierName(tier);
 
         List<String> lore = meta.getLore();
         // add soulbound lore
@@ -428,17 +428,15 @@ public class ItemGenerator {
             }
         }
 
-		// add the rarity tag
-		lore.add(rarity.getName());
+        // add the rarity tag
+        lore.add(rarity.getName());
 
         // add soulbound, untradeable, puntradeable
         if (isSoulbound) {
             lore.add(ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
-        }
-        else if (isUntradeable) {
+        } else if (isUntradeable) {
             lore.add(ChatColor.GRAY + "Untradeable");
-        }
-        else if (isPermanentlyUntradeable) {
+        } else if (isPermanentlyUntradeable) {
             lore.add(ChatColor.GRAY + "Permanently Untradeable");
         }
 
@@ -456,9 +454,10 @@ public class ItemGenerator {
             name = origItem.getItemMeta().getDisplayName();
         }
 
-        if (isReroll && EnchantmentAPI.isItemProtected(origItem)) lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "PROTECTED");
+        if (isReroll && EnchantmentAPI.isItemProtected(origItem))
+            lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "PROTECTED");
 
-		// set the lore!
+        // set the lore!
         meta.setLore(lore);
 
         if (isReroll && !isSoulbound) {
@@ -469,15 +468,15 @@ public class ItemGenerator {
         }
         meta.setDisplayName(name);
         //TODO: Check if it has the E-Cash custom name when it's implemented.
-		item.setItemMeta(meta);
+        item.setItemMeta(meta);
 
         RepairAPI.setCustomItemDurability(item, 1500);
-		
+
         // set NBT tags
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         // NMS stack for writing NBT tags
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        
+
         tag.set("itemType", new NBTTagInt(type.getId()));
         tag.set("itemRarity", new NBTTagInt(rarity.getId()));
         tag.set("soulbound", new NBTTagInt(isSoulbound ? 1 : 0));
@@ -487,11 +486,11 @@ public class ItemGenerator {
         if (isReroll && EnchantmentAPI.getEnchantLvl(origItem) > 0) {
             tag.set("enchant", new NBTTagInt(EnchantmentAPI.getEnchantLvl(origItem)));
         }
-        
+
         if (type.getId() <= 4) {
-            tag.set("type",  new NBTTagString("weapon"));
+            tag.set("type", new NBTTagString("weapon"));
         } else {
-            tag.set("type",  new NBTTagString("armor"));
+            tag.set("type", new NBTTagString("armor"));
         }
         
         /*
@@ -499,7 +498,7 @@ public class ItemGenerator {
         E.g. Diamond Sword says, "+7 Attack Damage"
          */
         tag.set("AttributeModifiers", new NBTTagList());
-        
+
         NBTTagList modifiersList = new NBTTagList();
         if (isReroll) {
             List<String> modifiers = GameAPI.getModifiers(origItem);
@@ -519,10 +518,10 @@ public class ItemGenerator {
                 }
             }
         }
-        
+
         for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
             tag.set(entry.getKey(), new NBTTagInt(entry.getValue()));
-            
+
             if (!entry.getKey().contains("Max")) {
                 if (entry.getKey().contains("Min")) {
                     modifiersList.add(new NBTTagString(entry.getKey().replace("Min", "")));
@@ -531,27 +530,28 @@ public class ItemGenerator {
                 modifiersList.add(new NBTTagString(entry.getKey()));
             }
         }
-        
+
         tag.set("modifiers", modifiersList);
-        
+
         nmsStack.setTag(tag);
-        
-		// apply antidupe
-		this.item = AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
-		
-		return this;
-	}
-	
-	public ItemStack getItem(){
-		return item;
-	}
-	
-	/**
-	 * Gets the custom named item located in the custom_items directory.
-	 * @param template_name - the name of the item
-	 * @return
-	 */
-	public static ItemStack getNamedItem(String template_name) {
+
+        // apply antidupe
+        this.item = AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+
+        return this;
+    }
+
+    public ItemStack getItem() {
+        return item;
+    }
+
+    /**
+     * Gets the custom named item located in the custom_items directory.
+     *
+     * @param template_name - the name of the item
+     * @return
+     */
+    public static ItemStack getNamedItem(String template_name) {
         File template = new File("plugins/DungeonRealms/custom_items/" + template_name + ".item");
         if (!(template.exists())) {
             Utils.log.warning("[ItemGenerator] Custom item " + template_name + " not found!");
@@ -582,14 +582,14 @@ public class ItemGenerator {
                         Utils.log.warning("[ItemGenerator] Missing item id from item " + template_name + "!");
                         return null;
                     }
-                    
+
                     // It's lore!
                     line = ChatColor.translateAlternateColorCodes('&', line);
                     //line = ChatColor.stripColor(line);
-                    
+
                     String modifierName = ChatColor.stripColor(line);
                     modifierName = modifierName.substring(0, modifierName.indexOf(':'));
-                    
+
                     if (line.contains("(")) {
                         // Number range!
                         String line_copy = line;
@@ -610,7 +610,7 @@ public class ItemGenerator {
                             }
                         }
                     }
-                    
+
                     // set NBT tags
                     if (Item.ItemType.isWeapon(is)) {
                         Item.WeaponAttributeType attribute = Item.WeaponAttributeType.getByName(modifierName);
@@ -618,38 +618,36 @@ public class ItemGenerator {
                             Utils.log.warning("[ItemGenerator] Invalid modifier " + modifierName + " for item " + template_name + "!");
                             return null;
                         }
-                        
+
                         if (line.contains("-")) { // range
                             String lowVal = line.split("-")[0];
                             String highVal = line.split("-")[1];
 
                             int lowInt = Integer.parseInt(lowVal.replaceAll("\\D", ""));
                             int highInt = Integer.parseInt(highVal.replaceAll("\\D", ""));
-                            
+
                             NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowInt));
                             NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highInt));
-                        }
-                        else { // static val
+                        } else { // static val
                             int val = Integer.parseInt(line.replaceAll("\\D", ""));
-                            
+
                             NBTModifiers.put(attribute.getNBTName(), new NBTTagInt(val));
                         }
-                    }
-                    else if (Item.ItemType.isArmor(is)) {
+                    } else if (Item.ItemType.isArmor(is)) {
                         Item.ArmorAttributeType attribute = Item.ArmorAttributeType.getByName(modifierName);
 
                         if (Item.ArmorAttributeType.getByName(modifierName) == null) {
                             Utils.log.warning("[ItemGenerator] Invalid modifier " + modifierName + " for item " + template_name + "!");
                             return null;
                         }
-                        
+
                         if (line.contains("-")) { // range
                             String lowVal = line.split("-")[0];
                             String highVal = line.split("-")[1];
 
                             int lowInt = Integer.parseInt(lowVal.replaceAll("\\D", ""));
                             int highInt = Integer.parseInt(highVal.replaceAll("\\D", ""));
-                            
+
                             NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowInt));
                             NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highInt));
                         } else { // static val
@@ -659,8 +657,7 @@ public class ItemGenerator {
                     }
 
                     item_lore.add(line);
-                }
-                else {
+                } else {
                     item_lore.add(ChatColor.translateAlternateColorCodes('&', line));
                 }
             }
@@ -674,7 +671,7 @@ public class ItemGenerator {
                 e.printStackTrace();
             }
         }
-        
+
         if (is == null) {
             Utils.log.warning("[ItemGenerator] Missing item id from item " + template_name + "!");
             return null;
@@ -690,7 +687,7 @@ public class ItemGenerator {
         if (!hasSoulboundTag) {
             item_lore.add(ChatColor.DARK_RED + "Soulbound");
         }
-        
+
         ItemMeta im = is.getItemMeta();
         im.setDisplayName(item_name);
         im.setLore(item_lore);
@@ -726,12 +723,10 @@ public class ItemGenerator {
             if (line.contains("Soulbound")) {
                 isSoulbound = true;
                 break; // an item can only be one of the three
-            }
-            else if (line.contains("Permanently Untradeable")) {
+            } else if (line.contains("Permanently Untradeable")) {
                 isPermanentlyUntradeable = true;
                 break;
-            }
-            else if (line.contains("Untradeable")) {
+            } else if (line.contains("Untradeable")) {
                 isUntradeable = true;
                 break;
             }
@@ -741,7 +736,7 @@ public class ItemGenerator {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
         // NMS stack for writing NBT tags
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        
+
         tag.set("itemType", new NBTTagInt(Item.ItemType.getTypeFromMaterial(is.getType()).getId()));
         tag.set("itemRarity", new NBTTagInt(rarity.getId()));
         tag.set("soulbound", new NBTTagInt(isSoulbound ? 1 : 0));
@@ -754,19 +749,19 @@ public class ItemGenerator {
          */
         tag.set("AttributeModifiers", new NBTTagList());
         tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getTierId()));
-        
+
         // set item type
         if (Item.ItemType.isWeapon(is)) {
             tag.set("type", new NBTTagString("weapon"));
         } else if (Item.ItemType.isArmor(is)) {
             tag.set("type", new NBTTagString("armor"));
         }
-        
+
         NBTTagList modifiersList = new NBTTagList();
-        
+
         for (Map.Entry<String, NBTTagInt> entry : NBTModifiers.entrySet()) {
             tag.set(entry.getKey(), entry.getValue());
-            
+
             if (!entry.getKey().contains("Max")) {
                 if (entry.getKey().contains("Min")) {
                     modifiersList.add(new NBTTagString(entry.getKey().replace("Min", "")));
@@ -775,70 +770,71 @@ public class ItemGenerator {
                 modifiersList.add(new NBTTagString(entry.getKey()));
             }
         }
-        
+
         tag.set("modifiers", modifiersList);
-        
+
 //        tag.a(CraftItemStack.asNMSCopy(is).getTag());
         nmsStack.setTag(tag);
 
         return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
-	
-	/**
-	 * Generates a helmet, chestplate, leggings, and boots of the specified 
-	 * tier and rarity (set normally via the instance variables).
-	 * @return - An ItemStack array of the armor set.
-	 */
-	public ItemStack[] getArmorSet() {
-        return new ItemStack[] { this.setType(Item.ItemType.BOOTS).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem(),
+
+    /**
+     * Generates a helmet, chestplate, leggings, and boots of the specified
+     * tier and rarity (set normally via the instance variables).
+     *
+     * @return - An ItemStack array of the armor set.
+     */
+    public ItemStack[] getArmorSet() {
+        return new ItemStack[]{this.setType(Item.ItemType.BOOTS).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem(),
                 this.setType(Item.ItemType.LEGGINGS).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem(),
                 this.setType(Item.ItemType.CHESTPLATE).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem(),
-                this.setType(Item.ItemType.HELMET).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem() };
-	}
-	
-	public static void loadModifiers(){
-		WeaponModifiers wm = new WeaponModifiers();
-		wm.new Accuracy();
-		wm.new ArmorPenetration();
-		wm.new Blind();
-		wm.new Critical();
-		wm.new SwordDamage();
-		wm.new AxeDamage();
-		wm.new StaffDamage();
-		wm.new PolearmDamage();
-		wm.new BowDamage();
-		wm.new Elemental();
-		wm.new ElementalBow();
-		wm.new Knockback();
-		wm.new LifeSteal();
-		wm.new Pure();
-		wm.new Slow();
+                this.setType(Item.ItemType.HELMET).setRarity(rarity == null ? GameAPI.getItemRarity(false) : rarity).generateItem().getItem()};
+    }
+
+    public static void loadModifiers() {
+        WeaponModifiers wm = new WeaponModifiers();
+        wm.new Accuracy();
+        wm.new ArmorPenetration();
+        wm.new Blind();
+        wm.new Critical();
+        wm.new SwordDamage();
+        wm.new AxeDamage();
+        wm.new StaffDamage();
+        wm.new PolearmDamage();
+        wm.new BowDamage();
+        wm.new Elemental();
+        wm.new ElementalBow();
+        wm.new Knockback();
+        wm.new LifeSteal();
+        wm.new Pure();
+        wm.new Slow();
         //	/* disabled as of patch 1.9 by Mayley's request
-		//wm.new StrDexVitInt();
-		wm.new SwordDamage();
-		wm.new Versus();
-		
-		ArmorModifiers am = new ArmorModifiers();
-		am.new Block();
-		am.new Dodge();
-		am.new EnergyRegen();
-		am.new GemFind();
-		//am.new HP();
-		am.new ChestplateHP();
-		am.new LeggingsHP();
-		am.new BootsHP();
-		am.new HelmetHP();
-		am.new MainDPS();
-		am.new OtherDPS();
-		am.new HPRegen();
-		am.new ItemFind();
-		am.new MainArmor();
-		am.new HelmetsArmor();
-		am.new LeggingArmor();
-		am.new BootsArmor();
-		am.new Reflection();
-		am.new Resistances();
-		am.new StrDexVitInt();
-		am.new Thorns();
-	}
+        //wm.new StrDexVitInt();
+        wm.new SwordDamage();
+        wm.new Versus();
+
+        ArmorModifiers am = new ArmorModifiers();
+        am.new Block();
+        am.new Dodge();
+        am.new EnergyRegen();
+        am.new GemFind();
+        //am.new HP();
+        am.new ChestplateHP();
+        am.new LeggingsHP();
+        am.new BootsHP();
+        am.new HelmetHP();
+        am.new MainDPS();
+        am.new OtherDPS();
+        am.new HPRegen();
+        am.new ItemFind();
+        am.new MainArmor();
+        am.new HelmetsArmor();
+        am.new LeggingArmor();
+        am.new BootsArmor();
+        am.new Reflection();
+        am.new Resistances();
+        am.new StrDexVitInt();
+        am.new Thorns();
+    }
 }
