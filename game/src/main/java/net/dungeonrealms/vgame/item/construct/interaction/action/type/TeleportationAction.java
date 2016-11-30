@@ -45,7 +45,7 @@ public class TeleportationAction implements IAction {
 
             final int taskTime[] = {6};
             int task = Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () -> {
-                // Are they in a teleportation? Because they might combat log
+                // Are they in a teleportation? Because they might combat log..
                 if (gamePlayer.isTeleporting()) {
                     // Is the time between 1 & 6, tell them
                     if (taskTime[0] > 0) {
