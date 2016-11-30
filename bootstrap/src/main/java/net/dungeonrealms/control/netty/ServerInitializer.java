@@ -21,6 +21,6 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new ObjectEncoder());
         pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
 
-        //TODO: Add the server handler.
+        pipeline.addLast(new ServerHandler());
     }
 }

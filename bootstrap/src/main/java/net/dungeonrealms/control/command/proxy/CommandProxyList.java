@@ -37,7 +37,7 @@ public class CommandProxyList extends NetworkCommand {
         }
 
         // Display a header for the page.
-        UtilLogger.info("---------- Proxies (Page " + page + "/" + maxPages + ") ----------");
+        UtilLogger.info("------------- Proxies (Page " + page + "/" + maxPages + ") -------------");
 
         // Loop through commands.
         for (int x = 0; x < 10; x++) {

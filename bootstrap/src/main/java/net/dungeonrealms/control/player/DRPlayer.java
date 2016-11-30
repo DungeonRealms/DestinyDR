@@ -134,9 +134,7 @@ public class DRPlayer {
             }
 
             //Connect each member to the server.
-            party.getPlayers().stream().filter(member -> member.getServer() != server).forEach(member -> {
-                member.connect(server, true);
-            });
+            party.getPlayers().stream().filter(member -> member.getServer() != server).forEach(member -> member.connect(server, true));
 
             return true;
         }

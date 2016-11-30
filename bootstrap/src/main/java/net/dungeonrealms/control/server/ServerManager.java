@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -151,6 +152,18 @@ public class ServerManager {
         }
 
         return lobbies;
+    }
+
+    public void autoRestartServers() {
+
+        //Restart any lobby that has been online for more than 6 hours (only one at a time).
+        for (GameServer server : getGameServers(GameServer.ServerType.LOBBY)) {
+            if (server.getTimeOnline() >= 21600000L) {
+                server.restart();
+                break;
+            }
+        }
+
     }
 
     public void loadProxies() throws SQLException {

@@ -4,7 +4,6 @@ import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
 import net.dungeonrealms.control.server.types.GameServer;
 import net.dungeonrealms.control.utils.UtilLogger;
-import org.bukkit.entity.Player;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Evoltr on 11/20/2016.
@@ -28,7 +28,7 @@ public class FriendManager {
         this.control = control;
     }
 
-    public List<Player> getFriends(DRPlayer player) {
+    public List<DRPlayer> getFriends(DRPlayer player) {
         List<DRPlayer> players = new ArrayList<>();
 
         // Load the friend list and cache it.
@@ -36,18 +36,27 @@ public class FriendManager {
             loadFriends(player);
         }
 
-        // Convert al the uuids to player obejcts. and find a way to do that
-        return null;
+        // Convert all the uuids to player objects.
+        players.addAll(friendLists.get(player.getUuid()).stream().map(uuid -> DRControl.getInstance().getPlayerManager().getPlayerByUUID(uuid)).collect(Collectors.toList()));
+
+        return players;
     }
 
-    public List<Player> getRequests(DRPlayer player) {
+    public List<DRPlayer> getRequests(DRPlayer player) {
         List<DRPlayer> players = new ArrayList<>();
 
         // Load the friend list and cache it
         if (!friendLists.containsKey(player.getUuid())) {
             loadFriends(player);
         }
-        return null;
+
+        players.addAll(friendRequests.get(player.getUuid()).stream().map(uuid -> DRControl.getInstance().getPlayerManager().getPlayerByUUID(uuid)).collect(Collectors.toList()));
+
+        return players;
+    }
+
+    public boolean isFriend(DRPlayer p1, DRPlayer p2) {
+        return getFriends(p1).contains(p2);
     }
 
     public String getStatus(DRPlayer player) {

@@ -5,6 +5,7 @@ import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.player.DRPlayer;
 import net.dungeonrealms.control.server.types.GameServer;
 import net.dungeonrealms.packet.Packet;
+import net.dungeonrealms.packet.network.PacketRestart;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +100,10 @@ public class Server {
 
     public boolean isFull() {
         return getPlayers().size() >= (this instanceof GameServer ? ((GameServer) this).getMaxPlayers() : 500);
+    }
+
+    public void restart() {
+        sendPacket(new PacketRestart());
     }
 
     public long getTimeOnline() {
