@@ -13,7 +13,11 @@ import net.dungeonrealms.control.utils.UtilLogger;
 import net.dungeonrealms.packet.Packet;
 import net.dungeonrealms.packet.connect.PacketConnect;
 import net.dungeonrealms.packet.network.PacketMOTD;
+import net.dungeonrealms.packet.network.PacketPrivateMessage;
+import net.dungeonrealms.packet.network.PacketReply;
+import net.dungeonrealms.packet.network.PacketStaffMessage;
 import net.dungeonrealms.packet.party.*;
+import net.dungeonrealms.packet.player.PacketMessage;
 import net.dungeonrealms.packet.player.PacketPlayerConnect;
 import net.dungeonrealms.packet.player.PacketPlayerJoin;
 import net.dungeonrealms.packet.player.PacketPlayerQuit;
@@ -22,6 +26,7 @@ import net.dungeonrealms.packet.server.PacketServerPing;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Evoltr on 11/19/2016.
@@ -78,11 +83,37 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if (server instanceof GameServer) {
                 ((GameServer) server).sendInfoToServers();
             }
+
+            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByUUID(packetPlayerJoin.getUUID());
+
+            // Send login message to all friends.
+            if (server instanceof ProxyServer) {
+                for (DRPlayer friend : DRControl.getInstance().getFriendManager().getFriends(player)) {
+                    player.sendMessage("&a+ " + friend.getName() + ".", true);
+                }
+
+                DRControl.getInstance().getChannel().eventLoop().schedule(() -> {
+                    int friendRequests = DRControl.getInstance().getFriendManager().getRequests(player).size();
+                    if (friendRequests > 0) {
+                        player.sendMessage("You have " + friendRequests + " friend requests. Type '/f requests' to view them.", true);
+                    }
+
+                }, 500, TimeUnit.MILLISECONDS);
+            }
         }
 
         // Handle quit packet.
         if (packet instanceof PacketPlayerQuit) {
             PacketPlayerQuit packetPlayerQuit = (PacketPlayerQuit) packet;
+
+            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByUUID(packetPlayerQuit.getUUID());
+
+            // Send leave message to all friends.
+            if (server instanceof ProxyServer) {
+                for (DRPlayer friend : DRControl.getInstance().getFriendManager().getFriends(player)) {
+                    player.sendMessage("&c- " + friend.getName(), true);
+                }
+            }
 
             server.removePlayer(packetPlayerQuit.getUUID());
 
@@ -123,6 +154,62 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             player.connect(gameServer);
         }
 
+        //Handle staff message packet.
+        if (packet instanceof PacketStaffMessage) {
+            PacketStaffMessage packetStaffMessage = (PacketStaffMessage) packet;
+
+            //Forward the packet to all proxies.
+            for (ProxyServer proxy : DRControl.getInstance().getServerManager().getProxyServers()) {
+                proxy.sendPacket(packetStaffMessage);
+            }
+        }
+
+        // Handle message packet.
+        if (packet instanceof PacketMessage) {
+            PacketMessage packetMessage = (PacketMessage) packet;
+
+            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(packetMessage.getPlayer());
+
+            //Send the message to the player.
+            if (player != null) {
+                player.sendMessage(packetMessage.getMessage(), false);
+            }
+        }
+
+        // Handle private message packet.
+        if (packet instanceof PacketPrivateMessage) {
+            PacketPrivateMessage packetPrivateMessage = (PacketPrivateMessage) packet;
+
+            String sender = packetPrivateMessage.getSender();
+            String receiver = packetPrivateMessage.getReceiver();
+            String message = packetPrivateMessage.getMessage();
+
+            //Handle the message.
+            handleMessage(sender, receiver, message, false);
+        }
+
+        // Handle reply packet.
+        if (packet instanceof PacketReply) {
+            PacketReply packetReply = (PacketReply) packet;
+
+            String sender = packetReply.getSender();
+            String message = packetReply.getMessage();
+
+            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(sender);
+
+            //Get the last player they messaged from the hashmap.
+            String receiver = messages.get(sender.toLowerCase());
+
+            if (receiver == null) {
+                player.sendMessage("&cYou have not messaged anyone recently.", true);
+                return;
+            }
+
+            //Handle the message.
+            handleMessage(sender, receiver, message, true);
+        }
+
+
         // Handle party invite packet.
         if (packet instanceof PacketPartyInvite) {
             DRControl.getInstance().getPartyManager().handleInvite((PacketPartyInvite) packet);
@@ -152,6 +239,53 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (packet instanceof PacketPartyDisband) {
             DRControl.getInstance().getPartyManager().handleDisband((PacketPartyDisband) packet);
         }
+    }
+
+    public void handleMessage(String sender, String receiver, String message, boolean isReply) {
+
+        DRPlayer senderPlayer = DRControl.getInstance().getPlayerManager().getPlayerByName(sender);
+        DRPlayer receiverPlayer = DRControl.getInstance().getPlayerManager().getPlayerByName(receiver);
+
+        // Check if they are not messaging themselves.
+        if (sender.equalsIgnoreCase(receiver)) {
+            senderPlayer.sendMessage("&cYou cannot message yourself!", true);
+            return;
+        }
+
+        // Check the receiving player exists.
+        if (receiverPlayer == null) {
+            senderPlayer.sendMessage("&cThat player is currently offline.", true);
+            return;
+        }
+
+        // Check they're allowed to message this player.
+        if (!isReply && !DRControl.getInstance().getFriendManager().isFriend(senderPlayer, receiverPlayer) && senderPlayer.getRank().getID() < Rank.PMOD.getID()) {
+            senderPlayer.sendMessage("&cYou can only message players on your friend list.", true);
+            senderPlayer.sendMessage("&cUse /f add <player> to add them.", true);
+            return;
+        }
+
+        // Check the receiving player is online.
+        if (!receiverPlayer.isOnline()) {
+            senderPlayer.sendMessage("&cThat player is currently offline.", true);
+            return;
+        }
+
+        // Send the messages to the players.
+        if (receiverPlayer.getRank() == Rank.DEFAULT) {
+            senderPlayer.sendMessage("&dTo " + receiverPlayer.getName() + "&7: " + message, false);
+        } else {
+            senderPlayer.sendMessage("&dTo " + receiverPlayer.getRank().getColor() + "[" + receiverPlayer.getRank().getName() + "] " + receiverPlayer.getName() + "&7: " + message, false);
+        }
+
+        if (senderPlayer.getRank() == Rank.DEFAULT) {
+            receiverPlayer.sendMessage("&dFrom " + senderPlayer.getName() + "&7: " + message, false);
+        } else {
+            receiverPlayer.sendMessage("&dFrom " + senderPlayer.getRank().getColor() + "[" + senderPlayer.getRank().getName() + "] " + senderPlayer.getName() + "&7: " + message, false);
+        }
+
+        messages.put(sender.toLowerCase(), receiver);
+        messages.put(receiver.toLowerCase(), sender);
     }
 
     @Override
@@ -200,7 +334,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         // Send packets to the server to sync it's info with the network.
         if (server instanceof GameServer) {
-
             // Send packet to lobbies and proxies to tell them the server is online.
             ((GameServer) server).sendInfoToServers();
         }

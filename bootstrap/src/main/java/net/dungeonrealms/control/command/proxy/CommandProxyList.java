@@ -31,13 +31,13 @@ public class CommandProxyList extends NetworkCommand {
         int maxPages = (proxyServerList.size() / 10) + 1;
 
         // Check the page number is valid.
-        if (page <1 || page > maxPages) {
+        if (page < 1 || page > maxPages) {
             UtilLogger.info("Invalid page number: " + page);
             return;
         }
 
         // Display a header for the page.
-        UtilLogger.info("---------- Proxies (Page " + page + "/" + maxPages + ") ----------" );
+        UtilLogger.info("------------- Proxies (Page " + page + "/" + maxPages + ") -------------");
 
         // Loop through commands.
         for (int x = 0; x < 10; x++) {

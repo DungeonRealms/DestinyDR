@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -151,6 +152,36 @@ public class ServerManager {
         }
 
         return lobbies;
+    }
+
+    public void autoRestartServers() {
+
+        //Restart any lobby that has been online for more than 6 hours (only one at a time).
+        for (GameServer server : getGameServers(GameServer.ServerType.LOBBY)) {
+            if (server.getTimeOnline() >= 21600000L) {
+                server.restart();
+                break;
+            }
+        }
+
+        //Restart any game server that has been online for more than 4 hours (wait for it to finish).
+        //Don't restart in the middle of a game.
+        getGameServers().stream().filter(server -> server.getType() != GameServer.ServerType.LOBBY && server.getTimeOnline() >= 14400000L).forEach(server -> {
+
+            final List<DRPlayer> players = server.getPlayers();
+
+            //Don't restart in the middle of a game.
+            if (server.getState().contains("Waiting for players")) {
+                server.restart();
+
+                control.getChannel().eventLoop().schedule(() -> {
+                    for (DRPlayer player : players) {
+                        player.sendMessage("&cThe server you were on (&6" + server.getDisplayName() + "&c) restarted for an update!", true);
+                    }
+                }, 3, TimeUnit.SECONDS);
+            }
+        });
+
     }
 
     public void loadProxies() throws SQLException {

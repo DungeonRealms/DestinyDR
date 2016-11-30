@@ -2,6 +2,8 @@ package net.dungeonrealms.control.command;
 
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.command.proxy.CommandProxyList;
+import net.dungeonrealms.control.command.util.CommandClear;
+import net.dungeonrealms.control.command.util.CommandHelp;
 import net.dungeonrealms.control.utils.UtilLogger;
 
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ public class CommandManager {
         this.control = control;
 
         registerCommand(new CommandProxyList());
+        registerCommand(new CommandClear());
+        registerCommand(new CommandHelp());
     }
 
     public List<NetworkCommand> getCommands() {
