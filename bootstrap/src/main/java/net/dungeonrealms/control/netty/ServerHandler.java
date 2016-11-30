@@ -154,11 +154,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             player.connect(gameServer);
         }
 
-        //Handle staff message packet.
+        // Handle staff message packet.
         if (packet instanceof PacketStaffMessage) {
             PacketStaffMessage packetStaffMessage = (PacketStaffMessage) packet;
 
-            //Forward the packet to all proxies.
+            // Forward the packet to all proxies.
             for (ProxyServer proxy : DRControl.getInstance().getServerManager().getProxyServers()) {
                 proxy.sendPacket(packetStaffMessage);
             }
@@ -170,7 +170,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
             DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(packetMessage.getPlayer());
 
-            //Send the message to the player.
+            // Send the message to the player.
             if (player != null) {
                 player.sendMessage(packetMessage.getMessage(), false);
             }
@@ -197,7 +197,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
             DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(sender);
 
-            //Get the last player they messaged from the hashmap.
+            // Get the last player they messaged from the hashmap.
             String receiver = messages.get(sender.toLowerCase());
 
             if (receiver == null) {
@@ -205,7 +205,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 return;
             }
 
-            //Handle the message.
+            // Handle the message.
             handleMessage(sender, receiver, message, true);
         }
 
