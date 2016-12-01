@@ -1,6 +1,7 @@
 package net.dungeonrealms.vgame.world.location;
 
 import lombok.Getter;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -12,14 +13,14 @@ import org.bukkit.Location;
  */
 public enum EnumLocation {
 
-    CYRENNICA(0, new Location(Bukkit.getWorld("dungeonrealms"), -378, 85, 357), "Cyrennica"),
-    HARRISONS_FIELD(1, new Location(Bukkit.getWorld("dungeonrealms"), -594, 59, 687, 92.0F, 1F), "Harrissons Field"),
-    DARK_OAK_TAVERN(2, new Location(Bukkit.getWorld("dungeonrealms"), 280, 59, 1132, 2.0F, 1F), "Dark Oak"),
-    DEAPEAKS_MOUNTAIN_CAMP(3, new Location(Bukkit.getWorld("dungeonrealms"), -1173, 106, 1030, -88.0F, 1F), "Deadpeaks"),
-    TROLLSBANE_TAVERN(4, new Location(Bukkit.getWorld("dungeonrealms"), 962, 95, 1069, -153.0F, 1F), "Trollsbane"),
-    TRIPOLI(5, new Location(Bukkit.getWorld("dungeonrealms"), -1320, 91, 370, 153F, 1F), "Tripoli"),
-    GLOOMY_HALLOWS(6, new Location(Bukkit.getWorld("dungeonrealms"), -590, 44, 0, 144F, 1F), "Gloomy Hallows"),
-    CRESTGAURD_KEEP(7, new Location(Bukkit.getWorld("dungeonrealms"), -1428, 116, -489, 95F, 1F), "Crestgaurd");
+    CYRENNICA(0, new Location(Game.getGame().getGameWorld().getBukkitWorld(), -378, 85, 357), "Cyrennica"),
+    HARRISONS_FIELD(1, new Location(Game.getGame().getGameWorld().getBukkitWorld(), -594, 59, 687, 92.0F, 1F), "Harrissons Field"),
+    DARK_OAK_TAVERN(2, new Location(Game.getGame().getGameWorld().getBukkitWorld(), 280, 59, 1132, 2.0F, 1F), "Dark Oak"),
+    DEAPEAKS_MOUNTAIN_CAMP(3, new Location(Game.getGame().getGameWorld().getBukkitWorld(), -1173, 106, 1030, -88.0F, 1F), "Deadpeaks"),
+    TROLLSBANE_TAVERN(4, new Location(Game.getGame().getGameWorld().getBukkitWorld(), 962, 95, 1069, -153.0F, 1F), "Trollsbane"),
+    TRIPOLI(5, new Location(Game.getGame().getGameWorld().getBukkitWorld(), -1320, 91, 370, 153F, 1F), "Tripoli"),
+    GLOOMY_HALLOWS(6, new Location(Game.getGame().getGameWorld().getBukkitWorld(), -590, 44, 0, 144F, 1F), "Gloomy Hallows"),
+    CRESTGAURD_KEEP(7, new Location(Game.getGame().getGameWorld().getBukkitWorld(), -1428, 116, -489, 95F, 1F), "Crestgaurd");
 
     @Getter
     private int id;

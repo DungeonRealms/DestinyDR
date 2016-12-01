@@ -16,6 +16,7 @@ import net.minecraft.server.v1_9_R2.*;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class CreatureSkeleton extends EntitySkeleton implements ICreature {
+
     @Getter
     private EnumEntityType entityType = EnumEntityType.SKELETON;
 

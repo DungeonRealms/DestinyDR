@@ -8,6 +8,7 @@ import net.dungeonrealms.vgame.player.goal.achievement.EnumAchievement;
 import net.dungeonrealms.vgame.player.goal.objective.Objective;
 import net.dungeonrealms.vgame.player.scoreboard.EnumScoreboardType;
 import net.dungeonrealms.vgame.player.scoreboard.GameScoreboard;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 /**
@@ -42,6 +43,14 @@ public class GamePlayer implements IPlayer {
     @Getter
     @Setter
     private boolean teleporting;
+
+    @Getter
+    @Setter
+    private boolean combat;
+
+    @Getter
+    @Setter
+    private Entity lastDamaged;
 
     public GamePlayer(DataPlayer dataPlayer) {
         this.data = dataPlayer;

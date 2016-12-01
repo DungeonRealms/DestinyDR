@@ -5,6 +5,7 @@ import net.dungeonrealms.vgame.world.entity.generic.IGameEntity;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Giovanni on 28-11-2016.
@@ -23,11 +24,11 @@ public class CreatureDamageEntityEvent extends Event {
     private Entity entity;
 
     @Getter
-    private double damage;
+    private ItemStack itemStack;
 
-    public CreatureDamageEntityEvent(IGameEntity gameEntity, Entity entity, double damage) {
+    public CreatureDamageEntityEvent(IGameEntity gameEntity, Entity entity, ItemStack itemStack) {
         this.gameEntity = gameEntity;
         this.entity = entity;
-        this.damage = damage;
+        this.itemStack = itemStack;
     }
 }

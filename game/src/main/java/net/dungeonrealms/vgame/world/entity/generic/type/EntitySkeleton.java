@@ -1,6 +1,7 @@
 package net.dungeonrealms.vgame.world.entity.generic.type;
 
 import lombok.Getter;
+import net.dungeonrealms.api.creature.ICreature;
 import net.dungeonrealms.api.creature.lib.craft.CreatureCow;
 import net.dungeonrealms.api.creature.lib.craft.CreaturePig;
 import net.dungeonrealms.api.creature.lib.craft.CreatureSkeleton;
@@ -32,11 +33,15 @@ public class EntitySkeleton extends CreatureSkeleton implements IGameEntity {
     @Getter
     private Entity entity;
 
+    @Getter
+    private ICreature creature;
+
     public EntitySkeleton(World world, EnumSkeletonType skeletonType, EntityData entityData) throws InvalidEntityDataException {
         super(world, EnumIntelligenceType.HOSTILE, skeletonType);
 
         this.entityData = entityData;
         this.entity = this;
+        this.creature = this;
 
         if (!this.entityData.isNull()) {
             String elementName = null;

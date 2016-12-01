@@ -15,7 +15,8 @@ import net.minecraft.server.v1_9_R2.EntityInsentient;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class LivingMeta {
-    private BiMap<IDamageSource, Float> damage;
+
+    private BiMap<IDamageSource, Double> damage;
 
     private EntityInsentient insentient;
 
@@ -36,9 +37,9 @@ public class LivingMeta {
         return this;
     }
 
-    public LivingMeta damage(IDamageSource damageSource, float value) {
+    public LivingMeta damage(IDamageSource damageSource, double value) {
         this.damage.put(damageSource, value);
-        this.insentient.damageEntity(DamageSource.GENERIC, value);
+        this.insentient.damageEntity(DamageSource.GENERIC, Float.parseFloat(String.valueOf(value)));
         return this;
     }
 

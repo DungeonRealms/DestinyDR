@@ -15,6 +15,7 @@ import net.minecraft.server.v1_9_R2.*;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class CreatureIronGolem extends EntityIronGolem implements ICreature {
+
     @Getter
     private EnumEntityType entityType = EnumEntityType.IRON_GOLEM;
 

@@ -2,6 +2,7 @@ package net.dungeonrealms.vgame.world.location;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import net.dungeonrealms.vgame.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -20,7 +21,7 @@ public class GameLocation extends Location {
     private double[] axisValues;
 
     public GameLocation(double[] axisValues) {
-        super(Bukkit.getWorld(""), axisValues[0], axisValues[1], axisValues[2]);
+        super(Game.getGame().getGameWorld().getBukkitWorld(), axisValues[0], axisValues[1], axisValues[2]);
         this.axisValues = axisValues;
     }
 

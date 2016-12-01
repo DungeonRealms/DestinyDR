@@ -1,5 +1,6 @@
 package net.dungeonrealms.vgame.world.entity.generic;
 
+import net.dungeonrealms.api.creature.ICreature;
 import net.dungeonrealms.vgame.world.entity.generic.construct.EntityData;
 import net.dungeonrealms.vgame.world.entity.generic.construct.element.EnumEntityElement;
 import net.dungeonrealms.vgame.world.entity.generic.construct.health.EntityHealthBar;
@@ -19,6 +20,8 @@ public interface IGameEntity {
     EntityData getEntityData();
 
     EntityInsentient getEntity();
+
+    ICreature getCreature();
 
     /**
      * Gets the game location of the game entity

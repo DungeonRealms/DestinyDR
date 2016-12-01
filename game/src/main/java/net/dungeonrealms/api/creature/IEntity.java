@@ -15,6 +15,7 @@ import java.util.List;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 interface IEntity extends IDamageSource {
+
     Entity getEntity();
 
     EntityCreature getEntityCreature();

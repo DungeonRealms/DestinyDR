@@ -8,6 +8,7 @@ import net.dungeonrealms.vgame.Game;
 import net.dungeonrealms.vgame.world.entity.generic.IGameEntity;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -35,12 +36,13 @@ public class CreatureCaller implements ICaller {
         Entity damager = ((CraftEntity) event.getEntity()).getHandle();
         if (damager instanceof IGameEntity) {
             IGameEntity gameEntity = (IGameEntity) damager;
-            // When a game entity hits a bukkit entity
-            Game.getGame().getServer().getPluginManager().callEvent(new CreatureDamageEntityEvent(gameEntity, damaged, event.getDamage()));
+            // When a game entity hits a bukkit entity - TODO support for non living entities
+            Game.getGame().getServer().getPluginManager().callEvent(new CreatureDamageEntityEvent(gameEntity, damaged, ((LivingEntity) damager).getEquipment().getItemInMainHand()));
         } else if (damaged instanceof IGameEntity) {
             IGameEntity gameEntity = (IGameEntity) damaged;
             // When a bukkit entity hits a game entity
-            Game.getGame().getServer().getPluginManager().callEvent(new EntityDamageCreatureEvent(gameEntity, damager.getBukkitEntity(), event.getDamage()));
+            Game.getGame().getServer().getPluginManager().callEvent(new EntityDamageCreatureEvent(gameEntity, damager.getBukkitEntity(),
+                    ((LivingEntity) damager).getEquipment().getItemInMainHand()));
             // Update the creature it's state
             Game.getGame().getServer().getPluginManager().callEvent(new CreatureStateChangeEvent(gameEntity, EnumCreatureState.DAMAGED, gameEntity.getEntityData().getCreatureState()));
         }

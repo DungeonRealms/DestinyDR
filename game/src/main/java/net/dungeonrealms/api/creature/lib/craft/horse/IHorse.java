@@ -12,6 +12,7 @@ import org.bukkit.entity.Horse;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public interface IHorse extends ICreature {
+
     default void setColour(Horse.Color colour) {
         ((Horse) this.getEntity()).setColor(colour);
     }

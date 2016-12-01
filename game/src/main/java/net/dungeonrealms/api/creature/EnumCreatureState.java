@@ -7,5 +7,6 @@ package net.dungeonrealms.api.creature;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public enum EnumCreatureState {
+
     LIVING, DAMAGED, IGNORED, DESPAWNED_EXISTENT, DESPAWNED_REMOVED;
 }

@@ -9,6 +9,7 @@ import lombok.Getter;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public enum EnumEntityType {
+
     OCELOT(EnumEquipmentType.NONE),
     SPIDER(EnumEquipmentType.NONE),
     SKELETON(EnumEquipmentType.GENERIC),

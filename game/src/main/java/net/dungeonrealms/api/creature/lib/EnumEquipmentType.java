@@ -7,5 +7,6 @@ package net.dungeonrealms.api.creature.lib;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public enum EnumEquipmentType {
+
     GENERIC, SADDLE, NONE;
 }
