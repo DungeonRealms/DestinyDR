@@ -156,7 +156,7 @@ public class ServerManager {
 
     public void autoRestartServers() {
 
-        //Restart any lobby that has been online for more than 6 hours (only one at a time).
+        // Restart any lobby that has been online for more than 6 hours (only one at a time).
         for (GameServer server : getGameServers(GameServer.ServerType.LOBBY)) {
             if (server.getTimeOnline() >= 21600000L) {
                 server.restart();
