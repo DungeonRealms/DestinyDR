@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
  */
 public class AlterationAction implements IAction {
 
-
     @Getter
     private EnumInteractionAction action = EnumInteractionAction.ALTERATION;
 

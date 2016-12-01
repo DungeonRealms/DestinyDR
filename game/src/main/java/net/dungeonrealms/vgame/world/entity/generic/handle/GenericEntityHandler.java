@@ -1,5 +1,6 @@
 package net.dungeonrealms.vgame.world.entity.generic.handle;
 
+import net.dungeonrealms.api.creature.EnumCreatureState;
 import net.dungeonrealms.api.event.creature.CreatureDamageEntityEvent;
 import net.dungeonrealms.api.event.creature.CreatureStateChangeEvent;
 import net.dungeonrealms.api.event.creature.EntityDamageCreatureEvent;
@@ -14,6 +15,7 @@ import org.bukkit.event.EventHandler;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class GenericEntityHandler implements SuperHandler.ListeningHandler {
+
     @Override
     public void prepare() {
         Game.getGame().getServer().getPluginManager().registerEvents(this, Game.getGame());
@@ -32,5 +34,12 @@ public class GenericEntityHandler implements SuperHandler.ListeningHandler {
     @EventHandler
     public void onCreatureStateChange(CreatureStateChangeEvent event) {
         event.getGameEntity().getEntityData().setCreatureState(event.getNewState());
+        if (event.getGameEntity().getEntityData().getCreatureState() == EnumCreatureState.DAMAGED) {
+            double axis[] = {10, 10, 10};
+            if (!event.getGameEntity().hasPlayersNearby(axis)) {
+                // When the creature state changes but there are no players nearby we will display the name again
+                event.getGameEntity().displayName();
+            }
+        }
     }
 }

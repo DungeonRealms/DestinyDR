@@ -25,6 +25,7 @@ import java.util.Random;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class EntityBandit extends CreatureZombie implements IGameEntity {
+
     @Getter
     private EntityData entityData;
 

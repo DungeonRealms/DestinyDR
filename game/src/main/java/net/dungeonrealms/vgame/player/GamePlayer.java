@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class GamePlayer implements IPlayer {
+
     @Getter
     private DataPlayer data; // All raw data
 

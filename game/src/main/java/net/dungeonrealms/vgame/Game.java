@@ -1,18 +1,21 @@
 package net.dungeonrealms.vgame;
 
+import com.google.gson.Gson;
 import lombok.Getter;
 import net.dungeonrealms.backend.GameShard;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.awt.frame.EnumSaveFlag;
 import net.dungeonrealms.common.backend.database.connection.exception.ConnectionRunningException;
 import net.dungeonrealms.common.backend.database.mongo.connection.MongoConnection;
 import net.dungeonrealms.vgame.core.handle.CommandHandler;
 import net.dungeonrealms.vgame.core.handle.GameHandler;
 import net.dungeonrealms.vgame.core.handle.RegistryHandler;
-import org.bukkit.ChatColor;
+import net.dungeonrealms.vgame.world.GameWorld;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.json.simple.parser.JSONParser;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
 
 /**
@@ -22,6 +25,9 @@ import java.io.FileReader;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class Game extends JavaPlugin {
+
+    // TODO rewrite this ugly thing
+
     @Getter
     private static Game game;
 
@@ -40,6 +46,9 @@ public class Game extends JavaPlugin {
     @Getter
     private MongoConnection mongoConnection;
 
+    @Getter
+    private GameWorld gameWorld;
+
     @Override
     public void onEnable() {
         game = this;
@@ -52,29 +61,32 @@ public class Game extends JavaPlugin {
         try {
             this.mongoConnection.runOn(Constants.DATABASE_URI, "dungeonrealms");
         } catch (ConnectionRunningException e) {
-            e.printStackTrace(); // This will never happen
+            // This will never happen
         }
-
-        // ** Init shard **//
-        try {
-            this.gameShard = new GameShard(new FileReader("shardConfig.ini"));
-        } catch (FileNotFoundException e) {
-            this.instanceLogger.sendMessage(ChatColor.RED + "ShardConfiguration not found, shutting down..");
-            Game.getGame().getServer().shutdown();
-        }
-        //** Handlers **//
+        //** Handlers ** //
         this.handlerCore = new GameHandler();
         this.handlerCore.prepare();
 
-        //** Registries **//
+        //** Registries ** //
         this.registryHandler = new RegistryHandler();
         this.registryHandler.prepare();
 
-        // ** Commands **//
+        // ** Commands ** //
         new CommandHandler().prepare();
+
+        // ** World ** //
+        JSONParser jsonParser = new JSONParser();
+        try {
+            // dataFolder\world\gameWorld.json
+            String jsonString = jsonParser.parse(new FileReader(this.getDataFolder() + File.separator + "world" + File.separator + "gameWorld.json")).toString();
+            this.gameWorld = new Gson().fromJson(jsonString, GameWorld.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onDisable() {
+        this.gameWorld.save(EnumSaveFlag.SAVE_QUIT);
     }
 }

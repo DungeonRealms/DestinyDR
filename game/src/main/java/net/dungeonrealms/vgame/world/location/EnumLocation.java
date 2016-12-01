@@ -18,7 +18,7 @@ public enum EnumLocation {
     DEAPEAKS_MOUNTAIN_CAMP(3, new Location(Bukkit.getWorld("dungeonrealms"), -1173, 106, 1030, -88.0F, 1F), "Deadpeaks"),
     TROLLSBANE_TAVERN(4, new Location(Bukkit.getWorld("dungeonrealms"), 962, 95, 1069, -153.0F, 1F), "Trollsbane"),
     TRIPOLI(5, new Location(Bukkit.getWorld("dungeonrealms"), -1320, 91, 370, 153F, 1F), "Tripoli"),
-    GLOOMY_HALLOWS(6, new Location(Bukkit.getWorld("dungeonrealms"), -590, 44, 0, 144F, 1F), "Gloomy Hallwos"),
+    GLOOMY_HALLOWS(6, new Location(Bukkit.getWorld("dungeonrealms"), -590, 44, 0, 144F, 1F), "Gloomy Hallows"),
     CRESTGAURD_KEEP(7, new Location(Bukkit.getWorld("dungeonrealms"), -1428, 116, -489, 95F, 1F), "Crestgaurd");
 
     @Getter

@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffectType;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public interface IPlayer extends IDamageSource {
+
     Player getPlayer();
 
     default void blind(int par1) {

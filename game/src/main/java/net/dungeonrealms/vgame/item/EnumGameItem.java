@@ -7,6 +7,7 @@ package net.dungeonrealms.vgame.item;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public enum EnumGameItem {
+
     ORB,
     TELEPORTATION_BOOK,
     WEAPON,

@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class EntityHealthBar {
+
     @Getter
     private String asString;
 

@@ -14,6 +14,7 @@ import java.util.List;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public enum EnumGameEntity {
+
     BANDIT(EntityBandit.class, Arrays.asList("Lazy", "Old", "Starving", "Clumsy")),
     SKELETON(EntitySkeleton.class, Arrays.asList("Broken", "Rotting"));
 

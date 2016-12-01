@@ -13,6 +13,7 @@ import java.util.List;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public enum EnumEntityElement {
+
     POISON(ChatColor.DARK_GREEN, Arrays.asList("Poison", "Poisonous")),
     FIRE(ChatColor.RED, Arrays.asList("Pyromaniac", "Fire", "Inferno")),
     ICE(ChatColor.BLUE, Arrays.asList("Ice")),

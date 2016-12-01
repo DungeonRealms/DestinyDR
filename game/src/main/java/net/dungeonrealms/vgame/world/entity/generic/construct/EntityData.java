@@ -15,6 +15,7 @@ import java.util.UUID;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class EntityData {
+
     @Getter
     private UUID uniqueId;
 

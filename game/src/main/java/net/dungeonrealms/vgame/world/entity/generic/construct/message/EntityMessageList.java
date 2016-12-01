@@ -13,6 +13,7 @@ import java.util.List;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class EntityMessageList {
+
     @Getter
     private List<String> messageList;
 
