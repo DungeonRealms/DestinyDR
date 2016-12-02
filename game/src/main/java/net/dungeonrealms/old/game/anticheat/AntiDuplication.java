@@ -18,7 +18,7 @@ import net.dungeonrealms.old.game.player.banks.BankMechanics;
 import net.dungeonrealms.old.game.player.banks.Storage;
 import net.dungeonrealms.old.game.world.entity.util.MountUtils;
 import net.dungeonrealms.old.game.world.item.repairing.RepairAPI;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;

@@ -1,5 +1,8 @@
 package net.dungeonrealms.common.awt.frame;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by Giovanni on 30-11-2016.
  * <p>
@@ -8,4 +11,14 @@ package net.dungeonrealms.common.awt.frame;
  */
 public class GameShard {
 
+    @Getter
+    private ServerCore serverCore;
+
+    @Getter
+    @Setter
+    private boolean enabled;
+
+    public GameShard(ServerCore serverCore) {
+        this.serverCore = serverCore;
+    }
 }

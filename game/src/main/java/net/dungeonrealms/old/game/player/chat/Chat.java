@@ -9,7 +9,7 @@ import net.dungeonrealms.common.old.network.ShardInfo;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.handler.FriendHandler;
 import net.dungeonrealms.old.game.player.json.JSONMessage;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

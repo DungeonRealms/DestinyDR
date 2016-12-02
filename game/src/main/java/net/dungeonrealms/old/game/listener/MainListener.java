@@ -36,7 +36,7 @@ import net.dungeonrealms.old.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.old.game.world.entity.util.MountUtils;
 import net.dungeonrealms.old.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;

@@ -1,7 +1,7 @@
 package net.dungeonrealms.vgame.player.goal.achievement.handle;
 
-import net.dungeonrealms.common.awt.handler.SuperHandler;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
+import net.dungeonrealms.vgame.old.Game;
 import net.dungeonrealms.vgame.player.goal.achievement.EnumAchievement;
 import net.dungeonrealms.vgame.player.goal.achievement.type.CombatAchievement;
 import net.dungeonrealms.vgame.player.goal.achievement.type.ExplorerAchievement;

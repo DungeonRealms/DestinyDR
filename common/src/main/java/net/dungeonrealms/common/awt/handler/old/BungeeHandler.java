@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.awt.handler;
+package net.dungeonrealms.common.awt.handler.old;
 
 import net.md_5.bungee.api.plugin.Listener;
 

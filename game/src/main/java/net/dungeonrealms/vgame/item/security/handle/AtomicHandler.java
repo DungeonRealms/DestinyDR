@@ -1,9 +1,9 @@
-package net.dungeonrealms.vgame.security.handle;
+package net.dungeonrealms.vgame.item.security.handle;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.awt.handler.SuperHandler;
-import net.dungeonrealms.vgame.security.NUAIHolder;
-import net.dungeonrealms.vgame.security.result.EnumCheckResult;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
+import net.dungeonrealms.vgame.item.security.NUAIHolder;
+import net.dungeonrealms.vgame.item.security.result.EnumCheckResult;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;

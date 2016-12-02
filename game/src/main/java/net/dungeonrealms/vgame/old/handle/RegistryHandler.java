@@ -1,10 +1,10 @@
-package net.dungeonrealms.vgame.core.handle;
+package net.dungeonrealms.vgame.old.handle;
 
 import lombok.Getter;
 import net.dungeonrealms.backend.registry.PlayerRegistry;
-import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
 import net.dungeonrealms.common.old.game.database.sql.registry.DataRegistry;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;

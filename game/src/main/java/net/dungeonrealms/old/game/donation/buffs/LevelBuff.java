@@ -4,7 +4,7 @@ import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.mastery.Utils;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

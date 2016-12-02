@@ -1,8 +1,7 @@
 package net.dungeonrealms.vgame.world.location;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.Game;
-import org.bukkit.Bukkit;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.Location;
 
 /**

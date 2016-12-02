@@ -4,7 +4,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.frontend.command.BaseCommand;
 import net.dungeonrealms.common.old.game.punishment.PunishAPI;
 import net.dungeonrealms.old.game.player.chat.GameChat;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

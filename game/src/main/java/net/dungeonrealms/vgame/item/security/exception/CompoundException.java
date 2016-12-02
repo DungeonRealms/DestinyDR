@@ -1,4 +1,4 @@
-package net.dungeonrealms.vgame.security.exception;
+package net.dungeonrealms.vgame.item.security.exception;
 
 import net.minecraft.server.v1_9_R2.ItemStack;
 

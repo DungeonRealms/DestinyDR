@@ -8,7 +8,7 @@ import net.dungeonrealms.common.old.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.old.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.old.game.guild.database.GuildDatabase;
 import net.dungeonrealms.old.game.tab.Column;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

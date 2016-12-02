@@ -33,7 +33,7 @@ import net.dungeonrealms.old.game.world.entity.util.MountUtils;
 import net.dungeonrealms.old.game.world.entity.util.PetUtils;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;

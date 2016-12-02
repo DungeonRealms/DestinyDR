@@ -14,7 +14,7 @@ import net.dungeonrealms.common.old.network.ShardInfo;
 import net.dungeonrealms.common.old.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.common.old.network.enumeration.EnumShardType;
 import net.dungeonrealms.network.GameClient;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.bukkit.ChatColor;

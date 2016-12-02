@@ -1,18 +1,18 @@
-package net.dungeonrealms.vgame.core.handle;
+package net.dungeonrealms.vgame.old.handle;
 
 import lombok.Getter;
 import net.dungeonrealms.backend.PacketHandler;
-import net.dungeonrealms.common.awt.handler.SuperHandler;
-import net.dungeonrealms.vgame.Game;
-import net.dungeonrealms.vgame.security.NUAIHolder;
-import net.dungeonrealms.vgame.security.handle.AtomicHandler;
-import net.dungeonrealms.vgame.security.handle.NeutronHandler;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
+import net.dungeonrealms.vgame.old.Game;
+import net.dungeonrealms.vgame.item.security.NUAIHolder;
+import net.dungeonrealms.vgame.item.security.handle.AtomicHandler;
+import net.dungeonrealms.vgame.item.security.handle.NeutronHandler;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static net.dungeonrealms.common.awt.handler.SuperHandler.Handler;
+import static net.dungeonrealms.common.awt.handler.old.SuperHandler.Handler;
 
 /**
  * Created by Giovanni on 29-10-2016.

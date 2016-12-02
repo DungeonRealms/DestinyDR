@@ -17,7 +17,7 @@ import net.dungeonrealms.old.game.mechanic.ParticleAPI;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.old.game.world.entity.type.pet.Creeper;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;

@@ -1,8 +1,8 @@
 package net.dungeonrealms.proxy.handle;
 
 import lombok.Getter;
-import net.dungeonrealms.common.awt.handler.BungeeHandler;
-import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.awt.handler.old.BungeeHandler;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
 import net.dungeonrealms.proxy.DungeonBungee;
 import net.dungeonrealms.proxy.handle.channel.ChannelHandler;
 import net.dungeonrealms.proxy.handle.connection.ConnectionHandler;

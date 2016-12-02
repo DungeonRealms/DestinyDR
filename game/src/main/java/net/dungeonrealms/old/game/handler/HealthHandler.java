@@ -18,7 +18,7 @@ import net.dungeonrealms.old.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.old.game.world.entity.EntityMechanics;
 import net.dungeonrealms.old.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.old.game.world.item.Item;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityInsentient;

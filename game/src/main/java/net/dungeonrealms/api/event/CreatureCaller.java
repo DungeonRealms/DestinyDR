@@ -4,7 +4,7 @@ import net.dungeonrealms.api.creature.EnumCreatureState;
 import net.dungeonrealms.api.event.creature.CreatureDamageEntityEvent;
 import net.dungeonrealms.api.event.creature.CreatureStateChangeEvent;
 import net.dungeonrealms.api.event.creature.EntityDamageCreatureEvent;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.dungeonrealms.vgame.world.entity.generic.IGameEntity;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;

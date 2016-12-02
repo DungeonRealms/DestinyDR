@@ -66,7 +66,7 @@ import net.dungeonrealms.old.game.world.realms.Realms;
 import net.dungeonrealms.old.game.world.shops.ShopMechanics;
 import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;

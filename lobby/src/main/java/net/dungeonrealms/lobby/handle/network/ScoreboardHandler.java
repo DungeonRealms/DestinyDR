@@ -1,6 +1,6 @@
 package net.dungeonrealms.lobby.handle.network;
 
-import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
 import net.dungeonrealms.common.frontend.lib.scoreboard.ScoreboardBuilder;
 import net.dungeonrealms.common.old.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.lobby.ServerLobby;

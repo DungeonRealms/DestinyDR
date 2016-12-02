@@ -1,9 +1,9 @@
-package net.dungeonrealms.vgame.security.handle;
+package net.dungeonrealms.vgame.item.security.handle;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.awt.handler.SuperHandler;
-import net.dungeonrealms.vgame.security.NUAIHolder;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
+import net.dungeonrealms.vgame.item.security.NUAIHolder;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerDropItemEvent;

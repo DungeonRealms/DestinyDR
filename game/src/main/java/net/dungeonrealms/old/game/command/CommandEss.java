@@ -8,7 +8,7 @@ import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.old.game.player.chat.GameChat;
 import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

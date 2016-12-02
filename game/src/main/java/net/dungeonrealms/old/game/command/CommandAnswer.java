@@ -5,7 +5,7 @@ import net.dungeonrealms.common.frontend.command.BaseCommand;
 import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.old.game.mechanic.PlayerManager;
 import net.dungeonrealms.old.game.player.chat.GameChat;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;

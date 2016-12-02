@@ -1,6 +1,6 @@
-package net.dungeonrealms.vgame.security;
+package net.dungeonrealms.vgame.item.security;
 
-import net.dungeonrealms.vgame.security.exception.CompoundException;
+import net.dungeonrealms.vgame.item.security.exception.CompoundException;
 import net.minecraft.server.v1_9_R2.ItemStack;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;

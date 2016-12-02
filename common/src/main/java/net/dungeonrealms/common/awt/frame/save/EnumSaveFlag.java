@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.awt.frame;
+package net.dungeonrealms.common.awt.frame.save;
 
 /**
  * Created by Giovanni on 1-12-2016.

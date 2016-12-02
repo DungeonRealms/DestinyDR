@@ -1,7 +1,7 @@
 package net.dungeonrealms.vgame.player.goal.achievement.type;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.dungeonrealms.vgame.player.goal.achievement.Achievement;
 import net.dungeonrealms.vgame.player.goal.achievement.IAchievement;
 import net.dungeonrealms.vgame.player.goal.objective.combat.CombatObjective;

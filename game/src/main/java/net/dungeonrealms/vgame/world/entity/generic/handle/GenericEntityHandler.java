@@ -6,9 +6,9 @@ import net.dungeonrealms.api.creature.lib.move.type.ItemPowerMove;
 import net.dungeonrealms.api.event.creature.CreatureDamageEntityEvent;
 import net.dungeonrealms.api.event.creature.CreatureStateChangeEvent;
 import net.dungeonrealms.api.event.creature.EntityDamageCreatureEvent;
-import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
 import net.dungeonrealms.common.frontend.lib.message.CenteredMessage;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.dungeonrealms.vgame.player.GamePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -52,7 +52,7 @@ public class GenericEntityHandler implements SuperHandler.ListeningHandler {
                     // Blocking & dodging the damage
                     EnumPowerMove powerMove = EnumPowerMove.randomCombatMove();
                     if (powerMove != EnumPowerMove.EMPTY) {
-                        ItemPowerMove itemPowerMove = new ItemPowerMove(EnumPowerMove.randomCombatMove(),
+                        ItemPowerMove itemPowerMove = new ItemPowerMove(powerMove,
                                 ((LivingEntity) event.getGameEntity().getEntity()).getEquipment().getArmorContents()) {
                             @Override
                             public void perform() {

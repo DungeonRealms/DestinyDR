@@ -15,7 +15,7 @@ import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mastery.ItemSerialization;
 import net.dungeonrealms.old.game.player.banks.BankMechanics;
 import net.dungeonrealms.old.game.player.chat.Chat;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

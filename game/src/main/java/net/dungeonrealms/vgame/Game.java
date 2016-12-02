@@ -1,92 +1,51 @@
 package net.dungeonrealms.vgame;
 
-import com.google.gson.Gson;
 import lombok.Getter;
-import net.dungeonrealms.backend.GameShard;
-import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.awt.frame.EnumSaveFlag;
-import net.dungeonrealms.common.backend.database.connection.exception.ConnectionRunningException;
-import net.dungeonrealms.common.backend.database.mongo.connection.MongoConnection;
-import net.dungeonrealms.vgame.core.handle.CommandHandler;
-import net.dungeonrealms.vgame.core.handle.GameHandler;
-import net.dungeonrealms.vgame.core.handle.RegistryHandler;
-import net.dungeonrealms.vgame.world.GameWorld;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.json.simple.parser.JSONParser;
-
-import java.io.File;
-import java.io.FileReader;
+import net.dungeonrealms.common.awt.frame.GameShard;
+import net.dungeonrealms.common.awt.frame.ServerCore;
+import net.dungeonrealms.common.awt.frame.exception.ServerRunningException;
+import net.dungeonrealms.vgame.server.HandlerRegistry;
+import net.dungeonrealms.vgame.server.IRegistryRegistry;
 
 /**
- * Created by Giovanni on 29-10-2016.
+ * Created by Giovanni on 2-12-2016.
  * <p>
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class Game extends JavaPlugin {
+public class Game extends ServerCore {
 
-    // TODO rewrite this ugly thing
+    // BOOTSTRAP:
+    // -> 1. Create registries
+    // -> 2. Register registries/handlers
+    // -> 3. Enable registered handlers/registries
+    // -> 4. Launch the game
 
     @Getter
     private static Game game;
 
     @Getter
-    private GameHandler handlerCore;
+    private HandlerRegistry handlerRegistry;
 
     @Getter
-    private RegistryHandler registryHandler;
-
-    @Getter
-    private ConsoleCommandSender instanceLogger;
-
-    @Getter
-    private GameShard gameShard;
-
-    @Getter
-    private MongoConnection mongoConnection;
-
-    @Getter
-    private GameWorld gameWorld;
+    private IRegistryRegistry registryRegistry;
 
     @Override
     public void onEnable() {
         game = this;
 
-        //** Logger **//
-        this.instanceLogger = this.getServer().getConsoleSender();
+        // 1 Launch all maps (hmap, rmap..)
+        this.preEnableMaps();
 
-        // ** Init the mongo ** //
-        this.mongoConnection = new MongoConnection();
+        // 2 Register the registries (contains all handlers & registries and registers them too)
+        this.registerRegistry(registryRegistry = new IRegistryRegistry(this.getRegistryMap()));
+        this.registerRegistry(handlerRegistry = new HandlerRegistry(this.getHandlerMap()));
+
+        // 3 Start the shard(server/game)
         try {
-            this.mongoConnection.runOn(Constants.DATABASE_URI, "dungeonrealms");
-        } catch (ConnectionRunningException e) {
-            // This will never happen
-        }
-        //** Handlers ** //
-        this.handlerCore = new GameHandler();
-        this.handlerCore.prepare();
-
-        //** Registries ** //
-        this.registryHandler = new RegistryHandler();
-        this.registryHandler.prepare();
-
-        // ** Commands ** //
-        new CommandHandler().prepare();
-
-        // ** World ** //
-        JSONParser jsonParser = new JSONParser();
-        try {
-            // dataFolder\world\gameWorld.json
-            String jsonString = jsonParser.parse(new FileReader(this.getDataFolder() + File.separator + "world" + File.separator + "gameWorld.json")).toString();
-            this.gameWorld = new Gson().fromJson(jsonString, GameWorld.class);
-        } catch (Exception e) {
+            this.enable(new GameShard(this));
+        } catch (ServerRunningException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onDisable() {
-        this.gameWorld.save(EnumSaveFlag.SAVE_QUIT);
     }
 }

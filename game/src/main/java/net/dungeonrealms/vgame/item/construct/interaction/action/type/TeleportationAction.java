@@ -1,7 +1,7 @@
 package net.dungeonrealms.vgame.item.construct.interaction.action.type;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.dungeonrealms.vgame.item.construct.interaction.InteractionItem;
 import net.dungeonrealms.vgame.item.construct.interaction.action.EnumInteractionAction;
 import net.dungeonrealms.vgame.item.construct.interaction.action.IAction;

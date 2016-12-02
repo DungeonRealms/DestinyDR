@@ -1,7 +1,7 @@
 package net.dungeonrealms.vgame.item.construct;
 
 import net.dungeonrealms.vgame.item.EnumGameItem;
-import net.dungeonrealms.vgame.security.UAI;
+import net.dungeonrealms.vgame.item.security.UAI;
 import org.bukkit.inventory.ItemStack;
 
 /**

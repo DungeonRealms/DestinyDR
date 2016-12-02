@@ -1,7 +1,7 @@
 package net.dungeonrealms.vgame.player.teleportation;
 
-import net.dungeonrealms.common.awt.handler.SuperHandler;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
+import net.dungeonrealms.vgame.old.Game;
 import net.dungeonrealms.vgame.player.GamePlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

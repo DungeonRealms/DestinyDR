@@ -2,7 +2,7 @@ package net.dungeonrealms.vgame.player.goal.achievement.command;
 
 import net.dungeonrealms.common.frontend.command.BaseCommand;
 import net.dungeonrealms.common.frontend.rank.EnumPlayerRank;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import net.dungeonrealms.vgame.player.GamePlayer;
 import net.dungeonrealms.vgame.player.goal.achievement.EnumAchievement;
 import org.bukkit.Bukkit;

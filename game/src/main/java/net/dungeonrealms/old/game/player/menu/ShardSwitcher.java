@@ -17,7 +17,7 @@ import net.dungeonrealms.common.old.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.old.game.player.combat.CombatLog;
 import net.dungeonrealms.old.game.title.TitleAPI;
 import net.dungeonrealms.old.game.world.realms.Realms;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

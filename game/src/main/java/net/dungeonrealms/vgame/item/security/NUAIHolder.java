@@ -1,8 +1,8 @@
-package net.dungeonrealms.vgame.security;
+package net.dungeonrealms.vgame.item.security;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;

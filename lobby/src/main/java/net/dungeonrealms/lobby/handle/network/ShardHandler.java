@@ -1,6 +1,6 @@
 package net.dungeonrealms.lobby.handle.network;
 
-import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
 import net.dungeonrealms.common.frontend.lib.message.CenteredMessage;
 import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.data.EnumData;

@@ -2,8 +2,7 @@ package net.dungeonrealms.vgame.world.location;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import net.dungeonrealms.vgame.Game;
-import org.bukkit.Bukkit;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 

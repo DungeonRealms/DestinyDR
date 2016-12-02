@@ -1,8 +1,8 @@
-package net.dungeonrealms.vgame.core.handle;
+package net.dungeonrealms.vgame.old.handle;
 
-import net.dungeonrealms.common.awt.handler.SuperHandler;
+import net.dungeonrealms.common.awt.handler.old.SuperHandler;
 import net.dungeonrealms.common.frontend.command.CommandManager;
-import net.dungeonrealms.vgame.Game;
+import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.ChatColor;
 
 /**
