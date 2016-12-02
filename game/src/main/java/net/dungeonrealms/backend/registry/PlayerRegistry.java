@@ -1,48 +1,60 @@
 package net.dungeonrealms.backend.registry;
 
-import net.dungeonrealms.common.old.game.database.sql.registry.DataRegistry;
-import net.dungeonrealms.vgame.player.GamePlayer;
+import lombok.Getter;
+import net.dungeonrealms.common.awt.frame.registry.Registry;
+import net.dungeonrealms.frontend.vgame.player.GamePlayer;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Created by Giovanni on 20-11-2016.
+ * Created by Giovanni on 2-12-2016.
  * <p>
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public class PlayerRegistry implements DataRegistry {
-    private ConcurrentHashMap<UUID, GamePlayer> playerMap;
+public class PlayerRegistry implements Registry {
+
+    @Getter
+    private UUID uniqueId;
+
+    @Getter
+    private boolean connected;
+
+    private final AtomicReference<ConcurrentHashMap<UUID, GamePlayer>> onlinePlayers = new AtomicReference<>();
+
+    public PlayerRegistry() {
+        this.uniqueId = UUID.randomUUID();
+    }
 
     @Override
     public void prepare() {
-        this.playerMap = new ConcurrentHashMap();
+        this.onlinePlayers.set(new ConcurrentHashMap<>());
+        this.connected = true;
     }
 
     @Override
-    public AtomicBoolean atomicPreference() {
-        return new AtomicBoolean(false);
+    public void disable() {
+        for (GamePlayer gamePlayer : this.onlinePlayers.get().values()) {
+            // TODO store data
+        }
     }
 
     @Override
-    public ConcurrentHashMap<UUID, GamePlayer> getMap() {
-        return this.playerMap;
+    public boolean ignoreEnabled() {
+        return false;
     }
 
-    @Override
-    public void collect() {
-        // Unused
+    public ConcurrentHashMap<UUID, GamePlayer> getOnlinePlayers() {
+        return this.onlinePlayers.get();
     }
 
-    @Override
-    public void createData() {
-        // Unused
+    public void acceptConnection(GamePlayer gamePlayer) {
+        this.onlinePlayers.get().put(gamePlayer.getData().getUniqueId(), gamePlayer);
     }
 
-    @Override
-    public void save() {
-
+    public GamePlayer getPlayer(UUID uuid) {
+        return this.onlinePlayers.get().get(uuid);
     }
 }

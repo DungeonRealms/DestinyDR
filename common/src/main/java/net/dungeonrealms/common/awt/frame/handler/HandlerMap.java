@@ -69,7 +69,7 @@ public class HandlerMap {
     /**
      * Flush the handler map
      */
-    public void clear() {
+    public void flush() {
         this.handlerMap.clear();
     }
 

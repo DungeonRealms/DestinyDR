@@ -1,6 +1,6 @@
 package net.dungeonrealms.api.exception;
 
-import net.dungeonrealms.vgame.world.entity.generic.construct.EntityData;
+import net.dungeonrealms.frontend.vgame.world.entity.generic.construct.EntityData;
 
 /**
  * Created by Giovanni on 28-11-2016.

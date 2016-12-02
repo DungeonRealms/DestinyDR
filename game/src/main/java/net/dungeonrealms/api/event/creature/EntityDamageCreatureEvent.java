@@ -1,7 +1,7 @@
 package net.dungeonrealms.api.event.creature;
 
 import lombok.Getter;
-import net.dungeonrealms.vgame.world.entity.generic.IGameEntity;
+import net.dungeonrealms.frontend.vgame.world.entity.generic.IGameEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

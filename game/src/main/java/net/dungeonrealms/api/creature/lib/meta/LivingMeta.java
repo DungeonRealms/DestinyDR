@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import net.dungeonrealms.api.creature.lib.damage.IDamageSource;
-import net.dungeonrealms.vgame.player.GamePlayer;
+import net.dungeonrealms.frontend.vgame.player.GamePlayer;
 import net.minecraft.server.v1_9_R2.DamageSource;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
 

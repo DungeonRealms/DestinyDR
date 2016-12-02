@@ -69,7 +69,7 @@ public class RegistryMap {
     /**
      * Flush the registry map
      */
-    public void clear() {
+    public void flush() {
         this.registryMap.clear();
     }
 

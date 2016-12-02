@@ -66,7 +66,7 @@ import net.dungeonrealms.old.game.world.realms.Realms;
 import net.dungeonrealms.old.game.world.shops.ShopMechanics;
 import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
-import net.dungeonrealms.vgame.old.Game;
+import net.dungeonrealms.frontend.vgame.old.Game;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
@@ -374,7 +374,7 @@ public class GameAPI {
     }
 
     public static GameClient getClient() {
-        return Game.getGame().getGameShard().getGameClient();
+        return null;
     }
 
     /**
@@ -396,7 +396,7 @@ public class GameAPI {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Game.getGame().getInstanceLogger().sendMessage(ChatColor.RED + "5 seconds until shutdown..");
-            DatabaseInstance.playerData.updateMany(Filters.eq("info.current", Game.getGame().getGameShard().getBungeeIdentifier()), new
+            DatabaseInstance.playerData.updateMany(Filters.eq("info.current", ""), new
                     Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
             DungeonRealms.getInstance().mm.stopInvocation(); // TODO remove
             AsyncUtils.pool.shutdown();
@@ -975,13 +975,13 @@ public class GameAPI {
             if (!DungeonRealms.getInstance().canAcceptPlayers() && !Rank.isDev(player)) {
                 player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
                 return;
-            } else if (Game.getGame().getGameShard().getShardType() == EnumShardType.SUBSCRIBER
+            } else if (null == EnumShardType.SUBSCRIBER
                     && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
                 player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
                         ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
                 return;
-            } else if ((Game.getGame().getGameShard().getShardType() == EnumShardType.YOUTUBE && !Rank.isYouTuber(player))
-                    || (Game.getGame().getGameShard().getShardType() == EnumShardType.SUPPORT && !Rank.isSupport(player))) {
+            } else if ((null == EnumShardType.YOUTUBE && !Rank.isYouTuber(player))
+                    || (null == EnumShardType.SUPPORT && !Rank.isSupport(player))) {
                 player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
                 return;
             }
@@ -991,7 +991,7 @@ public class GameAPI {
 
         try {
             if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid)) {
-                if (!DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(Game.getGame().getGameShard().getShardInfo().getPseudoName())) {
+                if (!DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals("")) {
                     String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
                     player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
                     return;
@@ -1113,41 +1113,41 @@ public class GameAPI {
 
         Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(Constants.BUILD_VERSION) + " Build " + String.valueOf(Constants.BUILD_NUMBER));
         Utils.sendCenteredMessage(player, ChatColor.GRAY + "http://www.dungeonrealms.net/");
-        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + ChatColor.BOLD + Game.getGame().getGameShard().getShardId() + ChatColor.YELLOW + " shard.");
+        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + "" + ChatColor.YELLOW + " shard.");
 
         player.sendMessage(new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Type " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/shard" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " to change your shard instance at any time.",
         });
 
-        if (Game.getGame().getGameShard().getShardType() == EnumShardType.MASTER) {
+        if (null == EnumShardType.MASTER) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is the Dungeon Realms " + ChatColor.UNDERLINE + "MASTER" + ChatColor.DARK_AQUA + " shard.",
                     ChatColor.GRAY + "Changes made on this shard will be deployed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
             });
         }
-        if (Game.getGame().getGameShard().getShardType() == EnumShardType.SUPPORT && Rank.isSupport(player)) {
+        if (null == EnumShardType.SUPPORT && Rank.isSupport(player)) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "CUSTOMER SUPPORT" + ChatColor.DARK_AQUA + " shard."
             });
         }
-        if (Game.getGame().getGameShard().getShardType() == EnumShardType.ROLEPLAY) {
+        if (null == EnumShardType.ROLEPLAY) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "ROLEPLAY" + ChatColor.DARK_AQUA + " shard. Local chat should always be in character, Global/Trade chat may be OOC.",
                     ChatColor.GRAY + "Please be respectful to those who want to roleplay. You " + ChatColor.UNDERLINE + "will" + ChatColor.GRAY + " be banned for trolling / local OOC."
             });
         }
-        if (Game.getGame().getGameShard().getShardType() == EnumShardType.BRAZILLIAN) {
+        if (null == EnumShardType.BRAZILLIAN) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BRAZILIAN" + ChatColor.DARK_AQUA + " shard.",
                     ChatColor.GRAY + "The official language of this server is " + ChatColor.UNDERLINE + "Portuguese."
             });
         }
-        if (Game.getGame().getGameShard().getShardType() == EnumShardType.BETA) {
+        if (null == EnumShardType.BETA) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BETA" + ChatColor.DARK_AQUA + " shard.",
@@ -1229,7 +1229,7 @@ public class GameAPI {
         }
 
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, Game.getGame().getGameShard().getBungeeIdentifier(), true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, "", true);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
 
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
@@ -1239,7 +1239,7 @@ public class GameAPI {
             player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
         });
 
-        sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + Game.getGame().getGameShard().getBungeeIdentifier());
+        sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + "");
 
         Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);

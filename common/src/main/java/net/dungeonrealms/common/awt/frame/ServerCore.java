@@ -1,6 +1,8 @@
 package net.dungeonrealms.common.awt.frame;
 
 import lombok.Getter;
+import net.dungeonrealms.common.awt.frame.command.Command;
+import net.dungeonrealms.common.awt.frame.command.CommandMap;
 import net.dungeonrealms.common.awt.frame.exception.ServerRunningException;
 import net.dungeonrealms.common.awt.frame.handler.Handler;
 import net.dungeonrealms.common.awt.frame.handler.HandlerMap;
@@ -9,6 +11,7 @@ import net.dungeonrealms.common.awt.frame.registry.RegistryMap;
 import net.dungeonrealms.common.awt.frame.server.IServer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
@@ -26,6 +29,9 @@ public class ServerCore extends JavaPlugin implements IServer {
 
     @Getter
     private RegistryMap registryMap;
+
+    @Getter
+    private CommandMap commandMap;
 
     @Getter
     private GameShard gameShard;
@@ -57,6 +63,9 @@ public class ServerCore extends JavaPlugin implements IServer {
             // Enable the registered handlers
             this.commandSender.sendMessage(ChatColor.YELLOW + "ENABLING HANDLERS " + ChatColor.GREEN + "(" + this.handlerMap.size() + ")");
             this.handlerMap.values().stream().filter(handler -> !handler.isPrepared()).forEach(Handler::prepare);
+            // Enabled the registered commands
+            this.commandSender.sendMessage(ChatColor.YELLOW + "ENABLING COMMANDS " + ChatColor.GREEN + "(" + this.commandMap.size() + ")");
+            this.commandMap.values().forEach(Command::register);
             // Start the actual shard
             this.commandSender.sendMessage(ChatColor.YELLOW + "STARTING GAME");
             this.gameShard = gameShard;
@@ -132,5 +141,18 @@ public class ServerCore extends JavaPlugin implements IServer {
      */
     public void stopRegistry(Registry registry) {
         this.stopRegistry(registry.getUniqueId());
+    }
+
+    /**
+     * Register a command
+     *
+     * @param command THe command to register
+     */
+    public void registerCommand(Command command) {
+        this.commandMap.add(command);
+    }
+
+    public void registerEvent(Listener listener) {
+        this.getServer().getPluginManager().registerEvents(listener, this);
     }
 }
