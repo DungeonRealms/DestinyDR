@@ -22,6 +22,7 @@ public class GamePlayer implements IPlayer {
     @Getter
     private DataPlayer data; // All raw data
 
+    // Transient game data
     @Getter
     private Player player;
 

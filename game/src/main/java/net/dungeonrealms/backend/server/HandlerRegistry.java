@@ -7,6 +7,7 @@ import net.dungeonrealms.common.awt.frame.registry.Registry;
 import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.frontend.vgame.item.security.handle.AtomicHandler;
 import net.dungeonrealms.frontend.vgame.item.security.handle.NeutronHandler;
+import net.dungeonrealms.frontend.vgame.player.connect.PlayerConnection;
 import net.dungeonrealms.frontend.vgame.player.goal.achievement.handle.AchievementHandler;
 import net.dungeonrealms.frontend.vgame.player.teleportation.TeleportationHandler;
 import net.dungeonrealms.frontend.vgame.world.entity.generic.handle.GenericEntityHandler;
@@ -45,6 +46,7 @@ public class HandlerRegistry implements Registry {
         // 2 Player
         this.handlerMap.add(new AchievementHandler());
         this.handlerMap.add(new TeleportationHandler());
+        this.handlerMap.add(new PlayerConnection());
         // 3 Entity
         this.handlerMap.add(new GenericEntityHandler());
 

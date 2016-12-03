@@ -13,6 +13,7 @@ import java.util.TreeMap;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class AtomicCollection<E> {
+
     @Getter
     private final NavigableMap<Double, E> map = new TreeMap<>();
 

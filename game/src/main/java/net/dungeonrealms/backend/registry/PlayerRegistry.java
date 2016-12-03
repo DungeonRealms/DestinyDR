@@ -2,6 +2,7 @@ package net.dungeonrealms.backend.registry;
 
 import lombok.Getter;
 import net.dungeonrealms.common.awt.frame.registry.Registry;
+import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.frontend.vgame.player.GamePlayer;
 
 import java.util.UUID;
@@ -37,8 +38,10 @@ public class PlayerRegistry implements Registry {
     @Override
     public void disable() {
         for (GamePlayer gamePlayer : this.onlinePlayers.get().values()) {
-            // TODO store data
+            Game.getGame().getGameShard().getMongoConnection().getApi().removeDataPlayer(gamePlayer.getPlayer().getUniqueId(), true);
+            this.removePlayer(gamePlayer);
         }
+        this.connected = false;
     }
 
     @Override
@@ -52,6 +55,14 @@ public class PlayerRegistry implements Registry {
 
     public void acceptConnection(GamePlayer gamePlayer) {
         this.onlinePlayers.get().put(gamePlayer.getData().getUniqueId(), gamePlayer);
+    }
+
+    public void removePlayer(GamePlayer gamePlayer) {
+        this.onlinePlayers.get().remove(gamePlayer);
+    }
+
+    public boolean isAccepted(UUID uniqueId) {
+        return this.onlinePlayers.get().containsKey(uniqueId);
     }
 
     public GamePlayer getPlayer(UUID uuid) {

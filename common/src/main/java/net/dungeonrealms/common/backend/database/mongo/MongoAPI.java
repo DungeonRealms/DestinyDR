@@ -41,8 +41,8 @@ public class MongoAPI {
      */
     public MongoAPI requestPlayerData(UUID uniqueId) {
         Document document = this.mongo.getCollection("playerData").find(Filters.eq("genericData.uniqueId", uniqueId.toString())).first();
-        if (document != null && !document.isEmpty()) // Does the dataplayer exist?
-        {
+        // Does the data exist?
+        if (document != null && !document.isEmpty()) {
             // Cache the player
             this.dataPlayerMap.put(uniqueId, new DataPlayer(uniqueId, document));
         } else {
@@ -88,5 +88,15 @@ public class MongoAPI {
      */
     public DataPlayer getPlayer(UUID uniqueId) {
         return this.dataPlayerMap.get(uniqueId);
+    }
+
+    /**
+     * Check if a player's data is cached
+     *
+     * @param uniqueId The player's uuid
+     * @return Boolean
+     */
+    public boolean exists(UUID uniqueId) {
+        return this.dataPlayerMap.containsKey(uniqueId);
     }
 }
