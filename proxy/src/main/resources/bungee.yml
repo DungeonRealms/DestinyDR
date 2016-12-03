@@ -1,6 +1,6 @@
 name: LIMBO-DungeonBungee
-main: net.dungeonrealms.proxy.DungeonBungee
+main: net.dungeonrealms.drproxy.DRProxy
 version: ${project.parent.version}
-authors: Vawke
+authors: [Vawke, Evoltr]
 website: http://www.dungeonrealms.net
 description: Dungeon Realms - LIMBO
