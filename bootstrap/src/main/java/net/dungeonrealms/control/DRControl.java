@@ -19,6 +19,7 @@ import net.dungeonrealms.packet.network.PacketPlayerCount;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +42,7 @@ public class DRControl {
     private CommandManager commandManager;
     private FriendManager friendManager;
 
-    public DRControl() {
+    public DRControl() throws SQLException {
         instance = this;
         uptime = System.currentTimeMillis();
 
@@ -65,7 +66,7 @@ public class DRControl {
         this.friendManager = new FriendManager(this);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         new DRControl().run();
     }
 

@@ -44,6 +44,7 @@ public class Database {
         source.addDataSourceProperty("password", password);
 
         UtilLogger.info("Connection established with the Database.");
+        UtilLogger.debug(host.toString() + " " + "database: " + database.toString());
     }
 
     public Connection getConnection() throws SQLException {

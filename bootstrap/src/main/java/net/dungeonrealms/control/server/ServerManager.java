@@ -5,6 +5,7 @@ import net.dungeonrealms.control.player.DRPlayer;
 import net.dungeonrealms.control.player.rank.Rank;
 import net.dungeonrealms.control.server.types.GameServer;
 import net.dungeonrealms.control.server.types.ProxyServer;
+import net.dungeonrealms.control.utils.UtilLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,8 +25,10 @@ public class ServerManager {
     private List<ProxyServer> proxyServers = new ArrayList<>();
     private List<GameServer> gameServers = new ArrayList<>();
 
-    public ServerManager(DRControl control) {
+    public ServerManager(DRControl control) throws SQLException {
         this.control = control;
+        loadProxies();
+        loadServers();
     }
 
     public List<ProxyServer> getProxyServers() {
@@ -54,7 +57,7 @@ public class ServerManager {
         return null;
     }
 
-    public List<GameServer> getOnlineGames() {
+    public List<GameServer> getOnlineServers() {
         List<GameServer> servers = new ArrayList<>();
 
         // Loop through all interactable instances and check if they're online.
@@ -182,7 +185,12 @@ public class ServerManager {
                 String host = set.getString("address");
                 int port = set.getInt("port");
 
-                proxyServers.add(new ProxyServer(name, host, port));
+                try {
+                    proxyServers.add(new ProxyServer(name, host, port));
+                    UtilLogger.warn("Added server to arraylist: " + name + ", " + host + ":" + port);
+                } catch (Exception e) {
+                    UtilLogger.warn("Failed to add server to arraylist: " + name + ", " + host + ":" + port);
+                }
             }
 
         } finally {

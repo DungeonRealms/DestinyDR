@@ -2,8 +2,7 @@ package net.dungeonrealms.control.command;
 
 import net.dungeonrealms.control.DRControl;
 import net.dungeonrealms.control.command.proxy.CommandProxyList;
-import net.dungeonrealms.control.command.util.CommandClear;
-import net.dungeonrealms.control.command.util.CommandHelp;
+import net.dungeonrealms.control.command.util.*;
 import net.dungeonrealms.control.utils.UtilLogger;
 
 import java.util.ArrayList;
@@ -24,6 +23,9 @@ public class CommandManager {
         registerCommand(new CommandProxyList());
         registerCommand(new CommandClear());
         registerCommand(new CommandHelp());
+        registerCommand(new CommandDebug());
+        registerCommand(new CommandEnd());
+        registerCommand(new CommandRestart());
     }
 
     public List<NetworkCommand> getCommands() {
