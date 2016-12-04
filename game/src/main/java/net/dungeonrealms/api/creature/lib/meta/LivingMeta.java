@@ -3,10 +3,12 @@ package net.dungeonrealms.api.creature.lib.meta;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
-import net.dungeonrealms.api.creature.lib.damage.IDamageSource;
+import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.frontend.vgame.player.GamePlayer;
 import net.minecraft.server.v1_9_R2.DamageSource;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
+
+import java.util.UUID;
 
 /**
  * Created by Giovanni on 24-11-2016.
@@ -16,7 +18,7 @@ import net.minecraft.server.v1_9_R2.EntityInsentient;
  */
 public class LivingMeta {
 
-    private BiMap<IDamageSource, Double> damage;
+    private BiMap<UUID, Double> damage;
 
     private EntityInsentient insentient;
 
@@ -37,16 +39,18 @@ public class LivingMeta {
         return this;
     }
 
-    public LivingMeta damage(IDamageSource damageSource, double value) {
+    public LivingMeta damage(UUID damageSource, double value) {
         this.damage.put(damageSource, value);
         this.insentient.damageEntity(DamageSource.GENERIC, Float.parseFloat(String.valueOf(value)));
         return this;
     }
 
     public GamePlayer getLargestDamageSource() {
-        IDamageSource damageSource = damage.inverse().get(Lists.newArrayList(this.damage.values()).get(0));
-        if (damageSource instanceof GamePlayer) {
-            return (GamePlayer) damageSource;
+        UUID damageSource = damage.inverse().get(Lists.newArrayList(this.damage.values()).get(0));
+        for (GamePlayer gamePlayer : Game.getGame().getRegistryRegistry().getPlayerRegistry().getOnlinePlayers().values()) {
+            if (gamePlayer.getPlayer().getUniqueId().equals(damageSource)) {
+                return gamePlayer;
+            }
         }
         return null;
     }

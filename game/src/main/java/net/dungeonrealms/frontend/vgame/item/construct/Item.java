@@ -1,6 +1,8 @@
 package net.dungeonrealms.frontend.vgame.item.construct;
 
 import net.dungeonrealms.frontend.vgame.item.EnumGameItem;
+import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemRarity;
+import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemTier;
 import net.dungeonrealms.frontend.vgame.item.security.UAI;
 import org.bukkit.inventory.ItemStack;
 
@@ -31,4 +33,18 @@ public interface Item {
      * @return An itemstack
      */
     ItemStack getItemStack();
+
+    /**
+     * Gets the item rarity of the game item
+     *
+     * @return The rarity
+     */
+    EnumItemRarity getRarity();
+
+    /**
+     * Gets the item tier of the game item
+     *
+     * @return The item tier
+     */
+    EnumItemTier getTier();
 }

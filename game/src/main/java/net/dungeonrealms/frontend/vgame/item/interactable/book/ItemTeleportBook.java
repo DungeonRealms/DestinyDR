@@ -2,6 +2,8 @@ package net.dungeonrealms.frontend.vgame.item.interactable.book;
 
 import lombok.Getter;
 import net.dungeonrealms.frontend.vgame.item.EnumGameItem;
+import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemRarity;
+import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemTier;
 import net.dungeonrealms.frontend.vgame.item.construct.Item;
 import net.dungeonrealms.frontend.vgame.item.construct.interaction.InteractionItem;
 import net.dungeonrealms.frontend.vgame.item.construct.interaction.action.EnumInteractionAction;
@@ -30,6 +32,12 @@ public class ItemTeleportBook extends InteractionItem implements Item {
 
     @Getter
     private ItemStack itemStack;
+
+    @Getter
+    private EnumItemTier tier = EnumItemTier.ONE;
+
+    @Getter
+    private EnumItemRarity rarity = EnumItemRarity.COMMON;
 
     public ItemTeleportBook() {
         super(EnumGameItem.TELEPORTATION_BOOK, EnumInteractionAction.TELEPORTATION);

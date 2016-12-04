@@ -2,12 +2,13 @@ package net.dungeonrealms.frontend.vgame.item.interactable.orb;
 
 import lombok.Getter;
 import net.dungeonrealms.frontend.vgame.item.EnumGameItem;
+import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemRarity;
+import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemTier;
 import net.dungeonrealms.frontend.vgame.item.construct.Item;
 import net.dungeonrealms.frontend.vgame.item.construct.interaction.InteractionItem;
 import net.dungeonrealms.frontend.vgame.item.construct.interaction.action.EnumInteractionAction;
 import net.dungeonrealms.frontend.vgame.item.security.UAI;
 import net.dungeonrealms.frontend.vgame.item.security.exception.CompoundException;
-import net.dungeonrealms.frontend.vgame.world.location.EnumLocation;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collections;
-import java.util.Random;
 
 /**
  * Created by Giovanni on 30-11-2016.
@@ -31,6 +31,12 @@ public class ItemOrb extends InteractionItem implements Item {
 
     @Getter
     private ItemStack itemStack;
+
+    @Getter
+    private EnumItemTier tier = EnumItemTier.ONE;
+
+    @Getter
+    private EnumItemRarity rarity = EnumItemRarity.COMMON;
 
     public ItemOrb() {
         super(EnumGameItem.ORB, EnumInteractionAction.ALTERATION);

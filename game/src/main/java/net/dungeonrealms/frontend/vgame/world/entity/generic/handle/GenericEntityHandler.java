@@ -48,22 +48,35 @@ public class GenericEntityHandler implements Handler.ListeningHandler {
 
     @EventHandler
     public void onCreatureDamageEntity(CreatureDamageEntityEvent event) {
-        event.getEntity().getBukkitEntity().sendMessage("");
+        if(event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if(Game.getGame().getRegistryRegistry().getPlayerRegistry().isAccepted(player.getUniqueId())) {
+                GamePlayer gamePlayer = Game.getGame().getRegistryRegistry().getPlayerRegistry().getPlayer(player.getUniqueId());
+                gamePlayer.setCombat(true);
+                gamePlayer.setLastDamageCause(event.getEntity().getBukkitEntity());
+                if(event.getItemStack() != null) {
+                    int damage = 0;
+                    int newHealth = 0;
+                } else {
+                }
+            }
+        }
     }
 
     @EventHandler
     public void onEntityDamageCreature(EntityDamageCreatureEvent event) {
-        event.getGameEntity().displayHealth();
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            GamePlayer gamePlayer = null;
-            if (gamePlayer != null) {
+            if (Game.getGame().getRegistryRegistry().getPlayerRegistry().isAccepted(player.getUniqueId())) {
+                GamePlayer gamePlayer = Game.getGame().getRegistryRegistry().getPlayerRegistry().getPlayer(player.getUniqueId());
                 gamePlayer.setCombat(true); // Set their combat log enabled
                 gamePlayer.setLastDamaged(event.getGameEntity().getEntity().getBukkitEntity());
                 if (event.getItemStack() != null) {
-                    // Calculate item damage
+                    // TODO Calculate item damage
                     int damage = 0;
                     int newHealth = (int) event.getGameEntity().getEntity().getHealth() - damage;
+
+                    final boolean[] powerMoved = {false};
 
                     // Blocking & dodging the damage
                     EnumPowerMove powerMove = EnumPowerMove.randomCombatMove();
@@ -74,14 +87,15 @@ public class GenericEntityHandler implements Handler.ListeningHandler {
                             public void perform() {
                                 int moveChance = new Random().nextInt(150);
                                 if (this.getChance() >= moveChance) {
+                                    powerMoved[0] = true;
                                     switch (this.getPowerMove()) {
                                         case DODGE:
                                             CenteredMessage.sendCenteredMessage(player, "&c&l*OPPONENT DODGED* &c(" + event.getGameEntity().getEntityData().getName() + "&c)");
-                                            player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 1f, 0.3f);
+                                            player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1f, 0.3f);
                                             break;
                                         case BLOCK:
                                             CenteredMessage.sendCenteredMessage(player, "&c&l*OPPONENT BLOCKED* &c(" + event.getGameEntity().getEntityData().getName() + "&c)");
-                                            player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 1f, 0.3f);
+                                            player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1f, 0.3f);
                                             break;
                                     }
                                 }
@@ -89,11 +103,16 @@ public class GenericEntityHandler implements Handler.ListeningHandler {
                         };
                         itemPowerMove.perform();
                     }
-                    // 5 DMG -> Atlas__ [99999]
-                    CenteredMessage.sendCenteredMessage(player, "&c" + damage + " &c&lDMG &c-> " + event.getGameEntity().getEntityData().getName() + "[" + newHealth + "]");
+                    if (!powerMoved[0]) {
+                        event.getGameEntity().displayHealth();
+                        // Damage the creature
+                        event.getGameEntity().getCreature().getLivingMeta().damage(gamePlayer.getPlayer().getUniqueId(), damage);
+                        // 5 DMG -> Atlas__ [99999]
+                        CenteredMessage.sendCenteredMessage(player, "&c" + damage + " &c&lDMG &c-> " + event.getGameEntity().getEntityData().getName() + "[" + newHealth + "]");
+                    }
                 } else {
                     // 1 Damage, player (most likely) used their hand to damage
-                    event.getGameEntity().getCreature().getLivingMeta().damage(gamePlayer, 1);
+                    event.getGameEntity().getCreature().getLivingMeta().damage(gamePlayer.getPlayer().getUniqueId(), 1);
                 }
             }
         }

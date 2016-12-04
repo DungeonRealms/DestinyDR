@@ -11,6 +11,8 @@ public enum EnumGameItem {
     ORB,
     TELEPORTATION_BOOK,
     WEAPON,
+    ARMOR,
+    // Selection
     HELMET,
     CHESTPLATE,
     LEGGINGS,

@@ -53,6 +53,10 @@ public class GamePlayer implements IPlayer {
     @Setter
     private Entity lastDamaged;
 
+    @Getter
+    @Setter
+    private Entity lastDamageCause;
+
     public GamePlayer(DataPlayer dataPlayer) {
         this.data = dataPlayer;
         this.player = dataPlayer.getPlayer();

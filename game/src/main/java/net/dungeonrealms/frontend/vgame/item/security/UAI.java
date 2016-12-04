@@ -25,8 +25,8 @@ public class UAI {
     public org.bukkit.inventory.ItemStack attachTo(ItemStack itemStack) throws CompoundException {
         NBTTagCompound tagCompound = itemStack.getTag();
         if (tagCompound != null) {
-            if (!tagCompound.hasKey("atomic")) {
-                tagCompound.set("atomic", new NBTTagString(this.uniqueId.toString()));
+            if (!tagCompound.hasKey("atomicId")) {
+                tagCompound.set("atomicId", new NBTTagString(this.uniqueId.toString()));
                 itemStack.setTag(tagCompound);
                 return CraftItemStack.asBukkitCopy(itemStack);
             } else {
