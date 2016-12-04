@@ -16,6 +16,18 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class InteractionItem {
 
+    /**
+     * NBT Format default
+     * gameItem true
+     * itemType
+     * interactionAction
+     * atomicId
+     *
+     * NBT Format teleport book
+     * inherit +
+     * teleportLocation
+     */
+
     @Getter
     private EnumGameItem gameItem;
 

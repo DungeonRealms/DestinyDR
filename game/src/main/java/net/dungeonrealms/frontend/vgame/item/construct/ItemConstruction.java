@@ -1,6 +1,7 @@
 package net.dungeonrealms.frontend.vgame.item.construct;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.frontend.vgame.item.EnumGameItem;
 import net.dungeonrealms.frontend.vgame.item.construct.gear.EnumGearType;
 import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemRarity;
@@ -15,22 +16,37 @@ import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemTier;
 public class ItemConstruction {
 
     @Getter
+    @Setter
     private EnumItemRarity itemRarity;
 
     @Getter
+    @Setter
     private EnumItemTier itemTier;
 
     @Getter
+    @Setter
     private EnumGearType gearType;
 
     @Getter
+    @Setter
     private String customName;
 
     @Getter
+    @Setter
     private boolean soulbound;
 
     @Getter
+    @Setter
     private boolean untradeable;
+
+    @Getter
+    @Setter
+    private int minDmg, maxDmg;
+
+    public ItemConstruction(EnumGearType gearType) {
+        this.gearType = gearType;
+        // Custom
+    }
 
     public ItemConstruction(EnumGameItem gameItem, EnumItemRarity itemRarity, boolean soulbound, boolean untradeable) {
         this.itemRarity = itemRarity;

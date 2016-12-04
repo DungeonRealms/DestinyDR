@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class BasicReflection {
+
     public static Object accessFieldObject(String par1, Object par2, Class par3) {
         Object object = null;
         try {

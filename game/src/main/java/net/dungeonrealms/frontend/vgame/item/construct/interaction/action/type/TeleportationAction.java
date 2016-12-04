@@ -37,31 +37,34 @@ public class TeleportationAction implements IAction {
     @Override
     public void start() {
         ItemStack itemStack = this.interactionItem.getItemStack();
-        GamePlayer gamePlayer = null;
+        GamePlayer gamePlayer = Game.getGame().getRegistryRegistry().getPlayerRegistry().getPlayer(this.activityPlayer.getUniqueId());
 
-        activityPlayer.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING" + " - " + ChatColor.AQUA
+        gamePlayer.setTeleporting(true);
+
+        this.activityPlayer.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "CASTING" + " - " + ChatColor.RESET + "Teleport: " + ChatColor.AQUA
                 + EnumLocation.valueOf(CraftItemStack.asNMSCopy(itemStack).getTag().getString("teleportLocation")).getName());
+        this.activityPlayer.getInventory().removeItem(itemStack);
 
         final int taskTime[] = {6};
         int task = Game.getGame().getServer().getScheduler().scheduleAsyncRepeatingTask(Game.getGame(), () -> {
-            // Are they in a teleportation? Because they might combat log..
+            // Are they in a teleportation? Prevent combat issues
             if (gamePlayer.isTeleporting()) {
                 // Is the time between 1 & 6, tell them
                 if (taskTime[0] > 0) {
-                    activityPlayer.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING " + ChatColor.RESET + "... " + taskTime + "s");
+                    this.activityPlayer.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "CASTING" + ChatColor.RESET + " ... " + taskTime[0] + "s");
                     taskTime[0]--;
                 }
 
                 // Is the time 0? Teleport him
                 if (taskTime[0] <= 0) {
-                    activityPlayer.teleport(EnumLocation.valueOf(CraftItemStack.asNMSCopy(itemStack).getTag().getString("teleportLocation")).getLocation());
+                    this.activityPlayer.teleport(EnumLocation.valueOf(CraftItemStack.asNMSCopy(itemStack).getTag().getString("teleportLocation")).getLocation());
                 }
             }
-        }, 0L, 100);
+        }, 0L, 20L);
 
         Game.getGame().getServer().getScheduler().scheduleAsyncDelayedTask(Game.getGame(), () -> {
             Game.getGame().getServer().getScheduler().cancelTask(task);
             taskTime[0] = 6;
-        }, (taskTime[0] * 20) + 10);
+        }, taskTime[0] * 20);
     }
 }

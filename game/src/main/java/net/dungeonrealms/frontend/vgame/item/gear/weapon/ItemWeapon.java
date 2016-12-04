@@ -12,7 +12,7 @@ import net.dungeonrealms.frontend.vgame.item.construct.generic.EnumItemTier;
 import net.dungeonrealms.frontend.vgame.item.security.UAI;
 import net.dungeonrealms.frontend.vgame.item.security.exception.CompoundException;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagDouble;
+import net.minecraft.server.v1_9_R2.NBTTagInt;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.ChatColor;
@@ -69,13 +69,16 @@ public class ItemWeapon implements Item {
 
     @Getter
     @Setter
-    private double minDmg, maxDmg;
+    private int minDmg, maxDmg;
 
     @Getter
     private boolean soulbound;
 
     @Getter
     private boolean untradeable;
+
+    @Getter
+    private List attributeList;
 
     public ItemWeapon(ItemConstruction itemConstruction) {
         this.atomicId = new UAI();
@@ -86,6 +89,42 @@ public class ItemWeapon implements Item {
         this.customName = itemConstruction.getCustomName();
         this.soulbound = itemConstruction.isSoulbound();
         this.untradeable = itemConstruction.isUntradeable();
+        // Create item
+        this.generate();
+    }
+
+    public ItemWeapon(ItemStack itemStack) throws CompoundException {
+        net.minecraft.server.v1_9_R2.ItemStack minecraftItem = CraftItemStack.asNMSCopy(itemStack);
+        if (minecraftItem.hasTag() || minecraftItem.getTag() != null) {
+            // Is it a game item?
+            if (minecraftItem.getTag().hasKey("gameItem")) {
+                // Does it have an atomic id?
+                if (minecraftItem.getTag().hasKey("atomicId")) {
+                    // Is it a weapon?
+                    if (minecraftItem.getTag().getString("itemType").equalsIgnoreCase(EnumGameItem.WEAPON.name())) {
+                        // Read the NBT and construct the weapon
+                        this.gameItem = EnumGameItem.valueOf(minecraftItem.getTag().getString("itemType"));
+                        this.tier = EnumItemTier.valueOf(minecraftItem.getTag().getString("itemTier"));
+                        this.rarity = EnumItemRarity.valueOf(minecraftItem.getTag().getString("itemRarity"));
+                        this.gearType = EnumGearType.valueOf(minecraftItem.getTag().getString("gearType"));
+                        this.minDmg = minecraftItem.getTag().getInt("minDmg");
+                        this.maxDmg = minecraftItem.getTag().getInt("maxDmg");
+                        this.soulbound = minecraftItem.getTag().getBoolean("soulbound");
+                        this.untradeable = minecraftItem.getTag().getBoolean("untradeable");
+                    }
+                } else
+                    throw new CompoundException(minecraftItem);
+            }
+        } else
+            throw new CompoundException(minecraftItem);
+    }
+
+    public ItemStack update() {
+        this.generate();
+        return this.itemStack;
+    }
+
+    private void generate() {
         // Generate itemstack
         this.itemStack = new ItemStack(Material.AIR);
         ItemMeta itemMeta = this.itemStack.getItemMeta();
@@ -98,7 +137,7 @@ public class ItemWeapon implements Item {
         // TODO attributes
         // Soulbound / Untradable
         if (this.soulbound) defaultLore.add("&4&oSoulbound");
-        if (this.untradeable) defaultLore.add("&7&oUntradable");
+        if (this.untradeable) defaultLore.add("&7&oUntradeable");
         // Fix the lore
         List<String> fixedLore = Lists.newArrayList();
         fixedLore.addAll(defaultLore.stream().map(string -> ChatColor.translateAlternateColorCodes('&', string)).collect(Collectors.toList()));
@@ -119,8 +158,8 @@ public class ItemWeapon implements Item {
         tagCompound.set("itemTier", new NBTTagString(this.tier.name()));
         tagCompound.set("itemRarity", new NBTTagString(this.rarity.name()));
         tagCompound.set("gearType", new NBTTagString(this.gearType.name()));
-        tagCompound.set("minDmg", new NBTTagDouble(this.minDmg));
-        tagCompound.set("maxDmg", new NBTTagDouble(this.maxDmg));
+        tagCompound.set("minDmg", new NBTTagInt(this.minDmg));
+        tagCompound.set("maxDmg", new NBTTagInt(this.maxDmg));
         // Change the attributelist to a json string
         // TODO tagCompound.set("attributes", new NBTTagString(new Gson().toJson(this.attributeList)));
         tagCompound.setBoolean("soulbound", this.soulbound);
@@ -132,31 +171,5 @@ public class ItemWeapon implements Item {
         } catch (CompoundException e) {
             e.printStackTrace();
         }
-    }
-
-    public ItemWeapon(ItemStack itemStack) throws CompoundException {
-        net.minecraft.server.v1_9_R2.ItemStack minecraftItem = CraftItemStack.asNMSCopy(itemStack);
-        if (minecraftItem.hasTag() || minecraftItem.getTag() != null) {
-            // Is it a game item?
-            if (minecraftItem.getTag().hasKey("gameItem")) {
-                // Does it have an atomic id?
-                if (minecraftItem.getTag().hasKey("atomicId")) {
-                    // Is it a weapon?
-                    if (minecraftItem.getTag().getString("itemType").equalsIgnoreCase(EnumGameItem.WEAPON.name())) {
-                        // Read the NBT and construct the weapon
-                        this.gameItem = EnumGameItem.valueOf(minecraftItem.getTag().getString("itemType"));
-                        this.tier = EnumItemTier.valueOf(minecraftItem.getTag().getString("itemTier"));
-                        this.rarity = EnumItemRarity.valueOf(minecraftItem.getTag().getString("itemRarity"));
-                        this.gearType = EnumGearType.valueOf(minecraftItem.getTag().getString("gearType"));
-                        this.minDmg = minecraftItem.getTag().getDouble("minDmg");
-                        this.maxDmg = minecraftItem.getTag().getDouble("maxDmg");
-                        this.soulbound = minecraftItem.getTag().getBoolean("soulbound");
-                        this.untradeable = minecraftItem.getTag().getBoolean("untradeable");
-                    }
-                } else
-                    throw new CompoundException(minecraftItem);
-            }
-        } else
-            throw new CompoundException(minecraftItem);
     }
 }

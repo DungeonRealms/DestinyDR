@@ -49,8 +49,8 @@ public class ItemTeleportBook extends InteractionItem implements Item {
         itemMeta.setDisplayName(ChatColor.BOLD.toString() + ChatColor.WHITE + "Teleportation: " + ChatColor.WHITE + location.getName());
         itemMeta.setLore(Arrays.asList(ChatColor.GRAY + "Teleports to " + location.getName(), ChatColor.GRAY + "Right-Click to teleport"));
         NBTTagCompound tagCompound = new NBTTagCompound();
-        tagCompound.setBoolean("interactionItem", true);
-        tagCompound.setString("gameItem", this.getGameItem().name());
+        tagCompound.setBoolean("gameItem", true);
+        tagCompound.setString("itemType", this.getGameItem().name());
         tagCompound.setString("interactionAction", this.getInteractionAction().name());
         tagCompound.setString("teleportLocation", location.name());
         this.itemStack.setItemMeta(itemMeta);

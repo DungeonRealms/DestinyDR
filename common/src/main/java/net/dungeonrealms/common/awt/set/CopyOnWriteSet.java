@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public abstract class CopyOnWriteSet<E> implements Set<E> {
+
     private final AtomicReference<Set<E>> ref;
 
     public CopyOnWriteSet(Collection<? extends E> c) {
