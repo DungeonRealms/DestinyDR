@@ -1,7 +1,7 @@
 package net.dungeonrealms.common.awt.frame.server.lobby;
 
 import lombok.Getter;
-import net.dungeonrealms.common.awt.frame.handler.HandlerMap;
+import lombok.Setter;
 import net.dungeonrealms.common.awt.database.connection.exception.ConnectionRunningException;
 import net.dungeonrealms.common.awt.database.mongo.connection.MongoConnection;
 
@@ -17,13 +17,12 @@ public class LobbyServer {
     private LobbyCore core;
 
     @Getter
-    private HandlerMap handlerMap;
-
-    @Getter
     private String lobbyId;
 
     @Getter
-    private transient boolean connectionsAllowed = false;
+    @Setter
+    private boolean enabled;
+
 
     @Getter
     private MongoConnection mongoConnection;
@@ -33,7 +32,7 @@ public class LobbyServer {
     }
 
     public void start() {
-        if (!this.connectionsAllowed) {
+        if (!this.enabled) {
             // Init connection to the mongo
             this.mongoConnection = new MongoConnection();
             try {
@@ -41,14 +40,7 @@ public class LobbyServer {
             } catch (ConnectionRunningException e) {
                 // This will never happen
             }
-            this.connectionsAllowed = this.core.isPrepared();
+            this.enabled = true;
         }
-    }
-
-    /**
-     * Enable all maps
-     */
-    protected void preEnableMaps() {
-        this.handlerMap = new HandlerMap();
     }
 }

@@ -37,7 +37,7 @@ public class ServerCore extends JavaPlugin implements IServer {
     private GameShard gameShard;
 
     @Getter
-    private boolean allowConnections = false;
+    private transient boolean allowConnections = false;
 
     @Getter
     protected JavaPlugin access;
@@ -58,7 +58,7 @@ public class ServerCore extends JavaPlugin implements IServer {
             this.commandSender.sendMessage(ChatColor.YELLOW + "Developers: VawkeNetty, Evoltr");
 
             // Enable the registered registries
-            this.commandSender.sendMessage(ChatColor.YELLOW + "ENABLING REGISTRIES " + ChatColor.GREEN + "(" + this.registryMap.size() + ")");
+            this.commandSender.sendMessage(ChatColor.YELLOW + "ENABLING SUPER-REGISTRIES " + ChatColor.GREEN + "(" + this.registryMap.size() + ")");
             this.registryMap.values().stream().filter(registry -> !registry.isConnected()).forEach(Registry::prepare);
             // Enable the registered handlers
             this.commandSender.sendMessage(ChatColor.YELLOW + "ENABLING HANDLERS " + ChatColor.GREEN + "(" + this.handlerMap.size() + ")");
@@ -69,12 +69,14 @@ public class ServerCore extends JavaPlugin implements IServer {
             // Start the actual shard
             this.commandSender.sendMessage(ChatColor.YELLOW + "STARTING GAME");
             this.gameShard = gameShard;
-            this.gameShard.setEnabled(true);
+            this.gameShard.start();
             // Allow player connections
             this.allowConnections = true;
             this.commandSender.sendMessage(ChatColor.GREEN + "INCOMING CONNECTIONS ENABLED");
             // Finished
             this.commandSender.sendMessage(ChatColor.GREEN + "DUNGEONREALMS SERVER - FINISHED");
+            // The size of the handler map grows when the handler-registry is prepared
+            this.commandSender.sendMessage(ChatColor.YELLOW + "Live handlers: " + this.handlerMap.size());
         } else
             throw new ServerRunningException();
     }
@@ -146,7 +148,7 @@ public class ServerCore extends JavaPlugin implements IServer {
     /**
      * Register a command
      *
-     * @param command THe command to register
+     * @param command The command to register
      */
     public void registerCommand(Command command) {
         this.commandMap.add(command);

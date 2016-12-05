@@ -2,9 +2,9 @@ package net.dungeonrealms.common.awt.database.mongo;
 
 import com.mongodb.client.model.Filters;
 import lombok.Getter;
+import net.dungeonrealms.common.awt.data.DataPlayer;
 import net.dungeonrealms.common.awt.database.mongo.nest.EnumNestType;
 import net.dungeonrealms.common.awt.database.mongo.nest.NestDocument;
-import net.dungeonrealms.common.awt.data.DataPlayer;
 import org.bson.Document;
 
 import java.util.UUID;
@@ -19,8 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class MongoAPI {
-    // DataPlayer dataPlayer = #requestPlayerData($).getPlayer();
-    // quitEvent -> $mongoapi.removeDataPlayer(event.getPlayer().getUniqueId(), true);
 
     @Getter
     private Mongo mongo;
@@ -36,7 +34,7 @@ public class MongoAPI {
     /**
      * Requests player generic by UUID & caches the player
      *
-     * @param uniqueId
+     * @param uniqueId The unique id of the player
      * @return this
      */
     public MongoAPI requestPlayerData(UUID uniqueId) {
@@ -55,26 +53,25 @@ public class MongoAPI {
     }
 
     /**
-     * Removes a dataplayer from the dataPlayerMap & updates the document
-     * <p>
-     * Called when a player logs out of a gameshard
+     * Remove a player's data from the mongo connection
      *
-     * @param uniqueId
+     * @param uniqueId The unique id of the player
+     * @param remove   Boolean
      * @return this
      */
-    public MongoAPI removeDataPlayer(UUID uniqueId, boolean save) {
+    public MongoAPI saveDataPlayer(UUID uniqueId, boolean remove) {
         if (this.dataPlayerMap.containsKey(uniqueId)) {
-            if (save) {
-                // Instead of bulk writing, we'll use something performance safer.
-                DataPlayer dataPlayer = this.dataPlayerMap.get(uniqueId);
-                Document document = dataPlayer.constructRawDocument();
-                // Insert the raw document of the DataPlayer
-                if (!(document != null && document.isEmpty()))
-                    this.mongo.getCollection("playerData").updateOne(Filters.eq("genericData.uniqueId", uniqueId.toString()), document);
-                else
-                    System.out.println("Failed to remove the player generic of: " + uniqueId + " > Document is empty/non-existent");
+            // Instead of bulk writing, we'll use something performance safer.
+            DataPlayer dataPlayer = this.dataPlayerMap.get(uniqueId);
+            Document document = dataPlayer.constructRawDocument();
+            // Insert the raw document of the DataPlayer
+            if (!(document != null && document.isEmpty()))
+                this.mongo.getCollection("playerData").updateOne(Filters.eq("genericData.uniqueId", uniqueId.toString()), document);
+            else
+                System.out.println("Failed to remove the player generic of: " + uniqueId + " > Document is empty/non-existent");
+            if (remove) {
+                this.dataPlayerMap.remove(uniqueId);
             }
-            this.dataPlayerMap.remove(uniqueId);
         }
         return this;
     }
@@ -83,7 +80,7 @@ public class MongoAPI {
      * This must be called after the player has been requested
      * using #requestPlayerData(parameter)
      *
-     * @param uniqueId
+     * @param uniqueId The unique id of the player
      * @return the dataplayer
      */
     public DataPlayer getPlayer(UUID uniqueId) {

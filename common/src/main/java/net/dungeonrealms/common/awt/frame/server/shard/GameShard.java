@@ -36,6 +36,7 @@ public class GameShard {
             } catch (ConnectionRunningException e) {
                 // This will never happen
             }
+            this.enabled = true;
         }
     }
 }
