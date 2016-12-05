@@ -5,12 +5,12 @@ import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
 import net.dungeonrealms.old.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.old.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.item.repairing.RepairAPI;
-import net.dungeonrealms.vgame.old.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -123,7 +123,7 @@ public class EnergyHandler implements GenericMechanic {
             }
             GamePlayer gp = GameAPI.getGamePlayer(player);
             if (gp == null || !gp.isAttributesLoaded()) {
-                continue; // player data not yet loaded
+                continue; // player generic not yet loaded
             }
             if (getPlayerCurrentEnergy(player) == 1.0F) {
                 continue;

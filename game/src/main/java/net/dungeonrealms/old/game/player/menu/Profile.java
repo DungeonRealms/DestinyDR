@@ -82,7 +82,7 @@ public class Profile implements Listener {
 
         Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
         if (muleTier == null) {
-            player.sendMessage(ChatColor.RED + "No mule data found.");
+            player.sendMessage(ChatColor.RED + "No mule generic found.");
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1,
                     true);
             muleTier = 1;

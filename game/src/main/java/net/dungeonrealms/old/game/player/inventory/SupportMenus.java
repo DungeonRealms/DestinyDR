@@ -47,13 +47,13 @@ public class SupportMenus {
     }
 
     public static void openMainMenu(Player player, String playerName) {
-        // @todo: Redo the loading of player data, looks like whoever change how the DB works messed up this entire system.
-        // @todo: As ranks no longer are read properly therefore leaving data [temporarily] outdated.
+        // @todo: Redo the loading of player generic, looks like whoever change how the DB works messed up this entire system.
+        // @todo: As ranks no longer are read properly therefore leaving generic [temporarily] outdated.
 
         try {
             UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
 
-            // Always grab new data, unless they're logged in (which shouldn't ever be the case)
+            // Always grab new generic, unless they're logged in (which shouldn't ever be the case)
             if (Bukkit.getPlayer(playerName) == null && DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
                 DatabaseAPI.getInstance().PLAYERS.remove(uuid);
             }

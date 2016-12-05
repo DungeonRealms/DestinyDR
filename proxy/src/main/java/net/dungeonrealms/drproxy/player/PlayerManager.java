@@ -22,7 +22,7 @@ public class PlayerManager implements Listener {
 
     private DRProxy plugin;
 
-    private String FAILED_LOAD_PLAYER = ChatColor.RED + "Failed to load your player data";
+    private String FAILED_LOAD_PLAYER = ChatColor.RED + "Failed to load your player generic";
 
     private HashMap<String, NetworkPlayer> players = new HashMap<>();
 
@@ -53,7 +53,7 @@ public class PlayerManager implements Listener {
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
             try {
-                // Create the player data if they have never played before.
+                // Create the player generic if they have never played before.
                 plugin.getDatabase().createPlayer(uuid, name, ip);
 
                 NetworkPlayer player = plugin.getDatabase().loadPlayer(uuid);

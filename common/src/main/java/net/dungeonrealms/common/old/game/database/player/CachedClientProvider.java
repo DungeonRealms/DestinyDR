@@ -17,7 +17,7 @@ public abstract class CachedClientProvider<D> {
 
     /**
      * @param player Player object
-     * @return Player's data
+     * @return Player's generic
      */
     public D createIfNotExists(Player player) {
         if (!this.PLAYER_DATA_CACHE.containsKey(player.getUniqueId()))
@@ -32,7 +32,7 @@ public abstract class CachedClientProvider<D> {
 
     /**
      * @param uuid UUID
-     * @return Player's data
+     * @return Player's generic
      */
     public D get(UUID uuid) {
         return this.PLAYER_DATA_CACHE.get(uuid);
@@ -41,7 +41,7 @@ public abstract class CachedClientProvider<D> {
 
     /**
      * @param uuid UUID
-     * @return If player data is cached
+     * @return If player generic is cached
      */
     public boolean isPresent(UUID uuid) {
         return PLAYER_DATA_CACHE.containsKey(uuid);
@@ -73,7 +73,7 @@ public abstract class CachedClientProvider<D> {
 
     /**
      * @param player Player
-     * @return New player data
+     * @return New player generic
      */
     protected abstract D cache(OfflinePlayer player, Object... params);
 }

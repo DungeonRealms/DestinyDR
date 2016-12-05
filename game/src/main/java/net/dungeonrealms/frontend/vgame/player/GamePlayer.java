@@ -3,7 +3,7 @@ package net.dungeonrealms.frontend.vgame.player;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.api.creature.lib.damage.EnumDamageSource;
-import net.dungeonrealms.common.backend.player.DataPlayer;
+import net.dungeonrealms.common.awt.data.DataPlayer;
 import net.dungeonrealms.frontend.vgame.player.goal.achievement.EnumAchievement;
 import net.dungeonrealms.frontend.vgame.player.goal.objective.Objective;
 import net.dungeonrealms.frontend.vgame.player.scoreboard.EnumScoreboardType;
@@ -20,9 +20,9 @@ import org.bukkit.entity.Player;
 public class GamePlayer implements IPlayer {
 
     @Getter
-    private DataPlayer data; // All raw data
+    private DataPlayer data; // All raw generic
 
-    // Transient game data
+    // Transient game generic
     @Getter
     private Player player;
 

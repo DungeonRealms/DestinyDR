@@ -47,9 +47,9 @@ public class CommandArmorSee extends BaseCommand {
                         inv.addItem(CraftItemStack.asCraftCopy(is));
                 }
             } else {
-                p.sendMessage(ChatColor.RED + "The player " + ent_name + "'s armor data is not loaded, and therefore cannot be displayed.");
+                p.sendMessage(ChatColor.RED + "The player " + ent_name + "'s armor generic is not loaded, and therefore cannot be displayed.");
 
-                p.sendMessage(ChatColor.GRAY + "In a later update, I will make it possible to view offline armor data" +
+                p.sendMessage(ChatColor.GRAY + "In a later update, I will make it possible to view offline armor generic" +
                         ".");
                 return true;
             }

@@ -174,7 +174,7 @@ public class DupedItemsRemover implements GenericMechanic {
             }
         }
         /*if (dupedItemsFound > 0) { uncomment to automatically remove found dupes
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, data, inv, true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, generic, inv, true);
         }*/
         return dupedItemsFound;
     }

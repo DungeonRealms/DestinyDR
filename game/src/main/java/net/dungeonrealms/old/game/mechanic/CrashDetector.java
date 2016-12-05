@@ -46,8 +46,8 @@ public class CrashDetector implements GenericMechanic {
                 if (multithreadAntiCrash == antiCrashTime) {
                     if (crashDetected) continue;
 
-                    // No tick in last 30 seconds, upload local data and reboot.
-                    Constants.log.warning("Detected no heartbeat in main thread for 30 seconds, uploading local data and locking server to prevent database issues.");
+                    // No tick in last 30 seconds, upload local generic and reboot.
+                    Constants.log.warning("Detected no heartbeat in main thread for 30 seconds, uploading local generic and locking server to prevent database issues.");
 
                     crashDetected = true;
                     GameAPI.handleCrash();

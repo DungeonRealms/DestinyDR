@@ -47,7 +47,7 @@ public class AddCommand extends BaseCommand {
 
 
         if (!isPlayer(playerName)) {
-            player.sendMessage(ChatColor.RED + "There is no data for a player by that name!");
+            player.sendMessage(ChatColor.RED + "There is no generic for a player by that name!");
             return false;
         }
 

@@ -12,7 +12,6 @@ import net.dungeonrealms.packet.network.PacketStaffMessage;
 import net.dungeonrealms.packet.player.PacketMessage;
 import net.dungeonrealms.packet.player.PacketPlayerConnect;
 import net.dungeonrealms.packet.server.PacketServerInfo;
-import net.dungeonrealms.proxy.handle.network.NetworkHandler;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;

@@ -10,6 +10,7 @@ import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;
 import net.dungeonrealms.common.old.game.punishment.PunishAPI;
 import net.dungeonrealms.common.old.game.util.Cooldown;
+import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.event.PlayerEnterRegionEvent;
@@ -36,7 +37,6 @@ import net.dungeonrealms.old.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.old.game.world.entity.util.MountUtils;
 import net.dungeonrealms.old.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.old.game.world.teleportation.Teleportation;
-import net.dungeonrealms.vgame.old.Game;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -139,7 +139,7 @@ public class MainListener implements Listener {
     public void onPing(ServerListPingEvent event) {
         if (!DungeonRealms.getInstance().canAcceptPlayers()) event.setMotd("offline");
         else
-            event.setMotd(Game.getGame().getGameShard().getShardId() + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER);
+            event.setMotd("" + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER);
     }
 
     /**
@@ -178,11 +178,11 @@ public class MainListener implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
-            if (!shard.equals("") && shard != null && !Game.getGame().getGameShard().getShardId().equals(shard)) {
+            if (!shard.equals("") && shard != null && !"".equals(shard)) {
                 event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
 
                         + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
-                        + "If you have just recently changed servers, your character data is being synced -- " + ChatColor.UNDERLINE.toString()
+                        + "If you have just recently changed servers, your character generic is being synced -- " + ChatColor.UNDERLINE.toString()
                         + "wait a few seconds" + ChatColor.GRAY.toString() + " before reconnecting.");
                 return;
             }

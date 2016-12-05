@@ -71,7 +71,7 @@ public class CommandLag extends BaseCommand {
                     tileEntities += chunk.getTileEntities().length;
                 }
             } catch (ClassCastException ex) {
-                Utils.log.info("Corrupted Chunk data on world " + w);
+                Utils.log.info("Corrupted Chunk generic on world " + w);
             }
             commandSender.sendMessage(ChatColor.GREEN + "World Type: " + ChatColor.WHITE + worldType + ChatColor.GREEN + " World Name: " + ChatColor.WHITE + w.getName());
             commandSender.sendMessage(ChatColor.YELLOW + "Loaded Chunks: " + ChatColor.WHITE + w.getLoadedChunks().length + ChatColor.BLUE + " Current Entities: "

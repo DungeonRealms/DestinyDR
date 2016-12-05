@@ -3,8 +3,8 @@ package net.dungeonrealms.frontend;
 import com.google.gson.Gson;
 import lombok.Getter;
 import net.dungeonrealms.backend.server.CommandRegistry;
-import net.dungeonrealms.common.awt.frame.GameShard;
-import net.dungeonrealms.common.awt.frame.ServerCore;
+import net.dungeonrealms.common.awt.frame.server.shard.GameShard;
+import net.dungeonrealms.common.awt.frame.server.shard.ServerCore;
 import net.dungeonrealms.common.awt.frame.exception.ServerRunningException;
 import net.dungeonrealms.common.awt.frame.save.EnumSaveFlag;
 import net.dungeonrealms.backend.server.HandlerRegistry;
@@ -60,7 +60,7 @@ public class Game extends ServerCore {
             e.printStackTrace();
         }
 
-        // 4 Load the world data
+        // 4 Load the world generic
         JSONParser jsonParser = new JSONParser();
         try {
             // dataFolder\world\gameWorld.json

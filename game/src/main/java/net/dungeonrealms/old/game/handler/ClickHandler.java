@@ -5,6 +5,7 @@ import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.donation.DonationEffects;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
@@ -33,7 +34,6 @@ import net.dungeonrealms.old.game.world.entity.util.MountUtils;
 import net.dungeonrealms.old.game.world.entity.util.PetUtils;
 import net.dungeonrealms.old.game.world.item.Item;
 import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.vgame.old.Game;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
@@ -100,7 +100,7 @@ public class ClickHandler {
                                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mule")) {
                                         Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
                                         if (muleTier == null) {
-                                            player.sendMessage(ChatColor.RED + "No mule data found.");
+                                            player.sendMessage(ChatColor.RED + "No mule generic found.");
                                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, true);
                                             muleTier = 1;
                                         }

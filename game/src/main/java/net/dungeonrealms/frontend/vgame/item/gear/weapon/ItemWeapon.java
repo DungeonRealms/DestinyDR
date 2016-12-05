@@ -150,7 +150,7 @@ public class ItemWeapon implements Item {
         // Generate the NBT
         net.minecraft.server.v1_9_R2.ItemStack minecraftItem = CraftItemStack.asNMSCopy(this.itemStack);
         NBTTagCompound tagCompound = minecraftItem.getTag() == null ? new NBTTagCompound() : minecraftItem.getTag();
-        // Remove Minecraft attribute data
+        // Remove Minecraft attribute generic
         tagCompound.set("AttributeModifiers", new NBTTagList());
         // Add our own
         tagCompound.set("gameItem", new NBTTagString("true"));
