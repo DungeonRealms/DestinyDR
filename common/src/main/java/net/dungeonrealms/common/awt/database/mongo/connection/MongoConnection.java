@@ -12,6 +12,7 @@ import net.dungeonrealms.common.awt.database.mongo.MongoAPI;
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
 public class MongoConnection {
+
     @Getter
     private Mongo mongo;
 
