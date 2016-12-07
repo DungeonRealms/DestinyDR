@@ -267,7 +267,7 @@ public class Rank {
 
     /**
      * Listens in the DatabaseDriver class when the players
-     * data is first returned to assign the proper
+     * generic is first returned to assign the proper
      * rank to the player!
      *
      * @param uuid

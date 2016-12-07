@@ -1,7 +1,8 @@
 package net.dungeonrealms.frontend.vgame.player.connect;
 
 import lombok.Getter;
-import net.dungeonrealms.common.backend.player.DataPlayer;
+import net.dungeonrealms.common.awt.data.DataPlayer;
+import net.dungeonrealms.common.awt.database.connection.IConnection;
 import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.frontend.vgame.player.GamePlayer;
 import org.bukkit.ChatColor;
@@ -75,7 +76,7 @@ public class PlayerConnection implements IConnection {
         if (Game.getGame().getRegistryRegistry().getPlayerRegistry().isAccepted(event.getPlayer().getUniqueId())
                 && Game.getGame().getGameShard().getMongoConnection().getApi().exists(event.getPlayer().getUniqueId())) {
             GamePlayer gamePlayer = Game.getGame().getRegistryRegistry().getPlayerRegistry().getPlayer(event.getPlayer().getUniqueId());
-            // Save the data first
+            // Save the generic first
             Game.getGame().getGameShard().getMongoConnection().getApi().removeDataPlayer(gamePlayer.getPlayer().getUniqueId(), true);
             // Now safely disconnect the player
             Game.getGame().getRegistryRegistry().getPlayerRegistry().removePlayer(gamePlayer);

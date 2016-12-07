@@ -8,7 +8,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -23,7 +22,7 @@ public class PlayerManager implements Listener {
 
     private DRProxy plugin;
 
-    private String FAILED_LOAD_PLAYER = ChatColor.RED + "Failed to load your player data";
+    private String FAILED_LOAD_PLAYER = ChatColor.RED + "Failed to load your player generic";
 
     private HashMap<String, NetworkPlayer> players = new HashMap<>();
 
@@ -54,13 +53,8 @@ public class PlayerManager implements Listener {
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
             try {
-                // Create the player data if they have never played before.
-                try {
-                    plugin.getDatabase().createPlayer(uuid, name, ip);
-                    DRProxy.log("Successfully created player data for " + name);
-                } catch (Exception e) {
-                    DRProxy.log("Failed to create player data for " + name);
-                }
+                // Create the player generic if they have never played before.
+                plugin.getDatabase().createPlayer(uuid, name, ip);
 
                 NetworkPlayer player = plugin.getDatabase().loadPlayer(uuid);
 

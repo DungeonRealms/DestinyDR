@@ -124,7 +124,7 @@ public class GameAPI {
     public static CooldownProvider SAVE_DATA_COOLDOWN = new CooldownProvider();
 
     /**
-     * Used to avoid double saving player data
+     * Used to avoid double saving player generic
      */
     public static Set<UUID> IGNORE_QUIT_EVENT = new HashSet<>();
 
@@ -156,7 +156,7 @@ public class GameAPI {
      *
      * @param callable Callable type
      * @param consumer Consumer task
-     * @param <T>      Type of data
+     * @param <T>      Type of generic
      * @author apollosoftware
      */
     public static <T> void submitAsyncCallback(Callable<T> callable, Consumer<Future<T>> consumer) {
@@ -501,21 +501,21 @@ public class GameAPI {
 
 
     /**
-     * Requests an update for cached player data on target
+     * Requests an update for cached player generic on target
      * player's server
      *
      * @param uuid Target
      */
     public static void updatePlayerData(UUID uuid) {
         // CHECK IF LOCAL //
-        if (Bukkit.getPlayer(uuid) != null) return; // their player data has already been updated in PLAYERS
+        if (Bukkit.getPlayer(uuid) != null) return; // their player generic has already been updated in PLAYERS
 
         // SENDS PACKET TO MASTER SERVER //
         sendNetworkMessage("Update", uuid.toString());
     }
 
     /**
-     * Requests an update for cached guild data on target
+     * Requests an update for cached guild generic on target
      * player's server
      *
      * @param guildName Target
@@ -529,7 +529,7 @@ public class GameAPI {
     /**
      * @param task     Packet job
      * @param message  Message to send.
-     * @param contents More data?
+     * @param contents More generic?
      * @since 1.0
      */
     public static void sendNetworkMessage(String task, String message, String... contents) {
@@ -706,7 +706,7 @@ public class GameAPI {
     }
 
     /**
-     * Saves player data
+     * Saves player generic
      *
      * @param uuid
      * @since 1.0
@@ -809,7 +809,7 @@ public class GameAPI {
         // HANDLE REALM LOGOUT SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
 
-        // save player data
+        // save player generic
         savePlayerData(uuid, async, doAfterSave -> {
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
@@ -900,7 +900,7 @@ public class GameAPI {
     }
 
     /**
-     * Safely logs out all players when the server restarts. Saves their data async before.
+     * Safely logs out all players when the server restarts. Saves their generic async before.
      *
      * @since 1.0
      */
@@ -921,7 +921,7 @@ public class GameAPI {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
-                // prevent any interaction while the data is being uploaded
+                // prevent any interaction while the generic is being uploaded
                 Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
                 player.setInvulnerable(true);
                 player.setNoDamageTicks(10);
@@ -939,7 +939,7 @@ public class GameAPI {
                     return;
                 } else GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
-                // upload data and send to server
+                // upload generic and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
                     if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
@@ -967,10 +967,10 @@ public class GameAPI {
         Player player = Bukkit.getPlayer(uuid);
 
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
-            player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
+            player.kickPlayer(ChatColor.RED + "Unable to grab your generic, please reconnect!");
             return;
         } else if (player != null) {
-            player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
+            player.sendMessage(ChatColor.GREEN + "Successfully received your generic, loading...");
 
             if (!DungeonRealms.getInstance().canAcceptPlayers() && !Rank.isDev(player)) {
                 player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
@@ -1340,7 +1340,7 @@ public class GameAPI {
     public static void moveToShard(Player player, String serverBungeeName) {
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
-        // prevent any interaction while the data is being uploaded
+        // prevent any interaction while the generic is being uploaded
         Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
         player.setInvulnerable(true);
         player.setNoDamageTicks(10);

@@ -71,7 +71,7 @@ public class MetadataUtils {
     }
 
     /**
-     * This type is used add metadata to projectiles based on their firing weapons nbt data.
+     * This type is used add metadata to projectiles based on their firing weapons nbt generic.
      *
      * @param tag
      * @param projectile

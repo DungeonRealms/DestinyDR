@@ -57,7 +57,7 @@ public interface IGameEntity {
     }
 
     /**
-     * Displays the name stored in the entity data of the game entity
+     * Displays the name stored in the entity generic of the game entity
      */
     default void displayName() {
         this.getEntity().setCustomName(this.getEntityData().getName());

@@ -11,6 +11,6 @@ import net.dungeonrealms.frontend.vgame.world.entity.generic.construct.EntityDat
 public class InvalidEntityDataException extends Exception {
 
     public InvalidEntityDataException(EntityData entityData) {
-        super("Entity data is null for [" + entityData.getUniqueId() + "] -> entity generation skipped");
+        super("Entity generic is null for [" + entityData.getUniqueId() + "] -> entity generation skipped");
     }
 }

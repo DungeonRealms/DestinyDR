@@ -52,7 +52,7 @@ public class ItemConstruction {
         this.itemRarity = itemRarity;
         this.soulbound = soulbound;
         this.untradeable = untradeable;
-        // Randomized data
+        // Randomized generic
         this.itemTier = EnumItemTier.random();
         switch (gameItem) {
             case WEAPON:
@@ -71,7 +71,7 @@ public class ItemConstruction {
         this.itemTier = itemTier;
         this.soulbound = soulbound;
         this.untradeable = untradeable;
-        // Randomized data
+        // Randomized generic
         this.itemRarity = EnumItemRarity.random();
         switch (gameItem) {
             case WEAPON:
@@ -90,7 +90,7 @@ public class ItemConstruction {
         this.customName = customName;
         this.soulbound = soulbound;
         this.untradeable = untradeable;
-        // Randomized data
+        // Randomized generic
         this.itemTier = EnumItemTier.random();
         this.itemRarity = EnumItemRarity.random();
         switch (gameItem) {
@@ -109,7 +109,7 @@ public class ItemConstruction {
         this.gearType = gearType;
         this.soulbound = soulbound;
         this.untradeable = untradeable;
-        // Randomized data
+        // Randomized generic
         this.itemTier = EnumItemTier.random();
         this.itemRarity = EnumItemRarity.random();
         // name
@@ -120,7 +120,7 @@ public class ItemConstruction {
         this.itemTier = itemTier;
         this.soulbound = soulbound;
         this.untradeable = untradeable;
-        // Randomized data
+        // Randomized generic
         switch (gameItem) {
             case WEAPON:
                 this.gearType = EnumGearType.randomWeapon();

@@ -58,7 +58,7 @@ public class GameWorld implements IWorld {
     }
 
     /**
-     * Save all the current game world data
+     * Save all the current game world generic
      *
      * @param saveFlag The type of save
      */

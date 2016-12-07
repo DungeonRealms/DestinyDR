@@ -86,7 +86,7 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async, boolean updateDatabase, Consumer<UpdateResult> doAfterOptional) {
-        if (PLAYERS.containsKey(uuid)) { // update local data
+        if (PLAYERS.containsKey(uuid)) { // update local generic
             Document localDoc = PLAYERS.get(uuid);
             String[] key = variable.getKey().split("\\.");
             Document rootDoc = (Document) localDoc.get(key[0]);
@@ -136,7 +136,7 @@ public class DatabaseAPI {
 
 
                 if (Bukkit.isPrimaryThread()) {
-                    Constants.log.warning("[Database] Updating " + uuid.toString() + "'s player data on the main thread");
+                    Constants.log.warning("[Database] Updating " + uuid.toString() + "'s player generic on the main thread");
 
                     if (Constants.debug)
                         printTrace();
@@ -196,7 +196,7 @@ public class DatabaseAPI {
      *
      * @param data Data type
      * @param uuid UUID
-     * @return Requested data
+     * @return Requested generic
      */
     public Object getData(EnumData data, UUID uuid) {
         Document doc;
@@ -205,7 +205,7 @@ public class DatabaseAPI {
         if (PLAYERS.containsKey(uuid)) doc = PLAYERS.get(uuid);
         else {
             long currentTime = 0;
-            // we should never be getting offline data sync.
+            // we should never be getting offline generic sync.
 
             if (Bukkit.isPrimaryThread()) {
                 Constants.log.info("[Database] Requested for " + uuid + "'s document from the database on the main thread.");
@@ -233,7 +233,7 @@ public class DatabaseAPI {
      *
      * @param data     Data type
      * @param document User's document
-     * @return Requested data
+     * @return Requested generic
      */
     public Object getData(EnumData data, Document document) {
         if (document == null) return null;
@@ -548,7 +548,7 @@ public class DatabaseAPI {
 
         DatabaseInstance.playerData.insertOne(newPlayerDocument);
         requestPlayer(uuid, async);
-        Constants.log.info("[Database] Requesting new data for : " + uuid);
+        Constants.log.info("[Database] Requesting new generic for : " + uuid);
     }
 
 

@@ -150,7 +150,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     private void update(String guildName, EnumGuildData data, EnumOperators EO, Object value, boolean async) {
-        if (CACHED_GUILD.containsKey(guildName)) { // update local data
+        if (CACHED_GUILD.containsKey(guildName)) { // update local generic
             Document localDoc = CACHED_GUILD.get(guildName);
             String[] key = data.getKey().split("\\.");
             Document rootDoc = (Document) localDoc.get(key[0]);

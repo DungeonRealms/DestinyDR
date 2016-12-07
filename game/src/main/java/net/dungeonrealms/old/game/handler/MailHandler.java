@@ -69,7 +69,7 @@ public class MailHandler {
     }
 
     /**
-     * Will apply the hidden data to an item.
+     * Will apply the hidden generic to an item.
      *
      * @param itemStack              item applying hidden date to..
      * @param base64SerializedString The encrypted string.

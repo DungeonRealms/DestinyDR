@@ -73,7 +73,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (packet instanceof PacketPlayerJoin) {
             PacketPlayerJoin packetPlayerJoin = (PacketPlayerJoin) packet;
 
-            // Update the player's data in the player manager.
+            // Update the player's generic in the player manager.
             if (packetPlayerJoin.getRank() != null && Rank.getRank(packetPlayerJoin.getRank()) != null) {
                 DRControl.getInstance().getPlayerManager().updatePlayer(packetPlayerJoin.getUUID(), packetPlayerJoin.getName(), Rank.getRank(packetPlayerJoin.getRank()));
             }

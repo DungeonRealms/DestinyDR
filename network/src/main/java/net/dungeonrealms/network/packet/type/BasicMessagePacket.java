@@ -9,7 +9,7 @@ import net.dungeonrealms.network.packet.Packet;
 public class BasicMessagePacket extends Packet {
 
     /*
-     * Raw data relayed from the master server.
+     * Raw generic relayed from the master server.
      */
     public byte[] data;
 

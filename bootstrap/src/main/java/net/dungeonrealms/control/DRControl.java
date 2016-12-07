@@ -5,9 +5,12 @@ import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import net.dungeonrealms.common.awt.database.connection.exception.ConnectionRunningException;
+import net.dungeonrealms.common.awt.database.mongo.connection.MongoConnection;
 import net.dungeonrealms.control.command.CommandManager;
 import net.dungeonrealms.control.config.Configuration;
 import net.dungeonrealms.control.database.Database;
+import net.dungeonrealms.control.database.cache.DataCache;
 import net.dungeonrealms.control.friend.FriendManager;
 import net.dungeonrealms.control.netty.ServerInitializer;
 import net.dungeonrealms.control.party.PartyManager;
@@ -34,6 +37,8 @@ public class DRControl {
     private boolean running = true;
 
     private Database database;
+    private MongoConnection mongoConnection;
+    private DataCache dataCache;
     private Configuration configuration;
 
     private PlayerManager playerManager;
@@ -57,6 +62,17 @@ public class DRControl {
         // Connect to the database.
         database = new Database(this);
         database.setup();
+
+        // Connect the Mongo to the default Dungeon Realms database, so we can interact w/ player data
+        this.mongoConnection = new MongoConnection();
+        try {
+            this.mongoConnection.runOn("", "dungeonrealms");
+        } catch (ConnectionRunningException e) {
+            e.printStackTrace();
+        }
+
+        // Start the player data cache
+        this.dataCache = new DataCache();
 
         // Setup managers.
         this.playerManager = new PlayerManager(this);
@@ -191,5 +207,9 @@ public class DRControl {
 
     public FriendManager getFriendManager() {
         return friendManager;
+    }
+
+    public MongoConnection getMongoConnection() {
+        return mongoConnection;
     }
 }

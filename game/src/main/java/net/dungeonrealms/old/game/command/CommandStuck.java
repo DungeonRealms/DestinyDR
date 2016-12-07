@@ -34,7 +34,7 @@ public class CommandStuck extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "Checking your status ...");
 
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "Seems one of the issues is we failed to retrieve your data from the database! Please rejoin!");
+            player.sendMessage(ChatColor.RED + "Seems one of the issues is we failed to retrieve your generic from the database! Please rejoin!");
             return true;
         }
 

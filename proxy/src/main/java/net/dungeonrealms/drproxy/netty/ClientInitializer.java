@@ -6,9 +6,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import net.dungeonrealms.common.backend.netty.NetworkManager;
 import net.dungeonrealms.drproxy.DRProxy;
-import net.dungeonrealms.proxy.handle.network.NetworkHandler;
 
 /**
  * Created by Evoltr on 11/30/2016.

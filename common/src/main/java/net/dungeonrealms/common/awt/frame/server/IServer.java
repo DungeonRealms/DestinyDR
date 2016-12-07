@@ -1,9 +1,9 @@
 package net.dungeonrealms.common.awt.frame.server;
 
 import com.google.common.collect.Lists;
-import net.dungeonrealms.common.awt.frame.ServerCore;
-import net.dungeonrealms.common.awt.frame.task.ServerTask;
-import net.dungeonrealms.common.awt.frame.task.data.EnumTaskPurpose;
+import net.dungeonrealms.common.awt.frame.server.shard.ServerCore;
+import net.dungeonrealms.common.awt.frame.server.shard.task.ServerTask;
+import net.dungeonrealms.common.awt.frame.server.shard.task.data.EnumTaskPurpose;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,9 +14,7 @@ import java.util.stream.Collectors;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public interface IServer {
-
-    ServerCore getCore();
+public interface IServer extends Core {
 
     /**
      * Schedule a new server task
@@ -28,10 +26,10 @@ public interface IServer {
             case ASYNC:
                 switch (serverTask.getTaskType()) {
                     case REPEATING:
-                        this.getCore().getServer().getScheduler().scheduleAsyncRepeatingTask(this.getCore(), serverTask::onRun, 0, 20 * serverTask.getTimeX());
+                        this.getAccess().getServer().getScheduler().scheduleAsyncRepeatingTask(this.getAccess(), serverTask::onRun, 0, 20 * serverTask.getTimeX());
                         break;
                     case DELAYED:
-                        this.getCore().getServer().getScheduler().scheduleAsyncDelayedTask(this.getCore(), serverTask::onRun, 20 * serverTask.getTimeX());
+                        this.getAccess().getServer().getScheduler().scheduleAsyncDelayedTask(this.getAccess(), serverTask::onRun, 20 * serverTask.getTimeX());
                         break;
                 }
                 break;
@@ -39,10 +37,10 @@ public interface IServer {
                 switch (serverTask.getTaskType()) {
                     case REPEATING:
                         if (serverTask.getTaskPurpose() == EnumTaskPurpose.WORLD_MANIPULATION)
-                            this.getCore().getServer().getScheduler().scheduleSyncRepeatingTask(this.getCore(), serverTask::onRun, 0, 20 * serverTask.getTimeX());
+                            this.getAccess().getServer().getScheduler().scheduleSyncRepeatingTask(this.getAccess(), serverTask::onRun, 0, 20 * serverTask.getTimeX());
                         break;
                     case DELAYED:
-                        this.getCore().getServer().getScheduler().scheduleSyncDelayedTask(this.getCore(), serverTask::onRun, 20 * serverTask.getTimeX());
+                        this.getAccess().getServer().getScheduler().scheduleSyncDelayedTask(this.getAccess(), serverTask::onRun, 20 * serverTask.getTimeX());
                         break;
                 }
                 break;

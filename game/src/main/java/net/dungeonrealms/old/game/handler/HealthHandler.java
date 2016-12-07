@@ -6,6 +6,7 @@ import net.dungeonrealms.common.old.game.database.DatabaseAPI;
 import net.dungeonrealms.common.old.game.database.data.EnumData;
 import net.dungeonrealms.common.old.game.database.data.EnumOperators;
 import net.dungeonrealms.common.old.game.database.player.rank.Rank;
+import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.old.game.achievements.Achievements;
 import net.dungeonrealms.old.game.mastery.DamageTracker;
 import net.dungeonrealms.old.game.mastery.GamePlayer;
@@ -18,7 +19,6 @@ import net.dungeonrealms.old.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.old.game.world.entity.EntityMechanics;
 import net.dungeonrealms.old.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.old.game.world.item.Item;
-import net.dungeonrealms.vgame.old.Game;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
@@ -131,7 +131,7 @@ public class HealthHandler implements GenericMechanic {
         if (player.hasMetadata("currentHP")) {
             return player.getMetadata("currentHP").get(0).asInt();
         } else {
-            return 50; //This shouldn't happen but safety return. Probably kick them or something if their data cannot be loaded.
+            return 50; //This shouldn't happen but safety return. Probably kick them or something if their generic cannot be loaded.
         }
     }
 
