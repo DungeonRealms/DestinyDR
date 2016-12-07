@@ -57,6 +57,64 @@
             <artifactId>netty-transport</artifactId>
             <version>5.0.0.Alpha3-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.5.1</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <defaultGoal>clean install</defaultGoal>
+        <finalName>BukkitCore</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.ini4j:ini4j</include>
+                                    <include>com.zaxxer:*</include>
+                                    <include>org.mongodb:mongo-java-driver</include>
+                                    <include>org.mongodb:bson</include>
+                                    <include>mysql:*</include>
+                                    <include>org.slf4j:*</include>
+                                    <include>org.objenesis:objenesis</include>
+                                    <include>commons-net:commons-net</include>
+                                    <include>net.lingala.zip4j:zip4j</include>
+                                    <include>net.dungeonrealms:DungeonRealms-common</include>
+                                    <include>net.dungeonrealms:DungeonRealms-network</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

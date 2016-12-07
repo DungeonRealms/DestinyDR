@@ -1,0 +1,4 @@
+name: BukkitCore
+version: ${project.version}
+author: Evoltr
+main: net.dungeonrealms.bukkit.BukkitCore

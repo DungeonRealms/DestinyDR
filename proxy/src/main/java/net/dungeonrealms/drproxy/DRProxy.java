@@ -34,7 +34,12 @@ public class DRProxy extends Plugin {
         instance = this;
         loadConfig();
 
-        setupDatabase();
+        try {
+            setupDatabase();
+            log("Successfully set up database. DB: " + getDatabase().);
+        } catch (Exception e) {
+            log("Failed to set up database");
+        }
 
         nettyHandler = new NettyHandler(this);
         playerManager = new PlayerManager(this);
