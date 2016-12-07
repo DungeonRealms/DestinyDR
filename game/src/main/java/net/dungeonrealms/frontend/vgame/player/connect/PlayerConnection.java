@@ -76,8 +76,8 @@ public class PlayerConnection implements IConnection {
         if (Game.getGame().getRegistryRegistry().getPlayerRegistry().isAccepted(event.getPlayer().getUniqueId())
                 && Game.getGame().getGameShard().getMongoConnection().getApi().exists(event.getPlayer().getUniqueId())) {
             GamePlayer gamePlayer = Game.getGame().getRegistryRegistry().getPlayerRegistry().getPlayer(event.getPlayer().getUniqueId());
-            // Save the generic first
-            Game.getGame().getGameShard().getMongoConnection().getApi().removeDataPlayer(gamePlayer.getPlayer().getUniqueId(), true);
+            // Save the data first
+            Game.getGame().getGameShard().getMongoConnection().getApi().saveDataPlayer(gamePlayer.getPlayer().getUniqueId(), true);
             // Now safely disconnect the player
             Game.getGame().getRegistryRegistry().getPlayerRegistry().removePlayer(gamePlayer);
         }
