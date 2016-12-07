@@ -1,7 +1,8 @@
 package net.dungeonrealms.bukkit;
 
-import lombok.Getter;
+import net.dungeonrealms.bukkit.database.Database;
 import net.dungeonrealms.bukkit.managers.NetworkManager;
+import net.dungeonrealms.bukkit.player.PlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -9,13 +10,17 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class BukkitCore extends JavaPlugin {
 
-    @Getter
     private static BukkitCore instance;
-    @Getter
     private NetworkManager networkManager;
+    private Database database;
+    private PlayerManager playerManager;
 
     public static void log(String msg) {
         getInstance().getLogger().info(msg);
+    }
+
+    public static BukkitCore getInstance() {
+        return instance;
     }
 
     @Override
@@ -23,7 +28,11 @@ public class BukkitCore extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
 
-        this.networkManager = new NetworkManager(this);
+        networkManager = new NetworkManager(this);
+        playerManager = new PlayerManager(this);
+
+        database = new Database(this);
+        database.setup();
 
         log("GameManager has successfully loaded and is taking over your bukkit server.");
     }
@@ -39,4 +48,15 @@ public class BukkitCore extends JavaPlugin {
         return getConfig().getString("name");
     }
 
+    public NetworkManager getNetworkManager() {
+        return networkManager;
+    }
+
+    public Database getDB() {
+        return database;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
 }
