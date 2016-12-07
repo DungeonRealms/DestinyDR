@@ -1,4 +1,4 @@
-package net.dungeonrealms.packet.player;
+package net.dungeonrealms.packet.player.out;
 
 import lombok.Getter;
 import net.dungeonrealms.packet.Packet;

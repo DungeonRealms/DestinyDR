@@ -17,6 +17,7 @@
         <module>lobby</module>
         <module>bootstrap</module>
         <module>bukkit</module>
+        <module>database</module>
     </modules>
 
     <build>

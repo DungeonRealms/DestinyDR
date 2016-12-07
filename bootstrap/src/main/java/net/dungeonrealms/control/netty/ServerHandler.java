@@ -17,10 +17,9 @@ import net.dungeonrealms.packet.network.PacketPrivateMessage;
 import net.dungeonrealms.packet.network.PacketReply;
 import net.dungeonrealms.packet.network.PacketStaffMessage;
 import net.dungeonrealms.packet.party.*;
-import net.dungeonrealms.packet.player.PacketMessage;
-import net.dungeonrealms.packet.player.PacketPlayerConnect;
-import net.dungeonrealms.packet.player.PacketPlayerJoin;
-import net.dungeonrealms.packet.player.PacketPlayerQuit;
+import net.dungeonrealms.packet.player.*;
+import net.dungeonrealms.packet.player.in.PacketPlayerDataRequest;
+import net.dungeonrealms.packet.player.out.PacketPlayerDataSend;
 import net.dungeonrealms.packet.server.PacketServerPing;
 
 import java.net.InetSocketAddress;
@@ -62,182 +61,182 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 if (server != null && server.getHost().equals(ip) || ip.equals("localhost")) {
                     onConnected(channelHandlerContext.channel(), server);
                 }
-            }
-            return;
-        }
-
-        // Convert the received message into a packet.
-        Packet packet = (Packet) object;
-
-        // Handle join packet.
-        if (packet instanceof PacketPlayerJoin) {
-            PacketPlayerJoin packetPlayerJoin = (PacketPlayerJoin) packet;
-
-            // Update the player's generic in the player manager.
-            if (packetPlayerJoin.getRank() != null && Rank.getRank(packetPlayerJoin.getRank()) != null) {
-                DRControl.getInstance().getPlayerManager().updatePlayer(packetPlayerJoin.getUUID(), packetPlayerJoin.getName(), Rank.getRank(packetPlayerJoin.getRank()));
-            }
-            server.addPlayer(packetPlayerJoin.getUUID());
-
-            // Send the new player count to the lobbies and proxies.
-            if (server instanceof GameServer) {
-                ((GameServer) server).sendInfoToServers();
-            }
-
-            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByUUID(packetPlayerJoin.getUUID());
-
-            // Send login message to all friends.
-            if (server instanceof ProxyServer) {
-                for (DRPlayer friend : DRControl.getInstance().getFriendManager().getFriends(player)) {
-                    player.sendMessage("&a+ " + friend.getName() + ".", true);
-                }
-
-                DRControl.getInstance().getChannel().eventLoop().schedule(() -> {
-                    int friendRequests = DRControl.getInstance().getFriendManager().getRequests(player).size();
-                    if (friendRequests > 0) {
-                        player.sendMessage("You have " + friendRequests + " friend requests. Type '/f requests' to view them.", true);
-                    }
-
-                }, 500, TimeUnit.MILLISECONDS);
-            }
-        }
-
-        // Handle quit packet.
-        if (packet instanceof PacketPlayerQuit) {
-            PacketPlayerQuit packetPlayerQuit = (PacketPlayerQuit) packet;
-
-            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByUUID(packetPlayerQuit.getUUID());
-
-            // Send leave message to all friends.
-            if (server instanceof ProxyServer) {
-                for (DRPlayer friend : DRControl.getInstance().getFriendManager().getFriends(player)) {
-                    player.sendMessage("&c- " + friend.getName(), true);
-                }
-            }
-
-            server.removePlayer(packetPlayerQuit.getUUID());
-
-            // Send the new player count to the lobbies and proxies.
-            if (server instanceof GameServer) {
-                ((GameServer) server).sendInfoToServers();
-            }
-        }
-
-        // Handle server ping packet.
-        if (packet instanceof PacketServerPing) {
-            PacketServerPing packetServerPing = (PacketServerPing) packet;
-
-            if (server instanceof GameServer) {
-                GameServer gameServer = (GameServer) server;
-
-                gameServer.setGame(packetServerPing.getGame());
-                gameServer.setMap(packetServerPing.getMap());
-                gameServer.setState(packetServerPing.getState());
-
-                gameServer.sendInfoToServers();
-            }
-        }
-
-        // Handle player connect packet.
-        if (packet instanceof PacketPlayerConnect) {
-            PacketPlayerConnect packetPlayerConnect = (PacketPlayerConnect) packet;
-
-            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPlayerConnect.getPlayer());
-            String serverName = packetPlayerConnect.getServer();
-
-            GameServer gameServer = DRControl.getInstance().getServerManager().getGameServer(serverName);
-
-            if (GameServer.ServerType.getByName(serverName) != null) {
-                gameServer = DRControl.getInstance().getServerManager().getBestServer(GameServer.ServerType.getByName(serverName), player);
-            }
-
-            player.connect(gameServer);
-        }
-
-        // Handle staff message packet.
-        if (packet instanceof PacketStaffMessage) {
-            PacketStaffMessage packetStaffMessage = (PacketStaffMessage) packet;
-
-            // Forward the packet to all proxies.
-            for (ProxyServer proxy : DRControl.getInstance().getServerManager().getProxyServers()) {
-                proxy.sendPacket(packetStaffMessage);
-            }
-        }
-
-        // Handle message packet.
-        if (packet instanceof PacketMessage) {
-            PacketMessage packetMessage = (PacketMessage) packet;
-
-            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(packetMessage.getPlayer());
-
-            // Send the message to the player.
-            if (player != null) {
-                player.sendMessage(packetMessage.getMessage(), false);
-            }
-        }
-
-        // Handle private message packet.
-        if (packet instanceof PacketPrivateMessage) {
-            PacketPrivateMessage packetPrivateMessage = (PacketPrivateMessage) packet;
-
-            String sender = packetPrivateMessage.getSender();
-            String receiver = packetPrivateMessage.getReceiver();
-            String message = packetPrivateMessage.getMessage();
-
-            //Handle the message.
-            handleMessage(sender, receiver, message, false);
-        }
-
-        // Handle reply packet.
-        if (packet instanceof PacketReply) {
-            PacketReply packetReply = (PacketReply) packet;
-
-            String sender = packetReply.getSender();
-            String message = packetReply.getMessage();
-
-            DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(sender);
-
-            // Get the last player they messaged from the hashmap.
-            String receiver = messages.get(sender.toLowerCase());
-
-            if (receiver == null) {
-                player.sendMessage("&cYou have not messaged anyone recently.", true);
                 return;
             }
 
-            // Handle the message.
-            handleMessage(sender, receiver, message, true);
-        }
+            // Convert the received message into a packet.
+            Packet packet = (Packet) object;
+
+            // Handle join packet.
+            if (packet instanceof PacketPlayerJoin) {
+                PacketPlayerJoin packetPlayerJoin = (PacketPlayerJoin) packet;
+
+                // Update the player's data in the player manager.
+                if (packetPlayerJoin.getRank() != null && Rank.getRank(packetPlayerJoin.getRank()) != null) {
+                    DRControl.getInstance().getPlayerManager().updatePlayer(packetPlayerJoin.getUUID(), packetPlayerJoin.getName(), Rank.getRank(packetPlayerJoin.getRank()));
+                }
+                server.addPlayer(packetPlayerJoin.getUUID());
+
+                // Send the new player count to the lobbies and proxies.
+                if (server instanceof GameServer) {
+                    ((GameServer) server).sendInfoToServers();
+                }
+
+                DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByUUID(packetPlayerJoin.getUUID());
+
+                // Send login message to all friends.
+                if (server instanceof ProxyServer) {
+                    for (DRPlayer friend : DRControl.getInstance().getFriendManager().getFriends(player)) {
+                        player.sendMessage("&a+ " + friend.getName() + ".", true);
+                    }
+
+                    DRControl.getInstance().getChannel().eventLoop().schedule(() -> {
+                        int friendRequests = DRControl.getInstance().getFriendManager().getRequests(player).size();
+                        if (friendRequests > 0) {
+                            player.sendMessage("You have " + friendRequests + " friend requests. Type '/f requests' to view them.", true);
+                        }
+
+                    }, 500, TimeUnit.MILLISECONDS);
+                }
+            }
+
+            // Handle quit packet.
+            if (packet instanceof PacketPlayerQuit) {
+                PacketPlayerQuit packetPlayerQuit = (PacketPlayerQuit) packet;
+
+                DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByUUID(packetPlayerQuit.getUUID());
+
+                // Send leave message to all friends.
+                if (server instanceof ProxyServer) {
+                    for (DRPlayer friend : DRControl.getInstance().getFriendManager().getFriends(player)) {
+                        player.sendMessage("&c- " + friend.getName(), true);
+                    }
+                }
+
+                server.removePlayer(packetPlayerQuit.getUUID());
+
+                // Send the new player count to the lobbies and proxies.
+                if (server instanceof GameServer) {
+                    ((GameServer) server).sendInfoToServers();
+                }
+            }
+
+            // Handle server ping packet.
+            if (packet instanceof PacketServerPing) {
+                PacketServerPing packetServerPing = (PacketServerPing) packet;
+
+                if (server instanceof GameServer) {
+                    GameServer gameServer = (GameServer) server;
+
+                    gameServer.setGame(packetServerPing.getGame());
+                    gameServer.setMap(packetServerPing.getMap());
+                    gameServer.setState(packetServerPing.getState());
+
+                    gameServer.sendInfoToServers();
+                }
+            }
+
+            // Handle player connect packet.
+            if (packet instanceof PacketPlayerConnect) {
+                PacketPlayerConnect packetPlayerConnect = (PacketPlayerConnect) packet;
+
+                DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(packetPlayerConnect.getPlayer());
+                String serverName = packetPlayerConnect.getServer();
+
+                GameServer gameServer = DRControl.getInstance().getServerManager().getGameServer(serverName);
+
+                if (GameServer.ServerType.getByName(serverName) != null) {
+                    gameServer = DRControl.getInstance().getServerManager().getBestServer(GameServer.ServerType.getByName(serverName), player);
+                }
+
+                player.connect(gameServer);
+            }
+
+            // Handle staff message packet.
+            if (packet instanceof PacketStaffMessage) {
+                PacketStaffMessage packetStaffMessage = (PacketStaffMessage) packet;
+
+                // Forward the packet to all proxies.
+                for (ProxyServer proxy : DRControl.getInstance().getServerManager().getProxyServers()) {
+                    proxy.sendPacket(packetStaffMessage);
+                }
+            }
+
+            // Handle message packet.
+            if (packet instanceof PacketMessage) {
+                PacketMessage packetMessage = (PacketMessage) packet;
+
+                DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(packetMessage.getPlayer());
+
+                // Send the message to the player.
+                if (player != null) {
+                    player.sendMessage(packetMessage.getMessage(), false);
+                }
+            }
+
+            // Handle private message packet.
+            if (packet instanceof PacketPrivateMessage) {
+                PacketPrivateMessage packetPrivateMessage = (PacketPrivateMessage) packet;
+
+                String sender = packetPrivateMessage.getSender();
+                String receiver = packetPrivateMessage.getReceiver();
+                String message = packetPrivateMessage.getMessage();
+
+                //Handle the message.
+                handleMessage(sender, receiver, message, false);
+            }
+
+            // Handle reply packet.
+            if (packet instanceof PacketReply) {
+                PacketReply packetReply = (PacketReply) packet;
+
+                String sender = packetReply.getSender();
+                String message = packetReply.getMessage();
+
+                DRPlayer player = DRControl.getInstance().getPlayerManager().getPlayerByName(sender);
+
+                // Get the last player they messaged from the hashmap.
+                String receiver = messages.get(sender.toLowerCase());
+
+                if (receiver == null) {
+                    player.sendMessage("&cYou have not messaged anyone recently.", true);
+                    return;
+                }
+
+                // Handle the message.
+                handleMessage(sender, receiver, message, true);
+            }
 
 
-        // Handle party invite packet.
-        if (packet instanceof PacketPartyInvite) {
-            DRControl.getInstance().getPartyManager().handleInvite((PacketPartyInvite) packet);
-        }
+            // Handle party invite packet.
+            if (packet instanceof PacketPartyInvite) {
+                DRControl.getInstance().getPartyManager().handleInvite((PacketPartyInvite) packet);
+            }
 
-        // Handle party accept packet.
-        if (packet instanceof PacketPartyAccept) {
-            DRControl.getInstance().getPartyManager().handleAccept((PacketPartyAccept) packet);
-        }
+            // Handle party accept packet.
+            if (packet instanceof PacketPartyAccept) {
+                DRControl.getInstance().getPartyManager().handleAccept((PacketPartyAccept) packet);
+            }
 
-        // Handle party leave packet.
-        if (packet instanceof PacketPartyLeave) {
-            DRControl.getInstance().getPartyManager().handleLeave((PacketPartyLeave) packet);
-        }
+            // Handle party leave packet.
+            if (packet instanceof PacketPartyLeave) {
+                DRControl.getInstance().getPartyManager().handleLeave((PacketPartyLeave) packet);
+            }
 
-        // Handle party chat packet.
-        if (packet instanceof PacketPartyChat) {
-            DRControl.getInstance().getPartyManager().handleChat((PacketPartyChat) packet);
-        }
+            // Handle party chat packet.
+            if (packet instanceof PacketPartyChat) {
+                DRControl.getInstance().getPartyManager().handleChat((PacketPartyChat) packet);
+            }
 
-        // Handle party warp packet.
-        if (packet instanceof PacketPartyWarp) {
-            DRControl.getInstance().getPartyManager().handleWarp((PacketPartyWarp) packet);
-        }
+            // Handle party warp packet.
+            if (packet instanceof PacketPartyWarp) {
+                DRControl.getInstance().getPartyManager().handleWarp((PacketPartyWarp) packet);
+            }
 
-        // Handle party disband packet.
-        if (packet instanceof PacketPartyDisband) {
-            DRControl.getInstance().getPartyManager().handleDisband((PacketPartyDisband) packet);
+            // Handle party disband packet.
+            if (packet instanceof PacketPartyDisband) {
+                DRControl.getInstance().getPartyManager().handleDisband((PacketPartyDisband) packet);
+            }
         }
     }
 
