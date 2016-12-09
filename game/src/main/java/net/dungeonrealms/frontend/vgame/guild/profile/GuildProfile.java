@@ -42,7 +42,6 @@ public class GuildProfile {
      * Flush the profile
      */
     public void flush() {
-        this.guild.removeMember(Game.getGame().getRegistryRegistry().getPlayerRegistry().getPlayer(this.owner));
         this.guildRole = null;
         this.guild = null;
         this.profileStatus = EnumProfileStatus.NO_GUILD;
@@ -90,6 +89,7 @@ public class GuildProfile {
             GamePlayer gamePlayer = Game.getGame().getRegistryRegistry().getPlayerRegistry().getPlayer(this.owner);
             this.guild.removeMember(gamePlayer);
             this.guild.notify(new String[]{kicker + " has kicked " + gamePlayer.getPlayer().getName() + " from the guild"});
+            this.flush();
         }
     }
 }
