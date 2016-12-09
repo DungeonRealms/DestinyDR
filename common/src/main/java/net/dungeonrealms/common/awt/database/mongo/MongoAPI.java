@@ -32,14 +32,14 @@ public class MongoAPI {
     }
 
     /**
-     * Requests player generic by UUID & caches the player
+     * Requests player data by UUID & caches the player
      *
      * @param uniqueId The unique id of the player
      * @return this
      */
     public MongoAPI requestPlayerData(UUID uniqueId) {
         Document document = this.mongo.getCollection("playerData").find(Filters.eq("genericData.uniqueId", uniqueId.toString())).first();
-        // Does the generic exist?
+        // Does the data exist?
         if (document != null && !document.isEmpty()) {
             // Cache the player
             this.dataPlayerMap.put(uniqueId, new DataPlayer(uniqueId, document));
@@ -68,7 +68,7 @@ public class MongoAPI {
             if (!(document != null && document.isEmpty()))
                 this.mongo.getCollection("playerData").updateOne(Filters.eq("genericData.uniqueId", uniqueId.toString()), document);
             else
-                System.out.println("Failed to remove the player generic of: " + uniqueId + " > Document is empty/non-existent");
+                System.out.println("Failed to remove the player data of: " + uniqueId + " > Document is empty/non-existent");
             if (remove) {
                 this.dataPlayerMap.remove(uniqueId);
             }
@@ -88,7 +88,7 @@ public class MongoAPI {
     }
 
     /**
-     * Check if a player's generic is cached
+     * Check if a player's data is cached
      *
      * @param uniqueId The player's uuid
      * @return Boolean

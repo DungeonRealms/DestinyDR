@@ -5,6 +5,7 @@ import net.dungeonrealms.backend.registry.PlayerRegistry;
 import net.dungeonrealms.common.awt.frame.registry.Registry;
 import net.dungeonrealms.common.awt.frame.registry.RegistryMap;
 import net.dungeonrealms.frontend.Game;
+import net.dungeonrealms.frontend.vgame.guild.GuildRegistry;
 
 import java.util.UUID;
 
@@ -30,6 +31,9 @@ public class IRegistryRegistry implements Registry {
     @Getter
     private PlayerRegistry playerRegistry;
 
+    @Getter
+    private GuildRegistry guildRegistry;
+
     public IRegistryRegistry(RegistryMap registryMap) {
         this.registryMap = registryMap;
         this.uniqueId = UUID.randomUUID();
@@ -37,7 +41,8 @@ public class IRegistryRegistry implements Registry {
 
     @Override
     public void prepare() {
-        this.registryMap.add(playerRegistry = new PlayerRegistry());
+        this.registryMap.add(this.playerRegistry = new PlayerRegistry());
+        this.registryMap.add(this.guildRegistry = new GuildRegistry());
         this.connected = true;
     }
 
