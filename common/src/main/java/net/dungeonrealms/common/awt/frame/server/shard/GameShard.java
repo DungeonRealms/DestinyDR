@@ -29,7 +29,7 @@ public class GameShard {
 
     public void start() {
         if(!enabled) {
-            // Init mongo connection
+            // Init mongo net.dungeonrealms.database.connection
             this.mongoConnection = new MongoConnection();
             try {
                 this.mongoConnection.runOn("", "dungeonrealms");

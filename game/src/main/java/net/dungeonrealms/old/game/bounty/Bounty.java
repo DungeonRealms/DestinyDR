@@ -28,7 +28,7 @@ public class Bounty {
     public void getBountiesOn(UUID uuid, Consumer<HashMap<String, Integer>> action) {
 //        Executors.newSingleThreadExecutor().submit(() -> {
 //            try (
-//                  //  PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT placer, reward FROM `bounties` WHERE victim='" + uuid.toString() + "';");
+//                  //  PreparedStatement statement = Core.getInstance().net.dungeonrealms.database.connection.prepareStatement("SELECT placer, reward FROM `bounties` WHERE victim='" + uuid.toString() + "';");
 //                   // ResultSet resultSet = statement.executeQuery()
 //
 //                HashMap<String, Integer> temp = new HashMap<>();
@@ -51,7 +51,7 @@ public class Bounty {
 //        Future<?> doesContain = Executors.newSingleThreadExecutor().submit(() -> {
 //            boolean contains = true;
 //            try (
-//                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT placer FROM `bounties` WHERE victim='" + uuid.toString() + "';");
+//                    PreparedStatement statement = Core.getInstance().net.dungeonrealms.database.connection.prepareStatement("SELECT placer FROM `bounties` WHERE victim='" + uuid.toString() + "';");
 //                    ResultSet resultSet = statement.executeQuery()
 //            ) {
 //                contains = resultSet.next();
@@ -77,7 +77,7 @@ public class Bounty {
     public void getPlacedBounties(UUID uuid, Consumer<HashMap<String, Integer>> action) {
 //        Executors.newSingleThreadExecutor().submit(() -> {
 //            try (
-//                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT * FROM `bounties` WHERE placer='" + uuid.toString() + "';");
+//                    PreparedStatement statement = Core.getInstance().net.dungeonrealms.database.connection.prepareStatement("SELECT * FROM `bounties` WHERE placer='" + uuid.toString() + "';");
 //                    ResultSet resultSet = statement.executeQuery()
 //            ) {
 //                HashMap<String, Integer> temp = new HashMap<>();

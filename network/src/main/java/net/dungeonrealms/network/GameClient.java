@@ -58,7 +58,7 @@ public class GameClient extends Listener {
         this.client.connect(500000, Constants.MASTER_SERVER_IP, Constants.MASTER_SERVER_PORT);
         isConnected = true;
 
-        Log.info("Master server connection established!");
+        Log.info("Master server net.dungeonrealms.database.connection established!");
     }
 
     public void kill() {
@@ -124,7 +124,7 @@ public class GameClient extends Listener {
     }
 
     public void disconnected(Connection c) {
-        Log.warn("Connection lost between master server. Attempting to reestablish connection...");
+        Log.warn("Connection lost between master server. Attempting to reestablish net.dungeonrealms.database.connection...");
         Runnable run = new DefaultReconnector();
         if (reconnected != null) run = reconnected;
         new Thread(run).start();

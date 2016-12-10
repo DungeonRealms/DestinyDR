@@ -48,14 +48,14 @@ public class MasterServer
     }
 
     public void connected(Connection c) {
-        Log.info("Incoming connection to master server: " + c.getRemoteAddressTCP().getAddress() + ":" + c.getRemoteAddressTCP().getPort());
+        Log.info("Incoming net.dungeonrealms.database.connection to master server: " + c.getRemoteAddressTCP().getAddress() + ":" + c.getRemoteAddressTCP().getPort());
     }
 
     @Override
     public void received(Connection c, Object object) {
         if (object instanceof Packet) {
             relayPacketTCP((Packet) object);
-            Log.info("Relaying packet connection: " + c.getRemoteAddressTCP().getAddress() + ":" + c.getRemoteAddressTCP().getPort());
+            Log.info("Relaying packet net.dungeonrealms.database.connection: " + c.getRemoteAddressTCP().getAddress() + ":" + c.getRemoteAddressTCP().getPort());
         }
     }
 }

@@ -115,9 +115,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        DRProxy.log("Lost connection to DRControl!");
+        DRProxy.log("Lost net.dungeonrealms.database.connection to DRControl!");
 
-        // Remove the connection from the network manager.
+        // Remove the net.dungeonrealms.database.connection from the network manager.
         nettyHandler.setChannel(null);
     }
 

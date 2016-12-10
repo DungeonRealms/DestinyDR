@@ -53,7 +53,7 @@ public class MongoAPI {
     }
 
     /**
-     * Remove a player's data from the mongo connection
+     * Remove a player's data from the mongo net.dungeonrealms.database.connection
      *
      * @param uniqueId The unique id of the player
      * @param remove   Boolean

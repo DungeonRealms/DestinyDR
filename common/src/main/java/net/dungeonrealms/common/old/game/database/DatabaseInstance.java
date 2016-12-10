@@ -40,7 +40,7 @@ public class DatabaseInstance {
         this.cacheData = cacheData;
         mongoClientURI = new MongoClientURI(Constants.DATABASE_URI);
 
-        Constants.log.info("DungeonRealms Database connection pool is being created...");
+        Constants.log.info("DungeonRealms Database net.dungeonrealms.database.connection pool is being created...");
         mongoClient = new MongoClient(mongoClientURI);
 
         database = mongoClient.getDatabase("dungeonrealms");

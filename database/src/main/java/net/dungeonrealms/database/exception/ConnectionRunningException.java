@@ -1,4 +1,4 @@
-package net.dungeonrealms.common.awt.database.connection.exception;
+package net.dungeonrealms.database.exception;
 
 /**
  * Created by Giovanni on 15-11-2016.

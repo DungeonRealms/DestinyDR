@@ -53,7 +53,7 @@ public class PlayerConnection implements IConnection {
         if (!Game.getGame().getGameShard().getMongoConnection().getApi().exists(event.getUniqueId())) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "Invalid data model, please reconnect");
         } else {
-            // Accept their connection and add them to the online player map
+            // Accept their net.dungeonrealms.database.connection and add them to the online player map
             DataPlayer dataPlayer = Game.getGame().getGameShard().getMongoConnection().getApi().getPlayer(event.getUniqueId());
             Game.getGame().getRegistryRegistry().getPlayerRegistry().acceptConnection(new GamePlayer(dataPlayer));
         }

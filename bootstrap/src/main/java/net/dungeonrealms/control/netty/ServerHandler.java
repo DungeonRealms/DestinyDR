@@ -41,11 +41,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         if (server == null) {
 
-            // Handle incoming connection.
+            // Handle incoming net.dungeonrealms.database.connection.
             if (object instanceof PacketConnect) {
                 PacketConnect packetConnect = (PacketConnect) object;
 
-                // Get the server the connection is coming from.
+                // Get the server the net.dungeonrealms.database.connection is coming from.
                 if (packetConnect.getType().equals("PROXY")) {
                     server = DRControl.getInstance().getServerManager().getProxyServer(packetConnect.getServer());
                     UtilLogger.debug("Received proxy packet from " + packetConnect.getServer());
@@ -54,7 +54,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     UtilLogger.debug("Received server packet from " + packetConnect.getServer());
                 }
 
-                // Get the IP of the incoming connection.
+                // Get the IP of the incoming net.dungeonrealms.database.connection.
                 String ip = ((InetSocketAddress) channelHandlerContext.channel().remoteAddress()).getHostName();
 
                 // Check the ip adress matches the server for security reasons.
@@ -313,7 +313,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             gameServer.sendInfoToServers();
         }
 
-        // Remove the connection from the hashmap
+        // Remove the net.dungeonrealms.database.connection from the hashmap
         connections.remove(channelHandlerContext.channel());
     }
 
@@ -323,7 +323,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         // Set the channel in the server class.
         server.setChannel(channel);
 
-        // Register the connection in the hashmap.
+        // Register the net.dungeonrealms.database.connection in the hashmap.
         connections.put(channel, server);
 
         // Send packets to the proxy to sync it's info with the network.

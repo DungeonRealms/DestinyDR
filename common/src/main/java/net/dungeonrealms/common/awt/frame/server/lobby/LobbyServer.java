@@ -33,7 +33,7 @@ public class LobbyServer {
 
     public void start() {
         if (!this.enabled) {
-            // Init connection to the mongo
+            // Init net.dungeonrealms.database.connection to the mongo
             this.mongoConnection = new MongoConnection();
             try {
                 this.mongoConnection.runOn("", "dungeonrealms");
