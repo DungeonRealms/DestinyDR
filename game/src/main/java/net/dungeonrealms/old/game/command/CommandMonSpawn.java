@@ -203,7 +203,7 @@ public class CommandMonSpawn extends BaseCommand {
                             MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
                             EntityStats.setBossRandomStats(entity, 100, 4);
                             break;
-                        default:
+                        generic:
                             entity = null;
                             break;
                     }

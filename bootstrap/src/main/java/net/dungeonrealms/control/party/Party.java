@@ -33,7 +33,7 @@ public class Party {
         if (owner.getRank().hasRank(Rank.DEV)) {
             this.partyType = EnumPartyType.DEV;
         } else {
-            // Only for default sub, sub_2, sub_3
+            // Only for generic sub, sub_2, sub_3
             if (owner.getRank().hasRank(Rank.DEFAULT) && !owner.getRank().hasRank(Rank.PMOD)) {
                 this.partyType = EnumPartyType.valueOf(owner.getRank().name());
             }

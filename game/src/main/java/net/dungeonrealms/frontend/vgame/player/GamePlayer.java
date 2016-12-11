@@ -3,7 +3,7 @@ package net.dungeonrealms.frontend.vgame.player;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.api.creature.lib.damage.EnumDamageSource;
-import net.dungeonrealms.common.awt.data.DataPlayer;
+import net.dungeonrealms.database.api.player.DataPlayer;
 import net.dungeonrealms.frontend.Game;
 import net.dungeonrealms.frontend.vgame.guild.Guild;
 import net.dungeonrealms.frontend.vgame.guild.profile.GuildProfile;

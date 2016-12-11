@@ -130,7 +130,7 @@ public interface Realms extends GenericMechanic {
     boolean downloadRealm(UUID uuid) throws IOException, ZipException;
 
     /**
-     * Unzips default world for realms
+     * Unzips generic world for realms
      *
      * @param player Owner of realm
      */

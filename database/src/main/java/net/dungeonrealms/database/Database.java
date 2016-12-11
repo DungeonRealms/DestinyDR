@@ -7,6 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
 import net.dungeonrealms.database.api.MongoAPI;
 import net.dungeonrealms.database.exception.ConnectionRunningException;
+import net.dungeonrealms.database.lib.PipelineHandler;
 import org.bson.Document;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +41,15 @@ public class Database {
      */
     public void close() {
         this.mongo.getMongoClient().close();
+    }
+
+    /**
+     * Register a pipeline
+     *
+     * @param handler The pipeline
+     */
+    public void registerPipeline(PipelineHandler handler) {
+        handler.start();
     }
 
     /**

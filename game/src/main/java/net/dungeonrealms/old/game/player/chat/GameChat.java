@@ -60,7 +60,7 @@ public final class GameChat {
         // We're using global chat, append global prefix.
         boolean gChat = isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
         if (gChat) {
-            // Determine which global type we should use, default is GLOBAL.
+            // Determine which global type we should use, generic is GLOBAL.
             switch (globalType.toLowerCase()) {
                 case "local": // This allows us to do a cheap hack for "/l".
                     break;
@@ -82,12 +82,12 @@ public final class GameChat {
         }
 
         // The user has a rank, append their rank.
-        if (r != null && !r.toLowerCase().contains("default")) {
+        if (r != null && !r.toLowerCase().contains("generic")) {
             message.append(getRankPrefix(r));
         }
 
         // Finally, we need to append their name.
-        message.append(getName(player, (r == null ? "default" : r.toLowerCase())));
+        message.append(getName(player, (r == null ? "generic" : r.toLowerCase())));
 
         return message.toString();
     }
@@ -110,7 +110,7 @@ public final class GameChat {
             case "gm":
             case "dev":
                 return ChatColor.AQUA + name + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
-            case "default":
+            case "generic":
             case "sub":
             case "sub+":
             case "sub++":
@@ -131,7 +131,7 @@ public final class GameChat {
             case "dev":
                 return ChatColor.AQUA + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
 
-            case "default":
+            case "generic":
             case "sub":
             case "sub+":
             case "sub++":
@@ -166,7 +166,7 @@ public final class GameChat {
                 return YOUTUBE;
             case "pmod":
                 return PMOD;
-            case "default":
+            case "generic":
             default:
                 return ""; // Invalid rank
         }

@@ -1,4 +1,4 @@
-package net.dungeonrealms.backend.server;
+package net.dungeonrealms.backend.registry;
 
 import lombok.Getter;
 import net.dungeonrealms.common.awt.frame.command.Command;

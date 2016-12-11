@@ -1,7 +1,7 @@
-package net.dungeonrealms.backend.server;
+package net.dungeonrealms.backend.registry;
 
 import lombok.Getter;
-import net.dungeonrealms.backend.registry.PlayerRegistry;
+import net.dungeonrealms.backend.registry.generic.PlayerRegistry;
 import net.dungeonrealms.common.awt.frame.registry.Registry;
 import net.dungeonrealms.common.awt.frame.registry.RegistryMap;
 import net.dungeonrealms.frontend.Game;

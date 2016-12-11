@@ -1,4 +1,4 @@
-package net.dungeonrealms.backend.registry;
+package net.dungeonrealms.backend.registry.generic;
 
 import lombok.Getter;
 import net.dungeonrealms.common.awt.frame.registry.Registry;
@@ -38,7 +38,8 @@ public class PlayerRegistry implements Registry {
     @Override
     public void disable() {
         for (GamePlayer gamePlayer : this.onlinePlayers.get().values()) {
-            Game.getGame().getGameShard().getMongoConnection().getApi().removeDataPlayer(gamePlayer.getPlayer().getUniqueId(), true);
+            Game.getGame().getDatabase().getApi().players().saveData(gamePlayer.getData().getUniqueId());
+            Game.getGame().getDatabase().getApi().players().removeData(gamePlayer.getData().getUniqueId());
             this.removePlayer(gamePlayer);
         }
         this.connected = false;

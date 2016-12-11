@@ -67,10 +67,10 @@ public class Rank {
 
             case "subscriber":
             case "sub":
-                return rank != null && !rank.equalsIgnoreCase("default");
+                return rank != null && !rank.equalsIgnoreCase("generic");
 
             default:
-                return rank != null && rank.equalsIgnoreCase("default");
+                return rank != null && rank.equalsIgnoreCase("generic");
         }
     }
 
@@ -143,24 +143,24 @@ public class Rank {
     }
 
     /**
-     * Returns true if the user does not have the "default" rank.
+     * Returns true if the user does not have the "generic" rank.
      *
      * @param player
      * @return boolean
      */
     public static boolean isSubscriber(Player player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank != null && !rank.equalsIgnoreCase("default");
+        return rank != null && !rank.equalsIgnoreCase("generic");
     }
 
     public static boolean isSubscriberPlus(Player player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub");
+        return rank != null && !rank.equalsIgnoreCase("generic") && !rank.equalsIgnoreCase("sub");
     }
 
     public static boolean isSubscriberLifetime(Player player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub") && !rank.equalsIgnoreCase("sub+");
+        return rank != null && !rank.equalsIgnoreCase("generic") && !rank.equalsIgnoreCase("sub") && !rank.equalsIgnoreCase("sub+");
     }
 
     public static String rankFromPrefix(String prefix) {
@@ -185,7 +185,7 @@ public class Rank {
                 return ChatColor.GOLD + "Subscriber+";
             case "sub":
                 return ChatColor.GREEN + "Subscriber";
-            case "default":
+            case "generic":
                 return ChatColor.GRAY + "Default";
         }
 
@@ -231,7 +231,7 @@ public class Rank {
      */
     public String getRank(UUID uuid) {
         String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid);
-        return (rank == null || rank.equals("") ? "default" : rank).toUpperCase();
+        return (rank == null || rank.equals("") ? "generic" : rank).toUpperCase();
     }
 
     /**
@@ -243,7 +243,7 @@ public class Rank {
      */
     public String getRank(Document doc) {
         String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, doc);
-        return (rank == null || rank.equals("") ? "default" : rank).toUpperCase();
+        return (rank == null || rank.equals("") ? "generic" : rank).toUpperCase();
     }
 
     /**

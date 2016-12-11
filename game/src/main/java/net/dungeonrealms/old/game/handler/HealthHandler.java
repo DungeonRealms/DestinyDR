@@ -459,7 +459,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor) {
-        // default damage cause is entity attack (called in onMonsterHitEntity and onPlayerHitEntity)
+        // generic damage cause is entity attack (called in onMonsterHitEntity and onPlayerHitEntity)
         handlePlayerBeingDamaged(player, damager, damage, armourReducedDamage, totalArmor, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
     }
 

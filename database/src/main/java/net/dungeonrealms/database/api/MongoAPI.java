@@ -20,6 +20,8 @@ public class MongoAPI {
 
     public MongoAPI(Database database) {
         this.database = database;
+        this.guildConnection = new GuildConnection(this.database);
+        this.playerConnection = new PlayerConnection(this.database);
     }
 
     /**

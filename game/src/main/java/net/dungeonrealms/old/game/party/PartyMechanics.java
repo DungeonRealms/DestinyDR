@@ -165,11 +165,11 @@ public class PartyMechanics implements GenericMechanic {
     public void togglePartyChat(Player player) {
         if (PARTY_CHAT.contains(player.getUniqueId())) {
             PARTY_CHAT.remove(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY + "Messages will now be default sent to local chat.");
+            player.sendMessage(ChatColor.GRAY + "Messages will now be generic sent to local chat.");
         } else {
             PARTY_CHAT.add(player.getUniqueId());
-            player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to party chat. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
-            player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/p" + ChatColor.GRAY + " again.");
+            player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be generic sent to party chat. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
+            player.sendMessage(ChatColor.GRAY + "To change back to generic local, type " + ChatColor.BOLD + "/p" + ChatColor.GRAY + " again.");
         }
     }
 

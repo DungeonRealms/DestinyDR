@@ -138,11 +138,11 @@ public class GuildMechanics {
 
         if (GUILD_CHAT.contains(player.getUniqueId())) {
             GUILD_CHAT.remove(player.getUniqueId());
-            player.sendMessage(ChatColor.GRAY + "Messages will now be default sent to local chat.");
+            player.sendMessage(ChatColor.GRAY + "Messages will now be generic sent to local chat.");
         } else {
             GUILD_CHAT.add(player.getUniqueId());
-            player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to <" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
-            player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
+            player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be generic sent to <" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
+            player.sendMessage(ChatColor.GRAY + "To change back to generic local, type " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
         }
     }
 

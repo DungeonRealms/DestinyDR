@@ -2,13 +2,16 @@ package net.dungeonrealms.frontend;
 
 import com.google.gson.Gson;
 import lombok.Getter;
-import net.dungeonrealms.backend.server.CommandRegistry;
-import net.dungeonrealms.common.awt.frame.server.shard.GameShard;
-import net.dungeonrealms.common.awt.frame.server.shard.ServerCore;
+import net.dungeonrealms.backend.pipeline.PlayerPipeline;
+import net.dungeonrealms.backend.registry.CommandRegistry;
+import net.dungeonrealms.backend.registry.HandlerRegistry;
+import net.dungeonrealms.backend.registry.IRegistryRegistry;
 import net.dungeonrealms.common.awt.frame.exception.ServerRunningException;
 import net.dungeonrealms.common.awt.frame.save.EnumSaveFlag;
-import net.dungeonrealms.backend.server.HandlerRegistry;
-import net.dungeonrealms.backend.server.IRegistryRegistry;
+import net.dungeonrealms.common.awt.frame.server.shard.GameShard;
+import net.dungeonrealms.common.awt.frame.server.shard.ServerCore;
+import net.dungeonrealms.database.Database;
+import net.dungeonrealms.database.exception.ConnectionRunningException;
 import net.dungeonrealms.frontend.vgame.world.GameWorld;
 import org.json.simple.parser.JSONParser;
 
@@ -41,26 +44,43 @@ public class Game extends ServerCore {
     @Getter
     private GameWorld gameWorld;
 
+    @Getter
+    private Database database;
+
     @Override
     public void onEnable() {
         game = this;
 
-        // 1 Launch all maps (hmap, rmap, cmap)
+        // * Backend
+
+        // 1 Connect to database
+        try {
+            this.database = new Database("", "dungeonrealms");
+        } catch (ConnectionRunningException e) {
+            e.printStackTrace();
+        }
+
+        // 2 Register data pipelines
+        this.database.registerPipeline(new PlayerPipeline());
+
+        // * Frontend
+
+        // 1 Enable the registry maps
         this.preEnableMaps();
 
-        // 2 Register the registries (contains all handlers & registries and registers them too)
+        // 2 Start the registries
         this.registerRegistry(registryRegistry = new IRegistryRegistry(this.getRegistryMap()));
         this.registerRegistry(handlerRegistry = new HandlerRegistry(this.getHandlerMap()));
         this.registerRegistry(new CommandRegistry(this.getCommandMap()));
 
-        // 3 Start the shard(server/game)
+        // 3 Launch the game
         try {
             this.enable(new GameShard(this));
         } catch (ServerRunningException e) {
             e.printStackTrace();
         }
 
-        // 4 Load the world generic
+        // 4 Load the world
         JSONParser jsonParser = new JSONParser();
         try {
             // dataFolder\world\gameWorld.json

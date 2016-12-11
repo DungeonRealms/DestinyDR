@@ -32,7 +32,7 @@ public interface GuildDatabaseAPI {
      * -> experience
      * }
      *
-     * @return Returns default document template
+     * @return Returns generic document template
      */
     static Document getDocumentTemplate(String owner, String guildName, String displayName, String tag, String banner) {
         return new Document("info",

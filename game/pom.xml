@@ -57,6 +57,7 @@
                                     <include>net.lingala.zip4j:zip4j</include>
                                     <include>net.dungeonrealms:DungeonRealms-common</include>
                                     <include>net.dungeonrealms:DungeonRealms-network</include>
+                                    <include>net.dungeonrealms:DungeonRealms-database</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -75,6 +76,13 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>net.dungeonrealms</groupId>
+            <artifactId>DungeonRealms-database</artifactId>
+            <version>5.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>net.dungeonrealms</groupId>
             <artifactId>DungeonRealms-network</artifactId>

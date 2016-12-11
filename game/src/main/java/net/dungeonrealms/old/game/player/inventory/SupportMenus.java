@@ -154,7 +154,7 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.GRAY.getData()), Rank.rankFromPrefix("default"), new String[]{
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.GRAY.getData()), Rank.rankFromPrefix("generic"), new String[]{
                 ChatColor.WHITE + "Set user rank to: Default"
         });
         inv.setItem(20, applySupportItemTags(item, playerName, uuid));

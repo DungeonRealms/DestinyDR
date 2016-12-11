@@ -50,6 +50,7 @@ public class GameWorld implements IWorld {
      * @param world The bukkit world to change to
      */
     public void update(World world) {
+        this.recentUnloadedWorlds.add(this.bukkitWorld);
         Bukkit.getOnlinePlayers().stream().filter(player -> player.getWorld() == this.bukkitWorld).forEach(player -> {
             player.teleport(new Location(world, this.spawnAxisValues.get(0), this.spawnAxisValues.get(1), this.spawnAxisValues.get(2)));
             player.sendMessage(ChatColor.RED + "The world you were in has been unloaded");

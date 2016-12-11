@@ -66,7 +66,7 @@ public class ScoreboardHandler implements GenericMechanic {
      */
     public Scoreboard getPlayerScoreboardObject(Player player) {
         if (!(PLAYER_SCOREBOARDS.containsKey(player.getUniqueId()))) {
-            //Why not just set the default scoreboard to the main one so it doesnt become desynced?
+            //Why not just set the generic scoreboard to the main one so it doesnt become desynced?
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
             registerHealth(scoreboard);

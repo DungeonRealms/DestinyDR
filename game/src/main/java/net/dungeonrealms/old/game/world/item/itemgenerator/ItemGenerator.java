@@ -706,7 +706,7 @@ public class ItemGenerator {
         }
         if (rarity == null) {
             // Add rarity if needed.
-            rarity = Item.ItemRarity.UNIQUE; // default to unique
+            rarity = Item.ItemRarity.UNIQUE; // generic to unique
             item_lore.remove(ChatColor.DARK_RED + "Soulbound");
             item_lore.add(rarity.getName());
             item_lore.add(ChatColor.DARK_RED + "Soulbound");

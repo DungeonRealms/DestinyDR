@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class InteractionItem {
 
     /**
-     * NBT Format default
+     * NBT Format generic
      * gameItem true
      * itemType
      * interactionAction

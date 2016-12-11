@@ -976,7 +976,7 @@ public class GameAPI {
                 player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
                 return;
             } else if (null == EnumShardType.SUBSCRIBER
-                    && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
+                    && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("generic")) {
                 player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
                         ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
                 return;
@@ -1269,7 +1269,7 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
 
-            //Don't think these will work as they default to Operators in MC.
+            //Don't think these will work as they generic to Operators in MC.
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
@@ -1925,7 +1925,7 @@ public class GameAPI {
      *                                to map with values 0, 0
      */
     public static void calculateArmorAttributes(Map<String, Integer[]> attributes, ItemStack[] armorSet, boolean includeAbsentAttributes) {
-        // populate the map with default values if necessary
+        // populate the map with generic values if necessary
         if (includeAbsentAttributes) {
             for (Item.ArmorAttributeType type : Item.ArmorAttributeType.values()) {
                 attributes.putIfAbsent(type.getNBTName(), new Integer[]{0, 0});
@@ -1965,7 +1965,7 @@ public class GameAPI {
      *                                to map with values 0, 0
      */
     public static void calculateWeaponAttributes(Map<String, Integer[]> attributes, ItemStack weapon, boolean includeAbsentAttributes) {
-        // populate the map with default values
+        // populate the map with generic values
         if (includeAbsentAttributes) {
             for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
                 attributes.putIfAbsent(type.getNBTName(), new Integer[]{0, 0});
