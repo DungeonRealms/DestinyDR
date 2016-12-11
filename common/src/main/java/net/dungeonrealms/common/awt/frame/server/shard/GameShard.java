@@ -2,8 +2,6 @@ package net.dungeonrealms.common.awt.frame.server.shard;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.common.awt.database.connection.exception.ConnectionRunningException;
-import net.dungeonrealms.common.awt.database.mongo.connection.MongoConnection;
 
 /**
  * Created by Giovanni on 30-11-2016.
@@ -20,8 +18,6 @@ public class GameShard {
     @Setter
     private boolean enabled;
 
-    @Getter
-    private MongoConnection mongoConnection;
 
     public GameShard(ServerCore serverCore) {
         this.serverCore = serverCore;
@@ -29,13 +25,6 @@ public class GameShard {
 
     public void start() {
         if(!enabled) {
-            // Init mongo net.dungeonrealms.database.connection
-            this.mongoConnection = new MongoConnection();
-            try {
-                this.mongoConnection.runOn("", "dungeonrealms");
-            } catch (ConnectionRunningException e) {
-                // This will never happen
-            }
             this.enabled = true;
         }
     }

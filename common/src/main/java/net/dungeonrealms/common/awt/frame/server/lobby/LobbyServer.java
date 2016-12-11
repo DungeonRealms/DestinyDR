@@ -24,22 +24,12 @@ public class LobbyServer {
     private boolean enabled;
 
 
-    @Getter
-    private MongoConnection mongoConnection;
-
     public LobbyServer(LobbyCore lobbyCore) {
         this.core = lobbyCore;
     }
 
     public void start() {
         if (!this.enabled) {
-            // Init net.dungeonrealms.database.connection to the mongo
-            this.mongoConnection = new MongoConnection();
-            try {
-                this.mongoConnection.runOn("", "dungeonrealms");
-            } catch (ConnectionRunningException e) {
-                // This will never happen
-            }
             this.enabled = true;
         }
     }
