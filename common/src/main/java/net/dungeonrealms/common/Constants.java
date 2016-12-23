@@ -62,8 +62,8 @@ public class Constants {
         DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
         DEVELOPERS = new String[]{"Atlas__", "VawkeNetty", "Evoltr"};
         OLD_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
-        MOTD = "                 &f&l❆ &c&lDUNGEON &f&lREALMS &f&l❆\n     &cThis christmas&e&l★ &f&l- &awww.dungeonrealms.net";
-        MAINTENANCE_MOTD = "                 &f&l❆ &c&lDUNGEON &f&lREALMS &f&l❆\n     &f&l24 DEC. 4:30CST★ &f&l- &awww.dungeonrealms.net";
+        MOTD = "                 &b❆ &c&lDUNGEON &f&lREALMS &b❆\n    &&f&l24 DEC. 4:30PM CST &f&l- &awww.dungeonrealms.net";
+        MAINTENANCE_MOTD = "                 &b❆ &c&lDUNGEON &f&lREALMS &b❆\n    &f&l24 DEC. 4:30PM CST &f&l- &awww.dungeonrealms.net";
         MIN_GAME_TIME = 14100000L;
         MAX_GAME_TIME = 21300000L;
         PLAYER_SLOTS = 1300;

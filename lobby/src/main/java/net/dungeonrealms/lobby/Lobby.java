@@ -64,6 +64,7 @@ public class Lobby extends JavaPlugin implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) throws InterruptedException {
+        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
         // Prevent a player from joining the lobby if he already is connected on a server
         if ((boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -80,9 +81,6 @@ public class Lobby extends JavaPlugin implements Listener {
             DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
             return;
         }
-
-        // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
 
