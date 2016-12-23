@@ -66,44 +66,43 @@ public class Lobby extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) throws InterruptedException {
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
-        // Prevent a player from joining the lobby if he already is connected on a server
-        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(ChatColor.RED + "Invalid game_session ID");
-            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
-            return;
-        }
-
-        if (PunishAPI.getInstance().isBanned(event.getUniqueId())) {
-            String bannedMessage = PunishAPI.getInstance().getBannedMessage(event.getUniqueId());
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-            event.setKickMessage(bannedMessage);
-
-            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
-            return;
-        }
     }
 
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Bukkit.getScheduler().runTask(this, () -> {
-            Player player = event.getPlayer();
+        // Prevent a player from joining the lobby if he already is connected on a server
+        if (DatabaseAPI.getInstance().PLAYERS.containsKey(event.getPlayer().getUniqueId())) {
+            if ((boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getPlayer().getUniqueId())) {
+                event.getPlayer().kickPlayer(ChatColor.RED + "Invalid game_session ID");
+                DatabaseAPI.getInstance().PLAYERS.remove(event.getPlayer().getUniqueId());
+                return;
+            }
 
-            player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
-            player.setDisplayName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
-            player.setCustomName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+            if (PunishAPI.getInstance().isBanned(event.getPlayer().getUniqueId())) {
+                String bannedMessage = PunishAPI.getInstance().getBannedMessage(event.getPlayer().getUniqueId());
+                event.getPlayer().kickPlayer(bannedMessage);
 
-            player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
+                DatabaseAPI.getInstance().PLAYERS.remove(event.getPlayer().getUniqueId());
+                return;
+            }
+        }
+            Bukkit.getScheduler().runTask(this, () -> {
+                Player player = event.getPlayer();
 
-            if (!player.isOp())
-                player.getInventory().clear();
+                player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+                player.setDisplayName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+                player.setCustomName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
 
-            player.getInventory().setItem(0, getShardSelector());
+                player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
 
-            ghostFactory.addPlayer(player);
-            ghostFactory.setGhost(player, !Rank.isGM(player) && !Rank.isSubscriber(player));
+                if (!player.isOp())
+                    player.getInventory().clear();
 
+                player.getInventory().setItem(0, getShardSelector());
+
+                ghostFactory.addPlayer(player);
+                ghostFactory.setGhost(player, !Rank.isGM(player) && !Rank.isSubscriber(player));
         });
     }
 
