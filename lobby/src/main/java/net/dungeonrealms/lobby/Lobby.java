@@ -148,6 +148,16 @@ public class Lobby extends JavaPlugin implements Listener {
         }
     }
 
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent event) {
+        if(!event.getPlayer().isOp()) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "Chat is disabled in the lobby");
+        } else {
+            event.setFormat(ChatColor.AQUA + event.getPlayer().getName() + ": " + event.getMessage());
+        }
+    }
+
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onItemClick(PlayerInteractEvent e) {

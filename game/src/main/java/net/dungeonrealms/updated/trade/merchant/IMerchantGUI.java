@@ -1,4 +1,4 @@
-package net.dungeonrealms.updated.trade.gui;
+package net.dungeonrealms.updated.trade.merchant;
 
 import net.dungeonrealms.updated.trade.ItemTrade;
 import net.dungeonrealms.updated.trade.gui.action.ClickAction;
@@ -22,9 +22,9 @@ import java.util.Map;
  * This file is part of the Dungeon Realms project.
  * Copyright (c) 2016 Dungeon Realms;www.vawke.io / development@vawke.io
  */
-public interface ITradeScreen {
+public interface IMerchantGUI {
 
-    ItemTrade getCorrespondingTrade();
+    MerchantTrade getCorrespondingTrade();
 
     Map<Integer, ItemStack> getItemsInScreen();
 
@@ -35,6 +35,8 @@ public interface ITradeScreen {
      * @param event       The called event
      */
     void handleClick(ClickAction clickAction, InventoryClickEvent event);
+
+    void handleButtonClick();
 
     /**
      * Get a list of disallowed slots

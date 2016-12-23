@@ -3,7 +3,6 @@ package net.dungeonrealms.updated.trade.handle;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.updated.Handler;
 import net.dungeonrealms.updated.trade.ItemTrade;
 import net.dungeonrealms.updated.trade.gui.TradeGUI;

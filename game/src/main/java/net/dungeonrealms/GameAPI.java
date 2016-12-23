@@ -12,7 +12,6 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.async.AsyncMongoFunction;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -20,7 +19,10 @@ import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
-import net.dungeonrealms.game.mastery.*;
+import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.NBTItem;
+import net.dungeonrealms.game.mastery.UUIDHelper;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.title.TitleAPI;
@@ -341,12 +343,13 @@ public class GameAPI {
     public static void stopGame() {
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
-        final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
-
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
 
+        // Stop all trades
+        DungeonRealms.getInstance().getTradeHandler().timeOut();
+        DungeonRealms.getInstance().getMerchantHandler().timeOut();
         // Delete shops
         ShopMechanics.deleteAllShops(true);
         // Update online status
@@ -382,7 +385,7 @@ public class GameAPI {
      * @since 1.0
      */
     public static JsonObject getPlayerCredentials(UUID uuid) {
-        URL url = null;
+        URL url;
         try {
             url = new URL("http://freegeoip.net/json/");
             HttpURLConnection request = (HttpURLConnection) url.openConnection();
@@ -622,7 +625,7 @@ public class GameAPI {
         List<UUID> processingPlayers = Lists.newArrayList();
         DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             // Check if all players are logged out & all mechanics are stopped
-            if(Bukkit.getOnlinePlayers().isEmpty() && processingPlayers.isEmpty() && DungeonRealms.getInstance().mm.isShutdown()) {
+            if (Bukkit.getOnlinePlayers().isEmpty() && processingPlayers.isEmpty() && DungeonRealms.getInstance().mm.isShutdown()) {
                 restart();
             }
         }, 0L, 10);

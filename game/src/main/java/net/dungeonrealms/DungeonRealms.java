@@ -80,6 +80,8 @@ import net.dungeonrealms.tool.PatchTools;
 import net.dungeonrealms.updated.Collector;
 import net.dungeonrealms.updated.connection.player.PlayerJoinPipeline;
 import net.dungeonrealms.updated.connection.player.PlayerQuitPipeline;
+import net.dungeonrealms.updated.trade.handle.MerchantHandler;
+import net.dungeonrealms.updated.trade.handle.TradeHandler;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -104,6 +106,11 @@ public class DungeonRealms extends JavaPlugin {
     private PlayerJoinPipeline playerJoinPipeline;
     @Getter
     private PlayerQuitPipeline playerQuitPipeline;
+
+    @Getter
+    private MerchantHandler merchantHandler;
+    @Getter
+    private TradeHandler tradeHandler;
 
     private static long SERVER_START_TIME, REBOOT_TIME;
 
@@ -576,6 +583,8 @@ public class DungeonRealms extends JavaPlugin {
         new Collector().init();
         this.playerJoinPipeline = new PlayerJoinPipeline();
         this.playerQuitPipeline = new PlayerQuitPipeline();
+        this.merchantHandler = new MerchantHandler();
+        this.tradeHandler = new TradeHandler();
     }
 
     public long getRebootTime() {
