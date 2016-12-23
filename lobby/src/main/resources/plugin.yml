@@ -1,7 +1,7 @@
-name: DR-Lobby
-main: ServerLobby
+name: DungeonRealmsLobby
+main: net.dungeonrealms.lobby.Lobby
 version: ${project.parent.version}
-authors: [apollosoftware, Vawke]
+authors: [apollosoftware, Bradez1571, EtherealTemplar, Proxying, Xwaffle]
 website: http://www.dungeonrealms.net
-depend: [BossBarAPI, ProtocolLib]
+depend: [WorldGuard, BossBarAPI, ProtocolLib]
 description: The new and improved DungeonRealms!

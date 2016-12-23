@@ -14,59 +14,57 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.old.game.database.DatabaseAPI;
-import net.dungeonrealms.common.old.game.database.DatabaseInstance;
-import net.dungeonrealms.common.old.game.database.data.EnumData;
-import net.dungeonrealms.common.old.game.database.data.EnumOperators;
-import net.dungeonrealms.common.old.game.database.player.rank.Rank;
-import net.dungeonrealms.common.old.game.database.player.rank.Subscription;
-import net.dungeonrealms.common.old.game.util.AsyncUtils;
-import net.dungeonrealms.common.old.game.util.CooldownProvider;
-import net.dungeonrealms.common.old.network.ShardInfo;
-import net.dungeonrealms.common.old.network.bungeecord.BungeeUtils;
-import net.dungeonrealms.common.old.network.enumeration.EnumShardType;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.DatabaseInstance;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Subscription;
+import net.dungeonrealms.common.game.util.AsyncUtils;
+import net.dungeonrealms.common.game.util.CooldownProvider;
+import net.dungeonrealms.common.network.ShardInfo;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.game.achievements.AchievementManager;
+import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.handler.EnergyHandler;
+import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.handler.ScoreboardHandler;
+import net.dungeonrealms.game.mastery.*;
+import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.miscellaneous.RandomHelper;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.CombatLogger;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.player.notice.Notice;
+import net.dungeonrealms.game.soundtrack.Soundtrack;
+import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
+import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.entity.util.EntityStats;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
-import net.dungeonrealms.old.game.achievements.AchievementManager;
-import net.dungeonrealms.old.game.achievements.Achievements;
-import net.dungeonrealms.old.game.anticheat.AntiDuplication;
-import net.dungeonrealms.old.game.donation.DonationEffects;
-import net.dungeonrealms.old.game.enchantments.EnchantmentAPI;
-import net.dungeonrealms.old.game.guild.GuildMechanics;
-import net.dungeonrealms.old.game.handler.EnergyHandler;
-import net.dungeonrealms.old.game.handler.HealthHandler;
-import net.dungeonrealms.old.game.handler.KarmaHandler;
-import net.dungeonrealms.old.game.handler.ScoreboardHandler;
-import net.dungeonrealms.old.game.mastery.*;
-import net.dungeonrealms.old.game.mechanic.DungeonManager;
-import net.dungeonrealms.old.game.mechanic.ParticleAPI;
-import net.dungeonrealms.old.game.mechanic.PlayerManager;
-import net.dungeonrealms.old.game.miscellaneous.RandomHelper;
-import net.dungeonrealms.old.game.party.PartyMechanics;
-import net.dungeonrealms.old.game.player.banks.BankMechanics;
-import net.dungeonrealms.old.game.player.banks.Storage;
-import net.dungeonrealms.old.game.player.chat.Chat;
-import net.dungeonrealms.old.game.player.combat.CombatLog;
-import net.dungeonrealms.old.game.player.combat.CombatLogger;
-import net.dungeonrealms.old.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.old.game.player.json.JSONMessage;
-import net.dungeonrealms.old.game.player.notice.Notice;
-import net.dungeonrealms.old.game.soundtrack.Soundtrack;
-import net.dungeonrealms.old.game.title.TitleAPI;
-import net.dungeonrealms.old.game.world.entity.EntityMechanics;
-import net.dungeonrealms.old.game.world.entity.type.mounts.EnumMountSkins;
-import net.dungeonrealms.old.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.old.game.world.entity.type.mounts.mule.MuleTier;
-import net.dungeonrealms.old.game.world.entity.type.pet.EnumPets;
-import net.dungeonrealms.old.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.old.game.world.entity.util.EntityStats;
-import net.dungeonrealms.old.game.world.entity.util.MountUtils;
-import net.dungeonrealms.old.game.world.item.Item;
-import net.dungeonrealms.old.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.old.game.world.realms.Realms;
-import net.dungeonrealms.old.game.world.shops.ShopMechanics;
-import net.dungeonrealms.old.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.old.game.world.teleportation.Teleportation;
-import net.dungeonrealms.frontend.vgame.old.Game;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
@@ -124,7 +122,7 @@ public class GameAPI {
     public static CooldownProvider SAVE_DATA_COOLDOWN = new CooldownProvider();
 
     /**
-     * Used to avoid double saving player generic
+     * Used to avoid double saving player data
      */
     public static Set<UUID> IGNORE_QUIT_EVENT = new HashSet<>();
 
@@ -150,13 +148,12 @@ public class GameAPI {
         }
     }
 
-
     /**
      * Utility type for calling async tasks with callbacks.
      *
      * @param callable Callable type
      * @param consumer Consumer task
-     * @param <T>      Type of generic
+     * @param <T>      Type of data
      * @author apollosoftware
      */
     public static <T> void submitAsyncCallback(Callable<T> callable, Consumer<Future<T>> consumer) {
@@ -374,14 +371,14 @@ public class GameAPI {
     }
 
     public static GameClient getClient() {
-        return null;
+        return DungeonRealms.getClient();
     }
 
     /**
      * Stops DungeonRealms server
      */
     public static void stopGame() {
-        Game.getGame().getInstanceLogger().sendMessage(ChatColor.RED + "This shard is stopping..");
+        DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
         final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
 
@@ -395,10 +392,10 @@ public class GameAPI {
         ShopMechanics.deleteAllShops(true);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            Game.getGame().getInstanceLogger().sendMessage(ChatColor.RED + "5 seconds until shutdown..");
-            DatabaseInstance.playerData.updateMany(Filters.eq("info.current", ""), new
+            Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
+            DatabaseInstance.playerData.updateMany(Filters.eq("info.current", DungeonRealms.getInstance().bungeeName), new
                     Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
-            DungeonRealms.getInstance().mm.stopInvocation(); // TODO remove
+            DungeonRealms.getInstance().mm.stopInvocation();
             AsyncUtils.pool.shutdown();
 
             DatabaseInstance.mongoClient.close();
@@ -501,21 +498,21 @@ public class GameAPI {
 
 
     /**
-     * Requests an update for cached player generic on target
+     * Requests an update for cached player data on target
      * player's server
      *
      * @param uuid Target
      */
     public static void updatePlayerData(UUID uuid) {
         // CHECK IF LOCAL //
-        if (Bukkit.getPlayer(uuid) != null) return; // their player generic has already been updated in PLAYERS
+        if (Bukkit.getPlayer(uuid) != null) return; // their player data has already been updated in PLAYERS
 
         // SENDS PACKET TO MASTER SERVER //
         sendNetworkMessage("Update", uuid.toString());
     }
 
     /**
-     * Requests an update for cached guild generic on target
+     * Requests an update for cached guild data on target
      * player's server
      *
      * @param guildName Target
@@ -529,11 +526,11 @@ public class GameAPI {
     /**
      * @param task     Packet job
      * @param message  Message to send.
-     * @param contents More generic?
+     * @param contents More data?
      * @since 1.0
      */
     public static void sendNetworkMessage(String task, String message, String... contents) {
-        getClient().sendNetworkMessage(task, message, false, contents);
+        getClient().sendNetworkMessage(task, message, contents);
     }
 
     /**
@@ -706,7 +703,7 @@ public class GameAPI {
     }
 
     /**
-     * Saves player generic
+     * Saves player data
      *
      * @param uuid
      * @since 1.0
@@ -809,7 +806,7 @@ public class GameAPI {
         // HANDLE REALM LOGOUT SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
 
-        // save player generic
+        // save player data
         savePlayerData(uuid, async, doAfterSave -> {
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
@@ -880,8 +877,8 @@ public class GameAPI {
                 EntityAPI.removePlayerMountList(uuid);
             }
 
-            if (PartyMechanics.getInstance().isInParty(player)) {
-                PartyMechanics.getInstance().removeMember(player, false);
+            if (Affair.getInstance().isInParty(player)) {
+                Affair.getInstance().removeMember(player, false);
             }
 
             operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.IS_PLAYING.getKey(), false))));
@@ -900,7 +897,7 @@ public class GameAPI {
     }
 
     /**
-     * Safely logs out all players when the server restarts. Saves their generic async before.
+     * Safely logs out all players when the server restarts. Saves their data async before.
      *
      * @since 1.0
      */
@@ -915,13 +912,13 @@ public class GameAPI {
 
             if (!DungeonRealms.getInstance().isDrStopAll) {
                 player.sendMessage(" ");
-                player.sendMessage(ChatColor.GRAY + "Your current interactable session has been paused while you are transferred.");
+                player.sendMessage(ChatColor.GRAY + "Your current game session has been paused while you are transferred.");
                 player.sendMessage(" ");
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
-                // prevent any interaction while the generic is being uploaded
+                // prevent any interaction while the data is being uploaded
                 Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
                 player.setInvulnerable(true);
                 player.setNoDamageTicks(10);
@@ -939,7 +936,7 @@ public class GameAPI {
                     return;
                 } else GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
-                // upload generic and send to server
+                // upload data and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
                     if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
@@ -967,21 +964,19 @@ public class GameAPI {
         Player player = Bukkit.getPlayer(uuid);
 
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
-            player.kickPlayer(ChatColor.RED + "Unable to grab your generic, please reconnect!");
+            player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
             return;
         } else if (player != null) {
-            player.sendMessage(ChatColor.GREEN + "Successfully received your generic, loading...");
+            player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
             if (!DungeonRealms.getInstance().canAcceptPlayers() && !Rank.isDev(player)) {
                 player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
                 return;
-            } else if (null == EnumShardType.SUBSCRIBER
-                    && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("generic")) {
+            } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
                 player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
                         ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
                 return;
-            } else if ((null == EnumShardType.YOUTUBE && !Rank.isYouTuber(player))
-                    || (null == EnumShardType.SUPPORT && !Rank.isSupport(player))) {
+            } else if ((DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) || (DungeonRealms.getInstance().isSupportShard && !Rank.isSupport(player))) {
                 player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
                 return;
             }
@@ -991,7 +986,7 @@ public class GameAPI {
 
         try {
             if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid)) {
-                if (!DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals("")) {
+                if (!DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
                     String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
                     player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
                     return;
@@ -1006,6 +1001,9 @@ public class GameAPI {
         }
 
         if (player.hasMetadata("sharding")) player.removeMetadata("sharding", DungeonRealms.getInstance());
+
+        // todo: finish anticheat system
+        //AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
 
         GamePlayer gp = new GamePlayer(player);
 
@@ -1113,41 +1111,41 @@ public class GameAPI {
 
         Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(Constants.BUILD_VERSION) + " Build " + String.valueOf(Constants.BUILD_NUMBER));
         Utils.sendCenteredMessage(player, ChatColor.GRAY + "http://www.dungeonrealms.net/");
-        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + "" + ChatColor.YELLOW + " shard.");
+        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + ChatColor.BOLD + DungeonRealms.getInstance().shardid + ChatColor.YELLOW + " shard.");
 
         player.sendMessage(new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Type " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/shard" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " to change your shard instance at any time.",
         });
 
-        if (null == EnumShardType.MASTER) {
+        if (DungeonRealms.getInstance().isMasterShard) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is the Dungeon Realms " + ChatColor.UNDERLINE + "MASTER" + ChatColor.DARK_AQUA + " shard.",
                     ChatColor.GRAY + "Changes made on this shard will be deployed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
             });
         }
-        if (null == EnumShardType.SUPPORT && Rank.isSupport(player)) {
+        if (DungeonRealms.getInstance().isSupportShard && Rank.isSupport(player)) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "CUSTOMER SUPPORT" + ChatColor.DARK_AQUA + " shard."
             });
         }
-        if (null == EnumShardType.ROLEPLAY) {
+        if (DungeonRealms.getInstance().isRoleplayShard) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "ROLEPLAY" + ChatColor.DARK_AQUA + " shard. Local chat should always be in character, Global/Trade chat may be OOC.",
                     ChatColor.GRAY + "Please be respectful to those who want to roleplay. You " + ChatColor.UNDERLINE + "will" + ChatColor.GRAY + " be banned for trolling / local OOC."
             });
         }
-        if (null == EnumShardType.BRAZILLIAN) {
+        if (DungeonRealms.getInstance().isBrazilianShard) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BRAZILIAN" + ChatColor.DARK_AQUA + " shard.",
                     ChatColor.GRAY + "The official language of this server is " + ChatColor.UNDERLINE + "Portuguese."
             });
         }
-        if (null == EnumShardType.BETA) {
+        if (DungeonRealms.getInstance().isBetaShard) {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BETA" + ChatColor.DARK_AQUA + " shard.",
@@ -1229,7 +1227,7 @@ public class GameAPI {
         }
 
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, "", true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
 
         Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
@@ -1239,7 +1237,7 @@ public class GameAPI {
             player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
         });
 
-        sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + "");
+        sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
 
         Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
@@ -1269,7 +1267,7 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
 
-            //Don't think these will work as they generic to Operators in MC.
+            //Don't think these will work as they default to Operators in MC.
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
@@ -1335,12 +1333,12 @@ public class GameAPI {
      * type used to switch shard
      *
      * @param player           Player
-     * @param serverBungeeName KryoHandler name
+     * @param serverBungeeName Bungee name
      */
     public static void moveToShard(Player player, String serverBungeeName) {
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
 
-        // prevent any interaction while the generic is being uploaded
+        // prevent any interaction while the data is being uploaded
         Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
         player.setInvulnerable(true);
         player.setNoDamageTicks(10);
@@ -1361,7 +1359,7 @@ public class GameAPI {
         );
     }
 
-    public static void backupDatabase() {
+    static void backupDatabase() {
         if (Bukkit.getOnlinePlayers().size() == 0) return;
         DungeonRealms.getInstance().getLogger().info("Beginning Mongo Database Backup");
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -1925,7 +1923,7 @@ public class GameAPI {
      *                                to map with values 0, 0
      */
     public static void calculateArmorAttributes(Map<String, Integer[]> attributes, ItemStack[] armorSet, boolean includeAbsentAttributes) {
-        // populate the map with generic values if necessary
+        // populate the map with default values if necessary
         if (includeAbsentAttributes) {
             for (Item.ArmorAttributeType type : Item.ArmorAttributeType.values()) {
                 attributes.putIfAbsent(type.getNBTName(), new Integer[]{0, 0});
@@ -1965,7 +1963,7 @@ public class GameAPI {
      *                                to map with values 0, 0
      */
     public static void calculateWeaponAttributes(Map<String, Integer[]> attributes, ItemStack weapon, boolean includeAbsentAttributes) {
-        // populate the map with generic values
+        // populate the map with default values
         if (includeAbsentAttributes) {
             for (Item.WeaponAttributeType type : Item.WeaponAttributeType.values()) {
                 attributes.putIfAbsent(type.getNBTName(), new Integer[]{0, 0});

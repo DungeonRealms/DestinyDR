@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/7/2016
  */
+
 public class Constants {
 
     public static final Logger log = Logger.getLogger("DungeonRealms");
@@ -13,13 +14,15 @@ public class Constants {
 
     public static final String DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
 
-    public static final String[] DEVELOPERS = new String[]{"Atlas__", "Vawke", "Evoltr"};
+    public static final String[] DEVELOPERS = new String[]{"Atlas__", "Vawke", "matt11matthew"};
 
-    public static final String[] PREVIOUS_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
+    public static final String[] OLD_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
 
-    public static final String MOTD = "                    &a• &6&lDUNGEON REALMS&r &a•    \n     &8- &d&nwww.dungeonrealms.net&r &a◾ &cIn development &8-";
+    public static final String MOTD = "&6Dungeon Realms™ &8- &a• The #1 Minecraft MMORPG •    \n                      &e&o&lOut of Beta!";
 
-    public static final String MAINTENANCE_MOTD = "                      &a• &6&lDUNGEON REALMS&r &a•    \n     &8- &d&nwww.dungeonrealms.net&r &a◾ &cIn development &8-";
+    public static final String MAINTENANCE_MOTD = "&6Dungeon Realms &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
+
+    public static final String GIT_BUILD_MOTD = "&6Dungeon Realms &8- &cBeing Redeveloped    \n  &8- &a&nAnnouncement at www.dungeonrealms.net&r &8-";
 
     public static final long MIN_GAME_TIME = 14100000L;
 
@@ -28,7 +31,7 @@ public class Constants {
     public static final int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //
-    public static final String MASTER_SERVER_IP = "131.153.25.42";
+    public static final String MASTER_SERVER_IP = "158.69.122.139";
 
     // BACKEND SERVER SERVER PORT //
     public static final int MASTER_SERVER_PORT = 22964;
@@ -38,24 +41,24 @@ public class Constants {
     public static final int NET_WRITE_BUFFER_SIZE = 32768;
 
     // BUILD VERSION //
-    public static final String BUILD_VERSION = "v1.0";
+    public static final String BUILD_VERSION = "minor 0.0.1 GIT-BUILD";
 
     // BUILD NUMBER //
-    public static final String BUILD_NUMBER = "&6&lAS OF OCT. 2016!";
+    public static final String BUILD_NUMBER = "#0";
 
     // FTP INFO //
     public static final String FTP_HOST_NAME = "167.114.65.102";
 
     public static final String FTP_USER_NAME = "dungeonrealms.53";
 
-    public static final String FTP_PASSWORD = "CXxbpBbWdyekJtyv";
+    public static final String FTP_PASSWORD = "KNlZmiaNUp0B";
 
     public static final int FTP_PORT = 21;
 
-    //MySQL INFO
-    public static final String SQL_HOSTNAME = "131.153.25.138";
-    public static final String SQL_PORT = "3306";
-    public static final String SQL_DATABASE = "dungeonrealms";
-    public static final String SQL_PASSWORD = "CXxbpBbWdyekJtyv";
-    public static final String SQL_USERNAME = "dungeonrealms";
+    //Removed use sql.yml
+//    public static final String SQL_HOSTNAME = "";
+//    public static final int SQL_PORT = 3306;
+//    public static final String SQL_DATABASE = "dungeonrealms";
+//    public static final String SQL_PASSWORD = "";
+//    public static final String SQL_USERNAME = "";
 }

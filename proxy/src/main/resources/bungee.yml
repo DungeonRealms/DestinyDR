@@ -1,6 +1,7 @@
-name: LIMBO-DungeonBungee
-main: net.dungeonrealms.drproxy.DRProxy
+name: DungeonRealmsProxy
+main: net.dungeonrealms.proxy.DungeonRealmsProxy
 version: ${project.parent.version}
-authors: [Vawke, Evoltr]
+#depend: ['BungeeTabListPlus']
+authors: [apollosoftware, Bradez1571, EtheralTemplar, Proxying, Xwaffle]
 website: http://www.dungeonrealms.net
-description: Dungeon Realms - LIMBO
+description: The new dungeonrealms!

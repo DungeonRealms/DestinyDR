@@ -8,18 +8,19 @@ import com.esotericsoftware.minlog.Log;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.dungeonrealms.common.Constants;
-import net.dungeonrealms.common.old.game.database.player.PlayerToken;
-import net.dungeonrealms.common.old.network.ServerAddress;
-import net.dungeonrealms.common.old.network.ShardInfo;
+import net.dungeonrealms.common.game.database.player.PlayerToken;
+import net.dungeonrealms.common.network.ServerAddress;
+import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.network.packet.Packet;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
-import net.dungeonrealms.network.packet.type.MonoPacket;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class GameClient extends Listener {
+public class GameClient
+        extends Listener {
+
     private Client client;
     private Runnable reconnected;
     private boolean isConnected = false;
@@ -58,7 +59,7 @@ public class GameClient extends Listener {
         this.client.connect(500000, Constants.MASTER_SERVER_IP, Constants.MASTER_SERVER_PORT);
         isConnected = true;
 
-        Log.info("Master server net.dungeonrealms.database.connection established!");
+        Log.info("Master server connection established!");
     }
 
     public void kill() {
@@ -81,7 +82,7 @@ public class GameClient extends Listener {
         sendUDP(packet);
     }
 
-    public void sendNetworkMessage(String task, String message, boolean mono, String... contents) {
+    public void sendNetworkMessage(String task, String message, String... contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(task);
         out.writeUTF(message);
@@ -89,14 +90,7 @@ public class GameClient extends Listener {
         for (String s : contents)
             out.writeUTF(s);
 
-        if (!mono) {
-            sendTCP(out.toByteArray());
-        } else {
-            MonoPacket monoPacket = new MonoPacket();
-            monoPacket.uniqueId = UUID.fromString(message);
-            monoPacket.data = out.toByteArray();
-            sendTCP(monoPacket);
-        }
+        sendTCP(out.toByteArray());
     }
 
     private static void registerClasses(Kryo kryo) {
@@ -124,7 +118,7 @@ public class GameClient extends Listener {
     }
 
     public void disconnected(Connection c) {
-        Log.warn("Connection lost between master server. Attempting to reestablish net.dungeonrealms.database.connection...");
+        Log.warn("Connection lost between master server. Attempting to reestablish connection...");
         Runnable run = new DefaultReconnector();
         if (reconnected != null) run = reconnected;
         new Thread(run).start();
@@ -151,4 +145,6 @@ public class GameClient extends Listener {
             Log.info("Connection reestablished!");
         }
     }
+
+
 }
