@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
@@ -63,6 +64,14 @@ public class Lobby extends JavaPlugin implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) throws InterruptedException {
+        // Prevent a player from joining the lobby if he already is connected on a server
+        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage(ChatColor.RED + "Invalid game_session ID");
+            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
+            return;
+        }
+
         if (PunishAPI.getInstance().isBanned(event.getUniqueId())) {
             String bannedMessage = PunishAPI.getInstance().getBannedMessage(event.getUniqueId());
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
