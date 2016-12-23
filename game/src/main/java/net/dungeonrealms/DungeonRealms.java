@@ -60,7 +60,6 @@ import net.dungeonrealms.game.player.menu.HearthStone;
 import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.soundtrack.Soundtrack;
 import net.dungeonrealms.game.tab.TabMechanics;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
@@ -266,7 +265,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(new EntityMechanics());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             mm.registerMechanic(new ShopMechanics());
-            mm.registerMechanic(Soundtrack.getInstance());
             mm.registerMechanic(Mining.getInstance());
             mm.registerMechanic(RealmInstance.getInstance());
             mm.registerMechanic(Fishing.getInstance());
@@ -287,7 +285,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(new EntityMechanics());
-            mm.registerMechanic(Soundtrack.getInstance());
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());
@@ -383,8 +380,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat.", Collections.singletonList("p")));
         cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
         cm.registerCommand(new CommandPDecline("pdecline", "/<command> [args]", "Decline a party invitation."));
-
-        cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to test dr soundtrack."));
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
         cm.registerCommand(new CommandAlbranir("albranir", "/<command> [args]", "Command to spawn albranir."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));

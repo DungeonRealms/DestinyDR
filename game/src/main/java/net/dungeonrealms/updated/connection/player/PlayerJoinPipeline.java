@@ -26,6 +26,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.updated.connection.pipeline.DataPipeline;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -82,7 +83,7 @@ public class PlayerJoinPipeline extends DataPipeline {
                 this.preventInteraction(uniqueId);
                 // Load the inventory data
                 this.loadInventory(uniqueId);
-                player.setGameMode(GameMode.SURVIVAL);
+                DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setGameMode(GameMode.SURVIVAL));
                 // Achievements
                 this.checkAchievements(uniqueId);
                 // Handlers
@@ -90,10 +91,10 @@ public class PlayerJoinPipeline extends DataPipeline {
                 // Finished
                 this.processing.remove(uniqueId);
                 Utils.sendCenteredMessage(player, ChatColor.GREEN + "DATA CONVERSION FINISHED");
-                // Server info
-                this.sendServerData(uniqueId);
                 // Done after 3s to prevent chat spamming
                 DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> finish(uniqueId), 60);
+                // Server info
+                this.sendServerData(uniqueId);
             }
         }
     }
@@ -180,12 +181,6 @@ public class PlayerJoinPipeline extends DataPipeline {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
         }
 
-        // calculate attributes and check inventory
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            PlayerManager.checkInventory(uniqueId);
-            GameAPI.calculateAllAttributes(player);
-        }, 40);
-
         if (gamePlayer.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (gamePlayer.getStats().freePoints > 0) {
@@ -214,11 +209,12 @@ public class PlayerJoinPipeline extends DataPipeline {
                 Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
                 Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM VANISH");
-                player.setGameMode(GameMode.SPECTATOR);
+                DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setGameMode(GameMode.SPECTATOR));
             } else {
-                player.setGameMode(GameMode.CREATIVE);
+                DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setGameMode(GameMode.CREATIVE));
             }
         }
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.teleport(TeleportAPI.getLocationFromString("cyrennica")));
     }
 
     /**
@@ -364,6 +360,11 @@ public class PlayerJoinPipeline extends DataPipeline {
         if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null) {
             MountUtils.inventories.put(player.getUniqueId(), muleInv);
         }
+        // Calculate data
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            GameAPI.calculateAllAttributes(player);
+            PlayerManager.checkInventory(uniqueId);
+        }, 40);
     }
 
     /**

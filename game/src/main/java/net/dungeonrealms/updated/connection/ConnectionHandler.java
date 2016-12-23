@@ -26,6 +26,7 @@ public class ConnectionHandler implements Handler, Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
             if (!shard.equals("") && !DungeonRealms.getInstance().shardid.equals(shard)) {
@@ -37,9 +38,6 @@ public class ConnectionHandler implements Handler, Listener {
                 return;
             }
         }
-
-        // REQUEST PLAYER'S DATA ASYNC //
-        DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
     @EventHandler

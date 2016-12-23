@@ -16,12 +16,9 @@ import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
@@ -48,10 +45,10 @@ public class PlayerQuitPipeline extends DataPipeline {
         if (Bukkit.getPlayer(uniqueId) != null && Bukkit.getPlayer(uniqueId).isOnline()) {
             Player player = Bukkit.getPlayer(uniqueId);
             if (DatabaseAPI.getInstance().PLAYERS.containsKey(uniqueId)) {
-                // Stop listening
-                this.stopHandlersOn(uniqueId);
                 // Save
                 this.saveData(uniqueId);
+                // Stop listening
+                this.stopHandlersOn(uniqueId);
             } else {
                 Constants.log.warning("Limbo'd player detected: " + player.getName());
             }
@@ -72,16 +69,6 @@ public class PlayerQuitPipeline extends DataPipeline {
         // Damage tacking
         for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
             tracker.removeDamager(player);
-        }
-        // Dungeon item stuff
-        if (player.getWorld().getName().contains("DUNGEON")) {
-            for (ItemStack stack : player.getInventory().getContents()) {
-                if (stack != null && stack.getType() != Material.AIR) {
-                    if (DungeonManager.getInstance().isDungeonItem(stack)) {
-                        player.getInventory().remove(stack);
-                    }
-                }
-            }
         }
         // Bank item stuff
         if (BankMechanics.shopPricing.containsKey(player.getName())) {
@@ -138,6 +125,17 @@ public class PlayerQuitPipeline extends DataPipeline {
      */
     public void saveData(UUID uniqueId) {
         Player player = Bukkit.getPlayer(uniqueId);
+
+        // Dungeon item stuff
+        if (player.getWorld().getName().contains("DUNGEON")) {
+            for (ItemStack stack : player.getInventory().getContents()) {
+                if (stack != null && stack.getType() != Material.AIR) {
+                    if (DungeonManager.getInstance().isDungeonItem(stack)) {
+                        player.getInventory().remove(stack);
+                    }
+                }
+            }
+        }
 
         // BANK AND COLLECTION BIN
         if (BankMechanics.storage.containsKey(uniqueId)) {
