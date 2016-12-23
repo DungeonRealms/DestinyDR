@@ -12,11 +12,13 @@ public abstract class AsyncMongoFunction {
 
     private JavaPlugin instance;
 
+    private int function;
+
     public AsyncMongoFunction(JavaPlugin instance) {
         this.instance = instance;
     }
 
-    protected abstract void function();
+    public abstract void function();
 
     /**
      * Execute the asynchronous database task
@@ -25,7 +27,7 @@ public abstract class AsyncMongoFunction {
      */
     public void execute(int parX) {
         if (this.instance.isEnabled()) {
-            this.instance.getServer().getScheduler().scheduleAsyncDelayedTask(instance, () -> {
+            this.function = this.instance.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> {
                 this.function();
             }, 20 * parX);
         }

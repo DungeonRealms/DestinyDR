@@ -350,13 +350,8 @@ public class GameAPI {
         // Delete shops
         ShopMechanics.deleteAllShops(true);
         // Update online status
-        DatabaseAPI.getInstance().submitAsyncFunction(new AsyncMongoFunction(DungeonRealms.getInstance()) {
-            @Override
-            protected void function() {
-                DatabaseInstance.playerData.updateMany(Filters.eq("info.current", DungeonRealms.getInstance().bungeeName), new
-                        Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
-            }
-        });
+        DatabaseAPI.getInstance().goAsync(DungeonRealms.getInstance(), () -> DatabaseInstance.playerData.updateMany(Filters.eq("info.current", DungeonRealms.getInstance().bungeeName), new
+                Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false))));
         // Safely logout all players
         GameAPI.logoutAllPlayers();
         // Stop all mechanics
