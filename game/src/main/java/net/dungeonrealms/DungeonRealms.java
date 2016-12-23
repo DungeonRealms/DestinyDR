@@ -175,6 +175,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onEnable() {
 //        new DupedItemsRemover().startInitialization();
+        Constants.build();
         SERVER_START_TIME = System.currentTimeMillis();
 
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");

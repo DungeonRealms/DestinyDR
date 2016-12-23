@@ -6,11 +6,13 @@ import net.dungeonrealms.updated.trade.ItemTrade;
 import net.dungeonrealms.updated.trade.gui.action.ClickAction;
 import net.dungeonrealms.updated.trade.gui.action.EnumClicker;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Map;
 
@@ -28,25 +30,47 @@ public class TradeGUI implements ITradeScreen {
     @Getter
     private Map<Integer, ItemStack> itemsInScreen;
 
+    private Inventory inventory;
+
     public TradeGUI(ItemTrade itemTrade) {
         this.correspondingTrade = itemTrade;
         this.itemsInScreen = Maps.newHashMap();
+        this.inventory = Bukkit.createInventory(null, 36, "Trading");
+
+        int middleSlots[] = {4, 13, 22, 31};
+        int buttonSlots[] = {0, 8};
+        // Create barriers in middle
+        ItemStack itemStack = new ItemStack(Material.IRON_FENCE);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName("");
+        itemStack.setItemMeta(itemMeta);
+        // Set items in inventory
+        for (int i : middleSlots) {
+            this.inventory.setItem(i, itemStack);
+        }
+        for (int i : buttonSlots) {
+            this.inventory.setItem(i, this.getButton(false));
+        }
+    }
+
+    public void open() {
+        Bukkit.getPlayer(this.correspondingTrade.getOwner()).openInventory(this.inventory);
+        Bukkit.getPlayer(this.correspondingTrade.getParticipator()).openInventory(this.inventory);
     }
 
     /**
      * Update the status of the trade
      *
-     * @param clicker   The clicker
-     * @param inventory The inventory
+     * @param clicker The clicker
      */
-    public void updateStatus(EnumClicker clicker, Inventory inventory, boolean status) {
+    public void updateStatus(EnumClicker clicker, boolean status) {
         switch (clicker) {
             case OWNER:
-                inventory.setItem(0, this.getButton(status));
+                this.inventory.setItem(0, this.getButton(status));
                 this.correspondingTrade.setOwnerAccepted(status);
                 break;
             case PARTICIPATOR:
-                inventory.setItem(8, this.getButton(status));
+                this.inventory.setItem(8, this.getButton(status));
                 this.correspondingTrade.setParticipatorAccepted(status);
                 break;
         }
@@ -57,7 +81,7 @@ public class TradeGUI implements ITradeScreen {
         // Clicked slot is 36, or under 36
         event.setCancelled(true);
         if (clickAction.getSlot() <= 36) {
-            this.updateStatus(clickAction.getClicker(), event.getInventory(), false);
+            this.updateStatus(clickAction.getClicker(), false);
             Player player = (Player) event.getWhoClicked();
             // Player is clicking a disallowed slot
             if (!this.disallowedSlots().contains(clickAction.getSlot())) {
@@ -75,11 +99,13 @@ public class TradeGUI implements ITradeScreen {
                                             // Remove & set item
                                             Bukkit.getPlayer(this.correspondingTrade.getOwner()).getInventory().removeItem(clickAction.getItemStack());
                                             this.correspondingTrade.getOwnerItems().add(clickAction.getItemStack());
+                                            this.inventory.setItem(clickAction.getSlot(), clickAction.getItemStack());
                                             break;
                                         case PARTICIPATOR:
                                             // Remove & set item
                                             Bukkit.getPlayer(this.correspondingTrade.getParticipator()).getInventory().removeItem(clickAction.getItemStack());
                                             this.correspondingTrade.getParticipatorItems().add(clickAction.getItemStack());
+                                            this.inventory.setItem(clickAction.getSlot(), clickAction.getItemStack());
                                             break;
                                     }
                                 } else {
@@ -97,6 +123,7 @@ public class TradeGUI implements ITradeScreen {
                                         // Remove after giving back
                                         this.itemsInScreen.remove(clickAction.getSlot());
                                         this.correspondingTrade.getOwnerItems().remove(clickAction.getItemStack());
+                                        this.inventory.remove(clickAction.getSlot());
                                         break;
                                     case PARTICIPATOR:
                                         // Add back
@@ -104,6 +131,7 @@ public class TradeGUI implements ITradeScreen {
                                         // Remove after giving back
                                         this.itemsInScreen.remove(clickAction.getSlot());
                                         this.correspondingTrade.getParticipatorItems().remove(clickAction.getItemStack());
+                                        this.inventory.remove(clickAction.getSlot());
                                         break;
                                 }
                             }

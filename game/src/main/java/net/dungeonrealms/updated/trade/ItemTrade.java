@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -65,6 +66,11 @@ public class ItemTrade {
                 owner.updateInventory();
             }
         }
+        owner.closeInventory();
+        participator.closeInventory();
+
+        owner.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TRADE ACCEPTED");
+        participator.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TRADE ACCEPTED");
     }
 
     /**
@@ -79,5 +85,7 @@ public class ItemTrade {
         for (ItemStack itemStack : this.participatorItems) {
             participator.getInventory().addItem(itemStack);
         }
+        owner.closeInventory();
+        participator.closeInventory();
     }
 }

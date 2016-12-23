@@ -238,7 +238,7 @@ public class PlayerJoinPipeline extends DataPipeline {
             player.sendMessage(new String[]{
                     ChatColor.RED + "You are playing on an unstable version of Dungeon Realms -",
                     ChatColor.RED + "This server is running fixed 2016 code, everything is",
-                    "being rewritten as we speak - www.dungeonrealms.net"});
+                    ChatColor.RED + "being rewritten as we speak - www.dungeonrealms.net"});
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
         } else {
             Utils.sendCenteredMessage(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "DEVELOPMENT SERVER");
