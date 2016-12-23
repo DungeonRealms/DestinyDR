@@ -1010,8 +1010,8 @@ public class GameAPI {
         gp.setAbleToDrop(false);
         gp.setAbleToSuicide(false);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToDrop(true), 20L * 10L);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToDrop(true), 20L * 10L);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
 
         // Hide invisible users from non-GMs.
         if (!Rank.isGM(player)) GameAPI._hiddenPlayers.forEach(player::hidePlayer);

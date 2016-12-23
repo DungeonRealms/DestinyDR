@@ -214,7 +214,7 @@ public class DungeonRealms extends JavaPlugin {
         BungeeUtils.setPlugin(this);
 
         DatabaseInstance.getInstance().startInitialization(true);
-        DatabaseAPI.getInstance().startInitialization(bungeeName);
+        DatabaseAPI.getInstance().startInitialization(bungeeName, this);
         AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
