@@ -49,7 +49,6 @@ import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.listener.world.BlockListener;
 import net.dungeonrealms.game.listener.world.DungeonListener;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
@@ -78,12 +77,14 @@ import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.tool.PatchTools;
+import net.dungeonrealms.updated.Collector;
+import net.dungeonrealms.updated.connection.player.PlayerJoinPipeline;
+import net.dungeonrealms.updated.connection.player.PlayerQuitPipeline;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ini4j.Ini;
@@ -97,6 +98,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DungeonRealms extends JavaPlugin {
+
+    // Pipelines
+    @Getter
+    private PlayerJoinPipeline playerJoinPipeline;
+    @Getter
+    private PlayerQuitPipeline playerQuitPipeline;
 
     private static long SERVER_START_TIME, REBOOT_TIME;
 
@@ -248,7 +255,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(new ForceField());
-            mm.registerMechanic(CrashDetector.getInstance());
             mm.registerMechanic(new EntityMechanics());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             mm.registerMechanic(new ShopMechanics());
@@ -565,6 +571,10 @@ public class DungeonRealms extends JavaPlugin {
 
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);
+
+        new Collector().init();
+        this.playerJoinPipeline = new PlayerJoinPipeline();
+        this.playerQuitPipeline = new PlayerQuitPipeline();
     }
 
     public long getRebootTime() {
