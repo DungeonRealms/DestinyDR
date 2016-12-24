@@ -59,6 +59,8 @@ import java.util.*;
  */
 public class InventoryListener implements Listener {
 
+
+
     /**
      * Handles important inventories (guilds, etc.)
      *
@@ -1268,120 +1270,134 @@ public class InventoryListener implements Listener {
             return;
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
+        boolean continueAllowed = false;
+        // Prevent T4 pickaxes/fishingrods to be repaired using scrap
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
-            if (Mining.isDRPickaxe(slotItem))
-                slotTier = Mining.getPickTier(slotItem);
-            else {
-                slotTier = Fishing.getRodTier(slotItem);
+            if (Mining.isDRPickaxe(slotItem)) {
+                if (Mining.getPickTier(slotItem) < 4) {
+                    slotTier = Mining.getPickTier(slotItem);
+                    continueAllowed = true;
+                } else {
+                    continueAllowed = false;
+                }
+            } else if (Fishing.isDRFishingPole(slotItem)) {
+                if (Fishing.getRodTier(slotItem) < 4) {
+                    slotTier = Fishing.getRodTier(slotItem);
+                    continueAllowed = true;
+                } else {
+                    continueAllowed = false;
+                }
             }
-            if (scrapTier != slotTier) return;
-            if (cursorItem.getAmount() == 1) {
-                event.setCancelled(true);
-                event.setCursor(new ItemStack(Material.AIR));
-            } else if (cursorItem.getAmount() > 1) {
-                event.setCancelled(true);
-                cursorItem.setAmount(cursorItem.getAmount() - 1);
-                event.setCursor(cursorItem);
-            }
-            double itemDurability = RepairAPI.getCustomDurability(slotItem);
+            if (continueAllowed) {
+                if (scrapTier != slotTier) return;
+                if (cursorItem.getAmount() == 1) {
+                    event.setCancelled(true);
+                    event.setCursor(new ItemStack(Material.AIR));
+                } else if (cursorItem.getAmount() > 1) {
+                    event.setCancelled(true);
+                    cursorItem.setAmount(cursorItem.getAmount() - 1);
+                    event.setCursor(cursorItem);
+                }
+                double itemDurability = RepairAPI.getCustomDurability(slotItem);
 
-            if (itemDurability + 45.0D >= 1500.0D) {
-                RepairAPI.setCustomItemDurability(slotItem, 1500);
+                if (itemDurability + 45.0D >= 1500.0D) {
+                    RepairAPI.setCustomItemDurability(slotItem, 1500);
+                    player.updateInventory();
+                } else if (itemDurability + 45.0D < 1500.0D) {
+                    RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
+                    player.updateInventory();
+                }
                 player.updateInventory();
-            } else if (itemDurability + 45.0D < 1500.0D) {
-                RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
+                double newPercent = RepairAPI.getCustomDurability(slotItem);
+
+                int particleID = 1;
+                switch (scrapTier) {
+                    case 1:
+                        particleID = 25;
+                        break;
+                    case 2:
+                        particleID = 30;
+                        break;
+                    case 3:
+                        particleID = 42;
+                        break;
+                    case 4:
+                        particleID = 57;
+                        break;
+                    case 5:
+                        particleID = 41;
+                        break;
+                }
+                if (slotItem.getType() == Material.BOW) {
+                    particleID = 5;
+                }
+                int repairPercent = (int) ((newPercent / 1500.D) * 100);
+
+                for (int i = 0; i < 6; i++) {
+                    player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
+                    player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
+                    player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
+                }
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                    player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
+                }
+                return;
+            }
+
+            if (RepairAPI.isItemArmorOrWeapon(slotItem)) {
+                slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
+                if (scrapTier != slotTier) return;
+                if (cursorItem.getAmount() == 1) {
+                    event.setCancelled(true);
+                    event.setCursor(new ItemStack(Material.AIR));
+                } else if (cursorItem.getAmount() > 1) {
+                    event.setCancelled(true);
+                    cursorItem.setAmount(cursorItem.getAmount() - 1);
+                    event.setCursor(cursorItem);
+                }
+
+                double itemDurability = RepairAPI.getCustomDurability(slotItem);
+
+                if (itemDurability + 45.0D >= 1500.0D) {
+                    RepairAPI.setCustomItemDurability(slotItem, 1500);
+                    player.updateInventory();
+                } else if (itemDurability + 45.0D < 1500.0D) {
+                    RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
+                    player.updateInventory();
+                }
                 player.updateInventory();
-            }
-            player.updateInventory();
-            double newPercent = RepairAPI.getCustomDurability(slotItem);
+                double newPercent = RepairAPI.getCustomDurability(slotItem);
 
-            int particleID = 1;
-            switch (scrapTier) {
-                case 1:
-                    particleID = 25;
-                    break;
-                case 2:
-                    particleID = 30;
-                    break;
-                case 3:
-                    particleID = 42;
-                    break;
-                case 4:
-                    particleID = 57;
-                    break;
-                case 5:
-                    particleID = 41;
-                    break;
-            }
-            if (slotItem.getType() == Material.BOW) {
-                particleID = 5;
-            }
-            int repairPercent = (int) ((newPercent / 1500.D) * 100);
-
-            for (int i = 0; i < 6; i++) {
-                player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
-                player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
-                player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
-            }
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
-            }
-            return;
-        }
-
-        if (RepairAPI.isItemArmorOrWeapon(slotItem)) {
-            slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
-            if (scrapTier != slotTier) return;
-            if (cursorItem.getAmount() == 1) {
-                event.setCancelled(true);
-                event.setCursor(new ItemStack(Material.AIR));
-            } else if (cursorItem.getAmount() > 1) {
-                event.setCancelled(true);
-                cursorItem.setAmount(cursorItem.getAmount() - 1);
-                event.setCursor(cursorItem);
-            }
-
-            double itemDurability = RepairAPI.getCustomDurability(slotItem);
-
-            if (itemDurability + 45.0D >= 1500.0D) {
-                RepairAPI.setCustomItemDurability(slotItem, 1500);
-                player.updateInventory();
-            } else if (itemDurability + 45.0D < 1500.0D) {
-                RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
-                player.updateInventory();
-            }
-            player.updateInventory();
-            double newPercent = RepairAPI.getCustomDurability(slotItem);
-
-            int particleID = 1;
-            switch (scrapTier) {
-                case 1:
-                    particleID = 25;
-                    break;
-                case 2:
-                    particleID = 30;
-                    break;
-                case 3:
-                    particleID = 42;
-                    break;
-                case 4:
-                    particleID = 57;
-                    break;
-                case 5:
-                    particleID = 41;
-                    break;
-            }
-            if (slotItem.getType() == Material.BOW) {
-                particleID = 5;
-            }
-            int repairPercent = (int) ((newPercent / 1500.D) * 100);
-            for (int i = 0; i < 6; i++) {
-                player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
-                player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
-                player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
-            }
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
+                int particleID = 1;
+                switch (scrapTier) {
+                    case 1:
+                        particleID = 25;
+                        break;
+                    case 2:
+                        particleID = 30;
+                        break;
+                    case 3:
+                        particleID = 42;
+                        break;
+                    case 4:
+                        particleID = 57;
+                        break;
+                    case 5:
+                        particleID = 41;
+                        break;
+                }
+                if (slotItem.getType() == Material.BOW) {
+                    particleID = 5;
+                }
+                int repairPercent = (int) ((newPercent / 1500.D) * 100);
+                for (int i = 0; i < 6; i++) {
+                    player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
+                    player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
+                    player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
+                }
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                    player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
+                }
             }
         }
     }

@@ -340,34 +340,38 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void petDamageListener(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity().hasMetadata("type"))) return;
-        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
-        switch (metaValue) {
-            case "pet":
-                event.setCancelled(true);
-                event.setDamage(0);
-                break;
-            case "mount":
-                event.setCancelled(true);
-                event.setDamage(0);
-                Player p = null;
-                if (event.getDamager() instanceof Player) {
-                    p = (Player) event.getDamager();
-                } else if (event.getDamager() instanceof Projectile) {
-                    if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
-                        p = (Player) ((Projectile) event.getDamager()).getShooter();
+        if (!GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
+            if (!(event.getEntity().hasMetadata("type"))) return;
+            String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
+            switch (metaValue) {
+                case "pet":
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    break;
+                case "mount":
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    Player p = null;
+                    if (event.getDamager() instanceof Player) {
+                        p = (Player) event.getDamager();
+                    } else if (event.getDamager() instanceof Projectile) {
+                        if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
+                            p = (Player) ((Projectile) event.getDamager()).getShooter();
+                        }
                     }
-                }
-                if (p == null) return;
-                Horse horse = (Horse) event.getEntity();
-                if (!horse.getVariant().equals(Variant.MULE)) return;
-                if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
-                    EntityAPI.removePlayerMountList(p.getUniqueId());
-                    horse.remove();
-                }
-                break;
-            default:
-                break;
+                    if (p == null) return;
+                    Horse horse = (Horse) event.getEntity();
+                    if (!horse.getVariant().equals(Variant.MULE)) return;
+                    if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
+                        EntityAPI.removePlayerMountList(p.getUniqueId());
+                        horse.remove();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            event.setCancelled(true);
         }
     }
 

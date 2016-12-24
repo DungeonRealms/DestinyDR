@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.world;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -38,6 +39,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -352,6 +354,15 @@ public class BlockListener implements Listener {
     }
 
 
+    private List<UUID> repairing = Lists.newArrayList();
+
+    @EventHandler
+    public void onPickupInRepair(PlayerPickupItemEvent event) {
+        if(repairing.contains(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
@@ -372,10 +383,17 @@ public class BlockListener implements Listener {
             return;
         }
 
-
-        if (Mining.isDRPickaxe(item) || Fishing.isDRFishingPole(item)) {
-            int lvl = Mining.getLvl(item);
-            if (lvl >= 100) {
+        if(Mining.isDRPickaxe(item)) {
+            int level = Mining.getLvl(item);
+            if(level >= 100) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "You can not repair this level 100 item.");
+                return;
+            }
+        }
+        if(Fishing.isDRFishingPole(item)) {
+            int level = Fishing.getLvl(item);
+            if(level >= 100) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You can not repair this level 100 item.");
                 return;
@@ -415,6 +433,7 @@ public class BlockListener implements Listener {
                     currentRepair.getRepairItem().remove();
                     pl.sendMessage(ChatColor.RED + "You were > 10 blocks from the anvil.");
                     returnItem(pl, currentRepair.getItem());
+                    repairing.remove(pl.getUniqueId());
                 }
                 //Player isnt nearby anymore?
                 repairMap.remove(block.getLocation());
@@ -426,6 +445,8 @@ public class BlockListener implements Listener {
                 player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEM(s)");
                 return;
             }
+
+            repairing.add(player.getUniqueId());
 
             Location middle = block.getLocation().add(.5, 1.3, .5);
             //Set the item on the anvil
@@ -481,10 +502,12 @@ public class BlockListener implements Listener {
                             player.setCanPickupItems(true);
                         }
                     }
+                    repairing.remove(player.getUniqueId());
                     player.updateInventory();
                     repairMap.remove(block.getLocation());
                 } else {
                     //Cancel
+                    repairing.remove(player.getUniqueId());
                     itemEntity.remove();
                     returnItem(player, item);
                     repairMap.remove(block.getLocation());
@@ -494,6 +517,7 @@ public class BlockListener implements Listener {
             }, p -> {
                 player.setCanPickupItems(true);
                 itemEntity.remove();
+                repairing.remove(player.getUniqueId());
                 returnItem(player, item);
                 repairMap.remove(block.getLocation());
                 p.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");

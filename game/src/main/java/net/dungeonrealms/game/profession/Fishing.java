@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.profession;
 
+import com.google.common.collect.Maps;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -90,11 +91,21 @@ public class Fishing implements GenericMechanic {
     }
 
     public enum EnumFish {
-        Shrimp("A raw and pink crustacean", 1), Anchovie("A small blue, oily fish", 1), Crayfish("A lobster-like and brown crustacean", 1),
-        Carp("A Large, silver-scaled fish", 2), Herring("A colourful and medium-sized fish", 2), Sardine("A small and oily green fish", 2),
-        Salmon("A beautiful jumping fish", 3), Trout("A non-migrating Salmon", 3), Cod("A cold-water, deep sea fish", 3),
-        Lobster("A Large, red crustacean", 4), Tuna("A large, sapphire blue fish", 4), Bass("A very large and white fish", 4),
-        Shark("A terrifying and massive predator", 5), Swordfish("An elongated fish with a long bill", 5), Monkfish("A flat, large, and scary-looking fish", 5);
+        Shrimp("A raw and pink crustacean", 1),
+        Anchovie("A small blue, oily fish", 1),
+        Crayfish("A lobster-like and brown crustacean", 1),
+        Carp("A Large, silver-scaled fish", 2),
+        Herring("A colourful and medium-sized fish", 2),
+        Sardine("A small and oily green fish", 2),
+        Salmon("A beautiful jumping fish", 3),
+        Trout("A non-migrating Salmon", 3),
+        Cod("A cold-water, deep sea fish", 3),
+        Lobster("A Large, red crustacean", 4),
+        Tuna("A large, sapphire blue fish", 4),
+        Bass("A very large and white fish", 4),
+        Shark("A terrifying and massive predator", 5),
+        Swordfish("An elongated fish with a long bill", 5),
+        Monkfish("A flat, large, and scary-looking fish", 5);
 
 
         public int tier;
@@ -463,7 +474,7 @@ public class Fishing implements GenericMechanic {
         }
 
         List<String> fish_lore = new ArrayList<>();
-        if (fish_buff == true) {
+        if (fish_buff) {
             fish_lore.add(fish_buff_s);
         }
         fish_lore.add(ChatColor.RED + "-" + hunger_to_heal + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)");
@@ -605,6 +616,62 @@ public class Fishing implements GenericMechanic {
         p.getEquipment().setItemInMainHand(stack);
     }
 
+    /**
+     * Get all enchants of a fishing rod
+     *
+     * @param itemStack
+     * @return
+     */
+    public static HashMap<FishingRodEnchant, Integer> getEnchantsFrom(ItemStack itemStack) {
+        HashMap<FishingRodEnchant, Integer> map = Maps.newHashMap();
+        map.put(FishingRodEnchant.TreasureFind, getTreasureFindChance(itemStack));
+        map.put(FishingRodEnchant.JunkFind, getJunkFindChance(itemStack));
+        map.put(FishingRodEnchant.DoubleCatch, getDoubleDropChance(itemStack));
+        map.put(FishingRodEnchant.TripleCatch, getTripleDropChance(itemStack));
+        map.put(FishingRodEnchant.CatchingSuccess, getSuccessChance(itemStack));
+        map.put(FishingRodEnchant.Durability, getDurabilityBuff(itemStack));
+        return map;
+    }
+
+    public static void enchant(FishingRodEnchant rodEnchant, ItemStack pick, Player p, int value) {
+        ItemMeta meta = pick.getItemMeta();
+        List<String> lore = meta.getLore();
+
+        Iterator<String> i = lore.iterator();
+
+        int prevValue = -1;
+
+        while (i.hasNext()) {
+            String line = i.next();
+            if (line.contains(rodEnchant.name())) {
+                prevValue = Integer.valueOf(line.substring(line.indexOf("+"), line.indexOf("%")));
+                i.remove();
+            }
+        }
+
+
+        String clone = lore.get(lore.size() - 1);
+        lore.remove(lore.size() - 1);
+        if (value == 0)
+            value = 1;
+        if (prevValue != -1 && prevValue > value)
+            value = prevValue;
+        lore.add(ChatColor.RED + rodEnchant.name() + " +" + value + "%");
+        lore.add(clone);
+        meta.setLore(lore);
+        pick.setItemMeta(meta);
+
+
+        ItemStack newItem = pick.clone();
+        p.getEquipment().getItemInMainHand().setType(Material.AIR);
+        p.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
+
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(newItem);
+        nms.getTag().setInt(rodEnchant.name(), value);
+        p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+        p.updateInventory();
+    }
 
     public static int getTreasureFindChance(ItemStack is) {
         int chance = 0;
@@ -896,8 +963,12 @@ public class Fishing implements GenericMechanic {
 
 
     public enum FishingRodEnchant {
-        DoubleCatch("DOUBLE CATCH"), TripleCatch("TRIPLE CATCH"), TreasureFind("TREASURE FIND"),
-        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND");
+        DoubleCatch("DOUBLE CATCH"),
+        TripleCatch("TRIPLE CATCH"),
+        TreasureFind("TREASURE FIND"),
+        Durability("DURABILITY"),
+        CatchingSuccess("FISHING SUCCESS"),
+        JunkFind("JUNK FIND");
 
 
         public String name;

@@ -46,8 +46,6 @@ public class AntiDuplication implements GenericMechanic {
 
     private static CooldownProvider WARNING_SUPPRESSOR = new CooldownProvider();
 
-    private final static long CHECK_TICK_FREQUENCY = 10L;
-
     public static AntiDuplication getInstance() {
         if (instance == null) {
             instance = new AntiDuplication();
@@ -64,7 +62,7 @@ public class AntiDuplication implements GenericMechanic {
     @Override
     public void startInitialization() {
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(),
-                () -> Bukkit.getOnlinePlayers().stream().forEach(p -> checkForSuspiciousDupedItems(p, new HashSet<>(Collections.singletonList(p.getInventory())))), 0, CHECK_TICK_FREQUENCY);
+                () -> Bukkit.getOnlinePlayers().forEach(this::check), 0, 10);
     }
 
     @Override
@@ -78,6 +76,34 @@ public class AntiDuplication implements GenericMechanic {
         AsyncUtils.pool.submit(() -> checkForSuspiciousDupedItems(p, new HashSet<>(Arrays.asList(p.getInventory(), storage.inv, storage.collection_bin, muleInv))));
     }
 
+    /**
+     * Check a player's epoch identifiers
+     *
+     * @param player The player to check
+     */
+    private void check(Player player) {
+        for (ItemStack itemStack : player.getInventory().getContents()) {
+            if (itemStack != null) {
+                for (ItemStack itemStack1 : player.getInventory().getContents()) {
+                    if (itemStack1 != null) {
+                        // Does the player have 2 of the exact same items?
+                        if (itemStack.equals(itemStack1))
+                            continue; // Suspicious
+                        if (CraftItemStack.asNMSCopy(itemStack).hasTag() && CraftItemStack.asNMSCopy(itemStack1).hasTag()) {
+                            if (CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("u") && (CraftItemStack.asNMSCopy(itemStack1).getTag().hasKey("u"))) {
+                                // Same epoch?
+                                if (CraftItemStack.asNMSCopy(itemStack).getTag().getString("u").equals(CraftItemStack.asNMSCopy(itemStack1).getTag().getString("u"))) {
+                                    player.sendMessage(ChatColor.RED + "Not today buddy..");
+                                    player.getInventory().remove(itemStack);
+                                    player.getInventory().remove(itemStack1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Checks and removes duplicated items
@@ -85,6 +111,7 @@ public class AntiDuplication implements GenericMechanic {
      *
      * @author APOLLOSOFTWARE
      */
+
     private static void checkForDuplications(Player p, HashMultimap<Inventory, Tuple<ItemStack, String>> map) {
         Set<String> duplicates = Utils.findDuplicates(map.values().stream().map(Tuple::b).collect(Collectors.toList()));
         Map<String, Integer> itemDesc = new HashMap<>();
@@ -117,20 +144,7 @@ public class AntiDuplication implements GenericMechanic {
                     }
                 }
             }
-            StringBuilder builder = new StringBuilder();
-            int i = 0;
-            for (Map.Entry<String, Integer> e : itemDesc.entrySet()) {
-                int amount = e.getValue() - 1;
-                String name = e.getKey();
-
-                if (i == 0)
-                    builder.append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
-                else
-                    builder.append(", ").append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
-                i++;
-            }
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
-                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+            p.sendMessage(ChatColor.RED + "Not today buddy.");
         }
     }
 
@@ -188,10 +202,6 @@ public class AntiDuplication implements GenericMechanic {
             if (WARNING_SUPPRESSOR.isCooldown(player.getUniqueId())) return;
 
             WARNING_SUPPRESSOR.submitCooldown(player, 120000L);
-
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: " + ChatColor.WHITE + "Player " + player.getName() + " has " + orbCount + " orbs, " +
-                    enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
-                    "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
         }
     }
 

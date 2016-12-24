@@ -55,7 +55,7 @@ public class Constants {
         log = Logger.getLogger("DungeonRealms");
         debug = false;
         DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
-        DEVELOPERS = new String[]{"Atlas__", "VawkeNetty", "Evoltr"};
+        DEVELOPERS = new String[]{"Atlas__", "VawkeNetty", "Evoltr", "Bradez1571"};
         MOTD = "                 &b❆ &c&lDUNGEON &f&lREALMS &b❆&r\n &l24 DEC. 4:30PM CST &f&l- &awww.dungeonrealms.net";
         MAINTENANCE_MOTD = "                 &b❆ &c&lDUNGEON &f&lREALMS &b❆&r\n &l24 DEC. 4:30PM CST &f&l- &awww.dungeonrealms.net";
         MIN_GAME_TIME = 14100000L;

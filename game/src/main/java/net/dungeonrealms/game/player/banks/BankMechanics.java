@@ -171,14 +171,6 @@ public class BankMechanics implements GenericMechanic {
             }
 
         }
-
-        if (paid_off > 0) {
-            if (paid_off < 64) {
-                p.getInventory().addItem(createGems(paid_off));
-            } else {
-                p.getInventory().addItem(createBankNote(paid_off));
-            }
-        }
         return false;
     }
 

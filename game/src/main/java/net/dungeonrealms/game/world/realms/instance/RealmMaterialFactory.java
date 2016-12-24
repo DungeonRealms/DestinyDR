@@ -238,7 +238,7 @@ class RealmMaterialFactory {
             price_each = is.getDurability();
         }
         if (is.getType() == Material.HOPPER) {
-            price_each = 1500;
+            price_each = 1750;
         }
         if (is.getType() == Material.DROPPER) {
             price_each = 1500;

@@ -43,7 +43,7 @@ public class EnergyHandler implements GenericMechanic {
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 1L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 10L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
@@ -274,6 +274,74 @@ public class EnergyHandler implements GenericMechanic {
     }
 
     /**
+     * Calaculate energy swing cost when hitting in the air
+     *
+     * @param itemStack The itemstack
+     * @return Calculated float
+     */
+    public static float handleAirSwingItem(ItemStack itemStack) {
+        Material material = itemStack.getType();
+        switch (material) {
+            case AIR:
+                return 0.025f;
+            case WOOD_SWORD:
+                return 0.03f;
+            case STONE_SWORD:
+                return 0.0035f;
+            case IRON_SWORD:
+                return 0.00825f;
+            case DIAMOND_SWORD:
+                return 0.0625f;
+            case GOLD_SWORD:
+                return 0.0675f;
+            case WOOD_AXE:
+                return 0.0360F * 1.1F;
+            case STONE_AXE:
+                return 0.0416F * 1.1F;
+            case IRON_AXE:
+                return 0.05F * 1.1F;
+            case DIAMOND_AXE:
+                return 0.0625F * 1.1F;
+            case GOLD_AXE:
+                return 0.0675F * 1.1F;
+            case WOOD_SPADE:
+                return 0.0360F;
+            case STONE_SPADE:
+                return 0.0415F;
+            case IRON_SPADE:
+                return 0.05F;
+            case DIAMOND_SPADE:
+                return 0.0625F;
+            case GOLD_SPADE:
+                return 0.0675F;
+            case WOOD_HOE:
+                return 0.05F / 1.1F;
+            case STONE_HOE:
+                return 0.06F / 1.1F;
+            case IRON_HOE:
+                return 0.065F / 1.1F;
+            case DIAMOND_HOE:
+                return 0.07F / 1.1F;
+            case GOLD_HOE:
+                return 0.075F / 1.1F;
+            case BOW:
+                switch (RepairAPI.getArmorOrWeaponTier(itemStack)) {
+                    case 1:
+                        return 0.0625F;
+                    case 2:
+                        return 0.0725F;
+                    case 3:
+                        return 0.0825F;
+                    case 4:
+                        return 0.0925F;
+                    case 5:
+                        return 0.125F;
+                }
+        }
+        return 0.10F;
+    }
+
+    /**
      * Returns the energy cost
      * of an item
      *
@@ -285,7 +353,7 @@ public class EnergyHandler implements GenericMechanic {
         Material material = itemStack.getType();
         switch (material) {
             case AIR:
-                return 0.05f;
+                return 0.025f;
             case WOOD_SWORD:
                 return 0.06f;
             case STONE_SWORD:

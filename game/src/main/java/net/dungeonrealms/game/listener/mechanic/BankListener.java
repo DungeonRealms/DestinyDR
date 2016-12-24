@@ -428,11 +428,13 @@ public class BankListener implements Listener {
                                     player.sendMessage(ChatColor.RED + "You can't store this item!");
                                     e.setCancelled(true);
                                     return;
+                                } else {
+                                    if (e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR) {
+                                        storage.inv.addItem(e.getCurrentItem());
+                                        e.setCurrentItem(null);
+                                        player.sendMessage(ChatColor.GREEN + "Item added to storage!");
+                                    }
                                 }
-
-                                storage.inv.addItem(e.getCurrentItem());
-                                e.setCurrentItem(null);
-                                player.sendMessage(ChatColor.GREEN + "Item added to storage!");
 
                             } else {
                                 player.sendMessage(ChatColor.RED + "You do not have space to add this item.");
