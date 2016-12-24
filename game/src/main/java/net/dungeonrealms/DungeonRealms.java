@@ -483,7 +483,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new AcceptCommand("accept", "/<command> [args]", "Accept Friend request!", Collections.singletonList("draccept")));
             cm.registerCommand(new AcceptCommand("deny", "/<command> [args]", "Deny Friend request!", Collections.singletonList("drdeny")));
 
-            cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close Shop on all Shards!", Collections.singletonList("shopclose")));
+            //cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close Shop on all Shards!", Collections.singletonList("shopclose"))); // @todo: fix dupe bug (disabled)
 
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
             cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
