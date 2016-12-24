@@ -10,6 +10,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
@@ -62,7 +63,7 @@ public class HearthStone implements Listener {
 
     private static void callEvent(Player player) {
         player.closeInventory();
-        if (!(CombatLog.isInCombat(player))) {
+        if (!(CombatAPI.getInstance().isTagged(player))) {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 player.sendMessage("You cannot restart a teleport during a cast!");
                 return;

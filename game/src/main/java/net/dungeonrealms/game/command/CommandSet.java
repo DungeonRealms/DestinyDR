@@ -15,6 +15,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
@@ -170,7 +171,7 @@ public class CommandSet extends BaseCommand {
                     break;
                 case "combatoff":
                     if (Bukkit.getPlayer(args[1]) != null) {
-                        CombatLog.removeFromCombat(Bukkit.getPlayer(args[1]));
+                        CombatAPI.getInstance().getCombatTagged().remove(Bukkit.getPlayer(args[0]).getUniqueId());
                     }
                     else {
                         player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");

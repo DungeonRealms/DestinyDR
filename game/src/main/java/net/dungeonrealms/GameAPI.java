@@ -45,6 +45,7 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
@@ -377,6 +378,9 @@ public class GameAPI {
      * Stops DungeonRealms server
      */
     public static void stopGame() {
+
+        CombatAPI.getInstance().saveCombatLoggers();
+
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
         final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
@@ -384,7 +388,6 @@ public class GameAPI {
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
-        CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
         GameAPI.logoutAllPlayers();
 
@@ -837,13 +840,6 @@ public class GameAPI {
             if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
                 return;
             }
-            if (CombatLog.isInCombat(player)) {
-                if (!DuelingMechanics.isDueling(uuid)) {
-                    if (!GameAPI.isNonPvPRegion(player.getLocation())) {
-                        //CombatLog.handleCombatLogger(player);
-                    }
-                }
-            }
             MountUtils.inventories.remove(uuid);
             operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.LAST_LOGOUT.getKey(), System.currentTimeMillis()))));
             EnergyHandler.getInstance().handleLogoutEvents(player);
@@ -935,7 +931,9 @@ public class GameAPI {
 
                 // upload data and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
-                    if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
+                    if (CombatAPI.getInstance().isTagged(player)) {
+                        CombatAPI.getInstance().getCombatTagged().remove(player);
+                    }
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
                     GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString(), String.valueOf(sub));
                 });
@@ -987,11 +985,6 @@ public class GameAPI {
                     String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
                     player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
                     return;
-                } else {
-                    if (!CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
-                        //Shard probably crashed, so they believe they combat logged, but the shard has no record of it.
-                    }
                 }
             }
         } catch (NullPointerException ignored) {
@@ -1040,12 +1033,13 @@ public class GameAPI {
                 } else {
                     offHand = ItemSerialization.itemStackFromBase64(armor);
                 }
-            }
-        }
-        player.getEquipment().setArmorContents(armorContents);
-        player.getEquipment().setItemInOffHand(offHand);
 
-        player.updateInventory();
+            }
+            player.getEquipment().setArmorContents(armorContents);
+            player.getEquipment().setItemInOffHand(offHand);
+
+            player.updateInventory();
+        }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
             Inventory inv = ItemSerialization.fromString(source);

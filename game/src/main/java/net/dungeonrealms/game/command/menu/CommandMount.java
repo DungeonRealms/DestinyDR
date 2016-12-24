@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -50,7 +51,7 @@ public class CommandMount extends BaseCommand {
                 EntityAPI.removePlayerMountList(player.getUniqueId());
                 return true;
             }
-            if (CombatLog.isInCombat(player)) {
+            if (CombatAPI.getInstance().isTagged(player)) {
                 player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                 return true;
             }
@@ -71,7 +72,7 @@ public class CommandMount extends BaseCommand {
             int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                 if (!EntityAPI.hasMountOut(player.getUniqueId())) {
                     if (player.getLocation().distanceSquared(startingLocation) <= 4) {
-                        if (!CombatLog.isInCombat(player)) {
+                        if (!CombatAPI.getInstance().isTagged(player)) {
                             if (!cancelled[0]) {
                                 if (count[0] < 3) {
                                     count[0]++;

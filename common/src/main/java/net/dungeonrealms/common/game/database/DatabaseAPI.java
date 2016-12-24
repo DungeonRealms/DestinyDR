@@ -459,7 +459,9 @@ public class DatabaseAPI {
                                 .append("activepet", "")
                                 .append("activemount", "")
                                 .append("activetrail", "")
-                                .append("activemountskin", ""))
+                                .append("activemountskin", "")
+                                .append("loggerInventory", "")
+                                .append("loggerArmor", new ArrayList<>()))
                         .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)
