@@ -115,6 +115,6 @@ public class CommandStore extends BaseCommand {
     }
 
     private boolean sendItem(UUID playerUUID, ItemStack itemStack) {
-        return MailHandler.getInstance().sendMailRaw("The DungeonRealms Team", playerUUID, itemStack);
+        return MailHandler.getInstance().sendMailRaw("The Dungeon Realms Team", playerUUID, itemStack);
     }
 }

@@ -153,6 +153,13 @@ public class Chat {
         event.setMessage(fixedMessage);
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
+            // You cannot private message nobody.
+            if (fixedMessage.equals("@")) {
+                event.setCancelled(true);
+                return;
+            }
+
+            //
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
             if (DungeonRealms.getInstance().getDevelopers().contains(playerName)) {
                 Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PM_DEV);
