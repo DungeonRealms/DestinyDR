@@ -49,6 +49,7 @@ import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.listener.world.BlockListener;
 import net.dungeonrealms.game.listener.world.DungeonListener;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
@@ -60,6 +61,7 @@ import net.dungeonrealms.game.player.menu.HearthStone;
 import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.soundtrack.Soundtrack;
 import net.dungeonrealms.game.tab.TabMechanics;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
@@ -76,11 +78,6 @@ import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.tool.PatchTools;
-import net.dungeonrealms.updated.Collector;
-import net.dungeonrealms.updated.connection.player.PlayerJoinPipeline;
-import net.dungeonrealms.updated.connection.player.PlayerQuitPipeline;
-import net.dungeonrealms.updated.trade.handle.MerchantHandler;
-import net.dungeonrealms.updated.trade.handle.TradeHandler;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -99,17 +96,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DungeonRealms extends JavaPlugin {
-
-    // Pipelines
-    @Getter
-    private PlayerJoinPipeline playerJoinPipeline;
-    @Getter
-    private PlayerQuitPipeline playerQuitPipeline;
-
-    @Getter
-    private MerchantHandler merchantHandler;
-    @Getter
-    private TradeHandler tradeHandler;
 
     private static long SERVER_START_TIME, REBOOT_TIME;
 
@@ -180,8 +166,8 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onEnable() {
-//        new DupedItemsRemover().startInitialization();
         Constants.build();
+//        new DupedItemsRemover().startInitialization();
         SERVER_START_TIME = System.currentTimeMillis();
 
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
@@ -228,7 +214,7 @@ public class DungeonRealms extends JavaPlugin {
         BungeeUtils.setPlugin(this);
 
         DatabaseInstance.getInstance().startInitialization(true);
-        DatabaseAPI.getInstance().startInitialization(bungeeName, this);
+        DatabaseAPI.getInstance().startInitialization(bungeeName);
         AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         TipHandler.getInstance().startInitialization();
@@ -262,9 +248,11 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(new ForceField());
+            mm.registerMechanic(CrashDetector.getInstance());
             mm.registerMechanic(new EntityMechanics());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             mm.registerMechanic(new ShopMechanics());
+            mm.registerMechanic(Soundtrack.getInstance());
             mm.registerMechanic(Mining.getInstance());
             mm.registerMechanic(RealmInstance.getInstance());
             mm.registerMechanic(Fishing.getInstance());
@@ -285,6 +273,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(new EntityMechanics());
+            mm.registerMechanic(Soundtrack.getInstance());
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());
@@ -380,6 +369,8 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat.", Collections.singletonList("p")));
         cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
         cm.registerCommand(new CommandPDecline("pdecline", "/<command> [args]", "Decline a party invitation."));
+
+        cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to test dr soundtrack."));
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
         cm.registerCommand(new CommandAlbranir("albranir", "/<command> [args]", "Command to spawn albranir."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
@@ -574,12 +565,6 @@ public class DungeonRealms extends JavaPlugin {
 
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);
-
-        new Collector().init();
-        this.playerJoinPipeline = new PlayerJoinPipeline();
-        this.playerQuitPipeline = new PlayerQuitPipeline();
-        this.merchantHandler = new MerchantHandler();
-        this.tradeHandler = new TradeHandler();
     }
 
     public long getRebootTime() {

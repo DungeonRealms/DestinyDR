@@ -26,6 +26,7 @@ public class GameClient
     private boolean isConnected = false;
 
     public GameClient() {
+        Constants.build();
         this.client = new Client(Constants.NET_WRITE_BUFFER_SIZE, Constants.NET_READ_BUFFER_SIZE);
         this.client.addListener(this);
         this.client.setKeepAliveTCP(1000);

@@ -1,10 +1,10 @@
 package net.dungeonrealms.lobby;
 
 import lombok.Getter;
+import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
-import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
@@ -41,11 +41,10 @@ public class Lobby extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-
+        Constants.build();
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(3L);
         DatabaseInstance.getInstance().startInitialization(true);
-        DatabaseAPI.getInstance().startOn(this);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         ghostFactory = new GhostFactory(this);
@@ -65,44 +64,39 @@ public class Lobby extends JavaPlugin implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) throws InterruptedException {
+        if (PunishAPI.isBanned(event.getUniqueId())) {
+            String bannedMessage = PunishAPI.getBannedMessage(event.getUniqueId());
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+            event.setKickMessage(bannedMessage);
+
+            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
+            return;
+        }
+
+        // REQUEST PLAYER'S DATA ASYNC //
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        // Prevent a player from joining the lobby if he already is connected on a server
-        if (DatabaseAPI.getInstance().PLAYERS.containsKey(event.getPlayer().getUniqueId())) {
-            if ((boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getPlayer().getUniqueId())) {
-                event.getPlayer().kickPlayer(ChatColor.RED + "Invalid game_session ID");
-                DatabaseAPI.getInstance().PLAYERS.remove(event.getPlayer().getUniqueId());
-                return;
-            }
+        Bukkit.getScheduler().runTask(this, () -> {
+            Player player = event.getPlayer();
 
-            if (PunishAPI.getInstance().isBanned(event.getPlayer().getUniqueId())) {
-                String bannedMessage = PunishAPI.getInstance().getBannedMessage(event.getPlayer().getUniqueId());
-                event.getPlayer().kickPlayer(bannedMessage);
+            player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+            player.setDisplayName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+            player.setCustomName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
 
-                DatabaseAPI.getInstance().PLAYERS.remove(event.getPlayer().getUniqueId());
-                return;
-            }
-        }
-            Bukkit.getScheduler().runTask(this, () -> {
-                Player player = event.getPlayer();
+            player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
 
-                player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
-                player.setDisplayName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
-                player.setCustomName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
+            if (!player.isOp())
+                player.getInventory().clear();
 
-                player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
+            player.getInventory().setItem(0, getShardSelector());
 
-                if (!player.isOp())
-                    player.getInventory().clear();
+            ghostFactory.addPlayer(player);
+            ghostFactory.setGhost(player, !Rank.isGM(player) && !Rank.isSubscriber(player));
 
-                player.getInventory().setItem(0, getShardSelector());
-
-                ghostFactory.addPlayer(player);
-                ghostFactory.setGhost(player, !Rank.isGM(player) && !Rank.isSubscriber(player));
         });
     }
 
@@ -145,16 +139,6 @@ public class Lobby extends JavaPlugin implements Listener {
             player.setFlying(false);
             player.setVelocity(player.getLocation().getDirection().multiply(2.7D).setY(0.4D));
             player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 1.0F, 1.0F);
-        }
-    }
-
-    @EventHandler
-    public void onChat(AsyncPlayerChatEvent event) {
-        if(!event.getPlayer().isOp()) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "Chat is disabled in the lobby");
-        } else {
-            event.setFormat(ChatColor.AQUA + event.getPlayer().getName() + ": " + event.getMessage());
         }
     }
 

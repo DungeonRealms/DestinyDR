@@ -14,13 +14,11 @@ public class Constants {
 
     public static String DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
 
-    public static String[] DEVELOPERS = new String[]{"Atlas__", "VawkeNetty", "Evoltr"};
+    public static String[] DEVELOPERS = new String[]{""};
 
-    public static String[] OLD_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
+    public static String MOTD = "&6Dungeon Realms™ &8- &a• The #1 Minecraft MMORPG •    \n                      &e&o&lOut of Beta!";
 
-    public static String MOTD = "                    &a• &c&lDUNGEON 7f&lREALMS&r &a•    \n     &8- &f&lTHIS CHRISTMAS &8-";
-
-    public static String MAINTENANCE_MOTD = "                    &a• &c&lDUNGEON 7f&lREALMS&r &a•    \n     &8- &f&l24 DEC. 4:30CST &8-";
+    public static String MAINTENANCE_MOTD = "&6Dungeon Realms™ &8- &cUndergoing Maintenance     \n                &8- &f&nwww.dungeonrealms.net &8-";
 
     public static long MIN_GAME_TIME = 14100000L;
 
@@ -29,7 +27,7 @@ public class Constants {
     public static int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //
-    public static String MASTER_SERVER_IP = "131.153.27.42";
+    public static String MASTER_SERVER_IP = "158.69.122.139";
 
     // BACKEND SERVER SERVER PORT //
     public static int MASTER_SERVER_PORT = 22964;
@@ -39,29 +37,25 @@ public class Constants {
     public static int NET_WRITE_BUFFER_SIZE = 32768;
 
     // BUILD VERSION //
-    public static String BUILD_VERSION = "UNSTABLE BUILD";
+    public static String BUILD_VERSION = "v5.0";
 
     // BUILD NUMBER //
-    public static String BUILD_NUMBER = "#0";
+    public static String BUILD_NUMBER = "#200";
 
     // FTP INFO //
     public static String FTP_HOST_NAME = "167.114.65.102";
 
     public static String FTP_USER_NAME = "dungeonrealms.53";
 
-    public static String FTP_PASSWORD = "CXxbpBbWdyekJtyv";
+    public static String FTP_PASSWORD = "KNlZmiaNUp0B";
 
     public static int FTP_PORT = 21;
 
-    /**
-     * Fix null variables
-     */
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
         debug = false;
         DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
         DEVELOPERS = new String[]{"Atlas__", "VawkeNetty", "Evoltr"};
-        OLD_DEVELOPERS = new String[]{"APOLLO_IO", "Proxying", "xWaffle", "xFinityPro", "Necrone_", "EtherealTemplar", "Bradez1571"};
         MOTD = "                 &b❆ &c&lDUNGEON &f&lREALMS &b❆\n    &&f&l24 DEC. 4:30PM CST &f&l- &awww.dungeonrealms.net";
         MAINTENANCE_MOTD = "                 &b❆ &c&lDUNGEON &f&lREALMS &b❆\n    &f&l24 DEC. 4:30PM CST &f&l- &awww.dungeonrealms.net";
         MIN_GAME_TIME = 14100000L;
@@ -79,10 +73,4 @@ public class Constants {
         FTP_PORT = 21;
     }
 
-    //Removed use sql.yml
-//    public static  String SQL_HOSTNAME = "";
-//    public static  int SQL_PORT = 3306;
-//    public static  String SQL_DATABASE = "dungeonrealms";
-//    public static  String SQL_PASSWORD = "";
-//    public static  String SQL_USERNAME = "";
 }

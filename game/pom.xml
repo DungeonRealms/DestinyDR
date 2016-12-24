@@ -107,6 +107,15 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Local dependency required -->
+        <dependency>
+            <groupId>com.codingforcookies</groupId>
+            <artifactId>ArmorEquipEvent</artifactId>
+            <version>1.6.3</version>
+            <systemPath>${project.basedir}/lib/ArmorEquipEvent-1.6.3 .jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.inventivetalent</groupId>
             <artifactId>bossbarapi</artifactId>
@@ -186,16 +195,6 @@
             <systemPath>${project.basedir}/lib/HolographicDisplaysAPI_v2.1.7.jar</systemPath>
             <scope>system</scope>
         </dependency>
-
-        <!-- Local dependency required -->
-        <dependency>
-            <groupId>com.codingforcookies</groupId>
-            <artifactId>ArmorEquipEvent</artifactId>
-            <version>1.6.3</version>
-            <systemPath>${project.basedir}/lib/ArmorEquipEvent-1.6.3.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
-
     </dependencies>
 
 </project>
