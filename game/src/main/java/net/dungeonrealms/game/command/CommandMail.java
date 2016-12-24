@@ -27,7 +27,7 @@ public class CommandMail extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-        if (!Rank.isDev(player)) {
+        /*if (!Rank.isDev(player)) {
             return true;
         }
         if (args.length == 2) {
@@ -55,7 +55,7 @@ public class CommandMail extends BaseCommand {
                 }
             }
             return true;
-        }
+        }*/
 
         PlayerMenus.openMailInventory(player);
 

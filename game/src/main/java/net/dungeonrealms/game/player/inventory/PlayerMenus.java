@@ -122,12 +122,12 @@ public class PlayerMenus {
 
         Inventory inv = Bukkit.createInventory(null, 45, "Mailbox");
 
-        inv.setItem(8, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Tax", new String[]{
+        /*inv.setItem(8, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Tax", new String[]{
                 ChatColor.GRAY + "Tax: " + ChatColor.AQUA + "5 GEMS",
                 ChatColor.GRAY + "Display Item"
-        }));
+        }));*/
 
-        int slot = 9;
+        int slot = 0; // @note: if we include tax, this should be slot #9.
         for (String s : mail) {
             String from = s.split(",")[0];
             long unix = Long.valueOf(s.split(",")[1]);
