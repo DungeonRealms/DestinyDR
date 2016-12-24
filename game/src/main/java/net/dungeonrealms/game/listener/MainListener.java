@@ -292,6 +292,7 @@ public class MainListener implements Listener {
         } else {
             if (((CraftEntity) event.getEntity()).getHandle() instanceof DRMonster) {
                 event.getEntity().setCustomNameVisible(true);
+                event.getEntity().setCollidable(true);
             }
         }
     }

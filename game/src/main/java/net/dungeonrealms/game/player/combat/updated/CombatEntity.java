@@ -14,6 +14,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -46,11 +48,13 @@ public class CombatEntity {
         this.armorContents = player.getInventory().getArmorContents();
         this.inventoryContents = player.getInventory().getContents();
 
-        this.loggerEntity.setHealth(HealthHandler.getInstance().getPlayerHPLive(player));
         this.loggerEntity.setMaxHealth(HealthHandler.getInstance().getPlayerHPLive(player));
+        this.loggerEntity.setHealth(HealthHandler.getInstance().getPlayerHPLive(player));
 
         this.loggerEntity.setCustomName(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + "'s COMBAT INVENTORY");
         this.loggerEntity.setCustomNameVisible(true);
+
+        this.loggerEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
     }
 
     /**
