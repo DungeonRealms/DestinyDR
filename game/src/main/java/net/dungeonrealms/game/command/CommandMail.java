@@ -34,7 +34,7 @@ public class CommandMail extends BaseCommand {
             if (args[0].equals("send")) {
                 if (player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
                     if (!player.getName().equals(args[1])) {
-                        if (BankMechanics.getInstance().getTotalGemsInInventory(player) >= 5) {
+                        if (BankMechanics.getInstance().hasEnoughGems(5, player)) {
                             if (GameAPI.isItemTradeable(player.getEquipment().getItemInMainHand())) {
                                 if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
                                     player.getEquipment().setItemInMainHand(null);

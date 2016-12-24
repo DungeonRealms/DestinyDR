@@ -103,7 +103,7 @@ public class ShopListener implements Listener {
     public void playerCloseShopInventory(InventoryCloseEvent event) {
         if (!event.getInventory().getTitle().contains("@")) return;
         event.getPlayer().setCanPickupItems(true);
-        if(this.shopViewers.contains(event.getPlayer().getUniqueId())) {
+        if (this.shopViewers.contains(event.getPlayer().getUniqueId())) {
             this.shopViewers.remove(event.getPlayer().getUniqueId());
         }
     }
@@ -511,7 +511,7 @@ public class ShopListener implements Listener {
                         return;
                     }
                     if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen ||
-                    		!(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
+                            !(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
                         clicker.sendMessage(ChatColor.RED + "The shop is no longer available.");
                         clicker.closeInventory();
                         return;
@@ -617,7 +617,8 @@ public class ShopListener implements Listener {
                     clicker.sendMessage(ChatColor.GRAY + "" + itemClicked.getAmount() + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
                     return;
                 }
-                if (BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker)) {
+                if (BankMechanics.getInstance().hasEnoughGems(totalPrice, clicker)) {
+                    BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker);
                     event.getInventory().clear(event.getRawSlot());
                     ItemStack clickClone = itemClicked.clone();
                     ItemMeta meta = clickClone.getItemMeta();
@@ -708,7 +709,7 @@ public class ShopListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPickup(PlayerPickupItemEvent event) {
-        if(this.shopViewers.contains(event.getPlayer().getUniqueId())) {
+        if (this.shopViewers.contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }

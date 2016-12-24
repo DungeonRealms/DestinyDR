@@ -31,6 +31,8 @@ public class MasterServerLauncher {
 
     public static void main(String[] args) {
 
+        Constants.build();
+
         Log.info("");
         Log.info("Master server initiated on " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER);
         Log.info("Alright. let's do this boys...");

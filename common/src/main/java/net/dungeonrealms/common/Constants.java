@@ -27,7 +27,7 @@ public class Constants {
     public static int PLAYER_SLOTS = 1300;
 
     // BACKEND SERVER SERVER PORT //
-    public static String MASTER_SERVER_IP = "158.69.122.139";
+    public static String MASTER_SERVER_IP;
 
     // BACKEND SERVER SERVER PORT //
     public static int MASTER_SERVER_PORT = 22964;

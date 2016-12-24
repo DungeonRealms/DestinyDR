@@ -74,8 +74,8 @@ public class BankListener implements Listener {
 
             Chat.listenForMessage(p, event -> {
                 if (event.getMessage().equalsIgnoreCase("confirm")) {
-                    boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
-                    if (tookGems) {
+                    if (BankMechanics.getInstance().hasEnoughGems(upgrade_cost, p)) {
+                        BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), false);
                         p.sendMessage("");
                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
@@ -386,8 +386,8 @@ public class BankListener implements Listener {
 
                             Chat.listenForMessage(p, event -> {
                                 if (event.getMessage().equalsIgnoreCase("confirm")) {
-                                    boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
-                                    if (tookGems) {
+                                    if (BankMechanics.getInstance().hasEnoughGems(upgrade_cost, p)) {
+                                        BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
                                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), false);
                                         p.sendMessage("");
                                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");

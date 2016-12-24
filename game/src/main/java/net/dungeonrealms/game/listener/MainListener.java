@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener;
 
+import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -63,6 +64,8 @@ import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerFishEvent.State;
@@ -74,7 +77,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -960,6 +965,30 @@ public class MainListener implements Listener {
     }
 
 
+    private List<UUID> lockedPlayers = Lists.newArrayList();
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        if (event.getInventory().getType() != InventoryType.PLAYER) {
+            // Player is not opening his own inventory, but something else
+            lockedPlayers.add(event.getPlayer().getUniqueId());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getInventory().getType() != InventoryType.PLAYER && lockedPlayers.contains(event.getPlayer().getUniqueId())) {
+            lockedPlayers.remove(event.getPlayer().getUniqueId());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void pickUpInventoryItem(PlayerPickupItemEvent event) {
+        if (lockedPlayers.contains(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerEnchant(EnchantItemEvent event) {
         event.setCancelled(true);
@@ -979,6 +1008,13 @@ public class MainListener implements Listener {
             return;
 
         if (GameAPI._hiddenPlayers.contains(trader)) return;
+
+        // Only allow trading in wild/safezones
+        if (!GameAPI.isNonPvPRegion(pl.getLocation())) {
+            pl.sendMessage(ChatColor.RED + "You cannot send trade requests in a " + ChatColor.BOLD + "CHAOTIC " + ChatColor.RED + "region!");
+            event.setCancelled(true);
+            return;
+        }
 
         if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, trader.getUniqueId()) && !Rank.isGM(pl)) {
             pl.sendMessage(ChatColor.RED + trader.getName() + " has Trades disabled.");

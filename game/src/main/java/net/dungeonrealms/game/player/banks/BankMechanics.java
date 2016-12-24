@@ -109,6 +109,11 @@ public class BankMechanics implements GenericMechanic {
         return found;
     }
 
+    public boolean hasEnoughGems(int amount, Player player) {
+        int gems = this.getTotalGemsInInventory(player);
+        return gems >= amount;
+    }
+
     public boolean takeGemsFromInventory(int amount, Player p) {
         Inventory i = p.getInventory();
         int paid_off = 0;
@@ -168,6 +173,14 @@ public class BankMechanics implements GenericMechanic {
                 }
                 p.updateInventory();
                 return true;
+            }
+
+            if (paid_off > 0) {
+                if (paid_off < 64) {
+                    p.getInventory().addItem(createGems(paid_off));
+                } else {
+                    p.getInventory().addItem(createBankNote(paid_off));
+                }
             }
 
         }

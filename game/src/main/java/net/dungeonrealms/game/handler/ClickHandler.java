@@ -88,7 +88,7 @@ public class ClickHandler {
                     } else {
                         EnumMounts mount = EnumMounts.getByName(nmsStack.getTag().getString("mountType"));
                         if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
-                            if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
+                            if (BankMechanics.getInstance().hasEnoughGems(nmsStack.getTag().getInt("mountCost"), player)) {
                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, mount.getRawName(), true);
                                 if (mount != EnumMounts.MULE) {
                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
@@ -116,10 +116,12 @@ public class ClickHandler {
                                 player.closeInventory();
                                 return;
                             } else {
+                                player.closeInventory();
                                 player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
                                 return;
                             }
                         } else {
+                            player.closeInventory();
                             player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
                         }
                     }
@@ -134,14 +136,16 @@ public class ClickHandler {
                 event.setCancelled(true);
                 if (slot > 9) return;
                 if (event.getCurrentItem().getType() != Material.AIR) {
-                    if (BankMechanics.getInstance().takeGemsFromInventory(100, player)) {
+                    if (BankMechanics.getInstance().hasEnoughGems(100, player)) {
                         switch (slot) {
                             case 0:
+                                BankMechanics.getInstance().takeGemsFromInventory(100, player);
                                 player.getInventory().addItem(ItemManager.createPickaxe(1));
                                 player.sendMessage(ChatColor.GREEN + "Transaction successful.");
                                 player.closeInventory();
                                 break;
                             case 1:
+                                BankMechanics.getInstance().takeGemsFromInventory(100, player);
                                 player.getInventory().addItem(ItemManager.createFishingPole(1));
                                 player.sendMessage(ChatColor.GREEN + "Transaction successful.");
                                 player.closeInventory();
@@ -152,6 +156,7 @@ public class ClickHandler {
                         return;
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + "100" + ChatColor.RED + " Gems");
+                        player.closeInventory();
                     }
                     return;
                 }
@@ -211,16 +216,19 @@ public class ClickHandler {
                             return;
                         } else {
                             if (TeleportAPI.canSetHearthstoneLocation(player, nmsStack.getTag().getString("hearthstoneLocation"))) {
-                                if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player)) {
+                                if (BankMechanics.getInstance().hasEnoughGems(nmsStack.getTag().getInt("gemCost"), player)) {
+                                    BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player);
                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true);
                                     player.sendMessage(ChatColor.GREEN + "Hearthstone set to " + nmsStack.getTag().getString("hearthstoneLocation") + ".");
                                     player.closeInventory();
                                     return;
                                 } else {
+                                    player.closeInventory();
                                     player.sendMessage(ChatColor.RED + "You do NOT have enough gems for this location, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("gemCost") + ChatColor.RED + " Gems.");
                                     return;
                                 }
                             } else {
+                                player.closeInventory();
                                 player.sendMessage(ChatColor.RED + "You have not explored the surrounding area of this Hearthstone Location yet");
                                 return;
                             }
@@ -853,7 +861,8 @@ public class ClickHandler {
                 }
                 int price = nms.getTag().getInt("worth");
                 if (player.getInventory().firstEmpty() != -1) {
-                    if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
+                    if (BankMechanics.getInstance().hasEnoughGems(price, player)) {
+                        BankMechanics.getInstance().takeGemsFromInventory(price, player);
                         ItemStack copy = stack.clone();
                         ArrayList<String> lore = new ArrayList<>();
                         ItemMeta meta = copy.getItemMeta();
@@ -871,9 +880,11 @@ public class ClickHandler {
                         copy.setItemMeta(meta);
                         player.getInventory().addItem(copy);
                     } else {
+                        player.closeInventory();
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
                     }
                 } else {
+                    player.closeInventory();
                     player.sendMessage(ChatColor.RED + "You do not have any inventory space to complete this transaction");
                 }
                 break;
@@ -898,13 +909,16 @@ public class ClickHandler {
                 }
                 price = nms.getTag().getInt("worth");
                 if (player.getInventory().firstEmpty() != -1) {
-                    if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
+                    if (BankMechanics.getInstance().hasEnoughGems(price, player)) {
+                        BankMechanics.getInstance().takeGemsFromInventory(price, player);
                         ItemStack toGive = ItemManager.createHealingFood(tier, rarity);
                         player.getInventory().addItem(toGive);
                     } else {
+                        player.closeInventory();
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
                     }
                 } else {
+                    player.closeInventory();
                     player.sendMessage(ChatColor.RED + "You do not have any inventory space to complete this transaction");
                 }
                 break;

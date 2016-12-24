@@ -907,8 +907,8 @@ public class DamageAPI {
 
             // ARMOR BONUS
             if (defender.hasMetadata("armorBonus")) {
-                totalArmor += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmor;
-                totalArmorReduction += (defender.getMetadata("armorBonus").get(0).asFloat() / 100f) * totalArmorReduction;
+                totalArmor += (defender.getMetadata("armorBonus").get(0).asFloat() / 180f) * totalArmor;
+                totalArmorReduction += (defender.getMetadata("armorBonus").get(0).asFloat() / 180f) * totalArmorReduction;
             }
             return new double[]{Math.round(totalArmorReduction), totalArmor};
         } catch (Exception ex) {

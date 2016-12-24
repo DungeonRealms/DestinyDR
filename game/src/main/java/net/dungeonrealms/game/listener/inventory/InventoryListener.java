@@ -60,7 +60,6 @@ import java.util.*;
 public class InventoryListener implements Listener {
 
 
-
     /**
      * Handles important inventories (guilds, etc.)
      *
@@ -1673,7 +1672,8 @@ public class InventoryListener implements Listener {
             String string = event.getInventory().getTitle().substring(event.getInventory().getTitle().indexOf(ChatColor.BOLD.toString()) + 2);
             string = string.replace("g?", "");
             int cost = Integer.parseInt(string);
-            if (BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())) {
+            if (BankMechanics.getInstance().hasEnoughGems(cost, (Player) event.getWhoClicked())) {
+                BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked());
                 ItemStack stack = event.getWhoClicked().getEquipment().getItemInMainHand();
                 RepairAPI.setCustomItemDurability(stack, 1500);
                 event.getWhoClicked().getEquipment().setItemInMainHand(stack);

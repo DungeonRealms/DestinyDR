@@ -132,7 +132,8 @@ public class PvPListener implements Listener {
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
         } else {
-            finalDamage = finalDamage - armorCalculation[0];
+            // EG finalDamage = 100, so actual finalDamage = 100 + 100 - calculation
+            finalDamage = finalDamage + (finalDamage / 100) * finalDamage - armorCalculation[0];
             calculatedDamage = calculatedDamage - armorCalculation[0];
         }
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
