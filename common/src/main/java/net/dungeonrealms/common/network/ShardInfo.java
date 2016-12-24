@@ -1,0 +1,72 @@
+package net.dungeonrealms.common.network;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Optional;
+
+/**
+ * Class written by APOLLOSOFTWARE.IO on 7/12/2016
+ */
+
+@NoArgsConstructor
+public enum ShardInfo implements Serializable {
+
+    // DEVELOPMENT SHARD //
+    US0("US-0", "us0", new ServerAddress("158.69.122.139", 40007)),
+
+    // US1 SHARD //
+    US1("US-1", "us1", new ServerAddress("64.38.249.176", 40008)),
+
+    // US2 SHARD //
+    US2("US-2", "us2", new ServerAddress("64.38.249.176", 40009)),
+
+    // BR 1 SHARD //
+    BR1("BR-1", "br1", new ServerAddress("64.38.249.176", 40010)),
+
+    // SUB 1 SHARD //
+    SUB1("SUB-1", "sub1", new ServerAddress("131.153.27.42", 40008)),
+
+    // CS 1 SHARD //
+    CS1("CS-1", "cs1", new ServerAddress("192.99.200.110", 11250));
+
+
+    @Getter
+    private String shardID;
+
+    @Getter
+    private String pseudoName;
+
+    @Getter
+    private ServerAddress address;
+
+    ShardInfo(String shardID, String pseudoName, ServerAddress address) {
+        this.shardID = shardID;
+        this.pseudoName = pseudoName;
+        this.address = address;
+    }
+
+
+    public static ShardInfo getByPseudoName(String pseudoName) {
+        Optional<ShardInfo> query = Arrays.asList(ShardInfo.values()).stream().
+                filter(info -> info.getPseudoName().equals(pseudoName)).findFirst();
+
+        return query.isPresent() ? query.get() : null;
+    }
+
+    public static ShardInfo getByShardID(String shardID) {
+        Optional<ShardInfo> query = Arrays.asList(ShardInfo.values()).stream().
+                filter(info -> info.getShardID().equals(shardID)).findFirst();
+
+        return query.isPresent() ? query.get() : null;
+    }
+
+    public static ShardInfo getByAddress(ServerAddress address) {
+        Optional<ShardInfo> query = Arrays.asList(ShardInfo.values()).stream().
+                filter(info -> info.getAddress().toString().equals(address.toString())).findFirst();
+
+        return query.isPresent() ? query.get() : null;
+    }
+}
