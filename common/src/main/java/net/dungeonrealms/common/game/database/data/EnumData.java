@@ -37,6 +37,8 @@ public enum EnumData {
     ACTIVE_TRAIL("info.activetrail"),
     ACTIVE_MOUNT_SKIN("info.activemountskin"),
 
+    GEMS_COUNT("info.gemsCount"),
+
     ACHIEVEMENTS("collectibles.achievements"),
 
     RANK("rank.rank"),

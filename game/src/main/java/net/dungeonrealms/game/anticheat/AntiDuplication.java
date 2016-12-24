@@ -63,6 +63,39 @@ public class AntiDuplication implements GenericMechanic {
     public void startInitialization() {
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(),
                 () -> Bukkit.getOnlinePlayers().forEach(this::check), 0, 10);
+
+
+        // Does a player have 2 of the exact same items?
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    if (itemStack != null) {
+                        for (ItemStack itemStack1 : player.getInventory().getContents()) {
+                            if (itemStack1 != null) {
+                                // Does the player have 2 of the exact same items?
+                                if (itemStack.equals(itemStack1))
+                                    continue; // Suspicious
+                                this.checkAtomics(itemStack, itemStack1);
+                            }
+                        }
+                    }
+                }
+            }
+        }, 0L, 5);
+
+        // Does the item have a "duplicated" NBT tag?
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    if (itemStack != null) {
+                        if (CraftItemStack.asNMSCopy(itemStack).getTag() != null && (CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("duplicated"))) {
+                            player.getInventory().removeItem(itemStack);
+                            player.updateInventory();
+                        }
+                    }
+                }
+            }
+        }, 0L, 20 * 5);
     }
 
     @Override
@@ -89,20 +122,35 @@ public class AntiDuplication implements GenericMechanic {
                         // Does the player have 2 of the exact same items?
                         if (itemStack.equals(itemStack1))
                             continue; // Suspicious
-                        if (CraftItemStack.asNMSCopy(itemStack).hasTag() && CraftItemStack.asNMSCopy(itemStack1).hasTag()) {
-                            if (CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("u") && (CraftItemStack.asNMSCopy(itemStack1).getTag().hasKey("u"))) {
-                                // Same epoch?
-                                if (CraftItemStack.asNMSCopy(itemStack).getTag().getString("u").equals(CraftItemStack.asNMSCopy(itemStack1).getTag().getString("u"))) {
-                                    player.sendMessage(ChatColor.RED + "Not today buddy..");
-                                    player.getInventory().remove(itemStack);
-                                    player.getInventory().remove(itemStack1);
-                                }
-                            }
-                        }
+                        this.checkAtomics(itemStack, itemStack1);
                     }
                 }
             }
         }
+    }
+
+    protected void checkAtomics(ItemStack itemStack, ItemStack itemStack1) {
+        if (CraftItemStack.asNMSCopy(itemStack).hasTag() && CraftItemStack.asNMSCopy(itemStack1).hasTag()) {
+            if (CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("u") && (CraftItemStack.asNMSCopy(itemStack1).getTag().hasKey("u"))) {
+                // Same epoch?
+                if (CraftItemStack.asNMSCopy(itemStack).getTag().getString("u").equals(CraftItemStack.asNMSCopy(itemStack1).getTag().getString("u"))) {
+                    this.removeCompound(itemStack);
+                    this.removeCompound(itemStack1);
+                }
+            }
+        }
+    }
+
+    private void removeCompound(ItemStack itemStack) {
+        Bukkit.getOnlinePlayers().stream().filter(player -> {
+            return player.getInventory().contains(itemStack);
+        }).forEach(player -> {
+            for (ItemStack itemStack1 : player.getInventory().getContents()) {
+                player.getInventory().removeItem(itemStack1);
+                player.updateInventory();
+                player.sendMessage(ChatColor.RED + "Not today buddy..");
+            }
+        });
     }
 
     /**

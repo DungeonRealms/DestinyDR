@@ -345,6 +345,11 @@ public class MainListener implements Listener {
     }
 
     @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        GameAPI.calculateAllAttributes(event.getPlayer());
+    }
+
+    @EventHandler
     public void onLogin(PlayerLoginEvent event) {
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && Rank.isSubscriber(event.getPlayer()))
             event.allow();

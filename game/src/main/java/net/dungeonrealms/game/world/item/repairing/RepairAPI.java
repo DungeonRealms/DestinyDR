@@ -4,7 +4,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.item.Attribute;
@@ -234,6 +233,7 @@ public class RepairAPI {
         }
         return Math.round(percentDurability);
     }
+
 
 
     /**
@@ -489,7 +489,7 @@ public class RepairAPI {
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
                 if (newItemDurability <= 1D) {
-                    Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                         player.updateInventory();
@@ -508,28 +508,28 @@ public class RepairAPI {
                 if (newItemDurability <= 1D) {
                     switch (new Attribute(itemStack).getItemType().getId()) {
                         case 5:
-                            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setHelmet(new ItemStack(Material.AIR));
                                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                                 player.updateInventory();
                             }, 10L);
                             break;
                         case 6:
-                            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setChestplate(new ItemStack(Material.AIR));
                                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                                 player.updateInventory();
                             }, 10L);
                             break;
                         case 7:
-                            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setLeggings(new ItemStack(Material.AIR));
                                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                                 player.updateInventory();
                             }, 10L);
                             break;
                         case 8:
-                            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setBoots(new ItemStack(Material.AIR));
                                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                                 player.updateInventory();
@@ -538,63 +538,8 @@ public class RepairAPI {
                         default:
                             break;
                     }
-                }
-            case "pick":
-                if (Mining.isDRPickaxe(itemStack)) {
-                    if (newItemDurability <= 1D) {
-                        if (Mining.getPickTier(itemStack) >= 5 && Mining.getLvl(itemStack) >= 100) {
-                            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                // Set pickaxe to T1 if pickaxe is T5 at lvl 100
-                                ItemStack newPickaxe = ItemManager.createPickaxe(1);
-                                // Add back all the enchants
-                                Mining.getEnchantsFrom(itemStack).keySet().stream().filter(pickEnchant -> Mining.getEnchantsFrom(itemStack).get(pickEnchant) != 0).forEach(pickEnchant -> {
-                                    Mining.enchant(pickEnchant, newPickaxe, player, Mining.getEnchantsFrom(itemStack).get(pickEnchant));
-                                });
-                                // Update the item
-                                player.getEquipment().setItemInMainHand(newPickaxe);
-                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
-                                player.updateInventory();
-                            }, 10L);
-                        } else {
-                            if (newItemDurability <= 150D && newItemDurability >= 140D) {
-                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
-                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **10% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
-                            }
-                            if (newItemDurability <= 30D && newItemDurability >= 20D) {
-                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
-                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
-                            }
-                        }
-                    }
-                }
-                break;
-            case "rod":
-                if (Fishing.isDRFishingPole(itemStack)) {
-                    if (newItemDurability <= 1D) {
-                        if (Fishing.getRodTier(itemStack) >= 5 && Fishing.getLvl(itemStack) >= 100) {
-                            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                // Set rod to T1 if rod is T5 at lvl 100
-                                ItemStack newRod = ItemManager.createFishingPole(1);
-                                // Add back all the enchants
-                                Fishing.getEnchantsFrom(itemStack).keySet().stream().filter(rodEnchant -> Fishing.getEnchantsFrom(itemStack).get(rodEnchant) != 0).forEach(rodEnchant -> {
-                                    Fishing.enchant(rodEnchant, newRod, player, Fishing.getEnchantsFrom(itemStack).get(rodEnchant));
-                                });
-                                // Update the item
-                                player.getEquipment().setItemInMainHand(newRod);
-                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
-                                player.updateInventory();
-                            }, 10L);
-                        } else {
-                            if (newItemDurability <= 150D && newItemDurability >= 140D) {
-                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
-                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **10% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
-                            }
-                            if (newItemDurability <= 30D && newItemDurability >= 20D) {
-                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
-                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
-                            }
-                        }
-                    }
+                    //TODO : PROFESSION ITEMS WITH DIFFERENT SYSTEM.
+                    //TODO : CHECK PLAYERS HP AND REGEN THEN REDUCE AFTER ARMOR BREAKING.
                 }
                 break;
             default:
