@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.trade;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -25,11 +26,14 @@ public class Trade {
     public boolean p2Ready;
     public Inventory inv;
 
-    private List<ItemStack> p1Items;
+    public List<ItemStack> p1Items;
+    public List<ItemStack> p2Items;
 
     public Trade(Player p1, Player p2) {
         this.p1 = p1;
         this.p2 = p2;
+        this.p1Items = Lists.newArrayList();
+        this.p2Items = Lists.newArrayList();
         p1.sendMessage(ChatColor.YELLOW + "Trading with " + ChatColor.BOLD + p2.getName() + "...");
         p2.sendMessage(ChatColor.YELLOW + "Trading with " + ChatColor.BOLD + p1.getName() + "...");
         openInventory();
@@ -108,27 +112,20 @@ public class Trade {
      * Handles if one player closes the trade inv before both players are ready.
      */
     public void handleClose() {
-        for (int i = 1; i < inv.getSize(); i++) {
-            ItemStack item = inv.getItem(i);
-            if (item == null)
-                continue;
-            if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE)
-                continue;
-            if (i == 8)
-                continue;
-            if (isLeftSlot(i)) {
-                p1.getInventory().addItem(item);
-            } else if (isRightSlot(i)) {
-                p2.getInventory().addItem(item);
-            }
+
+        for(ItemStack itemStack : this.p1Items) {
+            this.p1.getInventory().addItem(itemStack);
+        }
+        for(ItemStack itemStack : this.p2Items) {
+            this.p2.getInventory().addItem(itemStack);
         }
 
-        if(p1.getItemOnCursor() != null){
+        if (p1.getItemOnCursor() != null) {
             ItemStack item = p1.getItemOnCursor().clone();
             p1.setItemOnCursor(null);
             p1.getInventory().addItem(item);
         }
-        if(p2.getInventory() != null){
+        if (p2.getInventory() != null) {
             ItemStack item = p2.getItemOnCursor().clone();
             p2.setItemOnCursor(null);
             p2.getInventory().addItem(item);
@@ -166,19 +163,11 @@ public class Trade {
      * Finalize trade
      */
     private void doTrade() {
-        for (int i = 1; i < inv.getSize(); i++) {
-            ItemStack item = inv.getItem(i);
-            if (item == null)
-                continue;
-            if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE)
-                continue;
-            if (i == 8)
-                continue;
-            if (isLeftSlot(i)) {
-                p2.getInventory().addItem(item);
-            } else if (isRightSlot(i)) {
-                p1.getInventory().addItem(item);
-            }
+        for(ItemStack itemStack : this.p2Items) {
+            this.p1.getInventory().addItem(itemStack);
+        }
+        for(ItemStack itemStack : this.p1Items) {
+            this.p2.getInventory().addItem(itemStack);
         }
         p1.setCanPickupItems(true);
         p2.setCanPickupItems(true);

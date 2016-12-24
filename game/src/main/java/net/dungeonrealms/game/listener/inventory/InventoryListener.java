@@ -508,12 +508,11 @@ public class InventoryListener implements Listener {
             if (event.getCurrentItem() == null)
                 return;
 
-            if (!GameAPI.isItemTradeable(event.getCurrentItem()) || !GameAPI.isItemDroppable(event.getCurrentItem())) {
+            if (!GameAPI.isItemTradeable(event.getCursor()) || !GameAPI.isItemDroppable(event.getCursor())) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
                 event.setCancelled(true);
                 return;
             }
-
 
             int slot = event.getRawSlot();
             if (slot >= 36)
@@ -533,6 +532,35 @@ public class InventoryListener implements Listener {
                 if (trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
                     event.setCancelled(true);
                     return;
+                }
+            }
+
+            // Remove or add an item to the trade
+            if (trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
+                // Slot is unoccupied?
+                if (event.getInventory().getItem(slot) == null && event.getCursor() != null) {
+                    // Player adds an item to the trade
+                    trade.p1Items.add(event.getCursor());
+                    event.getInventory().setItem(slot, event.getCursor());
+                    event.getCursor().setType(Material.AIR);
+                } else {
+                    if (event.getInventory().getItem(slot) != null) {
+                        event.getInventory().remove(event.getCurrentItem());
+                        trade.p1Items.remove(event.getCurrentItem());
+                    }
+                }
+            } else {
+                // Slot is unoccupied?
+                if (event.getInventory().getItem(slot) == null && event.getCursor() != null) {
+                    // Player adds an item to the trade
+                    trade.p2Items.add(event.getCursor());
+                    event.getInventory().setItem(slot, event.getCursor());
+                    event.getCursor().setType(Material.AIR);
+                } else {
+                    if (event.getInventory().getItem(slot) != null) {
+                        event.getInventory().remove(event.getCurrentItem());
+                        trade.p2Items.remove(event.getCurrentItem());
+                    }
                 }
             }
 
