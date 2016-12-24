@@ -136,7 +136,8 @@ public class RestrictionListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
 
-        if (command.equalsIgnoreCase("/g") || command.equalsIgnoreCase("/gl") || command.equalsIgnoreCase("/l"))
+        if (command.equalsIgnoreCase("/g") || command.equalsIgnoreCase("/gl") || command.equalsIgnoreCase("/l")
+                || command.equalsIgnoreCase("/p") || command.equalsIgnoreCase("/w") || command.equalsIgnoreCase("/tell"))
             return;
 
         if (ANTI_COMMAND_SPAM.isCooldown(event.getPlayer().getUniqueId())) {
