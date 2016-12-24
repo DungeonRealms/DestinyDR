@@ -59,6 +59,13 @@ public class Lobby extends JavaPlugin implements Listener {
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command.", Collections.singletonList("connect")));
     }
 
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent event) {
+        if (event.getPlayer().isOp()) {
+            event.setFormat(ChatColor.AQUA.toString() + ChatColor.BOLD + "DEV " + ChatColor.AQUA + event.getPlayer().getName() + ": " + event.getMessage());
+        } else event.setCancelled(true);
+    }
+
 
     /**
      * This event is used for the DatabaseDriver.

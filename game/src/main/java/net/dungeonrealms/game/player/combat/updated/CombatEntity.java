@@ -63,9 +63,11 @@ public class CombatEntity {
      */
     public void handleDeath(Location location) {
         List<ItemStack> invContents = Lists.newArrayList();
-        for(ItemStack itemStack : inventoryContents) {
-            if(itemStack.getType() != Material.WRITTEN_BOOK || itemStack.getType() != Material.NETHER_STAR) {
-                invContents.add(itemStack);
+        for (ItemStack itemStack : inventoryContents) {
+            if (itemStack != null && itemStack.getType() != Material.AIR) {
+                if (itemStack.getType() != Material.WRITTEN_BOOK || itemStack.getType() != Material.NETHER_STAR) {
+                    invContents.add(itemStack);
+                }
             }
         }
         DatabaseAPI.getInstance().update(this.owner, EnumOperators.$SET, EnumData.LOGGERDIED, true, true, null);
