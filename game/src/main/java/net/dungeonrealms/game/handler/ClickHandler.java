@@ -515,17 +515,17 @@ public class ClickHandler {
                 break;
             case "Mailbox":
                 event.setCancelled(true);
-                if (slot == 0) {
+                /*if (slot == 0) { // @todo: Enable this code when we allow sending items.
                     player.sendMessage(ChatColor.RED + "You cannot send mail yet, this feature is coming soon...");
                     return;
                 } else if (slot == 8) {
                     return;
-                } else {
+                } else {*/
                     if (event.getCurrentItem() != null) {
                         ItemStack clickedItem = event.getCurrentItem();
                         MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
                     }
-                }
+                //}
                 break;
             case "Pet Selection":
                 event.setCancelled(true);
