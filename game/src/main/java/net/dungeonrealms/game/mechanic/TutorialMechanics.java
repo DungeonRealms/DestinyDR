@@ -30,6 +30,7 @@ public class TutorialMechanics implements GenericMechanic, Listener {
 
     @Override
     public void startInitialization() {
+        TutorialIsland.getInstance().startInitialization();
     }
 
     public void doLogin(Player p) {

@@ -1272,9 +1272,9 @@ public class GameAPI {
         }
 
         // calculate attributes and check inventory
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            PlayerManager.checkInventory(uuid);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             GameAPI.calculateAllAttributes(player);
+            PlayerManager.checkInventory(uuid);
         }, 2 * 20L);
 
         if (gp.getPlayer() != null) {
@@ -1315,7 +1315,7 @@ public class GameAPI {
 
         DungeonRealms.getInstance().getLoggingIn().remove(player.getUniqueId());
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             //Prevent weird scoreboard thing when sharding.
             ScoreboardHandler.getInstance().matchMainScoreboard(player);
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignmentDB().getAlignmentColor(), gp.getLevel());

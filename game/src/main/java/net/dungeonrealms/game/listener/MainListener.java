@@ -21,6 +21,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -228,19 +229,23 @@ public class MainListener implements Listener {
             }
         });
 
-        for(int i = 0; i < 20; i++) {
-            player.sendMessage("");
-        }
-        if (!DungeonRealms.getInstance().isMasterShard) {
-            Utils.sendCenteredMessage(player, ChatColor.RED.toString() + ChatColor.BOLD + "-> NOTIFICATION");
-            player.sendMessage(new String[]{
-                    ChatColor.RED + "You are playing on an unstable version of Dungeon Realms -",
-                    ChatColor.RED + "This server is running fixed 2016 code, everything is",
-                    ChatColor.RED + "being rewritten as we speak - www.dungeonrealms.net"});
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
-        } else {
-            Utils.sendCenteredMessage(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "DEVELOPMENT SERVER");
-        }
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            if (!TutorialIsland.onTutorialIsland(player.getLocation())) {
+                for (int i = 0; i < 20; i++) {
+                    player.sendMessage("");
+                }
+                if (!DungeonRealms.getInstance().isMasterShard) {
+                    Utils.sendCenteredMessage(player, ChatColor.RED.toString() + ChatColor.BOLD + "-> NOTIFICATION");
+                    player.sendMessage(new String[]{
+                            ChatColor.RED + "You are playing on an unstable version of Dungeon Realms -",
+                            ChatColor.RED + "This server is running fixed 2016 code, everything is",
+                            ChatColor.RED + "being rewritten as we speak - www.dungeonrealms.net"});
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
+                } else {
+                    Utils.sendCenteredMessage(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "DEVELOPMENT SERVER");
+                }
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
