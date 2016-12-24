@@ -19,6 +19,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
@@ -281,7 +282,7 @@ public class InventoryListener implements Listener {
                 return;
             }
         }*/
-        if (!CombatLog.isInCombat(player)) {
+        if (!CombatAPI.getInstance().isTagged(player)) {
             if (GameAPI.getGamePlayer(player) == null) {
                 return;
             }

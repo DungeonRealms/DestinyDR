@@ -94,13 +94,19 @@ public class CombatLog implements GenericMechanic {
 
     public static void removeFromCombat(Player player) {
         if (isInCombat(player)) {
-            COMBAT.remove(player);
             //Removes all arrows from player.
             ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "Leaving Combat", 4 * 20);
             }
         }
+    }
+
+    public static void handleCombatLog(Player player) {
+        // Set combat logged
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, true, false);
+        // Spawn NPC
+
     }
 
     public static void handleCombatLogger(Player player) {

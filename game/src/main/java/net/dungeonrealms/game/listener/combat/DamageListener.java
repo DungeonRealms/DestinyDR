@@ -21,6 +21,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
@@ -223,10 +224,10 @@ public class DamageListener implements Listener {
             //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
             if (!GameAPI.isWeapon(attackerEquipment.getItemInMainHand())) return;
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.updateCombat(player);
+            if (CombatAPI.getInstance().isTagged(player)) {
+                CombatAPI.getInstance().tag(player);
             } else {
-                CombatLog.addToCombat(player);
+                CombatAPI.getInstance().tag(player);
             }
         } else if (DamageAPI.isBowProjectile(event.getDamager())) {
             Projectile attackingArrow = (Projectile) event.getDamager();
@@ -240,10 +241,10 @@ public class DamageListener implements Listener {
                 }
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
             }
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.updateCombat(player);
+            if (CombatAPI.getInstance().isTagged(player)) {
+                CombatAPI.getInstance().tag(player);
             } else {
-                CombatLog.addToCombat(player);
+                CombatAPI.getInstance().tag(player);
             }
         } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
             Projectile staffProjectile = (Projectile) event.getDamager();
@@ -257,10 +258,10 @@ public class DamageListener implements Listener {
                 }
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
             }
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.updateCombat(player);
+            if (CombatAPI.getInstance().isTagged(player)) {
+                CombatAPI.getInstance().tag(player);
             } else {
-                CombatLog.addToCombat(player);
+                CombatAPI.getInstance().tag(player);
             }
         }
 
@@ -756,65 +757,6 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player) return;
         if (!(event.getEntity() instanceof CraftLivingEntity)) return;
         event.getDrops().clear();
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void handleCombatLoggerNPCDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof Player) return;
-        if (!(event.getEntity() instanceof CraftLivingEntity)) return;
-        if (!event.getEntity().hasMetadata("uuid")) return;
-        UUID uuid = UUID.fromString(event.getEntity().getMetadata("uuid").get(0).asString());
-        if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
-            CombatLogger combatLogger = CombatLog.getInstance().getCOMBAT_LOGGERS().get(uuid);
-            final Location location = event.getEntity().getLocation();
-            if (!combatLogger.getItemsToDrop().isEmpty()) {
-                for (ItemStack itemStack : combatLogger.getItemsToDrop()) {
-                    if (itemStack == null || itemStack.getType() == Material.AIR) {
-                        continue;
-                    }
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-                    if ((nmsStack.hasTag() && nmsStack.getTag() != null && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
-                        continue;
-                    }
-                    location.getWorld().dropItemNaturally(location, itemStack);
-                }
-            }
-            if (!combatLogger.getArmorToDrop().isEmpty()) {
-                for (ItemStack itemStack : combatLogger.getArmorToDrop()) {
-                    if (itemStack == null || itemStack.getType() == Material.AIR) {
-                        continue;
-                    }
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-                    if ((nmsStack.hasTag() && nmsStack.getTag() != null && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
-                        continue;
-                    }
-                    location.getWorld().dropItemNaturally(location, itemStack);
-                }
-            }
-            ArrayList<String> armorContents = new ArrayList<>();
-            String itemsToSave;
-            if (!combatLogger.getArmorToSave().isEmpty()) {
-                for (ItemStack itemStack : combatLogger.getArmorToSave()) {
-                    if (itemStack.getType() == null || itemStack.getType() == Material.AIR || itemStack.getType() == Material.MELON) {
-                        armorContents.add("null");
-                    } else {
-                        armorContents.add(ItemSerialization.itemStackToBase64(itemStack));
-                    }
-                }
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armorContents, true);
-            } else {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
-            }
-            if (!combatLogger.getItemsToSave().isEmpty()) {
-                Inventory inventory = Bukkit.createInventory(null, 27, "LoggerInventory");
-                combatLogger.getItemsToSave().forEach(inventory::addItem);
-                itemsToSave = ItemSerialization.toString(inventory);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, itemsToSave, true);
-            } else {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
-            }
-            combatLogger.handleNPCDeath();
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)

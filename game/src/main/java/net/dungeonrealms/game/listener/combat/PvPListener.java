@@ -9,6 +9,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.world.item.Attribute;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -44,10 +45,10 @@ public class PvPListener implements Listener {
         event.setDamage(0);
         event.setCancelled(true);
 
-        if (CombatLog.isInCombat(damager)) {
-            CombatLog.updateCombat(damager);
+        if (CombatAPI.getInstance().isTagged(damager)) {
+            CombatAPI.getInstance().tag(damager);
         } else {
-            CombatLog.addToCombat(damager);
+            CombatAPI.getInstance().tag(damager);
         }
 
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
@@ -133,7 +134,10 @@ public class PvPListener implements Listener {
             //Reflect when its fixed. @TODO
         } else {
             // EG finalDamage = 100, so actual finalDamage = 100 + 100 - calculation
-            finalDamage = finalDamage + (finalDamage / 100) * finalDamage - armorCalculation[0];
+            double damageO1 = finalDamage / 100;
+            double damageO2 = finalDamage + damageO1;
+            double damageO3 = (damageO2 * finalDamage) - armorCalculation[0];
+            finalDamage = damageO3;
             calculatedDamage = calculatedDamage - armorCalculation[0];
         }
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
@@ -179,10 +183,10 @@ public class PvPListener implements Listener {
         if (damager.equals(receiver)) return; // sometimes the projectile can be knocked back to the player at close range
 
         if (receiver.getGameMode() != GameMode.SURVIVAL) return;
-        if (CombatLog.isInCombat(damager)) {
-            CombatLog.updateCombat(damager);
+        if (CombatAPI.getInstance().isTagged(damager)) {
+            CombatAPI.getInstance().tag(damager);
         } else {
-            CombatLog.addToCombat(damager);
+            CombatAPI.getInstance().tag(damager);
         }
 
         receiver.playEffect(EntityEffect.HURT);

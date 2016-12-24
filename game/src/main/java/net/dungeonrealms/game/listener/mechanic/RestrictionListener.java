@@ -16,6 +16,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -448,7 +449,7 @@ public class RestrictionListener implements Listener {
         if (gamePlayer == null) return;
         if (event.getEntity().hasMetadata("tier")) {
             if (GameAPI.getTierFromLevel(gamePlayer.getLevel()) > (event.getEntity().getMetadata("tier").get(0).asInt() + 2)) {
-                if (!CombatLog.isInCombat((Player) event.getTarget()) && event.getTarget().getWorld().equals(Bukkit.getWorlds().get(0))) {
+                if (!CombatAPI.getInstance().isTagged((Player) event.getTarget()) && event.getTarget().getWorld().equals(Bukkit.getWorlds().get(0))) {
                     event.setCancelled(true);
                     return;
                 }

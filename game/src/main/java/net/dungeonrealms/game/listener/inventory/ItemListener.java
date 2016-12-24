@@ -21,6 +21,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -100,7 +101,7 @@ public class ItemListener implements Listener {
         }
 
         ItemStack itemStack = player.getEquipment().getItemInMainHand();
-        if (!(CombatLog.isInCombat(event.getPlayer()))) {
+        if (!(CombatAPI.getInstance().isTagged(player))) {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 player.sendMessage("You cannot restart a teleport during a cast!");
                 return;
@@ -572,7 +573,7 @@ public class ItemListener implements Listener {
     }
 
     private boolean performPreFoodChecks(Player player) {
-        if (CombatLog.isInCombat(player)) {
+        if (CombatAPI.getInstance().isTagged(player)) {
             player.sendMessage(ChatColor.RED + "You cannot eat this while in combat!");
             player.updateInventory();
             return false;
@@ -593,7 +594,7 @@ public class ItemListener implements Listener {
     private void healPlayerTask(Player player, int amount) {
         player.setMetadata("FoodRegen", new FixedMetadataValue(DungeonRealms.getInstance(), true));
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            if (!player.isSprinting() && HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player) && !CombatLog.isInCombat(player)) {
+            if (!player.isSprinting() && HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player) && !CombatAPI.getInstance().isTagged(player)) {
                 HealthHandler.getInstance().healPlayerByAmount(player, amount);
             } else {
                 if (player.hasMetadata("FoodRegen")) {
@@ -887,7 +888,7 @@ public class ItemListener implements Listener {
                         EntityAPI.removePlayerMountList(player.getUniqueId());
                         return;
                     }
-                    if (CombatLog.isInCombat(player)) {
+                    if (CombatAPI.getInstance().isTagged(player)) {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                         return;
                     }
@@ -915,7 +916,7 @@ public class ItemListener implements Listener {
                     int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                         if (!EntityAPI.hasMountOut(player.getUniqueId())) {
                             if (player.getLocation().distanceSquared(startingLocation) <= 4) {
-                                if (!CombatLog.isInCombat(player)) {
+                                if (!CombatAPI.getInstance().isTagged(player)) {
                                     if (!cancelled[0]) {
                                         if (count[0] < 3) {
                                             count[0]++;

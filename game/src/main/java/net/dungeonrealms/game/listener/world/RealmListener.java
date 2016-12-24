@@ -19,6 +19,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -974,7 +975,7 @@ public class RealmListener implements Listener {
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
 
-            if (!CombatLog.isInCombat(event.getPlayer())) {
+            if (!CombatAPI.getInstance().isTagged(event.getPlayer())) {
                 RealmToken realm = REALMS.getToken(event.getFrom());
 
                 if (realm == null) return;

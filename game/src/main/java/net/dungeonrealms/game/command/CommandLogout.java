@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,10 +30,6 @@ public class CommandLogout extends BaseCommand {
             Player player = (Player) s;
 
             if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-                if (CombatLog.isInCombat(player)) {
-                    player.sendMessage(ChatColor.RED + "You can not use /logout while in combat.");
-                    return true;
-                }
 
                 GamePlayer gp = GameAPI.getGamePlayer(player);
 
@@ -52,7 +49,7 @@ public class CommandLogout extends BaseCommand {
                     if (taskTimer[0] <= 0) {
                         return;
                     }
-                    if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
+                    if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatAPI.getInstance().isTagged(player)) {
                         player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Logout - CANCELLED");
                         player.removeMetadata("sharding", DungeonRealms.getInstance());
                         gp.setAbleToSuicide(true);
