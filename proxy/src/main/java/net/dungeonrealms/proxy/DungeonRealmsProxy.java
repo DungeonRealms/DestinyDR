@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ServerAddress;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.ping.PingResponse;
@@ -35,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -64,6 +66,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     @Override
     public void onEnable() {
         Constants.build();
+        AsyncUtils.threadCount = Runtime.getRuntime().availableProcessors();
+        AsyncUtils.pool = Executors.newFixedThreadPool(AsyncUtils.threadCount);
         instance = this;
         getLogger().info("DungeonRealmsProxy onEnable() ... STARTING UP");
 

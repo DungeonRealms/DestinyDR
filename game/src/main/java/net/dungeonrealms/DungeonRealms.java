@@ -11,6 +11,7 @@ import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.PlayerToken;
 import net.dungeonrealms.common.game.updater.UpdateTask;
+import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
@@ -93,6 +94,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 
 public class DungeonRealms extends JavaPlugin {
 
@@ -165,6 +167,9 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onEnable() {
+        AsyncUtils.threadCount = Runtime.getRuntime().availableProcessors();
+        AsyncUtils.pool = Executors.newFixedThreadPool(AsyncUtils.threadCount);
+
         Constants.build();
 //        new DupedItemsRemover().startInitialization();
         SERVER_START_TIME = System.currentTimeMillis();

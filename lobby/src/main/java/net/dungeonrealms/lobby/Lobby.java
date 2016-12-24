@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
+import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.commands.CommandShard;
@@ -26,6 +27,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collections;
+import java.util.concurrent.Executors;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/11/2016
@@ -41,6 +43,8 @@ public class Lobby extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
+        AsyncUtils.threadCount = Runtime.getRuntime().availableProcessors();
+        AsyncUtils.pool = Executors.newFixedThreadPool(AsyncUtils.threadCount);
         Constants.build();
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(3L);
@@ -87,7 +91,7 @@ public class Lobby extends JavaPlugin implements Listener {
             player.setDisplayName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
             player.setCustomName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
 
-            player.teleport(new Location(player.getWorld(), -972 + 0.5, 13.5, -275 + 0.5));
+            player.teleport(new Location(player.getWorld(), -420.512, 8.5, -149.540));
 
             if (!player.isOp())
                 player.getInventory().clear();
