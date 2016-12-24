@@ -12,7 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -51,8 +50,6 @@ public class CombatListener implements Listener {
         if (CombatAPI.getInstance().isTagged(event.getPlayer())) {
             // Spawn a logger if a player is combat tagged & leaves
             CombatAPI.getInstance().spawnEntity(new CombatEntity(event.getPlayer()));
-            event.getPlayer().getLocation().getWorld().strikeLightning(event.getPlayer().getLocation());
-
             DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, true, true, null);
         }
     }

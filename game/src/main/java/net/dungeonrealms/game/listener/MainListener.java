@@ -288,11 +288,11 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
+            event.getEntity().setCollidable(true);
             event.setCancelled(true);
         } else {
             if (((CraftEntity) event.getEntity()).getHandle() instanceof DRMonster) {
                 event.getEntity().setCustomNameVisible(true);
-                event.getEntity().setCollidable(true);
             }
         }
     }
