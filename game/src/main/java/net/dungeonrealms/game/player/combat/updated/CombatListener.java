@@ -97,7 +97,7 @@ public class CombatListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
         // Don't allow command sending in combat
-        if (CombatAPI.getInstance().isTagged(event.getPlayer())) return;
+        if (!CombatAPI.getInstance().isTagged(event.getPlayer())) return;
         event.setCancelled(true);
         event.getPlayer().sendMessage(ChatColor.RED + "You can't use commands whilst in combat!");
 

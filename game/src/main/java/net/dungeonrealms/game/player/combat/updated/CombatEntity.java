@@ -5,8 +5,10 @@ import lombok.Getter;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -43,6 +45,12 @@ public class CombatEntity {
         this.loggerEntity = CombatAPI.getInstance().createOn(player);
         this.armorContents = player.getInventory().getArmorContents();
         this.inventoryContents = player.getInventory().getContents();
+
+        this.loggerEntity.setHealth(HealthHandler.getInstance().getPlayerHPLive(player));
+        this.loggerEntity.setMaxHealth(HealthHandler.getInstance().getPlayerHPLive(player));
+
+        this.loggerEntity.setCustomName(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + "'s COMBAT INVENTORY");
+        this.loggerEntity.setCustomNameVisible(true);
     }
 
     /**
@@ -53,7 +61,8 @@ public class CombatEntity {
     public void handleDeath(Location location) {
         DatabaseAPI.getInstance().update(this.owner, EnumOperators.$SET, EnumData.LOGGERDIED, true, true, null);
         // Calculate items to remove based on alignment
-        KarmaHandler.EnumPlayerAlignments playerAlignments = KarmaHandler.EnumPlayerAlignments.valueOf((String) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, this.owner));
+        String alignment = (String) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, this.owner);
+        KarmaHandler.EnumPlayerAlignments playerAlignments = KarmaHandler.EnumPlayerAlignments.valueOf(alignment.toUpperCase());
         // The combat logger is CHAOTIC, drop all contents
         if (playerAlignments == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             // Clear a player's database inventory

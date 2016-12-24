@@ -68,7 +68,9 @@ public class CombatAPI implements Listener {
      * @param player The player
      */
     public void tag(Player player) {
-        TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
+        if(!this.combatTagged.containsKey(player)) {
+            TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
+        }
         this.combatTagged.put(player.getUniqueId(), System.currentTimeMillis());
     }
 
