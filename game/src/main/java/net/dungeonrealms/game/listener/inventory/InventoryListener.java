@@ -492,115 +492,105 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTradeInvClicked(InventoryClickEvent event) {
         if (event.getInventory().getTitle().contains("Trade Window")) {
-            if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-                event.setCancelled(true);
-                return;
-            }
-            if (event.isShiftClick()) {
-                event.setCancelled(true);
-                return;
-            }
+            // Check button click
             Trade trade = TradeManager.getTrade(event.getWhoClicked().getUniqueId());
-            if (trade == null) {
-                return;
-            }
-
-            if (event.getCurrentItem() == null)
-                return;
-
-            if (!GameAPI.isItemTradeable(event.getCursor()) || !GameAPI.isItemDroppable(event.getCursor())) {
-                event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
-                event.setCancelled(true);
-                return;
-            }
-
-            int slot = event.getRawSlot();
-            if (slot >= 36)
-                return;
-
-            if (event.getCurrentItem().getType() == Material.STAINED_GLASS_PANE) {
-                event.setCancelled(true);
-                return;
-            }
-
-            if (trade.isLeftSlot(slot)) {
-                if (!trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
+            if (trade != null) {
+                ItemStack stackClicked = event.getCurrentItem();
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
+                // A button has been clicked
+                if (nms.hasTag() && nms.getTag().hasKey("status")) {
+                    String status = nms.getTag().getString("status");
                     event.setCancelled(true);
-                    return;
-                }
-            } else if (trade.isRightSlot(slot)) {
-                if (trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-
-            // Remove or add an item to the trade
-            if (trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
-                // Slot is unoccupied?
-                if (event.getInventory().getItem(slot) == null && event.getCursor() != null) {
-                    // Player adds an item to the trade
-                    trade.p1Items.add(event.getCursor());
-                    event.getInventory().setItem(slot, event.getCursor());
-                    event.getCursor().setType(Material.AIR);
-                } else {
-                    if (event.getInventory().getItem(slot) != null) {
-                        event.getInventory().remove(event.getCurrentItem());
-                        trade.p1Items.remove(event.getCurrentItem());
+                    if (status.equalsIgnoreCase("ready")) {
+                        trade.updateReady(event.getWhoClicked().getUniqueId());
+                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
+                                null, DyeColor.GRAY.getDyeData());
+                        nms = CraftItemStack.asNMSCopy(item);
+                        NBTTagCompound nbt = new NBTTagCompound();
+                        nbt.setString("status", "notready");
+                        nms.setTag(nbt);
+                        nms.c(ChatColor.YELLOW + "NOT READY");
+                        event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+                        trade.checkReady();
+                        return;
+                    } else {
+                        trade.updateReady(event.getWhoClicked().getUniqueId());
+                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
+                                null, DyeColor.LIME.getDyeData());
+                        nms = CraftItemStack.asNMSCopy(item);
+                        NBTTagCompound nbt = new NBTTagCompound();
+                        nbt.setString("status", "ready");
+                        nms.setTag(nbt);
+                        nms.c(ChatColor.YELLOW + "READY");
+                        event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+                        trade.checkReady();
+                        return;
                     }
                 }
-            } else {
-                // Slot is unoccupied?
-                if (event.getInventory().getItem(slot) == null && event.getCursor() != null) {
-                    // Player adds an item to the trade
-                    trade.p2Items.add(event.getCursor());
-                    event.getInventory().setItem(slot, event.getCursor());
-                    event.getCursor().setType(Material.AIR);
+                // A button has not been clicked
+                if (event.getAction() != InventoryAction.COLLECT_TO_CURSOR) {
+                    if (!event.isShiftClick()) {
+                        if (trade != null) {
+                            if (event.getCurrentItem() != null) {
+                                if (GameAPI.isItemTradeable(event.getCurrentItem()) && GameAPI.isItemDroppable(event.getCurrentItem())) {
+                                    trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
+                                    trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
+                                    trade.changeReady();
+                                    Player player = (Player) event.getWhoClicked();
+                                    // Clicker is the owner?
+                                    if (trade.isLeftPlayer(player.getUniqueId())) {
+                                        if (event.getInventory().getItem(event.getRawSlot()) == null) {
+                                            // Add item
+                                            trade.p1Items.add(event.getCurrentItem());
+                                        }
+                                    } else {
+                                        if (event.getInventory().getItem(event.getRawSlot()) == null) {
+                                            // Add item
+                                            trade.p2Items.add(event.getCurrentItem());
+                                        }
+                                    }
+                                }
+                            } else {
+                                event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
+                                event.setCancelled(true);
+                            }
+                        } else {
+                            event.getWhoClicked().closeInventory();
+                        }
+                    }
                 } else {
-                    if (event.getInventory().getItem(slot) != null) {
-                        event.getInventory().remove(event.getCurrentItem());
-                        trade.p2Items.remove(event.getCurrentItem());
+                    // Player is removing an item
+                    if (!event.isShiftClick()) {
+                        if (event.getCurrentItem() != null) {
+                            if (GameAPI.isItemTradeable(event.getCurrentItem()) && GameAPI.isItemDroppable(event.getCurrentItem())) {
+                                trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
+                                trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
+                                trade.changeReady();
+                                Player player = (Player) event.getWhoClicked();
+                                // Clicker is the owner?
+                                if (trade.isLeftPlayer(player.getUniqueId())) {
+                                    if (event.getInventory().getItem(event.getRawSlot()) != null) {
+                                        // Remove item
+                                        if (trade.p1Items.contains(event.getCurrentItem())) {
+                                            trade.p1Items.remove(event.getCurrentItem());
+                                        }
+                                    }
+                                } else {
+                                    if (event.getInventory().getItem(event.getRawSlot()) != null) {
+                                        // Remove item
+                                        if (trade.p2Items.contains(event.getCurrentItem())) {
+                                            trade.p2Items.remove(event.getCurrentItem());
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
+                            event.setCancelled(true);
+                        }
                     }
                 }
             }
-
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
-                return;
-            ItemStack stackClicked = event.getCurrentItem();
-            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
-            if (nms.hasTag() && nms.getTag().hasKey("status")) {
-                String status = nms.getTag().getString("status");
-                event.setCancelled(true);
-                if (status.equalsIgnoreCase("ready")) {
-                    trade.updateReady(event.getWhoClicked().getUniqueId());
-                    ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
-                            null, DyeColor.GRAY.getDyeData());
-                    nms = CraftItemStack.asNMSCopy(item);
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    nbt.setString("status", "notready");
-                    nms.setTag(nbt);
-                    nms.c(ChatColor.YELLOW + "NOT READY");
-                    event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                    trade.checkReady();
-                    return;
-                } else {
-                    trade.updateReady(event.getWhoClicked().getUniqueId());
-                    ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
-                            null, DyeColor.LIME.getDyeData());
-                    nms = CraftItemStack.asNMSCopy(item);
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    nbt.setString("status", "ready");
-                    nms.setTag(nbt);
-                    nms.c(ChatColor.YELLOW + "READY");
-                    event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                    trade.checkReady();
-                    return;
-                }
-            }
-            Player clicker = (Player) event.getWhoClicked();
-            trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
-            trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
-            trade.changeReady();
         }
     }
 

@@ -33,6 +33,7 @@ import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
@@ -53,6 +54,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.*;
@@ -140,6 +142,11 @@ public class MainListener implements Listener {
         if (!DungeonRealms.getInstance().canAcceptPlayers()) event.setMotd("offline");
         else
             event.setMotd(DungeonRealms.getInstance().shardid + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER);
+    }
+
+    @EventHandler
+    public void onBlockFace(BlockFadeEvent event) {
+        event.setCancelled(true);
     }
 
     /**
@@ -277,6 +284,10 @@ public class MainListener implements Listener {
     public void onSpawn(CreatureSpawnEvent event) {
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
             event.setCancelled(true);
+        } else {
+            if (((CraftEntity) event.getEntity()).getHandle() instanceof DRMonster) {
+                event.getEntity().setCustomNameVisible(true);
+            }
         }
     }
 
