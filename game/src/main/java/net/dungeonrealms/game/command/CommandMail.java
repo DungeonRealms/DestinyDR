@@ -27,35 +27,35 @@ public class CommandMail extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-        /*if (!Rank.isDev(player)) {
-            return true;
-        }
-        if (args.length == 2) {
-            if (args[0].equals("send")) {
-                if (player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    if (!player.getName().equals(args[1])) {
-                        if (BankMechanics.getInstance().hasEnoughGems(5, player)) {
-                            if (GameAPI.isItemTradeable(player.getEquipment().getItemInMainHand())) {
-                                if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
-                                    player.getEquipment().setItemInMainHand(null);
-                                    BankMechanics.getInstance().takeGemsFromInventory(5, player);
+
+        if (Rank.isDev(player)) { // @todo: We can make this public at a later date.
+            if (args.length == 2) {
+                if (args[0].equals("send")) {
+                    if (player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                        if (!player.getName().equals(args[1])) {
+                            if (BankMechanics.getInstance().hasEnoughGems(5, player)) {
+                                if (GameAPI.isItemTradeable(player.getEquipment().getItemInMainHand())) {
+                                    if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
+                                        player.getEquipment().setItemInMainHand(null);
+                                        BankMechanics.getInstance().takeGemsFromInventory(5, player);
+                                    }
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
                                 }
                             } else {
-                                player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
+                                player.sendMessage(ChatColor.RED + "There is a " + ChatColor.UNDERLINE + "5 GEM" + ChatColor.RESET + ChatColor.RED + " fee to send mail.");
+                                return true;
                             }
                         } else {
-                            player.sendMessage(ChatColor.RED + "There is a " + ChatColor.UNDERLINE + "5 GEM" + ChatColor.RESET + ChatColor.RED + " fee to send mail.");
-                            return true;
+                            player.sendMessage(ChatColor.RED + "You cannot send mail to yourself.");
                         }
                     } else {
-                        player.sendMessage(ChatColor.RED + "You cannot send mail to yourself.");
+                        return true;
                     }
-                } else {
-                    return true;
                 }
+                return true;
             }
-            return true;
-        }*/
+        }
 
         PlayerMenus.openMailInventory(player);
 
