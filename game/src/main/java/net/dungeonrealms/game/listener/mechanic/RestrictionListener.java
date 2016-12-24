@@ -147,7 +147,7 @@ public class RestrictionListener implements Listener {
         }
 
         if (!Rank.isGM(event.getPlayer()))
-            ANTI_COMMAND_SPAM.submitCooldown(event.getPlayer(), 5000L);
+            ANTI_COMMAND_SPAM.submitCooldown(event.getPlayer(), 3000L);
 
         if (command.equalsIgnoreCase("/me") && !Rank.isDev(event.getPlayer()))
             event.setCancelled(true);
