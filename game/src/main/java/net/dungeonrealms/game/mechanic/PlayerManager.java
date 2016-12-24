@@ -3,7 +3,6 @@ package net.dungeonrealms.game.mechanic;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.game.soundtrack.Soundtrack;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -122,9 +121,6 @@ public class PlayerManager {
         public void setToggleState(Player player, boolean state) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, dbField, state, false);
             player.sendMessage((state ? ChatColor.GREEN : ChatColor.RED) + friendlyName + " - " + ChatColor.BOLD + (state ? "ENABLED" : "DISABLED"));
-
-            if (id == 9 && !state)
-                Soundtrack.getInstance().stopPlaying(player);
         }
     }
 }

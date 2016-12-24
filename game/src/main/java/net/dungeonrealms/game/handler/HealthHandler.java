@@ -171,7 +171,7 @@ public class HealthHandler implements GenericMechanic {
         }
         float healthToDisplay = (float) (healthPercentage * 100.F);
         int playerLevel = gamePlayer.getLevel();
-        String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LV. " + ChatColor.AQUA + playerLevel;
+        String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL. " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.WHITE.toString() + " - ";
         String playerHPInfo;
         BossBarAPI.Color color;

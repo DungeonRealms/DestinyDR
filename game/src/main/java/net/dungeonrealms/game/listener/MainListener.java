@@ -170,6 +170,7 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void worldInit(org.bukkit.event.world.WorldInitEvent e) {
+        e.getWorld().getEntities().stream().filter(entity -> entity instanceof Item).forEach(Entity::remove);
         e.getWorld().setKeepSpawnInMemory(false);
     }
 
@@ -177,7 +178,7 @@ public class MainListener implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
-            if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
+            if (!shard.equals("") && !DungeonRealms.getInstance().shardid.equals(shard)) {
                 event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
 
                         + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
@@ -226,6 +227,20 @@ public class MainListener implements Listener {
                 }
             }
         });
+
+        for(int i = 0; i < 20; i++) {
+            player.sendMessage("");
+        }
+        if (!DungeonRealms.getInstance().isMasterShard) {
+            Utils.sendCenteredMessage(player, ChatColor.RED.toString() + ChatColor.BOLD + "-> NOTIFICATION");
+            player.sendMessage(new String[]{
+                    ChatColor.RED + "You are playing on an unstable version of Dungeon Realms -",
+                    ChatColor.RED + "This server is running fixed 2016 code, everything is",
+                    ChatColor.RED + "being rewritten as we speak - www.dungeonrealms.net"});
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
+        } else {
+            Utils.sendCenteredMessage(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "DEVELOPMENT SERVER");
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
