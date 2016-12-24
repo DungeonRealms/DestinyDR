@@ -8,7 +8,6 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.ChatColor;
@@ -23,7 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -68,7 +66,7 @@ public class CombatAPI implements Listener {
      * @param player The player
      */
     public void tag(Player player) {
-        if(!this.combatTagged.containsKey(player)) {
+        if (!this.combatTagged.containsKey(player)) {
             TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "Entering Combat", 4 * 20);
         }
         this.combatTagged.put(player.getUniqueId(), System.currentTimeMillis());

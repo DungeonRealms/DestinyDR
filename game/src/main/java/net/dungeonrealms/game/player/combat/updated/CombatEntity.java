@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.player.combat.updated;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -8,16 +7,16 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.minecraft.server.v1_9_R2.EntityZombie;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftZombie;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
@@ -48,13 +47,12 @@ public class CombatEntity {
         this.armorContents = player.getInventory().getArmorContents();
         this.inventoryContents = player.getInventory().getContents();
 
-        this.loggerEntity.setMaxHealth(HealthHandler.getInstance().getPlayerHPLive(player));
-        this.loggerEntity.setHealth(HealthHandler.getInstance().getPlayerHPLive(player));
-
         this.loggerEntity.setCustomName(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + "'s COMBAT INVENTORY");
         this.loggerEntity.setCustomNameVisible(true);
 
-        this.loggerEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
+        // Remove entity knockback
+        EntityZombie entityZombie = ((CraftZombie) this.loggerEntity).getHandle();
+        entityZombie.getAttributeInstance(GenericAttributes.c).setValue(0);
     }
 
     /**

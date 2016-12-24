@@ -532,32 +532,28 @@ public class InventoryListener implements Listener {
                 // A button has not been clicked
                 if (event.getAction() != InventoryAction.COLLECT_TO_CURSOR) {
                     if (!event.isShiftClick()) {
-                        if (trade != null) {
-                            if (event.getCurrentItem() != null) {
-                                if (GameAPI.isItemTradeable(event.getCurrentItem()) && GameAPI.isItemDroppable(event.getCurrentItem())) {
-                                    trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
-                                    trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
-                                    trade.changeReady();
-                                    Player player = (Player) event.getWhoClicked();
-                                    // Clicker is the owner?
-                                    if (trade.isLeftPlayer(player.getUniqueId())) {
-                                        if (event.getInventory().getItem(event.getRawSlot()) == null) {
-                                            // Add item
-                                            trade.p1Items.add(event.getCurrentItem());
-                                        }
-                                    } else {
-                                        if (event.getInventory().getItem(event.getRawSlot()) == null) {
-                                            // Add item
-                                            trade.p2Items.add(event.getCurrentItem());
-                                        }
+                        if (event.getCurrentItem() != null) {
+                            if (GameAPI.isItemTradeable(event.getCurrentItem()) && GameAPI.isItemDroppable(event.getCurrentItem())) {
+                                trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
+                                trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
+                                trade.changeReady();
+                                Player player = (Player) event.getWhoClicked();
+                                // Clicker is the owner?
+                                if (trade.isLeftPlayer(player.getUniqueId())) {
+                                    if (event.getInventory().getItem(event.getRawSlot()) == null) {
+                                        // Add item
+                                        trade.p1Items.add(event.getCurrentItem());
+                                    }
+                                } else {
+                                    if (event.getInventory().getItem(event.getRawSlot()) == null) {
+                                        // Add item
+                                        trade.p2Items.add(event.getCurrentItem());
                                     }
                                 }
-                            } else {
-                                event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
-                                event.setCancelled(true);
                             }
                         } else {
-                            event.getWhoClicked().closeInventory();
+                            event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
+                            event.setCancelled(true);
                         }
                     }
                 } else {

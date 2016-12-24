@@ -6,10 +6,12 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -30,17 +32,16 @@ public class CombatListener implements Listener {
     }
 
     @EventHandler
-    public void onDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof Zombie) {
-            CombatEntity combatEntity = CombatAPI.getInstance().getOf((Zombie) event.getEntity());
-            if (combatEntity != null) {
-                event.getDrops().clear();
-                combatEntity.handleDeath(event.getEntity().getLocation());
-                // Drop items
-                combatEntity.handleDeath(event.getEntity().getLocation());
-                // Handle database stuff & spawn entity
-                CombatAPI.getInstance().setLogged(combatEntity.getOwner());
-                CombatAPI.getInstance().despawnEntity(combatEntity);
+    public void onDamage(EntityDamageByEntityEvent event) {
+        if(event.getDamager() instanceof Player) {
+            if(event.getEntity() instanceof Zombie) {
+                Zombie zombie = (Zombie) event.getEntity();
+                if(CombatAPI.getInstance().getOf(zombie) != null) {
+                    CombatAPI.getInstance().getOf(zombie).handleDeath(zombie.getLocation());
+                    CombatEntity combatEntity = CombatAPI.getInstance().getOf(zombie);
+                    CombatAPI.getInstance().setLogged(combatEntity.getOwner());
+                    CombatAPI.getInstance().despawnEntity(combatEntity);
+                }
             }
         }
     }
@@ -64,18 +65,20 @@ public class CombatListener implements Listener {
             // Player joined back in time, let him keep his items
             event.getPlayer().teleport(combatEntity.getLoggerEntity());
             CombatAPI.getInstance().despawnEntity(combatEntity);
-            event.getPlayer().sendMessage(ChatColor.RED + "You've been combat logged - Luckily you joined back");
+            DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> event.getPlayer().sendMessage(ChatColor.RED + "You've been combat logged - Luckily you joined back"), 20 * 2);
         } else {
             // Player joins back, but is combat logged but the combat entity is despawned already
             if (CombatAPI.getInstance().isLiveLogged(event.getPlayer())) {
                 event.getPlayer().getInventory().clear();
-                event.getPlayer().sendMessage(ChatColor.RED + "You've been combat logged - Some items may have been lost");
+                DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> event.getPlayer().sendMessage(ChatColor.RED + "You've been combat logged - Some items have been lost"), 20 * 2);
             } else {
                 // Player joins back, but the server session has no trace of a combat log, check the database
                 boolean logged = (boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, event.getPlayer().getUniqueId());
                 if (logged) {
                     // Oh boy..
-                    event.getPlayer().sendMessage(ChatColor.RED + "You've been combat logged - Some items may have been lost");
+                    DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> event.getPlayer().sendMessage(ChatColor.RED + "Some items have been lost"), 20 * 2);
+                } else {
+                    event.getPlayer().sendMessage("debug");
                 }
             }
         }
