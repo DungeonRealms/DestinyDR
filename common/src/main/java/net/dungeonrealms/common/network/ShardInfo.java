@@ -24,12 +24,13 @@ public enum ShardInfo implements Serializable {
 
     // US3 SHARD //
     US3("US-3", "us3", new ServerAddress("149.56.28.32", 41000)),
-
+    
     // SUB 1 SHARD //
     SUB1("SUB-1", "sub1", new ServerAddress("149.56.28.32", 42000)),
 
     // CS 1 SHARD //
     CS1("CS-1", "cs1", new ServerAddress("192.99.200.110", 11250));
+
 
     @Getter
     private String shardID;
