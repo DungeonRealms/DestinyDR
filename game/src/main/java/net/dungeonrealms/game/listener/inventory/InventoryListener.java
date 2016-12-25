@@ -9,7 +9,6 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.command.CommandModeration;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
-import net.dungeonrealms.game.handler.ClickHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -18,10 +17,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.updated.CombatAPI;
-import net.dungeonrealms.game.player.duel.DuelOffer;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.trade.Trade;
@@ -60,105 +56,6 @@ import java.util.*;
  */
 public class InventoryListener implements Listener {
 
-
-    /**
-     * Handles important inventories (guilds, etc.)
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onImportantInventoryClick(InventoryClickEvent event) {
-
-        if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
-            if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
-        }
-
-        ClickHandler.getInstance().doClick(event);
-    }
-
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDuelOfferClick(InventoryClickEvent e) {
-        if (!e.getInventory().getTitle().contains("VS.")) return;
-        if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-            e.setCancelled(true);
-            return;
-        }
-        Player p = (Player) e.getWhoClicked();
-        DuelOffer offer = DuelingMechanics.getOffer(p.getUniqueId());
-        if (offer == null) {
-            p.closeInventory();
-            return;
-        }
-        if (e.getRawSlot() > offer.sharedInventory.getSize()) return;
-
-        if (e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.BONE) {
-            e.setCancelled(true);
-            return;
-        }
-        int slot = e.getRawSlot();
-        if (slot == 30) {
-            e.setCancelled(true);
-            offer.updateOffer();
-            offer.cycleArmor();
-            return;
-        } else if (slot == 32) {
-            e.setCancelled(true);
-            offer.updateOffer();
-            offer.cycleItem();
-            return;
-        }
-
-        if (offer.isLeftSlot(e.getRawSlot())) {
-            if (!offer.isLeftPlayer(p)) {
-                e.setCancelled(true);
-                return;
-            }
-        } else {
-            if (offer.isLeftPlayer(p)) {
-                e.setCancelled(true);
-                return;
-            }
-        }
-
-        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
-            return;
-        ItemStack stackClicked = e.getCurrentItem();
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
-        if (nms.hasTag() && nms.getTag().hasKey("status")) {
-            String status = nms.getTag().getString("status");
-            e.setCancelled(true);
-            if (status.equalsIgnoreCase("ready")) {
-                offer.updateReady(p.getUniqueId());
-                ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
-                        null, DyeColor.GRAY.getDyeData());
-                nms = CraftItemStack.asNMSCopy(item);
-                NBTTagCompound nbt = new NBTTagCompound();
-                nbt.setString("status", "notready");
-                nms.setTag(nbt);
-                nms.c(ChatColor.YELLOW + "NOT READY");
-                e.getInventory().setItem(e.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                offer.checkReady();
-                return;
-            } else {
-                offer.updateReady(p.getUniqueId());
-                ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
-                        null, DyeColor.LIME.getDyeData());
-                nms = CraftItemStack.asNMSCopy(item);
-                NBTTagCompound nbt = new NBTTagCompound();
-                nbt.setString("status", "ready");
-                nms.setTag(nbt);
-                nms.c(ChatColor.YELLOW + "READY");
-                e.getInventory().setItem(e.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                offer.checkReady();
-                return;
-            }
-        }
-        offer.updateOffer();
-    }
-
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
         if (!CommandModeration.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
@@ -166,7 +63,7 @@ public class InventoryListener implements Listener {
         UUID target = CommandModeration.offline_inv_watchers.get(event.getPlayer().getUniqueId());
 
         String inventory = ItemSerialization.toString(event.getInventory());
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true, true, null);
 
         CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -193,7 +90,7 @@ public class InventoryListener implements Listener {
             armor.add(ItemSerialization.itemStackToBase64(offHand));
         }
 
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.ARMOR, armor, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.ARMOR, armor, true, true, null);
 
         CommandModeration.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -208,7 +105,7 @@ public class InventoryListener implements Listener {
         if (inv == null) return;
 
         String serializedInv = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, true, true, null);
 
         CommandModeration.offline_bank_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -223,7 +120,7 @@ public class InventoryListener implements Listener {
         if (inv == null) return;
 
         String serializedInv = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, true, true, null);
 
         CommandModeration.offline_bin_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -438,21 +335,7 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClosed(InventoryCloseEvent event) {
-        if (event.getInventory().getTitle().contains("VS.")) {
-            Player p = (Player) event.getPlayer();
-            DuelOffer offer = DuelingMechanics.getOffer(p.getUniqueId());
-            if (offer == null) return;
-            if (!offer.p1Ready || !offer.p2Ready) {
-                offer.giveBackItems();
-                DuelingMechanics.removeOffer(offer);
-                Player p1 = Bukkit.getPlayer(offer.player1);
-                if (p1 != null)
-                    p1.closeInventory();
-                Player p2 = Bukkit.getPlayer(offer.player2);
-                if (p2 != null)
-                    p2.closeInventory();
-            }
-        } else if (event.getInventory().getTitle().contains("Storage Chest") && !CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
+        if (event.getInventory().getTitle().contains("Storage Chest") && !CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             storage.inv.setContents(event.getInventory().getContents());
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
@@ -480,7 +363,7 @@ public class InventoryListener implements Listener {
                 i++;
             }
             if (i == 0) {
-                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", false);
+                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true, null);
                 storage.collection_bin = null;
             }
         }
@@ -494,101 +377,87 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTradeInvClicked(InventoryClickEvent event) {
         if (event.getInventory().getTitle().contains("Trade Window")) {
-            // Check button click
+            if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+                event.setCancelled(true);
+                return;
+            }
+            if (event.isShiftClick()) {
+                event.setCancelled(true);
+                return;
+            }
             Trade trade = TradeManager.getTrade(event.getWhoClicked().getUniqueId());
-            if (trade != null) {
-                ItemStack stackClicked = event.getCurrentItem();
-                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
-                // A button has been clicked
-                if (nms.hasTag() && nms.getTag().hasKey("status")) {
-                    String status = nms.getTag().getString("status");
+            if (trade == null) {
+                return;
+            }
+
+            if (event.getCurrentItem() == null)
+                return;
+
+            if (!GameAPI.isItemTradeable(event.getCurrentItem()) || !GameAPI.isItemDroppable(event.getCurrentItem())) {
+                event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
+                event.setCancelled(true);
+                return;
+            }
+
+
+            int slot = event.getRawSlot();
+            if (slot >= 36)
+                return;
+
+            if (event.getCurrentItem().getType() == Material.STAINED_GLASS_PANE) {
+                event.setCancelled(true);
+                return;
+            }
+
+            if (trade.isLeftSlot(slot)) {
+                if (!trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
                     event.setCancelled(true);
-                    if (status.equalsIgnoreCase("ready")) {
-                        trade.updateReady(event.getWhoClicked().getUniqueId());
-                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
-                                null, DyeColor.GRAY.getDyeData());
-                        nms = CraftItemStack.asNMSCopy(item);
-                        NBTTagCompound nbt = new NBTTagCompound();
-                        nbt.setString("status", "notready");
-                        nms.setTag(nbt);
-                        nms.c(ChatColor.YELLOW + "NOT READY");
-                        event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                        trade.checkReady();
-                        return;
-                    } else {
-                        trade.updateReady(event.getWhoClicked().getUniqueId());
-                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
-                                null, DyeColor.LIME.getDyeData());
-                        nms = CraftItemStack.asNMSCopy(item);
-                        NBTTagCompound nbt = new NBTTagCompound();
-                        nbt.setString("status", "ready");
-                        nms.setTag(nbt);
-                        nms.c(ChatColor.YELLOW + "READY");
-                        event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                        trade.checkReady();
-                        return;
-                    }
+                    return;
                 }
-                // A button has not been clicked
-                if (event.getAction() != InventoryAction.COLLECT_TO_CURSOR) {
-                    if (!event.isShiftClick()) {
-                        if (event.getCurrentItem() != null) {
-                            if (GameAPI.isItemTradeable(event.getCurrentItem()) && GameAPI.isItemDroppable(event.getCurrentItem())) {
-                                trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
-                                trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
-                                trade.changeReady();
-                                Player player = (Player) event.getWhoClicked();
-                                // Clicker is the owner?
-                                if (trade.isLeftPlayer(player.getUniqueId())) {
-                                    if (event.getInventory().getItem(event.getRawSlot()) == null) {
-                                        // Add item
-                                        trade.p1Items.add(event.getCurrentItem());
-                                    }
-                                } else {
-                                    if (event.getInventory().getItem(event.getRawSlot()) == null) {
-                                        // Add item
-                                        trade.p2Items.add(event.getCurrentItem());
-                                    }
-                                }
-                            }
-                        } else {
-                            event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
-                            event.setCancelled(true);
-                        }
-                    }
-                } else {
-                    // Player is removing an item
-                    if (!event.isShiftClick()) {
-                        if (event.getCurrentItem() != null) {
-                            if (GameAPI.isItemTradeable(event.getCurrentItem()) && GameAPI.isItemDroppable(event.getCurrentItem())) {
-                                trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
-                                trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + event.getWhoClicked().getName());
-                                trade.changeReady();
-                                Player player = (Player) event.getWhoClicked();
-                                // Clicker is the owner?
-                                if (trade.isLeftPlayer(player.getUniqueId())) {
-                                    if (event.getInventory().getItem(event.getRawSlot()) != null) {
-                                        // Remove item
-                                        if (trade.p1Items.contains(event.getCurrentItem())) {
-                                            trade.p1Items.remove(event.getCurrentItem());
-                                        }
-                                    }
-                                } else {
-                                    if (event.getInventory().getItem(event.getRawSlot()) != null) {
-                                        // Remove item
-                                        if (trade.p2Items.contains(event.getCurrentItem())) {
-                                            trade.p2Items.remove(event.getCurrentItem());
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
-                            event.setCancelled(true);
-                        }
-                    }
+            } else if (trade.isRightSlot(slot)) {
+                if (trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
+                    event.setCancelled(true);
+                    return;
                 }
             }
+
+            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                return;
+            ItemStack stackClicked = event.getCurrentItem();
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
+            if (nms.hasTag() && nms.getTag().hasKey("status")) {
+                String status = nms.getTag().getString("status");
+                event.setCancelled(true);
+                if (status.equalsIgnoreCase("ready")) {
+                    trade.updateReady(event.getWhoClicked().getUniqueId());
+                    ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
+                            null, DyeColor.GRAY.getDyeData());
+                    nms = CraftItemStack.asNMSCopy(item);
+                    NBTTagCompound nbt = new NBTTagCompound();
+                    nbt.setString("status", "notready");
+                    nms.setTag(nbt);
+                    nms.c(ChatColor.YELLOW + "NOT READY");
+                    event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+                    trade.checkReady();
+                    return;
+                } else {
+                    trade.updateReady(event.getWhoClicked().getUniqueId());
+                    ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
+                            null, DyeColor.LIME.getDyeData());
+                    nms = CraftItemStack.asNMSCopy(item);
+                    NBTTagCompound nbt = new NBTTagCompound();
+                    nbt.setString("status", "ready");
+                    nms.setTag(nbt);
+                    nms.c(ChatColor.YELLOW + "READY");
+                    event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+                    trade.checkReady();
+                    return;
+                }
+            }
+            Player clicker = (Player) event.getWhoClicked();
+            trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+            trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
+            trade.changeReady();
         }
     }
 
@@ -619,7 +488,6 @@ public class InventoryListener implements Listener {
             }
         }
         player.setMetadata("last_orb_use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        gp.getPlayerStatistics().setOrbsUsed(gp.getPlayerStatistics().getOrbsUsed() + 1);
         event.setCancelled(true);
         if (cursorItem.getAmount() == 1) {
             event.setCursor(new ItemStack(Material.AIR));
@@ -822,7 +690,6 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
-                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
@@ -898,7 +765,6 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (GameAPI.isArmor(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")) {
                 return;
@@ -975,7 +841,6 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
-                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
 
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
@@ -1076,7 +941,6 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (Fishing.isDRFishingPole(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("fishingenchant")) {
                 return;
@@ -1139,7 +1003,6 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
 
         } else if (Mining.isDRPickaxe(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("pickaxeenchant")) {
@@ -1203,7 +1066,6 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         }
     }
 
@@ -1266,134 +1128,120 @@ public class InventoryListener implements Listener {
             return;
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
-        boolean continueAllowed = false;
-        // Prevent T4 pickaxes/fishingrods to be repaired using scrap
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
-            if (Mining.isDRPickaxe(slotItem)) {
-                if (Mining.getPickTier(slotItem) < 4) {
-                    slotTier = Mining.getPickTier(slotItem);
-                    continueAllowed = true;
-                } else {
-                    continueAllowed = false;
-                }
-            } else if (Fishing.isDRFishingPole(slotItem)) {
-                if (Fishing.getRodTier(slotItem) < 4) {
-                    slotTier = Fishing.getRodTier(slotItem);
-                    continueAllowed = true;
-                } else {
-                    continueAllowed = false;
-                }
+            if (Mining.isDRPickaxe(slotItem))
+                slotTier = Mining.getPickTier(slotItem);
+            else {
+                slotTier = Fishing.getRodTier(slotItem);
             }
-            if (continueAllowed) {
-                if (scrapTier != slotTier) return;
-                if (cursorItem.getAmount() == 1) {
-                    event.setCancelled(true);
-                    event.setCursor(new ItemStack(Material.AIR));
-                } else if (cursorItem.getAmount() > 1) {
-                    event.setCancelled(true);
-                    cursorItem.setAmount(cursorItem.getAmount() - 1);
-                    event.setCursor(cursorItem);
-                }
-                double itemDurability = RepairAPI.getCustomDurability(slotItem);
+            if (scrapTier != slotTier) return;
+            if (cursorItem.getAmount() == 1) {
+                event.setCancelled(true);
+                event.setCursor(new ItemStack(Material.AIR));
+            } else if (cursorItem.getAmount() > 1) {
+                event.setCancelled(true);
+                cursorItem.setAmount(cursorItem.getAmount() - 1);
+                event.setCursor(cursorItem);
+            }
+            double itemDurability = RepairAPI.getCustomDurability(slotItem);
 
-                if (itemDurability + 45.0D >= 1500.0D) {
-                    RepairAPI.setCustomItemDurability(slotItem, 1500);
-                    player.updateInventory();
-                } else if (itemDurability + 45.0D < 1500.0D) {
-                    RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
-                    player.updateInventory();
-                }
+            if (itemDurability + 45.0D >= 1500.0D) {
+                RepairAPI.setCustomItemDurability(slotItem, 1500);
                 player.updateInventory();
-                double newPercent = RepairAPI.getCustomDurability(slotItem);
+            } else if (itemDurability + 45.0D < 1500.0D) {
+                RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
+                player.updateInventory();
+            }
+            player.updateInventory();
+            double newPercent = RepairAPI.getCustomDurability(slotItem);
 
-                int particleID = 1;
-                switch (scrapTier) {
-                    case 1:
-                        particleID = 25;
-                        break;
-                    case 2:
-                        particleID = 30;
-                        break;
-                    case 3:
-                        particleID = 42;
-                        break;
-                    case 4:
-                        particleID = 57;
-                        break;
-                    case 5:
-                        particleID = 41;
-                        break;
-                }
-                if (slotItem.getType() == Material.BOW) {
-                    particleID = 5;
-                }
-                int repairPercent = (int) ((newPercent / 1500.D) * 100);
+            int particleID = 1;
+            switch (scrapTier) {
+                case 1:
+                    particleID = 25;
+                    break;
+                case 2:
+                    particleID = 30;
+                    break;
+                case 3:
+                    particleID = 42;
+                    break;
+                case 4:
+                    particleID = 57;
+                    break;
+                case 5:
+                    particleID = 41;
+                    break;
+            }
+            if (slotItem.getType() == Material.BOW) {
+                particleID = 5;
+            }
+            int repairPercent = (int) ((newPercent / 1500.D) * 100);
 
-                for (int i = 0; i < 6; i++) {
-                    player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
-                    player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
-                    player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
-                }
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                    player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
-                }
-                return;
+            for (int i = 0; i < 6; i++) {
+                player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
+            }
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
+            }
+            return;
+        }
+
+        if (RepairAPI.isItemArmorOrWeapon(slotItem)) {
+            slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
+            if (scrapTier != slotTier) return;
+            if (cursorItem.getAmount() == 1) {
+                event.setCancelled(true);
+                event.setCursor(new ItemStack(Material.AIR));
+            } else if (cursorItem.getAmount() > 1) {
+                event.setCancelled(true);
+                cursorItem.setAmount(cursorItem.getAmount() - 1);
+                event.setCursor(cursorItem);
             }
 
-            if (RepairAPI.isItemArmorOrWeapon(slotItem)) {
-                slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
-                if (scrapTier != slotTier) return;
-                if (cursorItem.getAmount() == 1) {
-                    event.setCancelled(true);
-                    event.setCursor(new ItemStack(Material.AIR));
-                } else if (cursorItem.getAmount() > 1) {
-                    event.setCancelled(true);
-                    cursorItem.setAmount(cursorItem.getAmount() - 1);
-                    event.setCursor(cursorItem);
-                }
+            double itemDurability = RepairAPI.getCustomDurability(slotItem);
 
-                double itemDurability = RepairAPI.getCustomDurability(slotItem);
-
-                if (itemDurability + 45.0D >= 1500.0D) {
-                    RepairAPI.setCustomItemDurability(slotItem, 1500);
-                    player.updateInventory();
-                } else if (itemDurability + 45.0D < 1500.0D) {
-                    RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
-                    player.updateInventory();
-                }
+            if (itemDurability + 45.0D >= 1500.0D) {
+                RepairAPI.setCustomItemDurability(slotItem, 1500);
                 player.updateInventory();
-                double newPercent = RepairAPI.getCustomDurability(slotItem);
+            } else if (itemDurability + 45.0D < 1500.0D) {
+                RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
+                player.updateInventory();
+            }
+            player.updateInventory();
+            double newPercent = RepairAPI.getCustomDurability(slotItem);
 
-                int particleID = 1;
-                switch (scrapTier) {
-                    case 1:
-                        particleID = 25;
-                        break;
-                    case 2:
-                        particleID = 30;
-                        break;
-                    case 3:
-                        particleID = 42;
-                        break;
-                    case 4:
-                        particleID = 57;
-                        break;
-                    case 5:
-                        particleID = 41;
-                        break;
-                }
-                if (slotItem.getType() == Material.BOW) {
-                    particleID = 5;
-                }
-                int repairPercent = (int) ((newPercent / 1500.D) * 100);
-                for (int i = 0; i < 6; i++) {
-                    player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
-                    player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
-                    player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
-                }
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                    player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
-                }
+            int particleID = 1;
+            switch (scrapTier) {
+                case 1:
+                    particleID = 25;
+                    break;
+                case 2:
+                    particleID = 30;
+                    break;
+                case 3:
+                    particleID = 42;
+                    break;
+                case 4:
+                    particleID = 57;
+                    break;
+                case 5:
+                    particleID = 41;
+                    break;
+            }
+            if (slotItem.getType() == Material.BOW) {
+                particleID = 5;
+            }
+            int repairPercent = (int) ((newPercent / 1500.D) * 100);
+            for (int i = 0; i < 6; i++) {
+                player.getWorld().playEffect(player.getLocation().add(i, 1.3, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1.15, i), Effect.TILE_BREAK, particleID, 12);
+                player.getWorld().playEffect(player.getLocation().add(i, 1, i), Effect.TILE_BREAK, particleID, 12);
+            }
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + repairPercent + "%");
             }
         }
     }
@@ -1669,8 +1517,7 @@ public class InventoryListener implements Listener {
             String string = event.getInventory().getTitle().substring(event.getInventory().getTitle().indexOf(ChatColor.BOLD.toString()) + 2);
             string = string.replace("g?", "");
             int cost = Integer.parseInt(string);
-            if (BankMechanics.getInstance().hasEnoughGems(cost, (Player) event.getWhoClicked())) {
-                BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked());
+            if (BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())) {
                 ItemStack stack = event.getWhoClicked().getEquipment().getItemInMainHand();
                 RepairAPI.setCustomItemDurability(stack, 1500);
                 event.getWhoClicked().getEquipment().setItemInMainHand(stack);
@@ -1801,7 +1648,7 @@ public class InventoryListener implements Listener {
                             }
                             pl.sendMessage(ChatColor.GREEN + "Mule upgraded to " + newTier.getName() + "!");
 
-                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), true);
+                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), true, true, null);
 
                             if (MountUtils.inventories.containsKey(pl.getUniqueId())) {
                                 Inventory inv = MountUtils.inventories.get(pl.getUniqueId());

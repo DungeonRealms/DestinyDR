@@ -152,6 +152,10 @@ public class Chat {
 
         event.setMessage(fixedMessage);
 
+        // Player only types @i
+        if(fixedMessage.startsWith("@i") && !fixedMessage.contains("@i@")) {
+            event.setCancelled(true);
+        }
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             // You cannot private message nobody.
             if (fixedMessage.equals("@")) {

@@ -573,6 +573,16 @@ public class MainListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPickup(PlayerPickupItemEvent event) {
+        if(event.getItem().getType() != null) {
+            if(event.getItem().getItemStack().getType() == Material.WRITTEN_BOOK || event.getItem().getItemStack().getType() == Material.NETHER_STAR) {
+                event.getItem().remove();
+                event.setCancelled(true);
+            }
+        }
+    }
+
     /*
     * Prevents fishing bug in Dungeons/Realms
      */
