@@ -295,7 +295,6 @@ public class DungeonRealms extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
 
-        new InventorySecurity().start();
         if (!isInstanceServer) {
             pm.registerEvents(new MainListener(), this);
             pm.registerEvents(new DamageListener(), this);
