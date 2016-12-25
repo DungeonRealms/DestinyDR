@@ -18,7 +18,6 @@ import net.dungeonrealms.game.miscellaneous.TradeCalculator;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.inventory.ECashMenus;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
@@ -652,7 +651,7 @@ public class ClickHandler {
                         }
                         EntityAPI.removePlayerMountList(player.getUniqueId());
                     }
-                    if (CombatAPI.getInstance().isTagged(player)) {
+                    if (CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in combat!");
                         return;
                     }
@@ -674,7 +673,7 @@ public class ClickHandler {
                     int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                         if (!EntityAPI.hasMountOut(player.getUniqueId())) {
                             if (player.getLocation().distanceSquared(startingLocation) <= 4) {
-                                if (!CombatAPI.getInstance().isTagged(player)) {
+                                if (!CombatLog.isInCombat(player)) {
                                     if (!cancelled[0]) {
                                         if (count[0] < 3) {
                                             count[0]++;
@@ -778,7 +777,7 @@ public class ClickHandler {
                             EntityAPI.removePlayerPetList(player.getUniqueId());
                             player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
                         }
-                        if (CombatAPI.getInstance().isTagged(player)) {
+                        if (CombatLog.isInCombat(player)) {
                             player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in combat!");
                             return;
                         }

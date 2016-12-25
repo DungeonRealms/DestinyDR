@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.command.CommandModeration;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.handler.ClickHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -17,7 +18,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.trade.Trade;
@@ -55,6 +56,22 @@ import java.util.*;
  * Created by Nick on 9/18/2015.
  */
 public class InventoryListener implements Listener {
+
+    /**
+     * Handles important inventories (guilds, etc.)
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onImportantInventoryClick(InventoryClickEvent event) {
+
+        if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
+            if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
+        }
+
+        ClickHandler.getInstance().doClick(event);
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
@@ -179,7 +196,7 @@ public class InventoryListener implements Listener {
                 return;
             }
         }*/
-        if (!CombatAPI.getInstance().isTagged(player)) {
+        if (!CombatLog.isInCombat(player)) {
             if (GameAPI.getGamePlayer(player) == null) {
                 return;
             }

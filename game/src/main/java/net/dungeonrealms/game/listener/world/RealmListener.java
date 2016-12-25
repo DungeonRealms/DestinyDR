@@ -9,7 +9,6 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.updater.UpdateEvent;
 import net.dungeonrealms.common.game.updater.UpdateType;
 import net.dungeonrealms.common.game.util.Cooldown;
-import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -19,7 +18,6 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -975,7 +973,7 @@ public class RealmListener implements Listener {
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
 
-            if (!CombatAPI.getInstance().isTagged(event.getPlayer())) {
+            if (!CombatLog.isInCombat(event.getPlayer())) {
                 RealmToken realm = REALMS.getToken(event.getFrom());
 
                 if (realm == null) return;

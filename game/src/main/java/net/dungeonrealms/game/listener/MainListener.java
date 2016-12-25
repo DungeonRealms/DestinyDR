@@ -26,7 +26,6 @@ import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
@@ -1046,7 +1045,7 @@ public class MainListener implements Listener {
             pl.sendMessage(ChatColor.YELLOW + trader.getName() + " is currently busy.");
             return;
         }
-        if (CombatAPI.getInstance().isTagged(pl)) {
+        if (CombatLog.isInCombat(pl)) {
             pl.sendMessage(ChatColor.YELLOW + "You cannot trade while in combat.");
             pl.sendMessage(ChatColor.GRAY + "Wait " + ChatColor.BOLD + "a few seconds" + ChatColor.GRAY + " and try again.");
             event.setCancelled(true);

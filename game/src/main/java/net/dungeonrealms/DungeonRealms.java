@@ -57,8 +57,8 @@ import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.menu.HearthStone;
 import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.profession.Fishing;
@@ -264,6 +264,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(TabMechanics.getInstance());
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new LootManager());
+            mm.registerMechanic(CombatLog.getInstance());
             mm.registerMechanic(Affair.getInstance());
             mm.registerMechanic(PatchTools.getInstance());
             mm.registerMechanic(TutorialIsland.getInstance());
@@ -275,6 +276,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(new EntityMechanics());
+            mm.registerMechanic(CombatLog.getInstance());
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());
@@ -493,8 +495,6 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
             cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
         }
-
-        CombatAPI.getInstance().start();
 
         // Commands exclusive to support agents on their special server.
         if (isMasterShard || isSupportShard) {

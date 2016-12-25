@@ -22,7 +22,6 @@ import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
@@ -190,7 +189,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         }
 
 
-        if (CombatAPI.getInstance().isTagged(player)) {
+        if (CombatLog.isInCombat(player)) {
             player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
             return false;
         }
