@@ -93,31 +93,62 @@ public class MailHandler {
      */
     public boolean sendMail(Player player, String to, ItemStack itemStack) {
         UUID toUUID;
+
+        // Determine whether or not this item can be sent via the mailing system.
         if (!GameAPI.isItemTradeable(itemStack)) {
             player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
             return false;
         }
+
+        // Check that the user we're attempting to send it to is an actual Dungeon Realms player.
         String result = DatabaseAPI.getInstance().getUUIDFromName(to);
         if (result.equals("")) {
+            // Yikes! They're not a player, prompt the user and return false.
             player.sendMessage(ChatColor.RED + "This player does not exist.");
             return false;
-        } else toUUID = UUID.fromString(result);
+        } else {
+            // Success! The user is a valid player.
+            toUUID = UUID.fromString(result);
+        }
 
+        // Send the mail.
+        if (sendMailRaw(player.getName(), toUUID, itemStack)) {
+            // We were able to successfully send the mail, notify both users and return true.
+            if (GameAPI.isOnline(toUUID)) {
+                sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
+            } else {
+                BungeeUtils.sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
+            }
+            sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " Mail.");
+            return true;
+        }
+
+        // We failed to send the mail for some reason, return false.
+        return false;
+    }
+
+    /**
+     * This will perform the actual sending of the item.
+     * This is separate to sendMail so we can issue mail from a system user.
+     *
+     * @param senderName - The name of the sender.
+     * @param toUUID - The UUID of the receiver.
+     * @param itemStack - The item that will be sent.
+     * @return
+     */
+    public boolean sendMailRaw(String senderName, UUID toUUID, ItemStack itemStack) {
         String serializedItem = ItemSerialization.itemStackToBase64(itemStack);
+        String mailIdentification = senderName + "," + (System.currentTimeMillis() / 1000L) + "," + serializedItem;
 
-        String mailIdentification = player.getName() + "," + (System.currentTimeMillis() / 1000L) + "," + serializedItem;
-
+        // Send the mail!
         if (GameAPI.isOnline(toUUID)) {
-            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification,
-                    true);
-            sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
+            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true);
         } else {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true, doAfter -> {
                 GameAPI.updatePlayerData(toUUID);
-                BungeeUtils.sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
             });
         }
-        sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " Mail.");
+
         return true;
     }
 
@@ -130,7 +161,7 @@ public class MailHandler {
         player.sendMessage(getMailMessage(message));
     }
 
-    private String getMailMessage(String message) {
+    public String getMailMessage(String message) {
         return ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Mail" + ChatColor.WHITE + "]" + " " + message;
     }
 

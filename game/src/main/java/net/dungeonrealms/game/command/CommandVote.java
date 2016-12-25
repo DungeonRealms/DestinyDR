@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -23,13 +24,13 @@ public class CommandVote extends BaseCommand {
 
         int ecashAmount = 15;
         if (Rank.isSubscriberPlus(player)) {
-           ecashAmount = 25;
+            ecashAmount = 25;
         } else if (Rank.isSubscriber(player)) {
-           ecashAmount = 20;
+            ecashAmount = 20;
         }
 
         final JSONMessage message = new JSONMessage("To vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.AQUA);
-        message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
+        message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/405761");
         message.sendToPlayer(player);
         return true;
     }

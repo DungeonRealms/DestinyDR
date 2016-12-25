@@ -1276,8 +1276,8 @@ public class GameAPI {
 
         // calculate attributes and check inventory
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            PlayerManager.checkInventory(uuid);
             GameAPI.calculateAllAttributes(player);
+            PlayerManager.checkInventory(uuid);
         }, 2 * 20L);
 
         if (gp.getPlayer() != null) {

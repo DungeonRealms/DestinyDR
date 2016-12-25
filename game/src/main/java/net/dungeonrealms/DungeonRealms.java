@@ -24,6 +24,7 @@ import net.dungeonrealms.game.command.friend.FriendsCommand;
 import net.dungeonrealms.game.command.friend.RemoveCommand;
 import net.dungeonrealms.game.command.guild.*;
 import net.dungeonrealms.game.command.menu.*;
+import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.command.party.*;
 import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
@@ -36,10 +37,7 @@ import net.dungeonrealms.game.listener.TabCompleteCommands;
 import net.dungeonrealms.game.listener.combat.DamageListener;
 import net.dungeonrealms.game.listener.combat.PvEListener;
 import net.dungeonrealms.game.listener.combat.PvPListener;
-import net.dungeonrealms.game.listener.inventory.AntiCheatListener;
-import net.dungeonrealms.game.listener.inventory.InventoryListener;
-import net.dungeonrealms.game.listener.inventory.ItemListener;
-import net.dungeonrealms.game.listener.inventory.ShopListener;
+import net.dungeonrealms.game.listener.inventory.*;
 import net.dungeonrealms.game.listener.mechanic.BankListener;
 import net.dungeonrealms.game.listener.mechanic.BossListener;
 import net.dungeonrealms.game.listener.mechanic.EnergyListener;
@@ -297,6 +295,7 @@ public class DungeonRealms extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
 
+        new InventorySecurity().start();
         if (!isInstanceServer) {
             pm.registerEvents(new MainListener(), this);
             pm.registerEvents(new DamageListener(), this);
@@ -347,6 +346,12 @@ public class DungeonRealms extends JavaPlugin {
         // Commands always registered regardless of server.
         cm.registerCommand(new CommandDevDebug("devdebug", "/<command> [args]", "Toggle on and off debug."));
 
+        cm.registerCommand(new CommandInvsee("invsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mis")));
+        cm.registerCommand(new CommandBanksee("banksee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mbs")));
+        cm.registerCommand(new CommandArmorsee("armorsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mas")));
+        cm.registerCommand(new CommandGemsee("gemsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mgs")));
+        cm.registerCommand(new CommandBinsee("binsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mbns")));
+
         cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));
         cm.registerCommand(new CommandEss("dr", "/<command> [args]", "Developer command with the core essentials."));
@@ -370,7 +375,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
         cm.registerCommand(new CommandPDecline("pdecline", "/<command> [args]", "Decline a party invitation."));
 
-        cm.registerCommand(new CommandTestPlayer("testplayer", "/<command> [args]", "Command to test dr soundtrack."));
         cm.registerCommand(new CommandTestDupe("testdupe", "/<command> [args]", "Command test dupe."));
         cm.registerCommand(new CommandAlbranir("albranir", "/<command> [args]", "Command to spawn albranir."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
@@ -438,12 +442,13 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandReboot("reboot", "/<command>", "Displays the time until the shard will next reboot."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
             cm.registerCommand(new CommandHead("head", "/<command> [args]", "Spawn a player's Minecraft head."));
+            cm.registerCommand(new CommandStore("drstore", "/<command> [args]", "This command will issue store items to users."));
 
             cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "Sends a message to global chat."));
             cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Sendsa message to local chat."));
 
             cm.registerCommand(new CommandAsk("ask", "/<command> [args]", "Ask command", Collections.singletonList("help")));
-            cm.registerCommand(new CommandWelcome("welcome", "/<command> [args]", "Welcome command for ecash"));
+            //cm.registerCommand(new CommandWelcome("welcome", "/<command> [args]", "Welcome command for ecash"));
             cm.registerCommand(new CommandAnswer("answer", "/<command> [args]", "Answer command"));
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "Will help remove you if you're stuck in a block."));
             cm.registerCommand(new CommandSuicide("suicide", "/<command>", "Kills your player.", Collections.singletonList("drsuicide")));
