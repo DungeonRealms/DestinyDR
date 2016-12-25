@@ -2,6 +2,9 @@ package net.dungeonrealms.game.listener.inventory;
 
 import com.google.common.collect.Sets;
 import lombok.Getter;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.common.Constants;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,8 +38,31 @@ public class InventorySecurity implements Listener {
 
     private String kickMessage = ChatColor.RED + "Invalid inventory ID";
 
+
     public void start() {
+        DungeonRealms.getInstance().getServer().getPluginManager().registerEvents(this, DungeonRealms.getInstance());
         this.inventoryViewers = Sets.newHashSet();
+
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getOnlinePlayers().stream().filter(player -> this.inventoryViewers.contains(player.getUniqueId()) && player.getOpenInventory() == null).forEach(player -> {
+                this.inventoryViewers.remove(player.getUniqueId());
+            });
+        }, 0L, 15);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDamageInInventory(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (this.inventoryViewers.contains(player.getUniqueId())) {
+                player.closeInventory();
+            } else {
+                if (player.getOpenInventory() != null) {
+                    Constants.log.warning("PLAYER OUT OF INVENTORY BOUNDS, KICKED");
+                    player.closeInventory();
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -47,9 +73,9 @@ public class InventorySecurity implements Listener {
             if (!this.inventoryViewers.contains(event.getPlayer().getUniqueId())) {
                 this.inventoryViewers.add(event.getPlayer().getUniqueId());
             } else {
+                Constants.log.warning(event.getEventName() + " PLAYER OUT OF INVENTORY BOUNDS, KICKED");
                 // Suspicious, the player is opening an inventory whilst being in the inventory viewers set
                 event.setCancelled(true);
-                ((Player) event.getPlayer()).kickPlayer(this.kickMessage);
                 this.inventoryViewers.remove(event.getPlayer().getUniqueId());
             }
         }
@@ -57,7 +83,7 @@ public class InventorySecurity implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemPickup(PlayerPickupItemEvent event) {
-        if(this.inventoryViewers.contains(event.getPlayer().getUniqueId())) {
+        if (this.inventoryViewers.contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -66,10 +92,6 @@ public class InventorySecurity implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         if (this.inventoryViewers.contains(event.getPlayer().getUniqueId())) {
             this.inventoryViewers.remove(event.getPlayer().getUniqueId());
-        } else {
-            // Suspicious, a player is closing an inventory without being logged
-            ((Player) event.getPlayer()).kickPlayer(this.kickMessage);
-            this.inventoryViewers.remove(event.getPlayer().getUniqueId());
         }
     }
 
@@ -77,6 +99,7 @@ public class InventorySecurity implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         if (this.inventoryViewers.contains(event.getPlayer().getUniqueId())) {
             // A player is chatting whilst viewing an inventory, kick.
+            Constants.log.warning(event.getEventName() + " PLAYER OUT OF INVENTORY BOUNDS, KICKED");
             event.setCancelled(true);
             event.getPlayer().kickPlayer(this.kickMessage);
             this.inventoryViewers.remove(event.getPlayer().getUniqueId());
@@ -87,9 +110,14 @@ public class InventorySecurity implements Listener {
     public void onMove(PlayerMoveEvent event) {
         if (this.inventoryViewers.contains(event.getPlayer().getUniqueId())) {
             // A player is moving whilst viewing an inventory, kick
+            Constants.log.warning(event.getEventName() + " PLAYER OUT OF INVENTORY BOUNDS, KICKED");
             event.setCancelled(true);
             this.inventoryViewers.remove(event.getPlayer().getUniqueId());
             event.getPlayer().kickPlayer(this.kickMessage);
+        } else {
+            if (event.getPlayer().getOpenInventory() != null) {
+                event.getPlayer().closeInventory();
+            }
         }
     }
 
@@ -97,6 +125,7 @@ public class InventorySecurity implements Listener {
     public void onTeleport(PlayerTeleportEvent event) {
         if (this.inventoryViewers.contains(event.getPlayer().getUniqueId())) {
             // A player is teleporting whilst viewing an inventory, kick
+            Constants.log.warning(event.getEventName() + " PLAYER OUT OF INVENTORY BOUNDS, KICKED");
             event.setCancelled(true);
             event.getPlayer().kickPlayer(this.kickMessage);
             this.inventoryViewers.remove(event.getPlayer().getUniqueId());
@@ -107,22 +136,9 @@ public class InventorySecurity implements Listener {
     public void onWorldChange(PlayerChangedWorldEvent event) {
         if (this.inventoryViewers.contains(event.getPlayer().getUniqueId())) {
             // A player is changing world whilst viewing an inventory, kick
+            Constants.log.warning(event.getEventName() + " PLAYER OUT OF INVENTORY BOUNDS, KICKED");
             event.getPlayer().kickPlayer(this.kickMessage);
             this.inventoryViewers.remove(event.getPlayer().getUniqueId());
-        }
-    }
-
-    @EventHandler
-    public void onDamage(EntityDamageByEntityEvent event) {
-        if (event.getDamage() != 0) {
-            if (event.getEntity() instanceof Player) {
-                Player player = (Player) event.getEntity();
-                if (this.inventoryViewers.contains(player.getUniqueId())) {
-                    // Uh oh..
-                    player.kickPlayer(this.kickMessage);
-                    this.inventoryViewers.remove(player.getUniqueId());
-                }
-            }
         }
     }
 }
