@@ -411,6 +411,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandMessage("message", "/<command>", "Messages a player", Arrays.asList("msg", "tell", "t", "whisper", "w", "m")));
         cm.registerCommand(new CommandReply("reply", "/<command>", "Messages a player", Collections.singletonList("r")));
         cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
+        cm.registerCommand(new CommandSessionID("sessions", "/<command> [args]", "Session ID fixer", Arrays.asList("session", "fixsession")));
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));

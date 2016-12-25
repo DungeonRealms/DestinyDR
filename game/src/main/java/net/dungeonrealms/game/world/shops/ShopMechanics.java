@@ -17,6 +17,12 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -27,9 +33,40 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by Chase on Nov 17, 2015
  */
-public class ShopMechanics implements GenericMechanic {
+public class ShopMechanics implements GenericMechanic, Listener {
 
     public static ConcurrentHashMap<String, Shop> ALLSHOPS = new ConcurrentHashMap<>();
+
+    @EventHandler
+    public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        if (event.getMessage().toLowerCase().startsWith("/")) {
+            ALLSHOPS.values().stream().filter(shop -> shop.uniqueViewers.contains(event.getPlayer().getName())).forEach(shop -> {
+                event.setCancelled(true);
+            });
+        }
+    }
+
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent event) {
+        // Don't check for open inventory on this one
+        ALLSHOPS.values().stream().filter(shop -> shop.uniqueViewers.contains(event.getPlayer().getName())).forEach(shop -> {
+            event.setCancelled(true);
+        });
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        ALLSHOPS.values().stream().filter(shop -> shop.uniqueViewers.contains(event.getPlayer().getName())).forEach(shop -> {
+            event.setCancelled(true);
+        });
+    }
+
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent event) {
+        ALLSHOPS.values().stream().filter(shop -> shop.uniqueViewers.contains(event.getPlayer().getName())).forEach(shop -> {
+            event.setCancelled(true);
+        });
+    }
 
     public static Shop getShop(Block block) {
         for (Shop shop : ALLSHOPS.values()) {
@@ -111,7 +148,7 @@ public class ShopMechanics implements GenericMechanic {
 
     @Override
     public void startInitialization() {
-
+        DungeonRealms.getInstance().getServer().getPluginManager().registerEvents(this, DungeonRealms.getInstance());
     }
 
     @Override

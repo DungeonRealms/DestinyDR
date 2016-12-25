@@ -90,7 +90,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -983,353 +982,349 @@ public class GameAPI {
             return;
         }
 
-        if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, uuid)) {
-            try {
-                if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid)) {
-                    if (!DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
-                        String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
-                        player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
-                        return;
-                    } else {
-                        if (!CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
-                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
-                            //Shard probably crashed, so they believe they combat logged, but the shard has no record of it.
-                        }
-                    }
-                }
-            } catch (NullPointerException ignored) {
-            }
-
-            if (player.hasMetadata("sharding")) player.removeMetadata("sharding", DungeonRealms.getInstance());
-
-            // todo: finish anticheat system
-            //AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
-
-            GamePlayer gp = new GamePlayer(player);
-
-            gp.setAbleToDrop(false);
-            gp.setAbleToSuicide(false);
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToDrop(true), 20L * 10L);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
-
-            // Hide invisible users from non-GMs.
-            if (!Rank.isGM(player)) GameAPI._hiddenPlayers.forEach(player::hidePlayer);
-
-            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
-            //Prevent players entering a dungeon as they spawn.
-
-            String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
-            if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-                ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
-                player.getInventory().setContents(items);
-                player.updateInventory();
-            }
-            List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
-            int i = -1;
-            ItemStack[] armorContents = new ItemStack[4];
-            ItemStack offHand = new ItemStack(Material.AIR);
-            for (String armor : playerArmor) {
-                i++;
-                if (i <= 3) { //Normal armor piece
-                    if (armor.equals("null") || armor.equals("")) {
-                        armorContents[i] = new ItemStack(Material.AIR);
-                    } else {
-                        armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
-                    }
+        try {
+            if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid)) {
+                if (!DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
+                    String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
+                    player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
+                    return;
                 } else {
-                    if (armor.equals("null") || armor.equals("")) {
-                        offHand = new ItemStack(Material.AIR);
-                    } else {
-                        offHand = ItemSerialization.itemStackFromBase64(armor);
+                    if (!CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
+                        //Shard probably crashed, so they believe they combat logged, but the shard has no record of it.
                     }
                 }
             }
-            player.getEquipment().setArmorContents(armorContents);
-            player.getEquipment().setItemInOffHand(offHand);
+        } catch (NullPointerException ignored) {
+        }
 
+        if (player.hasMetadata("sharding")) player.removeMetadata("sharding", DungeonRealms.getInstance());
+
+        // todo: finish anticheat system
+        //AntiCheat.getInstance().getUids().addAll((HashSet<String>)DatabaseAPI.getInstance().getData(EnumData.ITEMUIDS, uuid));
+
+        GamePlayer gp = new GamePlayer(player);
+
+        gp.setAbleToDrop(false);
+        gp.setAbleToSuicide(false);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToDrop(true), 20L * 10L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
+
+        // Hide invisible users from non-GMs.
+        if (!Rank.isGM(player)) GameAPI._hiddenPlayers.forEach(player::hidePlayer);
+
+        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
+        //Prevent players entering a dungeon as they spawn.
+
+        String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
+        if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
+            ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
+            player.getInventory().setContents(items);
             player.updateInventory();
-            String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
-            if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
-                Inventory inv = ItemSerialization.fromString(source);
-                Storage storageTemp = new Storage(uuid, inv);
-                BankMechanics.storage.put(uuid, storageTemp);
+        }
+        List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
+        int i = -1;
+        ItemStack[] armorContents = new ItemStack[4];
+        ItemStack offHand = new ItemStack(Material.AIR);
+        for (String armor : playerArmor) {
+            i++;
+            if (i <= 3) { //Normal armor piece
+                if (armor.equals("null") || armor.equals("")) {
+                    armorContents[i] = new ItemStack(Material.AIR);
+                } else {
+                    armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
+                }
             } else {
-                Storage storageTemp = new Storage(uuid);
-                BankMechanics.storage.put(uuid, storageTemp);
-            }
-            String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
-            int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
-            if (muleLevel > 3) {
-                muleLevel = 3;
-            }
-            MuleTier tier = MuleTier.getByTier(muleLevel);
-            Inventory muleInv = null;
-            if (tier != null) {
-                muleInv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");
-                if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
-                    //Make sure the inventory is as big as we need
-                    muleInv = ItemSerialization.fromString(invString, tier.getSize());
+                if (armor.equals("null") || armor.equals("")) {
+                    offHand = new ItemStack(Material.AIR);
+                } else {
+                    offHand = ItemSerialization.itemStackFromBase64(armor);
                 }
             }
-            if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
-                MountUtils.inventories.put(player.getUniqueId(), muleInv);
-            TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
-            if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
-                String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid))
-                        .split(",");
-                player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]),
-                        Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]),
-                        Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
-            } else {
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
-                //TutorialMechanics.getInstance().doLogin(player);
+        }
+        player.getEquipment().setArmorContents(armorContents);
+        player.getEquipment().setItemInOffHand(offHand);
+
+        player.updateInventory();
+        String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
+        if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
+            Inventory inv = ItemSerialization.fromString(source);
+            Storage storageTemp = new Storage(uuid, inv);
+            BankMechanics.storage.put(uuid, storageTemp);
+        } else {
+            Storage storageTemp = new Storage(uuid);
+            BankMechanics.storage.put(uuid, storageTemp);
+        }
+        String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
+        int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+        if (muleLevel > 3) {
+            muleLevel = 3;
+        }
+        MuleTier tier = MuleTier.getByTier(muleLevel);
+        Inventory muleInv = null;
+        if (tier != null) {
+            muleInv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");
+            if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
+                //Make sure the inventory is as big as we need
+                muleInv = ItemSerialization.fromString(invString, tier.getSize());
+            }
+        }
+        if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4 && muleInv != null)
+            MountUtils.inventories.put(player.getUniqueId(), muleInv);
+        TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
+        if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
+            String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid))
+                    .split(",");
+            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]),
+                    Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]),
+                    Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
+        } else {
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
+            //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
-                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7&lWelcome &6&l" + player.getName() + " &7&lto &6&lDungeon Realms&7&l!"));
-                //ItemManager.giveStarter(player);
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7&lWelcome &6&l" + player.getName() + " &7&lto &6&lDungeon Realms&7&l!"));
+            //ItemManager.giveStarter(player);
 
-                player.teleport(Teleportation.Tutorial);
-                //player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
-                player.sendMessage(new String[]{
-                        ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
-                });
-            }
+            player.teleport(Teleportation.Tutorial);
+            //player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
+            player.sendMessage(new String[]{
+                    ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
+            });
+        }
 
-            // Essentials
-            //Subscription.getInstance().handleJoin(player);
-            Rank.getInstance().doGet(uuid);
+        // Essentials
+        //Subscription.getInstance().handleJoin(player);
+        Rank.getInstance().doGet(uuid);
 
-            // Scoreboard Safety
+        // Scoreboard Safety
 
-            player.setGameMode(GameMode.SURVIVAL);
+        player.setGameMode(GameMode.SURVIVAL);
 
-            for (int j = 0; j < 20; j++) {
-                player.sendMessage("");
-            }
-            player.setMaximumNoDamageTicks(0);
-            player.setNoDamageTicks(0);
+        for (int j = 0; j < 20; j++) {
+            player.sendMessage("");
+        }
+        player.setMaximumNoDamageTicks(0);
+        player.setNoDamageTicks(0);
 
-            Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(Constants.BUILD_VERSION) + " Build " + String.valueOf(Constants.BUILD_NUMBER));
-            Utils.sendCenteredMessage(player, ChatColor.GRAY + "http://www.dungeonrealms.net/");
-            Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + ChatColor.BOLD + DungeonRealms.getInstance().shardid + ChatColor.YELLOW + " shard.");
+        Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(Constants.BUILD_VERSION) + " Build " + String.valueOf(Constants.BUILD_NUMBER));
+        Utils.sendCenteredMessage(player, ChatColor.GRAY + "http://www.dungeonrealms.net/");
+        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + ChatColor.BOLD + DungeonRealms.getInstance().shardid + ChatColor.YELLOW + " shard.");
 
+        player.sendMessage(new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Type " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/shard" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " to change your shard instance at any time.",
+        });
+
+        if (DungeonRealms.getInstance().isMasterShard) {
             player.sendMessage(new String[]{
                     "",
-                    ChatColor.GRAY.toString() + ChatColor.ITALIC + "Type " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/shard" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " to change your shard instance at any time.",
+                    ChatColor.DARK_AQUA + "This is the Dungeon Realms " + ChatColor.UNDERLINE + "MASTER" + ChatColor.DARK_AQUA + " shard.",
+                    ChatColor.GRAY + "Changes made on this shard will be deployed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
             });
+        }
+        if (DungeonRealms.getInstance().isSupportShard && Rank.isSupport(player)) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "CUSTOMER SUPPORT" + ChatColor.DARK_AQUA + " shard."
+            });
+        }
+        if (DungeonRealms.getInstance().isRoleplayShard) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "ROLEPLAY" + ChatColor.DARK_AQUA + " shard. Local chat should always be in character, Global/Trade chat may be OOC.",
+                    ChatColor.GRAY + "Please be respectful to those who want to roleplay. You " + ChatColor.UNDERLINE + "will" + ChatColor.GRAY + " be banned for trolling / local OOC."
+            });
+        }
+        if (DungeonRealms.getInstance().isBrazilianShard) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BRAZILIAN" + ChatColor.DARK_AQUA + " shard.",
+                    ChatColor.GRAY + "The official language of this server is " + ChatColor.UNDERLINE + "Portuguese."
+            });
+        }
+        if (DungeonRealms.getInstance().isBetaShard) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BETA" + ChatColor.DARK_AQUA + " shard.",
+                    ChatColor.GRAY + "You will be testing " + ChatColor.UNDERLINE + "new" + ChatColor.GRAY + " and " + ChatColor.UNDERLINE + "unfinished" + ChatColor.GRAY + " versions of Dungeon Realms.",
+                    ChatColor.GRAY + "Report all bugs at: " + ChatColor.BOLD + ChatColor.UNDERLINE + "http://bug.dungeonrealms.net/"
+            });
+        }
 
-            if (DungeonRealms.getInstance().isMasterShard) {
-                player.sendMessage(new String[]{
-                        "",
-                        ChatColor.DARK_AQUA + "This is the Dungeon Realms " + ChatColor.UNDERLINE + "MASTER" + ChatColor.DARK_AQUA + " shard.",
-                        ChatColor.GRAY + "Changes made on this shard will be deployed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
-                });
-            }
-            if (DungeonRealms.getInstance().isSupportShard && Rank.isSupport(player)) {
-                player.sendMessage(new String[]{
-                        "",
-                        ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "CUSTOMER SUPPORT" + ChatColor.DARK_AQUA + " shard."
-                });
-            }
-            if (DungeonRealms.getInstance().isRoleplayShard) {
-                player.sendMessage(new String[]{
-                        "",
-                        ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "ROLEPLAY" + ChatColor.DARK_AQUA + " shard. Local chat should always be in character, Global/Trade chat may be OOC.",
-                        ChatColor.GRAY + "Please be respectful to those who want to roleplay. You " + ChatColor.UNDERLINE + "will" + ChatColor.GRAY + " be banned for trolling / local OOC."
-                });
-            }
-            if (DungeonRealms.getInstance().isBrazilianShard) {
-                player.sendMessage(new String[]{
-                        "",
-                        ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BRAZILIAN" + ChatColor.DARK_AQUA + " shard.",
-                        ChatColor.GRAY + "The official language of this server is " + ChatColor.UNDERLINE + "Portuguese."
-                });
-            }
-            if (DungeonRealms.getInstance().isBetaShard) {
-                player.sendMessage(new String[]{
-                        "",
-                        ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BETA" + ChatColor.DARK_AQUA + " shard.",
-                        ChatColor.GRAY + "You will be testing " + ChatColor.UNDERLINE + "new" + ChatColor.GRAY + " and " + ChatColor.UNDERLINE + "unfinished" + ChatColor.GRAY + " versions of Dungeon Realms.",
-                        ChatColor.GRAY + "Report all bugs at: " + ChatColor.BOLD + ChatColor.UNDERLINE + "http://bug.dungeonrealms.net/"
-                });
-            }
+        player.sendMessage("");
 
+        // Player Achievements
+        // Don't use a switch because flowing through isn't possible due to different criteria.
+        if (Rank.isDev(player)) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.DEVELOPER);
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFECTED);
+        }
+
+        if (Rank.isGM(player)) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GAME_MASTER);
+        }
+
+        if (Rank.isSupport(player)) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUPPORT_AGENT);
+        }
+
+        if (Rank.isPMOD(player)) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PLAYER_MOD);
+        }
+        if (Rank.isSubscriber(player)) {
+            String rank = Rank.getInstance().getRank(player.getUniqueId()).toLowerCase();
+            // We don't want to award PMODs with subscriber ranks because this is a rank that can be lost.
+            // If they lose it, we don't want to account them for paying for a rank they've not.
+            if (!rank.equals("pmod")) {
+                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER);
+                if (!rank.equals("sub")) {
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS);
+                    if (!rank.equals("sub+")) {
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS_PLUS);
+                    }
+                }
+            }
+        }
+
+        // Fatigue
+        EnergyHandler.getInstance().handleLoginEvents(player);
+
+        // Alignment
+        KarmaHandler.getInstance().handleLoginEvents(player);
+
+        // Subscription
+        Subscription.getInstance().handleLogin(player);
+
+        // Guilds
+        GuildMechanics.getInstance().doLogin(player);
+
+        // Notices
+        Notice.getInstance().doLogin(player);
+
+        // Anticheat
+        AntiDuplication.getInstance().handleLogin(player);
+
+
+        // Newbie Protection
+        //ProtectionHandler.getInstance().handleLogin(player);
+        //Unfinished, correct way to remove it was never implemented. Should be after 3 PvP attacks.
+
+        // Free E-Cash
+        int freeEcash = (int) (Long.valueOf(DatabaseAPI.getInstance().getData(EnumData.FREE_ECASH, uuid).toString()) / 1000);
+        int currentTime = (int) (System.currentTimeMillis() / 1000);
+        if (currentTime - freeEcash >= 86400) {
+            int ecashReward = Utils.randInt(10, 15);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
+            player.sendMessage(new String[]{
+                    ChatColor.GOLD + "You have gained " + ChatColor.BOLD + ecashReward + "EC" + ChatColor.GOLD + " for logging into DungeonRealms today!",
+                    ChatColor.GRAY + "Use /ecash to spend your EC, you can obtain more e-cash by logging in daily or by visiting " + ChatColor.GOLD + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
+            });
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+        }
+
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
+
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("IP");
+
+            player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+        });
+
+        sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
+
+        Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
+        player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
+        AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+        instance.setBaseValue(1024.0D);
+        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+
+        // Permissions
+        if (!player.isOp() && !Rank.isDev(player)) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.plugins", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.version", false);
+        }
+
+        if (Rank.isPMOD(player)) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.notify", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.notify", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.info", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
+        }
+
+        if (Rank.isGM(player)) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
+
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
+
+            //Don't think these will work as they default to Operators in MC.
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
+        }
+
+        // calculate attributes and check inventory
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            PlayerManager.checkInventory(uuid);
+            GameAPI.calculateAllAttributes(player);
+        }, 2 * 20L);
+
+        if (gp.getPlayer() != null) {
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                if (gp.getStats().freePoints > 0) {
+                    final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
+                            "To allocate click ", ChatColor.WHITE);
+                    normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
+                    normal.addText(ChatColor.GREEN + "*");
+                    normal.sendToPlayer(gp.getPlayer());
+                }
+            }, 100);
+        }
+
+        if (Rank.isGM(player)) {
+            HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);
+            HealthHandler.getInstance().setPlayerHPLive(player, 10000);
+
+            gp.setInvulnerable(true);
+            gp.setTargettable(false);
             player.sendMessage("");
 
-            // Player Achievements
-            // Don't use a switch because flowing through isn't possible due to different criteria.
-            if (Rank.isDev(player)) {
-                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.DEVELOPER);
-                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFECTED);
+            Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY");
+
+            // check vanish
+            final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, player.getUniqueId());
+            if (isVanished != null && (Boolean) isVanished) {
+                GameAPI._hiddenPlayers.add(player);
+                player.setCustomNameVisible(false);
+                Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
+                Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM VANISH");
+                player.setGameMode(GameMode.SPECTATOR);
+            } else {
+                player.setGameMode(GameMode.CREATIVE);
             }
-
-            if (Rank.isGM(player)) {
-                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GAME_MASTER);
-            }
-
-            if (Rank.isSupport(player)) {
-                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUPPORT_AGENT);
-            }
-
-            if (Rank.isPMOD(player)) {
-                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PLAYER_MOD);
-            }
-            if (Rank.isSubscriber(player)) {
-                String rank = Rank.getInstance().getRank(player.getUniqueId()).toLowerCase();
-                // We don't want to award PMODs with subscriber ranks because this is a rank that can be lost.
-                // If they lose it, we don't want to account them for paying for a rank they've not.
-                if (!rank.equals("pmod")) {
-                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER);
-                    if (!rank.equals("sub")) {
-                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS);
-                        if (!rank.equals("sub+")) {
-                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS_PLUS);
-                        }
-                    }
-                }
-            }
-
-            // Fatigue
-            EnergyHandler.getInstance().handleLoginEvents(player);
-
-            // Alignment
-            KarmaHandler.getInstance().handleLoginEvents(player);
-
-            // Subscription
-            Subscription.getInstance().handleLogin(player);
-
-            // Guilds
-            GuildMechanics.getInstance().doLogin(player);
-
-            // Notices
-            Notice.getInstance().doLogin(player);
-
-            // Anticheat
-            AntiDuplication.getInstance().handleLogin(player);
-
-
-            // Newbie Protection
-            //ProtectionHandler.getInstance().handleLogin(player);
-            //Unfinished, correct way to remove it was never implemented. Should be after 3 PvP attacks.
-
-            // Free E-Cash
-            int freeEcash = (int) (Long.valueOf(DatabaseAPI.getInstance().getData(EnumData.FREE_ECASH, uuid).toString()) / 1000);
-            int currentTime = (int) (System.currentTimeMillis() / 1000);
-            if (currentTime - freeEcash >= 86400) {
-                int ecashReward = Utils.randInt(10, 15);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.FREE_ECASH, System.currentTimeMillis(), true);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.ECASH, ecashReward, true);
-                player.sendMessage(new String[]{
-                        ChatColor.GOLD + "You have gained " + ChatColor.BOLD + ecashReward + "EC" + ChatColor.GOLD + " for logging into DungeonRealms today!",
-                        ChatColor.GRAY + "Use /ecash to spend your EC, you can obtain more e-cash by logging in daily or by visiting " + ChatColor.GOLD + ChatColor.UNDERLINE + "http://www.dungeonrealms.net/shop"
-                });
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-            }
-
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), true);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, true, true);
-
-            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeUTF("IP");
-
-                player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
-            });
-
-            sendNetworkMessage("Friends", "join:" + " ," + player.getUniqueId().toString() + "," + player.getName() + "," + DungeonRealms.getInstance().shardid);
-
-            Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
-            AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-            instance.setBaseValue(1024.0D);
-            DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-
-            // Permissions
-            if (!player.isOp() && !Rank.isDev(player)) {
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.plugins", false);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.version", false);
-            }
-
-            if (Rank.isPMOD(player)) {
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.notify", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.notify", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.info", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
-            }
-
-            if (Rank.isGM(player)) {
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
-
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
-
-                //Don't think these will work as they default to Operators in MC.
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
-            }
-
-            // calculate attributes and check inventory
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                PlayerManager.checkInventory(uuid);
-                GameAPI.calculateAllAttributes(player);
-            }, 2 * 20L);
-
-            if (gp.getPlayer() != null) {
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    if (gp.getStats().freePoints > 0) {
-                        final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
-                                "To allocate click ", ChatColor.WHITE);
-                        normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
-                        normal.addText(ChatColor.GREEN + "*");
-                        normal.sendToPlayer(gp.getPlayer());
-                    }
-                }, 100);
-            }
-
-            if (Rank.isGM(player)) {
-                HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);
-                HealthHandler.getInstance().setPlayerHPLive(player, 10000);
-
-                gp.setInvulnerable(true);
-                gp.setTargettable(false);
-                player.sendMessage("");
-
-                Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM INVINCIBILITY");
-
-                // check vanish
-                final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, player.getUniqueId());
-                if (isVanished != null && (Boolean) isVanished) {
-                    GameAPI._hiddenPlayers.add(player);
-                    player.setCustomNameVisible(false);
-                    Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
-                    Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM VANISH");
-                    player.setGameMode(GameMode.SPECTATOR);
-                } else {
-                    player.setGameMode(GameMode.CREATIVE);
-                }
-            }
-
-            DungeonRealms.getInstance().getLoggingIn().remove(player.getUniqueId());
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                //Prevent weird scoreboard thing when sharding.
-                ScoreboardHandler.getInstance().matchMainScoreboard(player);
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignmentDB().getAlignmentColor(), gp.getLevel());
-            }, 100L);
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                DonationEffects.getInstance().doLogin(player);
-            }, 100L);
-        } else {
-            Bukkit.getPlayer(uuid).kickPlayer(ChatColor.RED + "Invalid session ID");
         }
+
+        DungeonRealms.getInstance().getLoggingIn().remove(player.getUniqueId());
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            //Prevent weird scoreboard thing when sharding.
+            ScoreboardHandler.getInstance().matchMainScoreboard(player);
+            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignmentDB().getAlignmentColor(), gp.getLevel());
+        }, 100L);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            DonationEffects.getInstance().doLogin(player);
+        }, 100L);
     }
 
     /**

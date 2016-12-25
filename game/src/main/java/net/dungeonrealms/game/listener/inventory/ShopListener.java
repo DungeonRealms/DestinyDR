@@ -163,6 +163,12 @@ public class ShopListener implements Listener {
                 shop.updateStatus();
                 return;
             }
+            // Player is deleting his shop
+            if(event.getRawSlot() == (shop.getInvSize() - 2)) {
+                event.setCancelled(true);
+                shop.deleteShop(false);
+                return;
+            }
             ItemStack itemHeld = event.getCursor();
             ItemStack stackInSlot = event.getCurrentItem();
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemHeld);
@@ -663,20 +669,6 @@ public class ShopListener implements Listener {
                     clicker.sendMessage(ChatColor.RED + "COST: " + totalPrice);
                 }
             }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void punchShop(PlayerInteractEvent event) {
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
-        if (event.getClickedBlock().getType() != Material.CHEST) return;
-        if (!event.getPlayer().isSneaking()) return;
-        Shop shop = ShopMechanics.getShop(event.getClickedBlock());
-        if (shop == null) return;
-        if (event.getPlayer().getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
-            shop.deleteShop(false);
-        } else if (event.getPlayer().isOp() || Rank.isGM(event.getPlayer())) {
-            shop.deleteShop(false);
         }
     }
 

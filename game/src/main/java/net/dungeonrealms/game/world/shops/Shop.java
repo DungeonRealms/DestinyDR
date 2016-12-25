@@ -68,6 +68,18 @@ public class Shop {
         net.minecraft.server.v1_9_R2.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
         nmsButton.getTag().setString("status", "off");
         inv.setItem(invSize - 1, CraftItemStack.asBukkitCopy(nmsButton));
+
+        // Close shop button
+        ItemStack button1 = new ItemStack(Material.INK_SACK, 1, DyeColor.RED.getDyeData());
+        ItemMeta meta1 = button.getItemMeta();
+        meta1.setDisplayName(ChatColor.GREEN.toString() + "Click to DELETE shop");
+        ArrayList<String> lore1 = new ArrayList<>();
+        lore1.add(ChatColor.GRAY + "This will safely delete your shop");
+        meta1.setLore(lore1);
+        button.setItemMeta(meta1);
+        net.minecraft.server.v1_9_R2.ItemStack nmsButton1 = CraftItemStack.asNMSCopy(button1);
+        nmsButton1.getTag().setString("statusClose", "disabledInventorySessionChecker");
+        inv.setItem(invSize - 2, CraftItemStack.asBukkitCopy(nmsButton1));
         return inv;
     }
 
@@ -80,22 +92,28 @@ public class Shop {
         return Bukkit.getPlayer(ownerUUID);
     }
 
+
     /**
      * Deletes block, and unregisters all things for shop.
      *
      * @since 1.0
      */
     public void deleteShop(boolean shutDown) {
+        // Remove blocks
+        hologram.delete();
+        block1.setType(Material.AIR);
+        block2.setType(Material.AIR);
+        block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
+        // Close his inventory
+        Bukkit.getPlayer(ownerUUID).closeInventory();
+        // Do other stuff
         saveCollectionBin();
         viewCount = 0;
         uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
         uniqueViewers.clear();
-        ShopMechanics.ALLSHOPS.remove(ownerName);
-        DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true));
         if (shutDown) {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             saveCollectionBin();
-            ShopMechanics.ALLSHOPS.remove(ownerName);
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
         } else {
             if (Bukkit.getPlayer(ownerUUID) != null) {
@@ -104,11 +122,9 @@ public class Shop {
                     BankMechanics.shopPricing.remove(Bukkit.getPlayer(ownerUUID).getName());
                 }
             }
-            hologram.delete();
-            block1.setType(Material.AIR);
-            block2.setType(Material.AIR);
-            block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
+            DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true));
         }
+        ShopMechanics.ALLSHOPS.remove(ownerName);
     }
 
     /**
