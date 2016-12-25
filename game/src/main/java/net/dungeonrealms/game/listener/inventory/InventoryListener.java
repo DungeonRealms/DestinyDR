@@ -19,8 +19,6 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.duel.DuelOffer;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.trade.Trade;
@@ -75,88 +73,6 @@ public class InventoryListener implements Listener {
         ClickHandler.getInstance().doClick(event);
     }
 
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDuelOfferClick(InventoryClickEvent e) {
-        if (!e.getInventory().getTitle().contains("VS.")) return;
-        if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-            e.setCancelled(true);
-            return;
-        }
-        Player p = (Player) e.getWhoClicked();
-        DuelOffer offer = DuelingMechanics.getOffer(p.getUniqueId());
-        if (offer == null) {
-            p.closeInventory();
-            return;
-        }
-        if (e.getRawSlot() > offer.sharedInventory.getSize()) return;
-
-        if (e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.BONE) {
-            e.setCancelled(true);
-            return;
-        }
-        int slot = e.getRawSlot();
-        if (slot == 30) {
-            e.setCancelled(true);
-            offer.updateOffer();
-            offer.cycleArmor();
-            return;
-        } else if (slot == 32) {
-            e.setCancelled(true);
-            offer.updateOffer();
-            offer.cycleItem();
-            return;
-        }
-
-        if (offer.isLeftSlot(e.getRawSlot())) {
-            if (!offer.isLeftPlayer(p)) {
-                e.setCancelled(true);
-                return;
-            }
-        } else {
-            if (offer.isLeftPlayer(p)) {
-                e.setCancelled(true);
-                return;
-            }
-        }
-
-        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
-            return;
-        ItemStack stackClicked = e.getCurrentItem();
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
-        if (nms.hasTag() && nms.getTag().hasKey("status")) {
-            String status = nms.getTag().getString("status");
-            e.setCancelled(true);
-            if (status.equalsIgnoreCase("ready")) {
-                offer.updateReady(p.getUniqueId());
-                ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
-                        null, DyeColor.GRAY.getDyeData());
-                nms = CraftItemStack.asNMSCopy(item);
-                NBTTagCompound nbt = new NBTTagCompound();
-                nbt.setString("status", "notready");
-                nms.setTag(nbt);
-                nms.c(ChatColor.YELLOW + "NOT READY");
-                e.getInventory().setItem(e.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                offer.checkReady();
-                return;
-            } else {
-                offer.updateReady(p.getUniqueId());
-                ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
-                        null, DyeColor.LIME.getDyeData());
-                nms = CraftItemStack.asNMSCopy(item);
-                NBTTagCompound nbt = new NBTTagCompound();
-                nbt.setString("status", "ready");
-                nms.setTag(nbt);
-                nms.c(ChatColor.YELLOW + "READY");
-                e.getInventory().setItem(e.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
-                offer.checkReady();
-                return;
-            }
-        }
-        offer.updateOffer();
-    }
-
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
         if (!CommandModeration.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
@@ -164,7 +80,7 @@ public class InventoryListener implements Listener {
         UUID target = CommandModeration.offline_inv_watchers.get(event.getPlayer().getUniqueId());
 
         String inventory = ItemSerialization.toString(event.getInventory());
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true, true, null);
 
         CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -191,7 +107,7 @@ public class InventoryListener implements Listener {
             armor.add(ItemSerialization.itemStackToBase64(offHand));
         }
 
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.ARMOR, armor, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.ARMOR, armor, true, true, null);
 
         CommandModeration.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -206,7 +122,7 @@ public class InventoryListener implements Listener {
         if (inv == null) return;
 
         String serializedInv = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, true, true, null);
 
         CommandModeration.offline_bank_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -221,7 +137,7 @@ public class InventoryListener implements Listener {
         if (inv == null) return;
 
         String serializedInv = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, true);
+        DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, true, true, null);
 
         CommandModeration.offline_bin_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -436,21 +352,7 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClosed(InventoryCloseEvent event) {
-        if (event.getInventory().getTitle().contains("VS.")) {
-            Player p = (Player) event.getPlayer();
-            DuelOffer offer = DuelingMechanics.getOffer(p.getUniqueId());
-            if (offer == null) return;
-            if (!offer.p1Ready || !offer.p2Ready) {
-                offer.giveBackItems();
-                DuelingMechanics.removeOffer(offer);
-                Player p1 = Bukkit.getPlayer(offer.player1);
-                if (p1 != null)
-                    p1.closeInventory();
-                Player p2 = Bukkit.getPlayer(offer.player2);
-                if (p2 != null)
-                    p2.closeInventory();
-            }
-        } else if (event.getInventory().getTitle().contains("Storage Chest") && !CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
+        if (event.getInventory().getTitle().contains("Storage Chest") && !CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             storage.inv.setContents(event.getInventory().getContents());
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
@@ -478,7 +380,7 @@ public class InventoryListener implements Listener {
                 i++;
             }
             if (i == 0) {
-                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", false);
+                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true, null);
                 storage.collection_bin = null;
             }
         }
@@ -603,7 +505,6 @@ public class InventoryListener implements Listener {
             }
         }
         player.setMetadata("last_orb_use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        gp.getPlayerStatistics().setOrbsUsed(gp.getPlayerStatistics().getOrbsUsed() + 1);
         event.setCancelled(true);
         if (cursorItem.getAmount() == 1) {
             event.setCursor(new ItemStack(Material.AIR));
@@ -806,7 +707,6 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
-                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
@@ -882,7 +782,6 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (GameAPI.isArmor(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")) {
                 return;
@@ -959,7 +858,6 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
-                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
 
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
@@ -1060,7 +958,6 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (Fishing.isDRFishingPole(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("fishingenchant")) {
                 return;
@@ -1123,7 +1020,6 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
 
         } else if (Mining.isDRPickaxe(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("pickaxeenchant")) {
@@ -1187,7 +1083,6 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
-            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         }
     }
 
@@ -1770,7 +1665,7 @@ public class InventoryListener implements Listener {
                             }
                             pl.sendMessage(ChatColor.GREEN + "Mule upgraded to " + newTier.getName() + "!");
 
-                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), true);
+                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), true, true, null);
 
                             if (MountUtils.inventories.containsKey(pl.getUniqueId())) {
                                 Inventory inv = MountUtils.inventories.get(pl.getUniqueId());
