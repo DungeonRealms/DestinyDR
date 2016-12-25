@@ -90,13 +90,6 @@ public class Lobby extends JavaPlugin implements Listener {
 
         // REQUEST PLAYER'S DATA ASYNC //
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
-
-        // Prevent double joining
-        if((boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(ChatColor.RED + "Invalid session ID");
-            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
-        }
     }
 
 

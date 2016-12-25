@@ -173,12 +173,15 @@ public class RestrictionListener implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         if (event.getPlayer().getOpenInventory() == null) return;
         if (!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
-
-        String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
-        if (ownerName == null) return;
-        Shop shop = ShopMechanics.getShop(ownerName);
-        if (shop == null) return;
-        event.setCancelled(true);
+        if (GameAPI.isInSafeRegion(event.getPlayer().getLocation())) {
+            String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
+            if (ownerName == null) return;
+            Shop shop = ShopMechanics.getShop(ownerName);
+            if (shop == null) return;
+            event.setCancelled(true);
+        } else {
+            event.getPlayer().sendMessage(ChatColor.RED + "You access a shop in a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " region!");
+        }
     }
 
     @SuppressWarnings("deprecation")
