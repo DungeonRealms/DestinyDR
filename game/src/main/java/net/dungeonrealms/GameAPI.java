@@ -794,10 +794,8 @@ public class GameAPI {
         Utils.log.info("Handling logout for " + uuid.toString());
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
-        if (player == null) {
-            savePlayerData(uuid, async, null);
-            return;
-        }
+        // Fix invalid session IDs
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
 
         GuildMechanics.getInstance().doLogout(player);
 

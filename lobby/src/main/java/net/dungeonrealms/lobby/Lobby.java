@@ -5,6 +5,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
@@ -69,6 +70,7 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
 
+
     /**
      * This event is used for the DatabaseDriver.
      *
@@ -88,6 +90,13 @@ public class Lobby extends JavaPlugin implements Listener {
 
         // REQUEST PLAYER'S DATA ASYNC //
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
+
+        // Prevent double joining
+        if((boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage(ChatColor.RED + "Invalid session ID");
+            DatabaseAPI.getInstance().PLAYERS.remove(event.getUniqueId());
+        }
     }
 
 

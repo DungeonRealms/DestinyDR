@@ -35,7 +35,6 @@ public class Shop {
     public Hologram hologram;
     public boolean isopen;
     public Inventory inventory;
-    public Inventory collectionBin;
     public String shopName;
     public int viewCount;
     public List<String> uniqueViewers = new ArrayList<>();
@@ -87,6 +86,12 @@ public class Shop {
      * @since 1.0
      */
     public void deleteShop(boolean shutDown) {
+        saveCollectionBin();
+        viewCount = 0;
+        uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
+        uniqueViewers.clear();
+        ShopMechanics.ALLSHOPS.remove(ownerName);
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true));
         if (shutDown) {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             saveCollectionBin();
@@ -99,16 +104,10 @@ public class Shop {
                     BankMechanics.shopPricing.remove(Bukkit.getPlayer(ownerUUID).getName());
                 }
             }
-            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
-            uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
             hologram.delete();
             block1.setType(Material.AIR);
             block2.setType(Material.AIR);
             block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
-            uniqueViewers.clear();
-            viewCount = 0;
-            saveCollectionBin();
-            ShopMechanics.ALLSHOPS.remove(ownerName);
         }
     }
 
