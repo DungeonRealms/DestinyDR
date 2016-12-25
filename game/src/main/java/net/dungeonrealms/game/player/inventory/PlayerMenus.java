@@ -33,10 +33,8 @@ import java.util.*;
 /**
  * Created by Nick on 9/29/2015.
  */
-@SuppressWarnings({"unchecked", "chasesTouch"})
 public class PlayerMenus {
-
-    //TODO: DisplayItem Lore on stuff here.
+//TODO: DisplayItem Lore on stuff here.
 
     public static void openFriendsMenu(Player player) {
         UUID uuid = player.getUniqueId();

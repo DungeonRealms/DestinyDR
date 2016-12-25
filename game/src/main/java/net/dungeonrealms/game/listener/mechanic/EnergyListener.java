@@ -113,7 +113,7 @@ public class EnergyListener implements Listener {
             }
         }
         player.setMetadata("lastAttack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        float energyToRemove = EnergyHandler.getWeaponSwingEnergyCost(weapon);
+        float energyToRemove = EnergyHandler.handleAirSwingItem(weapon);
         if (weapon.getType() == Material.BOW) {
             energyToRemove += 0.15F;
         }

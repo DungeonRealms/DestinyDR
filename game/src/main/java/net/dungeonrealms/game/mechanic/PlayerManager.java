@@ -3,7 +3,6 @@ package net.dungeonrealms.game.mechanic;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.game.soundtrack.Soundtrack;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -68,8 +67,7 @@ public class PlayerManager {
         PVP(5, EnumData.TOGGLE_PVP, "togglepvp", "Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
         DUEL(6, EnumData.TOGGLE_DUEL, "toggleduel", "Toggles dueling requests.", "Dueling Requests"),
         CHAOTIC_PREVENTION(7, EnumData.TOGGLE_CHAOTIC_PREVENTION, "togglechaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
-        TIPS(8, EnumData.TOGGLE_TIPS, "toggletips", "Toggles the receiving of informative tips", "Tip display"),
-        SOUNDTRACK(9, EnumData.TOGGLE_SOUNDTRACK, "togglesoundtrack", "Toggle the Dungeon Realms Soundtrack", "Soundtrack");
+        TIPS(8, EnumData.TOGGLE_TIPS, "toggletips", "Toggles the receiving of informative tips", "Tip display");
 
         private int id;
         private EnumData dbField;
@@ -122,9 +120,6 @@ public class PlayerManager {
         public void setToggleState(Player player, boolean state) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, dbField, state, false);
             player.sendMessage((state ? ChatColor.GREEN : ChatColor.RED) + friendlyName + " - " + ChatColor.BOLD + (state ? "ENABLED" : "DISABLED"));
-
-            if (id == 9 && !state)
-                Soundtrack.getInstance().stopPlaying(player);
         }
     }
 }
