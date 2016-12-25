@@ -49,7 +49,6 @@ import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
-import net.dungeonrealms.game.soundtrack.Soundtrack;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
@@ -799,8 +798,6 @@ public class GameAPI {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
 
         GuildMechanics.getInstance().doLogout(player);
-
-        Soundtrack.getInstance().doLogout(player);
 
         // HANDLE REALM LOGOUT SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
