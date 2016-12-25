@@ -44,9 +44,11 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
+import net.dungeonrealms.game.soundtrack.Soundtrack;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
@@ -376,7 +378,6 @@ public class GameAPI {
      * Stops DungeonRealms server
      */
     public static void stopGame() {
-
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
         final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
@@ -384,6 +385,7 @@ public class GameAPI {
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
+        CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
         GameAPI.logoutAllPlayers();
 
@@ -799,6 +801,8 @@ public class GameAPI {
 
         GuildMechanics.getInstance().doLogout(player);
 
+        Soundtrack.getInstance().doLogout(player);
+
         // HANDLE REALM LOGOUT SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
 
@@ -835,6 +839,13 @@ public class GameAPI {
             }
             if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
                 return;
+            }
+            if (CombatLog.isInCombat(player)) {
+                if (!DuelingMechanics.isDueling(uuid)) {
+                    if (!GameAPI.isNonPvPRegion(player.getLocation())) {
+                        //CombatLog.handleCombatLogger(player);
+                    }
+                }
             }
             MountUtils.inventories.remove(uuid);
             operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.LAST_LOGOUT.getKey(), System.currentTimeMillis()))));
@@ -1032,13 +1043,12 @@ public class GameAPI {
                 } else {
                     offHand = ItemSerialization.itemStackFromBase64(armor);
                 }
-
             }
-            player.getEquipment().setArmorContents(armorContents);
-            player.getEquipment().setItemInOffHand(offHand);
-
-            player.updateInventory();
         }
+        player.getEquipment().setArmorContents(armorContents);
+        player.getEquipment().setItemInOffHand(offHand);
+
+        player.updateInventory();
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
             Inventory inv = ItemSerialization.fromString(source);
@@ -1265,9 +1275,9 @@ public class GameAPI {
         }
 
         // calculate attributes and check inventory
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            GameAPI.calculateAllAttributes(player);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             PlayerManager.checkInventory(uuid);
+            GameAPI.calculateAllAttributes(player);
         }, 2 * 20L);
 
         if (gp.getPlayer() != null) {

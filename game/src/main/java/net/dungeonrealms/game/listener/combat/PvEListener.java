@@ -77,6 +77,7 @@ public class PvEListener implements Listener {
         } else {
             CombatLog.addToCombat(damager);
         }
+
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
 
         if (!receiver.hasMetadata("boss"))

@@ -30,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
  */
 public class PvPListener implements Listener {
+
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerMeleePlayer(EntityDamageByEntityEvent event) {
         if (!GameAPI.isPlayer(event.getDamager())) return;
@@ -174,8 +175,7 @@ public class PvPListener implements Listener {
         Player damager = (Player) projectile.getShooter();
         Player receiver = (Player) event.getEntity();
 
-        if (damager.equals(receiver))
-            return; // sometimes the projectile can be knocked back to the player at close range
+        if (damager.equals(receiver)) return; // sometimes the projectile can be knocked back to the player at close range
 
         if (receiver.getGameMode() != GameMode.SURVIVAL) return;
         if (CombatLog.isInCombat(damager)) {

@@ -5,6 +5,7 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.MailHandler;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
@@ -76,21 +77,19 @@ public class Notice {
     }
 
     private void executeVoteReminder(Player p) {
-        /** Disabled upon request of Atlas__
-         Long vote = (Long) DatabaseAPI.getInstance().getData(EnumData.LAST_VOTE, p.getUniqueId());
+        Long vote = (Long) DatabaseAPI.getInstance().getData(EnumData.LAST_VOTE, p.getUniqueId());
 
-         if (vote == null || (System.currentTimeMillis() - vote) >= 86400000) {
-         int ecashAmount = 15;
-         if (Rank.isSubscriberPlus(p)) ecashAmount = 25;
-         else if (Rank.isSubscriber(p)) ecashAmount = 20;
+        if (vote == null || (System.currentTimeMillis() - vote) >= 86400000) {
+            int ecashAmount = 15;
+            if (Rank.isSubscriberPlus(p)) ecashAmount = 25;
+            else if (Rank.isSubscriber(p)) ecashAmount = 20;
 
-         p.sendMessage(" ");
-         final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.GRAY);
-         message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/405761");
-         message.sendToPlayer(p);
-         p.sendMessage(" ");
-         }
-         */
+            p.sendMessage(" ");
+            final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.GRAY);
+            message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
+            message.sendToPlayer(p);
+            p.sendMessage(" ");
+        }
     }
 
 

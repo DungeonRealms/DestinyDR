@@ -90,21 +90,11 @@ public class Fishing implements GenericMechanic {
     }
 
     public enum EnumFish {
-        Shrimp("A raw and pink crustacean", 1),
-        Anchovie("A small blue, oily fish", 1),
-        Crayfish("A lobster-like and brown crustacean", 1),
-        Carp("A Large, silver-scaled fish", 2),
-        Herring("A colourful and medium-sized fish", 2),
-        Sardine("A small and oily green fish", 2),
-        Salmon("A beautiful jumping fish", 3),
-        Trout("A non-migrating Salmon", 3),
-        Cod("A cold-water, deep sea fish", 3),
-        Lobster("A Large, red crustacean", 4),
-        Tuna("A large, sapphire blue fish", 4),
-        Bass("A very large and white fish", 4),
-        Shark("A terrifying and massive predator", 5),
-        Swordfish("An elongated fish with a long bill", 5),
-        Monkfish("A flat, large, and scary-looking fish", 5);
+        Shrimp("A raw and pink crustacean", 1), Anchovie("A small blue, oily fish", 1), Crayfish("A lobster-like and brown crustacean", 1),
+        Carp("A Large, silver-scaled fish", 2), Herring("A colourful and medium-sized fish", 2), Sardine("A small and oily green fish", 2),
+        Salmon("A beautiful jumping fish", 3), Trout("A non-migrating Salmon", 3), Cod("A cold-water, deep sea fish", 3),
+        Lobster("A Large, red crustacean", 4), Tuna("A large, sapphire blue fish", 4), Bass("A very large and white fish", 4),
+        Shark("A terrifying and massive predator", 5), Swordfish("An elongated fish with a long bill", 5), Monkfish("A flat, large, and scary-looking fish", 5);
 
 
         public int tier;
@@ -906,12 +896,8 @@ public class Fishing implements GenericMechanic {
 
 
     public enum FishingRodEnchant {
-        DoubleCatch("DOUBLE CATCH"),
-        TripleCatch("TRIPLE CATCH"),
-        TreasureFind("TREASURE FIND"),
-        Durability("DURABILITY"),
-        CatchingSuccess("FISHING SUCCESS"),
-        JunkFind("JUNK FIND");
+        DoubleCatch("DOUBLE CATCH"), TripleCatch("TRIPLE CATCH"), TreasureFind("TREASURE FIND"),
+        Durability("DURABILITY"), CatchingSuccess("FISHING SUCCESS"), JunkFind("JUNK FIND");
 
 
         public String name;
@@ -1174,7 +1160,6 @@ public class Fishing implements GenericMechanic {
                 }
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effect_time * 20, effect_tier));
-                PotionEffectType potionEffectType = PotionEffectType.SLOW_DIGGING;
             } else if (s.startsWith("NIGHTVISION")) {
 
                 String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));

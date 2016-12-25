@@ -6,7 +6,6 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -58,44 +57,43 @@ public class ShopMechanics implements GenericMechanic {
 
     public static void setupShop(Block block, UUID uniqueId) {
         Player player = Bukkit.getPlayer(uniqueId);
-        if (!TutorialIsland.onTutorialIsland(player.getLocation())) {
-            player.sendMessage(ChatColor.YELLOW + "Please enter a " + ChatColor.BOLD + "SHOP NAME." + ChatColor.YELLOW + " [max. 12 characters]");
-            player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
-            Chat.listenForMessage(player, event -> {
-                String shopName = event.getMessage();
-                if (shopName.length() > 12) {
-                    player.sendMessage(ChatColor.RED + "Shop name '" + ChatColor.BOLD + shopName + ChatColor.RED + "' exceeds the MAX character limit of 12.");
-                    return;
-                } else if (shopName.length() <= 2) {
-                    player.sendMessage(ChatColor.RED.toString() + "Shop name must be at least 3 characters.");
-                    return;
-                }
-                if (shopName.contains("@")) {
-                    player.sendMessage(ChatColor.RED + "Invalid character '@' in name.");
-                    return;
-                }
+        player.sendMessage(ChatColor.YELLOW + "Please enter a " + ChatColor.BOLD + "SHOP NAME." + ChatColor.YELLOW + " [max. 12 characters]");
+        player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
+        Chat.listenForMessage(player, event -> {
+            String shopName = event.getMessage();
+            if (shopName.length() > 12) {
+                player.sendMessage(ChatColor.RED + "Shop name '" + ChatColor.BOLD + shopName + ChatColor.RED + "' exceeds the MAX character limit of 12.");
+                return;
+            } else if (shopName.length() <= 2) {
+                player.sendMessage(ChatColor.RED.toString() + "Shop name must be at least 3 characters.");
+                return;
+            }
+            if (shopName.contains("@")) {
+                player.sendMessage(ChatColor.RED + "Invalid character '@' in name.");
+                return;
+            }
 
-                Block b = player.getWorld().getBlockAt(block.getLocation().add(0, 1, 0));
-                Block block2 = block.getWorld().getBlockAt(block.getLocation().add(1, 1, 0));
-                if (b.getType() == Material.AIR && block2.getType() == Material.AIR) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        block2.setType(Material.CHEST);
-                        b.setType(Material.CHEST);
-                        Shop shop = new Shop(uniqueId, b.getLocation(), Chat.getInstance().checkForBannedWords(shopName));
-                        DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
-                        ALLSHOPS.put(player.getName(), shop);
-                        player.sendMessage(ChatColor.YELLOW + "Shop name assigned.");
-                        player.sendMessage("");
-                        player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YOU'VE CREATED A SHOP!");
-                        player.sendMessage(ChatColor.YELLOW + "To stock your shop, simply drag items into your shop's inventory.");
-                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SHOP_CREATOR);
-                    }, 1L);
-                } else {
-                    player.sendMessage("You can't place a shop there");
-                }
-            }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
-            player.closeInventory();
-        }
+            Block b = player.getWorld().getBlockAt(block.getLocation().add(0, 1, 0));
+            Block block2 = block.getWorld().getBlockAt(block.getLocation().add(1, 1, 0));
+            if (b.getType() == Material.AIR && block2.getType() == Material.AIR) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    block2.setType(Material.CHEST);
+                    b.setType(Material.CHEST);
+                    Shop shop = new Shop(uniqueId, b.getLocation(), Chat.getInstance().checkForBannedWords(shopName));
+                    DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
+                    ALLSHOPS.put(player.getName(), shop);
+                    player.sendMessage(ChatColor.YELLOW + "Shop name assigned.");
+                    player.sendMessage("");
+                    player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YOU'VE CREATED A SHOP!");
+                    player.sendMessage(ChatColor.YELLOW + "To stock your shop, simply drag items into your shop's inventory.");
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SHOP_CREATOR);
+                }, 1L);
+            } else {
+                player.sendMessage("You can't place a shop there");
+            }
+        }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+        player.closeInventory();
+
     }
 
     /**

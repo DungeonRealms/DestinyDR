@@ -122,6 +122,7 @@ class RealmMaterialFactory {
         items.add(new RealmMaterialItem(new ItemStack(Material.LONG_GRASS, 5)));
 
         items.add(new RealmMaterialItem(new ItemStack(Material.DISPENSER, 64, (short) 100)));
+        items.add(new RealmMaterialItem(new ItemStack(Material.HOPPER, 64, (short) 150)));
         items.add(new RealmMaterialItem(new ItemStack(Material.DROPPER, 64, (short) 120)));
         items.add(new RealmMaterialItem(new ItemStack(Material.MINECART, 64)));
         items.add(new RealmMaterialItem(new ItemStack(Material.BOOKSHELF, 50, (short) 0)));
@@ -235,6 +236,9 @@ class RealmMaterialFactory {
         double ecash_price;
         if (price_each == 64) {
             price_each = is.getDurability();
+        }
+        if (is.getType() == Material.HOPPER) {
+            price_each = 1500;
         }
         if (is.getType() == Material.DROPPER) {
             price_each = 1500;
@@ -419,7 +423,7 @@ class RealmMaterialFactory {
             }
 
 
-            if (!isEcash && !BankMechanics.getInstance().hasEnoughGems(total_price, player)) {
+            if (!isEcash && !BankMechanics.getInstance().takeGemsFromInventory(total_price, player)) {
                 player.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
                 player.sendMessage(ChatColor.GRAY + "" + amount_to_buy + " X " + pricePerItem + " gem(s)/ea = " + (pricePerItem * amount_to_buy) + " gem(s).");
                 return;
@@ -430,13 +434,12 @@ class RealmMaterialFactory {
             if (isEcash && gamePlayer.getEcashBalance() < total_price) {
                 player.sendMessage(ChatColor.RED + "You do not have enough E-CASH to complete this purchase.");
                 player.sendMessage(ChatColor.GRAY + "" + amount_to_buy + " X " + pricePerItem + " EC/ea = " + (pricePerItem * amount_to_buy) + " EC.");
-                player.sendMessage(ChatColor.GRAY + "Vote for more E-Cash!");
+                player.sendMessage(ChatColor.GRAY + "Purchase more at store.dungeonrealms.net -- instant delivery!");
                 return;
 
             }
 
             if (isEcash) DonationEffects.getInstance().removeECashFromPlayer(player, total_price);
-            else BankMechanics.getInstance().takeGemsFromInventory(total_price, player);
 
             player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + total_price + ChatColor.BOLD + (isEcash ? " E-CASH" : "G"));
             player.sendMessage(ChatColor.GREEN + "Transaction successful.");

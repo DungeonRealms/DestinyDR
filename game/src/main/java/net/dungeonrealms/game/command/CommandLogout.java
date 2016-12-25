@@ -29,6 +29,10 @@ public class CommandLogout extends BaseCommand {
             Player player = (Player) s;
 
             if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+                if (CombatLog.isInCombat(player)) {
+                    player.sendMessage(ChatColor.RED + "You can not use /logout while in combat.");
+                    return true;
+                }
 
                 GamePlayer gp = GameAPI.getGamePlayer(player);
 

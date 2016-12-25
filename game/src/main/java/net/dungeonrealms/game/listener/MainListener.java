@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.listener;
 
-import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -22,7 +21,6 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
-import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -55,7 +53,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.*;
@@ -64,8 +61,6 @@ import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerFishEvent.State;
@@ -77,9 +72,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -99,7 +92,7 @@ public class MainListener implements Listener {
 
             // Prepare the mesage.
             TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/vote/405761"));
+            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/vote/174212"));
             bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
 
             // Handle reward calculations & achievements.
@@ -128,7 +121,7 @@ public class MainListener implements Listener {
 
             // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.
             final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-            normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/405761");
+            normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
             GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
         }
     }
@@ -147,11 +140,6 @@ public class MainListener implements Listener {
         if (!DungeonRealms.getInstance().canAcceptPlayers()) event.setMotd("offline");
         else
             event.setMotd(DungeonRealms.getInstance().shardid + "," + GameAPI.getServerLoad() + ChatColor.RESET + "," + Constants.BUILD_NUMBER);
-    }
-
-    @EventHandler
-    public void onBlockFace(BlockFadeEvent event) {
-        event.setCancelled(true);
     }
 
     /**
@@ -183,7 +171,6 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void worldInit(org.bukkit.event.world.WorldInitEvent e) {
-        e.getWorld().getEntities().stream().filter(entity -> entity instanceof Item).forEach(Entity::remove);
         e.getWorld().setKeepSpawnInMemory(false);
     }
 
@@ -191,7 +178,7 @@ public class MainListener implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
-            if (!shard.equals("") && !DungeonRealms.getInstance().shardid.equals(shard)) {
+            if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
                 event.disallow(Result.KICK_OTHER, ChatColor.YELLOW.toString() + "The account " + ChatColor.BOLD.toString() + event.getName() + ChatColor.YELLOW.toString()
 
                         + " is already logged in on " + ChatColor.UNDERLINE.toString() + shard + "." + "\n\n" + ChatColor.GRAY.toString()
@@ -228,6 +215,7 @@ public class MainListener implements Listener {
         GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 
+        CombatLog.checkCombatLog(player.getUniqueId());
         GameAPI.handleLogin(player.getUniqueId());
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -236,24 +224,6 @@ public class MainListener implements Listener {
                     player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You logged out while in combat, your doppelganger was killed and alas your items are gone.");
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
                     ItemManager.giveStarter(player);
-                }
-            }
-        });
-
-        DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            if (!TutorialIsland.onTutorialIsland(player.getLocation())) {
-                for (int i = 0; i < 20; i++) {
-                    player.sendMessage("");
-                }
-                if (!DungeonRealms.getInstance().isMasterShard) {
-                    Utils.sendCenteredMessage(player, ChatColor.RED.toString() + ChatColor.BOLD + "-> NOTIFICATION");
-                    player.sendMessage(new String[]{
-                            ChatColor.RED + "You are playing on an unstable version of Dungeon Realms -",
-                            ChatColor.RED + "This server is running fixed 2016 code, everything is",
-                            ChatColor.RED + "being rewritten as we speak - www.dungeonrealms.net"});
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1f, 1f);
-                } else {
-                    Utils.sendCenteredMessage(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "DEVELOPMENT SERVER");
                 }
             }
         });
@@ -287,12 +257,11 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
-            event.getEntity().setCollidable(true);
             event.setCancelled(true);
-        } else {
-            if (((CraftEntity) event.getEntity()).getHandle() instanceof DRMonster) {
-                event.getEntity().setCustomNameVisible(true);
-            }
+        }
+        if(((CraftEntity) event.getEntity()).getHandle() instanceof DRMonster) {
+            event.getEntity().setCustomNameVisible(true);
+            event.getEntity().setCollidable(true);
         }
     }
 
@@ -341,11 +310,6 @@ public class MainListener implements Listener {
         }
 
         GameAPI.handleLogout(event.getPlayer().getUniqueId(), true, null);
-    }
-
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        GameAPI.calculateAllAttributes(event.getPlayer());
     }
 
     @EventHandler
@@ -568,16 +532,6 @@ public class MainListener implements Listener {
                         }, 40);
                     }
                 }), pl -> pl.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
-            }
-        }
-    }
-
-    @EventHandler
-    public void onPickup(PlayerPickupItemEvent event) {
-        if(event.getItem().getType() != null) {
-            if(event.getItem().getItemStack().getType() == Material.WRITTEN_BOOK || event.getItem().getItemStack().getType() == Material.NETHER_STAR) {
-                event.getItem().remove();
-                event.setCancelled(true);
             }
         }
     }
@@ -980,30 +934,6 @@ public class MainListener implements Listener {
     }
 
 
-    private List<UUID> lockedPlayers = Lists.newArrayList();
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInventoryOpen(InventoryOpenEvent event) {
-        if (event.getInventory().getType() != InventoryType.PLAYER) {
-            // Player is not opening his own inventory, but something else
-            lockedPlayers.add(event.getPlayer().getUniqueId());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (event.getInventory().getType() != InventoryType.PLAYER && lockedPlayers.contains(event.getPlayer().getUniqueId())) {
-            lockedPlayers.remove(event.getPlayer().getUniqueId());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void pickUpInventoryItem(PlayerPickupItemEvent event) {
-        if (lockedPlayers.contains(event.getPlayer().getUniqueId())) {
-            event.setCancelled(true);
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerEnchant(EnchantItemEvent event) {
         event.setCancelled(true);
@@ -1023,13 +953,6 @@ public class MainListener implements Listener {
             return;
 
         if (GameAPI._hiddenPlayers.contains(trader)) return;
-
-        // Only allow trading in wild/safezones
-        if (!GameAPI.isNonPvPRegion(pl.getLocation())) {
-            pl.sendMessage(ChatColor.RED + "You cannot send trade requests in a " + ChatColor.BOLD + "CHAOTIC " + ChatColor.RED + "region!");
-            event.setCancelled(true);
-            return;
-        }
 
         if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, trader.getUniqueId()) && !Rank.isGM(pl)) {
             pl.sendMessage(ChatColor.RED + trader.getName() + " has Trades disabled.");

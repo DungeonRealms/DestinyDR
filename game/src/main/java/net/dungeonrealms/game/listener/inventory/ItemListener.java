@@ -100,7 +100,7 @@ public class ItemListener implements Listener {
         }
 
         ItemStack itemStack = player.getEquipment().getItemInMainHand();
-        if (!(CombatLog.isInCombat(player))) {
+        if (!(CombatLog.isInCombat(event.getPlayer()))) {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 player.sendMessage("You cannot restart a teleport during a cast!");
                 return;

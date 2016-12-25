@@ -3,6 +3,9 @@ package net.dungeonrealms.game.listener.combat;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
@@ -10,12 +13,14 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
@@ -253,7 +258,7 @@ public class DamageListener implements Listener {
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
             }
             if (CombatLog.isInCombat(player)) {
-                CombatLog.addToCombat(player);
+                CombatLog.updateCombat(player);
             } else {
                 CombatLog.addToCombat(player);
             }
@@ -335,38 +340,34 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void petDamageListener(EntityDamageByEntityEvent event) {
-        if (!GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
-            if (!(event.getEntity().hasMetadata("type"))) return;
-            String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
-            switch (metaValue) {
-                case "pet":
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    break;
-                case "mount":
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    Player p = null;
-                    if (event.getDamager() instanceof Player) {
-                        p = (Player) event.getDamager();
-                    } else if (event.getDamager() instanceof Projectile) {
-                        if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
-                            p = (Player) ((Projectile) event.getDamager()).getShooter();
-                        }
+        if (!(event.getEntity().hasMetadata("type"))) return;
+        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
+        switch (metaValue) {
+            case "pet":
+                event.setCancelled(true);
+                event.setDamage(0);
+                break;
+            case "mount":
+                event.setCancelled(true);
+                event.setDamage(0);
+                Player p = null;
+                if (event.getDamager() instanceof Player) {
+                    p = (Player) event.getDamager();
+                } else if (event.getDamager() instanceof Projectile) {
+                    if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
+                        p = (Player) ((Projectile) event.getDamager()).getShooter();
                     }
-                    if (p == null) return;
-                    Horse horse = (Horse) event.getEntity();
-                    if (!horse.getVariant().equals(Variant.MULE)) return;
-                    if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
-                        EntityAPI.removePlayerMountList(p.getUniqueId());
-                        horse.remove();
-                    }
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            event.setCancelled(true);
+                }
+                if (p == null) return;
+                Horse horse = (Horse) event.getEntity();
+                if (!horse.getVariant().equals(Variant.MULE)) return;
+                if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
+                    EntityAPI.removePlayerMountList(p.getUniqueId());
+                    horse.remove();
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -751,6 +752,65 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player) return;
         if (!(event.getEntity() instanceof CraftLivingEntity)) return;
         event.getDrops().clear();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void handleCombatLoggerNPCDeath(EntityDeathEvent event) {
+        if (event.getEntity() instanceof Player) return;
+        if (!(event.getEntity() instanceof CraftLivingEntity)) return;
+        if (!event.getEntity().hasMetadata("uuid")) return;
+        UUID uuid = UUID.fromString(event.getEntity().getMetadata("uuid").get(0).asString());
+        if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
+            CombatLogger combatLogger = CombatLog.getInstance().getCOMBAT_LOGGERS().get(uuid);
+            final Location location = event.getEntity().getLocation();
+            if (!combatLogger.getItemsToDrop().isEmpty()) {
+                for (ItemStack itemStack : combatLogger.getItemsToDrop()) {
+                    if (itemStack == null || itemStack.getType() == Material.AIR) {
+                        continue;
+                    }
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+                    if ((nmsStack.hasTag() && nmsStack.getTag() != null && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+                        continue;
+                    }
+                    location.getWorld().dropItemNaturally(location, itemStack);
+                }
+            }
+            if (!combatLogger.getArmorToDrop().isEmpty()) {
+                for (ItemStack itemStack : combatLogger.getArmorToDrop()) {
+                    if (itemStack == null || itemStack.getType() == Material.AIR) {
+                        continue;
+                    }
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+                    if ((nmsStack.hasTag() && nmsStack.getTag() != null && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
+                        continue;
+                    }
+                    location.getWorld().dropItemNaturally(location, itemStack);
+                }
+            }
+            ArrayList<String> armorContents = new ArrayList<>();
+            String itemsToSave;
+            if (!combatLogger.getArmorToSave().isEmpty()) {
+                for (ItemStack itemStack : combatLogger.getArmorToSave()) {
+                    if (itemStack.getType() == null || itemStack.getType() == Material.AIR || itemStack.getType() == Material.MELON) {
+                        armorContents.add("null");
+                    } else {
+                        armorContents.add(ItemSerialization.itemStackToBase64(itemStack));
+                    }
+                }
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armorContents, true);
+            } else {
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
+            }
+            if (!combatLogger.getItemsToSave().isEmpty()) {
+                Inventory inventory = Bukkit.createInventory(null, 27, "LoggerInventory");
+                combatLogger.getItemsToSave().forEach(inventory::addItem);
+                itemsToSave = ItemSerialization.toString(inventory);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, itemsToSave, true);
+            } else {
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
+            }
+            combatLogger.handleNPCDeath();
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)

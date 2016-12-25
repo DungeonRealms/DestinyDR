@@ -59,10 +59,10 @@ public class CommandList extends BaseCommand {
             onlinePlayers++;
 
             // Format player name + rank properly.
-            String playerName = GameChat.getPreMessage(player, false, "local");
+            String playerName = GameChat.getPreMessage(player);
             playerName = playerName.substring(0, playerName.length() - 4);
 
-            message.addRunCommand(ChatColor.GRAY + "[" + playerName + ChatColor.GRAY + "]" + (onlinePlayers % 3 == 0 ? "\n" : " "), ChatColor.GRAY, "/tp " + player.getDisplayName());
+            message.addRunCommand(ChatColor.GRAY + "[" + playerName + ChatColor.GRAY + "]" + (onlinePlayers % 4 == 0 ? "\n" : " "), ChatColor.GRAY, "/tp " + player.getDisplayName());
             players.append(playerName);
         }
 

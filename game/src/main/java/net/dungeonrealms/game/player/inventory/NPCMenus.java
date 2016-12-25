@@ -109,8 +109,7 @@ public class NPCMenus {
         int finalResetCost = resetCost;
         Chat.listenForMessage(p, event -> {
             if (event.getMessage().equalsIgnoreCase("confirm")) {
-                if (BankMechanics.getInstance().hasEnoughGems(finalResetCost, p)) {
-                    BankMechanics.getInstance().takeGemsFromInventory(finalResetCost, p);
+                if (BankMechanics.getInstance().takeGemsFromInventory(finalResetCost, p)) {
                     gp.getStats().addReset();
                     gp.getStats().unallocateAllPoints();
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");

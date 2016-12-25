@@ -26,6 +26,11 @@ public class CommandStuck extends BaseCommand {
 
         Player player = (Player) sender;
 
+        if (CombatLog.isInCombat(player)) {
+            player.sendMessage(ChatColor.RED + "You cannot use this while in combat!");
+            return true;
+        }
+
         sender.sendMessage(ChatColor.GREEN + "Checking your status ...");
 
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {

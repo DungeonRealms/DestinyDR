@@ -74,8 +74,8 @@ public class BankListener implements Listener {
 
             Chat.listenForMessage(p, event -> {
                 if (event.getMessage().equalsIgnoreCase("confirm")) {
-                    if (BankMechanics.getInstance().hasEnoughGems(upgrade_cost, p)) {
-                        BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
+                    boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
+                    if (tookGems) {
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), false);
                         p.sendMessage("");
                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
@@ -386,8 +386,8 @@ public class BankListener implements Listener {
 
                             Chat.listenForMessage(p, event -> {
                                 if (event.getMessage().equalsIgnoreCase("confirm")) {
-                                    if (BankMechanics.getInstance().hasEnoughGems(upgrade_cost, p)) {
-                                        BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
+                                    boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
+                                    if (tookGems) {
                                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), false);
                                         p.sendMessage("");
                                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
@@ -428,13 +428,11 @@ public class BankListener implements Listener {
                                     player.sendMessage(ChatColor.RED + "You can't store this item!");
                                     e.setCancelled(true);
                                     return;
-                                } else {
-                                    if (e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR) {
-                                        storage.inv.addItem(e.getCurrentItem());
-                                        e.setCurrentItem(null);
-                                        player.sendMessage(ChatColor.GREEN + "Item added to storage!");
-                                    }
                                 }
+
+                                storage.inv.addItem(e.getCurrentItem());
+                                e.setCurrentItem(null);
+                                player.sendMessage(ChatColor.GREEN + "Item added to storage!");
 
                             } else {
                                 player.sendMessage(ChatColor.RED + "You do not have space to add this item.");

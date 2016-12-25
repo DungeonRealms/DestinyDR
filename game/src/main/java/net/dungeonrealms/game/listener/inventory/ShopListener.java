@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.listener.inventory;
 
-import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -31,21 +30,17 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by Chase on Sep 23, 2015
  */
 public class ShopListener implements Listener {
-
-    protected List<UUID> shopViewers = Lists.newArrayList();
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void playerOpenShopInventory(PlayerInteractEvent event) {
@@ -103,9 +98,6 @@ public class ShopListener implements Listener {
     public void playerCloseShopInventory(InventoryCloseEvent event) {
         if (!event.getInventory().getTitle().contains("@")) return;
         event.getPlayer().setCanPickupItems(true);
-        if (this.shopViewers.contains(event.getPlayer().getUniqueId())) {
-            this.shopViewers.remove(event.getPlayer().getUniqueId());
-        }
     }
 
     /**
@@ -511,7 +503,7 @@ public class ShopListener implements Listener {
                         return;
                     }
                     if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen ||
-                            !(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
+                    		!(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
                         clicker.sendMessage(ChatColor.RED + "The shop is no longer available.");
                         clicker.closeInventory();
                         return;
@@ -617,8 +609,7 @@ public class ShopListener implements Listener {
                     clicker.sendMessage(ChatColor.GRAY + "" + itemClicked.getAmount() + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
                     return;
                 }
-                if (BankMechanics.getInstance().hasEnoughGems(totalPrice, clicker)) {
-                    BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker);
+                if (BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker)) {
                     event.getInventory().clear(event.getRawSlot());
                     ItemStack clickClone = itemClicked.clone();
                     ItemMeta meta = clickClone.getItemMeta();
@@ -689,7 +680,6 @@ public class ShopListener implements Listener {
         }
     }
 
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerOpenShopInventory(InventoryOpenEvent event) {
         if (!event.getInventory().getTitle().contains("@")) return;
@@ -704,13 +694,6 @@ public class ShopListener implements Listener {
         shop.uniqueViewers.add(event.getPlayer().getName());
         shop.hologram.removeLine(1);
         shop.hologram.insertTextLine(1, String.valueOf(shop.viewCount) + ChatColor.RED + " ❤");
-        this.shopViewers.add(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPickup(PlayerPickupItemEvent event) {
-        if (this.shopViewers.contains(event.getPlayer().getUniqueId())) {
-            event.setCancelled(true);
-        }
-    }
 }

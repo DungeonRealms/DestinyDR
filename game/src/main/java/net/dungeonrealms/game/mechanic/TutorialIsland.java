@@ -150,8 +150,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player pl = event.getPlayer();
         if (onTutorialIsland(pl.getLocation())) {
-            pl.teleport(new Location(Bukkit.getWorlds().get(0), 824.505, 47, -102.665));
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 pl.sendMessage("");
                 pl.sendMessage("");
                 pl.sendMessage("");
@@ -230,7 +229,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         ev.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
-                        ev.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -465.467, 73, 390.457));
+                        ev.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
                         ItemManager.giveStarter(e.getPlayer());
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
