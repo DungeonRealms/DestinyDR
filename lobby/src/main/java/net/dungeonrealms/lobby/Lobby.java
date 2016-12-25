@@ -124,6 +124,13 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
 
+    @EventHandler
+    public void onPreProcess(PlayerCommandPreprocessEvent event) {
+        if (event.getMessage().toLowerCase().startsWith("/me")) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClick(InventoryClickEvent event) {
         if (!event.getWhoClicked().isOp())
