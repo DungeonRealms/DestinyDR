@@ -286,7 +286,7 @@ public class CommandAdd extends BaseCommand {
                     expToGive += 100;
                     gamePlayer.addExperience(expToGive, false, true);
                     final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/174212");
+                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/405761");
                     for (Player player1 : Bukkit.getOnlinePlayers()) {
                         normal.sendToPlayer(player1);
                     }
