@@ -122,7 +122,6 @@ class RealmMaterialFactory {
         items.add(new RealmMaterialItem(new ItemStack(Material.LONG_GRASS, 5)));
 
         items.add(new RealmMaterialItem(new ItemStack(Material.DISPENSER, 64, (short) 100)));
-        items.add(new RealmMaterialItem(new ItemStack(Material.HOPPER, 64, (short) 150)));
         items.add(new RealmMaterialItem(new ItemStack(Material.DROPPER, 64, (short) 120)));
         items.add(new RealmMaterialItem(new ItemStack(Material.MINECART, 64)));
         items.add(new RealmMaterialItem(new ItemStack(Material.BOOKSHELF, 50, (short) 0)));
@@ -236,9 +235,6 @@ class RealmMaterialFactory {
         double ecash_price;
         if (price_each == 64) {
             price_each = is.getDurability();
-        }
-        if (is.getType() == Material.HOPPER) {
-            price_each = 1500;
         }
         if (is.getType() == Material.DROPPER) {
             price_each = 1500;
