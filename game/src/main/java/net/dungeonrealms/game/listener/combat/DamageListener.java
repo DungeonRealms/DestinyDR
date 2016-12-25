@@ -3,9 +3,6 @@ package net.dungeonrealms.game.listener.combat;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.DatabaseAPI;
-import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
@@ -13,15 +10,12 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.CombatLogger;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
@@ -224,10 +218,10 @@ public class DamageListener implements Listener {
             //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
             if (!GameAPI.isWeapon(attackerEquipment.getItemInMainHand())) return;
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
-            if (CombatAPI.getInstance().isTagged(player)) {
-                CombatAPI.getInstance().tag(player);
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.updateCombat(player);
             } else {
-                CombatAPI.getInstance().tag(player);
+                CombatLog.addToCombat(player);
             }
         } else if (DamageAPI.isBowProjectile(event.getDamager())) {
             Projectile attackingArrow = (Projectile) event.getDamager();
@@ -241,10 +235,10 @@ public class DamageListener implements Listener {
                 }
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
             }
-            if (CombatAPI.getInstance().isTagged(player)) {
-                CombatAPI.getInstance().tag(player);
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.updateCombat(player);
             } else {
-                CombatAPI.getInstance().tag(player);
+                CombatLog.addToCombat(player);
             }
         } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
             Projectile staffProjectile = (Projectile) event.getDamager();
@@ -258,10 +252,10 @@ public class DamageListener implements Listener {
                 }
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
             }
-            if (CombatAPI.getInstance().isTagged(player)) {
-                CombatAPI.getInstance().tag(player);
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.addToCombat(player);
             } else {
-                CombatAPI.getInstance().tag(player);
+                CombatLog.addToCombat(player);
             }
         }
 

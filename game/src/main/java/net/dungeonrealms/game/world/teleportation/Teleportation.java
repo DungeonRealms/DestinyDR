@@ -6,7 +6,6 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -181,7 +180,7 @@ public class Teleportation implements GenericMechanic {
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId()) && !hasCancelled[0]) {
                 if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                    if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatAPI.getInstance().isTagged(player)) {
+                    if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING " + ChatColor.RESET + "... " + taskTimer[0] + "s");
                         try {
                             ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
@@ -190,7 +189,7 @@ public class Teleportation implements GenericMechanic {
                             Utils.log.info("[TELEPORT] Tried to send particle to player and failed. Continuing");
                         }
                         if (taskTimer[0] <= 0) {
-                            if (CombatAPI.getInstance().isTagged(player)) {
+                            if (CombatLog.isInCombat(player)) {
                                 player.sendMessage(ChatColor.RED + "Your teleport has been interrupted by combat!");
                                 if (teleportType == EnumTeleportType.HEARTHSTONE) {
                                     TeleportAPI.addPlayerHearthstoneCD(uuid, 280);

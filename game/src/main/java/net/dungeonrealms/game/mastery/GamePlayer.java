@@ -18,7 +18,6 @@ import net.dungeonrealms.game.handler.ProtectionHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.title.TitleAPI;
@@ -481,7 +480,7 @@ public class GamePlayer {
     }
 
     public void setInvulnerable(boolean flag) {
-        if (CombatAPI.getInstance().isTagged(T)) CombatAPI.getInstance().getCombatTagged().remove(T);
+        if (CombatLog.isInCombat(T)) CombatLog.removeFromCombat(T);
         isInvulnerable = flag;
     }
 

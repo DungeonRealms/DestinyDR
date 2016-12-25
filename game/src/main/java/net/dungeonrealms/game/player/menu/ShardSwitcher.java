@@ -15,7 +15,6 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.realms.Realms;
 import org.bukkit.ChatColor;
@@ -69,7 +68,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                     Player player = event.getWhoClicked();
                     player.closeInventory();
 
-                    if (CombatAPI.getInstance().isTagged(player)) {
+                    if (CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
                         return;
                     }
@@ -124,7 +123,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                                 return;
                             }
 
-                            if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatAPI.getInstance().isTagged(player)) {
+                            if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
                                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "/shard - CANCELLED");
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");
                                 GameAPI.getGamePlayer(player).setAbleToDrop(true);
@@ -290,7 +289,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             }
         }
 
-        if (CombatAPI.getInstance().isTagged(player)) {
+        if (CombatLog.isInCombat(player)) {
             player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
             return;
         }

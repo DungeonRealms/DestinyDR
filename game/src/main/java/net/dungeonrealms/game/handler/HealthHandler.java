@@ -14,7 +14,6 @@ import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
@@ -307,7 +306,7 @@ public class HealthHandler implements GenericMechanic {
      */
     private void regenerateHealth() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (CombatAPI.getInstance().isTagged(player)) {
+            if (CombatLog.isInCombat(player)) {
                 continue;
             }
             if (getPlayerHPLive(player) <= 0 && player.getHealth() <= 0) {
@@ -474,10 +473,10 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
-        if (CombatAPI.getInstance().isTagged(player)) {
-            CombatAPI.getInstance().tag(player);
+        if (CombatLog.isInCombat(player)) {
+            CombatLog.updateCombat(player);
         } else {
-            CombatAPI.getInstance().tag(player);
+            CombatLog.addToCombat(player);
         }
 
         LivingEntity leAttacker = null;

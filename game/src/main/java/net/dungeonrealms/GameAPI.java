@@ -44,8 +44,6 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.CombatLogger;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
@@ -378,8 +376,6 @@ public class GameAPI {
      * Stops DungeonRealms server
      */
     public static void stopGame() {
-
-        CombatAPI.getInstance().saveCombatLoggers();
 
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
@@ -931,9 +927,7 @@ public class GameAPI {
 
                 // upload data and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
-                    if (CombatAPI.getInstance().isTagged(player)) {
-                        CombatAPI.getInstance().getCombatTagged().remove(player);
-                    }
+                    if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
                     GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString(), String.valueOf(sub));
                 });
@@ -985,6 +979,11 @@ public class GameAPI {
                     String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
                     player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
                     return;
+                } else {
+                    if (!CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
+                        //Shard probably crashed, so they believe they combat logged, but the shard has no record of it.
+                    }
                 }
             }
         } catch (NullPointerException ignored) {

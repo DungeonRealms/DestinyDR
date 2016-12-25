@@ -26,14 +26,9 @@ public class Trade {
     public boolean p2Ready;
     public Inventory inv;
 
-    public List<ItemStack> p1Items;
-    public List<ItemStack> p2Items;
-
     public Trade(Player p1, Player p2) {
         this.p1 = p1;
         this.p2 = p2;
-        this.p1Items = Lists.newArrayList();
-        this.p2Items = Lists.newArrayList();
         p1.sendMessage(ChatColor.YELLOW + "Trading with " + ChatColor.BOLD + p2.getName() + "...");
         p2.sendMessage(ChatColor.YELLOW + "Trading with " + ChatColor.BOLD + p1.getName() + "...");
         openInventory();
@@ -113,13 +108,6 @@ public class Trade {
      */
     public void handleClose() {
 
-        for(ItemStack itemStack : this.p1Items) {
-            this.p1.getInventory().addItem(itemStack);
-        }
-        for(ItemStack itemStack : this.p2Items) {
-            this.p2.getInventory().addItem(itemStack);
-        }
-
         if (p1.getItemOnCursor() != null) {
             ItemStack item = p1.getItemOnCursor().clone();
             p1.setItemOnCursor(null);
@@ -163,12 +151,6 @@ public class Trade {
      * Finalize trade
      */
     private void doTrade() {
-        for(ItemStack itemStack : this.p2Items) {
-            this.p1.getInventory().addItem(itemStack);
-        }
-        for(ItemStack itemStack : this.p1Items) {
-            this.p2.getInventory().addItem(itemStack);
-        }
         p1.setCanPickupItems(true);
         p2.setCanPickupItems(true);
         p1.sendMessage(ChatColor.GREEN + "Trade successful.");

@@ -9,7 +9,6 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.world.item.Attribute;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;

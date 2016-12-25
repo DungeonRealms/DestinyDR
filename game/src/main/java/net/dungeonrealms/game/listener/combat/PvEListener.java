@@ -7,7 +7,6 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
@@ -73,12 +72,11 @@ public class PvEListener implements Listener {
 
         double finalDamage;
 
-        if (CombatAPI.getInstance().isTagged(damager)) {
-            CombatAPI.getInstance().tag(damager);
+        if (CombatLog.isInCombat(damager)) {
+            CombatLog.updateCombat(damager);
         } else {
-            CombatAPI.getInstance().tag(damager);
+            CombatLog.addToCombat(damager);
         }
-
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
 
         if (!receiver.hasMetadata("boss"))

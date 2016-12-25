@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.player.trade;
 
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.combat.updated.CombatAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -45,7 +44,7 @@ public class TradeManager {
             return false;
         }
 
-        if (CombatAPI.getInstance().isTagged(p)) {
+        if (CombatLog.isInCombat(p)) {
             return false;
         }
 
