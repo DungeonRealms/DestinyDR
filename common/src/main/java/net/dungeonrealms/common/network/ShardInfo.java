@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @NoArgsConstructor
 public enum ShardInfo implements Serializable {
-
     // DEVELOPMENT SHARD //
     US0("US-0", "us0", new ServerAddress("131.153.27.42", 40011)),
 
