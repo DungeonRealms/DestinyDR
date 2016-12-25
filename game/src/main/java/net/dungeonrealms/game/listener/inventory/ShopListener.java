@@ -163,7 +163,6 @@ public class ShopListener implements Listener {
                 shop.updateStatus();
                 return;
             }
-            // Player is deleting his shop
             if(event.getRawSlot() == (shop.getInvSize() - 2)) {
                 event.setCancelled(true);
                 shop.deleteShop(false);
@@ -670,6 +669,12 @@ public class ShopListener implements Listener {
                 }
             }
         }
+    }
+
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCloseShop(InventoryClickEvent event) {
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

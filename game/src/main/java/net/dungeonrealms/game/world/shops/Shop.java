@@ -71,12 +71,12 @@ public class Shop {
 
         // Close shop button
         ItemStack button1 = new ItemStack(Material.INK_SACK, 1, DyeColor.RED.getDyeData());
-        ItemMeta meta1 = button.getItemMeta();
+        ItemMeta meta1 = button1.getItemMeta();
         meta1.setDisplayName(ChatColor.GREEN.toString() + "Click to DELETE shop");
         ArrayList<String> lore1 = new ArrayList<>();
         lore1.add(ChatColor.GRAY + "This will safely delete your shop");
         meta1.setLore(lore1);
-        button.setItemMeta(meta1);
+        button1.setItemMeta(meta1);
         net.minecraft.server.v1_9_R2.ItemStack nmsButton1 = CraftItemStack.asNMSCopy(button1);
         nmsButton1.getTag().setString("statusClose", "disabledInventorySessionChecker");
         inv.setItem(invSize - 2, CraftItemStack.asBukkitCopy(nmsButton1));
@@ -99,6 +99,8 @@ public class Shop {
      * @since 1.0
      */
     public void deleteShop(boolean shutDown) {
+        // Remove the actual game gui
+        ShopMechanics.ALLSHOPS.remove(ownerName);
         // Remove blocks
         hologram.delete();
         block1.setType(Material.AIR);
@@ -124,7 +126,6 @@ public class Shop {
             }
             DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true));
         }
-        ShopMechanics.ALLSHOPS.remove(ownerName);
     }
 
     /**
