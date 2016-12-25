@@ -15,7 +15,7 @@ import java.util.Optional;
 public enum ShardInfo implements Serializable {
 
     // DEVELOPMENT SHARD //
-    US0("US-0", "us0", new ServerAddress("64.38.249.176", 40011)),
+    US0("US-0", "us0", new ServerAddress("131.153.27.42", 40011)),
 
     // US 1 SHARD //
     US1("US-1", "us1", new ServerAddress("131.153.25.42", 42000)),
