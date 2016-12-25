@@ -31,7 +31,6 @@ import org.bukkit.inventory.ItemStack;
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
  */
 public class PvPListener implements Listener {
-
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerMeleePlayer(EntityDamageByEntityEvent event) {
         if (!GameAPI.isPlayer(event.getDamager())) return;
@@ -45,10 +44,10 @@ public class PvPListener implements Listener {
         event.setDamage(0);
         event.setCancelled(true);
 
-        if (CombatAPI.getInstance().isTagged(damager)) {
-            CombatAPI.getInstance().tag(damager);
+        if (CombatLog.isInCombat(damager)) {
+            CombatLog.updateCombat(damager);
         } else {
-            CombatAPI.getInstance().tag(damager);
+            CombatLog.addToCombat(damager);
         }
 
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
@@ -133,11 +132,7 @@ public class PvPListener implements Listener {
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
         } else {
-            // EG finalDamage = 100, so actual finalDamage = 100 + 100 - calculation
-            double damageO1 = finalDamage / 100;
-            double damageO2 = finalDamage + damageO1;
-            double damageO3 = (damageO2 * finalDamage) - armorCalculation[0];
-            finalDamage = damageO3;
+            finalDamage = finalDamage - armorCalculation[0];
             calculatedDamage = calculatedDamage - armorCalculation[0];
         }
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
@@ -180,13 +175,14 @@ public class PvPListener implements Listener {
         Player damager = (Player) projectile.getShooter();
         Player receiver = (Player) event.getEntity();
 
-        if (damager.equals(receiver)) return; // sometimes the projectile can be knocked back to the player at close range
+        if (damager.equals(receiver))
+            return; // sometimes the projectile can be knocked back to the player at close range
 
         if (receiver.getGameMode() != GameMode.SURVIVAL) return;
-        if (CombatAPI.getInstance().isTagged(damager)) {
-            CombatAPI.getInstance().tag(damager);
+        if (CombatLog.isInCombat(damager)) {
+            CombatLog.updateCombat(damager);
         } else {
-            CombatAPI.getInstance().tag(damager);
+            CombatLog.addToCombat(damager);
         }
 
         receiver.playEffect(EntityEffect.HURT);

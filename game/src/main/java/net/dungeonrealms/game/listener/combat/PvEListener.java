@@ -201,10 +201,10 @@ public class PvEListener implements Listener {
 
         double finalDamage;
 
-        if (CombatAPI.getInstance().isTagged(damager)) {
-            CombatAPI.getInstance().tag(damager);
+        if (CombatLog.isInCombat(damager)) {
+            CombatLog.updateCombat(damager);
         } else {
-            CombatAPI.getInstance().tag(damager);
+            CombatLog.addToCombat(damager);
         }
 
         if (!receiver.hasMetadata("boss"))

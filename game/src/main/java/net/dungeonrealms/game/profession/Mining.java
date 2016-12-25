@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.profession;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -77,23 +75,6 @@ public class Mining implements GenericMechanic {
         }
         return false;
     }
-
-    /**
-     * Get all enchants of a fishing pickaxe
-     *
-     * @param itemStack
-     * @return
-     */
-    public static HashMap<EnumMiningEnchant, Integer> getEnchantsFrom(ItemStack itemStack) {
-        HashMap<EnumMiningEnchant, Integer> map = Maps.newHashMap();
-        map.put(EnumMiningEnchant.DoubleOre, getDoubleDropChance(itemStack));
-        map.put(EnumMiningEnchant.Durability, getDurabilityBuff(itemStack));
-        map.put(EnumMiningEnchant.GemFind, getGemFindChance(itemStack));
-        map.put(EnumMiningEnchant.MiningSuccess, getSuccessChance(itemStack));
-        map.put(EnumMiningEnchant.TripleOre, getTripleDropChance(itemStack));
-        return map;
-    }
-
 
     /**
      * Returns tier of our pick itemstack.
@@ -298,7 +279,7 @@ public class Mining implements GenericMechanic {
         }
         currentXP += experienceGain;
 
-        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
+        if ((boolean)  DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
             p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          +" + ChatColor.YELLOW + Math.round(experienceGain - professionBuffBonus) + ChatColor.BOLD + " EXP"
                     + ChatColor.YELLOW + ChatColor.GRAY + " [" + Math.round(currentXP - professionBuffBonus) + ChatColor.BOLD + "/" + ChatColor.GRAY + getEXPNeeded(getLvl(stackInHand)) + " EXP]");
 //            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
@@ -471,47 +452,6 @@ public class Mining implements GenericMechanic {
             }
         }
         return false;
-    }
-
-    public static void enchant(EnumMiningEnchant miningEnchant, ItemStack pick, Player p, int value) {
-        ItemMeta meta = pick.getItemMeta();
-        List<String> lore = meta.getLore();
-        EnumMiningEnchant enchant = miningEnchant;
-
-        Iterator<String> i = lore.iterator();
-
-        int prevValue = -1;
-
-        while (i.hasNext()) {
-            String line = i.next();
-            if (line.contains(enchant.display)) {
-                prevValue = Integer.valueOf(line.substring(line.indexOf("+"), line.indexOf("%")));
-                i.remove();
-            }
-        }
-
-
-        String clone = lore.get(lore.size() - 1);
-        lore.remove(lore.size() - 1);
-        if (value == 0)
-            value = 1;
-        if (prevValue != -1 && prevValue > value)
-            value = prevValue;
-        lore.add(ChatColor.RED + enchant.display + " +" + value + "%");
-        lore.add(clone);
-        meta.setLore(lore);
-        pick.setItemMeta(meta);
-
-
-        ItemStack newItem = pick.clone();
-        p.getEquipment().getItemInMainHand().setType(Material.AIR);
-        p.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
-
-
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(newItem);
-        nms.getTag().setInt(enchant.name(), value);
-        p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
-        p.updateInventory();
     }
 
     private static void giveRandomEnchant(Player p, ItemStack pick, int pickTier) {

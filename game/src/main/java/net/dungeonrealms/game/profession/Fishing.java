@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.profession;
 
-import com.google.common.collect.Maps;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -474,7 +473,7 @@ public class Fishing implements GenericMechanic {
         }
 
         List<String> fish_lore = new ArrayList<>();
-        if (fish_buff) {
+        if (fish_buff == true) {
             fish_lore.add(fish_buff_s);
         }
         fish_lore.add(ChatColor.RED + "-" + hunger_to_heal + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)");
@@ -616,62 +615,6 @@ public class Fishing implements GenericMechanic {
         p.getEquipment().setItemInMainHand(stack);
     }
 
-    /**
-     * Get all enchants of a fishing rod
-     *
-     * @param itemStack
-     * @return
-     */
-    public static HashMap<FishingRodEnchant, Integer> getEnchantsFrom(ItemStack itemStack) {
-        HashMap<FishingRodEnchant, Integer> map = Maps.newHashMap();
-        map.put(FishingRodEnchant.TreasureFind, getTreasureFindChance(itemStack));
-        map.put(FishingRodEnchant.JunkFind, getJunkFindChance(itemStack));
-        map.put(FishingRodEnchant.DoubleCatch, getDoubleDropChance(itemStack));
-        map.put(FishingRodEnchant.TripleCatch, getTripleDropChance(itemStack));
-        map.put(FishingRodEnchant.CatchingSuccess, getSuccessChance(itemStack));
-        map.put(FishingRodEnchant.Durability, getDurabilityBuff(itemStack));
-        return map;
-    }
-
-    public static void enchant(FishingRodEnchant rodEnchant, ItemStack pick, Player p, int value) {
-        ItemMeta meta = pick.getItemMeta();
-        List<String> lore = meta.getLore();
-
-        Iterator<String> i = lore.iterator();
-
-        int prevValue = -1;
-
-        while (i.hasNext()) {
-            String line = i.next();
-            if (line.contains(rodEnchant.name())) {
-                prevValue = Integer.valueOf(line.substring(line.indexOf("+"), line.indexOf("%")));
-                i.remove();
-            }
-        }
-
-
-        String clone = lore.get(lore.size() - 1);
-        lore.remove(lore.size() - 1);
-        if (value == 0)
-            value = 1;
-        if (prevValue != -1 && prevValue > value)
-            value = prevValue;
-        lore.add(ChatColor.RED + rodEnchant.name() + " +" + value + "%");
-        lore.add(clone);
-        meta.setLore(lore);
-        pick.setItemMeta(meta);
-
-
-        ItemStack newItem = pick.clone();
-        p.getEquipment().getItemInMainHand().setType(Material.AIR);
-        p.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
-
-
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(newItem);
-        nms.getTag().setInt(rodEnchant.name(), value);
-        p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
-        p.updateInventory();
-    }
 
     public static int getTreasureFindChance(ItemStack is) {
         int chance = 0;
@@ -1231,6 +1174,7 @@ public class Fishing implements GenericMechanic {
                 }
                 int effect_time = Integer.parseInt(s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf("s")));
                 p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effect_time * 20, effect_tier));
+                PotionEffectType potionEffectType = PotionEffectType.SLOW_DIGGING;
             } else if (s.startsWith("NIGHTVISION")) {
 
                 String tier_symbol = s.substring(s.indexOf("(") + 1, s.indexOf(")"));
