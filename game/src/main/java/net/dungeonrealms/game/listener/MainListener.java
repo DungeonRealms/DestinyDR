@@ -194,6 +194,16 @@ public class MainListener implements Listener {
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
     }
 
+    @EventHandler
+    public void asyncChat(AsyncPlayerChatEvent event) {
+        if (event.getMessage().toLowerCase().startsWith("@i")) {
+            if (event.getMessage().length() < 1) {
+                // A player types "@i" only, cancel that message
+                event.setCancelled(true);
+            }
+        }
+    }
+
     /**
      * This event is the main event once the player has actually entered the
      * world! It is now safe to do things to the player e.g TitleAPI or
@@ -259,7 +269,7 @@ public class MainListener implements Listener {
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
             event.setCancelled(true);
         }
-        if(((CraftEntity) event.getEntity()).getHandle() instanceof DRMonster) {
+        if (((CraftEntity) event.getEntity()).getHandle() instanceof DRMonster) {
             event.getEntity().setCustomNameVisible(true);
             event.getEntity().setCollidable(true);
         }
