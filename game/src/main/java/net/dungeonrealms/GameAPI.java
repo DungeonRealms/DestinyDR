@@ -37,6 +37,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
@@ -949,12 +950,6 @@ public class GameAPI {
         sendNetworkMessage("Stop", "");
     }
 
-    /**
-     * Safely logs in the player, giving them their items, their storage and
-     * their cooldowns
-     *
-     * @since 1.0
-     */
     public static void handleLogin(UUID uuid) {
         if (Bukkit.getPlayer(uuid) == null) {
             return;
@@ -988,11 +983,6 @@ public class GameAPI {
                     String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
                     player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
                     return;
-                } else {
-                    if (!CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
-                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_COMBAT_LOGGED, false, true);
-                        //Shard probably crashed, so they believe they combat logged, but the shard has no record of it.
-                    }
                 }
             }
         } catch (NullPointerException ignored) {
@@ -1041,12 +1031,13 @@ public class GameAPI {
                 } else {
                     offHand = ItemSerialization.itemStackFromBase64(armor);
                 }
-            }
-        }
-        player.getEquipment().setArmorContents(armorContents);
-        player.getEquipment().setItemInOffHand(offHand);
 
-        player.updateInventory();
+            }
+            player.getEquipment().setArmorContents(armorContents);
+            player.getEquipment().setItemInOffHand(offHand);
+
+            player.updateInventory();
+        }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
             Inventory inv = ItemSerialization.fromString(source);
@@ -1083,8 +1074,11 @@ public class GameAPI {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&l>> &7&lWelcome &6&l" + player.getName() + " &7&lto &6&lDungeon Realms&7&l!"));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
             //ItemManager.giveStarter(player);
+
+            // Fix missing journal
+            player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
 
             player.teleport(Teleportation.Tutorial);
             //player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
@@ -1273,9 +1267,9 @@ public class GameAPI {
         }
 
         // calculate attributes and check inventory
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            PlayerManager.checkInventory(uuid);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             GameAPI.calculateAllAttributes(player);
+            PlayerManager.checkInventory(uuid);
         }, 2 * 20L);
 
         if (gp.getPlayer() != null) {

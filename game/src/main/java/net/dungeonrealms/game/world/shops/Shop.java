@@ -70,7 +70,7 @@ public class Shop {
         inv.setItem(invSize - 1, CraftItemStack.asBukkitCopy(nmsButton));
 
         // Close shop button
-        ItemStack button1 = new ItemStack(Material.INK_SACK, 1, DyeColor.RED.getDyeData());
+        ItemStack button1 = new ItemStack(Material.BARRIER);
         ItemMeta meta1 = button1.getItemMeta();
         meta1.setDisplayName(ChatColor.GREEN.toString() + "Click to DELETE shop");
         ArrayList<String> lore1 = new ArrayList<>();
@@ -137,7 +137,7 @@ public class Shop {
         for (ItemStack stack : inventory) {
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
             if (stack != null && stack.getType() != Material.AIR) {
-                if (stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status"))
+                if (stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status") || stack.getType() == Material.BARRIER && nms.hasTag() && nms.getTag().hasKey("statusClose"))
                     continue;
                 ItemMeta meta = stack.getItemMeta();
                 if (meta != null) {

@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -35,13 +36,10 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -617,23 +615,25 @@ public class BlockListener implements Listener {
                     return;
                 }
                 GamePlayer gp = GameAPI.getGamePlayer(player);
-                if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST) && !GameAPI.isMaterialNearby(b1, 3, Material.PORTAL)) {
-                    if (gp != null && !gp.hasShopOpen()) {
-                        if (BankMechanics.getInstance().getStorage(player.getUniqueId()).collection_bin != null) {
-                            player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
-                            player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
-                            e.setCancelled(true);
-                            return;
+                if (!TutorialIsland.onTutorialIsland(player.getLocation())) {
+                    if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST) && !GameAPI.isMaterialNearby(b1, 3, Material.PORTAL)) {
+                        if (gp != null && !gp.hasShopOpen()) {
+                            if (BankMechanics.getInstance().getStorage(player.getUniqueId()).collection_bin != null) {
+                                player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
+                                player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
+                                e.setCancelled(true);
+                                return;
+                            }
+                            ShopMechanics.setupShop(e.getClickedBlock(), player.getUniqueId());
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You have a shop open already! It may be on another shard.");
                         }
-                        ShopMechanics.setupShop(e.getClickedBlock(), player.getUniqueId());
                     } else {
-                        player.sendMessage(ChatColor.RED + " You have a shop open already! It may be on another shard.");
+                        player.sendMessage(ChatColor.RED + "You cannot place a shop here.");
                     }
                 } else {
-                    player.sendMessage(ChatColor.RED + "You can not place a shop here.");
+                    player.sendMessage(ChatColor.RED + "You cannot place a shop on " + ChatColor.BOLD + "TUTORIAL ISLAND");
                 }
-            } else {
-                player.sendMessage(ChatColor.RED + "You can not place a shop here.");
             }
         }
     }

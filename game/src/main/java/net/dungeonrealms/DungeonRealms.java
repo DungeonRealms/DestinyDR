@@ -59,7 +59,6 @@ import net.dungeonrealms.game.player.menu.HearthStone;
 import net.dungeonrealms.game.player.menu.Profile;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.soundtrack.Soundtrack;
 import net.dungeonrealms.game.tab.TabMechanics;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
@@ -250,7 +249,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(new EntityMechanics());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             mm.registerMechanic(new ShopMechanics());
-            mm.registerMechanic(Soundtrack.getInstance());
             mm.registerMechanic(Mining.getInstance());
             mm.registerMechanic(RealmInstance.getInstance());
             mm.registerMechanic(Fishing.getInstance());
@@ -271,7 +269,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
             mm.registerMechanic(new EntityMechanics());
-            mm.registerMechanic(Soundtrack.getInstance());
             mm.registerMechanic(BungeeChannelListener.getInstance());
             mm.registerMechanic(NetworkClientListener.getInstance());
             mm.registerMechanic(ScoreboardHandler.getInstance());

@@ -32,7 +32,6 @@ public class TradeManager {
     }
 
     public static Player getTarget(Player trader) {
-        ArrayList<Entity> list = new ArrayList<>();
         Optional<Entity> tradie =
         trader.getNearbyEntities(2.0D, 2.0D, 2.0D).stream().filter(e -> e instanceof Player && !e.hasMetadata("NPC")
                 && canTrade(e.getUniqueId()) && trader.hasLineOfSight(e)).findFirst();
