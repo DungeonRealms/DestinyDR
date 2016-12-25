@@ -8,6 +8,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.command.CommandModeration;
+import net.dungeonrealms.game.command.moderation.*;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.ClickHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -75,21 +76,21 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
-        if (!CommandModeration.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
+        if (!CommandInvsee.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
 
-        UUID target = CommandModeration.offline_inv_watchers.get(event.getPlayer().getUniqueId());
+        UUID target = CommandInvsee.offline_inv_watchers.get(event.getPlayer().getUniqueId());
 
         String inventory = ItemSerialization.toString(event.getInventory());
         DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true, true, null);
 
-        CommandModeration.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
+        CommandInvsee.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onArmorSeeClose(InventoryCloseEvent event) {
-        if (!CommandModeration.offline_armor_watchers.containsKey(event.getPlayer().getUniqueId())) return;
+        if (!CommandArmorsee.offline_armor_watchers.containsKey(event.getPlayer().getUniqueId())) return;
 
-        UUID target = CommandModeration.offline_armor_watchers.get(event.getPlayer().getUniqueId());
+        UUID target = CommandArmorsee.offline_armor_watchers.get(event.getPlayer().getUniqueId());
 
         ArrayList<String> armor = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
@@ -109,14 +110,14 @@ public class InventoryListener implements Listener {
 
         DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.ARMOR, armor, true, true, null);
 
-        CommandModeration.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
+        CommandArmorsee.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBankSeeClose(InventoryCloseEvent event) {
-        if (!(CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
+        if (!(CommandBanksee.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
 
-        UUID target = CommandModeration.offline_bank_watchers.get(event.getPlayer().getUniqueId());
+        UUID target = CommandBanksee.offline_bank_watchers.get(event.getPlayer().getUniqueId());
 
         Inventory inv = event.getInventory();
         if (inv == null) return;
@@ -124,14 +125,14 @@ public class InventoryListener implements Listener {
         String serializedInv = ItemSerialization.toString(inv);
         DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, true, true, null);
 
-        CommandModeration.offline_bank_watchers.remove(event.getPlayer().getUniqueId());
+        CommandBanksee.offline_bank_watchers.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBinSeeClose(InventoryCloseEvent event) {
-        if (!(CommandModeration.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
+        if (!(CommandBinsee.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
 
-        UUID target = CommandModeration.offline_bin_watchers.get(event.getPlayer().getUniqueId());
+        UUID target = CommandBinsee.offline_bin_watchers.get(event.getPlayer().getUniqueId());
 
         Inventory inv = event.getInventory();
         if (inv == null) return;
@@ -139,7 +140,7 @@ public class InventoryListener implements Listener {
         String serializedInv = ItemSerialization.toString(inv);
         DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, true, true, null);
 
-        CommandModeration.offline_bin_watchers.remove(event.getPlayer().getUniqueId());
+        CommandBinsee.offline_bin_watchers.remove(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -352,7 +353,7 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClosed(InventoryCloseEvent event) {
-        if (event.getInventory().getTitle().contains("Storage Chest") && !CommandModeration.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
+        if (event.getInventory().getTitle().contains("Storage Chest") && !CommandBanksee.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             storage.inv.setContents(event.getInventory().getContents());
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
@@ -368,7 +369,7 @@ public class InventoryListener implements Listener {
                 stat.resetTemp();
             }
             stat.reset = true;
-        } else if (event.getInventory().getTitle().contains("Collection Bin") && !CommandModeration.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId())) {
+        } else if (event.getInventory().getTitle().contains("Collection Bin") && !CommandBinsee.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             Inventory bin = storage.collection_bin;
             if (bin == null)
