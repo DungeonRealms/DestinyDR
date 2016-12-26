@@ -28,6 +28,11 @@ public class AcceptCommand extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
 
+        if (args.length == 0) {
+            player.sendMessage(ChatColor.RED + "Invalid usage! You must type: /accept <name>");
+            return false;
+        }
+
         String name = args[0];
 
 
