@@ -382,14 +382,14 @@ public class GameAPI {
 
         final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
 
+        ShopMechanics.deleteAllShops(true);
+
         Bukkit.getServer().setWhitelist(true);
         DungeonRealms.getInstance().setAcceptPlayers(false);
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
         GameAPI.logoutAllPlayers();
-
-        ShopMechanics.deleteAllShops(true);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
@@ -448,7 +448,7 @@ public class GameAPI {
 
         System.out.println("Successfully saved all sessions in " + String.valueOf(System.currentTimeMillis() - currentTime) + "ms");
 
-        DungeonRealms.getInstance().mm.stopInvocation();
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> DungeonRealms.getInstance().mm.stopInvocation());
         AsyncUtils.pool.shutdown();
         DatabaseInstance.mongoClient.close();
     }
@@ -922,8 +922,10 @@ public class GameAPI {
                 player.setCanPickupItems(false);
 
                 GamePlayer gp = GameAPI.getGamePlayer(player);
-                gp.setAbleToSuicide(false);
-                gp.setAbleToDrop(false);
+                if(gp != null) {
+                    gp.setAbleToSuicide(false);
+                    gp.setAbleToDrop(false);
+                }
 
                 if (DungeonRealms.getInstance().isDrStopAll) {
 
@@ -1566,7 +1568,12 @@ public class GameAPI {
     }
 
     public static Integer[] changeAttributeVal(Item.AttributeType type, Integer[] difference, Player p) {
-        return GameAPI.getGamePlayer(p).changeAttributeVal(type, difference);
+        if(GameAPI.getGamePlayer(p) != null) {
+            if(type != null) {
+                return GameAPI.getGamePlayer(p).changeAttributeVal(type, difference);
+            }
+        }
+        return new Integer[]{0, 0};
     }
 
     public static int getStaticAttributeVal(Item.AttributeType type, Player p) {
