@@ -341,6 +341,7 @@ public class DungeonRealms extends JavaPlugin {
 
         // Commands always registered regardless of server.
         cm.registerCommand(new CommandDevDebug("devdebug", "/<command> [args]", "Toggle on and off debug."));
+        cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close your shop"));
 
         cm.registerCommand(new CommandInvsee("invsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mis")));
         cm.registerCommand(new CommandBanksee("banksee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mbs")));

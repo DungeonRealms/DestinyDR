@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
@@ -90,6 +91,7 @@ public class Lobby extends JavaPlugin implements Listener {
 
         // REQUEST PLAYER'S DATA ASYNC //
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId(), false);
+
     }
 
 
@@ -111,7 +113,6 @@ public class Lobby extends JavaPlugin implements Listener {
 
             ghostFactory.addPlayer(player);
             ghostFactory.setGhost(player, !Rank.isGM(player) && !Rank.isSubscriber(player));
-
         });
     }
 
