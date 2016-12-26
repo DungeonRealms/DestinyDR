@@ -544,26 +544,28 @@ public class DungeonRealms extends JavaPlugin {
             }
         }, 0L, 1000);
 
-        // SEND SERVER INFO TO MASTER SERVER REPEATEDLY //
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                ServerListPacket packet = new ServerListPacket();
+        if(!isSupportShard) {
+            // SEND SERVER INFO TO MASTER SERVER REPEATEDLY //
+            new Timer().scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    ServerListPacket packet = new ServerListPacket();
 
-                final Player[] onlinePlayers = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+                    final Player[] onlinePlayers = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
 
-                packet.target = shard;
-                packet.tokens = new PlayerToken[onlinePlayers.length];
+                    packet.target = shard;
+                    packet.tokens = new PlayerToken[onlinePlayers.length];
 
 
-                for (int i = 0; i < onlinePlayers.length; i++) {
-                    Player player = onlinePlayers[i];
-                    packet.tokens[i] = new PlayerToken(player.getUniqueId().toString(), player.getName());
+                    for (int i = 0; i < onlinePlayers.length; i++) {
+                        Player player = onlinePlayers[i];
+                        packet.tokens[i] = new PlayerToken(player.getUniqueId().toString(), player.getName());
+                    }
+
+                    getClient().sendTCP(packet);
                 }
-
-                getClient().sendTCP(packet);
-            }
-        }, 0L, 3000);
+            }, 0L, 3000);
+        }
 
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);
