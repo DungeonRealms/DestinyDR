@@ -196,10 +196,12 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void asyncChat(AsyncPlayerChatEvent event) {
-        if (event.getMessage().toLowerCase().startsWith("@i")) {
-            if (event.getMessage().length() < 1) {
-                // A player types "@i" only, cancel that message
-                event.setCancelled(true);
+        if (event.getMessage() != null) {
+            if (event.getMessage().toLowerCase().startsWith("@i")) {
+                if (event.getMessage().length() < 1) {
+                    // A player types "@i" only, cancel that message
+                    event.setCancelled(true);
+                }
             }
         }
     }
