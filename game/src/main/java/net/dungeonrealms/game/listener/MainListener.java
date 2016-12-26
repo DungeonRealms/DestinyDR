@@ -60,6 +60,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
@@ -206,6 +207,14 @@ public class MainListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onShardClick(InventoryClickEvent event) {
+        if(event.getInventory().getTitle() != null) {
+            if(event.getInventory().getTitle().equalsIgnoreCase("dungeonrealms shards")) {
+                event.setCancelled(true);
+            }
+        }
+    }
     /**
      * This event is the main event once the player has actually entered the
      * world! It is now safe to do things to the player e.g TitleAPI or
