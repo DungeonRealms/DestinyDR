@@ -430,7 +430,7 @@ class RealmMaterialFactory {
             if (isEcash && gamePlayer.getEcashBalance() < total_price) {
                 player.sendMessage(ChatColor.RED + "You do not have enough E-CASH to complete this purchase.");
                 player.sendMessage(ChatColor.GRAY + "" + amount_to_buy + " X " + pricePerItem + " EC/ea = " + (pricePerItem * amount_to_buy) + " EC.");
-                player.sendMessage(ChatColor.GRAY + "Purchase more at store.dungeonrealms.net -- instant delivery!");
+                //player.sendMessage(ChatColor.GRAY + "Purchase more at www.dungeonrealms.net/store -- instant delivery!");
                 return;
 
             }

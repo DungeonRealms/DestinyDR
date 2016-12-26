@@ -187,7 +187,7 @@ public class ClickHandler {
                     if (nmsStack.getTag().hasKey("donationStore")) {
                         player.closeInventory();
                         final JSONMessage normal4 = new JSONMessage(ChatColor.GOLD + "To Purchase E-Cash from our Shop, Click ", ChatColor.GOLD);
-                        normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://shop.dungeonrealms.net");
+                        normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://www.dungeonrealms.net/store");
                         normal4.sendToPlayer(player);
                     }
                 }

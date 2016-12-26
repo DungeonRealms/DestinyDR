@@ -22,7 +22,7 @@ public class CommandPurchase extends BaseCommand {
 
         if (args.length == 1) {
             /*TextComponent bungeeMessage = new TextComponent(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
+            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://www.dungeonrealms.net/store"));
             bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view shop!").create()));
             TextComponent test = new TextComponent(ChatColor.GRAY + "Thank you " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + args[0] + ChatColor.RESET + ChatColor.GRAY + " for donating @ shop ");
             test.addExtra(bungeeMessage);
