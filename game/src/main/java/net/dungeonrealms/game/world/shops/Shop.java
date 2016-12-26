@@ -106,8 +106,10 @@ public class Shop {
         block1.setType(Material.AIR);
         block2.setType(Material.AIR);
         block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
-        // Close his inventory
-        Bukkit.getPlayer(ownerUUID).closeInventory();
+        // Close his inventory, check if online first
+        if (Bukkit.getPlayer(ownerUUID) != null && Bukkit.getPlayer(ownerUUID).isOnline()) {
+            Bukkit.getPlayer(ownerUUID).closeInventory();
+        }
         // Do other stuff
         saveCollectionBin();
         viewCount = 0;

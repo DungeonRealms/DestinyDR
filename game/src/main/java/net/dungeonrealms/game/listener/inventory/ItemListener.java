@@ -220,16 +220,18 @@ public class ItemListener implements Listener {
             }
 
             if (GameAPI.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
-                Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
+                if(event.getClickedBlock() != null && event.getClickedBlock().getLocation() != null) {
+                    Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
 
-                if (GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+                    if (GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
+                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
+                        return;
+                    }
+
+                    Realms.getInstance().setRealmSpawn(event.getPlayer().getUniqueId(), newLocation);
+                    event.setCancelled(true);
                     return;
-                }
-
-                Realms.getInstance().setRealmSpawn(event.getPlayer().getUniqueId(), newLocation);
-                event.setCancelled(true);
-                return;
+                } // Player is clicking air
             }
 
             if (GameAPI.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial_island")) {

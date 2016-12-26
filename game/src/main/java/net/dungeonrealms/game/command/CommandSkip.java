@@ -43,7 +43,7 @@ public class CommandSkip extends BaseCommand {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
+                        player.teleport(new Location(Bukkit.getWorlds().get(0), -465.484, 73, 390.453));
                         ItemManager.giveStarter(player);
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

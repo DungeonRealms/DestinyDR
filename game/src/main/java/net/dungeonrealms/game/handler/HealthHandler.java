@@ -96,7 +96,7 @@ public class HealthHandler implements GenericMechanic {
             }
             setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
             player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        }, 40L);
+        }, 100); // 5 sec
     }
 
     /**

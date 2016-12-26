@@ -230,7 +230,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         ev.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! We'll be casting off in a few moments!");
-                        ev.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -465.467, 73, 390.457));
+                        ev.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -465.484, 73, 390.453));
                         ItemManager.giveStarter(e.getPlayer());
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -353,8 +353,10 @@ public class TutorialIsland implements GenericMechanic, Listener {
                         pl.sendMessage(ChatColor.LIGHT_PURPLE + "[100]" + ChatColor.GRAY + " Lee" + ": " + ChatColor.WHITE + "\"" + messages.get(pos) + "\"");
                         pos++;
                     } else {
-                        GameAPI.getGamePlayer(pl).addExperience(50, false, true);
-                        cancel();
+                        if(GameAPI.getGamePlayer(pl) != null) {
+                            GameAPI.getGamePlayer(pl).addExperience(50, false, true);
+                            cancel();
+                        }
                     }
                 }
             }.runTaskTimer(DungeonRealms.getInstance(), 0L, 20L * 3L);
