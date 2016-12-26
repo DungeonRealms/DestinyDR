@@ -888,31 +888,8 @@ public class ItemManager {
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "          XP" + "\n" + ChatColor.BLACK + "       " + gp.getExperience() + "/"
                 + gp.getEXPNeeded(gp.getLevel());
-        page3_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) + " Strength"
-                + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Warrior'" + "\n"
-//                + ChatColor.BLACK.toString() + "+" + df.format("STR * 0.03") + "% Armor" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("armor"))) + "% ARMOR" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("block"))) + "% BLOCK" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.015) + "% AXE DMG" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.STRENGTH) * 0.023) + "% Polearm DMG" + "\n" + "\n"
-                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.DEXTERITY) + " Dexterity" + "\n"
-                + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Archer'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("dps"))) + "% DPS" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("dodge"))) + "% DODGE" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.WeaponAttributeType.getByNBTName("armorPenetration"))) + "% ARMOR PEN" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.DEXTERITY) * 0.015) + "% BOW DMG";
-        page4_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) + " Vitality"
-                + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Defender'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.034) + "% Health" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.getByNBTName("healthRegen"))) + "   HP/s" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.VITALITY) * 0.01) + "% Sword DMG" + "\n" + "\n"
-                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + gp.getStaticAttributeVal(Item.ArmorAttributeType.INTELLECT) + " Intellect" + "\n"
-                + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Mage'" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.ArmorAttributeType.getByNBTName("energyRegen"))) + "% Energy" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getAttributeBonusesFromStats().get(Item.WeaponAttributeType.getByNBTName("criticalHit"))) + "% Critical Hit" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(gp.getStaticAttributeVal(Item.ArmorAttributeType.INTELLECT) * 0.02) + "% Staff DMG";
 
-        String page5_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
+        page3_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/msg" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/ask" + "\n" + ChatColor.BLACK.toString() + "Ask any questions." + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/shard" + "\n" + ChatColor.BLACK.toString() + "Switch your current session." + new_line
@@ -922,7 +899,7 @@ public class ItemManager {
                 + "Invite to party");
 
 
-        String page6_string = (ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
+         page4_string = (ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
                 + "Kick player from party" + new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/pleave " + "\n"
                 + ChatColor.BLACK.toString() + "Leave your party"
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll "
@@ -932,7 +909,7 @@ public class ItemManager {
         );
 
 
-        String page7_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
+        String page5_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
 
         ArrayList<String> friendsList = FriendHandler.getInstance().getFriendsList(p.getUniqueId());
@@ -943,8 +920,6 @@ public class ItemManager {
         pages.add(page3_string);
         pages.add(page4_string);
         pages.add(page5_string);
-        pages.add(page6_string);
-        pages.add(page7_string);
 
 //        int count = 0;
 //        String nextLine = "\n";
