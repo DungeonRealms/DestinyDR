@@ -15,6 +15,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
@@ -133,6 +134,10 @@ public class CommandSet extends BaseCommand {
                     break;
                 case "pick":
                     Mining.lvlUp(Mining.getPickTier(player.getEquipment().getItemInMainHand()), player);
+                    player.updateInventory();
+                    break;
+                case "fishing":
+                    Fishing.lvlUp(Fishing.getRodTier(player.getEquipment().getItemInMainHand()), player);
                     player.updateInventory();
                     break;
                 case "shopoff":

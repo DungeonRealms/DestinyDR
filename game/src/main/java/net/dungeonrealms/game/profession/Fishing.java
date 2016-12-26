@@ -788,7 +788,7 @@ public class Fishing implements GenericMechanic {
 
     }
 
-    private static void lvlUp(int tier, Player p) {
+    public static void lvlUp(int tier, Player p) {
         ItemStack rod = p.getEquipment().getItemInMainHand();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rod);
         int lvl = nms.getTag().getInt("level") + 1;
