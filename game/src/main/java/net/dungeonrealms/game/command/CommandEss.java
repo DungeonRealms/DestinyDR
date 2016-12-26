@@ -31,7 +31,13 @@ public class CommandEss extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
-        if (!commandSender.isOp() && !(commandSender instanceof ConsoleCommandSender)) {
+        if ((commandSender instanceof Player && !Rank.isGM((Player) commandSender)) && !(commandSender instanceof ConsoleCommandSender)) {
+            return false;
+        }
+
+        // Extended Permission Check
+        if (commandSender instanceof Player && !Rank.isHeadGM((Player) commandSender) && !DungeonRealms.getInstance().isGMExtendedPermissions) {
+            commandSender.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
             return false;
         }
 

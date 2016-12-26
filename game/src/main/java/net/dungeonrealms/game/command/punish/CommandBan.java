@@ -90,8 +90,10 @@ public class CommandBan extends BaseCommand {
                 }
 
             if (Rank.isPMOD(Bukkit.getOfflinePlayer(p_uuid))) {
-                sender.sendMessage(ChatColor.RED + "You cannot ban that player.");
-                return;
+                if (sender instanceof Player && !Rank.isGM((Player) sender)) {
+                    sender.sendMessage(ChatColor.RED + "You cannot ban that player.");
+                    return;
+                }
             }
 
             if (args.length >= 3) {

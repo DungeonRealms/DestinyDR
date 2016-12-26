@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.inventory;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -771,6 +772,30 @@ public class PlayerMenus {
         isToggled = !gp.isInvulnerable() && gp.isTargettable();
         inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Allow Combat", new String[]{
                 ChatColor.GRAY + "Toggling this will make you vulnerable to attacks but also allow outgoing damage.",
+                ChatColor.GRAY + "Display Item"}).build());
+
+        player.openInventory(inv);
+    }
+
+    /**
+     * Opens the Head GM Toggles menu.
+     * (user must be Head GM)
+     *
+     * @param player
+     */
+    public static void openHeadGameMasterTogglesMenu(Player player) {
+        if (!Rank.isHeadGM(player)) return;
+        boolean isToggled = false;
+
+        Inventory inv = Bukkit.createInventory(null, 9, "Head Game Master Toggles");
+        GamePlayer gp = GameAPI.getGamePlayer(player);
+        if (gp == null) return;
+
+        // Game Master Extended Permissions
+        isToggled = DungeonRealms.getInstance().isGMExtendedPermissions;
+        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Game Master Extended Permissions", new String[]{
+                ChatColor.GRAY + "Toggling this will allow GMs to have extended permissions.",
+                ChatColor.GRAY + "This should be used for events and grants access to features such as adding items.",
                 ChatColor.GRAY + "Display Item"}).build());
 
         player.openInventory(inv);

@@ -1626,6 +1626,25 @@ public class ClickHandler {
 
                 PlayerMenus.openGameMasterTogglesMenu(player);
                 break;
+            case "Head Game Master Toggles":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+
+                switch (slot) {
+                    case 0: // Game Master Extended Permissions
+                        DungeonRealms.getInstance().isGMExtendedPermissions = !DungeonRealms.getInstance().isGMExtendedPermissions;
+                        if (DungeonRealms.getInstance().isGMExtendedPermissions) {
+                            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Game Master Extended Permissions - ENABLED");
+                        } else {
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Game Master Extended Permissions - DISABLED");
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                PlayerMenus.openHeadGameMasterTogglesMenu(player);
+                break;
             case "E-Cash Pets":
                 event.setCancelled(true);
                 if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;

@@ -123,6 +123,7 @@ public class DungeonRealms extends JavaPlugin {
     public boolean isBrazilianShard = false; // Brazilian shard - eventually create DR localization, etc.
     public boolean isRoleplayShard = false; // Role playing shard - prompt user its a RP shard.
     public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
+    public boolean isGMExtendedPermissions = false; // Does the GM have extended permissions (events / spawning / etc).
     // End of Shard Config
 
     private volatile boolean acceptPlayers = false;
@@ -359,6 +360,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStaffChat("staffchat", "/<command> [args]", "Send a message to the staff chat.", Arrays.asList("sc", "s")));
         cm.registerCommand(new CommandBroadcast("broadcast", "/<command> [args]", "Send a formatted broadcast to all shards..", Collections.singletonList("sayall")));
         cm.registerCommand(new CommandGm("gm", "/<command> [args]", "Displays the Game Master toggles."));
+        cm.registerCommand(new CommandHeadGm("headgm", "/<command> [args]", "Displays the Head Game Master toggles."));
         cm.registerCommand(new CommandPlayerFix("playerfix", "/<command> [args]", "Sets a player's state to offline so he can login.", Collections.singletonList("pfix")));
         cm.registerCommand(new CommandPlayerRetention("pretention", "/<command> [args]", "Player retention command."));
         cm.registerCommand(new CommandSudo("sudo", "/<command> [args]", "Sudo command."));

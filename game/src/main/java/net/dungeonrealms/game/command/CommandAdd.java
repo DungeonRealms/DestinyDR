@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -57,6 +58,13 @@ public class CommandAdd extends BaseCommand {
         if (!Rank.isGM(player)) {
             return false;
         }
+
+        // Extended Permission Check
+        if (!Rank.isHeadGM(player) && !DungeonRealms.getInstance().isGMExtendedPermissions) {
+            player.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
+            return false;
+        }
+
         if (args.length > 0) {
             int tier;
             Item.ItemType type;
