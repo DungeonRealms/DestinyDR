@@ -355,15 +355,15 @@ public class EnergyHandler implements GenericMechanic {
             case AIR:
                 return 0.025f;
             case WOOD_SWORD:
-                return 0.06f;
+                return 0.06f * 2F;
             case STONE_SWORD:
-                return 0.071f;
+                return 0.071f * 0.4F;
             case IRON_SWORD:
-                return 0.0833f;
+                return 0.0833f * 1.2F;
             case DIAMOND_SWORD:
-                return 0.125f;
+                return 0.125f * 0.3F;
             case GOLD_SWORD:
-                return 0.135f;
+                return 0.135f * 2F;
             case WOOD_AXE:
                 return 0.0721F * 1.1F;
             case STONE_AXE:
