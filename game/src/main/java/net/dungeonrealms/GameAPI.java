@@ -61,6 +61,7 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -937,7 +938,13 @@ public class GameAPI {
                 // upload data and send to server
                 GameAPI.handleLogout(player.getUniqueId(), true, consumer -> {
                     if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
+                    String name = player.getName();
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
+                    if(ShopMechanics.ALLSHOPS != null && !ShopMechanics.ALLSHOPS.isEmpty()) {
+                        // Second shop deletion handler
+                        ShopMechanics.getShop(name).deleteShop(true);
+                    }
+                    // Move
                     GameAPI.sendNetworkMessage("MoveSessionToken", player.getUniqueId().toString(), String.valueOf(sub));
                 });
 
@@ -1076,8 +1083,9 @@ public class GameAPI {
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
             //ItemManager.giveStarter(player);
 
-            // Fix missing journal
+            // Fix missing journal & portal rune
             player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
+            player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
 
             player.teleport(Teleportation.Tutorial);
             //player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
