@@ -9,7 +9,6 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.updater.UpdateEvent;
 import net.dungeonrealms.common.game.updater.UpdateType;
 import net.dungeonrealms.common.game.util.Cooldown;
-import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.FriendHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
@@ -144,68 +143,70 @@ public class RealmListener implements Listener {
         if (!e.getType().equals(UpdateType.SLOW)) return;
 
         for (Map.Entry<UUID, List<Location>> entry : REALMS.getProcessingBlocks().entrySet()) {
-            String w_name = entry.getKey().toString();
-            try {
-                World w = Bukkit.getWorld(w_name);
-                int limy = (128 - REALMS.getRealmDimensions(REALMS.getRealmTier(entry.getKey())));
-                CopyOnWriteArrayList<Location> loc_list = new CopyOnWriteArrayList<>(entry.getValue());
-                RealmToken realm = REALMS.getToken(entry.getKey());
-                int x = 0;
+            if (Bukkit.getPlayer(entry.getKey()) != null && Bukkit.getPlayer(entry.getKey()).isOnline()) {
+                String w_name = entry.getKey().toString();
+                try {
+                    World w = Bukkit.getWorld(w_name);
+                    int limy = (128 - REALMS.getRealmDimensions(REALMS.getRealmTier(entry.getKey())));
+                    CopyOnWriteArrayList<Location> loc_list = new CopyOnWriteArrayList<>(entry.getValue());
+                    RealmToken realm = REALMS.getToken(entry.getKey());
+                    int x = 0;
 
-                for (Location loc : loc_list) {
-                    if (x >= Realms.BLOCK_PROCESSOR_BUFFER_SIZE) {
-                        break;
+                    for (Location loc : loc_list) {
+                        if (x >= Realms.BLOCK_PROCESSOR_BUFFER_SIZE) {
+                            break;
+                        }
+                        if (loc.getBlock().getY() > 127) {
+                            if (loc.getBlock().getType() == Material.AIR) {
+                                loc.getBlock().setType(Material.GRASS);
+                            }
+                        } else if (loc.getBlock().getY() <= limy + 1) {
+                            if (loc.getBlock().getType() == Material.AIR) {
+                                loc.getBlock().setType(Material.BEDROCK);
+                            }
+
+                        } else {
+                            if (loc.getBlock().getType() == Material.AIR) {
+                                loc.getBlock().setType(Material.DIRT);
+                            }
+                        }
+
+                        loc_list.remove(loc);
+                        x++;
                     }
-                    if (loc.getBlock().getY() > 127) {
-                        if (loc.getBlock().getType() == Material.AIR) {
-                            loc.getBlock().setType(Material.GRASS);
-                        }
-                    } else if (loc.getBlock().getY() <= limy + 1) {
-                        if (loc.getBlock().getType() == Material.AIR) {
-                            loc.getBlock().setType(Material.BEDROCK);
-                        }
 
+                    if (loc_list.isEmpty()) {
+                        Player p = Bukkit.getPlayer(entry.getKey());
+
+                        if (p != null) {
+                            p.sendMessage("");
+                            Utils.sendCenteredMessage(p, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "REALM UPGRADE COMPLETE.");
+                            p.sendMessage("");
+
+                            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                            realm.setState(RealmState.CLOSED);
+
+                        } else REALMS.removeRealm(entry.getKey(), true);
+
+                        DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true, doAfter -> {
+                            GameAPI.updatePlayerData(entry.getKey());
+                        });
+
+                        REALMS.getProcessingBlocks().remove(entry.getKey());
+                        realm.setUpgradeProgress(0);
                     } else {
-                        if (loc.getBlock().getType() == Material.AIR) {
-                            loc.getBlock().setType(Material.DIRT);
-                        }
+                        double total_area = REALMS.getRealmDimensions(REALMS.getRealmTier(UUID.fromString(w.getName())) + 1);
+                        total_area = Math.pow(total_area, 3);
+                        double complete_area = total_area - loc_list.size();
+
+                        double percent = ((complete_area / total_area) * 100.0D);
+                        realm.setUpgradeProgress(percent);
+                        REALMS.getProcessingBlocks().put(entry.getKey(), loc_list);
                     }
 
-                    loc_list.remove(loc);
-                    x++;
-                }
-
-                if (loc_list.isEmpty()) {
-                    Player p = Bukkit.getPlayer(entry.getKey());
-
-                    if (p != null) {
-                        p.sendMessage("");
-                        Utils.sendCenteredMessage(p, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "REALM UPGRADE COMPLETE.");
-                        p.sendMessage("");
-
-                        p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                        realm.setState(RealmState.CLOSED);
-
-                    } else REALMS.removeRealm(entry.getKey(), true);
-
-                    DatabaseAPI.getInstance().update(entry.getKey(), EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true, doAfter -> {
-                        GameAPI.updatePlayerData(entry.getKey());
-                    });
-
+                } catch (NullPointerException ignored) {
                     REALMS.getProcessingBlocks().remove(entry.getKey());
-                    realm.setUpgradeProgress(0);
-                } else {
-                    double total_area = REALMS.getRealmDimensions(REALMS.getRealmTier(UUID.fromString(w.getName())) + 1);
-                    total_area = Math.pow(total_area, 3);
-                    double complete_area = total_area - loc_list.size();
-
-                    double percent = ((complete_area / total_area) * 100.0D);
-                    realm.setUpgradeProgress(percent);
-                    REALMS.getProcessingBlocks().put(entry.getKey(), loc_list);
                 }
-
-            } catch (NullPointerException ignored) {
-                REALMS.getProcessingBlocks().remove(entry.getKey());
             }
         }
     }
@@ -215,67 +216,69 @@ public class RealmListener implements Listener {
         if (!e.getType().equals(UpdateType.SEC)) return;
 
         for (RealmToken realm : REALMS.getCachedRealms().values()) {
-            if (!realm.getPropertyBoolean("peaceful") && realm.getPropertyBoolean("flight")) {
-                RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
-                property.setExpiry(System.currentTimeMillis() - 1000L);
-            }
-            if (realm.getWorld() == null) {
-                continue;
-            }
-
-            for (RealmProperty<?> p : realm.getRealmProperties().values()) {
-                if (!(p.hasExpired() && p.isAcknowledgeExpiration())) continue;
-
-                switch (p.getName()) {
-                    case "peaceful":
-                        Player owner = Bukkit.getPlayer(realm.getOwner());
-                        World world = REALMS.getRealmWorld(realm.getOwner());
-
-                        // SET WORLD GUARD FLAG
-                        REALMS.setRealmRegion(world, true);
-
-                        if (owner != null)
-                            owner.sendMessage(ChatColor.RED + "Your realm is now once again a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " zone.");
-
-                        if (realm.getPropertyBoolean("flight")) {
-
-                            if (owner != null)
-                                owner.sendMessage(ChatColor.GRAY + "Due to this, your " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.GRAY
-                                        + " will also expired.");
-
-                            RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
-                            property.setExpiry(System.currentTimeMillis() - 1000L);
-                        }
-
-                        break;
-                    case "flight":
-                        if (Bukkit.getPlayer(realm.getOwner()) != null)
-                            Bukkit.getPlayer(realm.getOwner()).sendMessage(ChatColor.RED + "Your " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED + " effect has expired.");
-
-                        for (Player pl : realm.getWorld().getPlayers()) pl.setAllowFlight(false);
-                        break;
+            if (Bukkit.getPlayer(realm.getOwner()) != null && Bukkit.getPlayer(realm.getOwner()).isOnline()) {
+                if (!realm.getPropertyBoolean("peaceful") && realm.getPropertyBoolean("flight")) {
+                    RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
+                    property.setExpiry(System.currentTimeMillis() - 1000L);
+                }
+                if (realm.getWorld() == null) {
+                    continue;
                 }
 
-                REALMS.updateRealmHologram(realm.getOwner());
-                p.setAcknowledgeExpiration(false);
+                for (RealmProperty<?> p : realm.getRealmProperties().values()) {
+                    if (!(p.hasExpired() && p.isAcknowledgeExpiration())) continue;
+
+                    switch (p.getName()) {
+                        case "peaceful":
+                            Player owner = Bukkit.getPlayer(realm.getOwner());
+                            World world = REALMS.getRealmWorld(realm.getOwner());
+
+                            // SET WORLD GUARD FLAG
+                            REALMS.setRealmRegion(world, true);
+
+                            if (owner != null)
+                                owner.sendMessage(ChatColor.RED + "Your realm is now once again a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " zone.");
+
+                            if (realm.getPropertyBoolean("flight")) {
+
+                                if (owner != null)
+                                    owner.sendMessage(ChatColor.GRAY + "Due to this, your " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.GRAY
+                                            + " will also expired.");
+
+                                RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("flight");
+                                property.setExpiry(System.currentTimeMillis() - 1000L);
+                            }
+
+                            break;
+                        case "flight":
+                            if (Bukkit.getPlayer(realm.getOwner()) != null)
+                                Bukkit.getPlayer(realm.getOwner()).sendMessage(ChatColor.RED + "Your " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED + " effect has expired.");
+
+                            for (Player pl : realm.getWorld().getPlayers()) pl.setAllowFlight(false);
+                            break;
+                    }
+
+                    REALMS.updateRealmHologram(realm.getOwner());
+                    p.setAcknowledgeExpiration(false);
+                }
+
+                if (realm.getPortalLocation() == null || realm.getState() != RealmState.OPENED) continue;
+
+                Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
+
+                if (Rank.isGM(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
+                    createDoubleHelix(loc);
+                else if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
+                    DonationEffects.getInstance().spawnPlayerParticleEffects(loc);
+
+                //loc.subtract(.5D, 2D, .5D);
+                if (realm.getPropertyBoolean("peaceful"))
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
+
+                //loc.subtract(.5D, 1.5D, .5D);
+                if (realm.getPropertyBoolean("flight"))
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
             }
-
-            if (realm.getPortalLocation() == null || realm.getState() != RealmState.OPENED) continue;
-
-            Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
-
-            if (Rank.isGM(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
-                createDoubleHelix(loc);
-            else if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
-                DonationEffects.getInstance().spawnPlayerParticleEffects(loc);
-
-            //loc.subtract(.5D, 2D, .5D);
-            if (realm.getPropertyBoolean("peaceful"))
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
-
-            //loc.subtract(.5D, 1.5D, .5D);
-            if (realm.getPropertyBoolean("flight"))
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, loc.clone().add(0.5, 1.5, 0.5), 0, 0, 0, 0F, 20);
         }
     }
 

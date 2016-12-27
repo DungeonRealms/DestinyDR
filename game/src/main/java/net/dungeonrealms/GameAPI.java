@@ -1589,7 +1589,12 @@ public class GameAPI {
      * @return if a ranged attribute, throws an error message and returns -1.
      */
     public static Integer[] getRangedAttributeVal(Item.AttributeType type, Player p) {
-        return GameAPI.getGamePlayer(p).getRangedAttributeVal(type);
+        if(GameAPI.getGamePlayer(p) != null) {
+            if(type != null) {
+                return GameAPI.getGamePlayer(p).getRangedAttributeVal(type);
+            }
+        }
+        return new Integer[]{0, 0};
     }
 
     /**
