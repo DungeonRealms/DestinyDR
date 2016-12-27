@@ -193,6 +193,14 @@ public class CommandSet extends BaseCommand {
                     player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
                 }
                 break;
+            case "pvpoff":
+                if (Bukkit.getPlayer(args[1]) != null) {
+                    CombatLog.removeFromPVP(Bukkit.getPlayer(args[1]));
+                }
+                else {
+                    player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
+                }
+                break;
             case "ecash":
                 int ecash = 0;
                 if (args.length > 1) {

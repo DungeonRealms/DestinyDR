@@ -44,10 +44,10 @@ public class PvPListener implements Listener {
         event.setDamage(0);
         event.setCancelled(true);
 
-        if (CombatLog.isInCombat(damager)) {
-            CombatLog.updateCombat(damager);
+        if (CombatLog.inPVP(damager)) {
+            CombatLog.updatePVP(damager);
         } else {
-            CombatLog.addToCombat(damager);
+            CombatLog.addToPVP(damager);
         }
 
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
@@ -178,10 +178,11 @@ public class PvPListener implements Listener {
         if (damager.equals(receiver)) return; // sometimes the projectile can be knocked back to the player at close range
 
         if (receiver.getGameMode() != GameMode.SURVIVAL) return;
-        if (CombatLog.isInCombat(damager)) {
-            CombatLog.updateCombat(damager);
+
+        if (CombatLog.inPVP(damager)) {
+            CombatLog.updatePVP(damager);
         } else {
-            CombatLog.addToCombat(damager);
+            CombatLog.addToPVP(damager);
         }
 
         receiver.playEffect(EntityEffect.HURT);

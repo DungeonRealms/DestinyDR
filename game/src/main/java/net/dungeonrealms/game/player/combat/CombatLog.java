@@ -50,6 +50,8 @@ public class CombatLog implements GenericMechanic {
 
     public static ConcurrentHashMap<Player, Integer> COMBAT = new ConcurrentHashMap<>();
 
+    public static ConcurrentHashMap<Player, Integer> PVP_COMBAT = new ConcurrentHashMap<>();
+
     public ConcurrentMap<UUID, CombatLogger> getCOMBAT_LOGGERS() {
         return COMBAT_LOGGERS;
     }
@@ -59,6 +61,77 @@ public class CombatLog implements GenericMechanic {
     public static boolean isInCombat(Player player) {
         return COMBAT.containsKey(player);
     }
+
+    // PVP COMBAT
+
+    /**
+     * Update a player's PVP timer
+     *
+     * @param player The player
+     */
+    public static void updatePVP(Player player) {
+        if (inPVP(player)) {
+            PVP_COMBAT.put(player, 10);
+        }
+    }
+
+    /**
+     * Add a player to PVP
+     *
+     * @param player The player
+     */
+    public static void addToPVP(Player player) {
+        if (!inPVP(player) && !GameAPI.getGamePlayer(player).isInvulnerable()) {
+            PVP_COMBAT.put(player, 10);
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                TitleAPI.sendActionBar(player, ChatColor.RED.toString() + ChatColor.BOLD + "ENTERING PVP COMBAT", 4 * 20);
+            }
+
+            /*
+            Knock player off of horse, if they're tagged in combat.
+             */
+            if (player.getVehicle() != null) {
+                if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                    net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(player.getUniqueId());
+                    player.eject();
+                    mount.getBukkitEntity().remove();
+                    EntityAPI.removePlayerMountList(player.getUniqueId());
+                } else {
+                    player.eject();
+                    player.getVehicle().remove();
+                }
+                player.sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
+            }
+        }
+    }
+
+    /**
+     * Remove a player from PVP
+     *
+     * @param player The player
+     */
+    public static void removeFromPVP(Player player) {
+        if (inPVP(player)) {
+            PVP_COMBAT.remove(player);
+            //Removes all arrows from player.
+            ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(9, DataWatcherRegistry.b), 0);
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                TitleAPI.sendActionBar(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEAVING PVP COMBAT", 4 * 20);
+            }
+        }
+    }
+
+    /**
+     * Check if a player is in PVP
+     *
+     * @param player The player
+     * @return Boolean
+     */
+    public static boolean inPVP(Player player) {
+        return PVP_COMBAT.containsKey(player);
+    }
+
+    // END PVP COMBAT
 
     public static void updateCombat(Player player) {
         if (isInCombat(player)) {
@@ -200,6 +273,13 @@ public class CombatLog implements GenericMechanic {
                     removeFromCombat(e.getKey());
                 } else {
                     COMBAT.put(e.getKey(), (e.getValue() - 1));
+                }
+            }
+            for (Map.Entry<Player, Integer> e : PVP_COMBAT.entrySet()) {
+                if (e.getValue() <= 0) {
+                    removeFromPVP(e.getKey());
+                } else {
+                    PVP_COMBAT.put(e.getKey(), (e.getValue() - 1));
                 }
             }
         }, 0, 20L);

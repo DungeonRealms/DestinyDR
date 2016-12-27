@@ -481,6 +481,7 @@ public class GamePlayer {
 
     public void setInvulnerable(boolean flag) {
         if (CombatLog.isInCombat(T)) CombatLog.removeFromCombat(T);
+        if(CombatLog.inPVP(T)) CombatLog.removeFromPVP(T);
         isInvulnerable = flag;
     }
 

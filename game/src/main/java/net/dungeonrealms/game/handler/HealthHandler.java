@@ -473,10 +473,20 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
-        if (CombatLog.isInCombat(player)) {
-            CombatLog.updateCombat(player);
+        if(!(damager instanceof Player)) {
+            // Player is damaged by a creature
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.updateCombat(player);
+            } else {
+                CombatLog.addToCombat(player);
+            }
         } else {
-            CombatLog.addToCombat(player);
+            // Player is pvping
+            if(CombatLog.inPVP(player)) {
+                CombatLog.updatePVP(player);
+            } else {
+                CombatLog.addToPVP(player);
+            }
         }
 
         LivingEntity leAttacker = null;
@@ -640,6 +650,9 @@ public class HealthHandler implements GenericMechanic {
                     }
                     GameAPI.calculateAllAttributes(player);
                     CombatLog.removeFromCombat(player);
+                    if(CombatLog.inPVP(player)) {
+                        CombatLog.removeFromPVP(player);
+                    }
                 }, 1L);
                 return true;
             }
@@ -668,6 +681,9 @@ public class HealthHandler implements GenericMechanic {
                 }
                 GameAPI.calculateAllAttributes(player);
                 CombatLog.removeFromCombat(player);
+                if(CombatLog.inPVP(player)) {
+                    CombatLog.removeFromPVP(player);
+                }
             }, 1L);
             return true;
         }

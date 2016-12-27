@@ -913,6 +913,9 @@ public class GameAPI {
                 player.sendMessage(" ");
             }
 
+            // Handle pvp log first
+            if(CombatLog.inPVP(player)) CombatLog.removeFromPVP(player);
+
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
                 // prevent any interaction while the data is being uploaded

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener;
 
+import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -73,6 +74,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -209,12 +211,13 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onShardClick(InventoryClickEvent event) {
-        if(event.getInventory().getTitle() != null) {
-            if(event.getInventory().getTitle().equalsIgnoreCase("dungeonrealms shards")) {
+        if (event.getInventory().getTitle() != null) {
+            if (event.getInventory().getTitle().equalsIgnoreCase("dungeonrealms shards")) {
                 event.setCancelled(true);
             }
         }
     }
+
     /**
      * This event is the main event once the player has actually entered the
      * world! It is now safe to do things to the player e.g TitleAPI or
@@ -351,8 +354,90 @@ public class MainListener implements Listener {
             GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
             return;
         }
+        Player player = event.getPlayer();
 
-        GameAPI.handleLogout(event.getPlayer().getUniqueId(), true, null);
+        // Handle combat log before data save so we overwrite the logger's inventory data
+        if (CombatLog.inPVP(player)) {
+            // Woo oh, he logged out in PVP
+            player.getWorld().strikeLightningEffect(player.getLocation());
+            player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
+            // Check player alignment
+            KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
+            if (alignments == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                // Player is chaotic, drop armor & inventory
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    // Don't drop realm portal rune & journal
+                    if (itemStack.getType() != Material.WRITTEN_BOOK || itemStack.getType() != Material.NETHER_STAR) {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }
+                }
+                // Drop gear
+                for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
+                    player.getWorld().dropItem(player.getLocation(), itemStack);
+                }
+                player.getInventory().clear();
+                player.getEquipment().clear();
+            }
+            if (alignments == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
+                // Player is neutral
+                List<ItemStack> droppedArmor = Lists.newArrayList();
+                Random random = new Random();
+                // Drop inventory items
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    // Don't drop realm portal rune & journal
+                    if (itemStack.getType() != Material.WRITTEN_BOOK || itemStack.getType() != Material.NETHER_STAR) {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }
+                }
+                // Check armor drops
+                for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
+                    int chance = random.nextInt(100);
+                    if (chance >= 75) {
+                        // If chance = 25% is called, aka 1/4 is called, drop the piece
+                        droppedArmor.add(itemStack);
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    }
+                }
+                // Update inventory data before upload
+                player.getInventory().clear();
+                // Remove correct pieces
+                for (ItemStack itemStack : droppedArmor) {
+                    if (itemStack == player.getEquipment().getBoots()) {
+                        player.getEquipment().setBoots(null);
+                    } else if (itemStack == player.getEquipment().getLeggings()) {
+                        player.getEquipment().setLeggings(null);
+                    } else if (itemStack == player.getEquipment().getChestplate()) {
+                        player.getEquipment().setChestplate(null);
+                    } else if (itemStack == player.getEquipment().getHelmet()) {
+                        player.getEquipment().setHelmet(null);
+                    }
+                }
+            }
+            if(alignments == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                // Player is lawful, damage all items
+                for(ItemStack itemStack : player.getInventory().getContents()) {
+                    if(GameAPI.isWeapon(itemStack) || GameAPI.isArmor(itemStack)) {
+                        double durability = RepairAPI.getCustomDurability(itemStack);
+                        double toSubstract = (durability / 100) * 30; // 30% of current durability
+                        RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
+                    }
+                }
+                // Damage armor
+                for(ItemStack itemStack : player.getEquipment().getArmorContents()) {
+                    if(GameAPI.isArmor(itemStack)) {
+                        double durability = RepairAPI.getCustomDurability(itemStack);
+                        double toSubstract = (durability / 100) * 30; // 30% of current durability
+                        RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
+                    } // Else? Wow wait what, he is not wearing any Dungeon Realms armor?!
+                }
+            }
+            // Remove from pvplog
+            CombatLog.removeFromPVP(player);
+            // Update bukkit inventory
+            player.updateInventory();
+        }
+        // Good to go lads
+        GameAPI.handleLogout(player.getUniqueId(), true, null);
     }
 
     /**
