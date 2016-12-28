@@ -11,6 +11,7 @@ import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.ProtectionHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.CrashDetector;
@@ -32,6 +33,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -50,6 +52,24 @@ import java.util.Random;
 public class RestrictionListener implements Listener {
 
     private static CooldownProvider ANTI_COMMAND_SPAM = new CooldownProvider();
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPotionThrow(ProjectileLaunchEvent event) {
+        if (event.getEntity().getType() == EntityType.SPLASH_POTION) {
+            if (event.getEntity().getShooter() != null) {
+                if (event.getEntity().getShooter() instanceof Player) {
+                    Player player = (Player) event.getEntity().getShooter();
+                    if (GameAPI.getGamePlayer(player) != null) {
+                        GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
+                        if (gamePlayer.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC || gamePlayer.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
+                            event.setCancelled(true);
+                            player.sendMessage(ChatColor.RED + "You cannot use a potion whilst " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " or " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "NEUTRAL");
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public static int getLevelToUseTier(int tier) {
         switch (tier) {

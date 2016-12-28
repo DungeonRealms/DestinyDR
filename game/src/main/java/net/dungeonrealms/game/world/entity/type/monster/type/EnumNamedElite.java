@@ -14,7 +14,7 @@ public enum EnumNamedElite {
     ACERON("aceron", "???"), //TODO: No one in config with name Aceron. But custom loot file exists.
     ZION("zion", "skeleton king zion"),
     DURANOR("duranor", "duranor the cruel"),
-    MOTHEROFDOOM("motherofDoom", "mother of doom"),
+    MOTHEROFDOOM("MotherofDoom", "mother of doom"), // How can you fuck up so bad
     LORD_TAYLOR("lordtaylor", "lord taylor"),
     NONE("none", "none");
 

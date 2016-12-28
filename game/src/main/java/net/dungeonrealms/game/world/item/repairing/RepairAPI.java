@@ -86,27 +86,27 @@ public class RepairAPI {
             }
 
             double global_multiplier = 0.25 - 0.05;
-            double multiplier = 1.0; // 100%
+            double multiplier; // 100%
             double missing_percent = 100 - percent_durability_left;
             double total_dmg_cost = missing_percent * dmg_cost;
             if (item_tier == 1) {
-                multiplier = 1.0;
+                multiplier = 0.07;
                 repair_cost = total_dmg_cost * multiplier;
             }
             if (item_tier == 2) {
-                multiplier = 1.25;
+                multiplier = 0.7;
                 repair_cost = total_dmg_cost * multiplier;
             }
             if (item_tier == 3) {
-                multiplier = 2;
+                multiplier = 1;
                 repair_cost = total_dmg_cost * multiplier;
             }
             if (item_tier == 4) {
-                multiplier = 5;
+                multiplier = 3.35;
                 repair_cost = total_dmg_cost * multiplier;
             }
             if (item_tier == 5) {
-                multiplier = 7.5;
+                multiplier = 4.48;
                 repair_cost = total_dmg_cost * multiplier;
             }
             repair_cost = repair_cost * global_multiplier;

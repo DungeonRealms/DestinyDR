@@ -347,19 +347,19 @@ public class BankMechanics implements GenericMechanic {
         //100, 250, 1000, 3000, 7000, 15000
         switch (invLvl) {
             case 1:
-                return 100;
+                return 50;
             case 2:
-                return 250;
+                return 125;
             case 3:
-                return 1000;
+                return 500;
             case 4:
-                return 3000;
+                return 1500;
             case 5:
-                return 7000;
+                return 3500;
             case 6:
-                return 15000;
+                return 7500;
             default:
-                return 15000;
+                return 7500;
         }
     }
 

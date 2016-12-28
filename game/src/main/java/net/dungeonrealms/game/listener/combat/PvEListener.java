@@ -123,10 +123,6 @@ public class PvEListener implements Listener {
                     default:
                         return;
                 }
-            case STAFF:
-                event.setDamage(0);
-                event.setCancelled(true);
-                return;
             default:
                 break;
         }

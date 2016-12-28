@@ -358,77 +358,37 @@ public class MainListener implements Listener {
 
         // Handle combat log before data save so we overwrite the logger's inventory data
         if (CombatLog.inPVP(player)) {
+            Utils.log.warning("debug quit combat");
             // Woo oh, he logged out in PVP
             player.getWorld().strikeLightningEffect(player.getLocation());
             player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
             // Check player alignment
             KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
-            if (alignments == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+            if (alignments == KarmaHandler.EnumPlayerAlignments.CHAOTIC || alignments == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
                 // Player is chaotic, drop armor & inventory
                 for (ItemStack itemStack : player.getInventory().getContents()) {
                     // Don't drop realm portal rune & journal
-                    if (itemStack.getType() != Material.WRITTEN_BOOK || itemStack.getType() != Material.NETHER_STAR) {
-                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                    if (itemStack != null) {
+                        if (!GameAPI.isArmor(itemStack)) {
+                            if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
+                                player.getWorld().dropItem(player.getLocation(), itemStack);
+                            }
+                        } else {
+                            player.getWorld().dropItem(player.getLocation(), itemStack);
+                        }
                     }
-                }
-                // Drop gear
-                for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
-                    player.getWorld().dropItem(player.getLocation(), itemStack);
                 }
                 player.getInventory().clear();
                 player.getEquipment().clear();
             }
-            if (alignments == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
-                // Player is neutral
-                List<ItemStack> droppedArmor = Lists.newArrayList();
-                Random random = new Random();
-                // Drop inventory items
-                for (ItemStack itemStack : player.getInventory().getContents()) {
-                    // Don't drop realm portal rune & journal
-                    if (itemStack.getType() != Material.WRITTEN_BOOK || itemStack.getType() != Material.NETHER_STAR) {
-                        player.getWorld().dropItem(player.getLocation(), itemStack);
-                    }
-                }
-                // Check armor drops
-                for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
-                    int chance = random.nextInt(100);
-                    if (chance >= 75) {
-                        // If chance = 25% is called, aka 1/4 is called, drop the piece
-                        droppedArmor.add(itemStack);
-                        player.getWorld().dropItem(player.getLocation(), itemStack);
-                    }
-                }
-                // Update inventory data before upload
-                player.getInventory().clear();
-                // Remove correct pieces
-                for (ItemStack itemStack : droppedArmor) {
-                    if (itemStack == player.getEquipment().getBoots()) {
-                        player.getEquipment().setBoots(null);
-                    } else if (itemStack == player.getEquipment().getLeggings()) {
-                        player.getEquipment().setLeggings(null);
-                    } else if (itemStack == player.getEquipment().getChestplate()) {
-                        player.getEquipment().setChestplate(null);
-                    } else if (itemStack == player.getEquipment().getHelmet()) {
-                        player.getEquipment().setHelmet(null);
-                    }
-                }
-            }
-            if(alignments == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+            if (alignments == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
                 // Player is lawful, damage all items
-                for(ItemStack itemStack : player.getInventory().getContents()) {
-                    if(GameAPI.isWeapon(itemStack) || GameAPI.isArmor(itemStack)) {
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    if (GameAPI.isWeapon(itemStack) || GameAPI.isArmor(itemStack)) {
                         double durability = RepairAPI.getCustomDurability(itemStack);
                         double toSubstract = (durability / 100) * 30; // 30% of current durability
                         RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
                     }
-                }
-                // Damage armor
-                for(ItemStack itemStack : player.getEquipment().getArmorContents()) {
-                    if(GameAPI.isArmor(itemStack)) {
-                        double durability = RepairAPI.getCustomDurability(itemStack);
-                        double toSubstract = (durability / 100) * 30; // 30% of current durability
-                        RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
-                    } // Else? Wow wait what, he is not wearing any Dungeon Realms armor?!
                 }
             }
             // Remove from pvplog

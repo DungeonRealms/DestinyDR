@@ -101,12 +101,6 @@ public class PvPListener implements Listener {
                 event.setCancelled(true);
                 damager.updateInventory();
                 return;
-            case STAFF:
-                event.setDamage(0);
-                event.setCancelled(true);
-                damager.updateInventory();
-                receiver.updateInventory();
-                return;
             default:
                 break;
         }

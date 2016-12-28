@@ -39,7 +39,7 @@ public interface DRMonster {
 
     Map<String, Integer[]> getAttributes();
 
-    default void checkItemDrop(int tier, EnumMonster monster, Entity ent, Player killer) {
+    default void checkItemDrop(int tier, Entity ent, Player killer) {
         if (ent.getWorld().getName().contains("DUNGEON")) {
             //No normal drops in dungeons.
             return;
