@@ -1,12 +1,14 @@
 package net.dungeonrealms.game.player.notice;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.MailHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -83,6 +85,11 @@ public class Notice {
             int ecashAmount = 15;
             if (Rank.isSubscriberPlus(p)) ecashAmount = 25;
             else if (Rank.isSubscriber(p)) ecashAmount = 20;
+
+            GamePlayer gp = GameAPI.getGamePlayer(p);
+            if (gp.isStreamMode()) {
+                return;
+            }
 
             p.sendMessage(" ");
             final JSONMessage message = new JSONMessage("Hey there! You have not voted for a day. Vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.GRAY);

@@ -114,7 +114,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                         Bukkit.getOnlinePlayers().forEach(p -> {
                             if (Rank.isGM(p)) {
-                                p.sendMessage(msg);
+                                GamePlayer gp = GameAPI.getGamePlayer(p);
+                                if (gp != null && !gp.isStreamMode()) {
+                                    p.sendMessage(msg);
+                                }
                             }
                         });
                         break;
@@ -122,7 +125,12 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                     case "StaffMessage": {
                         String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                         Bukkit.getOnlinePlayers().forEach(p -> {
-                            if (Rank.isPMOD(p) || Rank.isSupport(p)) p.sendMessage(msg);
+                            if (Rank.isPMOD(p) || Rank.isSupport(p)) {
+                                GamePlayer gp = GameAPI.getGamePlayer(p);
+                                if (gp != null && !gp.isStreamMode()) {
+                                    p.sendMessage(msg);
+                                }
+                            }
                         });
                         break;
                     }

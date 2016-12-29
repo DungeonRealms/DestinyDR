@@ -818,7 +818,6 @@ public class Fishing implements GenericMechanic {
                 case 100:
                     addEnchant = true;
                     Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_V);
-                    rod.getItemMeta().setDisplayName(ChatColor.YELLOW.toString() + "Grand Master Fishing Rod");
                     p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Fishing Rod has reached " + ChatColor.UNDERLINE + "LVL 100"
                             + ChatColor.YELLOW + " this means you can no longe repair it. You now have TWO options.");
                     p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Fishing Rod at the merchant for a 'Buff Token' that will hold all the custom stats of your Fishingrod and may be applied to a new Fishingrod.");
@@ -844,28 +843,28 @@ public class Fishing implements GenericMechanic {
             lore.set(0, ChatColor.GRAY.toString() + "Level: " + GameAPI.getTierColor(tier) + lvl);
             lore.set(1, ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
             lore.set(2, ChatColor.GRAY.toString() + "EXP: " + expBar);
-            String name = "Novice Fishingrod";
+            String name = "Basic Fishing Rod";
 
             switch (tier) {
                 case 1:
-                    name = ChatColor.WHITE + "Basic Fishingrod";
+                    name = ChatColor.WHITE + "Basic Fishing Rod";
                     lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of wood and thread.");
                     break;
                 case 2:
-                    name = ChatColor.GREEN.toString() + "Advanced Fishingrod";
+                    name = ChatColor.GREEN.toString() + "Advanced Fishing Rod";
                     lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of oak wood and thread.");
                     break;
                 case 3:
-                    name = ChatColor.AQUA.toString() + "Expert Fishingrod";
+                    name = ChatColor.AQUA.toString() + "Expert Fishing Rod";
                     lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of ancient oak wood and spider silk.");
                     break;
                 case 4:
-                    name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishingrod";
+                    name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishing Rod";
                     lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of jungle bamboo and spider silk.");
                     break;
                 case 5:
-                    name = ChatColor.YELLOW.toString() + "Master Fishingrod";
-                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of rich mahogany and enchanted silk");
+                    name = ChatColor.YELLOW.toString() + (lvl == 100 ? "Grand " : "") + "Master Fishing Rod";
+                    lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of rich mahogany and enchanted silk.");
                     break;
                 default:
                     break;

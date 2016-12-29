@@ -1590,6 +1590,26 @@ public class ClickHandler {
                             player.setGameMode(GameMode.CREATIVE);
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_VANISH, false, true);
                         } else {
+                            // Remove Trail
+                            if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
+                                DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
+                                player.sendMessage(ChatColor.GREEN + "Your have disabled your trail.");
+                            }
+
+                            // Remove Pet
+                            if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                                Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                                if (entity.isAlive()) {
+                                    entity.getBukkitEntity().remove();
+                                }
+                                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                                }
+                                player.sendMessage(ChatColor.GREEN + "Your pet has been dismissed.");
+                                EntityAPI.removePlayerPetList(player.getUniqueId());
+                            }
+
+                            // Make the user invisible / hidden.
                             GameAPI._hiddenPlayers.add(player);
                             player.setCustomNameVisible(false);
                             Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
@@ -1616,7 +1636,33 @@ public class ClickHandler {
                                 .BOLD + "ENABLED" : ChatColor.RED.toString() + ChatColor.BOLD + "DISABLED"));
                         break;
 
-                    case 2: // Toggle WARNING prompts
+                    case 2: // Toggle Stream Mode
+                        gp = GameAPI.getGamePlayer(player);
+                        if (gp == null) break;
+
+                        // Change the status.
+                        gp.setStreamMode(!gp.isStreamMode());
+
+                        // Update Permission
+                        player.performCommand("ncp notify " + (gp.isStreamMode() ? "off" : "on"));
+                        player.performCommand("ipc toggle detail");
+                        player.performCommand("ipc toggle secure");
+                        player.performCommand("ipc toggle active");
+                        player.performCommand("ipc toggle blacklist-list");
+                        player.performCommand("ipc toggle geop");
+                        player.performCommand("ipc toggle rejoin");
+
+                        // Clear Immediate Chat
+                        for (int i = 0; i < 50; i++) {
+                            player.sendMessage("");
+                        }
+
+                        // Prompt user about the change.
+                        if (gp.isStreamMode()) {
+                            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Stream Mode - ENABLED");
+                        } else {
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stream Mode - DISABLED");
+                        }
 
                         break;
 

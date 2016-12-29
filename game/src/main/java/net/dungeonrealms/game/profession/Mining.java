@@ -378,7 +378,6 @@ public class Mining implements GenericMechanic {
                 case 100:
                     addEnchant = true;
                     Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.PICKAXE_LEVEL_V);
-                    pick.getItemMeta().setDisplayName(ChatColor.YELLOW.toString() + "Grand Master Pickaxe");
                     p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Pickaxe has reached " + ChatColor.UNDERLINE + "LVL 100"
                             + ChatColor.YELLOW + " this means you can no longe repair it. You now have TWO options.");
                     p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Pickaxe at the merchant for a 'Buff Token' that will hold all the custom stats of your Pickaxe and may be applied to a new Pickaxe.");
@@ -424,7 +423,7 @@ public class Mining implements GenericMechanic {
                     lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of hardened diamond.");
                     break;
                 case 5:
-                    name = ChatColor.YELLOW.toString() + "Master Pickaxe";
+                    name = ChatColor.YELLOW.toString() + (lvl == 100 ? "Grand " : "") + "Master Pickaxe";
                     lore.set(lore.size() - 1, ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of reinforced gold.");
                     break;
                 default:

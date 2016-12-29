@@ -56,8 +56,10 @@ public class GamePlayer {
 
     private int playerEXP;
 
+    // Game Master
     private boolean isInvulnerable;
     private boolean isTargettable;
+    private boolean isStreamMode;
 
     private boolean isJailed;
 
@@ -78,6 +80,7 @@ public class GamePlayer {
         this.playerEXP = (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, player.getUniqueId());
         this.isTargettable = true;
         this.isInvulnerable = false;
+        this.isStreamMode = false;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
     }
@@ -489,6 +492,10 @@ public class GamePlayer {
         if (!isPvPTagged())
             TitleAPI.sendActionBar(T, ChatColor.RED + "PvP Tagged - " + ChatColor.BOLD + "10s", 4 * 20);
         this.pvpTaggedUntil = time;
+    }
+
+    public void setStreamMode(boolean flag) {
+        isStreamMode = flag;
     }
 
     public boolean isPvPTagged() {

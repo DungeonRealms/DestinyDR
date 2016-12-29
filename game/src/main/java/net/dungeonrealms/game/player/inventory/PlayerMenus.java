@@ -774,6 +774,12 @@ public class PlayerMenus {
                 ChatColor.GRAY + "Toggling this will make you vulnerable to attacks but also allow outgoing damage.",
                 ChatColor.GRAY + "Display Item"}).build());
 
+        // Stream Mode
+        isToggled = gp.isStreamMode();
+        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Stream Mode", new String[]{
+                ChatColor.GRAY + "Disable sensitive messages from being displayed.",
+                ChatColor.GRAY + "Display Item"}).build());
+
         player.openInventory(inv);
     }
 

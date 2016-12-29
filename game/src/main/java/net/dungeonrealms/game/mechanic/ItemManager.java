@@ -767,24 +767,24 @@ public class ItemManager {
 
         switch (tier) {
             case 1:
-                name = ChatColor.WHITE + "Basic Fishingrod";
+                name = ChatColor.WHITE + "Basic Fishing Rod";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of wood and thread.");
                 break;
             case 2:
-                name = ChatColor.GREEN.toString() + "Advanced Fishingrod";
+                name = ChatColor.GREEN.toString() + "Advanced Fishing Rod";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of oak wood and thread.");
                 break;
             case 3:
-                name = ChatColor.AQUA.toString() + "Expert Fishingrod";
+                name = ChatColor.AQUA.toString() + "Expert Fishing Rod";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of ancient oak wood and spider silk.");
                 break;
             case 4:
-                name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishingrod";
+                name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Fishing Rod";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of jungle bamboo and spider silk.");
                 break;
             case 5:
-                name = ChatColor.YELLOW.toString() + "Master Fishingrod";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of rich mahogany and enchanted silk");
+                name = ChatColor.YELLOW.toString() + "Master Fishing Rod";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of rich mahogany and enchanted silk.");
                 break;
             default:
                 break;
