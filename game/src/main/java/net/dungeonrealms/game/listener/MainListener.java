@@ -82,6 +82,15 @@ import java.util.Random;
  */
 public class MainListener implements Listener {
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onTeleport(EntityTeleportEvent event) {
+        if(event.getEntity().getType() == EntityType.ENDERMAN) {
+            if(event.getEntity().getWorld().getName().contains("DUNGEON")) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onVote(VotifierEvent event) {
         if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {

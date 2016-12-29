@@ -63,25 +63,25 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
     public InfernalAbyss(World world, Location loc) {
         super(world);
         this.setSkeletonType(1);
-        setArmor(getEnumBoss().tier);
         this.fireProof = true;
         this.getBukkitEntity().setCustomNameVisible(true);
         int bossLevel = 50;
         MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, bossLevel);
         this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
-        ;
-        EntityStats.setBossRandomStats(this, bossLevel, getEnumBoss().tier);
         this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
             p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "I have nothing to say to you foolish mortals, except for this: Burn.");
         }
-        ghast = new InfernalGhast(this);
         this.setSize(0.7F, 2.4F);
         this.fireProof = true;
         this.setSkeletonType(1);
         this.persistent = true;
         DungeonManager.getInstance().getFireUnderEntity().add(this);
+        ghast = new InfernalGhast(this);
+        setArmor(4);
+        EntityStats.setBossRandomStats(this, bossLevel, 4);
+        EntityStats.setBossRandomStats(this.ghast, 100, 4);
     }
 
     public void setArmor(int tier) {

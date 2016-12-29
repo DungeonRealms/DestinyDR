@@ -230,7 +230,9 @@ public class EntityStats {
         bukkitEntity.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
         bukkitEntity.setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
         for (ItemStack i : ((LivingEntity) bukkitEntity).getEquipment().getArmorContents()) {
-            EnchantmentAPI.addGlow(i);
+            if(i != null && bukkitEntity != null) {
+                EnchantmentAPI.addGlow(i);
+            }
         }
         EnchantmentAPI.addGlow(((LivingEntity) bukkitEntity).getEquipment().getItemInMainHand());
         ((LivingEntity) bukkitEntity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true));

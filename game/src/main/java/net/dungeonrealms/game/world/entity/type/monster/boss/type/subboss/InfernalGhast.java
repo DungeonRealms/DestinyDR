@@ -36,14 +36,13 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
      */
     public InfernalGhast(InfernalAbyss infernalAbyss) {
         super(infernalAbyss.getWorld());
+        this.boss = infernalAbyss;
         this.getBukkitEntity().setCustomNameVisible(true);
         int level = 100;
         MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
         this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
-        EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
         this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
-        this.boss = infernalAbyss;
         //TODO: Enable double armor (takes half damage from attacks) [same as above].
     }
 

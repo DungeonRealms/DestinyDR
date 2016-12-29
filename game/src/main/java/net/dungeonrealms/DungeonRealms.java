@@ -378,8 +378,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandAlbranir("albranir", "/<command> [args]", "Command to spawn albranir."));
         cm.registerCommand(new CommandClearChat("clearchat", "/<command> [args]", "Command clear chat."));
 
-
-        cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "Safely logout of Dungeon Realms."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "This command will allow the user to change shards.", Collections.singletonList("connect")));
 
