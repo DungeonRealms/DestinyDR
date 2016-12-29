@@ -423,7 +423,9 @@ public class RestrictionListener implements Listener {
         if (event.getPlayer().hasMetadata("sharding")) {
             event.setCancelled(true);
             try {
-                event.getPlayer().closeInventory();
+                if(event.getPlayer() != null && event.getPlayer().isOnline()) {
+                    event.getPlayer().closeInventory();
+                }
             } catch (Exception ignored) {
             }
         }
@@ -434,7 +436,9 @@ public class RestrictionListener implements Listener {
         if (event.getPlayer().hasMetadata("sharding")) {
             event.setCancelled(true);
             try {
-                event.getPlayer().closeInventory();
+                if(event.getPlayer() != null && event.getPlayer().isOnline()) {
+                    event.getPlayer().closeInventory();
+                }
             } catch (Exception ignored) {
             }
         }
