@@ -692,7 +692,6 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
                 if (realm.getPortalLocation().getWorld() == portalLocation.getWorld()) {
                     if (realm.getPortalLocation() != null && realm.getPortalLocation().distance(portalLocation.clone()) <= 2)
                         return realm;
-
                 } else {
                     Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
                     Utils.log.warning("PORTAL LOCATION IS NOT IN REQUESTS TOKEN WORLD");
