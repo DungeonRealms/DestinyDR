@@ -60,9 +60,14 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
+        /** Whoever thought this was a great idea is autistic and should be permanently banned from being able to use an IDE
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             Bukkit.getServer().getOnlinePlayers().stream().forEach(pl -> setPlayerOverheadHP(pl, getPlayerHPLive(pl)));
-        }, 0L, 6L);
+        }, 0L, 20L);
+        */
+        Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getServer().getOnlinePlayers().stream().forEach(pl -> setPlayerOverheadHP(pl, getPlayerHPLive(pl)));
+        }, 0L, 20L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40L, 20L);
 
     }
@@ -96,7 +101,7 @@ public class HealthHandler implements GenericMechanic {
             }
             setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
             player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        }, 100); // 5 sec
+        }, 20); // 1 sec
     }
 
     /**
@@ -473,7 +478,7 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
-        if(!(damager instanceof Player)) {
+        if (!(damager instanceof Player)) {
             // Player is damaged by a creature
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
@@ -482,7 +487,7 @@ public class HealthHandler implements GenericMechanic {
             }
         } else {
             // Player is pvping
-            if(CombatLog.inPVP(player)) {
+            if (CombatLog.inPVP(player)) {
                 CombatLog.updatePVP(player);
             } else {
                 CombatLog.addToPVP(player);
@@ -650,7 +655,7 @@ public class HealthHandler implements GenericMechanic {
                     }
                     GameAPI.calculateAllAttributes(player);
                     CombatLog.removeFromCombat(player);
-                    if(CombatLog.inPVP(player)) {
+                    if (CombatLog.inPVP(player)) {
                         CombatLog.removeFromPVP(player);
                     }
                 }, 1L);
@@ -681,7 +686,7 @@ public class HealthHandler implements GenericMechanic {
                 }
                 GameAPI.calculateAllAttributes(player);
                 CombatLog.removeFromCombat(player);
-                if(CombatLog.inPVP(player)) {
+                if (CombatLog.inPVP(player)) {
                     CombatLog.removeFromPVP(player);
                 }
             }, 1L);
