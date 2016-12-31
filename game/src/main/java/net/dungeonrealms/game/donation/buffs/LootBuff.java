@@ -31,7 +31,7 @@ public class LootBuff extends Buff {
         Bukkit.getServer().broadcastMessage(
                 ChatColor.GOLD + "" + ChatColor.BOLD + ">> " + "(" + Utils.getFormattedShardName(fromServer) + ") " + ChatColor.RESET + activatingPlayer + ChatColor.GOLD
                         + " has just activated " + ChatColor.UNDERLINE + "+" + bonusAmount + "% Global Drop Rates" + ChatColor.GOLD
-                        + " for " + formattedTime + " by using 'Global Loot Buff' from the E-CASH store!");
+                        + " for " + formattedTime + " by using 'Global Loot Buff' from the store!");
         Bukkit.getServer().broadcastMessage("");
         DonationEffects.getInstance().setActiveLootBuff(this);
         DatabaseAPI.getInstance().updateShardCollection(DungeonRealms.getInstance().bungeeName, EnumOperators.$SET,
