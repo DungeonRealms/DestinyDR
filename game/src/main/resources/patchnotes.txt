@@ -1,20 +1,10 @@
 Build <build>
 
 &2New Features&0
-Use /welcome to welcome new players
-for ecash!
+ - N/A
 
 &8Changes&0
-- Fixed critical exploits
-- Mining emeralds now takes less time
-- Fixed extra mining fatigue
-- Anti cheat no longer removes original item
-on accidental duplication
-- 10 minute cooldown added to suiciding
+ - N/A
 
 &4Bug Fixes&0
-- Fixed crashing
-- Fixed potential wiping when players crash
-before they load their data
-- Fixed going past +8 for protection scrolls
-- Fixed realms occasionally rolling back
+ - N/A
