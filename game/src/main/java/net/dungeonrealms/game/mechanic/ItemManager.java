@@ -904,8 +904,6 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "Leave your party"
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll "
                 + "\n" + ChatColor.BLACK.toString() + "Rolls a random number."
-                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/logout " + "\n" + ChatColor.BLACK.toString()
-                + "Safetly logs out your character."
         );
 
 
