@@ -66,7 +66,7 @@ public class Lobby extends JavaPlugin implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer().isOp()) {
-            event.setFormat(ChatColor.AQUA.toString() + ChatColor.BOLD + "DEV " + ChatColor.AQUA + event.getPlayer().getName() + ": " + event.getMessage());
+            event.setFormat(ChatColor.AQUA + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
         } else event.setCancelled(true);
     }
 

@@ -54,7 +54,7 @@ public class Rank {
                 return rank.equalsIgnoreCase("dev") && Arrays.asList(Constants.DEVELOPERS).contains(player.getName());
 
             case "gm":
-                return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev") || player.isOp();
+                return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
 
             case "support":
                 return rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("dev");
@@ -106,7 +106,7 @@ public class Rank {
      */
     public static boolean isGM(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev") || player.isOp();
+        return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
     /**
