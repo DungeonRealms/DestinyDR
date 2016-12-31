@@ -3,6 +3,7 @@ package net.dungeonrealms.game.command.guild;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import org.bukkit.Bukkit;
@@ -44,7 +45,7 @@ public class CommandGDemote extends BaseCommand {
         String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
 
-        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName)) {
+        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !Rank.isGM(player)) {
             player.sendMessage(ChatColor.RED + "You must be the " + ChatColor.BOLD + "GUILD OWNER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gdemote <player>.");
             return true;
         }

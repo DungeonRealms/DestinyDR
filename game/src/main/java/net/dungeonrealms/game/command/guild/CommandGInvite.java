@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -48,7 +49,7 @@ public class CommandGInvite extends BaseCommand {
         String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
 
-        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !GuildDatabaseAPI.get().isOfficer(player.getUniqueId(), guildName)) {
+        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !GuildDatabaseAPI.get().isOfficer(player.getUniqueId(), guildName) && !Rank.isGM(player)) {
             player.sendMessage(ChatColor.RED + "You must be at least a guild " + ChatColor.BOLD + "OFFICER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/ginvite");
             return true;
         }
