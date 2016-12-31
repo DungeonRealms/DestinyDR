@@ -155,8 +155,31 @@ public class RestrictionListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
 
-        if (command.equalsIgnoreCase("/g") || command.equalsIgnoreCase("/gl") || command.equalsIgnoreCase("/l"))
-            return;
+        // Commands that can bypass the cooldown restriction.
+        switch (command.toLowerCase().substring(1).split(" ")[0]) {
+            case "g": // Guild Chat
+            case "gl": // Global Chat
+            case "l": // Local Chat
+            case "p": case "pchat": // Party Chat
+            case "w": case "message": case "m": case "whisper": case "msg": case "tell": case "t": // Private Message
+            case "r": case "reply": // Reply (to Private Message)
+            case "pinvite": // Party Invite
+            case "premove": case "pkick": // Party Kick
+            case "pleave": case "pquit": // Party Leave
+            case "ginvite": // Guild Invite
+            case "gkick": // Guild Kick
+            case "toggles": case "toggle": // Toggle Menu
+            case "toggledebug": case "debug": // Toggle Debug
+            case "togglechaos": // Toggle Chaos
+            case "toggleglobalchat": // Toggle Global Chat
+            case "togglepvp": // Toggle PvP
+            case "toggletells": case "dnd": // Toggle (Non-Bud) PMs
+            case "toggletrade": // Toggle Trading
+            case "toggletradechat": // Toggle Trade Chat
+            case "toggleduel": // Toggle Duel
+            case "toggletips": // Toggle Tips
+                return;
+        }
 
         if (ANTI_COMMAND_SPAM.isCooldown(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can only execute a command every 5 seconds!");
