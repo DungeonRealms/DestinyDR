@@ -168,7 +168,6 @@ public class HealthHandler implements GenericMechanic {
         if (gamePlayer == null || !gamePlayer.isAttributesLoaded()) {
             return;
         }
-        ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
         double maxHP = getPlayerMaxHPLive(player);
         double healthPercentage = ((double) hp / maxHP);
         if (healthPercentage * 100.0F > 100.0F) {
@@ -198,6 +197,8 @@ public class HealthHandler implements GenericMechanic {
         }
         BossBarAPI.removeAllBars(player);
         BossBarAPI.addBar(player, new TextComponent("    " + playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), color, getStyle(maxHP), healthToDisplay);
+        // Do this sync
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ScoreboardHandler.getInstance().updatePlayerHP(player, hp));
     }
 
     private BossBarAPI.Style getStyle(double maxHealth) {
