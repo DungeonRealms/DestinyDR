@@ -820,9 +820,9 @@ public class Fishing implements GenericMechanic {
                     Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.FISHINGROD_LEVEL_V);
                     p.sendMessage(ChatColor.YELLOW + "Congratulations! Your Fishing Rod has reached " + ChatColor.UNDERLINE + "LVL 100"
                             + ChatColor.YELLOW + " this means you can no longe repair it. You now have TWO options.");
-                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Fishing Rod at the merchant for a 'Buff Token' that will hold all the custom stats of your Fishingrod and may be applied to a new Fishingrod.");
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(1) " + ChatColor.YELLOW + "You can exchange the Fishing Rod at the merchant for a 'Buff Token' that will hold all the custom stats of your Fishing Rod and may be applied to a new Fishing Rod.");
                     p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "(2) " + ChatColor.YELLOW + "If you continue to use this" +
-                            " Fishingrod until it runs out of durability, it will transform into a LVL 1 Fishing Rod "
+                            " Fishing Rod until it runs out of durability, it will transform into a LVL 1 Fishing Rod "
                             + ", but it will retain all its custom stats.");
                     p.sendMessage("");
                     break;
@@ -1007,7 +1007,7 @@ public class Fishing implements GenericMechanic {
     public static ItemStack getEnchant(int tier, FishingRodEnchant enchant) {
         int stat = enchant.getBuff(tier);
         String statBuff = ChatColor.RED + enchant.name + " " + stat + "%";
-        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishingrod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishingrod with special attributes."}).build();
+        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishing Rod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishing rod with special attributes."}).build();
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         nms.getTag().setString("type", "fishingenchant");
@@ -1017,7 +1017,7 @@ public class Fishing implements GenericMechanic {
 
     public static ItemStack getEnchant(int tier, FishingRodEnchant enchant, int percent) {
         String statBuff = ChatColor.RED + enchant.name + " " + percent + "%";
-        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishingrod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishingrod with special attributes."}).build();
+        ItemStack stack = new ItemBuilder().setItem(Material.EMPTY_MAP, (short) 0, ChatColor.WHITE + ChatColor.BOLD.toString() + "Scroll: " + ChatColor.YELLOW + "Fishing Rod Enchant", new String[]{statBuff, ChatColor.GRAY + "Imbues a fishing rod with special attributes."}).build();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         nms.getTag().setString("type", "fishingenchant");
         nms.getTag().setInt(enchant.name(), percent);
