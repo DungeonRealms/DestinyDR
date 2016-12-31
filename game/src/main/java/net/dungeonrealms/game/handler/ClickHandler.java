@@ -1645,12 +1645,6 @@ public class ClickHandler {
 
                         // Update Permission
                         player.performCommand("ncp notify " + (gp.isStreamMode() ? "off" : "on"));
-                        player.performCommand("ipc toggle detail");
-                        player.performCommand("ipc toggle secure");
-                        player.performCommand("ipc toggle active");
-                        player.performCommand("ipc toggle blacklist-list");
-                        player.performCommand("ipc toggle geop");
-                        player.performCommand("ipc toggle rejoin");
 
                         // Clear Immediate Chat
                         for (int i = 0; i < 50; i++) {
