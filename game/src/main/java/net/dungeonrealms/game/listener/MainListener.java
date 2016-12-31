@@ -23,6 +23,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
@@ -580,6 +581,11 @@ public class MainListener implements Listener {
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
             NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
             return;
+        }
+        if (npcNameStripped.equalsIgnoreCase("Banker") || npcNameStripped.equalsIgnoreCase("Roaming Banker")
+            || npcNameStripped.equalsIgnoreCase("Wandering Banker")) {
+            Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
+            event.getPlayer().openInventory(storage.inv);
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             if (GameAPI.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {

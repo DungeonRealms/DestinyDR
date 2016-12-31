@@ -2,6 +2,8 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -32,6 +34,8 @@ public class CommandInterface extends BaseCommand {
 
             switch (args[0].toLowerCase()) {
                 case "bank":
+                    Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
+                    player.openInventory(storage.inv);
                     break;
 
                 case "item":
