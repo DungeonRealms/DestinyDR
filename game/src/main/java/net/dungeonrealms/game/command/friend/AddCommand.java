@@ -28,8 +28,9 @@ public class AddCommand extends BaseCommand {
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
+
         if (args.length != 1) {
-            player.sendMessage(ChatColor.GRAY + "/add <PLAYER>");
+            player.sendMessage(ChatColor.RED + "Invalid usage! You must type: /add <name>");
             return false;
         }
 

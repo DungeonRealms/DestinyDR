@@ -28,6 +28,11 @@ public class RemoveCommand extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
 
+        if (args.length != 1) {
+            player.sendMessage(ChatColor.RED + "Invalid usage! You must type: /unfriend <name>");
+            return false;
+        }
+
         String name = args[0];
 
 

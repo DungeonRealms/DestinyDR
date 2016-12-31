@@ -28,6 +28,12 @@ public class DenyCommand extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
 
+
+        if (args.length != 1) {
+            player.sendMessage(ChatColor.RED + "Invalid usage! You must type: /deny <name>");
+            return false;
+        }
+
         String name = args[0];
 
 
