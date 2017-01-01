@@ -23,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
@@ -108,7 +109,8 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                         GameAPI.moveToShard(player, bungeeName);
                         return;
                     }
-
+                    // Fucking idiots, set the metadata value first
+                    player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                     final int[] taskTimer = {5};
 
                     new Updater(DungeonRealms.getInstance(), 20L, null) {

@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.item.Attribute;
@@ -15,10 +16,29 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
+import java.util.HashMap;
+
 /**
  * Created by Kieran on 9/26/2015.
  */
 public class RepairAPI {
+
+    /**
+     * Create a new lvl 1 fishing rod but keep the enchants
+     *
+     * @param enchantMap The enchanting data
+     */
+    public static ItemStack requestNewRod(HashMap<Fishing.FishingRodEnchant, Integer> enchantMap) {
+        if (enchantMap != null && !enchantMap.isEmpty()) {
+            ItemStack itemStack = ItemManager.createFishingPole(1);
+            // Add all enchants
+            enchantMap.keySet().stream().filter(fishingRodEnchant -> enchantMap.get(fishingRodEnchant) != 0).forEach(fishingRodEnchant -> {
+                Fishing.addDefaultEnchant(itemStack, fishingRodEnchant, enchantMap.get(fishingRodEnchant));
+            });
+            return itemStack;
+        }
+        return null;
+    }
 
     public static int getItemRepairCost(ItemStack i) {
         double repair_cost = 0;
@@ -233,7 +253,6 @@ public class RepairAPI {
         }
         return Math.round(percentDurability);
     }
-
 
 
     /**
@@ -540,6 +559,24 @@ public class RepairAPI {
                     }
                     //TODO : PROFESSION ITEMS WITH DIFFERENT SYSTEM.
                     //TODO : CHECK PLAYERS HP AND REGEN THEN REDUCE AFTER ARMOR BREAKING.
+                }
+                break;
+            case "rod":
+                if (newItemDurability <= 150D && newItemDurability >= 140D) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **10% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
+                }
+                if (newItemDurability <= 30D && newItemDurability >= 20D) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
+                }
+                if (newItemDurability <= 1D) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        player.getInventory().remove(itemStack);
+                        player.getInventory().addItem(requestNewRod(Fishing.getEnchantData(itemStack)));
+                        player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
+                        player.updateInventory();
+                    }, 10L);
                 }
                 break;
             default:

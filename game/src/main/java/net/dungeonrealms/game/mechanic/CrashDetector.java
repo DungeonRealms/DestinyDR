@@ -35,9 +35,9 @@ public class CrashDetector implements GenericMechanic {
         crashChecker = new Thread(() -> {
             long multithreadAntiCrash = 0;
             multithreadAntiCrash = antiCrashTime;
-            boolean crashed = false;
+            boolean crashed = false; // Stop, stop, close your IDE, and never return
 
-            while (!crashed) {
+            while (true) { // You fucking idiot, crashed = always false
                 try {
                     Thread.sleep(30 * 1000);
                 } catch (InterruptedException e) {

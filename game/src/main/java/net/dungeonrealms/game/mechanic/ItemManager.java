@@ -47,6 +47,7 @@ import java.util.*;
  * Created by Nick on 9/18/2015.
  */
 public class ItemManager {
+
     /**
      * returns hearthstone
      *
@@ -647,15 +648,24 @@ public class ItemManager {
                 ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
 
         if (Utils.randInt(0, 1) == 1) {
-            player.getInventory().addItem(ItemGenerator.getNamedItem("training_sword"));
+            ItemStack fixedSword = ItemGenerator.getNamedItem("training_sword");
+            player.getInventory().addItem(new ItemBuilder().setItem(fixedSword).setNBTString("dataType", "starterSet").build());
         } else {
-            player.getInventory().addItem(ItemGenerator.getNamedItem("training_axe"));
+            ItemStack fixedAxe = ItemGenerator.getNamedItem("training_axe");
+            player.getInventory().addItem(new ItemBuilder().setItem(fixedAxe).setNBTString("dataType", "starterSet").build());
         }
 
-        player.getInventory().setHelmet(ItemGenerator.getNamedItem("traininghelm"));
-        player.getInventory().setChestplate(ItemGenerator.getNamedItem("trainingchest"));
-        player.getInventory().setLeggings(ItemGenerator.getNamedItem("traininglegs"));
-        player.getInventory().setBoots(ItemGenerator.getNamedItem("trainingboots"));
+        ItemStack fixedHelmet = ItemGenerator.getNamedItem("traininghelm");
+        player.getInventory().setHelmet(new ItemBuilder().setItem(fixedHelmet).setNBTString("dataType", "starterSet").build());
+
+        ItemStack fixedChestplate = ItemGenerator.getNamedItem("trainingchest");
+        player.getInventory().setChestplate(new ItemBuilder().setItem(fixedChestplate).setNBTString("dataType", "starterSet").build());
+
+        ItemStack fixedLeggings = ItemGenerator.getNamedItem("traininglegs");
+        player.getInventory().setLeggings(new ItemBuilder().setItem(fixedLeggings).setNBTString("dataType", "starterSet").build());
+
+        ItemStack fixedBoots = ItemGenerator.getNamedItem("trainingboots");
+        player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
     }
 
 

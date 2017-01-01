@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.listener;
 
-import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -75,7 +74,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -84,9 +82,17 @@ import java.util.Random;
 public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCommandWhilstSharding(PlayerCommandPreprocessEvent event) {
+        if (event.getPlayer().hasMetadata("sharding")) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot perform commands whilst sharding!");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(EntityTeleportEvent event) {
-        if(event.getEntity().getType() == EntityType.ENDERMAN) {
-            if(event.getEntity().getWorld().getName().contains("DUNGEON")) {
+        if (event.getEntity().getType() == EntityType.ENDERMAN) {
+            if (event.getEntity().getWorld().getName().contains("DUNGEON")) {
                 event.setCancelled(true);
             }
         }
@@ -103,7 +109,7 @@ public class MainListener implements Listener {
             int expToGive = expToLevel / 20;
             expToGive += 100;
 
-            // Prepare the mesage.
+            // Prepare the message.
             TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
             bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/vote/405761"));
             bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
@@ -583,7 +589,7 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Banker") || npcNameStripped.equalsIgnoreCase("Roaming Banker")
-            || npcNameStripped.equalsIgnoreCase("Wandering Banker")) {
+                || npcNameStripped.equalsIgnoreCase("Wandering Banker")) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             event.getPlayer().openInventory(storage.inv);
         }
@@ -1011,6 +1017,7 @@ public class MainListener implements Listener {
             if (nms == null || !nms.hasTag())
                 return;
             if (nms.getTag().hasKey("subtype")) event.getItemDrop().remove();
+            if (nms.getTag().hasKey("dataType")) event.getItemDrop().remove();
         }
     }
 
