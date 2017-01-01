@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -48,6 +49,7 @@ public class CommandShard extends BaseCommand {
 
 
         if (args.length > 0) {
+            player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
             GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
             handleLogout(player.getUniqueId(), true, consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");

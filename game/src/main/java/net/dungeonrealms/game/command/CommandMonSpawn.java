@@ -40,7 +40,7 @@ public class CommandMonSpawn extends BaseCommand {
             BlockCommandSender bcs = (BlockCommandSender) s;
             Location location = bcs.getBlock().getLocation().add(0, 2, 0);
             World nmsWorld = ((CraftWorld) bcs.getBlock().getWorld()).getHandle();
-            if (args.length != 5) return true;
+            if (args.length != 4) return true;
             String monsterType = args[0];
             int tier = Integer.parseInt(args[1]);
             boolean elite = false;
@@ -110,81 +110,82 @@ public class CommandMonSpawn extends BaseCommand {
                 entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
             }
             return true;
-        } else if(s instanceof Player) {
+        } else if (s instanceof Player) {
             Player player = (Player) s;
-            if(Rank.isGM(player)) {
+            if (Rank.isGM(player)) {
                 Location location = player.getLocation();
                 World nmsWorld = ((CraftWorld) player.getWorld()).getHandle();
-                if (args.length != 5) return true;
-                String monsterType = args[0];
-                int tier = Integer.parseInt(args[1]);
-                boolean elite = false;
-                if (args[2].equalsIgnoreCase("true")) {
-                    elite = true;
-                }
-                String meta = args[3];
-                if (meta.equals("null")) {
-                    meta = "";
-                }
-                String customName = args[4];
-                if (customName.equalsIgnoreCase("null")) {
-                    customName = "";
-                } else {
-                    customName = ChatColor.translateAlternateColorCodes('&', customName);
-                    customName = customName.replaceAll("_", " ");
-                    customName = customName.replaceAll("&0", ChatColor.BLACK.toString());
-                    customName = customName.replaceAll("&1", ChatColor.DARK_BLUE.toString());
-                    customName = customName.replaceAll("&2", ChatColor.DARK_GREEN.toString());
-                    customName = customName.replaceAll("&3", ChatColor.DARK_AQUA.toString());
-                    customName = customName.replaceAll("&4", ChatColor.DARK_RED.toString());
-                    customName = customName.replaceAll("&5", ChatColor.DARK_PURPLE.toString());
-                    customName = customName.replaceAll("&6", ChatColor.GOLD.toString());
-                    customName = customName.replaceAll("&7", ChatColor.GRAY.toString());
-                    customName = customName.replaceAll("&8", ChatColor.DARK_GRAY.toString());
-                    customName = customName.replaceAll("&9", ChatColor.BLUE.toString());
-                    customName = customName.replaceAll("&a", ChatColor.GREEN.toString());
-                    customName = customName.replaceAll("&b", ChatColor.AQUA.toString());
-                    customName = customName.replaceAll("&c", ChatColor.RED.toString());
-                    customName = customName.replaceAll("&d", ChatColor.LIGHT_PURPLE.toString());
-                    customName = customName.replaceAll("&e", ChatColor.YELLOW.toString());
-                    customName = customName.replaceAll("&f", ChatColor.WHITE.toString());
+                if (args.length > 0) {
+                    String monsterType = args[0];
+                    int tier = Integer.parseInt(args[1]);
+                    boolean elite = false;
+                    if (args[2].equalsIgnoreCase("true")) {
+                        elite = true;
+                    }
+                    String meta = args[3];
+                    if (meta.equals("null")) {
+                        meta = "";
+                    }
+                    String customName = args[4];
+                    if (customName.equalsIgnoreCase("null")) {
+                        customName = "";
+                    } else {
+                        customName = ChatColor.translateAlternateColorCodes('&', customName);
+                        customName = customName.replaceAll("_", " ");
+                        customName = customName.replaceAll("&0", ChatColor.BLACK.toString());
+                        customName = customName.replaceAll("&1", ChatColor.DARK_BLUE.toString());
+                        customName = customName.replaceAll("&2", ChatColor.DARK_GREEN.toString());
+                        customName = customName.replaceAll("&3", ChatColor.DARK_AQUA.toString());
+                        customName = customName.replaceAll("&4", ChatColor.DARK_RED.toString());
+                        customName = customName.replaceAll("&5", ChatColor.DARK_PURPLE.toString());
+                        customName = customName.replaceAll("&6", ChatColor.GOLD.toString());
+                        customName = customName.replaceAll("&7", ChatColor.GRAY.toString());
+                        customName = customName.replaceAll("&8", ChatColor.DARK_GRAY.toString());
+                        customName = customName.replaceAll("&9", ChatColor.BLUE.toString());
+                        customName = customName.replaceAll("&a", ChatColor.GREEN.toString());
+                        customName = customName.replaceAll("&b", ChatColor.AQUA.toString());
+                        customName = customName.replaceAll("&c", ChatColor.RED.toString());
+                        customName = customName.replaceAll("&d", ChatColor.LIGHT_PURPLE.toString());
+                        customName = customName.replaceAll("&e", ChatColor.YELLOW.toString());
+                        customName = customName.replaceAll("&f", ChatColor.WHITE.toString());
 
-                    customName = customName.replaceAll("&u", ChatColor.UNDERLINE.toString());
-                    customName = customName.replaceAll("&s", ChatColor.BOLD.toString());
-                    customName = customName.replaceAll("&i", ChatColor.ITALIC.toString());
-                    customName = customName.replaceAll("&m", ChatColor.MAGIC.toString());
-                    //This is autistic. Whoever placed the command blocks with these incorrect color codes should be banned.
-                }
-                EnumMonster enumMonster = EnumMonster.getMonsterByString(monsterType);
-                if (enumMonster == null) {
-                    enumMonster = EnumMonster.Undead;
-                }
-                Entity entity = SpawningMechanics.getMob(nmsWorld, tier, enumMonster);
-                if (entity == null) {
+                        customName = customName.replaceAll("&u", ChatColor.UNDERLINE.toString());
+                        customName = customName.replaceAll("&s", ChatColor.BOLD.toString());
+                        customName = customName.replaceAll("&i", ChatColor.ITALIC.toString());
+                        customName = customName.replaceAll("&m", ChatColor.MAGIC.toString());
+                        //This is autistic. Whoever placed the command blocks with these incorrect color codes should be banned.
+                    }
+                    EnumMonster enumMonster = EnumMonster.getMonsterByString(monsterType);
+                    if (enumMonster == null) {
+                        enumMonster = EnumMonster.Undead;
+                    }
+                    Entity entity = SpawningMechanics.getMob(nmsWorld, tier, enumMonster);
+                    if (entity == null) {
+                        return true;
+                    }
+                    int level = Utils.getRandomFromTier(tier, "high");
+                    if (elite) {
+                        entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+                        EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, level, player.getWorld().getName().contains("DUNGEON"));
+                    } else if (player.getWorld().getName().contains("DUNGEON")) {
+                        entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+                        EntityStats.createDungeonMob(entity, level, tier);
+                    } else {
+                        EntityStats.setMonsterRandomStats(entity, level, tier);
+                    }
+                    SpawningMechanics.rollElement(entity, enumMonster);
+                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    if (!customName.equals("")) {
+                        entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
+                    } else {
+                        entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
+                    }
                     return true;
                 }
-                int level = Utils.getRandomFromTier(tier, "high");
-                if (elite) {
-                    entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-                    EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, level, player.getWorld().getName().contains("DUNGEON"));
-                } else if (player.getWorld().getName().contains("DUNGEON")) {
-                    entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    EntityStats.createDungeonMob(entity, level, tier);
-                } else {
-                    EntityStats.setMonsterRandomStats(entity, level, tier);
-                }
-                SpawningMechanics.rollElement(entity, enumMonster);
-                entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                if (!customName.equals("")) {
-                    entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
-                } else {
-                    entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
-                }
-                return true;
             }
         }
         return false;

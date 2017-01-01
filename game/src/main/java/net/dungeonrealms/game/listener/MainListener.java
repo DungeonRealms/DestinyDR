@@ -82,6 +82,14 @@ import java.util.Random;
 public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCommandWhilstSharding(PlayerCommandPreprocessEvent event) {
+        if (event.getPlayer().hasMetadata("sharding")) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot perform commands whilst sharding!");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(EntityTeleportEvent event) {
         if (event.getEntity().getType() == EntityType.ENDERMAN) {
             if (event.getEntity().getWorld().getName().contains("DUNGEON")) {
@@ -101,7 +109,7 @@ public class MainListener implements Listener {
             int expToGive = expToLevel / 20;
             expToGive += 100;
 
-            // Prepare the mesage.
+            // Prepare the message.
             TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
             bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/vote/405761"));
             bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
