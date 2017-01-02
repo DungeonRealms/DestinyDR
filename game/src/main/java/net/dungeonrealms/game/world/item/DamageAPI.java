@@ -69,11 +69,11 @@ public class DamageAPI {
                         int tierDif = RepairAPI.getArmorOrWeaponTier(weapon) - receiver.getMetadata("tier").get(0).asInt();
 
                         if (tierDif == 2) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 4);
+                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 2);
                         } else if (tierDif == 3) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 6);
+                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 4);
                         } else if (tierDif == 4) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 8);
+                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 6);
                         } else {
                             RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
                         }
