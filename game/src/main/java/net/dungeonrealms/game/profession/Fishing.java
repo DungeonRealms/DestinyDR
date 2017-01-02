@@ -720,7 +720,7 @@ public class Fishing implements GenericMechanic {
     }
 
     /**
-     * Get the enchant leve lof a fishing rod
+     * Get the enchant leve of a fishing rod
      *
      * @param itemStack  The fishing rod
      * @param rodEnchant The enchant to check for

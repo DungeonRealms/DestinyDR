@@ -1,11 +1,13 @@
 package net.dungeonrealms.game.listener.world;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -349,7 +351,6 @@ public class BlockListener implements Listener {
         if (event.getDestination().getName().equalsIgnoreCase("container.furnace")) event.setCancelled(true);
     }
 
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
@@ -448,7 +449,6 @@ public class BlockListener implements Listener {
             player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Y" + ChatColor.GRAY + " to confirm this repair. Or type " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " to cancel.");
             Chat.listenForMessage(player, chat -> {
                 if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
-                    player.setCanPickupItems(true);
                     //Not enough? cya.
                     if (BankMechanics.getInstance().getTotalGemsInInventory(player) < newCost) {
                         player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
@@ -467,6 +467,7 @@ public class BlockListener implements Listener {
                     BankMechanics.getInstance().takeGemsFromInventory(newCost, player);
                     if (player.getEquipment().getItemInMainHand() == null) {
                         player.getEquipment().setItemInMainHand(item);
+                        player.setCanPickupItems(true);
                     } else {
                         if (player.getInventory().firstEmpty() != -1)
                             player.getInventory().setItem(player.getInventory().firstEmpty(), item);
@@ -490,11 +491,11 @@ public class BlockListener implements Listener {
                     player.setCanPickupItems(true);
                 }
             }, p -> {
-                player.setCanPickupItems(true);
                 itemEntity.remove();
                 returnItem(player, item);
                 repairMap.remove(block.getLocation());
                 p.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
+                player.setCanPickupItems(true);
             });
         } else {
             event.setCancelled(true);

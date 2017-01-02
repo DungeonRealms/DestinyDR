@@ -65,24 +65,24 @@ public interface DRMonster {
         int chance = 0;
         switch (tier) {
             case 1:
-                gemChance = 50;
-                chance = ent.hasMetadata("elite") ? 750 : 120; // 75%, 12%
+                gemChance = 60;
+                chance = ent.hasMetadata("elite") ? 750 : 150; // 75%, 15%
                 break;
             case 2:
-                gemChance = 40;
-                chance = ent.hasMetadata("elite") ? 400 : 50; // 40%, 5%
+                gemChance = 50;
+                chance = ent.hasMetadata("elite") ? 400 : 100; // 40%, 10%
                 break;
             case 3:
-                gemChance = 30;
-                chance = ent.hasMetadata("elite") ? 90 : 30; // 9%, 3%
+                gemChance = 40;
+                chance = ent.hasMetadata("elite") ? 90 : 75; // 9%, 7,5%
                 break;
             case 4:
-                gemChance = 20;
-                chance = ent.hasMetadata("elite") ? 30 : 15; // 3%, 1.5%
+                gemChance = 30;
+                chance = ent.hasMetadata("elite") ? 40 : 25; // 4%, 2.5%
                 break;
             case 5:
-                gemChance = 35;
-                chance = ent.hasMetadata("elite") ? 10 : 4; // 1%, 0.4%
+                gemChance = 25;
+                chance = ent.hasMetadata("elite") ? 20 : 15; // 2%, 0.5%
                 break;
         }
         if (ent.hasMetadata("namedElite")) {//java.lang.NullPointerException at net.dungeonrealms.game.world.entities.types.monsters.DRMonster.checkItemDrop(DRMonster.java:90) ~[?:?]

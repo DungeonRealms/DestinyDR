@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.profession;
 
+import com.google.common.collect.Maps;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -151,6 +152,84 @@ public class Mining implements GenericMechanic {
         nms.getTag().setInt(enchant.name(), percent);
         return CraftItemStack.asBukkitCopy(nms);
 
+    }
+
+
+    /**
+     * Get the enchant leve of a pickaxe
+     *
+     * @param itemStack  The pickaxe
+     * @param miningEnchant The enchant to check for
+     * @return The enchant level
+     */
+    public static int getEnchantBuff(ItemStack itemStack, EnumMiningEnchant miningEnchant) {
+        switch (miningEnchant) {
+            case Durability:
+                return getDurabilityBuff(itemStack);
+            case DoubleOre:
+                return getDoubleDropChance(itemStack);
+            case TripleOre:
+                return getTripleDropChance(itemStack);
+            case MiningSuccess:
+                return getSuccessChance(itemStack);
+            case GemFind:
+                return getGemFindChance(itemStack);
+            default:
+                break;
+        }
+        return 0;
+    }
+
+    /**
+     * Get all enchant data of a pickaxe
+     *
+     * @param itemStack The pickaxe
+     * @return Enchant data
+     */
+    public static HashMap<EnumMiningEnchant, Integer> getEnchantData(ItemStack itemStack) {
+        if (isDRPickaxe(itemStack)) {
+            if (hasEnchants(itemStack)) {
+                HashMap<EnumMiningEnchant, Integer> objectMap = Maps.newHashMap();
+                for (EnumMiningEnchant miningEnchant : EnumMiningEnchant.values()) {
+                    objectMap.put(miningEnchant, getEnchantBuff(itemStack, miningEnchant));
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add an enchant to a fishing rod
+     *
+     * @param itemStack The itemstack
+     * @param enchant   The enchant
+     * @param buffLevel The enchant level
+     */
+    public static void addDefaultEnchant(ItemStack itemStack, EnumMiningEnchant enchant, int buffLevel) {
+        ItemMeta meta = itemStack.getItemMeta();
+        List<String> lore = meta.getLore();
+        Iterator<String> i = lore.iterator();
+        int prevValue = -1;
+
+        while (i.hasNext()) {
+            String line = i.next();
+            if (line.contains(enchant.display)) {
+                prevValue = Integer.valueOf(line.substring(line.indexOf("+"), line.indexOf("%")));
+                i.remove();
+            }
+        }
+
+        String clone = lore.get(lore.size() - 1);
+        int value = buffLevel;
+        if (value == 0)
+            value = 1;
+        if (prevValue != -1 && prevValue > value)
+            value = prevValue;
+        lore.remove(lore.size() - 1);
+        lore.add(ChatColor.RED + enchant.display + " +" + value + "%");
+        lore.add(clone);
+        meta.setLore(lore);
+        itemStack.setItemMeta(meta);
     }
 
     public static float getExperience(ItemStack stackInHand) {
