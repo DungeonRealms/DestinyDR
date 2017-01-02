@@ -724,6 +724,7 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile) {
+
         boolean isAttackerPlayer = attacker instanceof Player;
         boolean isDefenderPlayer = defender instanceof Player;
 

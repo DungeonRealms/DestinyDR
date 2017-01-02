@@ -111,7 +111,7 @@ public class PvPListener implements Listener {
 
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
         double armorReducedDamage = armorCalculation[0];
-        double finalDamage = calculatedDamage - armorCalculation[0];
+        double finalDamage = calculatedDamage;
         if (armorReducedDamage == -1) {
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + receiver.getName() + ChatColor.RED + ")");
             receiver.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + damager.getName() + ChatColor.GREEN + ")");
@@ -125,9 +125,6 @@ public class PvPListener implements Listener {
             finalDamage = 0;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
-        } else {
-            finalDamage = finalDamage - armorCalculation[0];
-            calculatedDamage = calculatedDamage - armorCalculation[0];
         }
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
 
@@ -191,7 +188,7 @@ public class PvPListener implements Listener {
             if (checkChaoticPrevention(event, damager, receiver, damagerGP, receiverGP, calculatedDamage)) return;
         }
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
-        double finalDamage = calculatedDamage - armorCalculation[0];
+        double finalDamage = calculatedDamage;
         double armorReducedDamage = armorCalculation[0];
         String defenderName = receiver.getName();
         String attackerName = damager.getName();
@@ -212,8 +209,6 @@ public class PvPListener implements Listener {
             finalDamage = 0;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
-        } else {
-            finalDamage = finalDamage - armorCalculation[0];
         }
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1]);
     }
