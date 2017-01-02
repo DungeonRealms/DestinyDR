@@ -77,12 +77,12 @@ public interface DRMonster {
                 chance = ent.hasMetadata("elite") ? 90 : 75; // 9%, 7,5%
                 break;
             case 4:
-                gemChance = 30;
+                gemChance = 35;
                 chance = ent.hasMetadata("elite") ? 40 : 25; // 4%, 2.5%
                 break;
             case 5:
                 gemChance = 25;
-                chance = ent.hasMetadata("elite") ? 20 : 15; // 2%, 0.5%
+                chance = ent.hasMetadata("elite") ? 20 : 15; // 2%, 1.5%
                 break;
         }
         if (ent.hasMetadata("namedElite")) {//java.lang.NullPointerException at net.dungeonrealms.game.world.entities.types.monsters.DRMonster.checkItemDrop(DRMonster.java:90) ~[?:?]

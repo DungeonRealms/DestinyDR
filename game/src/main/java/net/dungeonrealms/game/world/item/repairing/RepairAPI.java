@@ -97,11 +97,11 @@ public class RepairAPI {
                 repair_cost = total_armor_cost * multiplier;
             }
             if (item_tier == 4) {
-                multiplier = 3.75;
+                multiplier = 3.25;
                 repair_cost = total_armor_cost * multiplier;
             }
             if (item_tier == 5) {
-                multiplier = 6;
+                multiplier = 4.75;
                 repair_cost = total_armor_cost * multiplier;
             }
 
