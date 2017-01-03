@@ -65,20 +65,20 @@ public interface DRMonster {
         int chance = 0;
         switch (tier) {
             case 1:
-                gemChance = 60;
-                chance = ent.hasMetadata("elite") ? 750 : 200; // 75%, 20%
+                gemChance = 50;
+                chance = ent.hasMetadata("elite") ? 750 : 120; // 75%, 12%
                 break;
             case 2:
-                gemChance = 50;
-                chance = ent.hasMetadata("elite") ? 400 : 145; // 40%, 14.5%
+                gemChance = 40;
+                chance = ent.hasMetadata("elite") ? 400 : 50; // 40%, 5%
                 break;
             case 3:
-                gemChance = 40;
-                chance = ent.hasMetadata("elite") ? 200 : 100; // 20%, 10%
+                gemChance = 30;
+                chance = ent.hasMetadata("elite") ? 90 : 30; // 9%, 3%
                 break;
             case 4:
-                gemChance = 35;
-                chance = ent.hasMetadata("elite") ? 100 : 50; // 10%, 5%
+                gemChance = 20;
+                chance = ent.hasMetadata("elite") ? 30 : 15; // 3%, 1.5%
                 break;
             case 5:
                 gemChance = 25;
