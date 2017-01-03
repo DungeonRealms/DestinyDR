@@ -141,15 +141,12 @@ public class AntiDuplication implements GenericMechanic {
      * @param inventories Inventories to check
      * @author APOLLOSOFTWARE
      * @author EtherealTemplar
+     *
+     * Oh nice job lads, yes amazing, this is the most retarded thing I've ever seen. congrats.
      */
     public static void checkForSuspiciousDupedItems(Player player, final Set<Inventory> inventories) {
         if (Rank.isGM(player)) return;
         if (EXCLUSIONS.contains(player.getUniqueId())) return;
-
-        int orbCount = 0;
-        int enchantCount = 0;
-        int protectCount = 0;
-        int gemCount = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId());
 
         HashMultimap<Inventory, Tuple<ItemStack, String>> gearUids = HashMultimap.create();
 
@@ -165,44 +162,10 @@ public class AntiDuplication implements GenericMechanic {
                 String uniqueEpochIdentifier = AntiDuplication.getInstance().getUniqueEpochIdentifier(i);
                 if (uniqueEpochIdentifier != null) for (int ii = 0; ii < i.getAmount(); ii++)
                     gearUids.put(inv, new Tuple<>(i, uniqueEpochIdentifier));
-
-                if (GameAPI.isOrb(i))
-                    orbCount += i.getAmount();
-                else if (ItemManager.isEnchantScroll(i))
-                    enchantCount += i.getAmount();
-                else if (ItemManager.isProtectScroll(i))
-                    protectCount += i.getAmount();
-                else if (BankMechanics.getInstance().isBankNote(i))
-                    gemCount += (BankMechanics.getInstance().getNoteValue(i) * i.getAmount());
             }
         }
 
         checkForDuplications(player, gearUids);
-
-        if (orbCount > 128 || enchantCount > 128 || protectCount > 128 || gemCount > 400000) {
-            catchOp(player, orbCount, enchantCount, protectCount, gemCount);
-        } else if ((GameAPI.getGamePlayer(player) != null && GameAPI.getGamePlayer(player).getLevel() < 20) && orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 200000) { // IP BAN
-            catchOp(player, orbCount, enchantCount, protectCount, gemCount);
-        } else if (orbCount > 64 || enchantCount > 64 || protectCount > 64 || gemCount > 350000) { // WARN
-
-            if (WARNING_SUPPRESSOR.isCooldown(player.getUniqueId())) return;
-
-            WARNING_SUPPRESSOR.submitCooldown(player, 120000L);
-
-            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "WARNING: " + ChatColor.WHITE + "Player " + player.getName() + " has " + orbCount + " orbs, " +
-                    enchantCount + " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " " +
-                    "gems. He is currently on shard " + DungeonRealms.getInstance().shardid);
-        }
-    }
-
-    private static void catchOp(Player p, int orbCount, int enchantCount, int protectCount, int gemCount) {
-        PunishAPI.ban(p.getUniqueId(), p.getName(), "DR ANTICHEAT", -1, "[DR ANTICHEAT] Automatic detection of duplicated items. Please appeal if you feel this ban was erroneous.", null);
-
-        GameAPI.sendNetworkMessage("GMMessage", "");
-        GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + ChatColor.BOLD + "[DR ANTICHEAT] " + ChatColor.RED + ChatColor.UNDERLINE +
-                "Banned" + ChatColor.RED + " player " + p.getName() + " for possession of " + orbCount + " orbs, " + enchantCount +
-                " enchantment scrolls, " + protectCount + " protect scrolls, and " + gemCount + " gems on shard " + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
-        GameAPI.sendNetworkMessage("GMMessage", "");
     }
 
     private static void remove(Inventory inventory, String uniqueEpochIdentifier) {
