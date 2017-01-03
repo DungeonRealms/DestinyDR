@@ -43,6 +43,8 @@ public class GamePlayer {
 
     private Player T;
 
+    private boolean sharding = false;
+
     private PlayerStats playerStats;
     private PlayerStatistics playerStatistics;
 

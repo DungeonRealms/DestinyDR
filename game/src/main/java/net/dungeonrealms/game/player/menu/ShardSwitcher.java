@@ -95,7 +95,9 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                         player.sendMessage(ChatColor.RED + "You are " + ChatColor.BOLD + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " authorized to connect to this shard.");
                         return;
                     }
-
+                    GameAPI.getGamePlayer(player).setSharding(true);
+                    // Fucking idiots, set the metadata value first
+                    player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                     TitleAPI.sendTitle(player, 1, 300, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
 
                     player.sendMessage(ChatColor.GRAY + "Retrieving relevant server information...");
@@ -109,8 +111,6 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                         GameAPI.moveToShard(player, bungeeName);
                         return;
                     }
-                    // Fucking idiots, set the metadata value first
-                    player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                     final int[] taskTimer = {5};
 
                     new Updater(DungeonRealms.getInstance(), 20L, null) {
@@ -130,6 +130,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
                                 TitleAPI.sendTitle(player, 1, 1, 1, "");
                                 GameAPI.getGamePlayer(player).setAbleToDrop(true);
                                 player.removeMetadata("sharding", DungeonRealms.getInstance());
+                                GameAPI.getGamePlayer(player).setSharding(false);
                                 cancel();
                                 return;
                             }
