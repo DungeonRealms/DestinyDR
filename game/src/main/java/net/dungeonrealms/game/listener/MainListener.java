@@ -999,6 +999,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
+        if(event.getPlayer().hasMetadata("sharding")) event.setCancelled(true);
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();

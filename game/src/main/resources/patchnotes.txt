@@ -1,10 +1,13 @@
 Build <build>
 
-&2New Features&0
- - N/A
-
 &8Changes&0
- - N/A
+ - Slightly improved drop rates
+ - Improved gem drop rates
+ - Reduced durability consumption
+ - Removed PVP armor reduction
+ - Improved energy values
 
 &4Bug Fixes&0
- - N/A
+ - Fixed repair items vanishing
+ - Fixed realm wipes
+ - Fixed Mongo connectivity
