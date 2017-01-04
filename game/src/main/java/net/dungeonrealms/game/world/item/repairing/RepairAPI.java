@@ -40,6 +40,23 @@ public class RepairAPI {
         return null;
     }
 
+    /**
+     * Create a new lvl 1 pickaxe but keep the enchants
+     *
+     * @param enchantMap The enchanting data
+     */
+    public static ItemStack requestNewPickaxe(HashMap<Mining.EnumMiningEnchant, Integer> enchantMap) {
+        if (enchantMap != null && !enchantMap.isEmpty()) {
+            ItemStack itemStack = ItemManager.createPickaxe(1);
+            // Add all enchants
+            enchantMap.keySet().stream().filter(miningEnchant -> enchantMap.get(miningEnchant) != 0).forEach(miningEnchant -> {
+                Mining.addDefaultEnchant(itemStack, miningEnchant, enchantMap.get(miningEnchant));
+            });
+            return itemStack;
+        }
+        return null;
+    }
+
     public static int getItemRepairCost(ItemStack i) {
         double repair_cost = 0;
         if (GameAPI.isArmor(i)) { // It's a piece of armor.
@@ -80,11 +97,11 @@ public class RepairAPI {
                 repair_cost = total_armor_cost * multiplier;
             }
             if (item_tier == 4) {
-                multiplier = 3.75;
+                multiplier = 3.25;
                 repair_cost = total_armor_cost * multiplier;
             }
             if (item_tier == 5) {
-                multiplier = 6;
+                multiplier = 4.75;
                 repair_cost = total_armor_cost * multiplier;
             }
 
@@ -557,7 +574,6 @@ public class RepairAPI {
                         default:
                             break;
                     }
-                    //TODO : PROFESSION ITEMS WITH DIFFERENT SYSTEM.
                     //TODO : CHECK PLAYERS HP AND REGEN THEN REDUCE AFTER ARMOR BREAKING.
                 }
                 break;
@@ -574,6 +590,24 @@ public class RepairAPI {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         player.getInventory().remove(itemStack);
                         player.getInventory().addItem(requestNewRod(Fishing.getEnchantData(itemStack)));
+                        player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
+                        player.updateInventory();
+                    }, 10L);
+                }
+                break;
+            case "pickaxe":
+                if (newItemDurability <= 150D && newItemDurability >= 140D) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **10% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
+                }
+                if (newItemDurability <= 30D && newItemDurability >= 20D) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
+                }
+                if (newItemDurability <= 1D) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        player.getInventory().remove(itemStack);
+                        player.getInventory().addItem(requestNewPickaxe(Mining.getEnchantData(itemStack)));
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                         player.updateInventory();
                     }, 10L);

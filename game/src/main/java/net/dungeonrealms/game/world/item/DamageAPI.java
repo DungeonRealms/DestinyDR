@@ -69,11 +69,11 @@ public class DamageAPI {
                         int tierDif = RepairAPI.getArmorOrWeaponTier(weapon) - receiver.getMetadata("tier").get(0).asInt();
 
                         if (tierDif == 2) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 4);
+                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 2);
                         } else if (tierDif == 3) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 6);
+                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 4);
                         } else if (tierDif == 4) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 8);
+                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 6);
                         } else {
                             RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
                         }
@@ -724,6 +724,7 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile) {
+
         boolean isAttackerPlayer = attacker instanceof Player;
         boolean isDefenderPlayer = defender instanceof Player;
 

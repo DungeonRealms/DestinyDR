@@ -50,6 +50,7 @@ public class CommandShard extends BaseCommand {
 
         if (args.length > 0) {
             player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+            GameAPI.getGamePlayer(player).setSharding(true);
             GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
             handleLogout(player.getUniqueId(), true, consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
