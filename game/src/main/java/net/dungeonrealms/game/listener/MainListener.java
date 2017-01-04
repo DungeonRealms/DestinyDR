@@ -93,9 +93,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(EntityTeleportEvent event) {
         if (event.getEntity().getType() == EntityType.ENDERMAN) {
-            if (event.getEntity().getWorld().getName().contains("DUNGEON")) {
-                event.setCancelled(true);
-            }
+            event.setCancelled(true);
         }
     }
 

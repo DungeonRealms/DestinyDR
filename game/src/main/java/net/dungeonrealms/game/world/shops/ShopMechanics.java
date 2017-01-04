@@ -19,6 +19,7 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -36,6 +37,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ShopMechanics implements GenericMechanic, Listener {
 
     public static ConcurrentHashMap<String, Shop> ALLSHOPS = new ConcurrentHashMap<>();
+
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        if(event.getInventory().getName().contains("@")) {
+            if(Chat.getChatListeners().containsKey(event.getPlayer())) {
+                event.getPlayer().closeInventory();
+                event.getPlayer().sendMessage(ChatColor.RED + "You can't open an inventory whilst being interactive with chat");
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {

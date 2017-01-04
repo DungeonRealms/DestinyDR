@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.chat;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -39,7 +40,9 @@ public class Chat {
         return instance;
     }
 
+    @Getter
     private static final Map<Player, Consumer<? super AsyncPlayerChatEvent>> chatListeners = new ConcurrentHashMap<>();
+    @Getter
     private static final Map<Player, Consumer<? super Player>> orElseListeners = new ConcurrentHashMap<>();
 
     /**

@@ -17,6 +17,7 @@ import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeZombie;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
 import org.bukkit.*;
@@ -63,6 +64,55 @@ public class CombatLog implements GenericMechanic {
     }
 
     // PVP COMBAT
+
+    /**
+     * Handle a player leaving whilst in combat
+     *
+     * @param player The player
+     */
+    public void handleCombatLog(Player player) {
+        if (inPVP(player)) {
+            KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
+            switch (alignments) {
+                case LAWFUL:
+                    ItemStack storedItem = null;
+                    // Keep the item a player has in his offhand & damage it
+                    if (player.getInventory().getItemInOffHand() != null && player.getInventory().getItemInOffHand().getType() != Material.AIR) {
+                        storedItem = player.getInventory().getItem(0);
+                        if(GameAPI.isArmor(storedItem) || GameAPI.isWeapon(storedItem)) {
+                            // Damage by 30% of current durability
+                            double durability = RepairAPI.getCustomDurability(storedItem);
+                            double toSubstract = (durability / 100) * 30; // 30% of current durability
+                            RepairAPI.subtractCustomDurability(player, storedItem, toSubstract);
+                        }
+                    }
+                    // Drop all items except for storedItem
+                    for (ItemStack itemStack : player.getInventory().getStorageContents()) {
+                        // Don't drop the journal/realm star
+                        if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
+                            // We don't want to drop the storedItem
+                            if(itemStack != storedItem) {
+                                player.getWorld().dropItem(player.getLocation(), itemStack);
+                                player.getInventory().remove(itemStack);
+                            }
+                        }
+                    }
+                    break;
+                case NEUTRAL:
+                    ItemStack pieceToDrop;
+                    break;
+                case CHAOTIC:
+                    // Just drop all that shit
+                    for(ItemStack itemStack : player.getInventory().getContents()) {
+                        player.getWorld().dropItem(player.getLocation(), itemStack);
+                        player.getInventory().remove(itemStack);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     /**
      * Update a player's PVP timer
