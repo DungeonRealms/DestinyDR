@@ -94,6 +94,30 @@ public class CommandStore extends BaseCommand {
                     return false;
                 }
                 break;
+            case "scroll":
+                if (args.length >= 4) {
+                    String scrollType = args[2].toLowerCase();
+                    int scrollTier = Integer.parseInt(args[3]);
+                    if (scrollTier >= 1 && scrollTier <= 5) {
+                        if (scrollType.equals("weapon")) {
+                            items.add(ItemManager.createWeaponEnchant(scrollTier));
+                        } else if (scrollType.equals("armor") || scrollType.equals("armour")) {
+                            items.add(ItemManager.createArmorEnchant(scrollTier));
+                        } else if (scrollType.equals("protect") || scrollType.equals("protection")) {
+                            items.add(ItemManager.createProtectScroll(scrollTier));
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "Invalid usage! Scroll type must be weapon or armor.");
+                        }
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Invalid usage! Scroll tier must be between 1-5.");
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Invalid usage! Missing scroll type / scroll tier.");
+                }
+                break;
+            case "orb_of_alteration":
+                items.add(ItemManager.createOrbofAlteration());
+                break;
             default:
                 sender.sendMessage(ChatColor.RED + "Unrecognised store item " + storeItem + " for " + playerName + ".");
                 return false;
