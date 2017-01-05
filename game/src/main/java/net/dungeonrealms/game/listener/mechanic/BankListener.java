@@ -106,6 +106,12 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
+            Player player = event.getPlayer();
+            if(player.getOpenInventory() != null && player.getOpenInventory().getTitle().contains("@")) {
+                // Player is browsing a shop
+                event.setCancelled(true);
+                return;
+            }
             event.setCancelled(true);
             event.getItem().remove();
 

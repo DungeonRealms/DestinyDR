@@ -54,6 +54,12 @@ public class ShopListener implements Listener {
         if (shop == null) return;
         if (p.hasMetadata("pricing")) return;
 
+        if (Chat.listened(p)) {
+            p.sendMessage(ChatColor.RED + "You can't interact with inventories whilst being interactive with chat");
+            event.setCancelled(true);
+            return;
+        }
+
         ItemStack[] inventory = p.getInventory().getContents();
         int freeInvSlots = 0;
 
@@ -163,7 +169,7 @@ public class ShopListener implements Listener {
                 shop.updateStatus();
                 return;
             }
-            if(event.getRawSlot() == (shop.getInvSize() - 2)) {
+            if (event.getRawSlot() == (shop.getInvSize() - 2)) {
                 event.setCancelled(true);
                 shop.deleteShop(false);
                 return;
@@ -508,7 +514,7 @@ public class ShopListener implements Listener {
                         return;
                     }
                     if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen ||
-                    		!(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
+                            !(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
                         clicker.sendMessage(ChatColor.RED + "The shop is no longer available.");
                         clicker.closeInventory();
                         return;

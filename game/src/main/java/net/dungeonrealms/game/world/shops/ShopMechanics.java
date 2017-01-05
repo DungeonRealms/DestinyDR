@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -39,22 +39,24 @@ public class ShopMechanics implements GenericMechanic, Listener {
 
     public static ConcurrentHashMap<String, Shop> ALLSHOPS = new ConcurrentHashMap<>();
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInventoryOpen(InventoryOpenEvent event) {
-        if(event.getInventory().getName().contains("@")) {
-            if(Chat.listened((Player) event.getPlayer())) {
-                event.getPlayer().closeInventory();
-                event.getPlayer().sendMessage(ChatColor.RED + "You can't interact with inventories whilst being interactive with chat");
-            }
-        }
-    }
-
     @EventHandler
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
         if (event.getMessage().toLowerCase().startsWith("/")) {
             ALLSHOPS.values().stream().filter(shop -> shop.uniqueViewers.contains(event.getPlayer().getName())).forEach(shop -> {
                 event.setCancelled(true);
             });
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getInventory().getName().contains("@")) {
+            Player player = (Player) event.getWhoClicked();
+            if (Chat.listened(player)) {
+                event.setCancelled(true);
+                player.closeInventory();
+                player.sendMessage(ChatColor.RED + "You can't interact with inventories whilst being interactive with chat");
+            }
         }
     }
 
