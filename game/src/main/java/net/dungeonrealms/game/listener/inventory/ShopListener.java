@@ -494,59 +494,137 @@ public class ShopListener implements Listener {
                 clicker.sendMessage(ChatColor.RED + "No space available in inventory. Clear some room before attempting to purchase.");
                 return;
             }
-            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemClicked);
-            if (nms == null || !nms.hasTag() || !nms.getTag().hasKey("Price")) return;
-            int itemPrice = nms.getTag().getInt("Price");
-
-            if (!event.isShiftClick()) {
+            boolean shiftClick = event.isShiftClick();
+            if (!clicker.hasMetadata("pricing")) {
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemClicked);
+                if (nms == null || !nms.hasTag() || !nms.getTag().hasKey("Price")) return;
+                int itemPrice = nms.getTag().getInt("Price");
                 clicker.closeInventory();
-                clicker.setMetadata("pricing", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "QUANTITY" + ChatColor.GREEN + " you'd like to purchase.");
-                clicker.sendMessage(ChatColor.GRAY + "MAX: " + itemClicked.getAmount() + "X (" + itemPrice * itemClicked.getAmount() + "g), OR " + itemPrice + "g/each.");
-                Chat.listenForMessage(clicker, chat -> {
-                    clicker.removeMetadata("pricing", DungeonRealms.getInstance());
-                    if (chat.getMessage().equalsIgnoreCase("cancel") || chat.getMessage().equalsIgnoreCase("c")) {
-                        clicker.sendMessage(ChatColor.RED + "Purchase of item " + ChatColor.BOLD + "CANCELLED");
-                        return;
-                    }
-                    if (clicker.getInventory().firstEmpty() == -1) {
-                        clicker.sendMessage(ChatColor.RED + "No space available in inventory. Type 'cancel' or clear some room.");
-                        return;
-                    }
-                    if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen ||
-                            !(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
-                        clicker.sendMessage(ChatColor.RED + "The shop is no longer available.");
-                        clicker.closeInventory();
-                        return;
-                    }
-                    if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
-                        clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], purchase of item CANCELLED.");
-                        return;
-                    }
-                    if (!shop.getInventory().contains(itemClicked, 1)) {
-                        clicker.sendMessage(ChatColor.RED + "That item is no longer available.");
-                        return;
-                    }
-                    int quantity = 0;
-                    try {
-                        quantity = Integer.parseInt(chat.getMessage());
-                        if (quantity <= 0) {
-                            clicker.sendMessage(ChatColor.RED + "You cannot purchase a NON-POSITIVE number.");
+                if (!shiftClick) {
+                    clicker.setMetadata("pricing", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+                    clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "QUANTITY" + ChatColor.GREEN + " you'd like to purchase.");
+                    clicker.sendMessage(ChatColor.GRAY + "MAX: " + itemClicked.getAmount() + "X (" + itemPrice * itemClicked.getAmount() + "g), OR " + itemPrice + "g/each.");
+                    Chat.listenForMessage(clicker, chat -> {
+                        clicker.removeMetadata("pricing", DungeonRealms.getInstance());
+                        if (chat.getMessage().equalsIgnoreCase("cancel") || chat.getMessage().equalsIgnoreCase("c")) {
+                            clicker.sendMessage(ChatColor.RED + "Purchase of item " + ChatColor.BOLD + "CANCELLED");
                             return;
                         }
-                        if (quantity > itemClicked.getAmount()) {
-                            clicker.sendMessage(ChatColor.RED + "There are only [" + ChatColor.BOLD + itemClicked.getAmount() + ChatColor.RED + "] available.");
+                        if (clicker.getInventory().firstEmpty() == -1) {
+                            clicker.sendMessage(ChatColor.RED + "No space available in inventory. Type 'cancel' or clear some room.");
                             return;
                         }
-                        int totalPrice = quantity * itemPrice;
-                        if (totalPrice > 0 && (BankMechanics.getInstance().getTotalGemsInInventory(clicker) < totalPrice)) {
-                            clicker.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
-                            clicker.sendMessage(ChatColor.GRAY + "" + quantity + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
+                        if (!ShopMechanics.ALLSHOPS.containsKey(ownerName) || !shop.isopen ||
+                                !(ShopMechanics.ALLSHOPS.get(ownerName).equals(shop))) {
+                            clicker.sendMessage(ChatColor.RED + "The shop is no longer available.");
+                            clicker.closeInventory();
                             return;
                         }
-                        BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker);
-                        ItemStack toGive = itemClicked.clone();
-                        ItemMeta meta = toGive.getItemMeta();
+                        if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
+                            clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], purchase of item CANCELLED.");
+                            return;
+                        }
+                        if (!shop.getInventory().contains(itemClicked, 1)) {
+                            clicker.sendMessage(ChatColor.RED + "That item is no longer available.");
+                            return;
+                        }
+                        int quantity = 0;
+                        try {
+                            quantity = Integer.parseInt(chat.getMessage());
+                            if (quantity <= 0) {
+                                clicker.sendMessage(ChatColor.RED + "You cannot purchase a NON-POSITIVE number.");
+                                return;
+                            }
+                            if (quantity > itemClicked.getAmount()) {
+                                clicker.sendMessage(ChatColor.RED + "There are only [" + ChatColor.BOLD + itemClicked.getAmount() + ChatColor.RED + "] available.");
+                                return;
+                            }
+                            int totalPrice = quantity * itemPrice;
+                            if (totalPrice > 0 && (BankMechanics.getInstance().getTotalGemsInInventory(clicker) < totalPrice)) {
+                                clicker.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
+                                clicker.sendMessage(ChatColor.GRAY + "" + quantity + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
+                                return;
+                            }
+                            BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker);
+                            ItemStack toGive = itemClicked.clone();
+                            ItemMeta meta = toGive.getItemMeta();
+                            List<String> lore = meta.getLore();
+                            if (lore != null) {
+                                for (int i = 0; i < lore.size(); i++) {
+                                    String current = lore.get(i);
+                                    if (current.contains("Price")) {
+                                        lore.remove(i);
+                                        break;
+                                    }
+                                }
+                            }
+                            meta.setLore(lore);
+                            toGive.setItemMeta(meta);
+                            toGive.setAmount(quantity);
+                            clicker.getInventory().addItem(toGive);
+                            clicker.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + totalPrice + ChatColor.BOLD + "G");
+                            clicker.sendMessage(ChatColor.GREEN + "Transaction successful.");
+                            clicker.playSound(clicker.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                            clicker.updateInventory();
+                            int remainingStock = itemClicked.getAmount() - quantity;
+                            if (remainingStock > 0) {
+                                itemClicked.setAmount(remainingStock);
+                            } else {
+                                event.getInventory().clear(event.getRawSlot());
+                            }
+                            DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, false);
+                            if (shop.getOwner() != null) {
+                                if (shop.hasCustomName(itemClicked)) {
+                                    shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + quantity + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                } else {
+                                    shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                }
+                                GamePlayer gamePlayer = GameAPI.getGamePlayer(shop.getOwner());
+                                if (gamePlayer != null) {
+                                    gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + totalPrice);
+                                }
+                                Achievements.getInstance().giveAchievement(shop.getOwner().getUniqueId(), Achievements.EnumAchievements.SHOP_MERCHANT);
+                            } else {
+                                if (shop.hasCustomName(itemClicked)) {
+                                    BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                } else {
+                                    BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                }
+                                DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS_EARNED, totalPrice, true, doAfter -> {
+                                    GameAPI.updatePlayerData(shop.ownerUUID);
+                                });
+                            }
+                            int itemsLeft = 0;
+                            for (ItemStack itemStack : event.getInventory().getContents()) {
+                                if (itemStack != null && itemStack.getType() != Material.AIR) {
+                                    if (itemStack.equals(event.getInventory().getItem(shop.getInvSize() - 1))) {
+                                        continue;
+                                    }
+                                    itemsLeft++;
+                                }
+                            }
+                            if (itemsLeft == 0) {
+                                Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), shop::updateStatus, 10L);
+                            }
+                        } catch (NumberFormatException e) {
+                            clicker.removeMetadata("pricing", DungeonRealms.getInstance());
+                            clicker.sendMessage(ChatColor.RED + "Please enter a valid number.");
+                        }
+                    }, p -> {
+                        p.sendMessage(ChatColor.RED + "Transaction cancelled.");
+                        clicker.removeMetadata("pricing", DungeonRealms.getInstance());
+                    });
+                } else if (event.isShiftClick()) {
+                    int totalPrice = itemPrice * itemClicked.getAmount();
+                    if (totalPrice > 0 && (BankMechanics.getInstance().getTotalGemsInInventory(clicker) < totalPrice)) {
+                        clicker.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
+                        clicker.sendMessage(ChatColor.GRAY + "" + itemClicked.getAmount() + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
+                        return;
+                    }
+                    if (BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker)) {
+                        event.getInventory().clear(event.getRawSlot());
+                        ItemStack clickClone = itemClicked.clone();
+                        ItemMeta meta = clickClone.getItemMeta();
                         List<String> lore = meta.getLore();
                         if (lore != null) {
                             for (int i = 0; i < lore.size(); i++) {
@@ -558,41 +636,27 @@ public class ShopListener implements Listener {
                             }
                         }
                         meta.setLore(lore);
-                        toGive.setItemMeta(meta);
-                        toGive.setAmount(quantity);
-                        clicker.getInventory().addItem(toGive);
-                        clicker.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + totalPrice + ChatColor.BOLD + "G");
-                        clicker.sendMessage(ChatColor.GREEN + "Transaction successful.");
-                        clicker.playSound(clicker.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                        clicker.updateInventory();
-                        int remainingStock = itemClicked.getAmount() - quantity;
-                        if (remainingStock > 0) {
-                            itemClicked.setAmount(remainingStock);
-                        } else {
-                            event.getInventory().clear(event.getRawSlot());
-                        }
+                        clickClone.setItemMeta(meta);
                         DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, false);
                         if (shop.getOwner() != null) {
                             if (shop.hasCustomName(itemClicked)) {
-                                shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + quantity + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             } else {
-                                shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
-                            }
-                            GamePlayer gamePlayer = GameAPI.getGamePlayer(shop.getOwner());
-                            if (gamePlayer != null) {
-                                gamePlayer.getPlayerStatistics().setGemsEarned(gamePlayer.getPlayerStatistics().getGemsEarned() + totalPrice);
+                                shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             }
                             Achievements.getInstance().giveAchievement(shop.getOwner().getUniqueId(), Achievements.EnumAchievements.SHOP_MERCHANT);
                         } else {
                             if (shop.hasCustomName(itemClicked)) {
-                                BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             } else {
-                                BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + quantity + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
+                                BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
                             }
-                            DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS_EARNED, totalPrice, true, doAfter -> {
-                                GameAPI.updatePlayerData(shop.ownerUUID);
-                            });
                         }
+                        clickClone.setAmount(itemClicked.getAmount());
+                        clicker.getInventory().addItem(clickClone);
+                        clicker.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + totalPrice + ChatColor.BOLD + "G");
+                        clicker.sendMessage(ChatColor.GREEN + "Transaction successful.");
+                        clicker.playSound(clicker.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                         int itemsLeft = 0;
                         for (ItemStack itemStack : event.getInventory().getContents()) {
                             if (itemStack != null && itemStack.getType() != Material.AIR) {
@@ -605,74 +669,16 @@ public class ShopListener implements Listener {
                         if (itemsLeft == 0) {
                             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), shop::updateStatus, 10L);
                         }
-                    } catch (NumberFormatException e) {
-                        clicker.removeMetadata("pricing", DungeonRealms.getInstance());
-                        clicker.sendMessage(ChatColor.RED + "Please enter a valid number.");
-                    }
-                }, p -> {
-                    p.sendMessage(ChatColor.RED + "Transaction cancelled.");
-                    clicker.removeMetadata("pricing", DungeonRealms.getInstance());
-                });
-            } else if (event.isShiftClick()) {
-                int totalPrice = itemPrice * itemClicked.getAmount();
-                if (totalPrice > 0 && (BankMechanics.getInstance().getTotalGemsInInventory(clicker) < totalPrice)) {
-                    clicker.sendMessage(ChatColor.RED + "You do not have enough GEM(s) to complete this purchase.");
-                    clicker.sendMessage(ChatColor.GRAY + "" + itemClicked.getAmount() + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
-                    return;
-                }
-                if (BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker)) {
-                    event.getInventory().clear(event.getRawSlot());
-                    ItemStack clickClone = itemClicked.clone();
-                    ItemMeta meta = clickClone.getItemMeta();
-                    List<String> lore = meta.getLore();
-                    if (lore != null) {
-                        for (int i = 0; i < lore.size(); i++) {
-                            String current = lore.get(i);
-                            if (current.contains("Price")) {
-                                lore.remove(i);
-                                break;
-                            }
-                        }
-                    }
-                    meta.setLore(lore);
-                    clickClone.setItemMeta(meta);
-                    DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, false);
-                    if (shop.getOwner() != null) {
-                        if (shop.hasCustomName(itemClicked)) {
-                            shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
-                        } else {
-                            shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
-                        }
-                        Achievements.getInstance().giveAchievement(shop.getOwner().getUniqueId(), Achievements.EnumAchievements.SHOP_MERCHANT);
                     } else {
-                        if (shop.hasCustomName(itemClicked)) {
-                            BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
-                        } else {
-                            BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "SOLD " + itemClicked.getAmount() + "x '" + ChatColor.WHITE + itemClicked.getType().toString().toLowerCase() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());
-                        }
+                        clicker.closeInventory();
+                        clicker.sendMessage(ChatColor.RED + "You don't have enough GEM(s) for " + itemClicked.getAmount() + "x of this item.");
+                        clicker.sendMessage(ChatColor.RED + "COST: " + totalPrice);
                     }
-                    clickClone.setAmount(itemClicked.getAmount());
-                    clicker.getInventory().addItem(clickClone);
-                    clicker.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + totalPrice + ChatColor.BOLD + "G");
-                    clicker.sendMessage(ChatColor.GREEN + "Transaction successful.");
-                    clicker.playSound(clicker.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                    int itemsLeft = 0;
-                    for (ItemStack itemStack : event.getInventory().getContents()) {
-                        if (itemStack != null && itemStack.getType() != Material.AIR) {
-                            if (itemStack.equals(event.getInventory().getItem(shop.getInvSize() - 1))) {
-                                continue;
-                            }
-                            itemsLeft++;
-                        }
-                    }
-                    if (itemsLeft == 0) {
-                        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), shop::updateStatus, 10L);
-                    }
-                } else {
-                    clicker.closeInventory();
-                    clicker.sendMessage(ChatColor.RED + "You don't have enough GEM(s) for " + itemClicked.getAmount() + "x of this item.");
-                    clicker.sendMessage(ChatColor.RED + "COST: " + totalPrice);
                 }
+            } else {
+                clicker.closeInventory();
+                clicker.sendMessage(ChatColor.RED + "Woah.. I think the banhammer is loading..");
+                GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "BANHAMMER: " + clicker.getName() + " is cheating in shops on " + DungeonRealms.getInstance().bungeeName);
             }
         }
     }
