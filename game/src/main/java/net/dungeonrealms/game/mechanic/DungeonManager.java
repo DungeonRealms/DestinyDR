@@ -545,13 +545,13 @@ public class DungeonManager implements GenericMechanic {
 
             switch (tier) {
                 case 1:
-                    shardsToGive = 750 + new Random().nextInt(150);
+                    shardsToGive = 100 + new Random().nextInt(150);
                     break;
                 case 2:
                     shardsToGive = 900 + new Random().nextInt(300);
                     break;
                 case 3:
-                    shardsToGive = 1000 + new Random().nextInt(500);
+                    shardsToGive = 100 + new Random().nextInt(500);
                     break;
                 case 4:
                     shardsToGive = 1200 + new Random().nextInt(750);
