@@ -25,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 /**
  * Created by Kieran Quigley (Proxying) on 03-Jul-16.
@@ -105,7 +106,6 @@ public class PvPListener implements Listener {
                 break;
         }
 
-
         double calculatedDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
         if (checkChaoticPrevention(event, damager, receiver, damagerGP, receiverGP, calculatedDamage)) return;
 
@@ -136,6 +136,10 @@ public class PvPListener implements Listener {
             if (damagerGP.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
                     if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
+                        receiver.setFireTicks(0);
+                        for(PotionEffect potionEffect : receiver.getActivePotionEffects()) {
+                            receiver.removePotionEffect(potionEffect.getType());
+                        }
                         event.setCancelled(true);
                         event.setDamage(0);
                         damager.updateInventory();

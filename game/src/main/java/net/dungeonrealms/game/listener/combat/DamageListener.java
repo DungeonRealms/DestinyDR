@@ -66,6 +66,7 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -213,89 +214,91 @@ public class DamageListener implements Listener {
 
         double finalDamage = 0;
         Player player = (Player) event.getEntity();
-        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
-                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
-        if (event.getDamager() instanceof LivingEntity) {
-            LivingEntity attacker = (LivingEntity) event.getDamager();
-            EntityEquipment attackerEquipment = attacker.getEquipment();
-            if (attackerEquipment.getItemInMainHand() == null) return;
-            attackerEquipment.getItemInMainHand().setDurability(((short) -1));
-            //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
-            if (!GameAPI.isWeapon(attackerEquipment.getItemInMainHand())) return;
-            finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.updateCombat(player);
-            } else {
-                CombatLog.addToCombat(player);
-            }
-        } else if (DamageAPI.isBowProjectile(event.getDamager())) {
-            Projectile attackingArrow = (Projectile) event.getDamager();
-            if (!(attackingArrow.getShooter() instanceof CraftLivingEntity)) return;
-            if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
-                if (!(attackingArrow.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
-                    attackingArrow.remove();
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
+        if (!player.hasMetadata("loggingIn")) {
+            LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
+                    : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
+            if (event.getDamager() instanceof LivingEntity) {
+                LivingEntity attacker = (LivingEntity) event.getDamager();
+                EntityEquipment attackerEquipment = attacker.getEquipment();
+                if (attackerEquipment.getItemInMainHand() == null) return;
+                attackerEquipment.getItemInMainHand().setDurability(((short) -1));
+                //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
+                if (!GameAPI.isWeapon(attackerEquipment.getItemInMainHand())) return;
+                finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
+                if (CombatLog.isInCombat(player)) {
+                    CombatLog.updateCombat(player);
+                } else {
+                    CombatLog.addToCombat(player);
                 }
-                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
-            }
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.updateCombat(player);
-            } else {
-                CombatLog.addToCombat(player);
-            }
-        } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
-            Projectile staffProjectile = (Projectile) event.getDamager();
-            if (!(staffProjectile.getShooter() instanceof CraftLivingEntity)) return;
-            if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("type")) {
-                if (!(staffProjectile.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
-                    staffProjectile.remove();
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
+            } else if (DamageAPI.isBowProjectile(event.getDamager())) {
+                Projectile attackingArrow = (Projectile) event.getDamager();
+                if (!(attackingArrow.getShooter() instanceof CraftLivingEntity)) return;
+                if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
+                    if (!(attackingArrow.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
+                        attackingArrow.remove();
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                    finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), (LivingEntity) event.getEntity(), attackingArrow);
                 }
-                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
+                if (CombatLog.isInCombat(player)) {
+                    CombatLog.updateCombat(player);
+                } else {
+                    CombatLog.addToCombat(player);
+                }
+            } else if (DamageAPI.isStaffProjectile(event.getDamager())) {
+                Projectile staffProjectile = (Projectile) event.getDamager();
+                if (!(staffProjectile.getShooter() instanceof CraftLivingEntity)) return;
+                if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("type")) {
+                    if (!(staffProjectile.getShooter() instanceof Player) && !(event.getEntity() instanceof Player)) {
+                        staffProjectile.remove();
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                    finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), (LivingEntity) event.getEntity(), staffProjectile);
+                }
+                if (CombatLog.isInCombat(player)) {
+                    CombatLog.updateCombat(player);
+                } else {
+                    CombatLog.addToCombat(player);
+                }
             }
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.updateCombat(player);
-            } else {
-                CombatLog.addToCombat(player);
+
+            if (PowerStrike.powerStrike.contains(leDamageSource.getUniqueId())) {
+                finalDamage *= 2;
+                PowerStrike.chargedMonsters.remove(leDamageSource.getUniqueId());
+                PowerStrike.powerStrike.remove(leDamageSource.getUniqueId());
+                player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
+                player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3, 3);
             }
-        }
 
-        if (PowerStrike.powerStrike.contains(leDamageSource.getUniqueId())) {
-            finalDamage *= 2;
-            PowerStrike.chargedMonsters.remove(leDamageSource.getUniqueId());
-            PowerStrike.powerStrike.remove(leDamageSource.getUniqueId());
-            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 0.5F);
-            player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3, 3);
-        }
-
-        double[] armorCalculation = DamageAPI.calculateArmorReduction(leDamageSource, player, finalDamage, null);
-        finalDamage = finalDamage - armorCalculation[0];
-        double armorReducedDamage = armorCalculation[0];
-        String attackerName;
-        if (leDamageSource.hasMetadata("customname")) {
-            attackerName = leDamageSource.getMetadata("customname").get(0).asString().trim();
-        } else {
-            attackerName = "Enemy";
-        }
-        if (armorReducedDamage == -1) {
-            player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + attackerName + ChatColor.GREEN + ")");
-            //The defender dodged the attack
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
-            finalDamage = 0;
-        } else if (armorReducedDamage == -2) {
-            player.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-            finalDamage = 0;
-        } else if (armorReducedDamage == -3) {
-            //Reflect when its fixed. @TODO
-        } else {
+            double[] armorCalculation = DamageAPI.calculateArmorReduction(leDamageSource, player, finalDamage, null);
             finalDamage = finalDamage - armorCalculation[0];
+            double armorReducedDamage = armorCalculation[0];
+            String attackerName;
+            if (leDamageSource.hasMetadata("customname")) {
+                attackerName = leDamageSource.getMetadata("customname").get(0).asString().trim();
+            } else {
+                attackerName = "Enemy";
+            }
+            if (armorReducedDamage == -1) {
+                player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "                        *DODGE* (" + ChatColor.RED + attackerName + ChatColor.GREEN + ")");
+                //The defender dodged the attack
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
+                finalDamage = 0;
+            } else if (armorReducedDamage == -2) {
+                player.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+                finalDamage = 0;
+            } else if (armorReducedDamage == -3) {
+                //Reflect when its fixed. @TODO
+            } else {
+                finalDamage = finalDamage - armorCalculation[0];
+            }
+            HealthHandler.getInstance().handlePlayerBeingDamaged(player, leDamageSource, finalDamage, armorCalculation[0], armorCalculation[1]);
         }
-        HealthHandler.getInstance().handlePlayerBeingDamaged(player, leDamageSource, finalDamage, armorCalculation[0], armorCalculation[1]);
     }
 
     /**
@@ -362,12 +365,12 @@ public class DamageListener implements Listener {
                 Horse horse = (Horse) event.getEntity();
                 if (!horse.getVariant().equals(Variant.MULE)) return;
                 if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
-                    if(!GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
+                    if (!GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
                         // Not in a safezone
                         EntityAPI.removePlayerMountList(p.getUniqueId());
                         horse.remove();
                     } else {
-                        if(event.getDamager() instanceof Player) {
+                        if (event.getDamager() instanceof Player) {
                             event.getDamager().sendMessage(org.bukkit.ChatColor.RED + "You cannot damage a mount in a " + org.bukkit.ChatColor.UNDERLINE + "safezone");
                         }
                     }

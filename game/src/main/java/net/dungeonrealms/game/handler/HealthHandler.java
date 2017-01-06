@@ -86,6 +86,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
+        player.setMetadata("loggingIn", new FixedMetadataValue(DungeonRealms.getInstance(), "yes"));
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             setPlayerMaxHPLive(player, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, player) + 50);
             int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
@@ -101,6 +102,7 @@ public class HealthHandler implements GenericMechanic {
             }
             setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
             player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+            player.removeMetadata("loggingIn", DungeonRealms.getInstance());
         }, 20); // 1 sec
     }
 
@@ -520,6 +522,10 @@ public class HealthHandler implements GenericMechanic {
                 }
                 if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
                     if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                        player.setFireTicks(0);
+                        for(PotionEffect potionEffect : player.getActivePotionEffects()) {
+                            player.removePotionEffect(potionEffect.getType());
+                        }
                         newHP = 1;
                         leAttacker.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
                         player.sendMessage(ChatColor.YELLOW + leAttacker.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");

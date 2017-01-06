@@ -107,6 +107,9 @@ public class DungeonRealms extends JavaPlugin {
     private static Profile ps;
     private static TabCompleteCommands tcc;
 
+    @Getter
+    private boolean almostRestarting = false;
+
     // Shard Config
     public MechanicManager mm = null;
     public boolean isInstanceServer = false;

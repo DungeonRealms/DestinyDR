@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.player.combat;
 
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -12,6 +13,8 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
@@ -79,37 +82,112 @@ public class CombatLog implements GenericMechanic {
                     // Keep the item a player has in his offhand & damage it
                     if (player.getInventory().getItemInOffHand() != null && player.getInventory().getItemInOffHand().getType() != Material.AIR) {
                         storedItem = player.getInventory().getItem(0);
-                        if(GameAPI.isArmor(storedItem) || GameAPI.isWeapon(storedItem)) {
-                            // Damage by 30% of current durability
-                            double durability = RepairAPI.getCustomDurability(storedItem);
-                            double toSubstract = (durability / 100) * 30; // 30% of current durability
-                            RepairAPI.subtractCustomDurability(player, storedItem, toSubstract);
-                        }
+                        this.damageAndReturn(player, storedItem, null);
                     }
                     // Drop all items except for storedItem
                     for (ItemStack itemStack : player.getInventory().getStorageContents()) {
                         // Don't drop the journal/realm star
                         if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
-                            // We don't want to drop the storedItem
-                            if(itemStack != storedItem) {
-                                player.getWorld().dropItem(player.getLocation(), itemStack);
-                                player.getInventory().remove(itemStack);
+                            // We don't want to drop a pickaxe/fishing rod
+                            if (!Mining.isDRPickaxe(itemStack) && !Fishing.isDRFishingPole(itemStack)) {
+                                // We don't want to drop the storedItem
+                                if (itemStack != storedItem) {
+                                    player.getWorld().dropItem(player.getLocation(), itemStack);
+                                    player.getInventory().remove(itemStack);
+                                }
                             }
                         }
                     }
                     break;
                 case NEUTRAL:
-                    ItemStack pieceToDrop;
+                    // This is dirty, I know, got to get this out quick
+                    List<ItemStack> toSave = Lists.newArrayList();
+                    boolean dropHelmet = false;
+                    boolean dropChestplate = false;
+                    boolean dropLeggings = false;
+                    boolean dropBoots = false;
+                    boolean dropWeapon = false;
+                    Random random = new Random();
+                    // Above 75 or under 25 = 25%
+                    if (random.nextInt(100) >= 75 || random.nextInt(100) <= 25) {
+                        // Random piece
+                        int type = random.nextInt(4);
+                        if (type == 1) {
+                            dropBoots = true;
+                        } else if (type == 2) {
+                            dropChestplate = true;
+                        } else if (type == 3) {
+                            dropLeggings = true;
+                        } else if (type == 4) {
+                            dropHelmet = true;
+                        }
+                    }
+                    if(random.nextInt(100) <= 50) {
+                        dropWeapon = true;
+                    }
+                    // A piece is dropping
+                    if (dropHelmet) {
+                        damageAndReturn(player, player.getInventory().getChestplate(), toSave);
+                        damageAndReturn(player, player.getInventory().getLeggings(), toSave);
+                        damageAndReturn(player, player.getInventory().getBoots(), toSave);
+                    } else if (dropChestplate) {
+                        damageAndReturn(player, player.getInventory().getHelmet(), toSave);
+                        damageAndReturn(player, player.getInventory().getLeggings(), toSave);
+                        damageAndReturn(player, player.getInventory().getBoots(), toSave);
+                    } else if (dropLeggings) {
+                        damageAndReturn(player, player.getInventory().getChestplate(), toSave);
+                        damageAndReturn(player, player.getInventory().getHelmet(), toSave);
+                        damageAndReturn(player, player.getInventory().getBoots(), toSave);
+                    } else if (dropBoots) {
+                        damageAndReturn(player, player.getInventory().getChestplate(), toSave);
+                        damageAndReturn(player, player.getInventory().getLeggings(), toSave);
+                        damageAndReturn(player, player.getInventory().getHelmet(), toSave);
+                    }
+                    // Remove offhand weapon if needed
+                    if(dropWeapon) {
+                        if (player.getInventory().getItemInOffHand() != null && player.getInventory().getItemInOffHand().getType() != Material.AIR) {
+                            ItemStack itemStack = player.getInventory().getItem(0);
+                            player.getWorld().dropItem(player.getLocation(), itemStack);
+                            player.getInventory().remove(itemStack);
+                        }
+                    }
+                    // Removal
+                    for (ItemStack itemStack : player.getInventory().getContents()) {
+                        if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
+                            player.getWorld().dropItem(player.getLocation(), itemStack);
+                            player.getInventory().remove(itemStack);
+                        }
+                    }
+                    // Add back the saved items
+                    for (ItemStack itemStack : toSave) {
+                        player.getInventory().addItem(itemStack);
+                    }
                     break;
                 case CHAOTIC:
                     // Just drop all that shit
-                    for(ItemStack itemStack : player.getInventory().getContents()) {
+                    for (ItemStack itemStack : player.getInventory().getContents()) {
                         player.getWorld().dropItem(player.getLocation(), itemStack);
                         player.getInventory().remove(itemStack);
                     }
                     break;
+                case NONE:
+                    break;
                 default:
                     break;
+            }
+        }
+    }
+
+    public void damageAndReturn(Player player, ItemStack itemStack, List<ItemStack> list) {
+        if (GameAPI.isArmor(itemStack)) {
+            if (GameAPI.isArmor(itemStack) || GameAPI.isWeapon(itemStack)) {
+                // Damage by 30% of current durability
+                double durability = RepairAPI.getCustomDurability(itemStack);
+                double toSubstract = (durability / 100) * 30; // 30% of current durability
+                RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
+                if (list != null) {
+                    list.add(itemStack);
+                }
             }
         }
     }

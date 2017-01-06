@@ -373,44 +373,16 @@ public class MainListener implements Listener {
 
         // Handle combat log before data save so we overwrite the logger's inventory data
         if (CombatLog.inPVP(player)) {
-            Utils.log.warning("debug quit combat");
             // Woo oh, he logged out in PVP
             player.getWorld().strikeLightningEffect(player.getLocation());
             player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
-            // Check player alignment
-            KarmaHandler.EnumPlayerAlignments alignments = GameAPI.getGamePlayer(player).getPlayerAlignment();
-            if (alignments == KarmaHandler.EnumPlayerAlignments.CHAOTIC || alignments == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
-                // Player is chaotic, drop armor & inventory
-                for (ItemStack itemStack : player.getInventory().getContents()) {
-                    // Don't drop realm portal rune & journal
-                    if (itemStack != null) {
-                        if (!GameAPI.isArmor(itemStack)) {
-                            if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
-                                player.getWorld().dropItem(player.getLocation(), itemStack);
-                            }
-                        } else {
-                            player.getWorld().dropItem(player.getLocation(), itemStack);
-                        }
-                    }
-                }
-                player.getInventory().clear();
-                player.getEquipment().clear();
-            }
-            if (alignments == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
-                // Player is lawful, damage all items
-                for (ItemStack itemStack : player.getInventory().getContents()) {
-                    if (GameAPI.isWeapon(itemStack) || GameAPI.isArmor(itemStack)) {
-                        double durability = RepairAPI.getCustomDurability(itemStack);
-                        double toSubstract = (durability / 100) * 30; // 30% of current durability
-                        RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
-                    }
-                }
-            }
-            // Remove from pvplog
-            CombatLog.removeFromPVP(player);
-            // Update bukkit inventory
-            player.updateInventory();
+
+            CombatLog.getInstance().handleCombatLog(player);
         }
+        // Remove from pvplog
+        CombatLog.removeFromPVP(player);
+        // Update bukkit inventory
+        player.updateInventory();
         // Good to go lads
         GameAPI.handleLogout(player.getUniqueId(), true, null);
     }
@@ -979,7 +951,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if(GameAPI.getGamePlayer(player).isSharding() || player.hasMetadata("sharding")) {
+        if (GameAPI.getGamePlayer(player).isSharding() || player.hasMetadata("sharding")) {
             event.setCancelled(true);
         }
     }
@@ -987,7 +959,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryOpen(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
-        if(player.hasMetadata("sharding") || GameAPI.getGamePlayer(player).isSharding()) {
+        if (player.hasMetadata("sharding") || GameAPI.getGamePlayer(player).isSharding()) {
             event.setCancelled(true);
         }
     }
@@ -1014,7 +986,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
-        if(event.getPlayer().hasMetadata("sharding")) event.setCancelled(true);
+        if (event.getPlayer().hasMetadata("sharding")) event.setCancelled(true);
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();

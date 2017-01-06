@@ -370,12 +370,18 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     public void createNewInstance(DungeonType type, Map<Player, Boolean> playerList, String instanceName) {
-        if (!instance_mob_spawns.containsKey(instanceName)) {
-            loadDungeonMobSpawns(instanceName);
+        if(!DungeonRealms.getInstance().isAlmostRestarting()) {
+            if (!instance_mob_spawns.containsKey(instanceName)) {
+                loadDungeonMobSpawns(instanceName);
+            }
+            DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000L), instanceName);
+            Dungeons.add(dungeonObject);
+            dungeonObject.load();
+        } else {
+            for(Player player : playerList.keySet()) {
+                player.sendMessage(ChatColor.RED + "You can't enter a dungeon if the shard is almost restarting");
+            }
         }
-        DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000L), instanceName);
-        Dungeons.add(dungeonObject);
-        dungeonObject.load();
     }
 
     public boolean canCreateInstance() {
@@ -551,7 +557,7 @@ public class DungeonManager implements GenericMechanic {
                     shardsToGive = 900 + new Random().nextInt(300);
                     break;
                 case 3:
-                    shardsToGive = 100 + new Random().nextInt(500);
+                    shardsToGive = 100 + new Random().nextInt(275);
                     break;
                 case 4:
                     shardsToGive = 1200 + new Random().nextInt(750);
