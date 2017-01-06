@@ -12,7 +12,7 @@ public class Constants {
 
     public static boolean debug = false;
 
-    public static String DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
+    public static String DATABASE_URI = "mongodb://dungeonrealms:SjSTgkJxFTgDBSNs@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228";
 
     public static String[] DEVELOPERS = new String[]{""};
 
@@ -54,7 +54,7 @@ public class Constants {
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
         debug = false;
-        DATABASE_URI = "mongodb://dungeonrealms:nPqMSTZrdyzLgGhW@131.153.27.42:27017/dungeonrealms";
+        DATABASE_URI = "mongodb://dungeonrealms:SjSTgkJxFTgDBSNs@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228";
         DEVELOPERS = new String[]{"Atlas__", "VawkeNetty", "Evoltr", "Bradez1571"};
         MOTD = "                   &6&lDUNGEON REALMS &r\n &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
         MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
