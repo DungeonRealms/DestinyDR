@@ -70,6 +70,25 @@ public class CommandAdd extends BaseCommand {
             Item.ItemType type;
             Item.ItemRarity rarity;
             switch (args[0]) {
+                case "nameditem":
+                    if (args.length == 2) {
+                        String namedItem = null;
+                        try {
+                            namedItem = args[1];
+                        } catch (Exception e) {
+                            player.sendMessage(ChatColor.RED + "Argument 2 must be a string");
+                            e.printStackTrace();
+                        }
+                        if (namedItem != null) {
+                            ItemStack itemStack = ItemGenerator.getNamedItem(namedItem);
+                            if (itemStack != null) {
+                                player.getInventory().addItem(itemStack);
+                            }
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "/ad nameitem <name>");
+                    }
+                    break;
                 case "pcheck":
                     player.sendMessage(ChatColor.GREEN + "There are " + String.valueOf(Affair.getInstance()._parties.size()));
                     break;

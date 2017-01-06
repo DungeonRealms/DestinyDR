@@ -8,7 +8,6 @@ import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.type.monster.boss.WorldBoss;
-import net.dungeonrealms.game.world.entity.type.monster.boss.type.world.Albranir;
 import net.minecraft.server.v1_9_R2.EntityPigZombie;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -38,7 +37,6 @@ public class BossEggs extends CachedClientProvider<WBInstance> implements Generi
 
         // REGISTER BOSSES //
         NMSUtils nmsUtils = new NMSUtils();
-        nmsUtils.registerEntity("Albranir", 57, EntityPigZombie.class, Albranir.class);
     }
 
     @Override
