@@ -56,12 +56,12 @@ public class Constants {
         debug = false;
         DATABASE_URI = "mongodb://dungeonrealms:SjSTgkJxFTgDBSNs@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228";
         DEVELOPERS = new String[]{"Atlas__", "VawkeNetty", "Evoltr", "Bradez1571"};
-        MOTD = "                   &6&lDUNGEON REALMS &r\n &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
-        MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
+        MOTD = "                   &6&lDUNGEON REALMS &r\n           &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
+        MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n           &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
         MIN_GAME_TIME = 14100000L;
         MAX_GAME_TIME = 21300000L;
         PLAYER_SLOTS = 1300;
-        MASTER_SERVER_IP = "131.153.27.42";
+        MASTER_SERVER_IP = "64.38.249.176";
         MASTER_SERVER_PORT = 22964;
         NET_READ_BUFFER_SIZE = 16384;
         NET_WRITE_BUFFER_SIZE = 32768;

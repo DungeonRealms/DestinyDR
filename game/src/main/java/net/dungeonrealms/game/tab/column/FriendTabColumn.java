@@ -26,66 +26,70 @@ public class FriendTabColumn extends Column {
 
     @Override
     public Column register() {
-        for (int i = 0; i < 18; i++) {
-            int cursor = i;
-            variablesToRegister.add(new Variable("friends." + cursor) {
-                @Override
-                public String getReplacement(Player player) {
-                    if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) return "";
+        try {
+            for (int i = 0; i < 18; i++) {
+                int cursor = i;
+                variablesToRegister.add(new Variable("friends." + cursor) {
+                    @Override
+                    public String getReplacement(Player player) {
+                        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) return "";
 
-                    List<String> friends = new ArrayList<>(FriendHandler.getInstance().getFriendsList(player.getUniqueId()));
+                        List<String> friends = new ArrayList<>(FriendHandler.getInstance().getFriendsList(player.getUniqueId()));
 
-                    if (friends.size() == 0) {
-                        switch (cursor) {
-                            case 0:
-                                return ChatColor.GRAY.toString() + "Type " + ChatColor.GREEN + "/add" + ChatColor.GRAY + " to add someone";
-                            case 1:
-                                return ChatColor.GRAY.toString() + "To your buddy list";
+                        if (friends.size() == 0) {
+                            switch (cursor) {
+                                case 0:
+                                    return ChatColor.GRAY.toString() + "Type " + ChatColor.GREEN + "/add" + ChatColor.GRAY + " to add someone";
+                                case 1:
+                                    return ChatColor.GRAY.toString() + "To your buddy list";
 
-                        }
-                        return "";
-                    }
-
-                    List<String> onlineFriends = new CopyOnWriteArrayList<>();
-
-                    // MAKE SURE FRIENDS ARE ONLINE //
-                    friends.forEach(uuid -> {
-
-                        String playerName = null;
-                        ShardInfo shard = null;
-
-                        if (Bukkit.getPlayer(UUID.fromString(uuid)) == null) {
-
-                            Optional<Tuple<PlayerToken, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(UUID.fromString(uuid));
-                            if (!curInfo.isPresent()) return;
-
-                            PlayerToken playerInfo = curInfo.get().a();
-                            if (playerInfo == null) return;
-
-                            playerName = playerInfo.getName();
-                            shard = curInfo.get().b();
-
-                        } else {
-                            shard = DungeonRealms.getShard();
-                            playerName = Bukkit.getPlayer(UUID.fromString(uuid)).getName();
-                        }
-
-                        onlineFriends.add(getFormat(playerName, shard));
-                    });
-
-                    if (onlineFriends.isEmpty()) if (cursor == 0)
-                        return ChatColor.RED + "No friends online!";
-                    else return "";
-                    try {
-                        if (onlineFriends.get(cursor) == null)
+                            }
                             return "";
-                    } catch (Exception ignored) {
-                        return "";
-                    }
+                        }
 
-                    return onlineFriends.get(cursor);
-                }
-            });
+                        List<String> onlineFriends = new CopyOnWriteArrayList<>();
+
+                        // MAKE SURE FRIENDS ARE ONLINE //
+                        friends.forEach(uuid -> {
+
+                            String playerName = null;
+                            ShardInfo shard = null;
+
+                            if (Bukkit.getPlayer(UUID.fromString(uuid)) == null) {
+
+                                Optional<Tuple<PlayerToken, ShardInfo>> curInfo = BungeeServerTracker.grabPlayerInfo(UUID.fromString(uuid));
+                                if (!curInfo.isPresent()) return;
+
+                                PlayerToken playerInfo = curInfo.get().a();
+                                if (playerInfo == null) return;
+
+                                playerName = playerInfo.getName();
+                                shard = curInfo.get().b();
+
+                            } else {
+                                shard = DungeonRealms.getShard();
+                                playerName = Bukkit.getPlayer(UUID.fromString(uuid)).getName();
+                            }
+
+                            onlineFriends.add(getFormat(playerName, shard));
+                        });
+
+                        if (onlineFriends.isEmpty()) if (cursor == 0)
+                            return ChatColor.RED + "No friends online!";
+                        else return "";
+                        try {
+                            if (onlineFriends.get(cursor) == null)
+                                return "";
+                        } catch (Exception ignored) {
+                            return "";
+                        }
+
+                        return onlineFriends.get(cursor);
+                    }
+                });
+            }
+        } catch (NullPointerException ignored) {
+
         }
         return this;
     }

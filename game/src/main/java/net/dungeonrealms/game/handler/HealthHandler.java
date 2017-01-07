@@ -61,10 +61,10 @@ public class HealthHandler implements GenericMechanic {
 
     public void startInitialization() {
         /** Whoever thought this was a great idea is autistic and should be permanently banned from being able to use an IDE
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            Bukkit.getServer().getOnlinePlayers().stream().forEach(pl -> setPlayerOverheadHP(pl, getPlayerHPLive(pl)));
-        }, 0L, 20L);
-        */
+         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+         Bukkit.getServer().getOnlinePlayers().stream().forEach(pl -> setPlayerOverheadHP(pl, getPlayerHPLive(pl)));
+         }, 0L, 20L);
+         */
         Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             Bukkit.getServer().getOnlinePlayers().stream().forEach(pl -> setPlayerOverheadHP(pl, getPlayerHPLive(pl)));
         }, 0L, 20L);
@@ -523,7 +523,7 @@ public class HealthHandler implements GenericMechanic {
                 if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
                     if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
                         player.setFireTicks(0);
-                        for(PotionEffect potionEffect : player.getActivePotionEffects()) {
+                        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
                             player.removePotionEffect(potionEffect.getType());
                         }
                         newHP = 1;
