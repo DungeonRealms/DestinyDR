@@ -155,6 +155,10 @@ public class RestrictionListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
 
+        // Servers that can bypass these limits altogether.
+        if (DungeonRealms.getInstance().isSupportShard || DungeonRealms.getInstance().isMasterShard)
+            return;
+
         // Commands that can bypass the cooldown restriction.
         switch (command.toLowerCase().substring(1).split(" ")[0]) {
             case "g": // Guild Chat

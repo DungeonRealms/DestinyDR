@@ -31,13 +31,24 @@ public class CommandEss extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
-        if ((commandSender instanceof Player && !Rank.isGM((Player) commandSender)) && !(commandSender instanceof ConsoleCommandSender)) {
-            return false;
-        }
+        if (commandSender instanceof Player) {
+            Player player = (Player) commandSender;
 
-        // Extended Permission Check
-        if (commandSender instanceof Player && !Rank.isHeadGM((Player) commandSender) && !DungeonRealms.getInstance().isGMExtendedPermissions) {
-            commandSender.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
+            // You must be a support or GM to use this!
+            if (!Rank.isGM(player) && !Rank.isSupport(player))
+                return false;
+
+            // Support Agents can only use this command on the support shard.
+            if (!Rank.isGM(player) && Rank.isSupport(player)) {
+                if (!DungeonRealms.getInstance().isSupportShard)
+                    return false;
+            }
+            // Extended Permission Check
+            else if (!Rank.isHeadGM(player) && !DungeonRealms.getInstance().isGMExtendedPermissions) {
+                commandSender.sendMessage(ChatColor.RED + "You don't have permission to execute this command.");
+                return false;
+            }
+        } else if (!(commandSender instanceof ConsoleCommandSender)) {
             return false;
         }
 
