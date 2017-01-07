@@ -24,6 +24,9 @@ import java.util.Map;
  */
 public class DRMagma extends EntityMagmaCube implements DRMonster {
 
+
+	// TODO inspect this because slimes are retarded or something?
+
 	private EnumMonster monsterType;
 	@Getter
 	protected Map<String, Integer[]> attributes = new HashMap<>();

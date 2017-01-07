@@ -9,6 +9,10 @@ import net.dungeonrealms.game.tab.column.CharacterTabColumn;
 import net.dungeonrealms.game.tab.column.FriendTabColumn;
 import net.dungeonrealms.game.tab.column.GuildTabColumn;
 import net.dungeonrealms.game.tab.column.StatisticsTabColumn;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.HashSet;
 import java.util.Set;
