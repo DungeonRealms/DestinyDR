@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener;
 
+import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -75,7 +76,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -378,9 +381,10 @@ public class MainListener implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
 
             CombatLog.getInstance().handleCombatLog(player);
+
+            // Remove from pvplog
+            CombatLog.removeFromPVP(player);
         }
-        // Remove from pvplog
-        CombatLog.removeFromPVP(player);
         // Update bukkit inventory
         player.updateInventory();
         // Good to go lads
