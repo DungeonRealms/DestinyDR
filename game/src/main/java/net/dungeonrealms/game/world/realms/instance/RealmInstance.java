@@ -124,6 +124,13 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
     @Override
     public void loadRealm(Player player, Runnable doAfter) {
+        // Temporarily disable realms.
+        if (true) {
+            player.sendMessage(ChatColor.RED + "Realms are currently undergoing maintenance.");
+            return;
+        }
+
+        //
         if (isRealmCached(player.getUniqueId())) {
             if (doAfter != null)
                 doAfter.run();
