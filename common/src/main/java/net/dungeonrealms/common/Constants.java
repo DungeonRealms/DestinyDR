@@ -12,7 +12,7 @@ public class Constants {
 
     public static boolean debug = false;
 
-    public static String DATABASE_URI = "mongodb://dungeonrealms:SjSTgkJxFTgDBSNs@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228";
+    public static String DATABASE_URI = "mongodb://dungeonrealms:ACNZuQdvjDrzWSqV@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228";
 
     public static String[] DEVELOPERS = new String[]{""};
 
@@ -54,10 +54,10 @@ public class Constants {
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
         debug = false;
-        DATABASE_URI = "mongodb://dungeonrealms:SjSTgkJxFTgDBSNs@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228";
+        DATABASE_URI = "mongodb://dungeonrealms:ACNZuQdvjDrzWSqV@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228";
         DEVELOPERS = new String[]{"Atlas__", "Bradez1571", "Kneesnap"};
-        MOTD = "                   &6&lDUNGEON REALMS &r\n       &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
-        MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n       &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
+        MOTD = "                   &6&lDUNGEON REALMS &r\n   &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
+        MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n   &lThe #1 Minecraft MMORPG &f&l- &awww.dungeonrealms.net";
         MIN_GAME_TIME = 14100000L;
         MAX_GAME_TIME = 21300000L;
         PLAYER_SLOTS = 1300;
@@ -69,7 +69,7 @@ public class Constants {
         BUILD_NUMBER = "#0";
         FTP_HOST_NAME = "167.114.65.102";
         FTP_USER_NAME = "dungeonrealms.53";
-        FTP_PASSWORD = "CXxbpBbWdyekJtyv";
+        FTP_PASSWORD = "BSmZWafwEk3QX7JTnF";
         FTP_PORT = 21;
     }
 
