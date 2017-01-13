@@ -29,6 +29,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.inventivetalent.bossbar.BossBarAPI;
@@ -501,6 +502,23 @@ public class HealthHandler implements GenericMechanic {
         if (damager != null) {
             if (damager instanceof Player) {
                 leAttacker = (LivingEntity) damager;
+
+                // Temporary Hack
+                if (damage > 3000) {
+                    // Destroy the item from the game.
+                    Bukkit.getPlayer(leAttacker.getName()).getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+
+                    // Prompt the user that this weapon is not allowed.
+                    leAttacker.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the Gods.");
+
+                    // User isn't a GM, let's alert the GMs about this violation.
+                    if (!Rank.isGM((Player) leAttacker)) {
+                        GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
+                                ChatColor.WHITE + "Destroyed illegal weapon (" + damage + " ) from " + leAttacker.getName() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+                    }
+                    return;
+                }
+
             } else if (damager instanceof CraftLivingEntity) {
                 leAttacker = (LivingEntity) damager;
             } else if (damager instanceof Projectile) {
@@ -745,6 +763,23 @@ public class HealthHandler implements GenericMechanic {
         if (damage < 0) {
             damage = 1;
         }
+
+        // Temporary Hack
+        if (attacker != null && GameAPI.isPlayer(attacker) && damage > 3000) {
+            // Destroy the item from the game.
+            Bukkit.getPlayer(attacker.getName()).getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+
+            // Prompt the user that this weapon is not allowed.
+            attacker.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the Gods.");
+
+            // User isn't a GM, let's alert the GMs about this violation.
+            if (!Rank.isGM((Player) attacker)) {
+                GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
+                        ChatColor.WHITE + "Destroyed illegal weapon (" + damage + " ) from " + attacker.getName() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+            }
+            return;
+        }
+
         double maxHP = getMonsterMaxHPLive(entity);
         double currentHP = getMonsterHPLive(entity);
         double newHP = currentHP - damage;
