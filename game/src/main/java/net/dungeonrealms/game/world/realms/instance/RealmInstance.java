@@ -696,7 +696,6 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
                     Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
                     Utils.log.warning("PORTAL LOCATION IS NOT IN REQUESTS TOKEN WORLD");
                     Utils.log.warning("SERVER CRASH PREVENTED - TOKEN NOT RETURNED");
-                    Utils.log.warning("CONTACT VAWKENETTY RIGHT NOW.");
                     Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
                 }
             }
