@@ -635,11 +635,14 @@ public class BlockListener implements Listener {
                                 e.setCancelled(true);
                                 return;
                             }
+
+                            // Temporary: Disable shops.
                             if (true) {
                                 player.sendMessage(ChatColor.RED + "Shops are currently undergoing maintenance.");
                                 e.setCancelled(true);
                                 return;
                             }
+
                             ShopMechanics.setupShop(e.getClickedBlock(), player.getUniqueId());
                         } else {
                             player.sendMessage(ChatColor.RED + "You have a shop open already! It may be on another shard.");
