@@ -448,6 +448,13 @@ public class BlockListener implements Listener {
             player.sendMessage(ChatColor.YELLOW + "It will cost " + ChatColor.GREEN + ChatColor.BOLD.toString() + newCost + "G" + ChatColor.YELLOW + " to repair '" + name + ChatColor.YELLOW + "'");
             player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Y" + ChatColor.GRAY + " to confirm this repair. Or type " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " to cancel.");
             Chat.listenForMessage(player, chat -> {
+                // Anvil is in use by someone else, we can't return them this item again.
+                if (!repairMap.containsKey(block.getLocation()) || !repairMap.get(block.getLocation()).getRepairing().equalsIgnoreCase(player.getName())) {
+                    itemEntity.remove();
+                    player.setCanPickupItems(true);
+                    return;
+                }
+
                 if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
                     //Not enough? cya.
                     if (BankMechanics.getInstance().getTotalGemsInInventory(player) < newCost) {
@@ -491,8 +498,11 @@ public class BlockListener implements Listener {
                     player.setCanPickupItems(true);
                 }
             }, p -> {
+                // Anvil is in use by the current user, return those items.
+                if (repairMap.containsKey(block.getLocation()) && repairMap.get(block.getLocation()).getRepairing().equalsIgnoreCase(player.getName()))
+                    returnItem(player, item);
+
                 itemEntity.remove();
-                returnItem(player, item);
                 repairMap.remove(block.getLocation());
                 p.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
                 player.setCanPickupItems(true);
@@ -622,6 +632,11 @@ public class BlockListener implements Listener {
                             if (BankMechanics.getInstance().getStorage(player.getUniqueId()).collection_bin != null) {
                                 player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
                                 player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
+                                e.setCancelled(true);
+                                return;
+                            }
+                            if (true) {
+                                player.sendMessage(ChatColor.RED + "Shops are currently undergoing maintenance.");
                                 e.setCancelled(true);
                                 return;
                             }
