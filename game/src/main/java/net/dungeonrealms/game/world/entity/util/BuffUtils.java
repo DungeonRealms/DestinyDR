@@ -52,7 +52,7 @@ public class BuffUtils {
     }
 
     public static PotionEffectType getRandomPotionEffect() {
-        switch (new Random().nextInt(9)) {
+        switch (new Random().nextInt(8)) {
             case 0:
                 return PotionEffectType.INCREASE_DAMAGE;
             case 1:
@@ -62,14 +62,12 @@ public class BuffUtils {
             case 3:
                 return PotionEffectType.NIGHT_VISION;
             case 4:
-                return PotionEffectType.INVISIBILITY;
-            case 5:
                 return PotionEffectType.JUMP;
-            case 6:
+            case 5:
                 return PotionEffectType.FIRE_RESISTANCE;
-            case 7:
+            case 6:
                 return PotionEffectType.WATER_BREATHING;
-            case 8:
+            case 7:
                 return PotionEffectType.HEAL;
             default:
                 return PotionEffectType.SPEED;

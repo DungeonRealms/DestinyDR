@@ -20,13 +20,17 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,6 +196,31 @@ public class CommandSet extends BaseCommand {
                 else {
                     player.sendMessage(ChatColor.RED + args[1] + " not found on this shard.");
                 }
+                break;
+            case "dummyitem":
+                ItemStack currentItem = player.getInventory().getItemInMainHand();
+                if (currentItem == null || currentItem.getType() == Material.AIR) {
+                    player.sendMessage(ChatColor.RED + "You must have an item in your main hand to make it a dummy.");
+                    break;
+                }
+
+                net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(currentItem);
+                NBTTagCompound tag = nmsStack.getTag();
+                if (tag == null) {
+                    player.sendMessage(ChatColor.RED + "There was an error, the item has no tag.");
+                    break;
+                }
+
+                boolean addFlag = !tag.hasKey("dummy_item");
+                if (addFlag) {
+                    tag.set("dummy_item", new NBTTagString("1"));
+                } else {
+                    tag.remove("dummy_item");
+                }
+                nmsStack.setTag(tag);
+
+                player.getInventory().setItemInMainHand(CraftItemStack.asBukkitCopy(nmsStack));
+                player.sendMessage((addFlag ?  ChatColor.GREEN + "Added" : ChatColor.RED + "Removed") + " item's dummy flag.");
                 break;
             case "pvpoff":
                 if (Bukkit.getPlayer(args[1]) != null) {
