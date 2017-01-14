@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.ChatColor;
@@ -23,12 +24,14 @@ public class CommandAnswer extends BaseCommand {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
+        if (!(sender instanceof Player)) return false;
 
         Player p = (Player) sender;
+        if (!Rank.isPMOD(p)) return false;
+
         if ((args.length == 0) || (args.length < 2)) {
             sender.sendMessage(ChatColor.RED + "/answer [name] [message]");
-            return true;
+            return false;
         }
         String other = args[0];
 
@@ -50,7 +53,7 @@ public class CommandAnswer extends BaseCommand {
             sender.sendMessage(ChatColor.GRAY + "Your DND has been disabled so players can reply to your answer.");
         }
 
-        return false;
+        return true;
     }
 
     public String[] getAliases() {
