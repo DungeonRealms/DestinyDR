@@ -6,6 +6,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.Utils;
@@ -1106,7 +1107,7 @@ public class Fishing implements GenericMechanic {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         nms.getTag().setString("type", "fishingenchant");
         nms.getTag().setInt(enchant.name(), stat);
-        return CraftItemStack.asBukkitCopy(nms);
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
     public static ItemStack getEnchant(int tier, FishingRodEnchant enchant, int percent) {
@@ -1115,8 +1116,7 @@ public class Fishing implements GenericMechanic {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         nms.getTag().setString("type", "fishingenchant");
         nms.getTag().setInt(enchant.name(), percent);
-        return CraftItemStack.asBukkitCopy(nms);
-
+        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
 
