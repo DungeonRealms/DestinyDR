@@ -245,9 +245,12 @@ public class BlockListener implements Listener {
                             break;
                     }
                     amount = (int) (amount * 0.80D);
-                    p.getWorld().dropItemNaturally(p.getLocation(), BankMechanics.createGems(amount));
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
-                        p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          FOUND " + amount + " GEM(s)" + ChatColor.YELLOW + "");
+
+                    if (amount > 0) {
+                        p.getWorld().dropItemNaturally(p.getLocation(), BankMechanics.createGems(amount));
+                        if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                            p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          FOUND " + amount + " GEM(s)" + ChatColor.YELLOW + "");
+                    }
                 }
             }
         }
