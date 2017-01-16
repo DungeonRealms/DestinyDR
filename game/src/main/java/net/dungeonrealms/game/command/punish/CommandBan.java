@@ -78,13 +78,11 @@ public class CommandBan extends BaseCommand {
                 sender.sendMessage(ChatColor.RED + args[1] + " is not a valid number.");
                 return;
             }
-            
-            
 
             if (sender instanceof Player)
                 if (!Rank.isGM((Player) sender) && !Rank.isDev((Player) sender) && Rank.isPMOD((Player) sender)) {
                 	
-                	if(PunishAPI.isBanned(p_uuid)){
+                    if(PunishAPI.isBanned(p_uuid)){
                     	sender.sendMessage(ChatColor.RED + "This player is already banned.");
                     	return;
                     }
