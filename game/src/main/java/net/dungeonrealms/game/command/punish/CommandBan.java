@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.punish;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -7,11 +8,13 @@ import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.punishment.TimeFormat;
 import net.dungeonrealms.game.mastery.UUIDFetcher;
 import net.dungeonrealms.game.mastery.Utils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 
 import java.util.Arrays;
 
@@ -75,9 +78,17 @@ public class CommandBan extends BaseCommand {
                 sender.sendMessage(ChatColor.RED + args[1] + " is not a valid number.");
                 return;
             }
+            
+            
 
             if (sender instanceof Player)
                 if (!Rank.isGM((Player) sender) && !Rank.isDev((Player) sender) && Rank.isPMOD((Player) sender)) {
+                	
+                	if(PunishAPI.isBanned(p_uuid)){
+                    	sender.sendMessage(ChatColor.RED + "This player is already banned.");
+                    	return;
+                    }
+                	
                     if (duration > 1209600L) {
                         sender.sendMessage(ChatColor.RED + "You cannot ban players for more than 14 days.");
                         return;
