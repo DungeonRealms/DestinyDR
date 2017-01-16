@@ -9,7 +9,7 @@
   <artifactId>DungeonRealms-bootstrap</artifactId>
   <build>
     <defaultGoal>clean install</defaultGoal>
-    <finalName>dr-master-server</finalName>
+    <finalName>kryo-master</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

@@ -14,7 +14,7 @@
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>dr-master-server</finalName>
+        <finalName>kryo-master</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

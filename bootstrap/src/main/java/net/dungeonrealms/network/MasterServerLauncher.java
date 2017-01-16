@@ -30,12 +30,10 @@ public class MasterServerLauncher {
 
 
     public static void main(String[] args) {
-
         Constants.build();
 
         Log.info("");
         Log.info("Master server initiated on " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER);
-        Log.info("Alright. let's do this boys...");
         Log.info("Ready to sit back relax and relay packets");
 
         try {
@@ -51,18 +49,18 @@ public class MasterServerLauncher {
     }
 
     private static void registerClasses() {
-        kryo.register(Packet.class);
-        kryo.register(byte.class);
-        kryo.register(byte[].class);
-        kryo.register(BasicMessagePacket.class);
-        kryo.register(ServerListPacket.class);
-        kryo.register(ShardInfo.class);
-        kryo.register(ServerAddress.class);
-        kryo.register(PlayerToken.class);
-        kryo.register(PlayerToken[].class);
-        kryo.register(UUID.class);
-        kryo.register(String.class);
-        kryo.register(int.class);
+        kryo.register(Packet.class, 0);
+        kryo.register(byte.class, 1);
+        kryo.register(byte[].class, 2);
+        kryo.register(BasicMessagePacket.class, 3);
+        kryo.register(ServerListPacket.class, 4);
+        kryo.register(ShardInfo.class, 5);
+        kryo.register(ServerAddress.class, 6);
+        kryo.register(PlayerToken.class, 7);
+        kryo.register(PlayerToken[].class, 8);
+        kryo.register(UUID.class, 9);
+        kryo.register(String.class, 10);
+        kryo.register(int.class, 11);
     }
 
 }
