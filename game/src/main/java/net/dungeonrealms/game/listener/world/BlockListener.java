@@ -640,7 +640,7 @@ public class BlockListener implements Listener {
                             }
 
                             // Temporary: Disable shops.
-                            if (true) {
+                            if (!DungeonRealms.getInstance().isMasterShard && !DungeonRealms.getInstance().isSupportShard) {
                                 player.sendMessage(ChatColor.RED + "Shops are currently undergoing maintenance.");
                                 e.setCancelled(true);
                                 return;
