@@ -50,7 +50,7 @@ public class CommandBan extends BaseCommand {
 
         UUIDFetcher.getUUID(args[0], p_uuid -> {
             if (p_uuid == null) {
-                sender.sendMessage(ChatColor.RED + args[1] + " is not a player.");
+                sender.sendMessage(ChatColor.RED + args[0] + " is not a player, have they changed their name recently?");
                 return;
             }
 
@@ -80,7 +80,7 @@ public class CommandBan extends BaseCommand {
             }
 
             if (sender instanceof Player)
-                if (!Rank.isGM((Player) sender) && !Rank.isDev((Player) sender) && Rank.isPMOD((Player) sender)) {
+                if (!Rank.isGM((Player) sender) && Rank.isPMOD((Player) sender)) {
                 	
                     if(PunishAPI.isBanned(p_uuid)){
                     	sender.sendMessage(ChatColor.RED + "This player is already banned.");
