@@ -213,6 +213,7 @@ public class DungeonRealms extends JavaPlugin {
 
         shard = ShardInfo.getByShardID(shardid);
         BungeeUtils.setPlugin(this);
+        BungeeUtils.fetchServers();
 
         DatabaseInstance.getInstance().startInitialization(true);
         DatabaseAPI.getInstance().startInitialization(bungeeName);

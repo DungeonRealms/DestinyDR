@@ -43,12 +43,15 @@ public class CommandShard extends BaseCommand {
                     e.printStackTrace();
                 }
             });
+        } else {
+            String serverName = args[0];
 
-            return true;
-        }
+            // Doesn't check if the server is online, but better than nothing.
+            if (!BungeeUtils.doesServerExist(serverName)) {
+                player.sendMessage(ChatColor.RED + "Could not find a shard names " + serverName);
+                return true;
+            }
 
-
-        if (args.length > 0) {
             player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
             GameAPI.getGamePlayer(player).setSharding(true);
             GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());

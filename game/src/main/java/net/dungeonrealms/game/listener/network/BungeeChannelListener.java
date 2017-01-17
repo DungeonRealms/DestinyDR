@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -89,6 +90,16 @@ public class BungeeChannelListener implements PluginMessageListener, GenericMech
 
                         BungeeServerInfo serverInfo = BungeeServerTracker.getOrCreateServerInfo(server);
                         serverInfo.setOnlinePlayers(online);
+                    }
+                }
+
+                if (subChannel.equals("GetServers")) {
+                    String[] servers = in.readUTF().split(", ");
+
+                    BungeeUtils.servers.clear();
+
+                    for (String server : servers) {
+                        BungeeUtils.servers.add(server);
                     }
                 }
 

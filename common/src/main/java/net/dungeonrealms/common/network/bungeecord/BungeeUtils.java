@@ -11,6 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 7/13/2016
@@ -19,6 +21,8 @@ public class BungeeUtils {
 
     @Setter
     private static JavaPlugin plugin;
+
+    public static List<String> servers = new ArrayList<>();
 
     public static void askPlayerCount(String server) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -37,6 +41,15 @@ public class BungeeUtils {
 
         if (Bukkit.getOnlinePlayers().size() > 0)
             ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
+    }
+
+    public static void fetchServers() {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("GetServers");
+    }
+
+    public static boolean doesServerExist(String serverName) {
+        return servers.stream().anyMatch(server -> server.equalsIgnoreCase(serverName));
     }
 
     public static void sendToServer(String playerName, String serverName) {
