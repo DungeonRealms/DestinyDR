@@ -62,7 +62,9 @@ public class UUIDFetcher {
     }
 
     /**
-     * Fetches the uuid synchronously for a specified name and time
+     * Fetches the uuid synchronously for a specified name and time.
+     * If the user is online, their UUID and name are gathered from their player object.
+     * If the user is offline, their UUID and name are gathered from the Mojang API.
      *
      * @param name      The name
      * @param timestamp Time when the player had this name in milliseconds
