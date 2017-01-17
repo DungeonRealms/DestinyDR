@@ -146,15 +146,22 @@ public class ShopListener implements Listener {
     public void playerClickShopInventory(InventoryClickEvent event) {
         if (!event.getInventory().getTitle().contains("@")) return;
 
-
         String ownerName = event.getInventory().getTitle().split("@")[1];
         if (ownerName == null) return;
         Shop shop = ShopMechanics.getShop(ownerName);
         if (shop == null) return;
-        if (event.getAction() == InventoryAction.NOTHING) return;
+        
+        // Prevents Stealing from shops. Unknown why the click is InventoryAction.NOTHING //
+        if (event.getAction() == InventoryAction.NOTHING){
+        	if(event.getWhoClicked().getInventory().firstEmpty() == -1)
+        		GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getWhoClicked().getName() + " has attempted to steal items on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+        	event.setCancelled(true);
+        	return;
+        }
+        
         Player clicker = (Player) event.getWhoClicked();
         if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-            event.setCancelled(true);
+            event.setCancelled(true); 
             return;
         }
         if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
