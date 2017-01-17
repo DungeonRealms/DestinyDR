@@ -87,7 +87,7 @@ public class Notice {
             else if (Rank.isSubscriber(p)) ecashAmount = 20;
 
             GamePlayer gp = GameAPI.getGamePlayer(p);
-            if (gp.isStreamMode()) {
+            if (gp == null || gp.isStreamMode()) {
                 return;
             }
 
