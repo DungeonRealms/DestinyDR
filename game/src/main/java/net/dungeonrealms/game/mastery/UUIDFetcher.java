@@ -3,6 +3,8 @@ package net.dungeonrealms.game.mastery;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.util.UUIDTypeAdapter;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -71,13 +73,26 @@ public class UUIDFetcher {
             return uuidCache.get(name);
         }
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(String.format(UUID_URL, name, timestamp / 1000)).openConnection();
-            connection.setReadTimeout(5000);
-            UUIDFetcher data = gson.fromJson(new BufferedReader(new InputStreamReader(connection.getInputStream())), UUIDFetcher.class);
+            UUID uuid;
+            String username;
 
-            uuidCache.put(name, data.id);
-            nameCache.put(data.id, data.name);
-            return data.id;
+            Player player = Bukkit.getServer().getPlayerExact(name);
+            if (player != null) {
+                uuid = player.getUniqueId();
+                username = player.getName();
+            } else {
+                HttpURLConnection connection = (HttpURLConnection) new URL(String.format(UUID_URL, name, timestamp / 1000)).openConnection();
+                connection.setReadTimeout(5000);
+                UUIDFetcher data = gson.fromJson(new BufferedReader(new InputStreamReader(connection.getInputStream())), UUIDFetcher.class);
+
+                uuid = data.id;
+                username = data.name;
+            }
+
+            uuidCache.put(username, uuid);
+            nameCache.put(uuid, username);
+
+            return uuid;
         } catch (Exception e) {
             e.printStackTrace();
         }
