@@ -47,10 +47,10 @@ public class CommandShard extends BaseCommand {
             String serverName = args[0];
 
             // Doesn't check if the server is online, but better than nothing.
-            if (!BungeeUtils.doesServerExist(serverName)) {
-                player.sendMessage(ChatColor.RED + "Could not find a shard named " + serverName);
-                return true;
-            }
+//            if (!BungeeUtils.doesServerExist(serverName)) {
+//                player.sendMessage(ChatColor.RED + "Could not find a shard named " + serverName);
+//                return true;
+//            }
 
             player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
             GameAPI.getGamePlayer(player).setSharding(true);
