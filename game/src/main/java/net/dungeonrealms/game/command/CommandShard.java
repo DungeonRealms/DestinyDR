@@ -48,7 +48,7 @@ public class CommandShard extends BaseCommand {
 
             // Doesn't check if the server is online, but better than nothing.
             if (!BungeeUtils.doesServerExist(serverName)) {
-                player.sendMessage(ChatColor.RED + "Could not find a shard names " + serverName);
+                player.sendMessage(ChatColor.RED + "Could not find a shard named " + serverName);
                 return true;
             }
 
