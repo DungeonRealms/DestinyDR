@@ -32,6 +32,7 @@ public class CommandTeleport extends BaseCommand {
                 { "Gloomy Hollows", "-590 44 0" },
                 { "Crestguard Keep", "-1428 116 -489" },
                 { "Deadpeaks", "-1173 106 1030" },
+                { "Tutorial Island", "990 32 -147" },
                 { "Tutorial", "-726 78 350" },
                 { "Avalon Peaks", "-1263 103 -516" },
                 { "Lost City of Avalon", "-221 153 -3489" },
