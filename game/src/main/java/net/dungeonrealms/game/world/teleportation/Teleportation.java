@@ -79,7 +79,7 @@ public class Teleportation implements GenericMechanic {
         Tripoli = new Location(Bukkit.getWorlds().get(0), -1320, 91, 370, 153F, 1F);
         Gloomy_Hollows = new Location(Bukkit.getWorlds().get(0), -590, 44, 0, 144F, 1F);
         Crestguard_Keep = new Location(Bukkit.getWorlds().get(0), -1428, 116, -489, 95F, 1F);
-        Tutorial = new Location(Bukkit.getWorlds().get(0), 826.153, 74, -102.511, 93.5F, -0.4F);
+        Tutorial = new Location(Bukkit.getWorlds().get(0), -726.533, 78, 350.849, -18.9F, -4.2F);
         Underworld = new Location(Bukkit.getWorlds().get(0), -362, 172, -3440, -90F, 1F);
         Overworld = new Location(Bukkit.getWorlds().get(0), -1158, 96, -515, 91F, 1F);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -152,7 +152,7 @@ public class Teleportation implements GenericMechanic {
         } else if (location.equals(Crestguard_Keep)) {
             message += "Crestguard Keep";
         } else if (location.equals(Tutorial)) {
-            message += "Tutorial Island";
+            message += "Tutorial";
         }
 
         player.sendMessage(message);

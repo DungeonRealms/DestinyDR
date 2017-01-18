@@ -103,9 +103,11 @@ public class Shop {
         ShopMechanics.ALLSHOPS.remove(ownerName);
         // Remove blocks
         hologram.delete();
-        block1.setType(Material.AIR);
-        block2.setType(Material.AIR);
-        block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
+        if(!shutDown){ //Prevents a crash in crashHandler() (Accessing Bukkit API Async)
+        	block1.setType(Material.AIR);
+        	block2.setType(Material.AIR);
+        	block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
+        }
         // Close his inventory, check if online first
         if (Bukkit.getPlayer(ownerUUID) != null && Bukkit.getPlayer(ownerUUID).isOnline()) {
             Bukkit.getPlayer(ownerUUID).closeInventory();

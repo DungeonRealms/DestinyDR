@@ -1084,7 +1084,7 @@ public class GameAPI {
             //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
-            //ItemManager.giveStarter(player);
+            ItemManager.giveStarter(player);
 
             // Fix missing journal & portal rune
             player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
@@ -1092,9 +1092,6 @@ public class GameAPI {
 
             player.teleport(Teleportation.Tutorial);
             //player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
-            player.sendMessage(new String[]{
-                    ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
-            });
         }
 
         // Essentials

@@ -465,7 +465,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandJail("jail", "/<command> [args]", "Jail command"));
             cm.registerCommand(new CommandUnjail("unjail", "/<command> [args]", "Unjail command"));
 
-            cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
+            //cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
             cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Will announce a purchase messages."));
 
             cm.registerCommand(new CommandMount("mount", "/<command> [args]", "Opens the player mounts menu.", Collections.singletonList("mounts")));

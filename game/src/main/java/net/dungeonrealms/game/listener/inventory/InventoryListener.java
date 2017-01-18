@@ -1152,7 +1152,7 @@ public class InventoryListener implements Listener {
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
         	
         	if( (Mining.isDRPickaxe(slotItem) && Mining.getLvl(slotItem) == 100) || (Fishing.isDRFishingPole(slotItem) && Fishing.getLvl(slotItem) == 100 ) ){
-            	event.getWhoClicked().sendMessage(ChatColor.GRAY + "This is too worn to be repaired.");
+            	event.getWhoClicked().sendMessage(ChatColor.GRAY + "This tool is much too worn to be repaired.");
             	event.setCancelled(true);
             	return;
             }

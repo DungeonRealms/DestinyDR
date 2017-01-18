@@ -647,7 +647,8 @@ public class BlockListener implements Listener {
                         player.sendMessage(ChatColor.RED + "You cannot place a shop here.");
                     }
                 } else {
-                    player.sendMessage(ChatColor.RED + "You cannot place a shop on " + ChatColor.BOLD + "TUTORIAL ISLAND");
+                	player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
+                            + " open a shop until you have left the tutorial.");
                 }
             }
         }

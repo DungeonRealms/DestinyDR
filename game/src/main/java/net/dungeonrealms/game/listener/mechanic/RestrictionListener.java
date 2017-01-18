@@ -479,21 +479,22 @@ public class RestrictionListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player pl = event.getPlayer();
-        Location from = event.getFrom();
-        if (GameAPI.getRegionName(from).equalsIgnoreCase("tutorial_island")) {
-            if (!Achievements.getInstance().hasAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CYRENNICA)) {
-                Location to = event.getTo();
-                if (!GameAPI.getRegionName(to).equalsIgnoreCase("tutorial_island") && !GameAPI.getRegionName(to).equalsIgnoreCase("cityofcyrennica")) {
-                    event.setCancelled(true);
-                    pl.teleport(from);
-                    pl.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "must" + ChatColor.RED + " either finish the tutorial or skip it with /skip to get off tutorial island.");
-                }
-            }
-        }
-    }
+    /*
+    	@EventHandler
+    	public void onPlayerMove(PlayerMoveEvent event) {
+        	Player pl = event.getPlayer();
+        	Location from = event.getFrom();
+        	if (GameAPI.getRegionName(from).equalsIgnoreCase("tutorial")) {
+            	if (!Achievements.getInstance().hasAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CYRENNICA)) {
+                	Location to = event.getTo();
+                	if (!GameAPI.getRegionName(to).equalsIgnoreCase("tutorial") && !GameAPI.getRegionName(to).equalsIgnoreCase("cityofcyrennica")) {
+                    	event.setCancelled(true);
+                    	pl.teleport(from);
+                    	pl.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "must" + ChatColor.RED + " either finish the tutorial or skip it with /skip to get off tutorial island.");
+                	}
+            	}
+        	}
+    	}*/
 
     @EventHandler
     public void onEntityTargetUntargettablePlayer(EntityTargetLivingEntityEvent event) {

@@ -113,7 +113,7 @@ public class MainListener implements Listener {
 
             // Prepare the message.
             TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/vote/405761"));
+            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/vote"));
             bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
 
             // Handle reward calculations & achievements.
@@ -142,7 +142,7 @@ public class MainListener implements Listener {
 
             // Send a message to everyone prompting them that a player has voted & how much they were rewarded for voting.
             final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for " + ecashReward + " ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-            normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/vote/405761");
+            normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
             GameAPI.sendNetworkMessage("BroadcastRaw", normal.toString());
         }
     }
@@ -568,7 +568,7 @@ public class MainListener implements Listener {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             event.getPlayer().openInventory(storage.inv);
         }
-        if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
+        /* if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             if (GameAPI.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {
                 event.getPlayer().sendMessage("");
                 event.getPlayer().sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Are you ready to start ye adventure " + event.getPlayer().getName() + "?"); //+ " " + ChatColor.GREEN.toString() + ChatColor.BOLD.toString() + "Y " + ChatColor.GRAY.toString() + "/" + ChatColor.RED.toString() + ChatColor.BOLD.toString() + " N");
@@ -581,10 +581,10 @@ public class MainListener implements Listener {
                         ItemManager.giveStarter(event.getPlayer());
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " ❢ " + ChatColor.YELLOW + "Need more information? Visit our wiki " + ChatColor.WHITE);
+                            final JSONMessage normal = new JSONMessage(ChatColor.GOLD + " â�¢ " + ChatColor.YELLOW + "Need more information? Visit our wiki " + ChatColor.WHITE);
                             normal.addURL(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "http://dungeonrealms.wikia.com/wiki/Main_Page");
                             normal.addSuggestCommand(ChatColor.YELLOW.toString() + " or for any questions. Click " + ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/ask ");
-                            normal.addText(ChatColor.GOLD + " ❢ ");
+                            normal.addText(ChatColor.GOLD + " â�¢ ");
 
                             event.getPlayer().sendMessage("");
                             normal.sendToPlayer(event.getPlayer());
@@ -595,7 +595,7 @@ public class MainListener implements Listener {
                     }
                 }), pl -> pl.sendMessage(ChatColor.GRAY + "Ship Captain: " + ChatColor.WHITE + "Argh! Speak to me when ye ready to leave!"));
             }
-        }
+        }*/
     }
 
     /*
