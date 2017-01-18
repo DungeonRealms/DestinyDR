@@ -344,7 +344,7 @@ public class BlockListener implements Listener {
                     && ((block.getWorld().equals(Bukkit.getWorlds().get(0)) || block.getWorld().getName().contains("DUNGEON")) && Realms.getInstance().getToken(block.getWorld()) == null))
                 event.setCancelled(true);
 
-            if (mat == Material.FURNACE || mat == Material.HOPPER_MINECART || mat == Material.TRAPPED_CHEST)
+            if (mat == Material.FURNACE || mat == Material.HOPPER_MINECART || mat == Material.TRAPPED_CHEST || mat == Material.BREWING_STAND)
                 event.setCancelled(true);
         }
     }

@@ -1150,9 +1150,17 @@ public class InventoryListener implements Listener {
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
-            if (Mining.isDRPickaxe(slotItem))
+        	
+        	if( (Mining.isDRPickaxe(slotItem) && Mining.getLvl(slotItem) == 100) || (Fishing.isDRFishingPole(slotItem) && Fishing.getLvl(slotItem) == 100 ) ){
+            	event.getWhoClicked().closeInventory();
+            	event.getWhoClicked().sendMessage(ChatColor.GRAY + "This is too worn to be repaired.");
+            	event.setCancelled(true);
+            	return;
+            }
+        	
+            if (Mining.isDRPickaxe(slotItem)){
                 slotTier = Mining.getPickTier(slotItem);
-            else {
+            } else {
                 slotTier = Fishing.getRodTier(slotItem);
             }
             if (scrapTier != slotTier) return;
