@@ -896,12 +896,13 @@ public class RealmListener implements Listener {
 
         if (!event.getInventory().getName().equalsIgnoreCase("container.chest") && !event.getInventory().getName().contains("Realm Chest") && !event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
                 && !(event.getInventory().getName().equalsIgnoreCase("container.minecart"))
-                && !(event.getInventory().getName().equalsIgnoreCase("container.dispenser")) && !(event.getInventory().getName().equalsIgnoreCase("container.hopper"))
+                && !(event.getInventory().getName().equalsIgnoreCase("container.dispenser"))
+                && !(event.getInventory().getName().equalsIgnoreCase("container.hopper"))
                 && !(event.getInventory().getName().equalsIgnoreCase("container.dropper"))) {
             return;
         }
 
-        if (p.getWorld().equals(Bukkit.getWorlds().get(0)) || p.isOp()) return;
+        if (p.getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         if (!event.getInventory().getName().equalsIgnoreCase("container.hopper") && event.getAction() == InventoryAction.PICKUP_ALL) {
             // Trying to grab all items from a chest in a realm.
@@ -911,10 +912,6 @@ public class RealmListener implements Listener {
                 event.setResult(Event.Result.DENY);
                 return;
             }
-        }
-
-        if (p.isOp()) {
-            return;
         }
 
         int slot_num = event.getRawSlot();

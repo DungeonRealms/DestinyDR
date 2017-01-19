@@ -502,6 +502,8 @@ public class DungeonRealms extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        getServer().dispatchCommand(getServer().getConsoleSender(), "save-off");
 
         Bukkit.getServer().setWhitelist(false);
 

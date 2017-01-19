@@ -23,6 +23,7 @@ import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -41,6 +42,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
@@ -227,7 +229,7 @@ public class RestrictionListener implements Listener {
             if (shop == null) return;
             event.setCancelled(true);
         } else {
-            event.getPlayer().sendMessage(ChatColor.RED + "You access a shop in a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " region!");
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot access a shop in a " + ChatColor.BOLD + "CHAOTIC" + ChatColor.RED + " region!");
         }
     }
 
@@ -313,6 +315,11 @@ public class RestrictionListener implements Listener {
     public void onInventoryOpen(InventoryOpenEvent event) {
 //        checkPlayersArmorIsValid((Player) event.getPlayer());
         checkForIllegalItems((Player) event.getPlayer());
+        
+        if(event.getInventory() instanceof MerchantInventory){
+        	event.setCancelled(true);
+        	return;
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
