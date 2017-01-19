@@ -225,7 +225,7 @@ public enum LootType {
                         case WATCH:
                             continue;
                         case CHEST:
-                            item = ItemManager.createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
+                            item = ItemManager.createRealmChest();
                             break;
                         case MAGMA_CREAM:
                             item = ItemManager.createOrbofAlteration();

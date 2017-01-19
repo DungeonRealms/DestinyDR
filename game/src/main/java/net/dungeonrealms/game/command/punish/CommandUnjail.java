@@ -30,9 +30,8 @@ public class CommandUnjail extends BaseCommand {
             if (!Rank.isGM(player)) return false;
         }
 
-
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "/unjail <player>");
+            sender.sendMessage(ChatColor.RED + "Invalid usage! /unjail <player>");
             return true;
         }
 
@@ -40,26 +39,24 @@ public class CommandUnjail extends BaseCommand {
         Player player = Bukkit.getPlayer(args[0]);
 
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + args[0] + " ain't online");
+            sender.sendMessage(ChatColor.RED + args[0] + " isn't online.");
             return true;
         }
-
 
         GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
 
         if (gamePlayer == null) {
-            sender.sendMessage(ChatColor.RED + args[0] + " ain't playin");
+            sender.sendMessage(ChatColor.RED + args[0] + " hasn't played Dungeon Realms before.");
             return true;
         }
-
 
         if (!gamePlayer.isJailed()) {
-            sender.sendMessage(ChatColor.RED + args[0] + " is free");
+            sender.sendMessage(ChatColor.RED + args[0] + " isn't currently jailed.");
             return true;
         }
 
-        sender.sendMessage(ChatColor.GREEN + "You done unjailed " + args[0] + " m9");
-        player.sendMessage(ChatColor.RED + "You have been unjailed");
+        sender.sendMessage(ChatColor.GREEN + "You have unjailed " + args[0] + ".");
+        player.sendMessage(ChatColor.RED + "You have been unjailed.");
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
         player.teleport(Teleportation.Cyrennica);
 

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.punish;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
@@ -50,7 +51,8 @@ public class CommandUnmute extends BaseCommand {
         }
 
         PunishAPI.unmute(p_uuid);
-        sender.sendMessage(ChatColor.RED.toString() + "You have unmuted " + ChatColor.BOLD + p_name);
+        sender.sendMessage(ChatColor.RED.toString() + "You have unmuted " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+        GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has unmuted " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
         return false;
     }
 }

@@ -34,36 +34,33 @@ public class CommandJail extends BaseCommand {
             if (!Rank.isGM(player)) return false;
         }
 
-
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "/jail <player>");
+            sender.sendMessage(ChatColor.RED + "Invalid usage! /jail <player>");
             return true;
         }
-
 
         Player player = Bukkit.getPlayer(args[0]);
 
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + args[0] + " ain't online");
+            sender.sendMessage(ChatColor.RED + args[0] + " isn't online.");
             return true;
         }
-
 
         GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
 
         if (gamePlayer == null) {
-            sender.sendMessage(ChatColor.RED + args[0] + " ain't playin");
+            sender.sendMessage(ChatColor.RED + args[0] + " hasn't played Dungeon Realms before.");
             return true;
         }
 
 
         if (gamePlayer.isJailed()) {
-            sender.sendMessage(ChatColor.RED + args[0] + " ain't free");
+            sender.sendMessage(ChatColor.RED + args[0] + " is already jailed.");
             return true;
         }
 
-        sender.sendMessage(ChatColor.GREEN + "You done jailed " + args[0] + " m9");
-        player.sendMessage(ChatColor.RED + "You have been jailed");
+        sender.sendMessage(ChatColor.GREEN + "You have jailed " + args[0] + ".");
+        player.sendMessage(ChatColor.RED + "You have been jailed.");
         player.teleport(new Location(Bukkit.getWorlds().get(0), -225, 81, 403));
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
 

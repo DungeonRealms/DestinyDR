@@ -296,8 +296,7 @@ public class CommandAdd extends BaseCommand {
                     }
                     break;
                 case "realmchest":
-                    ItemStack realmChest = ItemManager.createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
-                    player.getInventory().addItem(realmChest);
+                    player.getInventory().addItem(ItemManager.createRealmChest());
                     break;
                 case "pouch":
                     tier = Integer.parseInt(args[1]);

@@ -80,21 +80,28 @@ public class CommandMute extends BaseCommand {
             return true;
         }
 
+        // Build the reason string.
+        String reasonString = "";
         if (args.length >= 3) {
             StringBuilder reason = new StringBuilder(args[2]);
-            for (int arg = 3; arg < args.length; arg++) reason.append(" ").append(args[arg]);
 
-            PunishAPI.mute(p_uuid, duration, reason.toString(), doAfter -> GameAPI.updatePlayerData(p_uuid));
+            for (int arg = 3; arg < args.length; arg++)
+                reason.append(" ").append(args[arg]);
 
-            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)) + " for " + reason.toString());
-            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)) + " for " + reason.toString());
-
-        } else {
-            PunishAPI.mute(p_uuid, duration, "", doAfter -> GameAPI.updatePlayerData(p_uuid));
-
-            sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
-            p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
+            reasonString = reason.toString();
         }
+
+        // Apply the mute against the user.
+        PunishAPI.mute(p_uuid, duration, reasonString, doAfter -> GameAPI.updatePlayerData(p_uuid));
+
+        //
+        String punishmentLength = ChatColor.RED + PunishAPI.timeString((int) (duration / 60));
+        String friendlyReason = ChatColor.RED + (reasonString != "" ? ".\nReason: " + ChatColor.ITALIC + reasonString : "");
+
+        // Distribute the appropriate messages.
+        sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + ".");
+        p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");
+        GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");
 
         return false;
     }

@@ -745,7 +745,7 @@ public class RealmListener implements Listener {
         }
 
         if (b.getType() == Material.CHEST) {
-            loot = ItemManager.createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
+            loot = ItemManager.createRealmChest();
         }
 
         if (b.getType() == Material.PISTON_STICKY_BASE) {

@@ -105,26 +105,27 @@ public class CommandBan extends BaseCommand {
                 }
             }
 
+            String reasonString = "";
+
             if (args.length >= 3) {
                 StringBuilder reason = new StringBuilder(args[2]);
-                for (int arg = 3; arg < args.length; arg++) reason.append(" ").append(args[arg]);
 
-                String reasonString = reason.toString() + " [" + sender.getName() + "]";
+                for (int arg = 3; arg < args.length; arg++)
+                    reason.append(" ").append(args[arg]);
 
-                if (duration != -1)
-                    sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)) + " for " + reasonString);
-                else
-                    sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + reasonString);
-
-                PunishAPI.ban(p_uuid, p_name, sender.getName(), duration, reasonString, null);
-            } else {
-                if (duration != -1)
-                    sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " until " + PunishAPI.timeString((int) (duration / 60)));
-                else
-                    sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name);
-
-                PunishAPI.ban(p_uuid, p_name, sender.getName(), duration, "", null);
+                reasonString = reason.toString();
             }
+
+            String friendlyMessage = ChatColor.RED + (reasonString != "" ? ".\nReason: " + ChatColor.ITALIC + reasonString : "");
+            if (duration != -1) {
+                String punishExpiry = ChatColor.BOLD + PunishAPI.timeString((int) (duration / 60));
+                sender.sendMessage(ChatColor.RED.toString() + "You have banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + ".");
+                GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has banned " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishExpiry + friendlyMessage + ".");
+            } else {
+                sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+                GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has permanently banned " + ChatColor.BOLD + p_name + friendlyMessage + ".");
+            }
+            PunishAPI.ban(p_uuid, p_name, sender.getName(), duration, reasonString + " [" + sender.getName() + "]", null);
         });
 
         return false;

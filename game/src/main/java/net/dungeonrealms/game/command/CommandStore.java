@@ -1,12 +1,15 @@
 package net.dungeonrealms.game.command;
 
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.handler.MailHandler;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -29,8 +32,20 @@ public class CommandStore extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if ((sender instanceof Player && !Rank.isDev((Player) sender))&& !(sender instanceof ConsoleCommandSender))
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+
+            // Player isn't a developer nor a support agent.
+            if (!Rank.isDev(player) && !Rank.isSupport(player))
+                return false;
+
+            // Player is a support agent. However, they're not on the support shard.
+            if (!Rank.isDev(player) && !DungeonRealms.getInstance().isSupportShard)
+                return false;
+        } else if (!(sender instanceof ConsoleCommandSender)) {
+            // User isn't a player nor the console and therefore we can't use t his command.
             return false;
+        }
 
         // Check whether we have the required number of arguments in order to continue.
         if (args.length < 2) {
@@ -105,8 +120,22 @@ public class CommandStore extends BaseCommand {
                             items.add(ItemManager.createArmorEnchant(scrollTier));
                         } else if (scrollType.equals("protect") || scrollType.equals("protection")) {
                             items.add(ItemManager.createProtectScroll(scrollTier));
+                        } else if (scrollType.equals("mining") || scrollType.equals("pick") || scrollType.equals("pickaxe")) {
+                            if (args.length >= 5) {
+                                Mining.EnumMiningEnchant enchantType = Mining.EnumMiningEnchant.getEnchant(args[4]);
+                                items.add((args.length >= 6 ? Mining.getEnchant(scrollTier, enchantType, Integer.parseInt(args[5])) : Mining.getEnchant(scrollTier, enchantType)));
+                            } else {
+                                sender.sendMessage(ChatColor.RED + "Invalid usage! Missing enchantment type.");
+                            }
+                        } else if (scrollType.equals("fishing") || scrollType.equals("fish") || scrollType.equals("rod") || scrollType.equals("fishingrod")) {
+                            if (args.length >= 5) {
+                                Fishing.FishingRodEnchant enchantType = Fishing.FishingRodEnchant.getEnchant(args[4]);
+                                items.add((args.length >= 6 ? Fishing.getEnchant(scrollTier, enchantType, Integer.parseInt(args[5])) : Fishing.getEnchant(scrollTier, enchantType)));
+                            } else {
+                                sender.sendMessage(ChatColor.RED + "Invalid usage! Missing enchantment type.");
+                            }
                         } else {
-                            sender.sendMessage(ChatColor.RED + "Invalid usage! Scroll type must be weapon or armor.");
+                            sender.sendMessage(ChatColor.RED + "Invalid usage! Scroll type must be weapon, armor, protect, mining or fishing.");
                         }
                     } else {
                         sender.sendMessage(ChatColor.RED + "Invalid usage! Scroll tier must be between 1-5.");
@@ -117,6 +146,51 @@ public class CommandStore extends BaseCommand {
                 break;
             case "orb_of_alteration":
                 items.add(ItemManager.createOrbofAlteration());
+                break;
+            case "orb_of_peace":
+                items.add(ItemManager.createOrbofPeace());
+                break;
+            case "orb_of_flight":
+                items.add(ItemManager.createOrbofFlight());
+                break;
+            case "global_messenger":
+                items.add(ItemManager.createGlobalMessenger());
+                break;
+            case "realm_chest":
+                items.add(ItemManager.createRealmChest());
+                break;
+            case "profession":
+                if (args.length >= 3) {
+                    int tier = 1;
+
+                    if (args.length >= 4) {
+                        tier = Integer.parseInt(args[3]);
+
+                        if (tier < 1 || tier > 5) {
+                            sender.sendMessage(ChatColor.RED + "Invalid usage! Invalid tier 1-5.");
+                            break;
+                        }
+                    }
+
+                    switch (args[2].toLowerCase()) {
+                        case "mining":
+                        case "mine":
+                        case "pick":
+                        case "pickaxe":
+                            items.add(ItemManager.createPickaxe(tier));
+                            break;
+                        case "fishing":
+                        case "fish":
+                        case "rod":
+                        case "fishingrod":
+                        case "fishing_rod":
+                            items.add(ItemManager.createFishingPole(tier));
+                            break;
+                        default:
+                            sender.sendMessage(ChatColor.RED + "Invalid usage! Invalid profession item.");
+                            break;
+                    }
+                }
                 break;
             default:
                 sender.sendMessage(ChatColor.RED + "Unrecognised store item " + storeItem + " for " + playerName + ".");
