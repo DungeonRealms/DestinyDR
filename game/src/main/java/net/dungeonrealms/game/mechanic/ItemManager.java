@@ -69,7 +69,7 @@ public class ItemManager {
     }
 
     public static ItemStack createRealmChest() {
-        return AntiDuplication.getInstance().applyAntiDupe(createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."}));
+        return createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
     }
 
     public static ItemStack createOrbofAlteration() {
