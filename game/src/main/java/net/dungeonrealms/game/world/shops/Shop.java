@@ -309,7 +309,6 @@ public class Shop {
                 }
                 inventory.addItem(stack);
             }
-            Bukkit.getLogger().info("Finished recreating shop for " + p.getName());
         });
     }
 

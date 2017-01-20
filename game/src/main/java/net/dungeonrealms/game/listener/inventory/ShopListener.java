@@ -146,8 +146,6 @@ public class ShopListener implements Listener {
         Shop shop = ShopMechanics.getShop(ownerName);
         if (shop == null) return;
         
-        Bukkit.getLogger().info(event.getWhoClicked().getName() + " - " + event.getAction() + ", Cancelled = " + event.isCancelled());
-        
         // Prevents Stealing from shops. //
         if (event.getAction() == InventoryAction.NOTHING){
         	if(event.getWhoClicked().getInventory().firstEmpty() == -1)
@@ -700,7 +698,6 @@ public class ShopListener implements Listener {
         if (ownerName == null) return;
         Shop shop = ShopMechanics.getShop(ownerName);
         if (shop == null) return;
-        Bukkit.getLogger().info("Opening shop for " + event.getPlayer().getName());
         if (!shop.isopen) return;
         if (event.getPlayer().getName().equalsIgnoreCase(ownerName)) return;
         if (shop.uniqueViewers.contains(event.getPlayer().getName())) return;
