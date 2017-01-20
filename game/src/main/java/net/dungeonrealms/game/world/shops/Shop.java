@@ -268,10 +268,6 @@ public class Shop {
         p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Player owned shop upgrades are " + ChatColor.BOLD + ChatColor.RED + "NOT" + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this upgrade request.");
         p.sendMessage("");
         Chat.listenForMessage(p, chat -> {
-            if (chat.getMessage().equalsIgnoreCase("cancel")) {
-                p.sendMessage(ChatColor.RED + "Shop upgrade cancelled.");
-                return;
-            }
             if (!chat.getMessage().equalsIgnoreCase("confirm")) {
                 p.sendMessage(ChatColor.RED + "Shop upgrade cancelled.");
                 return;
@@ -298,7 +294,7 @@ public class Shop {
      */
     private void upgradeShop(Player p, int new_tier) {
         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, new_tier, true);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
             ItemStack[] items = inventory.getContents();
             inventory = createNewInv(p.getUniqueId());
             for (ItemStack stack : items) {
@@ -313,7 +309,8 @@ public class Shop {
                 }
                 inventory.addItem(stack);
             }
-        }, 20);
+            Bukkit.getLogger().info("Finished recreating shop for " + p.getName());
+        });
     }
 
     /**

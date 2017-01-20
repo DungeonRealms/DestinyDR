@@ -87,16 +87,10 @@ public class ShopListener implements Listener {
             return;
         }
 
-        if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
+        if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer()) || shop.isopen) {
             p.openInventory(shop.getInventory());
             p.playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
             p.setCanPickupItems(false);
-        } else {
-            if (shop.isopen) {
-                p.openInventory(shop.getInventory());
-                p.playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
-                p.setCanPickupItems(false);
-            }
         }
     }
 
@@ -120,12 +114,6 @@ public class ShopListener implements Listener {
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
-        // Temporary: prevent upgrading.
-        if (true) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Shop upgrading is currently undergoing maintenance.");
-            return;
-        }
 
         if (!shop.isopen) {
             if (event.getPlayer().isSneaking()) {
@@ -158,7 +146,9 @@ public class ShopListener implements Listener {
         Shop shop = ShopMechanics.getShop(ownerName);
         if (shop == null) return;
         
-        // Prevents Stealing from shops. Unknown why the click is InventoryAction.NOTHING //
+        Bukkit.getLogger().info(event.getWhoClicked().getName() + " - " + event.getAction() + ", Cancelled = " + event.isCancelled());
+        
+        // Prevents Stealing from shops. //
         if (event.getAction() == InventoryAction.NOTHING){
         	if(event.getWhoClicked().getInventory().firstEmpty() == -1)
         		GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getWhoClicked().getName() + " has attempted to steal items on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
@@ -710,6 +700,7 @@ public class ShopListener implements Listener {
         if (ownerName == null) return;
         Shop shop = ShopMechanics.getShop(ownerName);
         if (shop == null) return;
+        Bukkit.getLogger().info("Opening shop for " + event.getPlayer().getName());
         if (!shop.isopen) return;
         if (event.getPlayer().getName().equalsIgnoreCase(ownerName)) return;
         if (shop.uniqueViewers.contains(event.getPlayer().getName())) return;
