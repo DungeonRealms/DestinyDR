@@ -213,7 +213,7 @@ public class ShopListener implements Listener {
                     }
                     BankMechanics.shopPricing.put(clicker.getName(), stackClicked);
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
-                    clicker.closeInventory();
+                    Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> clicker.closeInventory());
                     Chat.listenForMessage(clicker, chat -> {
                         if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
                             clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
