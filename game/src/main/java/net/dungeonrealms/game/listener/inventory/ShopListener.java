@@ -120,6 +120,13 @@ public class ShopListener implements Listener {
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        // Temporary: prevent upgrading.
+        if (true) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Shop upgrading is currently undergoing maintenance.");
+            return;
+        }
+
         if (!shop.isopen) {
             if (event.getPlayer().isSneaking()) {
                 if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
