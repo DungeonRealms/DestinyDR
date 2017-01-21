@@ -66,7 +66,6 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -116,9 +115,9 @@ public class DamageListener implements Listener {
     public void disallowPVPEvent(DisallowedPVPEvent event) {
         Player p1 = event.getAttacker();
         Player p2 = event.getDefender();
-        if (DuelingMechanics.isDueling(p1.getUniqueId()) && DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+        if (DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
             DuelOffer offer = DuelingMechanics.getOffer(p1.getUniqueId());
-            if (offer.canFight) {
+            if (offer != null && offer.canFight) {
                 event.setCancelled(true);
             }
         }
@@ -224,7 +223,7 @@ public class DamageListener implements Listener {
                 attackerEquipment.getItemInMainHand().setDurability(((short) -1));
                 //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
                 if (!GameAPI.isWeapon(attackerEquipment.getItemInMainHand())) return;
-                finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity());
+                finalDamage = DamageAPI.calculateWeaponDamage(attacker, (LivingEntity) event.getEntity(), true);
                 if (CombatLog.isInCombat(player)) {
                     CombatLog.updateCombat(player);
                 } else {
@@ -307,7 +306,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGH)
     public void playerPunchPlayer(EntityDamageByEntityEvent event) {
         if (!GameAPI.isPlayer(event.getEntity()) || !GameAPI.isPlayer(event.getDamager()))
             return;
@@ -317,15 +316,29 @@ public class DamageListener implements Listener {
         event.setDamage(0);
 
         if (!GameAPI.isNonPvPRegion(p1.getLocation()) && !GameAPI.isNonPvPRegion(p2.getLocation())) return;
-        if (!DuelingMechanics.isDueling(p2.getUniqueId())) return;
-        if (!DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+
+        if (event.isCancelled() && p1.isSneaking()) {
+            if(!(p1.hasMetadata("duel_cooldown") && p1.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
+                //Check if anyone has a duel already.
+                DuelOffer currentDuel = DuelingMechanics.getOffer(p1.getUniqueId());
+                DuelOffer otherDuel = DuelingMechanics.getOffer(p2.getUniqueId());
+                if (currentDuel == null && otherDuel == null) {
+                    //Send invite?
+                    DuelingMechanics.sendDuelRequest(p1, p2);
+                    return;
+                }
+            }
+        }
+
+        if (DuelingMechanics.isDueling(p1.getUniqueId()) && !DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
             p1.sendMessage("That's not your dueling partner!");
             event.setDamage(0);
             event.setCancelled(true);
             return;
         }
+
         DuelOffer offer = DuelingMechanics.getOffer(p1.getUniqueId());
-        if (!offer.canFight) {
+        if (offer != null && !offer.canFight) {
             event.setCancelled(true);
             event.setDamage(0);
         }
@@ -960,8 +973,10 @@ public class DamageListener implements Listener {
             }
         }
 
+        boolean inDuel = false;
         if (GameAPI.isInSafeRegion(player.getLocation())) {
-            if (!DuelingMechanics.isDueling(player.getUniqueId())) {
+            inDuel = DuelingMechanics.isDueling(player.getUniqueId());
+            if (!inDuel) {
                 player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1f, 1.25F);
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
@@ -1007,7 +1022,7 @@ public class DamageListener implements Listener {
             }
         }
         player.setMetadata("last_Bow_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        DamageAPI.fireBowProjectile(player, hand, nmsItem.getTag());
+        DamageAPI.fireBowProjectile(player, hand, nmsItem.getTag(), !inDuel);
         player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1f, 1f);
     }
 

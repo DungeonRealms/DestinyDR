@@ -1,7 +1,11 @@
 package net.dungeonrealms.game.player.duel;
 
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -10,11 +14,18 @@ import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
+import org.bukkit.block.Banner;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -24,20 +35,57 @@ public class DuelOffer {
 
     public UUID player1;
     public UUID player2;
-    public Inventory sharedInventory = null;
+    //    public Inventory sharedInventory = null;
     public boolean p1Ready;
     public boolean p2Ready;
     public Item.ItemTier tierArmor = Item.ItemTier.TIER_5;
     public Item.ItemTier tierWeapon = Item.ItemTier.TIER_5;
+
+    @Getter
     public Location centerPoint = null;
+    public Location bannerLoc = null;
+    private Hologram bannerHologram;
     public boolean canFight = false;
+
+    public boolean cancelled = false;
+    public boolean starting = false;
     public int timerID = -1;
 
+    @Getter
+    private Map<UUID, Integer> leaveAttempts = new HashMap<>();
     public DuelOffer(Player player, Player player2) {
         this.player1 = player.getUniqueId();
         this.player2 = player2.getUniqueId();
-        sharedInventory = Bukkit.createInventory(null, 36, player.getName() + "  VS. " + player2.getName());
-        openInventory();
+//        sharedInventory = Bukkit.createInventory(null, 36, player.getName() + "  VS. " + player2.getName());
+//        openInventory();
+        startFight();
+
+        bannerLoc = centerPoint;
+
+        //Scan down till we get a non air block.
+        while(bannerLoc.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR){
+            bannerLoc.subtract(0, 1, 0);
+        }
+
+        Block block = bannerLoc.getBlock();
+        if (block.isEmpty() && block.getRelative(BlockFace.DOWN).getType().isSolid()) {
+            //Spawn the hologram and stuff if theres no problems.
+            block.setType(Material.STANDING_BANNER);
+            Banner banner = (Banner) block.getState();
+            banner.setBaseColor(DyeColor.RED);
+            banner.addPattern(new Pattern(DyeColor.BLACK, PatternType.SKULL));
+            banner.update();
+
+            this.bannerHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), block.getLocation().clone().add(.5, 2.5, .5));
+            this.bannerHologram.appendTextLine(ChatColor.YELLOW + ChatColor.BOLD.toString() + "DUEL");
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                String rank = GameChat.getFormattedName(player);
+                String second = GameChat.getFormattedName(player2);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                        () -> this.bannerHologram.appendTextLine(rank + ChatColor.YELLOW + " vs " + second));
+            });
+        }
     }
 
     /**
@@ -46,53 +94,64 @@ public class DuelOffer {
     private void openInventory() {
         Bukkit.getPlayer(player1).closeInventory();
         Bukkit.getPlayer(player2).closeInventory();
-        ItemStack separator = ItemManager.createItem(Material.BONE, " ", null);
-        ItemStack armorTier = ItemManager.createItem(Material.GOLD_CHESTPLATE, "Armor Tier Limit", null);
-        ItemStack weaponTier = ItemManager.createItem(Material.GOLD_SWORD, "Weapon Tier Limit", null);
-        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP",
-                null, DyeColor.GRAY.getDyeData());
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("status", "notready");
-        nms.setTag(nbt);
-        nms.c(ChatColor.YELLOW + "READY UP");
-        sharedInventory.setItem(0, CraftItemStack.asBukkitCopy(nms));
-        sharedInventory.setItem(8, CraftItemStack.asBukkitCopy(nms));
-        sharedInventory.setItem(4, separator);
-        sharedInventory.setItem(13, separator);
-        sharedInventory.setItem(22, separator);
-        sharedInventory.setItem(27, separator);
-        sharedInventory.setItem(28, separator);
-        sharedInventory.setItem(29, separator);
-        sharedInventory.setItem(31, separator);
-        sharedInventory.setItem(33, separator);
-        sharedInventory.setItem(34, separator);
-        sharedInventory.setItem(35, separator);
-        sharedInventory.setItem(4, separator);
-        sharedInventory.setItem(30, armorTier);
-        sharedInventory.setItem(32, weaponTier);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            Bukkit.getPlayer(player1).openInventory(sharedInventory);
-            Bukkit.getPlayer(player2).openInventory(sharedInventory);
-        }, 20);
+//        ItemStack separator = ItemManager.createItem(Material.BONE, " ", null);
+//        ItemStack armorTier = ItemManager.createItem(Material.GOLD_CHESTPLATE, "Armor Tier Limit", null);
+//        ItemStack weaponTier = ItemManager.createItem(Material.GOLD_SWORD, "Weapon Tier Limit", null);
+//        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP",
+//                null, DyeColor.GRAY.getDyeData());
+//        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+//        NBTTagCompound nbt = new NBTTagCompound();
+//        nbt.setString("status", "notready");
+//        nms.setTag(nbt);
+//        nms.c(ChatColor.YELLOW + "READY UP");
+//        sharedInventory.setItem(0, CraftItemStack.asBukkitCopy(nms));
+//        sharedInventory.setItem(8, CraftItemStack.asBukkitCopy(nms));
+//        sharedInventory.setItem(4, separator);
+//        sharedInventory.setItem(13, separator);
+//        sharedInventory.setItem(22, separator);
+//        sharedInventory.setItem(27, separator);
+//        sharedInventory.setItem(28, separator);
+//        sharedInventory.setItem(29, separator);
+//        sharedInventory.setItem(31, separator);
+//        sharedInventory.setItem(33, separator);
+//        sharedInventory.setItem(34, separator);
+//        sharedInventory.setItem(35, separator);
+//        sharedInventory.setItem(4, separator);
+//        sharedInventory.setItem(30, armorTier);
+//        sharedInventory.setItem(32, weaponTier);
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//            Bukkit.getPlayer(player1).openInventory(sharedInventory);
+//            Bukkit.getPlayer(player2).openInventory(sharedInventory);
+//        }, 20);
     }
 
     public void endDuel(Player winner, Player loser) {
         canFight = false;
-        for (int i = 1; i < sharedInventory.getSize(); i++) {
-            if (!isRightSlot(i) && !isLeftSlot(i))
-                continue;
-            ItemStack current = sharedInventory.getItem(i);
-            if (current != null && current.getType() != Material.AIR) {
-                winner.getInventory().addItem(current);
-            }
+        cancelled = true;
+//        for (int i = 1; i < sharedInventory.getSize(); i++) {
+//            if (!isRightSlot(i) && !isLeftSlot(i))
+//                continue;
+//            ItemStack current = sharedInventory.getItem(i);
+//            if (current != null && current.getType() != Material.AIR) {
+//                winner.getInventory().addItem(current);
+//            }
+//        }
+        if (this.bannerLoc.getBlock().getType() == Material.STANDING_BANNER) {
+            this.bannerLoc.getBlock().setType(Material.AIR);
         }
+
+        if (this.bannerHologram != null && !this.bannerHologram.isDeleted()) {
+            this.bannerHologram.delete();
+        }
+
         GamePlayer wGP = GameAPI.getGamePlayer(winner);
         GamePlayer lGP = GameAPI.getGamePlayer(loser);
         if (wGP != null) {
+            wGP.setPvpTaggedUntil(0);
             wGP.getPlayerStatistics().setDuelsWon(wGP.getPlayerStatistics().getDuelsWon() + 1);
         }
         if (lGP != null) {
+            lGP.setPvpTaggedUntil(0);
             lGP.getPlayerStatistics().setDuelsLost(lGP.getPlayerStatistics().getDuelsLost() + 1);
         }
 
@@ -106,6 +165,8 @@ public class DuelOffer {
         }
         final String finalWinnerName = winnerName;
         final String finalLoserName = loserName;
+
+
         GameAPI.getNearbyPlayers(winner.getLocation(), 100).forEach(player1 -> player1.sendMessage(finalWinnerName + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + finalLoserName + ChatColor.GREEN + " in a duel!"));
         DuelingMechanics.removeOffer(this);
     }
@@ -126,16 +187,16 @@ public class DuelOffer {
      * Return items to players
      */
     public void giveBackItems() {
-        for (int i = 1; i < sharedInventory.getSize(); i++) {
-            ItemStack current = sharedInventory.getItem(i);
-            if (current != null && current.getType() != Material.AIR) {
-                if (isLeftSlot(i)) {
-                    Bukkit.getPlayer(player1).getInventory().addItem(current);
-                } else if (isRightSlot(i)) {
-                    Bukkit.getPlayer(player2).getInventory().addItem(current);
-                }
-            }
-        }
+//        for (int i = 1; i < sharedInventory.getSize(); i++) {
+//            ItemStack current = sharedInventory.getItem(i);
+//            if (current != null && current.getType() != Material.AIR) {
+//                if (isLeftSlot(i)) {
+//                    Bukkit.getPlayer(player1).getInventory().addItem(current);
+//                } else if (isRightSlot(i)) {
+//                    Bukkit.getPlayer(player2).getInventory().addItem(current);
+//                }
+//            }
+//        }
     }
 
     /**
@@ -188,7 +249,7 @@ public class DuelOffer {
             }
         }
         tierArmor = list[j];
-        sharedInventory.setItem(30, getArmorItem());
+//        sharedInventory.setItem(30, getArmorItem());
     }
 
     public void cycleItem() {
@@ -204,7 +265,7 @@ public class DuelOffer {
             }
         }
         tierWeapon = list[j];
-        sharedInventory.setItem(32, getWeaponItem());
+//        sharedInventory.setItem(32, getWeaponItem());
     }
 
     /**
@@ -235,8 +296,8 @@ public class DuelOffer {
         nms.setTag(nbt);
         nms.c(ChatColor.YELLOW + "NOT READY");
         ItemStack newItem = CraftItemStack.asBukkitCopy(nms);
-        sharedInventory.setItem(0, newItem);
-        sharedInventory.setItem(8, newItem);
+//        sharedInventory.setItem(0, newItem);
+//        sharedInventory.setItem(8, newItem);
         p1Ready = false;
         p2Ready = false;
 
@@ -277,16 +338,42 @@ public class DuelOffer {
      *
      */
     private void startFight() {
+        if (starting) return;
+
+        starting = true;
         centerPoint = this.getPlayer1().getLocation();
-        this.getPlayer2().teleport(centerPoint);
-        this.getPlayer1().sendMessage(ChatColor.YELLOW + "Battle begins in 10 seconds!");
-        this.getPlayer2().sendMessage(ChatColor.YELLOW + "Battle begins in 10 seconds!");
-        timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), this::checkArmorAndWeapon, 0, 10);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            canFight = true;
-            this.getPlayer1().sendMessage(ChatColor.YELLOW + "Fight!");
-            this.getPlayer2().sendMessage(ChatColor.YELLOW + "Fight!");
-        }, 100);
+//        this.getPlayer2().teleport(centerPoint);
+        this.getPlayer1().sendMessage(ChatColor.YELLOW + "Duel will begin in 10 seconds...");
+        this.getPlayer2().sendMessage(ChatColor.YELLOW + "Duel will begin in 10 seconds...");
+
+
+        Player player1 = getPlayer1();
+        Player player2 = getPlayer2();
+
+        new BukkitRunnable() {
+            int timer = 10;
+
+            public void run() {
+
+                if (player1 == null || !player1.isOnline() || player2 == null || !player2.isOnline() || cancelled) {
+                    cancel();
+                    return;
+                }
+
+                timer--;
+                if (timer > 0) {
+                    player1.sendMessage(ChatColor.YELLOW.toString() + timer + "...");
+                    player2.sendMessage(ChatColor.YELLOW.toString() + timer + "...");
+                }
+
+                if (timer <= 0) {
+                    canFight = true;
+                    player1.sendMessage(ChatColor.YELLOW + "Fight!");
+                    player2.sendMessage(ChatColor.YELLOW + "Fight!");
+                    cancel();
+                }
+            }
+        }.runTaskTimer(DungeonRealms.getInstance(), 20, 20);
     }
 
     /**

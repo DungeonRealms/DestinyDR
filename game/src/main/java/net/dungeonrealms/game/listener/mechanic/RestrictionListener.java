@@ -17,6 +17,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -636,12 +637,23 @@ public class RestrictionListener implements Listener {
             if (GameAPI.isNonPvPRegion(pDamager.getLocation()) || GameAPI.isNonPvPRegion(pReceiver.getLocation())) {
                 if (DuelingMechanics.isDueling(pDamager.getUniqueId())) { //TODO: Check if you can attack players that are dueling.
                     if (DuelingMechanics.isDueling(pReceiver.getUniqueId())) {
+
                         if (!DuelingMechanics.isDuelPartner(pDamager.getUniqueId(), pReceiver.getUniqueId())) {
                             event.setDamage(0);
                             event.setCancelled(true);
                             pDamager.updateInventory();
                             pReceiver.updateInventory();
+                        }else{
+                            DuelOffer offer = DuelingMechanics.getOffer(pDamager.getUniqueId());
+                            if(offer != null && !offer.canFight){
+                                event.setCancelled(true);
+                                event.setDamage(0D);
+                                return;
+                            }
                         }
+                    }else {
+                        event.setCancelled(true);
+                        event.setDamage(0);
                     }
                 } else {
                     event.setDamage(0);

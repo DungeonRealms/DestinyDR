@@ -66,7 +66,7 @@ public class WhirlWind extends PowerMove {
                         }
                         // * 4 for whirlwind
                         double multiplier = entity.hasMetadata("boss") ? 1.3 : 4;
-                        double dmg = DamageAPI.calculateWeaponDamage(entity, p) * multiplier;
+                        double dmg = DamageAPI.calculateWeaponDamage(entity, p, true) * multiplier;
                         double[] result = DamageAPI.calculateArmorReduction(entity, p, dmg, null);
                         int armourReducedDamage = (int) result[0];
                         int totalArmor = (int) result[1];

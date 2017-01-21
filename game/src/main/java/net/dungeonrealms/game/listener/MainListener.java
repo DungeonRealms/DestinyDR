@@ -403,17 +403,46 @@ public class MainListener implements Listener {
         if (!GameAPI.isPlayer(event.getPlayer()))
             return;
 
-        if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
+        //Only check blocks that change to save on cpu checks.
+        if (event.getTo().getBlock() != event.getFrom().getBlock()) {
             DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
-            assert offer != null;
-            if (!offer.canFight) return;
-            if (event.getTo().distance(offer.centerPoint) >= 15) {
-                event.setCancelled(true);
-                event.getPlayer().teleport(event.getFrom());
-                event.getPlayer().sendMessage(ChatColor.RED + "Can't leave area while in battle!");
+            if (offer != null) {
+//                if (!offer.canFight) return;
+                if (event.getTo().distanceSquared(offer.centerPoint) >= 300) {
+                    event.setCancelled(true);
+                    Player player = event.getPlayer();
+                    player.teleport(event.getFrom());
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "WARNING:" + ChatColor.RED
+                            + " You are too far from the DUEL START POINT, please turn back or you will "
+                            + ChatColor.UNDERLINE + "FORFEIT.");
+
+                    Integer attempts = offer.getLeaveAttempts().get(player.getUniqueId());
+                    if (attempts != null) {
+
+                        long lastAttempt = player.hasMetadata("duel_leave_attempt") ? player.getMetadata("duel_leave_attempt").get(0).asLong() : 0;
+
+                        if (System.currentTimeMillis() - lastAttempt <= 5000) {
+                            //Trying within 5 seconds.
+                            if (attempts >= 5) {
+                                //NO
+                                Player winner = offer.player1 == player.getUniqueId() ? offer.getPlayer2() : offer.getPlayer1();
+//                                Player loser = offer.player1 == player.getUniqueId() ?  : offer.getPlayer1();
+                                offer.endDuel(winner, player);
+                                player.sendMessage(ChatColor.RED + "You attempted to leave the duel area and forfeit the duel.");
+                            }
+                        } else {
+                            attempts = 0;
+                        }
+
+                        offer.getLeaveAttempts().put(player.getUniqueId(), ++attempts);
+                    } else {
+                        offer.getLeaveAttempts().put(player.getUniqueId(), 1);
+                    }
+
+                    player.setMetadata("duel_leave_attempt", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                }
             }
         }
-
         if (!(DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer())))
             return;
         Player player = event.getPlayer();
@@ -479,15 +508,18 @@ public class MainListener implements Listener {
         if (!gp.isPvPTagged() && gp.getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             return;
         }
+
+        if (DuelingMechanics.isDueling(player.getUniqueId())) return;
+
         if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
             return;
         }
         if (GameAPI.isInSafeRegion(event.getFrom()) || GameAPI.isNonPvPRegion(event.getFrom())) {
             player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
             if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
-                player.sendMessage(ChatColor.RED + "The guards have kicked you of of this area due to your alignment.");
+                player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your alignment.");
             else
-                player.sendMessage(ChatColor.RED + "The guards have kicked you of of this area due to your PvP tagged status.");
+                player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your PvP tagged status.");
             return;
         }
         if (GameAPI.isInSafeRegion(event.getTo()) || GameAPI.isNonPvPRegion(event.getTo())) {
@@ -741,6 +773,7 @@ public class MainListener implements Listener {
                         }
                         gamePlayer.getPlayerStatistics().setFishCaught(gamePlayer.getPlayerStatistics().getFishCaught() + 2);
                     }
+
                     int junk_chance = Fishing.getJunkFindChance(pl.getEquipment().getItemInMainHand());
                     if (junk_chance >= (new Random().nextInt(100) + 1)) {
                         int junk_type = new Random().nextInt(100) + 1; // 0, 1, 2

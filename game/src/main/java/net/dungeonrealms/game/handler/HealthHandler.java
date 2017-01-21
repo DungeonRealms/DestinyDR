@@ -530,6 +530,10 @@ public class HealthHandler implements GenericMechanic {
             if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
                 DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
                 if (offer != null) {
+                    GamePlayer attackPLayer = GameAPI.getGamePlayer((Player)leAttacker);
+
+                    player.setMetadata("duel_cooldown", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 1000));
+                    leAttacker.setMetadata("duel_cooldown", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 1000));
                     offer.endDuel((Player) leAttacker, player);
                 }
                 return;

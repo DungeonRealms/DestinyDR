@@ -39,8 +39,10 @@ public class DuelingMechanics {
 			sender.sendMessage(ChatColor.RED + "That player is already dueling!");
 			return;
 		}
-		
+
 		if (isPending(requested.getUniqueId()) && getPendingPartner(requested.getUniqueId()).toString().equalsIgnoreCase(sender.getUniqueId().toString())) {
+			DuelOffer offer = getDuelOffer(sender.getUniqueId(), requested.getUniqueId());
+			if(offer != null)return;
 			startDuel(sender, requested);
 			return;
 		}
@@ -50,7 +52,7 @@ public class DuelingMechanics {
 			cooldown.add(sender.getUniqueId());
 			sender.sendMessage(ChatColor.GREEN + "Duel request sent!");
 			requested.sendMessage(ChatColor.YELLOW + "Duel request received from " + sender.getName() + "");
-			requested.sendMessage(ChatColor.YELLOW + "Punch them back to accept");
+			requested.sendMessage(ChatColor.YELLOW + "Shift punch them back to accept");
 			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 				if (pending.containsKey(sender.getUniqueId()))
 					pending.remove(sender.getUniqueId());
@@ -59,6 +61,13 @@ public class DuelingMechanics {
 		} else {
 			sender.sendMessage(ChatColor.RED + "That player has duels toggled off!");
 		}
+	}
+
+	public static DuelOffer getDuelOffer(UUID uuid, UUID other){
+		for(DuelOffer offer : duels){
+			if((offer.player1.equals(uuid) || offer.player2.equals(uuid)) && (offer.player1.equals(other) && offer.player2.equals(other)))return offer;
+		}
+		return null;
 	}
 
 	/**
@@ -110,7 +119,9 @@ public class DuelingMechanics {
 	 * @return boolean
 	 */
 	public static boolean isDueling(UUID uuid) {
-		return !duels.isEmpty() && (uuid.equals(duels.get(0).player1) || uuid.equals(duels.get(0).player2));
+		DuelOffer offer = getOffer(uuid);
+		return offer != null;
+//		return !duels.isEmpty() && (uuid.equals(duels.get(0).player1) || uuid.equals(duels.get(0).player2));
 	}
 
 	/**
@@ -142,7 +153,12 @@ public class DuelingMechanics {
 	 * @return
 	 */
 	public static boolean isDuelPartner(UUID uniqueId, UUID uniqueId2) {
-		return !duels.isEmpty() && (duels.get(0).player1.equals(uniqueId) || duels.get(0).player2.equals(uniqueId))
-				&& (duels.get(0).player1.equals(uniqueId2) || duels.get(0).player2.equals(uniqueId2));
+		DuelOffer offer = getOffer(uniqueId);
+
+		if(offer != null && (offer.player2.equals(uniqueId2) || offer.player1.equals(uniqueId2)))return true;
+
+		return false;
+//		return !duels.isEmpty() && (duels.get(0).player1.equals(uniqueId) || duels.get(0).player2.equals(uniqueId))
+//				&& (duels.get(0).player1.equals(uniqueId2) || duels.get(0).player2.equals(uniqueId2));
 	}
 }

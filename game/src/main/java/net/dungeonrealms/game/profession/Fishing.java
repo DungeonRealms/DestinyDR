@@ -172,12 +172,12 @@ public class Fishing implements GenericMechanic {
 
 
     public static ItemStack getFishDrop(int tier) {
-        int fish_type = new Random().nextInt(3); // 0, 1, 2
+        int fish_type = random.nextInt(3); // 0, 1, 2
         String fish_name = "";
         int hunger_to_heal = 0;
 
         int buff_chance = 0;
-        int do_i_buff = new Random().nextInt(100);
+        int do_i_buff = random.nextInt(100);
 
         boolean fish_buff = false;
         String fish_buff_s = "";
@@ -196,16 +196,16 @@ public class Fishing implements GenericMechanic {
 
             if (buff_chance >= do_i_buff) {
                 fish_buff = true;
-                int buff_type = new Random().nextInt(100);
+                int buff_type = random.nextInt(100);
                 int buff_val = 0;
                 if (buff_type >= 0 && buff_type <= 15) {
                     // Of Power (DMG) 1-2%
-                    buff_val = new Random().nextInt(2) + 1;
+                    buff_val = random.nextInt(2) + 1;
                     fish_name += " of Lesser Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(20s)";
                 } else if (buff_type > 15 && buff_type <= 25) {
                     // Of Health 1-3% HP (instant heal)
-                    buff_val = new Random().nextInt(3) + 1;
+                    buff_val = random.nextInt(3) + 1;
                     fish_name = ChatColor.WHITE.toString() + "Small, Healing " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 25 && buff_type <= 50) {
@@ -219,12 +219,12 @@ public class Fishing implements GenericMechanic {
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 60 && buff_type <= 70) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = new Random().nextInt(2) + 1;
+                    buff_val = random.nextInt(2) + 1;
                     fish_name += " of Weak Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(20s)";
                 } else if (buff_type > 70) {
                     // Nightvision for 60 seconds.
-                    buff_val = new Random().nextInt(2) + 1;
+                    buff_val = random.nextInt(2) + 1;
                     fish_name += " of Vision";
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(30s)";
                 }
@@ -239,28 +239,29 @@ public class Fishing implements GenericMechanic {
                 fish_name = ChatColor.GREEN.toString() + "Herring";
             } else if (fish_type == 2) {
                 fish_name = ChatColor.GREEN.toString() + "Sardine";
-            } else if (buff_chance >= do_i_buff) {
+            }
+            if (buff_chance >= do_i_buff) {
                 fish_buff = true;
-                int buff_type = new Random().nextInt(100);
+                int buff_type = random.nextInt(100);
                 int buff_val = 0;
                 if (buff_type >= 0 && buff_type <= 10) {
                     // Of Power (DMG) 1-2%
-                    buff_val = new Random().nextInt(3) + 1;
+                    buff_val = random.nextInt(3) + 1;
                     fish_name += " of Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(25s)";
                 } else if (buff_type > 10 && buff_type <= 15) {
                     // Of HP REGEN
-                    buff_val = new Random().nextInt(5) + 5;
+                    buff_val = random.nextInt(5) + 5;
                     fish_name += " of Regeneration";
                     fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
                 } else if (buff_type > 15 && buff_type <= 20) {
                     // OF BLOCK%
-                    buff_val = new Random().nextInt(5) + 1;
+                    buff_val = random.nextInt(5) + 1;
                     fish_name += " of Blocking";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(25s)";
                 } else if (buff_type > 20 && buff_type <= 30) {
                     // Of Health (instant heal)
-                    buff_val = new Random().nextInt(5) + 1;
+                    buff_val = random.nextInt(5) + 1;
                     fish_name = ChatColor.GREEN.toString() + "Healing " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
@@ -273,12 +274,12 @@ public class Fishing implements GenericMechanic {
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 65 && buff_type <= 75) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = new Random().nextInt(3) + 1;
+                    buff_val = random.nextInt(3) + 1;
                     fish_name += " of Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(25s)";
                 } else if (buff_type > 75) {
                     // Nightvision for 60 seconds.
-                    buff_val = new Random().nextInt(2) + 1;
+                    buff_val = random.nextInt(2) + 1;
                     fish_name += " of Vision";
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(45s)";
                 }
@@ -293,28 +294,29 @@ public class Fishing implements GenericMechanic {
                 fish_name = ChatColor.AQUA.toString() + "Trout";
             } else if (fish_type == 2) {
                 fish_name = ChatColor.AQUA.toString() + "Cod";
-            } else if (buff_chance >= do_i_buff) {
+            }
+            if (buff_chance >= do_i_buff) {
                 fish_buff = true;
-                int buff_type = new Random().nextInt(100);
+                int buff_type = random.nextInt(100);
                 int buff_val = 0;
                 if (buff_type >= 0 && buff_type <= 10) {
                     // Of Power (DMG) 1-2%
-                    buff_val = new Random().nextInt(3) + 3;
+                    buff_val = random.nextInt(3) + 3;
                     fish_name += " of Greater Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(30s)";
                 } else if (buff_type > 10 && buff_type <= 15) {
                     // Of HP REGEN
-                    buff_val = new Random().nextInt(11) + 5;
+                    buff_val = random.nextInt(11) + 5;
                     fish_name += " of Mighty Regeneration";
                     fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
                 } else if (buff_type > 15 && buff_type <= 20) {
                     // OF BLOCK%
-                    buff_val = new Random().nextInt(5) + 1;
+                    buff_val = random.nextInt(5) + 1;
                     fish_name += " of Blocking";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(30s)";
                 } else if (buff_type > 20 && buff_type <= 30) {
                     // Of Health (instant heal)
-                    buff_val = new Random().nextInt(4) + 4;
+                    buff_val = random.nextInt(4) + 4;
                     fish_name = ChatColor.AQUA.toString() + "Large, Healing " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
@@ -327,12 +329,12 @@ public class Fishing implements GenericMechanic {
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 65 && buff_type <= 75) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = new Random().nextInt(3) + 3;
+                    buff_val = random.nextInt(3) + 3;
                     fish_name += " of Mighty Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(30s)";
                 } else if (buff_type > 75) {
                     // Nightvision for 60 seconds.
-                    buff_val = new Random().nextInt(2) + 1;
+                    buff_val = random.nextInt(2) + 1;
                     fish_name += " of Lasting Vision";
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (I) BUFF " + ChatColor.GRAY.toString() + "(60s)";
                 }
@@ -349,30 +351,30 @@ public class Fishing implements GenericMechanic {
                 fish_name = ChatColor.LIGHT_PURPLE.toString() + "Bass";
             }
 
-            int buff_time = new Random().nextInt(10) + 40; // Up to 49s.
+            int buff_time = random.nextInt(10) + 40; // Up to 49s.
 
             if (buff_chance >= do_i_buff) {
                 fish_buff = true;
-                int buff_type = new Random().nextInt(100);
+                int buff_type = random.nextInt(100);
                 int buff_val = 0;
                 if (buff_type >= 0 && buff_type <= 10) {
                     // Of Power (DMG) 1-2%
-                    buff_val = new Random().nextInt(6) + 5;
+                    buff_val = random.nextInt(6) + 5;
                     fish_name += " of Ancient Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 10 && buff_type <= 15) {
                     // Of HP REGEN
-                    buff_val = new Random().nextInt(6) + 10;
+                    buff_val = random.nextInt(6) + 10;
                     fish_name += " of Enhanced Regeneration";
                     fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
                 } else if (buff_type > 15 && buff_type <= 20) {
                     // OF BLOCK%
-                    buff_val = new Random().nextInt(5) + 4;
+                    buff_val = random.nextInt(5) + 4;
                     fish_name += " of Greater Blocking";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 20 && buff_type <= 30) {
                     // Of Health (instant heal)
-                    buff_val = new Random().nextInt(4) + 4;
+                    buff_val = random.nextInt(4) + 4;
                     fish_name = ChatColor.LIGHT_PURPLE.toString() + "Healthy " + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
@@ -385,12 +387,12 @@ public class Fishing implements GenericMechanic {
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 65 && buff_type <= 75) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = new Random().nextInt(5) + 4;
-                    fish_name += " of Fortelse ified Defense";
+                    buff_val = random.nextInt(5) + 4;
+                    fish_name += " of Fortified Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type >= 75 && buff_type < 80) {
                     // Vampirism
-                    buff_val = new Random().nextInt(2) + 4;
+                    buff_val = random.nextInt(2) + 4;
                     fish_name = "Albino " + ChatColor.LIGHT_PURPLE.toString() + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFESTEAL " +
                             ChatColor.GRAY.toString() + "(" + buff_time + "s)";
@@ -412,30 +414,30 @@ public class Fishing implements GenericMechanic {
                 fish_name = ChatColor.YELLOW.toString() + "Monkfish";
             }
 
-            int buff_time = new Random().nextInt(11) + 50; // Up to 60s.
+            int buff_time = random.nextInt(11) + 50; // Up to 60s.
 
             if (buff_chance >= do_i_buff) {
                 fish_buff = true;
-                int buff_type = new Random().nextInt(100);
+                int buff_type = random.nextInt(100);
                 int buff_val = 0;
                 if (buff_type >= 0 && buff_type <= 10) {
                     // Of Power (DMG) 1-2%
-                    buff_val = new Random().nextInt(11) + 5;
+                    buff_val = random.nextInt(11) + 5;
                     fish_name += " of Legendary Power";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% DMG " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 10 && buff_type <= 15) {
                     // Of HP REGEN
-                    buff_val = new Random().nextInt(6) + 10;
+                    buff_val = random.nextInt(6) + 10;
                     fish_name += " of Extreme Regeneration";
                     fish_buff_s = ChatColor.RED.toString() + "REGEN " + buff_val + "% HP " + ChatColor.GRAY.toString() + "(over 10s)";
                 } else if (buff_type > 15 && buff_type <= 20) {
                     // OF BLOCK%
-                    buff_val = new Random().nextInt(5) + 4;
+                    buff_val = random.nextInt(5) + 4;
                     fish_name += " of Greater Blocking";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% BLOCK " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 20 && buff_type <= 30) {
                     // Of Health (instant heal)
-                    buff_val = new Random().nextInt(6) + 5;
+                    buff_val = random.nextInt(6) + 5;
                     fish_name = ChatColor.YELLOW.toString() + "Legendary " + fish_name + " of Medicine";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 45) {
@@ -448,12 +450,12 @@ public class Fishing implements GenericMechanic {
                     fish_buff_s = ChatColor.RED.toString() + "-" + buff_val + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 50 && buff_type <= 60) {
                     // Of Defence (ARMOR%) 1-2% ARMOR
-                    buff_val = new Random().nextInt(6) + 5;
+                    buff_val = random.nextInt(6) + 5;
                     fish_name = ChatColor.YELLOW.toString() + "Hardended " + fish_name + " of Legendary Defense";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ARMOR " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 60 && buff_type <= 65) {
                     // Vampirism
-                    buff_val = new Random().nextInt(5) + 3;
+                    buff_val = random.nextInt(5) + 3;
                     fish_name = "Albino " + ChatColor.YELLOW.toString() + fish_name;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% LIFE STEAL " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 65 && buff_type <= 85) {
@@ -462,12 +464,12 @@ public class Fishing implements GenericMechanic {
                     fish_buff_s = ChatColor.RED.toString() + "NIGHTVISION (II) BUFF " + ChatColor.GRAY.toString() + "(" + (buff_time + 60) + "s)";
                 } else if (buff_type > 85 && buff_type <= 90) {
                     // Critical hit bonus
-                    buff_val = new Random().nextInt(5) + 1;
+                    buff_val = random.nextInt(5) + 1;
                     fish_name = "Perfect " + ChatColor.YELLOW.toString() + fish_name + " of Accuracy";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% CRITICAL HIT " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 } else if (buff_type > 90) {
                     // Energy Regen Buff
-                    buff_val = new Random().nextInt(5) + 1;
+                    buff_val = random.nextInt(5) + 1;
                     fish_name = ChatColor.YELLOW.toString() + fish_name + " of Hidden Energy";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% ENERGY REGEN " + ChatColor.GRAY.toString() + "(" + buff_time + "s)";
                 }

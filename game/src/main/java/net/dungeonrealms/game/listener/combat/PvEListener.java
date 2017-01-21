@@ -127,7 +127,7 @@ public class PvEListener implements Listener {
                 break;
         }
 
-        finalDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
+        finalDamage = DamageAPI.calculateWeaponDamage(damager, receiver, true);
         double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, finalDamage, null);
         double armorReducedDamage = armorCalculation[0];
         String defenderName;

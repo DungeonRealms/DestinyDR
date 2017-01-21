@@ -9,6 +9,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.Attribute;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -63,16 +64,22 @@ public class PvPListener implements Listener {
 
         if (damagerGP == null || receiverGP == null) return;
 
+        boolean isDuel = DuelingMechanics.isDuelPartner(damager.getUniqueId(), receiver.getUniqueId());
+        //Dont tag them if they are in a duel..
         damagerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
 
         if (!GameAPI.isWeapon(damager.getEquipment().getItemInMainHand())) {
-            for (ItemStack i : receiver.getInventory().getArmorContents()) {
-                RepairAPI.subtractCustomDurability(receiver, i, 1);
+
+            //Take durability if not in a duel.
+            if (!isDuel) {
+                for (ItemStack i : receiver.getInventory().getArmorContents()) {
+                    RepairAPI.subtractCustomDurability(receiver, i, 1);
+                }
             }
+
             HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, 1, 0, 0);
             return;
         }
-
         Item.ItemType weaponType = new Attribute(damager.getInventory().getItemInMainHand()).getItemType();
         Item.ItemTier tier = new Attribute(damager.getInventory().getItemInMainHand()).getItemTier();
 
@@ -107,10 +114,11 @@ public class PvPListener implements Listener {
                 break;
         }
 
-        double calculatedDamage = DamageAPI.calculateWeaponDamage(damager, receiver);
-        if (checkChaoticPrevention(event, damager, receiver, damagerGP, receiverGP, calculatedDamage)) return;
+        double calculatedDamage = DamageAPI.calculateWeaponDamage(damager, receiver, !isDuel);
+        if (!isDuel && checkChaoticPrevention(event, damager, receiver, damagerGP, receiverGP, calculatedDamage))
+            return;
 
-        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
+        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null, !isDuel);
         double armorReducedDamage = armorCalculation[0];
         double finalDamage = calculatedDamage;
         if (armorReducedDamage == -1) {
@@ -138,7 +146,7 @@ public class PvPListener implements Listener {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
                     if (calculatedDamage >= HealthHandler.getInstance().getPlayerHPLive(receiver)) {
                         receiver.setFireTicks(0);
-                        for(PotionEffect potionEffect : receiver.getActivePotionEffects()) {
+                        for (PotionEffect potionEffect : receiver.getActivePotionEffects()) {
                             receiver.removePotionEffect(potionEffect.getType());
                         }
                         event.setCancelled(true);
@@ -171,7 +179,8 @@ public class PvPListener implements Listener {
         Player damager = (Player) projectile.getShooter();
         Player receiver = (Player) event.getEntity();
 
-        if (damager.equals(receiver)) return; // sometimes the projectile can be knocked back to the player at close range
+        if (damager.equals(receiver))
+            return; // sometimes the projectile can be knocked back to the player at close range
 
         if (receiver.getGameMode() != GameMode.SURVIVAL) return;
 
@@ -185,14 +194,15 @@ public class PvPListener implements Listener {
         DamageAPI.knockbackEntity(damager, receiver, 0.3);
         receiver.setSprinting(false);
 
+        boolean isDuel = DuelingMechanics.isDuelPartner(damager.getUniqueId(), receiver.getUniqueId());
         double calculatedDamage = DamageAPI.calculateProjectileDamage(damager, receiver, projectile);
         GamePlayer damagerGP = GameAPI.getGamePlayer(damager);
         GamePlayer receiverGP = GameAPI.getGamePlayer(receiver);
         if (receiverGP != null && damagerGP != null) {
             damagerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
-            if (checkChaoticPrevention(event, damager, receiver, damagerGP, receiverGP, calculatedDamage)) return;
+            if (!isDuel && checkChaoticPrevention(event, damager, receiver, damagerGP, receiverGP, calculatedDamage)) return;
         }
-        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null);
+        double[] armorCalculation = DamageAPI.calculateArmorReduction(damager, receiver, calculatedDamage, null, !isDuel);
         double finalDamage = calculatedDamage;
         double armorReducedDamage = armorCalculation[0];
         String defenderName = receiver.getName();

@@ -51,7 +51,7 @@ public class DamageAPI {
      * @param receiver
      * @since 1.0
      */
-    public static double calculateWeaponDamage(LivingEntity attacker, LivingEntity receiver) {
+    public static double calculateWeaponDamage(LivingEntity attacker, LivingEntity receiver, boolean removeDurability) {
         boolean isAttackerPlayer = attacker instanceof Player;
         boolean isDefenderPlayer = receiver instanceof Player;
         try {
@@ -61,27 +61,29 @@ public class DamageAPI {
             // get the attacker's attributes
             Map<String, Integer[]> attackerAttributes;
             if (isAttackerPlayer) {
-                if (receiver.hasMetadata("tier")) {
-                    //Player attacking monster, check if its a lower tier.
-                    int mobTier = receiver.getMetadata("tier").get(0).asInt();
-                    int wepTier = RepairAPI.getArmorOrWeaponTier(weapon);
-                    if (wepTier > mobTier) {
-                        int tierDif = RepairAPI.getArmorOrWeaponTier(weapon) - receiver.getMetadata("tier").get(0).asInt();
+                if (removeDurability) {
+                    if (receiver.hasMetadata("tier")) {
+                        //Player attacking monster, check if its a lower tier.
+                        int mobTier = receiver.getMetadata("tier").get(0).asInt();
+                        int wepTier = RepairAPI.getArmorOrWeaponTier(weapon);
+                        if (wepTier > mobTier) {
+                            int tierDif = RepairAPI.getArmorOrWeaponTier(weapon) - receiver.getMetadata("tier").get(0).asInt();
 
-                        if (tierDif == 2) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 2);
-                        } else if (tierDif == 3) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 4);
-                        } else if (tierDif == 4) {
-                            RepairAPI.subtractCustomDurability((Player) attacker, weapon, 6);
+                            if (tierDif == 2) {
+                                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 2);
+                            } else if (tierDif == 3) {
+                                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 4);
+                            } else if (tierDif == 4) {
+                                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 6);
+                            } else {
+                                RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
+                            }
                         } else {
                             RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
                         }
                     } else {
                         RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
                     }
-                } else {
-                    RepairAPI.subtractCustomDurability((Player) attacker, weapon, 1);
                 }
                 GamePlayer gp = GameAPI.getGamePlayer((Player) attacker);
 
@@ -714,6 +716,10 @@ public class DamageAPI {
     }
 
 
+    public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile) {
+        return calculateArmorReduction(attacker, defender, totalDamage, projectile, true);
+    }
+
     /**
      * Calculates the new damage based on the armor of the defender and the previous damage
      *
@@ -723,7 +729,7 @@ public class DamageAPI {
      * @param projectile  must leave null if melee damage (no projectile)!
      * @since 1.0
      */
-    public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile) {
+    public static double[] calculateArmorReduction(LivingEntity attacker, LivingEntity defender, double totalDamage, Projectile projectile, boolean takeDura) {
 
         boolean isAttackerPlayer = attacker instanceof Player;
         boolean isDefenderPlayer = defender instanceof Player;
@@ -737,8 +743,10 @@ public class DamageAPI {
 
             if (isDefenderPlayer) {
                 Player p = (Player) defender;
-                for (ItemStack armor : defender.getEquipment().getArmorContents()) {
-                    RepairAPI.subtractCustomDurability(p, armor, 1);
+                if (takeDura) {
+                    for (ItemStack armor : defender.getEquipment().getArmorContents()) {
+                        RepairAPI.subtractCustomDurability(p, armor, 1);
+                    }
                 }
                 defenderAttributes = GameAPI.getGamePlayer(p).getAttributes();
             } else if (((CraftLivingEntity) defender).getHandle() instanceof DRMonster) {
@@ -1008,8 +1016,9 @@ public class DamageAPI {
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
     }
 
-    public static void fireBowProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
-        RepairAPI.subtractCustomDurability(player, itemStack, 1);
+    public static void fireBowProjectile(Player player, ItemStack itemStack, NBTTagCompound tag, boolean takeDura) {
+        if (takeDura)
+            RepairAPI.subtractCustomDurability(player, itemStack, 1);
         GamePlayer gp = GameAPI.getGamePlayer(player);
         Projectile projectile;
         if (tag.hasKey("fireDamage")) {
