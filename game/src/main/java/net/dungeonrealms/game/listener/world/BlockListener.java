@@ -39,6 +39,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -71,6 +72,15 @@ public class BlockListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPickupWhileRepairing(PlayerPickupItemEvent event){
+        for(Repair repair : repairMap.values()){
+            if(repair.getRepairing().equals(event.getPlayer().getName())){
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
     /**
      * Disables the placement of Realm Chest.
      *
@@ -484,7 +494,7 @@ public class BlockListener implements Listener {
                         else {
                             player.sendMessage(ChatColor.RED + "No inventory space.");
                             itemEntity.remove();
-                            returnItem(player, item);
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> returnItem(player, item));
                             repairMap.remove(block.getLocation());
                             player.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
                             player.setCanPickupItems(true);
@@ -495,7 +505,7 @@ public class BlockListener implements Listener {
                 } else {
                     //Cancel
                     itemEntity.remove();
-                    returnItem(player, item);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> returnItem(player, item));
                     repairMap.remove(block.getLocation());
                     player.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
                     player.setCanPickupItems(true);
