@@ -526,7 +526,8 @@ public class ShopListener implements Listener {
                             clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], purchase of item CANCELLED.");
                             return;
                         }
-                        if (!shop.getInventory().contains(itemClicked, 1)) {
+                        
+                        if (!shop.getInventory().getItem(event.getRawSlot()).equals(itemClicked)) {
                             clicker.sendMessage(ChatColor.RED + "That item is no longer available.");
                             return;
                         }
@@ -599,7 +600,7 @@ public class ShopListener implements Listener {
                             int itemsLeft = 0;
                             for (ItemStack itemStack : event.getInventory().getContents()) {
                                 if (itemStack != null && itemStack.getType() != Material.AIR) {
-                                    if (itemStack.equals(event.getInventory().getItem(shop.getInvSize() - 1))) {
+                                    if (itemStack.equals(event.getInventory().getItem(shop.getInvSize() - 1)) || itemStack.equals(event.getInventory().getItem(shop.getInvSize() - 2))) {
                                         continue;
                                     }
                                     itemsLeft++;
