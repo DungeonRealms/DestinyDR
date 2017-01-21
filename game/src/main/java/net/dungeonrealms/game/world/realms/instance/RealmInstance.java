@@ -24,6 +24,7 @@ import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.lingala.zip4j.core.ZipFile;
@@ -308,6 +309,20 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), location.add(0.5, 1.5, 0.5));
         realmHologram.getVisibilityManager().setVisibleByDefault(true);
         realm.setHologram(realmHologram);
+
+
+        RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("peaceful");
+
+        if (!(property.isAcknowledgeExpiration() && property.getExpiry() > System.currentTimeMillis())) {
+            if (GameAPI.isInSafeRegion(location)) {
+                property.setValue(true);
+                property.setAcknowledgeExpiration(false);
+            } else {
+                property.setValue(false);
+                property.setAcknowledgeExpiration(false);
+            }
+        }
+
         updateRealmHologram(player.getUniqueId());
 
         realm.setState(RealmState.OPENED);
@@ -317,11 +332,11 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         player.getWorld().playEffect(portalLocation, Effect.ENDER_SIGNAL, 10);
         player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 5F, 1.25F);
 
-
-        if (getRealmTitle(player.getUniqueId()).equals(""))
+        String title = getRealmTitle(player.getUniqueId());
+        if (title.equals(""))
             player.sendMessage(ChatColor.GRAY + "Type /realm <TITLE> to set the description of your realm, it will be displayed to all visitors.");
         else
-            player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Description: " + ChatColor.GRAY + getRealmTitle(player.getUniqueId()));
+            player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Description: " + ChatColor.GRAY + title);
     }
 
     private Color getRandomColor() {
