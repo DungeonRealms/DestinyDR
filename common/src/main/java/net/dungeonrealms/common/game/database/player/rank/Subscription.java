@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/24/2015.
@@ -30,13 +31,24 @@ public class Subscription {
      * Is used in the startTimer class that checks all players on
      * the server and their subscription time.
      *
+     * @deprecated
      * @param player
      * @since 1.0
      */
     public int checkSubscription(Player player) {
-        if (Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("sub") || Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("sub+")) {
+        return checkSubscription(player.getUniqueId());
+    }
+
+    /**
+     * Is used in the startTimer class that checks all players on
+     * the server and their subscription time.
+     *
+     * @param uuid
+     */
+    public int checkSubscription(UUID uuid) {
+        if (Rank.getInstance().getRank(uuid).equalsIgnoreCase("sub") || Rank.getInstance().getRank(uuid).equalsIgnoreCase("sub+")) {
             int currentTime = (int) (System.currentTimeMillis() / 1000);
-            int endTime = (int) DatabaseAPI.getInstance().getData(EnumData.RANK_SUB_EXPIRATION, player.getUniqueId());
+            int endTime = (int) DatabaseAPI.getInstance().getData(EnumData.RANK_SUB_EXPIRATION, uuid);
             int timeRemaining = (currentTime == 0 || endTime == 0 ? 0 : (endTime - currentTime));
             return (int) (timeRemaining <= 0 ? 0 : Math.ceil(timeRemaining / 86400.0));
         }

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.player.inventory;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.database.player.rank.Subscription;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
@@ -69,7 +70,9 @@ public class SupportMenus {
             Inventory inv = Bukkit.createInventory(null, 45, "Support Tools");
 
             item = editItem(playerName, ChatColor.GREEN + playerName + ChatColor.WHITE + " (" + uuid.toString() + ")", new String[]{
-                    ChatColor.WHITE + "Rank: " + Rank.rankFromPrefix(playerRank),
+                    ChatColor.WHITE + "Rank: " + Rank.rankFromPrefix(playerRank) +
+                            (playerRank.equalsIgnoreCase("sub") || playerRank.equalsIgnoreCase("sub+") ?
+                                    ChatColor.WHITE + " (" + Subscription.getInstance().checkSubscription(uuid) + " days remaining)" : ""),
                     ChatColor.WHITE + "Level: " + DatabaseAPI.getInstance().getData(EnumData.LEVEL, uuid),
                     ChatColor.WHITE + "Experience: " + DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, uuid),
                     ChatColor.WHITE + "E-Cash: " + DatabaseAPI.getInstance().getData(EnumData.ECASH, uuid),
