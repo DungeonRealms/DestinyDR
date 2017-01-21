@@ -123,12 +123,12 @@ public class Trade {
             }
         }
 
-        if(p1.getItemOnCursor() != null){
+        if (p1.getItemOnCursor() != null) {
             ItemStack item = p1.getItemOnCursor().clone();
             p1.setItemOnCursor(null);
             p1.getInventory().addItem(item);
         }
-        if(p2.getInventory() != null){
+        if (p2.getInventory() != null) {
             ItemStack item = p2.getItemOnCursor().clone();
             p2.setItemOnCursor(null);
             p2.getInventory().addItem(item);
@@ -156,6 +156,33 @@ public class Trade {
      */
     public void checkReady() {
         if (p1Ready && p2Ready) {
+            for (int i = 1; i < inv.getSize(); i++) {
+                ItemStack item = inv.getItem(i);
+                if (item == null)
+                    continue;
+                if (item.getType() == Material.AIR || item.getType() == Material.STAINED_GLASS_PANE)
+                    continue;
+                if (i == 8)
+                    continue;
+
+                if (isLeftSlot(i)) {
+                    if (p2.getInventory().firstEmpty() == -1) {
+                        //CANT TRADE
+                        p1.sendMessage(ChatColor.RED + p2.getName() + " does not have enough inventory space to accept the trade.");
+                        p2.sendMessage(ChatColor.RED + p2.getName() + " does not have enough inventory space to accept the trade.");
+                        changeReady();
+                        return;
+                    }
+                } else if (isRightSlot(i)) {
+                    if (p1.getInventory().firstEmpty() == -1) {
+                        p1.sendMessage(ChatColor.RED + p1.getName() + " does not have enough inventory space to accept the trade.");
+                        p2.sendMessage(ChatColor.RED + p1.getName() + " does not have enough inventory space to accept the trade.");
+                        changeReady();
+                        return;
+                    }
+                }
+            }
+
             p1.closeInventory();
             p2.closeInventory();
             doTrade();
