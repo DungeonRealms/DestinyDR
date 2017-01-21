@@ -39,14 +39,14 @@ public class CommandSessionID extends BaseCommand {
                     // Check
                     if (uuid != null) {
                         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
-                        sender.sendMessage(ChatColor.GREEN + "Fixed " + args[0] + "'s vnetty-session_ID");
+                        sender.sendMessage(ChatColor.GREEN + "Fixed " + args[0] + "'s session ID.");
                     } else {
                         sender.sendMessage(ChatColor.RED + "Player is not existent in the Mongo database");
                         return true;
                     }
                 }
             } else {
-                sender.sendMessage(ChatColor.RED + "Command: /session <player> | Fixes a player's vnetty-session_ID");
+                sender.sendMessage(ChatColor.RED + "Command: /session <player> | Fixes a player's session ID.");
                 return true;
             }
         }
