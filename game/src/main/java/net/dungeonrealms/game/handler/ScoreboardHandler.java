@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.handler;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -111,55 +112,74 @@ public class ScoreboardHandler implements GenericMechanic {
      * @param playerLevel
      * @since 1.0
      */
-    public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
-      Affair affair = Affair.getInstance();
-        for (Player player1 : Bukkit.getOnlinePlayers()) {
+    public void setPlayerHeadScoreboard(Player player, final ChatColor chatColor, int playerLevel) {
+        Affair affair = Affair.getInstance();
 
-            //Party support.
-            if (affair.isInParty(player1)) {
-                //Dont update them each indiviually.
-                continue;
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+
+            ChatColor color = chatColor;
+            String rank = Rank.getInstance().getRank(player.getUniqueId());
+            //Only need to check if GM one time..
+            if (Rank.isGMRank(rank)) {
+                color = ChatColor.AQUA;
             }
-            if (Rank.isGM(player)) {
-                chatColor = ChatColor.AQUA;
-            }
-            Team team = getPlayerTeam(getPlayerScoreboardObject(player1), player);
+
             String guild = "";
             if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
                 String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
                 guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
             }
-            team.setPrefix(guild + chatColor);
-            team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
-            player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
-            if (!team.hasEntry(player.getName())) {
-                team.addEntry(player.getName());
-            }
-        }
 
-        for (Party party : affair._parties) {
-            //Update the party scoreboards with this persons new level.
-            updateCurrentPlayerLevel(player, party.getPartyScoreboard());
-        }
+            //Async please thanks.
+            ChatColor rankColor = Rank.colorFromRank(rank);
 
-        Team team = getPlayerTeam(mainScoreboard, player);
-        if (Rank.isGM(player)) {
-            chatColor = ChatColor.AQUA;
-        }
-        String guild = "";
-        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
-            String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
-            guild = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + "[" + clanTag + ChatColor.RESET + "] ");
-        }
-        team.setPrefix(guild + chatColor);
-        team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
-        player.setPlayerListName(Rank.colorFromRank(Rank.getInstance().getRank(player.getUniqueId())) + player.getName());
-        if (!team.hasEntry(player.getName())) {
-            team.addEntry(player.getName());
-        }
+            //Final cause threading is fun.
+            final String guildName = guild;
+            final ChatColor newColor = color;
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                //Do this once.
+                player.setPlayerListName(rankColor + player.getName());
+                for (Player player1 : Bukkit.getOnlinePlayers()) {
+
+                    //Party support.
+                    if (affair.isInParty(player1)) {
+                        //Dont update them each indiviually.
+                        continue;
+                    }
+
+                    //The player1 team on their scoreboard.
+                    Team team = getPlayerTeam(getPlayerScoreboardObject(player1), player);
+                    team.setPrefix(guildName + newColor);
+                    team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
+                    if (!team.hasEntry(player.getName())) {
+                        team.addEntry(player.getName());
+                    }
+                }
+
+                for (Party party : affair._parties) {
+                    //Update the party scoreboards with this persons new level.
+//                updateCurrentPlayerLevel(player, party.getPartyScoreboard());
+                    Scoreboard scoreboard = party.getPartyScoreboard();
+                    Team team = getPlayerTeam(scoreboard, player);
+                    team.setPrefix(guildName + newColor);
+                    team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
+                    if (!team.hasEntry(player.getName())) {
+                        team.addEntry(player.getName());
+                    }
+                }
+
+                Team team = getPlayerTeam(mainScoreboard, player);
+                team.setPrefix(guildName + newColor);
+                team.setSuffix(ChatColor.AQUA + " [Lvl. " + playerLevel + "]");
+                if (!team.hasEntry(player.getName())) {
+                    team.addEntry(player.getName());
+                }
+            });
+
+        });
     }
 
-    public void updateCurrentPlayerLevel(Player toSetFor, Scoreboard scoreboard) {
+   /* public void updateCurrentPlayerLevel(Player toSetFor, Scoreboard scoreboard) {
         GamePlayer gamePlayer = GameAPI.getGamePlayer(toSetFor);
         if (gamePlayer == null) return;
 
@@ -181,7 +201,7 @@ public class ScoreboardHandler implements GenericMechanic {
         if (!team.hasEntry(toSetFor.getName())) {
             team.addEntry(toSetFor.getName());
         }
-    }
+    }*/
 
     public void registerHealth(Scoreboard scoreboard) {
         Objective objective = scoreboard.getObjective("playerScoreboard") != null ? scoreboard.getObjective("playerScoreboard") : scoreboard.registerNewObjective("playerScoreboard", "playerScoreboard");

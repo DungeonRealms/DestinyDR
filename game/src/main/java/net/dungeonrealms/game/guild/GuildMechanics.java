@@ -364,6 +364,11 @@ public class GuildMechanics {
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
             sendAlert(guildName, player.getName() + " has left the guild.");
 
+            GamePlayer gp = GameAPI.getGamePlayer(player);
+            if (gp != null) {
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+            }
+
             boolean setOwner = false;
             boolean disbanded = false;
 

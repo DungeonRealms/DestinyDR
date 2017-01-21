@@ -106,9 +106,12 @@ public class Rank {
      */
     public static boolean isGM(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+        return isGMRank(rank);
     }
 
+    public static boolean isGMRank(String rank){
+        return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+    }
     /**
      * Returns true if the user has the rank "dev" or "support".
      *

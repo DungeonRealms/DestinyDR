@@ -60,8 +60,8 @@ public class MongoAccessThread extends Thread {
                     DocumentSearchQuery documentSearchQuery = (DocumentSearchQuery) query;
                     Document doc = (Document) documentSearchQuery.getCollection().find(documentSearchQuery.getSearchQuery()).first();
 
-                    if (Constants.debug)
-                        Constants.log.info("[Database] ASYNC Executed search query: " + documentSearchQuery.getSearchQuery().toString() + " " + doc.toString());
+//                    if (Constants.debug)
+//                        Constants.log.info("[Database] ASYNC Executed search query: " + documentSearchQuery.getSearchQuery().toString() + " " + doc.toString());
 
                     CONSUMER_EXECUTOR_SERVICE.submit(() -> documentSearchQuery.getDoAfter().accept(doc));
                 } else if (query instanceof BulkWriteQuery) {
