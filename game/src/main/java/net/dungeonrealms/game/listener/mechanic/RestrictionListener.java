@@ -473,8 +473,8 @@ public class RestrictionListener implements Listener {
             try {
                 //Only close their inventory once since this seems to be recursive and causing a dead lock.
                 if (event.getPlayer() != null && event.getPlayer().isOnline() && !closedShardingInventories.contains(event.getPlayer().getUniqueId())) {
-                    event.getPlayer().closeInventory();
                     closedShardingInventories.add(event.getPlayer().getUniqueId());
+                    event.getPlayer().closeInventory();
                 }
             } catch (Exception ignored) {
             }
