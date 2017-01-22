@@ -11,6 +11,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -195,6 +196,15 @@ public class ShardSelector extends AbstractMenu {
         if (getSize() == 0) {
             player.sendMessage(ChatColor.RED + "Unable to find an available shard for you.");
             return;
+        }
+        
+        long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
+
+        if (lastShardTransfer != 0 && !Rank.isGM(player)) {
+            if ((System.currentTimeMillis() - lastShardTransfer) < 30000) {
+                player.sendMessage(ChatColor.RED + "You must wait 30 seconds before you can transfer between shards.");
+                return;
+            }
         }
 
         player.openInventory(inventory);
