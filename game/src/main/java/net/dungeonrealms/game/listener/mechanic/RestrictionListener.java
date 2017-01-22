@@ -185,6 +185,8 @@ public class RestrictionListener implements Listener {
             case "toggletradechat": // Toggle Trade Chat
             case "toggleduel": // Toggle Duel
             case "toggletips": // Toggle Tips
+            case "staffchat": case "sc": case "s": // Staff Chat
+            case "answer": // Answer
                 return;
         }
 
