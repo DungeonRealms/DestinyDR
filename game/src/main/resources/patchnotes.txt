@@ -1,7 +1,15 @@
 Build <build>
 
 &8Changes&0
- - N/A
+ - Improved Junk / Treasure Find
+ - Dueling system update
+ - Disabled bow knockback against players
 
 &4Bug Fixes&0
- - N/A
+ - Fixed realms
+ - Optimizations
+ - Potential boss despawn fix
+ - Soulbound now working properly
+ - Fix item clearing when trading with a full inventory
+ - Fix anvils not dropping items with a full inventory
+ - Fixed some fish not giving buffs

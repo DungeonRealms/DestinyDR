@@ -572,18 +572,17 @@ public class DamageListener implements Listener {
             }
 
         } else {
-            double w_durability_to_take = (1500 * 0.45D);
+//            double w_durability_to_take = (1500 * 0.45D);
             //DIED AS CHAOTIC, CHECK SOULBOUND.
             for (ItemStack item : Lists.newArrayList(event.getDrops())) {
                 if (GameAPI.isItemSoulbound(item)) {
-                    if ((RepairAPI.getCustomDurability(item) - w_durability_to_take) > 0.1D) {
-                        RepairAPI.subtractCustomDurability(p, item, w_durability_to_take);
+//                    if ((RepairAPI.getCustomDurability(item) - w_durability_to_take) > 0.1D) {
+//                        RepairAPI.subtractCustomDurability(p, item, w_durability_to_take);
+//                        alreadySaved.add(item);
 //                        gearToSave.add(item);
-                        alreadySaved.add(item);
-                        gearToSave.add(item);
-                    } else {
-                        event.getDrops().remove(item);
-                    }
+//                    } else {
+                    event.getDrops().remove(item);
+//                    }
                 }
             }
         }
