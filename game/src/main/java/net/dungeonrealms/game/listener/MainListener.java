@@ -22,6 +22,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -37,6 +38,8 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.dungeonrealms.game.world.item.*;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -51,6 +54,7 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.Item;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -678,6 +682,7 @@ public class MainListener implements Listener {
         }
 
         if (e.getState() == State.CAUGHT_FISH) {
+            Random random = new Random();
             final Location fish_loc = Fishing.getInstance().getFishingSpot(pl.getLocation());
             final int spot_tier = Fishing.getInstance().getFishingSpotTier(pl.getLocation());
             if (e.getCaught() != null)
@@ -778,7 +783,8 @@ public class MainListener implements Listener {
                     if (junk_chance >= (new Random().nextInt(100) + 1)) {
                         int junk_type = new Random().nextInt(100) + 1; // 0, 1, 2
                         ItemStack junk = null;
-                        if (junk_type > 70 && junk_type < 95) {
+
+                        if (junk_type < 70) {
                             if (spot_tier == 1) {
                                 junk = ItemManager.createHealthPotion(1, false, false);
                                 junk.setAmount(5 + new Random().nextInt(3));
@@ -801,7 +807,7 @@ public class MainListener implements Listener {
                             }
                         }
 
-                        if (junk_type >= 95) {
+                        if (junk_type > 70 && junk_type < 95) {
                             if (spot_tier == 1) {
                                 junk = ItemManager.createArmorScrap(1);
                                 junk.setAmount(20 + new Random().nextInt(7));
@@ -822,6 +828,13 @@ public class MainListener implements Listener {
                                 junk = ItemManager.createArmorScrap(5);
                                 junk.setAmount(2 + new Random().nextInt(6));
                             }
+                        }
+
+                        if (junk_type >= 95) {
+                            junk = new ItemGenerator().setTier(net.dungeonrealms.game.world.item.Item.ItemTier.getByTier(spot_tier))
+                                    .setType(random.nextBoolean() ? net.dungeonrealms.game.world.item.Item.ItemType.getRandomArmor() :
+                                            net.dungeonrealms.game.world.item.Item.ItemType.getRandomWeapon())
+                                    .setRarity(net.dungeonrealms.game.world.item.Item.ItemRarity.COMMON).generateItem().getItem();
                         }
 
                         if (junk != null) {
@@ -861,6 +874,15 @@ public class MainListener implements Listener {
                         if (treasure_type == 0) {
                             // OOA
                             treasure = CraftItemStack.asCraftCopy(ItemManager.createOrbofAlteration());
+                        } else if (treasure_type == 1) {
+                            net.dungeonrealms.game.world.item.Item.ItemRarity rarity =
+                                    random.nextInt(100) <= 75 ? net.dungeonrealms.game.world.item.Item.ItemRarity.UNCOMMON : net.dungeonrealms.game.world.item.Item.ItemRarity.RARE;
+                            treasure = new ItemGenerator().setTier(net.dungeonrealms.game.world.item.Item.ItemTier.getByTier(spot_tier))
+                                    .setType(random.nextInt(100) <= 75 ? net.dungeonrealms.game.world.item.Item.ItemType.getRandomArmor() :
+                                            net.dungeonrealms.game.world.item.Item.ItemType.getRandomWeapon())
+                                    .setRarity(rarity).generateItem().getItem();
+                        } else if (treasure_type == 2) {
+                            treasure = ItemManager.createOrbofFlight();
                         }
 
                         if (treasure != null) {
