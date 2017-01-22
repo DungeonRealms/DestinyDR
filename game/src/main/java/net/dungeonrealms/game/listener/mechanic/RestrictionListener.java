@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.mechanic;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -47,7 +48,9 @@ import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Kieran Quigley (Proxying) on 16-Jun-16.
@@ -318,7 +321,7 @@ public class RestrictionListener implements Listener {
     public void onInventoryOpen(InventoryOpenEvent event) {
 //        checkPlayersArmorIsValid((Player) event.getPlayer());
         checkForIllegalItems((Player) event.getPlayer());
-        
+
         if(event.getInventory() instanceof MerchantInventory){
         	event.setCancelled(true);
         	return;
@@ -455,13 +458,23 @@ public class RestrictionListener implements Listener {
         }
     }
 
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        closedShardingInventories.remove(event.getPlayer().getUniqueId());
+    }
+
+    private List<UUID> closedShardingInventories = Lists.newArrayList();
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void shardingExtraSafetyCheckDrop(PlayerDropItemEvent event) {
         if (event.getPlayer().hasMetadata("sharding")) {
             event.setCancelled(true);
             try {
-                if(event.getPlayer() != null && event.getPlayer().isOnline()) {
+                //Only close their inventory once since this seems to be recursive and causing a dead lock.
+                if (event.getPlayer() != null && event.getPlayer().isOnline() && !closedShardingInventories.contains(event.getPlayer().getUniqueId())) {
                     event.getPlayer().closeInventory();
+                    closedShardingInventories.add(event.getPlayer().getUniqueId());
                 }
             } catch (Exception ignored) {
             }
