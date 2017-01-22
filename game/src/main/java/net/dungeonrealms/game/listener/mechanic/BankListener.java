@@ -554,13 +554,10 @@ public class BankListener implements Listener {
                     item = e.getCursor();
                 }
             }
-
             if (!GameAPI.isItemTradeable(item) || !GameAPI.isItemDroppable(item)) {
                 p.sendMessage(ChatColor.RED + "You can't store this item!");
                 e.setCancelled(true);
             }
-
-
         }
 
     }

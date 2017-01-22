@@ -910,7 +910,7 @@ public class ItemManager {
                 + "Invite to party");
 
 
-         page4_string = (ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
+        page4_string = (ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
                 + "Kick player from party" + new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/pleave " + "\n"
                 + ChatColor.BLACK.toString() + "Leave your party"
                 + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll "
@@ -1149,7 +1149,17 @@ public class ItemManager {
         if (im.hasLore()) {
             lore = im.getLore();
         }
-        lore.add(ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
+        boolean contained = false;
+        for (String line : lore) {
+            if (line.contains("Soulbound") && line.contains(ChatColor.DARK_RED.toString())) {
+                contained = true;
+            }
+        }
+
+        //Just to avoid the ugly looking drops.
+        if (!contained)
+            lore.add(ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
+
         im.setLore(lore);
         is.setItemMeta(im);
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);

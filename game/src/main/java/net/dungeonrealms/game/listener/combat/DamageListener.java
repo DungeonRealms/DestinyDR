@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.combat;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -460,7 +461,7 @@ public class DamageListener implements Listener {
         p.setExp(0F);
         p.setLevel(0);
 
-        if (Rank.isGM(p))
+        if (Rank.isGM(p) && !Rank.isDev(p))
             event.getDrops().clear();
 
         new ArrayList<>(event.getDrops()).stream().filter(itemStack -> !GameAPI.isItemDroppable(itemStack) || GameAPI.isItemUntradeable(itemStack)).forEach(itemStack -> {
@@ -492,6 +493,8 @@ public class DamageListener implements Listener {
                 }
             }
         }
+
+        List<ItemStack> alreadySaved = Lists.newArrayList();
         if (alignment != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             double durability_to_take = (1500 * 0.30D); // 30%
             double w_durability_to_take = (1500 * 0.30D);
@@ -503,6 +506,7 @@ public class DamageListener implements Listener {
                 if ((RepairAPI.getCustomDurability(boots) - durability_to_take) > 0.1D) {
                     RepairAPI.subtractCustomDurability(p, boots, durability_to_take);
                     gearToSave.add(boots);
+                    alreadySaved.add(boots);
                 }
             }
             if (!neutral_legs && p.getInventory().getLeggings() != null && p.getInventory().getLeggings().getType() != Material.AIR) {
@@ -512,6 +516,7 @@ public class DamageListener implements Listener {
                 if ((RepairAPI.getCustomDurability(leggings) - durability_to_take) > 0.1D) {
                     RepairAPI.subtractCustomDurability(p, leggings, durability_to_take);
                     gearToSave.add(leggings);
+                    alreadySaved.add(leggings);
                 }
             }
             if (!neutral_chest && p.getInventory().getChestplate() != null && p.getInventory().getChestplate().getType() != Material.AIR) {
@@ -521,6 +526,7 @@ public class DamageListener implements Listener {
                 if ((RepairAPI.getCustomDurability(chestplate) - durability_to_take) > 0.1D) {
                     RepairAPI.subtractCustomDurability(p, chestplate, durability_to_take);
                     gearToSave.add(chestplate);
+                    alreadySaved.add(chestplate);
                 }
             }
             if (!neutral_helmet && p.getInventory().getHelmet() != null && p.getInventory().getHelmet().getType() != Material.AIR) {
@@ -530,6 +536,7 @@ public class DamageListener implements Listener {
                 if ((RepairAPI.getCustomDurability(helmet) - durability_to_take) > 0.1D) {
                     RepairAPI.subtractCustomDurability(p, helmet, durability_to_take);
                     gearToSave.add(helmet);
+                    alreadySaved.add(helmet);
                 }
             }
 
@@ -540,6 +547,7 @@ public class DamageListener implements Listener {
                 if ((RepairAPI.getCustomDurability(is) - w_durability_to_take) > 0.1D) {
                     RepairAPI.subtractCustomDurability(p, is, w_durability_to_take);
                     gearToSave.add(is);
+                    alreadySaved.add(is);
                 }
             });
 
@@ -549,6 +557,7 @@ public class DamageListener implements Listener {
                 if ((RepairAPI.getCustomDurability(weapon_slot) - w_durability_to_take) > 0.1D) {
                     RepairAPI.subtractCustomDurability(p, weapon_slot, w_durability_to_take);
                     gearToSave.add(weapon_slot);
+                    alreadySaved.add(weapon_slot);
                 }
             }
         }
@@ -571,7 +580,7 @@ public class DamageListener implements Listener {
             }
         }
 
-        gearToSave.addAll(event.getDrops().stream().filter(GameAPI::isItemPermanentlyUntradeable).collect(Collectors.toList()));
+        gearToSave.addAll(event.getDrops().stream().filter((is) -> (GameAPI.isItemPermanentlyUntradeable(is) || GameAPI.isItemSoulbound(is)) && !alreadySaved.contains(is)).collect(Collectors.toList()));
 
         gearToSave.stream().filter(stack -> event.getDrops().contains(stack)).forEach(stack -> {
             event.getDrops().remove(stack);
@@ -624,7 +633,7 @@ public class DamageListener implements Listener {
                 p.getInventory().addItem(stack);
             }
 
-            ItemManager.giveStarter(p);
+//            ItemManager.giveStarter(p);
         }, 20L);
     }
 

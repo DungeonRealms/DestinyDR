@@ -2058,6 +2058,7 @@ public class GameAPI {
                 return false;
             }
         }
+//        if(isItemSoulbound(itemStack))return false;
         return true;
     }
 

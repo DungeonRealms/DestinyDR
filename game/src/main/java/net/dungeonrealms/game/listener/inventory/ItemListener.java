@@ -68,6 +68,40 @@ public class ItemListener implements Listener {
     public void onItemDrop(PlayerDropItemEvent event) {
         Player p = event.getPlayer();
         ItemStack item = event.getItemDrop().getItemStack();
+
+        if (GameAPI.isItemSoulbound(item)) {
+            event.setCancelled(true);
+            event.getItemDrop().remove();
+            p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor.RED + " this Soulbound item? ");
+            p.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.GRAY + " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N" + ChatColor.GRAY + " to confirm.");
+            p.playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1.2F);
+            //Confirm destruction.
+            //REmove 1 tick later once its actually back in their inventory.
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> p.getInventory().removeItem(item), 1);
+            Chat.listenForMessage(p, (message) -> {
+                message.setCancelled(true);
+                if (message.getMessage().equalsIgnoreCase("yes") || message.getMessage().equalsIgnoreCase("y")) {
+                    p.sendMessage(ChatColor.RED + "Item " + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() + " " : "") + ChatColor.RED + "has been " + ChatColor.UNDERLINE + "destroyed.");
+                } else {
+                    if (p.getInventory().firstEmpty() == -1) {
+                        p.sendMessage(ChatColor.RED + "Your inventory was " + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " so your Soulbound item has been destroyed.");
+                    } else {
+                        p.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
+                        p.getInventory().addItem(item);
+                    }
+                }
+            }, (player) -> {
+                if (player.getInventory().firstEmpty() == -1) {
+                    player.sendMessage(ChatColor.RED + "Your inventory was " + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " so your Soulbound item has been destroyed.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
+                    p.getInventory().addItem(item);
+                }
+            });
+
+            return;
+        }
+
         if (!GameAPI.isItemDroppable(item)) { //Realm Portal, Character Journal.
             event.setCancelled(true);
             event.getItemDrop().remove();
@@ -220,7 +254,7 @@ public class ItemListener implements Listener {
             }
 
             if (GameAPI.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
-                if(event.getClickedBlock() != null && event.getClickedBlock().getLocation() != null) {
+                if (event.getClickedBlock() != null && event.getClickedBlock().getLocation() != null) {
                     Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
 
                     if (GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {

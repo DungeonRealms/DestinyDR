@@ -414,7 +414,7 @@ public class InventoryListener implements Listener {
             if (event.getCurrentItem() == null)
                 return;
 
-            if (!GameAPI.isItemTradeable(event.getCurrentItem()) || !GameAPI.isItemDroppable(event.getCurrentItem())) {
+            if (!GameAPI.isItemTradeable(event.getCurrentItem()) || !GameAPI.isItemDroppable(event.getCurrentItem()) || GameAPI.isItemSoulbound(event.getCurrentItem())) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
                 event.setCancelled(true);
                 return;
