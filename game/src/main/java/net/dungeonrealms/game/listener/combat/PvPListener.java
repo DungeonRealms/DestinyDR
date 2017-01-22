@@ -80,39 +80,12 @@ public class PvPListener implements Listener {
             HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, 1, 0, 0);
             return;
         }
-        Item.ItemType weaponType = new Attribute(damager.getInventory().getItemInMainHand()).getItemType();
-        Item.ItemTier tier = new Attribute(damager.getInventory().getItemInMainHand()).getItemTier();
+//        Item.ItemType weaponType = new Attribute(damager.getInventory().getItemInMainHand()).getItemType();
+//        Item.ItemTier tier = new Attribute(damager.getInventory().getItemInMainHand()).getItemTier();
 
-        switch (weaponType) {
-            case BOW:
-                double knockback = 0;
-                switch (tier) {
-                    case TIER_1:
-                        knockback = 1.2;
-                        break;
-                    case TIER_2:
-                        knockback = 1.5;
-                        break;
-                    case TIER_3:
-                        knockback = 1.8;
-                        break;
-                    case TIER_4:
-                        knockback = 2;
-                        break;
-                    case TIER_5:
-                        knockback = 2.2;
-                        break;
-                    default:
-                        return;
-                }
-                DamageAPI.knockbackEntity(damager, receiver, knockback);
-                KarmaHandler.getInstance().handleAlignmentChanges(damager);
-                event.setCancelled(true);
-                damager.updateInventory();
-                return;
-            default:
-                break;
-        }
+        KarmaHandler.getInstance().handleAlignmentChanges(damager);
+        event.setCancelled(true);
+        damager.updateInventory();
 
         double calculatedDamage = DamageAPI.calculateWeaponDamage(damager, receiver, !isDuel);
         if (!isDuel && checkChaoticPrevention(event, damager, receiver, damagerGP, receiverGP, calculatedDamage))
