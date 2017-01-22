@@ -973,8 +973,9 @@ public class DamageAPI {
         return Math.round(totalStat);
     }
 
-    public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
-        RepairAPI.subtractCustomDurability(player, itemStack, 1);
+    public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag, boolean subtractDurability) {
+        if (subtractDurability)
+            RepairAPI.subtractCustomDurability(player, itemStack, 1);
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = null;
         switch (weaponTier) {

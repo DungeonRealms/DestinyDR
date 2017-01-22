@@ -746,8 +746,11 @@ public class DamageListener implements Listener {
                 return;
             }
         }
+
+        boolean inDuel = false;
         if (GameAPI.isInSafeRegion(player.getLocation())) {
-            if (!DuelingMechanics.isDueling(player.getUniqueId())) {
+            inDuel = DuelingMechanics.isDueling(player.getUniqueId());
+            if (!inDuel) {
                 player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1F, 1.25F);
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
@@ -783,7 +786,7 @@ public class DamageListener implements Listener {
         }
         event.setCancelled(true);
         player.setMetadata("last_Staff_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        DamageAPI.fireStaffProjectile(player, player.getEquipment().getItemInMainHand(), nmsItem.getTag());
+        DamageAPI.fireStaffProjectile(player, player.getEquipment().getItemInMainHand(), nmsItem.getTag(), !inDuel);
         player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_LAUNCH, 1f, 1f);
     }
 
