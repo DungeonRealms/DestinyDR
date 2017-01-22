@@ -527,7 +527,7 @@ public class ShopListener implements Listener {
                             return;
                         }
                         
-                        if (!shop.getInventory().getItem(event.getRawSlot()).equals(itemClicked)) {
+                        if (shop.getInventory().getItem(event.getRawSlot()) == null || !shop.getInventory().getItem(event.getRawSlot()).equals(itemClicked)) {
                             clicker.sendMessage(ChatColor.RED + "That item is no longer available.");
                             return;
                         }
