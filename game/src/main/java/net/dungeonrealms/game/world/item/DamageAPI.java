@@ -1041,7 +1041,7 @@ public class DamageAPI {
         }
         projectile.setBounce(false);
         projectile.setVelocity(projectile.getVelocity().multiply(1.1));
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack), !takeDura);
         projectile.setShooter(player);
         EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
         eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;

@@ -52,8 +52,8 @@ public class PvPListener implements Listener {
         } else {
             CombatLog.addToPVP(damager);
         }
-
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()));
+        boolean isDuel = DuelingMechanics.isDuelPartner(damager.getUniqueId(), receiver.getUniqueId());
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()), isDuel);
 
         receiver.playEffect(EntityEffect.HURT);
         DamageAPI.knockbackEntity(damager, receiver, 0.3);
@@ -64,7 +64,6 @@ public class PvPListener implements Listener {
 
         if (damagerGP == null || receiverGP == null) return;
 
-        boolean isDuel = DuelingMechanics.isDuelPartner(damager.getUniqueId(), receiver.getUniqueId());
         //Dont tag them if they are in a duel..
         damagerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
 

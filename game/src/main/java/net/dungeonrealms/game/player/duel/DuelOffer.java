@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.GameChat;
@@ -53,6 +54,7 @@ public class DuelOffer {
 
     @Getter
     private Map<UUID, Integer> leaveAttempts = new HashMap<>();
+
     public DuelOffer(Player player, Player player2) {
         this.player1 = player.getUniqueId();
         this.player2 = player2.getUniqueId();
@@ -63,7 +65,7 @@ public class DuelOffer {
         bannerLoc = centerPoint;
 
         //Scan down till we get a non air block.
-        while(bannerLoc.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR){
+        while (bannerLoc.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
             bannerLoc.subtract(0, 1, 0);
         }
 
@@ -128,14 +130,6 @@ public class DuelOffer {
     public void endDuel(Player winner, Player loser) {
         canFight = false;
         cancelled = true;
-//        for (int i = 1; i < sharedInventory.getSize(); i++) {
-//            if (!isRightSlot(i) && !isLeftSlot(i))
-//                continue;
-//            ItemStack current = sharedInventory.getItem(i);
-//            if (current != null && current.getType() != Material.AIR) {
-//                winner.getInventory().addItem(current);
-//            }
-//        }
         if (this.bannerLoc.getBlock().getType() == Material.STANDING_BANNER) {
             this.bannerLoc.getBlock().setType(Material.AIR);
         }
@@ -149,10 +143,16 @@ public class DuelOffer {
         if (wGP != null) {
             wGP.setPvpTaggedUntil(0);
             wGP.getPlayerStatistics().setDuelsWon(wGP.getPlayerStatistics().getDuelsWon() + 1);
+            if (GameAPI.isInSafeRegion(winner.getLocation())) {
+                KarmaHandler.getInstance().setPlayerAlignment(winner, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
+            }
         }
         if (lGP != null) {
             lGP.setPvpTaggedUntil(0);
             lGP.getPlayerStatistics().setDuelsLost(lGP.getPlayerStatistics().getDuelsLost() + 1);
+            if (GameAPI.isInSafeRegion(loser.getLocation())) {
+                KarmaHandler.getInstance().setPlayerAlignment(loser, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
+            }
         }
 
         String winnerName = GameChat.getPreMessage(winner).replaceAll(":", "").trim().intern();
@@ -368,6 +368,9 @@ public class DuelOffer {
 
                 if (timer <= 0) {
                     canFight = true;
+
+                    player1.playSound(player1.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1.3F);
+                    player2.playSound(player2.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1.3F);
                     player1.sendMessage(ChatColor.YELLOW + "Fight!");
                     player2.sendMessage(ChatColor.YELLOW + "Fight!");
                     cancel();

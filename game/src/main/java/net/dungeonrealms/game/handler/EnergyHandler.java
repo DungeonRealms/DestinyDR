@@ -229,7 +229,7 @@ public class EnergyHandler implements GenericMechanic {
      * @param amountToRemove
      * @since 1.0
      */
-    public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove) {
+    public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove, boolean duel) {
         Player player = Bukkit.getPlayer(uuid);
         if (Rank.isGM(player)) {
             GamePlayer gp = GameAPI.getGamePlayer(player);
@@ -237,7 +237,7 @@ public class EnergyHandler implements GenericMechanic {
             if (gp != null && gp.isInvulnerable() && !gp.isTargettable()) return;
         }
         if (player.getGameMode() == GameMode.CREATIVE) return;
-        if (GameAPI.isInSafeRegion(player.getLocation())) return;
+        if (GameAPI.isInSafeRegion(player.getLocation()) && !duel) return;
         if (player.hasMetadata("last_energy_remove")) {
             if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 80) {
                 return;
@@ -255,6 +255,9 @@ public class EnergyHandler implements GenericMechanic {
         updatePlayerEnergyBar(player);
     }
 
+    public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove){
+        removeEnergyFromPlayerAndUpdate(uuid, amountToRemove, false);
+    }
     /**
      * Adds the hunger potion effect
      * to a player and "starving" as
