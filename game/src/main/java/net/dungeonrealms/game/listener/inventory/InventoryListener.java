@@ -19,6 +19,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -76,6 +77,7 @@ public class InventoryListener implements Listener {
 
         ClickHandler.getInstance().doClick(event);
     }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
         if (!CommandInvsee.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
@@ -414,12 +416,36 @@ public class InventoryListener implements Listener {
             if (event.getCurrentItem() == null)
                 return;
 
-            if (!GameAPI.isItemTradeable(event.getCurrentItem()) || !GameAPI.isItemDroppable(event.getCurrentItem()) || GameAPI.isItemSoulbound(event.getCurrentItem())) {
+            if (!GameAPI.isItemTradeable(event.getCurrentItem()) || !GameAPI.isItemDroppable(event.getCurrentItem())) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
                 event.setCancelled(true);
                 return;
             }
 
+            if (GameAPI.isItemSoulbound(event.getCurrentItem())) {
+                NBTWrapper wrapper = new NBTWrapper(event.getCurrentItem());
+
+                boolean canTrade = false;
+                if (wrapper.hasTag("soulboundAllowed")) {
+                    long time = wrapper.getLong("soulboundAllowed");
+                    if (System.currentTimeMillis() < time) {
+                        //Hasnt expired on tradeable time.
+                        String bypassablePlayers = wrapper.getString("soulboundBypass");
+                        Player clicked = (Player) event.getWhoClicked();
+                        Player trading = trade.getOppositePlayer(clicked);
+                        if (trading != null) {
+                            if (bypassablePlayers.contains(trading.getName() + ",")) {
+                                //Allowed to trade.
+                                canTrade = true;
+                            }
+                        }
+                    }
+                }
+                if (!canTrade) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
+                    event.setCancelled(true);
+                }
+            }
 
             int slot = event.getRawSlot();
             if (slot >= 36)
@@ -1150,14 +1176,14 @@ public class InventoryListener implements Listener {
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
-        	
-        	if( (Mining.isDRPickaxe(slotItem) && Mining.getLvl(slotItem) == 100) || (Fishing.isDRFishingPole(slotItem) && Fishing.getLvl(slotItem) == 100 ) ){
-            	event.getWhoClicked().sendMessage(ChatColor.GRAY + "This tool is much too worn to be repaired.");
-            	event.setCancelled(true);
-            	return;
+
+            if ((Mining.isDRPickaxe(slotItem) && Mining.getLvl(slotItem) == 100) || (Fishing.isDRFishingPole(slotItem) && Fishing.getLvl(slotItem) == 100)) {
+                event.getWhoClicked().sendMessage(ChatColor.GRAY + "This tool is much too worn to be repaired.");
+                event.setCancelled(true);
+                return;
             }
-        	
-            if (Mining.isDRPickaxe(slotItem)){
+
+            if (Mining.isDRPickaxe(slotItem)) {
                 slotTier = Mining.getPickTier(slotItem);
             } else {
                 slotTier = Fishing.getRodTier(slotItem);

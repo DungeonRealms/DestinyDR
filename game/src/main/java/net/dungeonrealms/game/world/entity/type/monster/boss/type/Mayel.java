@@ -201,6 +201,7 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
         possible_drops.add(weapon);
 
         ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(random.nextInt(possible_drops.size())));
+        reward = ItemManager.addPartyMemberSoulboundBypass(reward, 60 * 5, livingEntity.getWorld().getPlayers());
         livingEntity.getWorld().dropItem(livingEntity.getLocation(), reward);
         List<String> hoveredChat = new ArrayList<>();
         ItemMeta meta = reward.getItemMeta();

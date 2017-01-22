@@ -10,6 +10,7 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.stats.PlayerStats;
@@ -68,6 +69,17 @@ public class ItemManager {
         return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
+    public static ItemStack addPartyMemberSoulboundBypass(ItemStack item, int timeframe, List<Player> partyMembers){
+        StringBuilder serialized = new StringBuilder();
+        partyMembers.forEach((pl) -> serialized.append(pl.getName()).append(","));
+
+        NBTWrapper wrapper = new NBTWrapper(item);
+
+        wrapper.setLong("soulboundAllowed", System.currentTimeMillis() + (timeframe * 1000));
+        wrapper.setString("soulboundBypass", serialized.toString());
+
+        return wrapper.build();
+    }
     public static ItemStack createRealmChest() {
         return createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
     }

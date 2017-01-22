@@ -255,4 +255,9 @@ public class Trade {
             }
         }
     }
+
+    public Player getOppositePlayer(Player player){
+        if(p1.equals(player))return p2;
+        return p1;
+    }
 }
