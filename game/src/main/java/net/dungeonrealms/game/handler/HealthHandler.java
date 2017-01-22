@@ -471,8 +471,15 @@ public class HealthHandler implements GenericMechanic {
         // default damage cause is entity attack (called in onMonsterHitEntity and onPlayerHitEntity)
         handlePlayerBeingDamaged(player, damager, damage, armourReducedDamage, totalArmor, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
     }
+    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, boolean logCombat) {
+        // default damage cause is entity attack (called in onMonsterHitEntity and onPlayerHitEntity)
+        handlePlayerBeingDamaged(player, damager, damage, armourReducedDamage, totalArmor, EntityDamageEvent.DamageCause.ENTITY_ATTACK, logCombat);
+    }
 
-    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, EntityDamageEvent.DamageCause cause) {
+    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armor, double totalArmor, EntityDamageEvent.DamageCause cause){
+        handlePlayerBeingDamaged(player, damager, damage, armor, totalArmor, cause, true);
+    }
+    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, EntityDamageEvent.DamageCause cause, boolean logCombat) {
         final GamePlayer gp = GameAPI.getGamePlayer(player);
         if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE) || gp
                 == null || gp.isInvulnerable())
@@ -482,22 +489,23 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
-        if (!(damager instanceof Player)) {
-            // Player is damaged by a creature
-            if (CombatLog.isInCombat(player)) {
-                CombatLog.updateCombat(player);
+        if(logCombat) {
+            if (!(damager instanceof Player)) {
+                // Player is damaged by a creature
+                if (CombatLog.isInCombat(player)) {
+                    CombatLog.updateCombat(player);
+                } else {
+                    CombatLog.addToCombat(player);
+                }
             } else {
-                CombatLog.addToCombat(player);
-            }
-        } else {
-            // Player is pvping
-            if (CombatLog.inPVP(player)) {
-                CombatLog.updatePVP(player);
-            } else {
-                CombatLog.addToPVP(player);
+                // Player is pvping
+                if (CombatLog.inPVP(player)) {
+                    CombatLog.updatePVP(player);
+                } else {
+                    CombatLog.addToPVP(player);
+                }
             }
         }
-
         LivingEntity leAttacker = null;
         if (damager != null) {
             if (damager instanceof Player) {

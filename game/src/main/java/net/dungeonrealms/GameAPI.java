@@ -46,6 +46,7 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
+import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
@@ -809,11 +810,6 @@ public class GameAPI {
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
 
             Chat.listenForMessage(player, null, null);
-
-            // Player leaves while in duel
-            if (DuelingMechanics.isDueling(player.getUniqueId())) {
-                DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
-            }
 
             for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
                 tracker.removeDamager(player);

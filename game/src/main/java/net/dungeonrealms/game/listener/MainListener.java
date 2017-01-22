@@ -389,6 +389,13 @@ public class MainListener implements Listener {
             // Remove from pvplog
             CombatLog.removeFromPVP(player);
         }
+
+        // Player leaves while in duel
+        DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
+        if (offer != null) {
+            offer.handleLogOut(player);
+//                DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
+        }
         // Update bukkit inventory
         player.updateInventory();
         // Good to go lads

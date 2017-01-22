@@ -319,7 +319,7 @@ public class DamageListener implements Listener {
         if (!GameAPI.isNonPvPRegion(p1.getLocation()) && !GameAPI.isNonPvPRegion(p2.getLocation())) return;
 
         if (event.isCancelled() && p1.isSneaking()) {
-            if(!(p1.hasMetadata("duel_cooldown") && p1.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
+            if (!(p1.hasMetadata("duel_cooldown") && p1.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
                 //Check if anyone has a duel already.
                 DuelOffer currentDuel = DuelingMechanics.getOffer(p1.getUniqueId());
                 DuelOffer otherDuel = DuelingMechanics.getOffer(p2.getUniqueId());
@@ -461,8 +461,9 @@ public class DamageListener implements Listener {
         p.setExp(0F);
         p.setLevel(0);
 
-        if (Rank.isGM(p) && !Rank.isDev(p))
+        if (Rank.isGM(p) && !Rank.isDev(p)) {
             event.getDrops().clear();
+        }
 
         new ArrayList<>(event.getDrops()).stream().filter(itemStack -> !GameAPI.isItemDroppable(itemStack) || GameAPI.isItemUntradeable(itemStack)).forEach(itemStack -> {
             event.getDrops().remove(itemStack);
@@ -494,6 +495,7 @@ public class DamageListener implements Listener {
             }
         }
 
+        System.out.println(alignment);
         List<ItemStack> alreadySaved = Lists.newArrayList();
         if (alignment != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             double durability_to_take = (1500 * 0.30D); // 30%
@@ -558,6 +560,30 @@ public class DamageListener implements Listener {
                     RepairAPI.subtractCustomDurability(p, weapon_slot, w_durability_to_take);
                     gearToSave.add(weapon_slot);
                     alreadySaved.add(weapon_slot);
+                }
+            }
+
+            for (ItemStack item : Lists.newArrayList(event.getDrops())) {
+                if (GameAPI.isItemSoulbound(item)) {
+                    event.getDrops().remove(item);
+                    gearToSave.add(item);
+                    alreadySaved.add(item);
+                }
+            }
+
+        } else {
+            double w_durability_to_take = (1500 * 0.45D);
+            //DIED AS CHAOTIC, CHECK SOULBOUND.
+            for (ItemStack item : Lists.newArrayList(event.getDrops())) {
+                if (GameAPI.isItemSoulbound(item)) {
+                    if ((RepairAPI.getCustomDurability(item) - w_durability_to_take) > 0.1D) {
+                        RepairAPI.subtractCustomDurability(p, item, w_durability_to_take);
+//                        gearToSave.add(item);
+                        alreadySaved.add(item);
+                        gearToSave.add(item);
+                    } else {
+                        event.getDrops().remove(item);
+                    }
                 }
             }
         }

@@ -233,6 +233,8 @@ public class DuelOffer {
         } else {
             winner = Bukkit.getPlayer(player1);
         }
+
+        Bukkit.getLogger().info("Player " + logOut.getName() + " has logged out in a duel.");
         endDuel(winner, logOut);
     }
 
