@@ -38,7 +38,7 @@ public class CommandShard extends BaseCommand {
 
             submitAsyncCallback(() -> new ShardSwitcher(player), menu -> {
                 try {
-                    player.closeInventory();
+//                    player.closeInventory();
                     menu.get().open(player);
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
