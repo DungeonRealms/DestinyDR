@@ -430,14 +430,16 @@ public class RestrictionListener implements Listener {
         }
     }
 
+    private List<UUID> loggedOutCombat = Lists.newArrayList();
     @EventHandler(priority = EventPriority.HIGHEST)
     public void loggingOutDropItem(PlayerDropItemEvent event) {
         if (CrashDetector.crashDetected)
             event.setCancelled(true);
 
-        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName()) && !loggedOutCombat.contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             try {
+                loggedOutCombat.add(event.getPlayer().getUniqueId());
                 event.getPlayer().closeInventory();
             } catch (Exception ignored) {
             }
@@ -462,6 +464,7 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLeave(PlayerQuitEvent event) {
         closedShardingInventories.remove(event.getPlayer().getUniqueId());
+        loggedOutCombat.remove(event.getPlayer().getUniqueId());
     }
 
     private List<UUID> closedShardingInventories = Lists.newArrayList();
