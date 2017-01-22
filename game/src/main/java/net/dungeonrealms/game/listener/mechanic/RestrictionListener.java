@@ -37,6 +37,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -222,6 +223,21 @@ public class RestrictionListener implements Listener {
     public void onCrash(PlayerInteractEvent event) {
         if (CrashDetector.crashDetected)
             event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityHangingBreak(HangingBreakByEntityEvent event){
+        if(!(event.getRemover() instanceof Player)){
+            event.setCancelled(true);
+            return;
+        }
+
+        if(event.getEntity().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName())){
+            //Dont let them
+            if(!Rank.isGM(((Player)event.getRemover()))){
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
