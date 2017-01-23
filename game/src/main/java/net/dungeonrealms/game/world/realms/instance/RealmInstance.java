@@ -709,15 +709,16 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     public RealmToken getToken(Location portalLocation) {
         for (RealmToken realm : getCache().values())
             if (realm.getPortalLocation() != null) {
-                if (realm.getPortalLocation().getWorld() == portalLocation.getWorld()) {
-                    if (realm.getPortalLocation() != null && realm.getPortalLocation().distance(portalLocation.clone()) <= 2)
+            	if (realm.getPortalLocation() != null && realm.getPortalLocation().distance(portalLocation.clone()) <= 2){
+            		if (realm.getPortalLocation().getWorld() == portalLocation.getWorld()) {
                         return realm;
-                } else {
-                    Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
-                    Utils.log.warning("PORTAL LOCATION IS NOT IN REQUESTS TOKEN WORLD");
-                    Utils.log.warning("SERVER CRASH PREVENTED - TOKEN NOT RETURNED");
-                    Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
-                }
+            		} else {
+            			Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
+            			Utils.log.warning("PORTAL LOCATION IS NOT IN REQUESTS TOKEN WORLD");
+            			Utils.log.warning("WAS TRYING TO REPLY WITH REALM: " + realm.getOwner().toString());
+            			Utils.log.warning("SERVER CRASH PREVENTED - WORLDS COMPARED: " + realm.getPortalLocation().getWorld().getName() + " and " + portalLocation.getWorld().getName());
+            		}
+            	}
             }
 
         return null;
