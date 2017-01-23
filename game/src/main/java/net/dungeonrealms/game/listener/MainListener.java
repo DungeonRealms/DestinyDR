@@ -418,10 +418,17 @@ public class MainListener implements Listener {
         if (event.getTo().getBlock() != event.getFrom().getBlock()) {
             DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
             if (offer != null) {
+                Player player = event.getPlayer();
 //                if (!offer.canFight) return;
+                if(event.getTo().getWorld() != offer.getCenterPoint().getWorld()){
+                    Player winner = offer.player1 == player.getUniqueId() ? offer.getPlayer2() : offer.getPlayer1();
+//                                Player loser = offer.player1 == player.getUniqueId() ?  : offer.getPlayer1();
+                    offer.endDuel(winner, player);
+                    return;
+                }
+
                 if (event.getTo().distanceSquared(offer.centerPoint) >= 300) {
                     event.setCancelled(true);
-                    Player player = event.getPlayer();
                     player.teleport(event.getFrom());
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "WARNING:" + ChatColor.RED
                             + " You are too far from the DUEL START POINT, please turn back or you will "

@@ -318,6 +318,8 @@ public class DamageListener implements Listener {
 
         if (!GameAPI.isNonPvPRegion(p1.getLocation()) && !GameAPI.isNonPvPRegion(p2.getLocation())) return;
 
+        if(!Bukkit.getWorlds().get(0).getName().equals(p1.getWorld().getName()))return;
+
         if (event.isCancelled() && p1.isSneaking()) {
             if (!(p1.hasMetadata("duel_cooldown") && p1.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
                 //Check if anyone has a duel already.

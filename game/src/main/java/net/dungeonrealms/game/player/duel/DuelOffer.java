@@ -143,14 +143,14 @@ public class DuelOffer {
         if (wGP != null) {
             wGP.setPvpTaggedUntil(0);
             wGP.getPlayerStatistics().setDuelsWon(wGP.getPlayerStatistics().getDuelsWon() + 1);
-            if (GameAPI.isInSafeRegion(winner.getLocation())) {
+            if (GameAPI.isInSafeRegion(winner.getLocation()) && Bukkit.getWorlds().get(0).getName().equals(winner.getWorld().getName())) {
                 KarmaHandler.getInstance().setPlayerAlignment(winner, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
             }
         }
         if (lGP != null) {
             lGP.setPvpTaggedUntil(0);
             lGP.getPlayerStatistics().setDuelsLost(lGP.getPlayerStatistics().getDuelsLost() + 1);
-            if (GameAPI.isInSafeRegion(loser.getLocation())) {
+            if (GameAPI.isInSafeRegion(loser.getLocation()) && Bukkit.getWorlds().get(0).getName().equals(loser.getWorld().getName())) {
                 KarmaHandler.getInstance().setPlayerAlignment(loser, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
             }
         }

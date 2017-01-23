@@ -18,6 +18,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.Item;
@@ -972,6 +973,11 @@ public class RealmListener implements Listener {
                 Entity mount = EntityMechanics.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
                 mount.dead = true;
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
+            }
+
+            if(DuelingMechanics.isDueling(event.getPlayer().getUniqueId())){
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in a duel!");
+                return;
             }
 
             if (!CombatLog.isInCombat(event.getPlayer())) {
