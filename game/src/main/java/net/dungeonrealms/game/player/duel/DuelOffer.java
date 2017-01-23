@@ -65,7 +65,9 @@ public class DuelOffer {
         bannerLoc = centerPoint;
 
         //Scan down till we get a non air block.
-        while (bannerLoc.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
+        int maxChecks = 10;
+        while (bannerLoc.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR && bannerLoc.getY() > 0 && maxChecks > 0) {
+            maxChecks--;
             bannerLoc.subtract(0, 1, 0);
         }
 
