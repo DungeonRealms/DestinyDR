@@ -7,6 +7,7 @@ Build <build>
  - Items are now whitelisted for the mobs killer.
 
 &4Bug Fixes&0
+ - Fix Fire Tick bug
  - Fixed realms
  - Optimizations
  - Potential boss despawn fix

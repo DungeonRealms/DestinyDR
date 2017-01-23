@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
@@ -64,6 +65,10 @@ public class CommandSuicide extends BaseCommand {
                 return;
             }
             if (event.getMessage().equalsIgnoreCase("y")) {
+
+                p.removeMetadata("lastPlayerToDamageExpire", DungeonRealms.getInstance());
+                p.removeMetadata("lastPlayerToDamage", DungeonRealms.getInstance());
+
                 HealthHandler.getInstance().handlePlayerDeath(p, null);
             } else {
                 p.sendMessage(ChatColor.YELLOW + "Suicide - " + ChatColor.BOLD + "CANCELLED");

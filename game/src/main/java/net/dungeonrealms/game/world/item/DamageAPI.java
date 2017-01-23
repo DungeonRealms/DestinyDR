@@ -170,6 +170,10 @@ public class DamageAPI {
 
             // ELEMENTAL DAMAGE
             if (isAttackerPlayer) {
+                if (isDefenderPlayer) {
+                    receiver.setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
+                    receiver.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), attacker.getName()));
+                }
                 if (attackerAttributes.get("fireDamage")[1] != 0) {
                     applyFireDebuff(receiver, weaponTier);
                     damage += attackerAttributes.get("fireDamage")[1];
@@ -533,6 +537,10 @@ public class DamageAPI {
 
             // ELEMENTAL DAMAGE
             if (isAttackerPlayer) {
+                if (isDefenderPlayer) {
+                    receiver.setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
+                    receiver.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), attacker.getName()));
+                }
                 if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
                     applyFireDebuff(receiver, weaponTier);
                     damage += projectile.getMetadata("fireDamage").get(0).asInt();
