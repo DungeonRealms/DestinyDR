@@ -716,7 +716,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             			Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
             			Utils.log.warning("PORTAL LOCATION IS NOT IN REQUESTS TOKEN WORLD");
             			Utils.log.warning("WAS TRYING TO REPLY WITH REALM: " + realm.getOwner().toString());
-            			Utils.log.warning("SERVER CRASH PREVENTED - WORLDS COMPARED: " + realm.getPortalLocation().getWorld().getName() + " and " + portalLocation.getWorld().getName());
+            			Utils.log.warning("SERVER CRASH PREVENTED - WORLDS COMPARE: " + realm.getPortalLocation().getWorld().getName() + " and " + portalLocation.getWorld().getName());
             		}
             	}
             }
