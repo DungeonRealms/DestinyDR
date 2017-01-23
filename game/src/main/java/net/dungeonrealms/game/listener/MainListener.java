@@ -838,7 +838,23 @@ public class MainListener implements Listener {
                         }
 
                         if (junk_type >= 95) {
-                            junk = new ItemGenerator().setTier(net.dungeonrealms.game.world.item.Item.ItemTier.getByTier(spot_tier))
+                            int tier = spot_tier;
+                            if (spot_tier == 4) {
+                                int tierChance = random.nextInt(100);
+                                if (tierChance <= 70) {
+                                    tier = 3;
+                                }
+                            } else if (spot_tier == 5) {
+                                int tierChance = random.nextInt(100);
+                                if (tierChance <= 70) {
+                                    tier = 3;
+                                } else if (tierChance <= 95) {
+                                    tier = 4;
+                                } else {
+                                    tier = 5;
+                                }
+                            }
+                            junk = new ItemGenerator().setTier(net.dungeonrealms.game.world.item.Item.ItemTier.getByTier(tier))
                                     .setType(random.nextBoolean() ? net.dungeonrealms.game.world.item.Item.ItemType.getRandomArmor() :
                                             net.dungeonrealms.game.world.item.Item.ItemType.getRandomWeapon())
                                     .setRarity(net.dungeonrealms.game.world.item.Item.ItemRarity.COMMON).generateItem().getItem();
@@ -882,9 +898,25 @@ public class MainListener implements Listener {
                             // OOA
                             treasure = CraftItemStack.asCraftCopy(ItemManager.createOrbofAlteration());
                         } else if (treasure_type == 1) {
+                            int tier = spot_tier;
+                            if (spot_tier == 4) {
+                                int tierChance = random.nextInt(100);
+                                if (tierChance <= 70) {
+                                    tier = 3;
+                                }
+                            } else if (spot_tier == 5) {
+                                int tierChance = random.nextInt(100);
+                                if (tierChance <= 70) {
+                                    tier = 3;
+                                } else if (tierChance <= 95) {
+                                    tier = 4;
+                                } else {
+                                    tier = 5;
+                                }
+                            }
                             net.dungeonrealms.game.world.item.Item.ItemRarity rarity =
                                     random.nextInt(100) <= 75 ? net.dungeonrealms.game.world.item.Item.ItemRarity.UNCOMMON : net.dungeonrealms.game.world.item.Item.ItemRarity.RARE;
-                            treasure = new ItemGenerator().setTier(net.dungeonrealms.game.world.item.Item.ItemTier.getByTier(spot_tier))
+                            treasure = new ItemGenerator().setTier(net.dungeonrealms.game.world.item.Item.ItemTier.getByTier(tier))
                                     .setType(random.nextInt(100) <= 75 ? net.dungeonrealms.game.world.item.Item.ItemType.getRandomArmor() :
                                             net.dungeonrealms.game.world.item.Item.ItemType.getRandomWeapon())
                                     .setRarity(rarity).generateItem().getItem();
