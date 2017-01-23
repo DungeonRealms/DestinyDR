@@ -4,6 +4,7 @@ Build <build>
  - Improved Junk / Treasure Find
  - Dueling system update
  - Disabled bow knockback against players
+ - Items are now whitelisted for the mobs killer.
 
 &4Bug Fixes&0
  - Fixed realms

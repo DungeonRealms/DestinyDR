@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mechanic;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -35,6 +36,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
@@ -1181,5 +1183,10 @@ public class ItemManager {
         nmsItem.setTag(nbtTagCompound);
 
         return CraftItemStack.asBukkitCopy(nmsItem);
+    }
+
+    public static void whitelistItemDrop(Player player, org.bukkit.entity.Item item){
+        if(player == null)return;
+        item.setMetadata("whitelist", new FixedMetadataValue(DungeonRealms.getInstance(), player.getName()));
     }
 }

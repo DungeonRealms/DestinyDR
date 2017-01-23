@@ -308,13 +308,16 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
         RealmProperty<Boolean> property = (RealmProperty<Boolean>) realm.getProperty("peaceful");
 
+        Realms realms = Realms.getInstance();
         if (!(property.isAcknowledgeExpiration() && property.getExpiry() > System.currentTimeMillis())) {
             if (GameAPI.isInSafeRegion(location)) {
                 property.setValue(true);
                 property.setAcknowledgeExpiration(false);
+                realms.setRealmRegion(realms.getRealmWorld(player.getUniqueId()), false);
             } else {
                 property.setValue(false);
                 property.setAcknowledgeExpiration(false);
+                realms.setRealmRegion(realms.getRealmWorld(player.getUniqueId()), true);
             }
         }
 

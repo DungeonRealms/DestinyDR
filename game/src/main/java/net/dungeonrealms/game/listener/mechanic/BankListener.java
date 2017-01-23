@@ -105,6 +105,16 @@ public class BankListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
+
+        if(event.getItem().hasMetadata("whitelist")){
+            //Whitelisted item, dont let them pick it up.
+            String allowed = event.getItem().getMetadata("whitelist").get(0).asString();
+            if(!allowed.equals(event.getPlayer().getName())){
+                event.setCancelled(true);
+                return;
+            }
+        }
+
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             Player player = event.getPlayer();
             if(player.getOpenInventory() != null && player.getOpenInventory().getTitle().contains("@")) {

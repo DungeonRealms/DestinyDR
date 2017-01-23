@@ -141,12 +141,12 @@ public interface DRMonster {
                 gem_drop_amount -= 64;
                 ItemStack item = BankMechanics.gem.clone();
                 item.setAmount(64);
-                world.getWorld().dropItem(loc.add(0, 1, 0), item);
+                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
             }
             if (gem_drop_amount > 0) {
                 ItemStack item = BankMechanics.gem.clone();
                 item.setAmount((int) gem_drop_amount);
-                world.getWorld().dropItem(loc.add(0, 1, 0), item);
+                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), item));
             }
         }
 
@@ -184,7 +184,7 @@ public interface DRMonster {
             if (drop != null && drop.getType() != Material.AIR) {
                 RepairAPI.setCustomItemDurability(drop, RandomHelper.getRandomNumberBetween(200, 1500));
                 EnchantmentAPI.removeGlow(drop);
-                world.getWorld().dropItem(loc.add(0, 1, 0), drop);
+                ItemManager.whitelistItemDrop(killer, world.getWorld().dropItem(loc.add(0, 1, 0), drop));
             }
         }
         int scrollDrop = random.nextInt(100);
@@ -271,7 +271,7 @@ public interface DRMonster {
                     break;
             }
             if (teleport != null) {
-                ent.getWorld().dropItem(ent.getLocation().add(0, 1, 0), teleport);
+                ItemManager.whitelistItemDrop(killer, ent.getWorld().dropItem(ent.getLocation().add(0, 1, 0), teleport));
             }
         }
         /*if (weapon.getType() == Material.BOW) {
@@ -289,4 +289,5 @@ public interface DRMonster {
             }
         }*/ // arrows are no longer needed (uncomment if we ever add them back)
     }
+
 }
