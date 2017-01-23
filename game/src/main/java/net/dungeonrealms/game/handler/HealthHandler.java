@@ -583,13 +583,16 @@ public class HealthHandler implements GenericMechanic {
                 //Check for killer from this.
                 Player killer = getKillerFromRecentDamage(player);
                 if (killer != null) {
-                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                         if (KarmaHandler.getInstance().getPlayerRawAlignment(killer) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, killer.getUniqueId()).toString())) {
+                            boolean prevent = Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, killer.getUniqueId()).toString());
+                            if (prevent || !GameAPI.isNonPvPRegion(player.getLocation())) {
                                 player.setFireTicks(0);
-                                killer.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
-                                player.sendMessage(ChatColor.YELLOW + killer.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
                                 newHP = 1;
+                                if (prevent) {
+                                    killer.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
+                                    player.sendMessage(ChatColor.YELLOW + killer.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                                }
                             }
                         }
                     }
