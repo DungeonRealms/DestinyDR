@@ -473,14 +473,16 @@ public class HealthHandler implements GenericMechanic {
         // default damage cause is entity attack (called in onMonsterHitEntity and onPlayerHitEntity)
         handlePlayerBeingDamaged(player, damager, damage, armourReducedDamage, totalArmor, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
     }
+
     public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, boolean logCombat) {
         // default damage cause is entity attack (called in onMonsterHitEntity and onPlayerHitEntity)
         handlePlayerBeingDamaged(player, damager, damage, armourReducedDamage, totalArmor, EntityDamageEvent.DamageCause.ENTITY_ATTACK, logCombat);
     }
 
-    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armor, double totalArmor, EntityDamageEvent.DamageCause cause){
+    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armor, double totalArmor, EntityDamageEvent.DamageCause cause) {
         handlePlayerBeingDamaged(player, damager, damage, armor, totalArmor, cause, true);
     }
+
     public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor, EntityDamageEvent.DamageCause cause, boolean logCombat) {
         final GamePlayer gp = GameAPI.getGamePlayer(player);
         if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE) || gp
@@ -491,7 +493,7 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
-        if(logCombat) {
+        if (logCombat) {
             if (!(damager instanceof Player)) {
                 // Player is damaged by a creature
                 if (CombatLog.isInCombat(player)) {
@@ -540,7 +542,7 @@ public class HealthHandler implements GenericMechanic {
             if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
                 DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
                 if (offer != null) {
-                    GamePlayer attackPLayer = GameAPI.getGamePlayer((Player)leAttacker);
+                    GamePlayer attackPLayer = GameAPI.getGamePlayer((Player) leAttacker);
 
                     player.setMetadata("duel_cooldown", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 1000));
                     leAttacker.setMetadata("duel_cooldown", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 1000));
@@ -564,6 +566,11 @@ public class HealthHandler implements GenericMechanic {
                     }
                 }
             }
+
+            //Track this player damage for when we die.
+            player.setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
+            player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), leAttacker.getName()));
+
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
                 leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]");
             }
@@ -571,6 +578,24 @@ public class HealthHandler implements GenericMechanic {
         }
 
         //player.getWorld().playEffect(player.getLocation().clone().add(0, 1, 0), Effect.STEP_SOUND, 152);
+        if (cause == EntityDamageEvent.DamageCause.FIRE_TICK) {
+            if (newHP <= 0) {
+                //Check for killer from this.
+                Player killer = getKillerFromRecentDamage(player);
+                if (killer != null) {
+                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                        if (KarmaHandler.getInstance().getPlayerRawAlignment(killer) != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, killer.getUniqueId()).toString())) {
+                                player.setFireTicks(0);
+                                killer.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
+                                player.sendMessage(ChatColor.YELLOW + killer.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                                newHP = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
             if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
@@ -579,6 +604,8 @@ public class HealthHandler implements GenericMechanic {
                         ChatColor.GRAY
                         + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
             } else { // foreign damage
+
+
                 ChatColor causeColor;
                 String damageCauseName;
                 switch (cause) {
@@ -658,6 +685,13 @@ public class HealthHandler implements GenericMechanic {
         if (player.hasMetadata("last_death_time")) {
             if (System.currentTimeMillis() - player.getMetadata("last_death_time").get(0).asLong() > 100) {
                 String killerName = "";
+                if (!(leAttacker instanceof Player)) {
+                    Player damagerKiller = getKillerFromRecentDamage(player);
+                    if (damagerKiller != null) {
+                        leAttacker = damagerKiller;
+                    }
+                }
+
                 if (leAttacker instanceof Player) {
                     killerName = GameChat.getPreMessage((Player) leAttacker).replaceAll(":", "").trim();
                     if (ChatColor.stripColor(killerName).startsWith("<G>")) {
@@ -677,6 +711,7 @@ public class HealthHandler implements GenericMechanic {
                         killerName = "The World";
                     }
                 }
+
                 String deadPlayerName = GameChat.getPreMessage(player).replaceAll(":", "").trim();
                 if (ChatColor.stripColor(deadPlayerName).startsWith("<G>")) {
                     deadPlayerName = deadPlayerName.split(">")[1];
@@ -701,6 +736,14 @@ public class HealthHandler implements GenericMechanic {
                 return true;
             }
         } else {
+
+            if (!(leAttacker instanceof Player)) {
+                Player damagerKiller = getKillerFromRecentDamage(player);
+                if (damagerKiller != null) {
+                    leAttacker = damagerKiller;
+                }
+            }
+
             String killerName = "";
             if (leAttacker instanceof Player) {
                 killerName = leAttacker.getName();
@@ -732,6 +775,20 @@ public class HealthHandler implements GenericMechanic {
             return true;
         }
         return false;
+    }
+
+    public Player getKillerFromRecentDamage(Player player) {
+        if (player.hasMetadata("lastPlayerToDamageExpire")) {
+            long expiration = player.getMetadata("lastPlayerToDamageExpire").get(0).asLong();
+            if (expiration > System.currentTimeMillis()) {
+                String killer = player.getMetadata("lastPlayerToDamage").get(0).asString();
+                Player onlineKiller = Bukkit.getPlayer(killer);
+                if (onlineKiller != null) {
+                    return onlineKiller;
+                }
+            }
+        }
+        return null;
     }
 
     private void handleMonsterDamageTracker(UUID monster, Player attacker, double damage) {
