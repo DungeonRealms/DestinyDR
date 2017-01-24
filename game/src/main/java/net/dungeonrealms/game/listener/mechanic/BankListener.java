@@ -106,7 +106,7 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
 
-        if(event.getItem().hasMetadata("whitelist")){
+        if(event.getItem().hasMetadata("whitelist") && event.getItem().getTicksLived() < 60 * 20 * 2){
             //Whitelisted item, dont let them pick it up.
             String allowed = event.getItem().getMetadata("whitelist").get(0).asString();
             if(!allowed.equals(event.getPlayer().getName())){

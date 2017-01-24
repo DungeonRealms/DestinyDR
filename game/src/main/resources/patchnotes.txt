@@ -3,7 +3,7 @@ Build <build>
 &8Changes&0
  - Added Portal Key Shards to Journal
  - Remove Soulbound from all elite gear
-
+ - Whitelist on items expires after 2 minutes.
 &4Bug Fixes&0
  - Fix realm upgrades locking server
  - Fix Duranor gear
