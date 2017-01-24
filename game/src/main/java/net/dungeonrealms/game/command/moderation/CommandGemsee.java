@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.moderation;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -34,9 +35,18 @@ public class CommandGemsee extends BaseCommand {
         }
 
         String playerName = args[0];
-        if (Bukkit.getPlayer(playerName) != null) {
-            sender.sendMessage(ChatColor.YELLOW + playerName + " balance: " + ChatColor.AQUA + DatabaseAPI.getInstance().getData(EnumData.GEMS, Bukkit.getPlayer(playerName).getUniqueId()));
-        }
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+           String uuid = DatabaseAPI.getInstance().getUUIDFromName(playerName);
+           if(uuid == null || uuid.equals("")){
+               sender.sendMessage(ChatColor.RED + "No player found with that name.");
+               return;
+           }
+
+            UUID p_uuid = UUID.fromString(uuid);
+
+            sender.sendMessage(ChatColor.YELLOW + playerName + " balance: " + ChatColor.AQUA + DatabaseAPI.getInstance().getData(EnumData.GEMS, p_uuid));
+
+        });
         return false;
     }
 }
