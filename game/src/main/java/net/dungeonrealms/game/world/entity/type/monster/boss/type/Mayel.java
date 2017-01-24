@@ -221,7 +221,7 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
             }
             groupSize++;
         }
-        int perPlayerDrop = Math.round(gemDrop / groupSize);
+        int perPlayerDrop = Math.round(gemDrop / Math.max(1, groupSize));
         ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {

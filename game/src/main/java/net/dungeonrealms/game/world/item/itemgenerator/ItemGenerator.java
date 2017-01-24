@@ -675,16 +675,16 @@ public class ItemGenerator {
             return null;
         }
 
-        boolean hasSoulboundTag = false;
-        for (String line : item_lore) {
-            if (line.contains("Soulbound")) {
-                hasSoulboundTag = true;
-                break;
-            }
-        }
-        if (!hasSoulboundTag) {
-            item_lore.add(ChatColor.DARK_RED + "Soulbound");
-        }
+//        boolean hasSoulboundTag = false;
+//        for (String line : item_lore) {
+//            if (line.contains("Soulbound")) {
+//                hasSoulboundTag = true;
+//                break;
+//            }
+//        }
+//        if (!hasSoulboundTag) {
+//            item_lore.add(ChatColor.DARK_RED + "Soulbound");
+//        }
 
         ItemMeta im = is.getItemMeta();
         im.setDisplayName(item_name);
@@ -705,9 +705,9 @@ public class ItemGenerator {
         if (rarity == null) {
             // Add rarity if needed.
             rarity = Item.ItemRarity.UNIQUE; // default to unique
-            item_lore.remove(ChatColor.DARK_RED + "Soulbound");
+//            item_lore.remove(ChatColor.DARK_RED + "Soulbound");
             item_lore.add(rarity.getName());
-            item_lore.add(ChatColor.DARK_RED + "Soulbound");
+//            item_lore.add(ChatColor.DARK_RED + "Soulbound");
             im.setLore(item_lore);
             is.setItemMeta(im);
             RepairAPI.setCustomItemDurability(is, 1500);

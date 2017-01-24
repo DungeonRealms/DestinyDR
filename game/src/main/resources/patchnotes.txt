@@ -2,11 +2,10 @@ Build <build>
 
 &8Changes&0
  - Added Portal Key Shards to Journal
+ - Remove Soulbound from all elite gear
 
 &4Bug Fixes&0
  - Fix realm upgrades locking server
  - Fix Duranor gear
  - Fix Dungeon Bosses despawning
- - Fix Fire Tick bug in duels
- - Realm fixes
  - Fixed Mother of Doom gear
