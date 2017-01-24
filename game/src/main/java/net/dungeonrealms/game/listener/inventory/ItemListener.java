@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listener.inventory;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -31,6 +32,7 @@ import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
@@ -203,6 +205,12 @@ public class ItemListener implements Listener {
             Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
             if (p.isSneaking()) {
+            	
+            	if(DungeonRealms.getInstance().getRebootTime() - System.currentTimeMillis() < 5 * 60 * 1000){
+            		p.sendMessage(ChatColor.RED + "This shard is rebooting in less than 5 minutes, so you cannot upgrade this realm on this shard.");
+            		return;
+            	}
+            	
                 if (!GameAPI.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                     p.sendMessage(ChatColor.RED + "You must be inside your realm to modify its size.");
                     return;
