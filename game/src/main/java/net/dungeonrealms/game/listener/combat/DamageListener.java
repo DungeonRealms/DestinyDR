@@ -881,6 +881,9 @@ public class DamageListener implements Listener {
             return;
 
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
+            //Dont even despawn the boss..
+            if(event.getEntity().hasMetadata("boss"))return;
+
             event.getEntity().remove();
             return;
         }

@@ -145,8 +145,13 @@ public class RealmListener implements Listener {
     public void RealmBlockProcessor(UpdateEvent e) {
         if (!e.getType().equals(UpdateType.SLOW)) return;
 
+        int blocksPasted = 0;
         for (Map.Entry<UUID, List<Location>> entry : REALMS.getProcessingBlocks().entrySet()) {
-            if (Bukkit.getPlayer(entry.getKey()) != null && Bukkit.getPlayer(entry.getKey()).isOnline()) {
+
+            if(blocksPasted >= Realms.SERVER_BLOCK_BUFFER)break;
+            //Only Get this once..
+            Player player = Bukkit.getPlayer(entry.getKey());
+            if (player != null && player.isOnline()) {
                 String w_name = entry.getKey().toString();
                 try {
                     World w = Bukkit.getWorld(w_name);
@@ -156,7 +161,7 @@ public class RealmListener implements Listener {
                     int x = 0;
 
                     for (Location loc : loc_list) {
-                        if (x >= Realms.BLOCK_PROCESSOR_BUFFER_SIZE) {
+                        if (x >= Realms.BLOCK_PROCESSOR_BUFFER_SIZE || blocksPasted >= Realms.SERVER_BLOCK_BUFFER) {
                             break;
                         }
                         if (loc.getBlock().getY() > 127) {
@@ -176,17 +181,17 @@ public class RealmListener implements Listener {
 
                         loc_list.remove(loc);
                         x++;
+                        blocksPasted++;
                     }
 
                     if (loc_list.isEmpty()) {
-                        Player p = Bukkit.getPlayer(entry.getKey());
 
-                        if (p != null) {
-                            p.sendMessage("");
-                            Utils.sendCenteredMessage(p, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "REALM UPGRADE COMPLETE.");
-                            p.sendMessage("");
+                        if (player != null) {
+                            player.sendMessage("");
+                            Utils.sendCenteredMessage(player, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "REALM UPGRADE COMPLETE.");
+                            player.sendMessage("");
 
-                            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                             realm.setState(RealmState.CLOSED);
 
                         } else REALMS.removeRealm(entry.getKey(), true);

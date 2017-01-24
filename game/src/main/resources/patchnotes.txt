@@ -4,6 +4,9 @@ Build <build>
  - Added Portal Key Shards to Journal
 
 &4Bug Fixes&0
+ - Fix realm upgrades locking server
+ - Fix Duranor gear
+ - Fix Dungeon Bosses despawning
  - Fix Fire Tick bug in duels
  - Realm fixes
  - Fixed Mother of Doom gear
