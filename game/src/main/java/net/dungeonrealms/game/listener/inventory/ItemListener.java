@@ -276,16 +276,6 @@ public class ItemListener implements Listener {
                 } // Player is clicking air
             }
 
-            if (GameAPI.getRegionName(p.getLocation()).equalsIgnoreCase("tutorial")) {
-                p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
-                        + " open a portal to your realm until you have left the tutorial.");
-                return;
-            }
-            
-            if(DungeonRealms.getInstance().getRebootTime() - System.currentTimeMillis() < 5 * 60 * 1000){
-        		p.sendMessage(ChatColor.RED + "This shard is rebooting in less than 5 minutes, so you cannot open your realm on this shard.");
-        		return;
-        	}
             
             if (event.getClickedBlock() != null) {
                 if (Realms.getInstance().canPlacePortal(p, event.getClickedBlock().getLocation()))
