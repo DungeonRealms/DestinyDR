@@ -400,7 +400,8 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTradeInvClicked(InventoryClickEvent event) {
         if (event.getInventory().getTitle().contains("Trade Window")) {
-            if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+            //Dont allow these click types.
+            if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR || event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
                 event.setCancelled(true);
                 return;
             }
