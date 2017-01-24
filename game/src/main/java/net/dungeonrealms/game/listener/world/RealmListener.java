@@ -29,6 +29,7 @@ import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -37,6 +38,7 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -890,7 +892,6 @@ public class RealmListener implements Listener {
         return deletedItems;
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onInventoryClickEvent(InventoryClickEvent event) {
         Player p = (Player) event.getWhoClicked();
@@ -914,46 +915,23 @@ public class RealmListener implements Listener {
                 return;
             }
         }
-
-        int slot_num = event.getRawSlot();
-        if (slot_num < event.getInventory().getSize()) {
-            // An item inside the chest is being clicked.
-            if (event.isShiftClick() || (event.getCursor() == null && event.getCurrentItem() != null)) {
-                return; // Don't care if they're moving stuff OUT of inventory.
-            }
-
-            if (event.getCursor() != null) {
-                // They're placing an item into the chest.
-                ItemStack cursor = event.getCursor();
-                if (Item.ItemType.isArmor(cursor) || Item.ItemType.isWeapon(cursor) || cursor.getType() == Material
-                        .EMERALD
-                        || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) ||
-                        BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)
-                        || ItemManager.isEnchantScroll(cursor) || ItemManager.isProtectScroll(cursor) || GameAPI.isOrb(cursor) || RepairAPI.isItemArmorScrap(cursor)) {
-                    event.setCancelled(true);
-                    event.setCursor(cursor);
-                    p.updateInventory();
-                    p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " deposit weapons, armor, or gems in realm blocks.");
-                    p.sendMessage(ChatColor.GRAY + "Deposit those items in your BANK CHEST.");
-                }
-            }
-        } else if (slot_num >= event.getInventory().getSize()) {
-            // Clicking in own inventory.
-            ItemStack item = null;
-            if (event.isShiftClick()) {
-                item = event.getCurrentItem();
-            } else if (event.getAction() == InventoryAction.HOTBAR_SWAP) {
-                item = event.getInventory().getItem(event.getHotbarButton());
-            } else {
-                return;
-            }
-            if (Item.ItemType.isArmor(item) || Item.ItemType.isWeapon(item) || item.getType() == Material
-                    .EMERALD
-                    || item.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(item) ||
-                    BankMechanics.getInstance().isGem(item) || BankMechanics.getInstance().isBankNote(item)
-                    || ItemManager.isEnchantScroll(item) || ItemManager.isProtectScroll(item) || GameAPI.isOrb(item) || RepairAPI.isItemArmorScrap(item)) {
+        ItemStack cursor = event.getCursor();
+        if (event.isShiftClick() || event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
+        	cursor = event.getCurrentItem();
+        if((event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.HOTBAR_SWAP) && event.getRawSlot() < event.getInventory().getSize())
+        	cursor = event.getView().getBottomInventory().getItem(event.getHotbarButton());
+        
+        if (event.getRawSlot() < event.getInventory().getSize() && (event.getAction() != InventoryAction.MOVE_TO_OTHER_INVENTORY && event.getAction() != InventoryAction.HOTBAR_SWAP && event.getAction() != InventoryAction.HOTBAR_MOVE_AND_READD && event.getAction() != InventoryAction.PLACE_ONE && event.getAction() != InventoryAction.PLACE_SOME && event.getAction() != InventoryAction.PLACE_ALL) && event.getRawSlot() != -999)
+            return;
+        
+        if (cursor != null) {
+            if (Item.ItemType.isArmor(cursor) || Item.ItemType.isWeapon(cursor) || cursor.getType() == Material.EMERALD
+                    || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) ||
+                    BankMechanics.getInstance().isGem(cursor) || BankMechanics.getInstance().isBankNote(cursor)
+                    || ItemManager.isEnchantScroll(cursor) || ItemManager.isProtectScroll(cursor)
+                    || GameAPI.isOrb(cursor) || RepairAPI.isItemArmorScrap(cursor)) {
                 event.setCancelled(true);
-                event.setCurrentItem(item);
+                event.setResult(Result.DENY);
                 p.updateInventory();
                 p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " deposit weapons, armor, or gems in realm blocks.");
                 p.sendMessage(ChatColor.GRAY + "Deposit those items in your BANK CHEST.");

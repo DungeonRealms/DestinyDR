@@ -8,6 +8,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
@@ -31,6 +32,7 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -125,8 +127,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
     @Override
     public void loadRealm(Player player, Runnable doAfter) {
-        // Temporarily disable realms.
-        //
+    	
         if (isRealmCached(player.getUniqueId())) {
             if (doAfter != null)
                 doAfter.run();
@@ -228,7 +229,17 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "REQ:" + ChatColor.GRAY + " >3 blocks away.");
             return false;
         }
-
+        
+        if (GameAPI.getRegionName(player.getLocation()).equalsIgnoreCase("tutorial")) {
+            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
+                    + " open a portal to your realm until you have left the tutorial.");
+            return false;
+        }
+        
+        if(DungeonRealms.getInstance().getRebootTime() - System.currentTimeMillis() < 5 * 60 * 1000){
+    		player.sendMessage(ChatColor.RED + "This shard is rebooting in less than 5 minutes, so you cannot open your realm on this shard.");
+    		return false;
+        }
 
         for (Player p : Bukkit.getWorlds().get(0).getPlayers()) {
             if (p.getName().equals(player.getName())) continue;
