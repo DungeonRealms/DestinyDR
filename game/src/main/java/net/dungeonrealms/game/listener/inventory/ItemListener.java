@@ -281,7 +281,12 @@ public class ItemListener implements Listener {
                         + " open a portal to your realm until you have left the tutorial.");
                 return;
             }
-
+            
+            if(DungeonRealms.getInstance().getRebootTime() - System.currentTimeMillis() < 5 * 60 * 1000){
+        		p.sendMessage(ChatColor.RED + "This shard is rebooting in less than 5 minutes, so you cannot open your realm on this shard.");
+        		return;
+        	}
+            
             if (event.getClickedBlock() != null) {
                 if (Realms.getInstance().canPlacePortal(p, event.getClickedBlock().getLocation()))
                     Realms.getInstance().loadRealm(p, () -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
