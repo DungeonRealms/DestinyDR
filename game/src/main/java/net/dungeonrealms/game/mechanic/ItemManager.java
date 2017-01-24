@@ -71,7 +71,7 @@ public class ItemManager {
         return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
-    public static ItemStack addPartyMemberSoulboundBypass(ItemStack item, int timeframe, List<Player> partyMembers){
+    public static ItemStack addPartyMemberSoulboundBypass(ItemStack item, int timeframe, List<Player> partyMembers) {
         StringBuilder serialized = new StringBuilder();
         partyMembers.forEach((pl) -> serialized.append(pl.getName()).append(","));
 
@@ -82,6 +82,7 @@ public class ItemManager {
 
         return wrapper.build();
     }
+
     public static ItemStack createRealmChest() {
         return createItem(Material.CHEST, ChatColor.GREEN + "Realm Chest", new String[]{ChatColor.GRAY + "This chest can only be placed in realms."});
     }
@@ -914,6 +915,16 @@ public class ItemManager {
                 + "          XP" + "\n" + ChatColor.BLACK + "       " + gp.getExperience() + "/"
                 + gp.getEXPNeeded(gp.getLevel());
 
+
+        String portalShardPage = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Portal Key Shards" + "\n" + ChatColor.BLACK.toString()
+                + ChatColor.ITALIC.toString()
+                + "A sharded fragment from the great portal of Maltai that may be exchanged at the Dungeoneer for epic equipment." + new_line
+                + ChatColor.DARK_GRAY.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T1, p.getUniqueId()) + "\n"
+                + ChatColor.GREEN.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T2, p.getUniqueId()) + "\n"
+                + ChatColor.AQUA.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T3, p.getUniqueId()) + "\n"
+                + ChatColor.LIGHT_PURPLE.toString() + "Portal Shards: " + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T4, p.getUniqueId())
+                + "\n" + ChatColor.GOLD.toString() + "Portal Shards: " + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T5, p.getUniqueId());
+
         page3_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/msg" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/ask" + "\n" + ChatColor.BLACK.toString() + "Ask any questions." + new_line
@@ -940,6 +951,7 @@ public class ItemManager {
         bm.setAuthor("King Bulwar");
         pages.add(page1_string);
         pages.add(page2_string);
+        pages.add(portalShardPage);
         pages.add(page3_string);
         pages.add(page4_string);
         pages.add(page5_string);
@@ -1185,8 +1197,8 @@ public class ItemManager {
         return CraftItemStack.asBukkitCopy(nmsItem);
     }
 
-    public static void whitelistItemDrop(Player player, org.bukkit.entity.Item item){
-        if(player == null)return;
+    public static void whitelistItemDrop(Player player, org.bukkit.entity.Item item) {
+        if (player == null) return;
         item.setMetadata("whitelist", new FixedMetadataValue(DungeonRealms.getInstance(), player.getName()));
     }
 }

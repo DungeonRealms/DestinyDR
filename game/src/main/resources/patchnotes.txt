@@ -1,17 +1,9 @@
 Build <build>
 
 &8Changes&0
- - Improved Junk / Treasure Find
- - Dueling system update
- - Disabled bow knockback against players
- - Items are now whitelisted for the mobs killer.
+ - Added Portal Key Shards to Journal
 
 &4Bug Fixes&0
- - Fix Fire Tick bug
- - Fixed realms
- - Optimizations
- - Potential boss despawn fix
- - Soulbound now working properly
- - Fix item clearing when trading with a full inventory
- - Fix anvils not dropping items with a full inventory
- - Fixed some fish not giving buffs
+ - Fix Fire Tick bug in duels
+ - Realm fixes
+ - Fixed Mother of Doom gear
