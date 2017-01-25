@@ -150,17 +150,21 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                     UUID uuid = UUID.fromString(uuidString);
 
                                     if (Bukkit.getPlayer(uuid) != null) {
-                                        ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+                                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                            ArrayList<String> list = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+                                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                                for (String s : list) {
+                                                    UUID friendUuid = UUID.fromString(s);
+                                                    Player friend = Bukkit.getPlayer(friendUuid);
 
-                                        for (String s : list) {
-                                            UUID friendUuid = UUID.fromString(s);
-                                            Player friend = Bukkit.getPlayer(friendUuid);
+                                                    if (friend != null && !friendUuid.toString().equalsIgnoreCase(s)) {
+                                                        friend.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
+                                                        friend.playSound(friend.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                                                    }
+                                                }
+                                            });
+                                        });
 
-                                            if (friend != null && !friendUuid.toString().equalsIgnoreCase(s)) {
-                                                friend.sendMessage(ChatColor.GRAY + name + " has joined " + ChatColor.AQUA + ChatColor.UNDERLINE + shard + ".");
-                                                friend.playSound(friend.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-                                            }
-                                        }
                                     }
                                 } else if (msg.contains("request:")) {
                                     String[] content = msg.split(",");
