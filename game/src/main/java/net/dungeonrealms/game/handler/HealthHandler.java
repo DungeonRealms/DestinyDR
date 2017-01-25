@@ -12,6 +12,7 @@ import net.dungeonrealms.game.mastery.DamageTracker;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
@@ -662,6 +663,9 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (newHP <= 0) {
+            //Dead, call this so we get our items back to drop properlly.
+            Chat.listenForMessage(player, null, null);
+            player.closeInventory();
             if (handlePlayerDeath(player, leAttacker)) return;
         }
 
