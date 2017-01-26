@@ -86,10 +86,10 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         // INITIALIZE WORK FOLDERS
         pluginFolder = DungeonRealms.getInstance().getDataFolder();
         rootFolder = new File(System.getProperty("user.dir"));
-
+        File uploadingFolder = new File(pluginFolder, "/realms/uploading");
         try {
             FileUtils.forceMkdir(new File(pluginFolder, "/realms/downloaded"));
-            FileUtils.forceMkdir(new File(pluginFolder, "/realms/uploading"));
+            FileUtils.forceMkdir(uploadingFolder);
         } catch (IOException e) {
             e.printStackTrace();
             Utils.log.info("Failed to create realm directories!");
@@ -106,6 +106,26 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
                 e.printStackTrace();
             }
         });
+        
+        GameAPI.submitAsyncCallback(() -> {
+        	Utils.log.info("Uploading " + uploadingFolder.listFiles().length + " broken realms.");
+        	Arrays.stream(uploadingFolder.listFiles())
+        		.filter(file -> GameAPI.isUUID(file.getName().split(".zip")[0])).forEach(f -> {
+        			UUID uuid = UUID.fromString(f.getName().split(".zip")[0]);
+        			if((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPLOAD, uuid)){
+        				uploadZippedRealm(uuid);
+        				DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, false);
+        	        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, false);
+        	        	GameAPI.updatePlayerData(uuid);
+        			}
+        	        try{
+        	        	FileUtils.forceDelete(f);
+        	        }catch(Exception e){}
+        		});
+        	Utils.log.info("Finished uploading broken realms");
+            return true;
+        }, null);
+        
 
         Utils.log.info("DungeonRealms Finished Registering RealmsInstance() ... FINISHED!");
         Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
@@ -613,29 +633,43 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             uploadRealm(uuid, removeCacheFolder, doAfter);
         }
     }
+    
+    private void uploadZippedRealm(UUID uuid) {
+    	InputStream inputStream = null;
+    	try{
+    		FTPClient ftpClient = new FTPClient();
+
+        	ftpClient.connect(Constants.FTP_HOST_NAME);
+        	ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
+        	ftpClient.enterLocalPassiveMode();
+        	ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+        	String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+        
+        	inputStream = new FileInputStream(pluginFolder.getAbsolutePath() + "/realms/uploading/" + uuid.toString() + ".zip");
+        
+        	Utils.log.info("[REALM] [ASYNC] Started upload for player realm " + uuid.toString() + " ... STARTING");
+        	ftpClient.storeFile(REMOTE_FILE, inputStream);
+        	Utils.log.info("[REALM] [ASYNC] Successfully uploaded player realm " + uuid.toString());
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	try{
+    		if(inputStream != null)
+    			inputStream.close();
+    	}catch(Exception e){
+    		
+    	}
+    }
 
     private void uploadRealm(UUID uuid, boolean removeCacheFolder, Consumer<Boolean> doAfter) {
         Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
-        InputStream inputStream = null;
+        
 
         try {
             zip(rootFolder.getAbsolutePath() + "/" + uuid.toString() + "/", pluginFolder.getAbsolutePath() + "/" + "realms/" + "uploading" + "/" + uuid.toString() + ".zip");
-            FTPClient ftpClient = new FTPClient();
-
-            ftpClient.connect(Constants.FTP_HOST_NAME);
-            ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-            String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
-
-            inputStream = new FileInputStream(pluginFolder.getAbsolutePath() + "/realms/uploading/" + uuid.toString() + ".zip");
-
-            Utils.log.info("[REALM] [ASYNC] Started upload for player realm " + uuid.toString() + " ... STARTING");
-            ftpClient.storeFile(REMOTE_FILE, inputStream);
-            inputStream.close();
-            Utils.log.info("[REALM] [ASYNC] Successfully uploaded player realm " + uuid.toString());
-        } catch (IOException | ZipException e) {
+            uploadZippedRealm(uuid);
+        } catch (ZipException e) {
             getToken(uuid).setState(RealmState.CLOSED);
             e.printStackTrace();
             if (doAfter != null)
@@ -653,14 +687,6 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
             if (doAfter != null)
                 doAfter.accept(true);
-
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
 
             try {
                 FileUtils.forceDelete(new File(pluginFolder.getAbsolutePath() + "/realms/uploading/" + uuid.toString() + ".zip"));
@@ -790,7 +816,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     public void removeRealm(UUID uuid, boolean runAsync) {
         if (isRealmPortalOpen(uuid))
             closeRealmPortal(uuid, true, null);
-
+        
         getToken(uuid).setState(RealmState.REMOVING);
 
         // UNLOAD WORLD

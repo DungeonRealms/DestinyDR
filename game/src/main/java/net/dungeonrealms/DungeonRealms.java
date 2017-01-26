@@ -3,7 +3,9 @@ package net.dungeonrealms;
 import com.esotericsoftware.minlog.Log;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
+
 import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -75,6 +77,7 @@ import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.tool.PatchTools;
+
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -94,7 +97,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DungeonRealms extends JavaPlugin {
 
-    private static long SERVER_START_TIME, REBOOT_TIME;
+    private static long SERVER_START_TIME;
+
+	private static long rebootTime;
 
     @Getter
     private static ShardInfo shard;
@@ -179,7 +184,7 @@ public class DungeonRealms extends JavaPlugin {
         long min = Constants.MIN_GAME_TIME + SERVER_START_TIME;
         long max = Constants.MAX_GAME_TIME + SERVER_START_TIME;
 
-        REBOOT_TIME += min + (long) (random.nextDouble() * (max - min));
+        setRebootTime(min + (long) (random.nextDouble() * (max - min)));
 
         Utils.log.info("Reading shard config...");
         Ini ini = new Ini();
@@ -507,13 +512,6 @@ public class DungeonRealms extends JavaPlugin {
 
         Bukkit.getServer().setWhitelist(false);
 
-        rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
-            if (System.currentTimeMillis() >= (REBOOT_TIME - 300000L)) {
-                scheduleRestartTask();
-                Bukkit.getScheduler().cancelTask(rebooterID);
-            }
-        }, 0, 100);
-
         // FIX PLAYERS //
         UpdateResult playerFixResult = DatabaseInstance.playerData.updateMany(Filters.eq("info.current", shard.getPseudoName()),
                 new Document(EnumOperators.$SET.getUO(), new Document("info.isPlaying", false)));
@@ -573,14 +571,28 @@ public class DungeonRealms extends JavaPlugin {
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);
     }
+    
+    public void setRebootTime(long nextReboot) {
+    	rebootTime = nextReboot;
+    	if(rebooterID != 0)
+    		Bukkit.getScheduler().cancelTask(rebooterID);
+    	rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
+            if (System.currentTimeMillis() >= (rebootTime - 300000L)) {
+                scheduleRestartTask();
+                Bukkit.getScheduler().cancelTask(rebooterID);
+            }
+        }, 0, 100);
+    }
 
     public long getRebootTime() {
-        return REBOOT_TIME;
+        return rebootTime;
     }
 
     private void scheduleRestartTask() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 60, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
-
+        
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Realms.getInstance().removeAllRealms(true));
+        
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

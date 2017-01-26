@@ -4,11 +4,14 @@ import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -85,6 +88,14 @@ public class Rank {
     public static boolean isDev(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("dev") && Arrays.asList(Constants.DEVELOPERS).contains(player.getName());
+    }
+    
+    public static boolean isDev(CommandSender commandSender) {
+		return commandSender instanceof ConsoleCommandSender || (commandSender instanceof Player && Rank.isDev(((OfflinePlayer)commandSender)));
+	}
+    
+    public static boolean isDev(Player player){//This is for legacy purposes.
+    	return isDev((OfflinePlayer)player);
     }
 
     /**
@@ -278,5 +289,4 @@ public class Rank {
     public void doGet(UUID uuid) {
         PLAYER_RANKS.put(uuid, (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid));
     }
-
 }
