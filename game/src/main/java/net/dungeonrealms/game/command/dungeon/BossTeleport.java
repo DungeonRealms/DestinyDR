@@ -68,7 +68,6 @@ public class BossTeleport extends BaseCommand {
                 ((CraftWorld) bcs.getBlock().getWorld()).getHandle().addEntity(mayel, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mayel.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
                 bcs.getBlock().setType(Material.AIR);
-                ((LivingEntity)mayel).setRemoveWhenFarAway(false);
                 toSpawn.getWorld().playSound(toSpawn, Sound.AMBIENT_CAVE, 1F, 1F);
                 break;
             case VARENGLADE:
@@ -80,7 +79,6 @@ public class BossTeleport extends BaseCommand {
                 ((CraftWorld) bcs.getBlock().getWorld()).getHandle().addEntity(burick, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 burick.setLocation(varen.getX(), varen.getY(), varen.getZ(), 1, 1);
                 bcs.getBlock().setType(Material.AIR);
-                ((LivingEntity)burick).setRemoveWhenFarAway(false);
                 varen.getWorld().playSound(varen, Sound.ENTITY_ENDERDRAGON_HURT, 4F, 0.5F);
                 break;
             case THE_INFERNAL_ABYSS:
@@ -92,7 +90,6 @@ public class BossTeleport extends BaseCommand {
                 ((CraftWorld) bcs.getBlock().getWorld()).getHandle().addEntity(infernal, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 infernal.setLocation(abyss.getX(), abyss.getY(), abyss.getZ(), 1, 1);
                 bcs.getBlock().setType(Material.AIR);
-                ((LivingEntity)infernal).setRemoveWhenFarAway(false);
                 abyss.getWorld().playSound(abyss, Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F);
                 break;
         }
