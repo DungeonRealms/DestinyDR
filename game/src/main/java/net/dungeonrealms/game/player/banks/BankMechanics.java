@@ -210,16 +210,16 @@ public class BankMechanics implements GenericMechanic {
         switch (type) {
             case 0:
             case 1:
-                stack = ItemManager.createItem(Material.INK_SACK, "Small Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 100g"});
+                stack = ItemManager.createItem(Material.INK_SACK, ChatColor.WHITE + "Small Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 100g"});
                 break;
             case 2:
-                stack = ItemManager.createItem(Material.INK_SACK, "Medium Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 150g"});
+                stack = ItemManager.createItem(Material.INK_SACK, ChatColor.GREEN + "Medium Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 150g"});
                 break;
             case 3:
-                stack = ItemManager.createItem(Material.INK_SACK, "Large Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 200g"});
+                stack = ItemManager.createItem(Material.INK_SACK, ChatColor.AQUA + "Large Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 200g"});
                 break;
             case 4:
-                stack = ItemManager.createItem(Material.INK_SACK, "Gigantic Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 300g"});
+                stack = ItemManager.createItem(Material.INK_SACK, ChatColor.LIGHT_PURPLE + "Gigantic Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 300g"});
                 break;
         }
         nms = CraftItemStack.asNMSCopy(stack);
