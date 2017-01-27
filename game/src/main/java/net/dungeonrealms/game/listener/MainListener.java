@@ -80,8 +80,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -337,6 +336,8 @@ public class MainListener implements Listener {
         }
     }
 
+
+    private Set<UUID> kickedIgnore = new HashSet<>();
     /**
      * Handles player leaving the server
      *
@@ -355,6 +356,7 @@ public class MainListener implements Listener {
             return;
         }
 
+        this.kickedIgnore.add(event.getPlayer().getUniqueId());
         GameAPI.handleLogout(event.getPlayer().getUniqueId(), true, null);
     }
 
@@ -371,6 +373,8 @@ public class MainListener implements Listener {
         if (event.getPlayer().hasMetadata("sharding"))
             event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
 
+
+        boolean ignoreCombat = this.kickedIgnore.remove(event.getPlayer().getUniqueId());
         if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
             Utils.log.info("Ignored quit event for player " + event.getPlayer().getName());
             GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
@@ -379,7 +383,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
 
         // Handle combat log before data save so we overwrite the logger's inventory data
-        if (CombatLog.inPVP(player)) {
+        if (CombatLog.inPVP(player) && !ignoreCombat) {
             // Woo oh, he logged out in PVP
             player.getWorld().strikeLightningEffect(player.getLocation());
             player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
