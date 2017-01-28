@@ -49,6 +49,14 @@ public class NetworkClientListener extends Listener {
                     boolean sub = Boolean.valueOf(in.readUTF());
 
                     DungeonRealmsProxy.getInstance().LoadBalancer(uuid, false, sub, true);
+                } else if (task.equals("vanish")) {
+                    UUID toHide = UUID.fromString(in.readUTF());
+                    boolean hide = Boolean.valueOf(in.readUTF());
+
+                    if (hide)
+                        DungeonRealmsProxy.getInstance().hidePlayer(toHide);
+                    else
+                        DungeonRealmsProxy.getInstance().unhidePlayer(toHide);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1305,6 +1305,7 @@ public class GameAPI {
                 Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
                 Utils.sendCenteredMessage(player, ChatColor.AQUA + ChatColor.BOLD.toString() + "GM VANISH");
+                GameAPI.sendNetworkMessage("vanish", uuid.toString(), "true");
                 player.setGameMode(GameMode.SPECTATOR);
             } else {
                 player.setGameMode(GameMode.CREATIVE);

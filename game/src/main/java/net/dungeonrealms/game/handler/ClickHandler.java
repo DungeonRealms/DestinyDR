@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -1586,6 +1587,7 @@ public class ClickHandler {
                             }
                             player.removePotionEffect(PotionEffectType.INVISIBILITY);
                             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
+                            GameAPI.sendNetworkMessage("vanish", player.getUniqueId().toString(), "false");
                             player.setCustomNameVisible(true);
                             player.setGameMode(GameMode.CREATIVE);
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_VANISH, false, true);
@@ -1615,6 +1617,7 @@ public class ClickHandler {
                             Bukkit.getOnlinePlayers().forEach(p -> p.hidePlayer(player));
                             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
                             player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
+                            GameAPI.sendNetworkMessage("vanish", player.getUniqueId().toString(), "true");
                             player.setGameMode(GameMode.SPECTATOR);
                             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_VANISH, true, true);
                         }

@@ -20,10 +20,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.api.event.ProxyPingEvent;
-import net.md_5.bungee.api.event.ServerConnectEvent;
-import net.md_5.bungee.api.event.TabCompleteEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -62,6 +59,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     private final File BUNGEE_CONFIG_FILE = new File(new File(System.getProperty("user.dir")), "config.yml");
 
     private List<String> WHITELIST = new ArrayList<>();
+
+    //We need to track all vanished players at the bungee level..
+    private Set<UUID> vanishedPlayers = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -284,10 +284,17 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         int lastSpaceIndex = partialPlayerName.lastIndexOf(' ');
         if (lastSpaceIndex >= 0) partialPlayerName = partialPlayerName.substring(lastSpaceIndex + 1);
 
-        for (ProxiedPlayer p : getProxy().getPlayers())
-            if (p.getName().toLowerCase().startsWith(partialPlayerName)) ev.getSuggestions().add(p.getName());
+        for (ProxiedPlayer p : getProxy().getPlayers()) {
+            if (p.getName().toLowerCase().startsWith(partialPlayerName) && !this.vanishedPlayers.contains(p.getUniqueId())) ev.getSuggestions().add(p.getName());
+        }
     }
 
+
+    @EventHandler
+    public void onPlayerLeave(PlayerDisconnectEvent event){
+        //Remove them from the list if they disconnect.
+        this.vanishedPlayers.remove(event.getPlayer().getUniqueId());
+    }
 
     @EventHandler
     public void onProxyConnection(PreLoginEvent event) {
@@ -323,6 +330,14 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         List<ServerInfo> servers = getProxy().getServers().values().stream().filter(server -> server.getName().contains("Lobby")).collect(Collectors.toList());
         Collections.sort(servers, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
         return servers;
+    }
+
+    public void hidePlayer(UUID uuid){
+        if(!this.vanishedPlayers.contains(uuid))this.vanishedPlayers.add(uuid);
+    }
+
+    public void unhidePlayer(UUID uuid){
+        this.vanishedPlayers.remove(uuid);
     }
 
     public void sendNetworkPacket(String task, String... contents) {
