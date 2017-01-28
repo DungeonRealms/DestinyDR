@@ -119,7 +119,7 @@ public class RealmListener implements Listener {
         } else if (REALMS.getToken(event.getFrom()) != null) {
             RealmToken realm = REALMS.getToken(event.getFrom());
 
-            if (!player.getGameMode().equals(GameMode.CREATIVE))
+            if (!player.getGameMode().equals(GameMode.CREATIVE) && !player.getGameMode().equals(GameMode.SPECTATOR))
                 player.setAllowFlight(false);
 
             if (player.getUniqueId().equals(realm.getOwner()))
