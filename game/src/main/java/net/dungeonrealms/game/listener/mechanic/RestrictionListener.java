@@ -33,6 +33,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
@@ -295,7 +296,7 @@ public class RestrictionListener implements Listener {
                 || result.getType() == Material.MINECART || result.getType() == Material.GOLD_INGOT || result.getType() == Material.GOLD_ORE
                 || result.getType() == Material.GOLDEN_APPLE || result.getType() == Material.STORAGE_MINECART || result.getType() == Material.PISTON_BASE
                 || result.getType() == Material.PISTON_STICKY_BASE || result.getType() == Material.CARROT_STICK || result.getType() == Material.LEASH
-                || result.getType() == Material.NAME_TAG || result.getTypeId() == 417 || result.getTypeId() == 418 || result.getTypeId() == 419) {
+                || result.getType() == Material.NAME_TAG || result.getTypeId() == 417 || result.getTypeId() == 418 || result.getTypeId() == 419 || result.getType().name().startsWith("BOAT")) {
 
             Player p = ((Player) event.getWhoClicked());
             if (p.isOp()) {
@@ -314,6 +315,14 @@ public class RestrictionListener implements Listener {
     }
 
 
+    @EventHandler
+    public void onCropGrowth(BlockGrowEvent event){
+        if(event.getBlock().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName()))return;
+
+        //Disable in realms and everywhere else.
+        event.setCancelled(true);
+    }
+    
     @EventHandler
     public void playerWeaponSwitch(PlayerItemHeldEvent event) {
         Player p = event.getPlayer();
