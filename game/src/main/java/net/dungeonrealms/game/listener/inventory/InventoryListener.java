@@ -357,11 +357,11 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClosed(InventoryCloseEvent event) {
+        Player p = (Player) event.getPlayer();
         if (event.getInventory().getTitle().contains("Storage Chest") && !CommandBanksee.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             storage.inv.setContents(event.getInventory().getContents());
-        } else if (event.getInventory().getTitle().contains("Trade Window")) {
-            Player p = (Player) event.getPlayer();
+        } else if (event.getInventory().getTitle().contains(p.getName())) {
             Trade t = TradeManager.getTrade(p.getUniqueId());
             if (t != null)
                 if (!t.p1Ready || !t.p2Ready) {
@@ -399,7 +399,8 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTradeInvClicked(InventoryClickEvent event) {
-        if (event.getInventory().getTitle().contains("Trade Window")) {
+        Player player = (Player)event.getWhoClicked();
+        if (event.getInventory().getTitle().contains(player.getName())) {
             //Dont allow these click types.
             if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR || event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
                 event.setCancelled(true);

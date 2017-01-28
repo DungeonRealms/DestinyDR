@@ -43,7 +43,7 @@ public class Trade {
      * Opens Trade Window
      */
     private void openInventory() {
-        inv = Bukkit.createInventory(null, 36, "Trade Window");
+        inv = Bukkit.createInventory(null, 36, generateTitle(p1.getName(), p2.getName()));
         if (!p1.isOnline() || p1 == null || !p2.isOnline() || p2 == null) {
             TradeManager.trades.remove(this);
             return;
@@ -69,6 +69,20 @@ public class Trade {
         p1.openInventory(inv);
         p2.openInventory(inv);
     }
+
+
+    public static String generateTitle(String lPName, String rPName) {
+        String title = lPName;
+
+        int spacesLeft = 32 - (title.length() + rPName.length());
+
+        for(int i = 0; i < spacesLeft; i++){
+            title += " ";
+        }
+        title += rPName;
+        return title;
+    }
+
 
     // 0, 8 Confirm
     // 4, 13, 22, 27, 31 separator
