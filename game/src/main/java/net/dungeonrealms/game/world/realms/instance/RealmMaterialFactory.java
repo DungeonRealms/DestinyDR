@@ -330,7 +330,7 @@ class RealmMaterialFactory {
             calculatePrices(this);
 
             setLore(Arrays.asList(ChatColor.GREEN.toString() + "Price: " + ChatColor.WHITE.toString() + price + "g"
-                    , ChatColor.WHITE.toString() + price + ChatColor.GREEN.toString() + " E-CASH",
+                    , ChatColor.WHITE.toString() + eCashPrice + ChatColor.GREEN.toString() + " E-CASH",
                     ChatColor.ITALIC + "" + ChatColor.GRAY + "Left click to use gems, Right click to use E-CASH."));
 
         }
