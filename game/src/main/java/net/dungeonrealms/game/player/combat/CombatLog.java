@@ -91,7 +91,7 @@ public class CombatLog implements GenericMechanic {
                             // Don't drop the journal/realm star
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
                                 // We don't want to drop a pickaxe/fishing rod
-                                if (!Mining.isDRPickaxe(itemStack) && !Fishing.isDRFishingPole(itemStack)) {
+                                if (!Mining.isDRPickaxe(itemStack) && !Fishing.isDRFishingPole(itemStack) && !GameAPI.isItemSoulbound(itemStack)) {
                                     // We don't want to drop the storedItem
                                     if (itemStack != storedItem) {
                                         player.getWorld().dropItem(player.getLocation(), itemStack);
@@ -108,7 +108,9 @@ public class CombatLog implements GenericMechanic {
                     for (ItemStack itemStack : player.getInventory().getContents()) {
                         if (itemStack != null) {
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
-                                player.getWorld().dropItem(player.getLocation(), itemStack);
+                                if(!GameAPI.isItemSoulbound(itemStack)){
+                                    player.getWorld().dropItem(player.getLocation(), itemStack);
+                                }
                                 player.getInventory().remove(itemStack);
                             }
                         }
