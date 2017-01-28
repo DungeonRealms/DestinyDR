@@ -59,6 +59,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
 import net.dungeonrealms.game.player.menu.HearthStone;
 import net.dungeonrealms.game.player.menu.Profile;
+import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.tab.TabMechanics;
@@ -345,6 +346,7 @@ public class DungeonRealms extends JavaPlugin {
         }
 
 
+        TradeManager.startParticles();
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         CommandManager cm = new CommandManager();

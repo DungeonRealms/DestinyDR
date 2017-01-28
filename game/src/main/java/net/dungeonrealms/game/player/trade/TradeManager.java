@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.player.trade;
 
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -29,6 +31,19 @@ public class TradeManager {
         if (sender == null || requested == null) {
             return;
         }
+    }
+
+    public static void startParticles(){
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for(Trade trade : trades){
+                if(trade.p1 != null && trade.p1.isOnline()){
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, trade.p1.getLocation().add(0, 2.05, 0), 0F, 0F, 0F, .001F, 5);
+                }
+                if(trade.p2 != null && trade.p2.isOnline()){
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, trade.p2.getLocation().add(0, 2.05, 0), 0F, 0F, 0F, .001F, 5);
+                }
+            }
+        }, 20, 20);
     }
 
     public static Player getTarget(Player trader) {

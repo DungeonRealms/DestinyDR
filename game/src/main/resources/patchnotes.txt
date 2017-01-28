@@ -1,11 +1,10 @@
 Build <build>
 
 &8Changes&0
- - Added Portal Key Shards to Journal
- - Remove Soulbound from all elite gear
- - Whitelist on items expires after 2 minutes.
+- Add names back in Trade menu title
+- Added particles when trading
+
 &4Bug Fixes&0
- - Fix realm upgrades locking server
- - Fix Duranor gear
- - Fix Dungeon Bosses despawning
- - Fixed Mother of Doom gear
+- Fix E-CASH not displaying correctly in realm shop
+- Fix gems turning into bank notes in realms
+- Fix Gem Pouch names missing colors
