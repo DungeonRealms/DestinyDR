@@ -127,10 +127,11 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPreProcess(PlayerCommandPreprocessEvent event) {
-        if (event.getMessage().toLowerCase().startsWith("/me")) {
+        if (event.getMessage().toLowerCase().startsWith("/me") || event.getMessage().toLowerCase().startsWith("/minecraft:me")) {
             event.setCancelled(true);
+            event.setMessage("");
         }
     }
 

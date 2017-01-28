@@ -203,7 +203,7 @@ public class RestrictionListener implements Listener {
         if (!Rank.isGM(event.getPlayer()) && !event.getPlayer().isOp())
             ANTI_COMMAND_SPAM.submitCooldown(event.getPlayer(), 5000L);
 
-        if (command.equalsIgnoreCase("/me") && !Rank.isDev(event.getPlayer()))
+        if ((command.toLowerCase().startsWith("/me") || command.toLowerCase().startsWith("/minecraft:me")) && !Rank.isDev(event.getPlayer()))
             event.setCancelled(true);
     }
 
