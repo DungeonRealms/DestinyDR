@@ -392,6 +392,29 @@ public class InventoryListener implements Listener {
     }
 
 
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+
+        //Basically any inventory.
+        if (event.getInventory().getName().contains("container.chest") || event.getInventory().getName().contains("Realm Chest")
+                || event.getInventory().getName().equalsIgnoreCase("container.chestDouble")
+                || (event.getInventory().getName().equalsIgnoreCase("container.minecart"))
+                || (event.getInventory().getName().equalsIgnoreCase("container.dispenser"))
+                || (event.getInventory().getName().equalsIgnoreCase("container.hopper"))
+                || (event.getInventory().getName().equalsIgnoreCase("container.dropper"))
+                || event.getInventory().getName().equalsIgnoreCase("Loot")) {
+
+            //Check for soulbound item?
+            ItemStack item = event.getClick() == ClickType.NUMBER_KEY ? event.getWhoClicked().getInventory().getItem(event.getHotbarButton()) : event.getCurrentItem();
+            if (item == null || item.getType() == Material.AIR) return;
+
+            if (GameAPI.isItemSoulbound(item)) {
+                event.setCancelled(true);
+                event.setResult(Event.Result.DENY);
+            }
+        }
+    }
+
     /**
      * @param event
      * @since 1.0 handles Trading inventory items.
@@ -399,7 +422,7 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTradeInvClicked(InventoryClickEvent event) {
-        Player player = (Player)event.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
         if (event.getInventory().getTitle().contains(player.getName())) {
             //Dont allow these click types.
             if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR || event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
@@ -568,6 +591,8 @@ public class InventoryListener implements Listener {
 
         player.updateInventory();
 
+        //ORB USAGE
+        gp.getPlayerStatistics().setOrbsUsed(gp.getPlayerStatistics().getOrbsUsed() + 1);
         if (oldItem.getItemMeta().getLore().size() < newItem.getItemMeta().getLore().size()) {
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.25F);
             try {
@@ -739,6 +764,8 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
+
+                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
@@ -814,6 +841,7 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
         } else if (GameAPI.isArmor(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")) {
                 return;
@@ -891,6 +919,7 @@ public class InventoryListener implements Listener {
                     event.setCursor(newStack);
                 }
 
+                gamePlayer.getPlayerStatistics().setFailedEnchants(gamePlayer.getPlayerStatistics().getFailedEnchants() + 1);
                 if (amount <= 8) {
                     if (EnchantmentAPI.isItemProtected(slotItem)) {
                         event.getWhoClicked().sendMessage(ChatColor.RED + "Your enchantment scroll " + ChatColor.UNDERLINE + "FAILED" + ChatColor.RED + " but since you had white scroll protection, your item did not vanish.");
@@ -990,6 +1019,8 @@ public class InventoryListener implements Listener {
             fwm.addEffect(effect);
             fwm.setPower(0);
             fw.setFireworkMeta(fwm);
+            gamePlayer.getPlayerStatistics().setSuccessfulEnchants(gamePlayer.getPlayerStatistics().getSuccessfulEnchants() + 1);
+
         } else if (Fishing.isDRFishingPole(slotItem)) {
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("fishingenchant")) {
                 return;
