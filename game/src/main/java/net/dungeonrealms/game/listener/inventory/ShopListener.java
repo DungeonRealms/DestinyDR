@@ -663,7 +663,7 @@ public class ShopListener implements Listener {
                         int itemsLeft = 0;
                         for (ItemStack itemStack : event.getInventory().getContents()) {
                             if (itemStack != null && itemStack.getType() != Material.AIR) {
-                                if (itemStack.equals(event.getInventory().getItem(shop.getInvSize() - 1))) {
+                                if (itemStack.equals(event.getInventory().getItem(shop.getInvSize() - 1)) || itemStack.equals(event.getInventory().getItem(shop.getInvSize() - 2))) {
                                     continue;
                                 }
                                 itemsLeft++;
