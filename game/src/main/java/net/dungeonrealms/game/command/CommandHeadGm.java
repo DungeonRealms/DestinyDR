@@ -22,7 +22,7 @@ public class CommandHeadGm extends BaseCommand {
 
         // We have a security precaution in-place, the word for arg[0] must match otherwise the user doesn't know the key.
         // Without the correct key they won't be able to access to head GM tools and we can pretend they've not got access.
-        if (args.length != 1 || !args[0].equalsIgnoreCase("cosmo")) return false;
+        if (args.length != 1 || !args[0].equalsIgnoreCase("nitro")) return false;
 
         Player player = (Player) sender;
         PlayerMenus.openHeadGameMasterTogglesMenu(player);
