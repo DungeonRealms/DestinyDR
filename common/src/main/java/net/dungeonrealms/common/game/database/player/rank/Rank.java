@@ -196,6 +196,8 @@ public class Rank {
                 return ChatColor.AQUA + "Head Game Master";
             case "gm":
                 return ChatColor.AQUA + "Game Master";
+            case "trialgm":
+                return ChatColor.AQUA + "Trial Game Master";
             case "pmod":
                 return ChatColor.WHITE + "Player Moderator";
             case "support":
@@ -224,6 +226,7 @@ public class Rank {
                 return ChatColor.AQUA;
             case "headgm":
             case "gm":
+            case "trialgm":
                 return ChatColor.AQUA;
             case "pmod":
                 return ChatColor.WHITE;
