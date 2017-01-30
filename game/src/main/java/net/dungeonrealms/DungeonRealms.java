@@ -360,6 +360,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandArmorsee("armorsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mas")));
         cm.registerCommand(new CommandGemsee("gemsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mgs")));
         cm.registerCommand(new CommandBinsee("binsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mbns")));
+        cm.registerCommand(new CommandMuleSee());
 
         cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));

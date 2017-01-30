@@ -7,10 +7,8 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.game.command.moderation.CommandArmorsee;
-import net.dungeonrealms.game.command.moderation.CommandBanksee;
-import net.dungeonrealms.game.command.moderation.CommandBinsee;
-import net.dungeonrealms.game.command.moderation.CommandInvsee;
+import net.dungeonrealms.game.command.moderation.*;
+import net.dungeonrealms.game.command.punish.CommandBan;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.ClickHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -130,6 +128,43 @@ public class InventoryListener implements Listener {
 
         CommandBanksee.offline_bank_watchers.remove(event.getPlayer().getUniqueId());
     }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onMuleInventoryClose(InventoryCloseEvent event) {
+
+        Player player = (Player) event.getPlayer();
+        UUID target = CommandMuleSee.getOfflineMuleSee().get(player.getUniqueId());
+
+        //No inventory open.
+        if (target == null) return;
+
+        Inventory inv = event.getInventory();
+        if (inv == null) return;
+
+        Player onlineNow = Bukkit.getPlayer(target);
+
+        String serializedInv = ItemSerialization.toString(inv);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+
+            //Check again incase this data isnt accurate.
+            boolean isPlaying = (Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, target);
+
+            if (isPlaying) {
+                if (player.isOnline()) {
+                    player.sendMessage(ChatColor.RED + (onlineNow != null ? onlineNow.getName() : target.toString()) + " has sinced logged into DungeonRealms and your modified inventory would not been saved properly.");
+                    player.sendMessage(ChatColor.RED + "Please /mulesee them on their shard to see their live mule inventory.");
+                }
+            } else {
+
+                DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_MULE, serializedInv, true, true, null);
+                if (player.isOnline())
+                    player.sendMessage(ChatColor.RED + "Saved offline mule inventory to our database.");
+            }
+        });
+
+        CommandMuleSee.getOfflineMuleSee().remove(player.getUniqueId());
+    }
+
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBinSeeClose(InventoryCloseEvent event) {
