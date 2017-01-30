@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.party;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class CommandPl extends BaseCommand {
         //pinvite <playerName>
 
         if (args.length == 1) {
-            if (Bukkit.getPlayer(args[0]) != null && !Bukkit.getPlayer(args[0]).equals(player)) {
+            if (Bukkit.getPlayer(args[0]) != null && !Bukkit.getPlayer(args[0]).equals(player) && !GameAPI._hiddenPlayers.contains(Bukkit.getPlayer(args[0]))) {
                 if (Affair.getInstance().isInParty(Bukkit.getPlayer(args[0]))) {
                     player.sendMessage(ChatColor.RED + "That player is already in a party!");
                     return true;

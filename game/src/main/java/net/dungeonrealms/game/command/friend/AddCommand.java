@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.friend;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -38,10 +39,17 @@ public class AddCommand extends BaseCommand {
 
         if (Bukkit.getPlayer(playerName) != null) {
             Player friend = Bukkit.getPlayer(playerName);
+
+            if (GameAPI._hiddenPlayers.contains(friend)) {
+                player.sendMessage(ChatColor.RED + "That player is not on any shard!");
+                return false;
+            }
+
             if (FriendHandler.getInstance().areFriends(player, friend.getUniqueId())) {
                 player.sendMessage(ChatColor.RED + "You're already friends.");
                 return false;
             }
+
             FriendHandler.getInstance().sendRequest(player, friend);
             return false;
         }
