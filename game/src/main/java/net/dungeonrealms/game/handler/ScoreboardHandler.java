@@ -120,7 +120,7 @@ public class ScoreboardHandler implements GenericMechanic {
             ChatColor color = chatColor;
             String rank = Rank.getInstance().getRank(player.getUniqueId());
             //Only need to check if GM one time..
-            if (Rank.isGMRank(rank)) {
+            if (Rank.isTrialGMRank(rank)) {
                 color = ChatColor.AQUA;
             }
 
@@ -219,7 +219,7 @@ public class ScoreboardHandler implements GenericMechanic {
 
             Team team = getPlayerTeam(scoreboard, player1);
             ChatColor chatColor = GameAPI.getGamePlayer(player1).getPlayerAlignment().getAlignmentColor();
-            if (Rank.isGM(player1)) {
+            if (Rank.isTrialGM(player1)) {
                 chatColor = ChatColor.AQUA;
             }
             String guild = "";

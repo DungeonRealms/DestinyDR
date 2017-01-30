@@ -134,6 +134,10 @@ public class Rank {
     public static boolean isGMRank(String rank){
         return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
+
+    public static boolean isTrialGMRank(String rank){
+        return rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+    }
     /**
      * Returns true if the user has the rank "dev" or "support".
      *

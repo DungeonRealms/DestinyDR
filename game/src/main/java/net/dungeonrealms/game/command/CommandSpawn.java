@@ -19,7 +19,7 @@ public class CommandSpawn extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player) || !Rank.isGM((Player) sender)) {
+        if (!(sender instanceof Player) || !Rank.isTrialGM((Player) sender)) {
             return false;
         }
 
