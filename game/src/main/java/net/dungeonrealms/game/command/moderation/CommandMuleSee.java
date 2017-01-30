@@ -8,6 +8,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -68,6 +69,8 @@ public class CommandMuleSee extends BaseCommand {
 
                 String inventoryData = !isPlaying && foundUUID ? (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, p_uuid) : null;
 
+                int muleLevel = !isPlaying && foundUUID ? Math.min(3, (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, p_uuid)) : 1;
+                MuleTier tier = MuleTier.getByTier(muleLevel);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
                     if (!foundUUID) {
@@ -83,9 +86,20 @@ public class CommandMuleSee extends BaseCommand {
                         return;
                     }
 
+
                     Inventory inv;
-                    if (inventoryData != null && inventoryData.length() > 0 && !inventoryData.equalsIgnoreCase("null")) {
-                        inv = ItemSerialization.fromString(inventoryData);
+                    if (inventoryData != null && inventoryData.length() > 0 && (!inventoryData.equalsIgnoreCase("null") &&
+                            !inventoryData.equalsIgnoreCase("empty")) && tier != null) {
+                        try {
+                            inv = ItemSerialization.fromString(inventoryData, tier.getSize());
+                        } catch (Exception e) {
+                            sender.sendMessage(ChatColor.RED + "Fatal Error trying to decode " + playerName + "'s Mule Inventory, Tier: " + tier);
+                            Bukkit.getLogger().info("Encoded Inventory: " + inventoryData);
+                            return;
+                        }
+                    } else if (tier == null) {
+                        sender.sendMessage(ChatColor.RED + "Unable to get mule tier with Mule Level: " + muleLevel);
+                        return;
                     } else {
                         sender.sendMessage(ChatColor.RED + "That player's mule storage is empty.");
                         return;
