@@ -43,7 +43,8 @@ public class Trade {
      * Opens Trade Window
      */
     private void openInventory() {
-        inv = Bukkit.createInventory(null, 36, generateTitle(p1.getName(), p2.getName()));
+//        inv = Bukkit.createInventory(null, 36, generateTitle(p1.getName(), p2.getName()));
+        inv = Bukkit.createInventory(null, 36, "Trade Window");
         if (!p1.isOnline() || p1 == null || !p2.isOnline() || p2 == null) {
             TradeManager.trades.remove(this);
             return;

@@ -7,7 +7,6 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.dungeonrealms.game.command.CommandModeration;
 import net.dungeonrealms.game.command.moderation.CommandArmorsee;
 import net.dungeonrealms.game.command.moderation.CommandBanksee;
 import net.dungeonrealms.game.command.moderation.CommandBinsee;
@@ -361,7 +360,8 @@ public class InventoryListener implements Listener {
         if (event.getInventory().getTitle().contains("Storage Chest") && !CommandBanksee.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             storage.inv.setContents(event.getInventory().getContents());
-        } else if (event.getInventory().getTitle().contains(p.getName())) {
+        } else if (event.getInventory().getTitle().contains("Trade Window")) {
+//        } else if (event.getInventory().getTitle().startsWith(p.getName()) || event.getInventory().getTitle().endsWith(p.getName())) {
             Trade t = TradeManager.getTrade(p.getUniqueId());
             if (t != null)
                 if (!t.p1Ready || !t.p2Ready) {
@@ -420,10 +420,16 @@ public class InventoryListener implements Listener {
      * @since 1.0 handles Trading inventory items.
      */
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onTradeInvClicked(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.getInventory().getTitle().contains(player.getName())) {
+
+//        System.out.println("---------");
+//        System.out.println("First trade click: " + event.getSlot() + " From " + event.getInventory().getName() + " Slot: " + event.getRawSlot() + " Current: " + event.getCurrentItem() + " Cursor: " + event.getCursor());
+//        if (event.getInventory().getTitle().contains(player.getName())) {
+        if (event.getInventory().getTitle().contains("Trade Window")) {
+//            System.out.println("Second Trade click: " + player.getName() + " Time: " + System.currentTimeMillis() + " Type: " + event.getClick() + " Slot : " + event.getRawSlot());
+
             //Dont allow these click types.
             if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR || event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
                 event.setCancelled(true);
@@ -437,9 +443,24 @@ public class InventoryListener implements Listener {
             if (trade == null) {
                 return;
             }
+            int slot = event.getRawSlot();
 
-            if (event.getCurrentItem() == null)
+            if (trade.isLeftSlot(slot)) {
+                if (!trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
+                    event.setCancelled(true);
+                    return;
+                }
+            } else if (trade.isRightSlot(slot)) {
+
+                if (trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
+            if (event.getCurrentItem() == null) {
                 return;
+            }
 
             if (!GameAPI.isItemTradeable(event.getCurrentItem()) || !GameAPI.isItemDroppable(event.getCurrentItem())) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
@@ -472,29 +493,18 @@ public class InventoryListener implements Listener {
                 }
             }
 
-            int slot = event.getRawSlot();
-            if (slot >= 36)
-                return;
 
             if (event.getCurrentItem().getType() == Material.STAINED_GLASS_PANE) {
                 event.setCancelled(true);
                 return;
             }
-
-            if (trade.isLeftSlot(slot)) {
-                if (!trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
-                    event.setCancelled(true);
-                    return;
-                }
-            } else if (trade.isRightSlot(slot)) {
-                if (trade.isLeftPlayer(event.getWhoClicked().getUniqueId())) {
-                    event.setCancelled(true);
-                    return;
-                }
+            if (slot >= 36) {
+                return;
+            }
+            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+                return;
             }
 
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
-                return;
             ItemStack stackClicked = event.getCurrentItem();
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
             if (nms.hasTag() && nms.getTag().hasKey("status")) {
@@ -531,6 +541,7 @@ public class InventoryListener implements Listener {
             trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
             trade.changeReady();
         }
+
     }
 
     @SuppressWarnings("deprecation")
