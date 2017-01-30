@@ -27,7 +27,7 @@ public class CommandInvoke extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-        if (!Rank.isGM(player)) {
+        if (!Rank.isTrialGM(player)) {
             return false;
         }
         if (args.length > 0) {

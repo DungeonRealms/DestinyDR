@@ -28,7 +28,7 @@ public class CommandRealmWipe extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (!Rank.isGM(player)) return false;
+            if (!Rank.isTrialGM(player)) return false;
         }
 
         if (args.length == 0) {

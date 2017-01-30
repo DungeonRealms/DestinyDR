@@ -87,7 +87,7 @@ public class ShopListener implements Listener {
             return;
         }
 
-        if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer()) || shop.isopen) {
+        if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isTrialGM(event.getPlayer()) || shop.isopen) {
             p.openInventory(shop.getInventory());
             p.playSound(event.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
             p.setCanPickupItems(false);
@@ -163,7 +163,7 @@ public class ShopListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString()) || Rank.isGM(clicker)) {
+        if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString()) || Rank.isTrialGM(clicker)) {
             // Owner is Clicking
             if (event.getRawSlot() == (shop.getInvSize() - 1)) {
                 event.setCancelled(true);

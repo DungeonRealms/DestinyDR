@@ -23,7 +23,7 @@ public class CommandList extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender commandSender, Command cmd, String string, String[] args) {
 
-        if (commandSender instanceof Player && !Rank.isGM((Player) commandSender))
+        if (commandSender instanceof Player && !Rank.isTrialGM((Player) commandSender))
             return false;
 
         if (args.length > 0 && (args[0].equals("-h") || args[0].equals("-help"))) {
@@ -69,7 +69,7 @@ public class CommandList extends BaseCommand {
         if (players.length() > 0) {
             commandSender.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + searchName + " Online: " + ChatColor.LIGHT_PURPLE + onlinePlayers + ChatColor.GRAY + "/" + ChatColor.LIGHT_PURPLE + Bukkit.getMaxPlayers());
             // If the user is a player we want to send the JSONMessage to them so that they can use the added teleport functionality.
-            if ((commandSender instanceof Player) && Rank.isGM((Player) commandSender)) {
+            if ((commandSender instanceof Player) && Rank.isTrialGM((Player) commandSender)) {
                 message.sendToPlayer((Player) commandSender);
             } else {
                 commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + players.toString() + ChatColor.GRAY + "]");

@@ -59,7 +59,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             String shardID = ShardInfo.getByPseudoName(bungeeName).getShardID();
 
             // Do not show YT / CS shards unless they've got the appropriate permission to see them.
-            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isGM(player)))
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("CS") && !Rank.isSupport(player)) || (shardID.equalsIgnoreCase("US-0") && !Rank.isTrialGM(player)))
                 continue;
 
             GUIButton button = new GUIButton(getShardItem(shardID)) {
@@ -107,7 +107,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
 
                     final Location startingLocation = player.getLocation();
 
-                    if (GameAPI.isInSafeRegion(startingLocation) || Rank.isGM(player)) {
+                    if (GameAPI.isInSafeRegion(startingLocation) || Rank.isTrialGM(player)) {
                         GameAPI.moveToShard(player, bungeeName);
                         return;
                     }
@@ -282,7 +282,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
 
         long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
 
-        if (lastShardTransfer != 0 && !Rank.isGM(player)) {
+        if (lastShardTransfer != 0 && !Rank.isTrialGM(player)) {
             if (GameAPI.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 30000) {
                 player.sendMessage(ChatColor.RED + "You must wait 30 seconds before you can transfer between shards.");
                 return;

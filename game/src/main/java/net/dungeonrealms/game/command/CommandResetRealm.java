@@ -36,7 +36,7 @@ public class CommandResetRealm extends BaseCommand {
 
         long lastReset = (long) DatabaseAPI.getInstance().getData(EnumData.REALM_LAST_RESET, player.getUniqueId());
 
-        if (lastReset != 0 && !Rank.isGM(player)) {
+        if (lastReset != 0 && !Rank.isTrialGM(player)) {
             player.sendMessage(ChatColor.RED + "You may only reset your realm " + ChatColor.UNDERLINE + "ONCE" + ChatColor.RED + " per hour.");
             return true;
         }

@@ -17,11 +17,14 @@ public class CommandTestRank extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		Player p = (Player)sender;
 
-		// This command can only be executed from US-0 or if the player is an OP on a live shard.
-		if (!DungeonRealms.getInstance().isMasterShard && !p.isOp()) return false;
+		// This command can only be executed from US-0.
+		if (!DungeonRealms.getInstance().isMasterShard)
+			return false;
 
 		p.sendMessage("Developer: " + Rank.isDev(p));
+		p.sendMessage("Head Game Master: " + Rank.isHeadGM(p));
 		p.sendMessage("Game Master: " + Rank.isGM(p));
+		p.sendMessage("Trial Game Master: " + Rank.isTrialGM(p));
 		p.sendMessage("Support Agent: " + Rank.isSupport(p));
 		p.sendMessage("Player Moderator: " + Rank.isPMOD(p));
 		p.sendMessage("YouTuber: " + Rank.isYouTuber(p));

@@ -80,7 +80,7 @@ public class CommandBan extends BaseCommand {
             }
 
             if (sender instanceof Player)
-                if (!Rank.isGM((Player) sender) && Rank.isPMOD((Player) sender)) {
+                if (!Rank.isTrialGM((Player) sender) && Rank.isPMOD((Player) sender)) {
                 	
                     if(PunishAPI.isBanned(p_uuid)){
                     	sender.sendMessage(ChatColor.RED + "This player is already banned.");
@@ -99,7 +99,7 @@ public class CommandBan extends BaseCommand {
                 }
 
             if (Rank.isPMOD(Bukkit.getOfflinePlayer(p_uuid))) {
-                if (sender instanceof Player && !Rank.isGM((Player) sender)) {
+                if (sender instanceof Player && !Rank.isTrialGM((Player) sender)) {
                     sender.sendMessage(ChatColor.RED + "You cannot ban that player.");
                     return;
                 }

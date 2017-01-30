@@ -26,7 +26,7 @@ public class CommandModeration extends BaseCommand {
         if (s instanceof ConsoleCommandSender) return false;
         Player sender = (Player) s;
 
-        if (!Rank.isGM(sender)) return false;
+        if (!Rank.isTrialGM(sender)) return false;
 
         if (args.length == 0) {
             s.sendMessage(usage);
@@ -42,14 +42,6 @@ public class CommandModeration extends BaseCommand {
                     sender.sendMessage("Teleported to " + player.getName());
                 } else
                     sender.sendMessage(ChatColor.RED + playerName + " not online");
-                break;
-            case "armorsee":
-            case "banksee":
-            case "binsee":
-            case "gemsee":
-            case "invsee":
-                sender.sendMessage(ChatColor.RED + "Please use " + ChatColor.BOLD + ChatColor.UNDERLINE +
-                        "/" + args[0].toLowerCase() + ChatColor.RED + " instead.");
                 break;
         }
         return false;

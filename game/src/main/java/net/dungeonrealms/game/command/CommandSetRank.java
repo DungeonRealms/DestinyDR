@@ -30,7 +30,7 @@ public class CommandSetRank extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (!(sender instanceof ConsoleCommandSender) && !(Rank.isGM((Player) sender))) return false;
 
-        String[] ranks = new String[] { "DEV", "HEADGM", "GM", "PMOD", "SUPPORT", "YOUTUBE", "BUILDER", "SUB++", "SUB+", "SUB", "DEFAULT" };
+        String[] ranks = new String[] { "DEV", "HEADGM", "GM", "TRIALGM", "PMOD", "SUPPORT", "YOUTUBE", "BUILDER", "SUB++", "SUB+", "SUB", "DEFAULT" };
 
         // If the user isn't a dev and they're at this point, it means they're a GM.
         // We can't allow for SUB ranks because they need more technical execution & that's for a support agent.
@@ -40,7 +40,7 @@ public class CommandSetRank extends BaseCommand {
         boolean isHeadGM = false;
         if (!(sender instanceof ConsoleCommandSender) && !(Rank.isDev((Player) sender))) {
             if (Rank.isHeadGM((Player) sender)) {
-                ranks = new String[] { "GM", "PMOD", "BUILDER", "DEFAULT" };
+                ranks = new String[] { "GM", "TRIALGM", "PMOD", "BUILDER", "DEFAULT" };
                 isHeadGM = true;
             } else {
                 ranks = new String[] { "PMOD", "DEFAULT" };
@@ -54,10 +54,10 @@ public class CommandSetRank extends BaseCommand {
                 String rank = args[1].toUpperCase();
 
                 // Check for any ranks that cannot be revoked by a GM.
-                // DEV | GM | SUPPORT | YOUTUBE
+                // DEV | HEADM | GM | SUPPORT | YOUTUBE
                 if (isGM) {
                     String currentRank = Rank.getInstance().getRank(uuid).toUpperCase();
-                    if (currentRank.equals("DEV") || (currentRank.equals("GM") && !isHeadGM) || currentRank.equals("SUPPORT") || currentRank.equals("YOUTUBE")) {
+                    if (currentRank.equals("DEV") || currentRank.equals("HEADGM") || (currentRank.equals("GM") && !isHeadGM) || currentRank.equals("SUPPORT") || currentRank.equals("YOUTUBE")) {
                         sender.sendMessage(ChatColor.RED + "You can't change the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.RED + " as they're a " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank + ChatColor.RED + ".");
                         return false;
                     }

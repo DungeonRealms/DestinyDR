@@ -109,6 +109,7 @@ public final class GameChat {
         switch (rank.toLowerCase()) {
             case "headgm":
             case "gm":
+            case "trialgm":
             case "dev":
                 return ChatColor.AQUA + name + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
             case "default":
@@ -129,6 +130,7 @@ public final class GameChat {
         switch (rank.toLowerCase()) {
             case "headgm":
             case "gm":
+            case "trialgm":
             case "dev":
                 return ChatColor.AQUA + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
 
@@ -160,6 +162,7 @@ public final class GameChat {
                 return DEV;
             case "headgm":
             case "gm":
+            case "trialgm":
                 return GM;
             case "support":
                 return SUPPORT;

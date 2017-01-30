@@ -48,7 +48,7 @@ public class DupedItemsRemover implements GenericMechanic {
                 if (infoDoc == null) return;
 
                 final String rank = doc.get("rank", Document.class).get("rank", String.class);
-                if (rank.equalsIgnoreCase("GM") || rank.equalsIgnoreCase("DEV") || rank.equalsIgnoreCase("HEADGM"))
+                if (rank.equalsIgnoreCase("GM") || rank.equalsIgnoreCase("DEV") || rank.equalsIgnoreCase("HEADGM") || rank.equalsIgnoreCase("TRIALGM"))
                     return;
 
                 String name = infoDoc.get("username", String.class);

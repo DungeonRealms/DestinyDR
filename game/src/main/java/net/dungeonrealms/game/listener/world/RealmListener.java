@@ -274,7 +274,7 @@ public class RealmListener implements Listener {
 
                 Location loc = realm.getPortalLocation().clone().add(0, 1, 0);
 
-                if (Rank.isGM(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
+                if (Rank.isTrialGM(Bukkit.getPlayer(realm.getOwner())) && !DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
                     createDoubleHelix(loc);
                 else if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(Bukkit.getPlayer(realm.getOwner())))
                     DonationEffects.getInstance().spawnPlayerParticleEffects(loc);
@@ -362,7 +362,7 @@ public class RealmListener implements Listener {
         if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
-        if (!p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString()) && !Rank.isGM(p)) {
+        if (!p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString()) && !Rank.isTrialGM(p)) {
             // Trying to use in a realm that isn't theirs.
             if (tag.getString("orb").equalsIgnoreCase("flight"))
                 p.sendMessage(ChatColor.RED + "You may only use an " + ChatColor.UNDERLINE + "Orb of Flight" + ChatColor.RED + " in your OWN realm.");
@@ -455,7 +455,7 @@ public class RealmListener implements Listener {
         }
 
         int maxDistance = 150;
-        if (!(Rank.isGM(p)))
+        if (!(Rank.isTrialGM(p)))
             if (to.getZ() >= maxDistance || to.getZ() <= -maxDistance || to.getX() >= maxDistance || to.getX() <= -maxDistance) {
                 Location newTo = event.getFrom();
                 newTo.setPitch(event.getTo().getPitch());
@@ -486,7 +486,7 @@ public class RealmListener implements Listener {
                 return;
             }
 
-        if (!realm.getOwner().equals(p.getUniqueId()) && !realm.getBuilders().contains(p.getUniqueId()) && !Rank.isGM(p)) {
+        if (!realm.getOwner().equals(p.getUniqueId()) && !realm.getBuilders().contains(p.getUniqueId()) && !Rank.isTrialGM(p)) {
             p.sendMessage(ChatColor.RED + "You aren't authorized to build in " + Bukkit.getPlayer(realm.getOwner()).getName() + "'s realm.");
             p.sendMessage(ChatColor.GRAY + Bukkit.getPlayer(realm.getOwner()).getName() + " will have to " + ChatColor.UNDERLINE + "Sneak Left Click" + ChatColor.GRAY +
                     " you with their Realm Portal Rune to add you to their builder list.");
@@ -503,7 +503,7 @@ public class RealmListener implements Listener {
         if (realm == null) return;
 
         if (event.getClickedBlock().getType().equals(Material.PORTAL) && realm.getOwner().equals(event.getPlayer().getUniqueId()) ||
-                Rank.isGM(event.getPlayer())) {
+                Rank.isTrialGM(event.getPlayer())) {
             REALMS.closeRealmPortal(realm.getOwner(), true, "");
             event.setCancelled(true);
         }
@@ -532,7 +532,7 @@ public class RealmListener implements Listener {
 
         int max_y = 128;
         Block b = e.getBlock();
-        if (!(Rank.isGM(p)))
+        if (!(Rank.isTrialGM(p)))
             if (Math.round(b.getX() - 0.5) > max_size || Math.round(b.getX() - 0.5) < 16 || Math.round(b.getZ() - 0.5) > max_size
                     || Math.round(b.getZ() - 0.5) < 16 || (b.getY() > (max_y + (max_size) + 1)) || (b.getY() < (max_y - (max_size) - 1))) {
                 e.setCancelled(true);
@@ -540,7 +540,7 @@ public class RealmListener implements Listener {
                 return;
             }
 
-        if (!Rank.isGM(p) && (e.getBlock().getType() == Material.TRAPPED_CHEST || e.getBlock().getType() == Material.GOLD_BLOCK)) {
+        if (!Rank.isTrialGM(p) && (e.getBlock().getType() == Material.TRAPPED_CHEST || e.getBlock().getType() == Material.GOLD_BLOCK)) {
             if (e.getBlock().getType() == Material.TRAPPED_CHEST) {
                 p.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " place this "
                         + e.getBlock().getType().name().toUpperCase() + " as it is an illegal item.");
@@ -551,7 +551,7 @@ public class RealmListener implements Listener {
         }
 
 
-        if (!realm.getOwner().equals(p.getUniqueId()) && !realm.getBuilders().contains(p.getUniqueId()) && !Rank.isGM(p)) {
+        if (!realm.getOwner().equals(p.getUniqueId()) && !realm.getBuilders().contains(p.getUniqueId()) && !Rank.isTrialGM(p)) {
             p.sendMessage(ChatColor.RED + "You aren't authorized to build in " + Bukkit.getPlayer(realm.getOwner()).getName() + "'s realm.");
             p.sendMessage(ChatColor.GRAY + Bukkit.getPlayer(realm.getOwner()).getName() + " will have to " + ChatColor.UNDERLINE + "Sneak Left Click" + ChatColor.GRAY +
                     " you with their Realm Portal Rune to add you to their builder list.");
@@ -643,7 +643,7 @@ public class RealmListener implements Listener {
         if (realm == null) return;
 
 
-        if (!realm.getOwner().equals(p.getUniqueId()) && !realm.getBuilders().contains(p.getUniqueId()) && !Rank.isGM(p)) {
+        if (!realm.getOwner().equals(p.getUniqueId()) && !realm.getBuilders().contains(p.getUniqueId()) && !Rank.isTrialGM(p)) {
             p.sendMessage(ChatColor.RED + "You aren't authorized to build in " + Bukkit.getPlayer(realm.getOwner()).getName() + "'s realm.");
             p.sendMessage(ChatColor.GRAY + Bukkit.getPlayer(realm.getOwner()).getName() + " will have to " + ChatColor.UNDERLINE + "Sneak Left Click" + ChatColor.GRAY +
                     " you with their Realm Portal Rune to add you to their builder list.");

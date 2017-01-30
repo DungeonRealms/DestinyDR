@@ -21,7 +21,7 @@ public class CommandHead extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (!(sender instanceof Player) || !Rank.isGM((Player) sender)) return false;
+        if (!(sender instanceof Player) || !Rank.isTrialGM((Player) sender)) return false;
         Player player = (Player) sender;
         if (args.length == 0) {
             player.sendMessage(ChatColor.RED + "Invalid usage! /head <name>");

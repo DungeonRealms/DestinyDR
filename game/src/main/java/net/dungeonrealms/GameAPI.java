@@ -1007,7 +1007,7 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
 
         // Hide invisible users from non-GMs.
-        if (!Rank.isGM(player)) GameAPI._hiddenPlayers.forEach(player::hidePlayer);
+        if (!Rank.isTrialGM(player)) GameAPI._hiddenPlayers.forEach(player::hidePlayer);
 
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.
@@ -1158,7 +1158,7 @@ public class GameAPI {
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFECTED);
         }
 
-        if (Rank.isGM(player)) {
+        if (Rank.isTrialGM(player)) {
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GAME_MASTER);
         }
 
@@ -1254,19 +1254,21 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
         }
 
-        if (Rank.isGM(player)) {
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
-
+        if (Rank.isTrialGM(player)) {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
 
-            //Don't think these will work as they default to Operators in MC.
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
+            // GM Exclusive Permissions
+            if (Rank.isGM(player)) {
+                player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
+                player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
+                player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
+
+                player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
+                player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
+                player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
+                player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
+            }
         }
 
         // calculate attributes and check inventory
@@ -1287,7 +1289,7 @@ public class GameAPI {
             }, 100);
         }
 
-        if (Rank.isGM(player)) {
+        if (Rank.isTrialGM(player)) {
             HealthHandler.getInstance().setPlayerMaxHPLive(player, 10000);
             HealthHandler.getInstance().setPlayerHPLive(player, 10000);
 

@@ -24,7 +24,7 @@ public class TabCompleteCommands implements Listener {
             public void onPacketReceiving(PacketEvent event) {
                 if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
                     // Allow GMs/OPs/DEVs to access tab completion.
-                    if (Rank.isGM(event.getPlayer())) return;
+                    if (Rank.isTrialGM(event.getPlayer())) return;
 
                     PacketContainer packet = event.getPacket();
                     String message = (packet.getSpecificModifier(String.class).read(0)).toLowerCase();

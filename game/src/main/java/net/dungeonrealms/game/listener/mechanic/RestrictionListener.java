@@ -201,7 +201,7 @@ public class RestrictionListener implements Listener {
             return;
         }
 
-        if (!Rank.isGM(event.getPlayer()) && !event.getPlayer().isOp())
+        if (!Rank.isTrialGM(event.getPlayer()) && !event.getPlayer().isOp())
             ANTI_COMMAND_SPAM.submitCooldown(event.getPlayer(), 5000L);
 
         if ((command.toLowerCase().startsWith("/me") || command.toLowerCase().startsWith("/minecraft:me")) && !Rank.isDev(event.getPlayer()))
@@ -235,7 +235,7 @@ public class RestrictionListener implements Listener {
 
         if(event.getEntity().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName())){
             //Dont let them
-            if(!Rank.isGM(((Player)event.getRemover()))){
+            if(!Rank.isTrialGM(((Player)event.getRemover()))){
                 event.setCancelled(true);
             }
         }

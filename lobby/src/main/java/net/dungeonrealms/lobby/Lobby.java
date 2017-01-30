@@ -112,7 +112,7 @@ public class Lobby extends JavaPlugin implements Listener {
             player.getInventory().setItem(0, getShardSelector());
 
             ghostFactory.addPlayer(player);
-            ghostFactory.setGhost(player, !Rank.isGM(player) && !Rank.isSubscriber(player));
+            ghostFactory.setGhost(player, !Rank.isPMOD(player) && !Rank.isSubscriber(player));
         });
     }
 

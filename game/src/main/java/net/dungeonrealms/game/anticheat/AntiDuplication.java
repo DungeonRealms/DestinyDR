@@ -145,7 +145,7 @@ public class AntiDuplication implements GenericMechanic {
      * Oh nice job lads, yes amazing, this is the most retarded thing I've ever seen. congrats.
      */
     public static void checkForSuspiciousDupedItems(Player player, final Set<Inventory> inventories) {
-        if (Rank.isGM(player)) return;
+        if (Rank.isTrialGM(player)) return;
         if (EXCLUSIONS.contains(player.getUniqueId())) return;
 
         HashMultimap<Inventory, Tuple<ItemStack, String>> gearUids = HashMultimap.create();

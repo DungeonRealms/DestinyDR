@@ -47,7 +47,7 @@ public class CommandSuicide extends BaseCommand {
             return true;
         }
 
-        if (!COOLDOWN.isCooldown(p.getUniqueId()) && Rank.isGM(p)) {
+        if (!COOLDOWN.isCooldown(p.getUniqueId()) && Rank.isTrialGM(p)) {
             p.sendMessage(ChatColor.RED + "You cannot commit suicide at the moment.");
             return true;
         }

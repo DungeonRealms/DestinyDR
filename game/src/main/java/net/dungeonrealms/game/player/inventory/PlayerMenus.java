@@ -755,7 +755,7 @@ public class PlayerMenus {
      * @param player
      */
     public static void openGameMasterTogglesMenu(Player player) {
-        if (!Rank.isGM(player)) return;
+        if (!Rank.isTrialGM(player)) return;
         boolean isToggled = false;
 
         Inventory inv = Bukkit.createInventory(null, 9, "Game Master Toggles");

@@ -46,7 +46,6 @@ public class CommandISay extends BaseCommand {
         message = message.replaceAll("&s", ChatColor.BOLD.toString());
         message = message.replaceAll("&i", ChatColor.ITALIC.toString());
         message = message.replaceAll("&m", ChatColor.MAGIC.toString());
-        //This is autistic. Whoever placed the command blocks with these incorrect color codes should be banned.
 
         if (commandSender instanceof Player) {
             if (!Rank.isGM((Player) commandSender)) {

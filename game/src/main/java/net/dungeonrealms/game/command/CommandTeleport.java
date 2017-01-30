@@ -19,7 +19,7 @@ public class CommandTeleport extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (!(sender instanceof Player) || !Rank.isGM((Player) sender)) return false;
+        if (!(sender instanceof Player) || !Rank.isTrialGM((Player) sender)) return false;
 
         Player player = (Player) sender;
 

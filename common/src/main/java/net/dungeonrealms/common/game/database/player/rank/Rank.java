@@ -110,7 +110,7 @@ public class Rank {
     }
 
     /**
-     * Returns true if the user has the rank "dev" or "gm". Opped players are also considered a GM.
+     * Returns true if the user has the rank "dev" or "gm".
      *
      * @param player
      * @return boolean
@@ -118,6 +118,17 @@ public class Rank {
     public static boolean isGM(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return isGMRank(rank);
+    }
+
+    /**
+     * Return true if the user is a Trial GM or higher.
+     *
+     * @param player
+     * @return
+     */
+    public static boolean isTrialGM(OfflinePlayer player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId());
+        return rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
     public static boolean isGMRank(String rank){
@@ -142,7 +153,7 @@ public class Rank {
      */
     public static boolean isPMOD(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
     /**
@@ -153,7 +164,7 @@ public class Rank {
      */
     public static boolean isYouTuber(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+        return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
 
     /**

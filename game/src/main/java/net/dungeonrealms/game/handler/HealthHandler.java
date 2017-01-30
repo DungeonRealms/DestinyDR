@@ -92,7 +92,7 @@ public class HealthHandler implements GenericMechanic {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             setPlayerMaxHPLive(player, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_POINTS, player) + 50);
             int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
-            if (Rank.isGM(player)) {
+            if (Rank.isTrialGM(player)) {
                 setPlayerHPLive(player, 10000);
             } else if (hp > 0) {
                 if (hp > getPlayerMaxHPLive(player)) {
@@ -525,7 +525,7 @@ public class HealthHandler implements GenericMechanic {
                     leAttacker.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the Gods.");
 
                     // User isn't a GM, let's alert the GMs about this violation.
-                    if (!Rank.isGM((Player) leAttacker)) {
+                    if (!Rank.isTrialGM((Player) leAttacker)) {
                         GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
                                 ChatColor.WHITE + "Destroyed illegal weapon (" + damage + " ) from " + leAttacker.getName() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
                     }
@@ -851,7 +851,7 @@ public class HealthHandler implements GenericMechanic {
             attacker.sendMessage(ChatColor.YELLOW + "The weapon you posses is not of this world and has been returned to the Gods.");
 
             // User isn't a GM, let's alert the GMs about this violation.
-            if (!Rank.isGM((Player) attacker)) {
+            if (!Rank.isTrialGM((Player) attacker)) {
                 GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
                         ChatColor.WHITE + "Destroyed illegal weapon (" + damage + " ) from " + attacker.getName() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
             }

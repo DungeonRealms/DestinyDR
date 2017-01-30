@@ -87,7 +87,7 @@ public class EnergyHandler implements GenericMechanic {
         }
         player.setFoodLevel(foodLevel);
         if (foodLevel <= 0) {
-            if (Rank.isGM(player) || player.getGameMode() == GameMode.CREATIVE) {
+            if (Rank.isTrialGM(player) || player.getGameMode() == GameMode.CREATIVE) {
                 return;
             }
             if (!(player.hasMetadata("starving"))) {
@@ -231,7 +231,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove, boolean duel) {
         Player player = Bukkit.getPlayer(uuid);
-        if (Rank.isGM(player)) {
+        if (Rank.isTrialGM(player)) {
             GamePlayer gp = GameAPI.getGamePlayer(player);
             // check if they have allow fight on
             if (gp != null && gp.isInvulnerable() && !gp.isTargettable()) return;

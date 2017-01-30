@@ -22,7 +22,7 @@ public class CommandWhois extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender instanceof Player && !Rank.isGM((Player) sender)) return true;
+        if (sender instanceof Player && !Rank.isTrialGM((Player) sender)) return true;
         String p_name = args[0];
 
         if (args.length != 1) {

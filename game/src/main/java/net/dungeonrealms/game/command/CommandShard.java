@@ -34,7 +34,7 @@ public class CommandShard extends BaseCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        if (args.length == 0 || !Rank.isGM(player)) {
+        if (args.length == 0 || !Rank.isTrialGM(player)) {
 
             submitAsyncCallback(() -> new ShardSwitcher(player), menu -> {
                 try {

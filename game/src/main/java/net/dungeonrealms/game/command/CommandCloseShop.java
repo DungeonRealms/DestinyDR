@@ -31,7 +31,7 @@ public class CommandCloseShop extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
 
-        if (args.length == 1 && (commandSender instanceof Player && Rank.isGM((Player) commandSender))) {
+        if (args.length == 1 && (commandSender instanceof Player && Rank.isTrialGM((Player) commandSender))) {
             String playerName = args[0];
             if (!isPlayer(playerName)) {
                 commandSender.sendMessage(ChatColor.RED + "Player does not exist in our database");

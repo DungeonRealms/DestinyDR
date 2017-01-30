@@ -78,7 +78,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
         GameAPI._hiddenPlayers.stream().filter(player -> player != null).forEach(player -> {
             for (Player player1 : Bukkit.getOnlinePlayers()) {
                 // GMs can see hidden players whereas non-GMs cannot.
-                if (player1.getUniqueId().toString().equals(player.getUniqueId().toString()) || Rank.isGM(player1)) {
+                if (player1.getUniqueId().toString().equals(player.getUniqueId().toString()) || Rank.isTrialGM(player1)) {
                     player1.showPlayer(player);
                 } else {
                     player1.hidePlayer(player);

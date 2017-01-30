@@ -29,7 +29,7 @@ public class CommandSessionID extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (Rank.isGM(player)) {
+            if (Rank.isTrialGM(player)) {
                 if (args.length == 1) {
                     UUID uuid = null;
                     try {
@@ -41,7 +41,7 @@ public class CommandSessionID extends BaseCommand {
                         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
                         sender.sendMessage(ChatColor.GREEN + "Fixed " + args[0] + "'s session ID.");
                     } else {
-                        sender.sendMessage(ChatColor.RED + "Player is not existent in the Mongo database");
+                        sender.sendMessage(ChatColor.RED + "The player could not be found, have they played Dungeon Realms before?");
                         return true;
                     }
                 }

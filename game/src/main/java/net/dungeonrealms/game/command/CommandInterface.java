@@ -28,7 +28,7 @@ public class CommandInterface extends BaseCommand {
 
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
-        if (!Rank.isGM(player)) return false;
+        if (!Rank.isTrialGM(player)) return false;
 
         if (args.length >= 1) {
 

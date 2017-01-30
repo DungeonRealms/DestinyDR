@@ -104,13 +104,13 @@ public class Chat {
             return;
         }
 
-        if (!FriendHandler.getInstance().areFriends(player, UUID.fromString(testUUID), document) && !Rank.isGM(player))
+        if (!FriendHandler.getInstance().areFriends(player, UUID.fromString(testUUID), document) && !Rank.isTrialGM(player))
             if (!(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, document)) {
                 player.sendMessage(ChatColor.RED + "This user is only accepting messages from friends.");
                 return;
             }
 
-        if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, document)) || (GameAPI.isPlayerHidden(document) && !Rank.isGM(player))) {
+        if (!((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, document)) || (GameAPI.isPlayerHidden(document) && !Rank.isTrialGM(player))) {
             player.sendMessage(ChatColor.RED + "That user is not currently online.");
             return;
         }
