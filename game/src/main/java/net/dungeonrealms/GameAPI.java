@@ -1242,9 +1242,25 @@ public class GameAPI {
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
 
         // Permissions
-        if (!player.isOp() && !Rank.isDev(player)) {
+        if (!Rank.isDev(player)) {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.plugins", false);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.version", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.ban.*", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.unban.*", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.op.*", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.save.*", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.whitelist.*", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.stop", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.spreadplayers", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.spawnpoint", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.setworldspawn", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.scoreboard", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.seed", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.time.*", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamerule", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.debug", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.reload", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.timings", false);
         }
 
         if (Rank.isPMOD(player)) {
@@ -1258,16 +1274,18 @@ public class GameAPI {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
 
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.kick", true);
+
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
+
             // GM Exclusive Permissions
             if (Rank.isGM(player)) {
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
                 player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
                 player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
 
                 player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
                 player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
             }
         }
 
