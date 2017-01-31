@@ -23,12 +23,14 @@ public class CommandWhois extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player && !Rank.isTrialGM((Player) sender)) return true;
-        String p_name = args[0];
 
-        if (args.length != 1) {
+        if (args.length == 0) {
             sender.sendMessage("Syntax. /whois <player>");
             return true;
         }
+        
+        String p_name = args[0];
+        
         if (DatabaseAPI.getInstance().getUUIDFromName(p_name).equals("")) {
             sender.sendMessage(ChatColor.RED + "Player " + p_name + " has never logged into DungeonRealms.");
             return false;
