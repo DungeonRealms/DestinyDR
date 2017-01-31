@@ -24,13 +24,10 @@ public class CommandClearChat extends BaseCommand {
         if (sender instanceof Player && !Rank.isGM((Player) sender)) return true;
 
         for (int i = 0; i < 100; i++)
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                p.sendMessage(" ");
-
-                if (i == 99)
-                    p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Chat cleared by " + GameChat.getFormattedName((Player) sender));
-            }
-
-        return false;
+        	Bukkit.broadcastMessage(" ");
+        
+        Bukkit.broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Chat cleared by " + GameChat.getFormattedName((Player) sender));
+        
+        return true;
     }
 }
