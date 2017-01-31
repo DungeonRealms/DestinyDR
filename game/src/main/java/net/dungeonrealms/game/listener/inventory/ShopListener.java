@@ -224,6 +224,14 @@ public class ShopListener implements Listener {
                             BankMechanics.shopPricing.remove(clicker.getName());
                             return;
                         }
+                        
+                        if(number >= Integer.MAX_VALUE / 64){
+                        	clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
+                        	clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                            BankMechanics.shopPricing.remove(clicker.getName());
+                        	return;
+                        }
+                        
                         if (number <= 0) {
                             clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
                             clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
@@ -300,7 +308,7 @@ public class ShopListener implements Listener {
 
                     if (stackInSlot == null || stackInSlot.getType() == Material.AIR) {
                         //Setting new Item in SHop
-                        if (itemHeld.getType() == Material.AIR || itemHeld.getType() == Material.EMERALD)
+                        if (itemHeld.getType() == Material.AIR)
                             return;
                         if (clicker.getInventory().firstEmpty() < 0) {
                             clicker.sendMessage(ChatColor.RED + "Make more room in your inventory");
@@ -538,6 +546,12 @@ public class ShopListener implements Listener {
                                 clicker.sendMessage(ChatColor.RED + "You cannot purchase a NON-POSITIVE number.");
                                 return;
                             }
+                            
+                            if(quantity > 64){
+                            	clicker.sendMessage(ChatColor.RED + "You cannot buy more than 64 items.");
+                            	return;
+                            }
+                            
                             if (quantity > itemClicked.getAmount()) {
                                 clicker.sendMessage(ChatColor.RED + "There are only [" + ChatColor.BOLD + itemClicked.getAmount() + ChatColor.RED + "] available.");
                                 return;
