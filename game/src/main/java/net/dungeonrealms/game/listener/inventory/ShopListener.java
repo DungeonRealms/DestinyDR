@@ -351,6 +351,14 @@ public class ShopListener implements Listener {
                                 BankMechanics.shopPricing.remove(clicker.getName());
                                 return;
                             }
+                            
+                            if(number >= Integer.MAX_VALUE / 64){
+                            	clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
+                            	clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                                BankMechanics.shopPricing.remove(clicker.getName());
+                            	return;
+                            }
+                            
                             if (number <= 0) {
                                 clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
                                 clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
@@ -447,6 +455,8 @@ public class ShopListener implements Listener {
                             clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
                             return;
                         }
+                        
+                        
                         int number = 0;
                         try {
                             number = Integer.parseInt(chat.getMessage());
@@ -454,6 +464,14 @@ public class ShopListener implements Listener {
                             chat.getPlayer().sendMessage(ChatColor.RED + "Please enter a valid number");
                             return;
                         }
+                        
+                        if(number >= Integer.MAX_VALUE / 64){
+                        	clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
+                        	clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                            BankMechanics.shopPricing.remove(clicker.getName());
+                        	return;
+                        }
+                        
                         if (number < 0) {
                             clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
                         } else {
