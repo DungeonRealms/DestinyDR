@@ -56,8 +56,8 @@ public class Constants {
         debug = false;
         DATABASE_URI = "mongodb://dungeonrealms:ACNZuQdvjDrzWSqV@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228";
         DEVELOPERS = new String[]{"Atlas__", "Bradez1571", "Kneesnap", "Nentify", "iFamasssxD"};
-        MOTD = "                   &6&lDUNGEON REALMS &r\n&lThe #1 Minecraft MMORPG &f&l- &adungeonrealms.net";
-        MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n&lThe #1 Minecraft MMORPG &f&l- &adungeonrealms.net";
+        MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
+        MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
         MIN_GAME_TIME = 14100000L;
         MAX_GAME_TIME = 21300000L;
         PLAYER_SLOTS = 1300;
