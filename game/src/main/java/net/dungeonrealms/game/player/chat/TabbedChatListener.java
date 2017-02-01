@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.player.chat;
 
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.game.player.json.JSONMessage;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,6 +30,12 @@ public class TabbedChatListener implements Listener {
 
         if (!Chat.checkGlobalCooldown(player)) {
             return;
+        }
+        
+        int index = e.getChatMessage().indexOf("/");
+        if(index > 0 && index < 3 && Rank.isTrialGM(e.getPlayer())){
+        	e.getPlayer().sendMessage(ChatColor.RED + "Woah there! You sure you want to send that in global?");
+        	return;
         }
 
         player.closeInventory(); // Closes the chat after it grabs it!
