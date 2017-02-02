@@ -66,7 +66,7 @@ public class Constants {
         NET_READ_BUFFER_SIZE = 16384;
         NET_WRITE_BUFFER_SIZE = 32768;
         BUILD_VERSION = "UNSTABLE BUILD";
-        BUILD_NUMBER = "#3.5";
+        BUILD_NUMBER = "#4";
         FTP_HOST_NAME = "167.114.65.102";
         FTP_USER_NAME = "dungeonrealms.53";
         FTP_PASSWORD = "BSmZWafwEk3QX7JTnF";

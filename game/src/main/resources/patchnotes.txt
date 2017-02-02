@@ -1,10 +1,8 @@
 Build <build>
 
 &8Changes&0
-- Add names back in Trade menu title
-- Added particles when trading
+- Added /ignore for private messages
+- Added Level Restrictions for gear usage
 
 &4Bug Fixes&0
-- Fix E-CASH not displaying correctly in realm shop
-- Fix gems turning into bank notes in realms
-- Fix Gem Pouch names missing colors
+- Fix regenerating HP in PVP Combat
