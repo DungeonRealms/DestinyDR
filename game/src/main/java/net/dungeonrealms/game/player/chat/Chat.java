@@ -90,8 +90,10 @@ public class Chat {
      * @param finalMessage
      */
     public static void sendPrivateMessage(Player player, String recipientName, String finalMessage) {
-        if (Bukkit.getPlayer(recipientName) != null && DatabaseAPI.getInstance().PLAYERS.containsKey(Bukkit.getPlayer(recipientName).getUniqueId())) {
-            sendPrivateMessage(player, recipientName, DatabaseAPI.getInstance().PLAYERS.get(Bukkit.getPlayer(recipientName).getUniqueId()), finalMessage);
+
+        Player recipient = Bukkit.getPlayer(recipientName);
+        if (recipient != null && DatabaseAPI.getInstance().PLAYERS.containsKey(recipient.getUniqueId())) {
+            sendPrivateMessage(player, recipientName, DatabaseAPI.getInstance().PLAYERS.get(recipient.getUniqueId()), finalMessage);
         } else
             DatabaseAPI.getInstance().retrieveDocumentFromUsername(recipientName, document -> sendPrivateMessage(player, recipientName, document, finalMessage));
     }
@@ -115,18 +117,26 @@ public class Chat {
             return;
         }
 
+        List<String> ignoredPlayers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.IGNORED, document);
+
+        boolean ignoringPlayer = ignoredPlayers != null && ignoredPlayers.contains(player.getUniqueId().toString());
+
         ShardInfo shard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, document));
 
         player.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getFormattedName
                 (recipientName) + ChatColor.GRAY + " [" + ChatColor.AQUA + shard.getShardID() + ChatColor.GRAY + "]: " +
                 ChatColor.WHITE + finalMessage);
 
-        GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
-                ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
-                .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
-                finalMessage));
+        if (!ignoringPlayer) {
+            GameAPI.sendNetworkMessage("PrivateMessage", player.getName(), recipientName, (ChatColor.GRAY.toString() +
+                    ChatColor.BOLD + "FROM " + GameChat.getFormattedName(player) + ChatColor.GRAY + " [" + ChatColor
+                    .AQUA + DungeonRealms.getInstance().shardid + ChatColor.GRAY + "]: " + ChatColor.WHITE +
+                    finalMessage));
 
-        GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
+            GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
+        }else{
+            Bukkit.getLogger().info("Supressing message from ignored player " + player.getName() + " to " + recipientName + " Message: " + finalMessage);
+        }
     }
 
     /**

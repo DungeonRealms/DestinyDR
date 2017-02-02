@@ -84,13 +84,13 @@ public class RestrictionListener implements Listener {
             case 1:
                 return 1;
             case 2:
-                return 10;
+                return 5;
             case 3:
-                return 20;
+                return 10;
             case 4:
-                return 30;
+                return 20;
             case 5:
-                return 40;
+                return 25;
         }
         return 1;
     }
@@ -98,7 +98,7 @@ public class RestrictionListener implements Listener {
     public static boolean canPlayerUseTier(Player p, int tier) {
         if (GameAPI.getGamePlayer(p) == null) return true;
         int level = GameAPI.getGamePlayer(p).getLevel();
-        return tier == 1 || tier == 2 && level >= 10 || tier == 3 && level >= 20 || tier == 4 && level >= 30 || tier == 5 && level >= 40;
+        return tier == 1 || tier == 2 && level >= 5 || tier == 3 && level >= 10 || tier == 4 && level >= 20 || tier == 5 && level >= 25;
     }
 
     private void checkForIllegalItems(Player p) {
@@ -331,20 +331,20 @@ public class RestrictionListener implements Listener {
 
         if (GameAPI.isWeapon(i)) {
             // Level restrictions on equipment removed on 7/18/16 Build#131
-            /*if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(i))) {
+            if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(i))) {
                 event.setCancelled(true);
                 p.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
                         + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(i)) + " to use this weapon.");
                 p.updateInventory();
                 return;
-            }*/
+            }
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.4F);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
-//        checkPlayersArmorIsValid((Player) event.getPlayer());
+        checkPlayersArmorIsValid((Player) event.getPlayer());
         checkForIllegalItems((Player) event.getPlayer());
 
         if(event.getInventory() instanceof MerchantInventory){
@@ -355,12 +355,13 @@ public class RestrictionListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
-//        checkPlayersArmorIsValid((Player) event.getPlayer());
+        checkPlayersArmorIsValid((Player) event.getPlayer());
         checkForIllegalItems((Player) event.getPlayer());
     }
 
     // Level restrictions on equipment removed on 7/18/16 Build#131
-    /*@EventHandler(priority = EventPriority.LOW)
+    //Level restrictions added back on 2/2/2017
+    @EventHandler(priority = EventPriority.LOW)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
@@ -376,7 +377,7 @@ public class RestrictionListener implements Listener {
                 }
             }
         }
-    }*/
+    }
 
     @EventHandler
     public void onBucket(PlayerBucketEmptyEvent event) {
@@ -423,14 +424,14 @@ public class RestrictionListener implements Listener {
         }
     }
 
-    /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void playerJoinEventDelayed(PlayerJoinEvent event) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (event.getPlayer() != null && event.getPlayer().isOnline()) {
                 checkPlayersArmorIsValid(event.getPlayer());
             }
         }, 150L);
-    }*/
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerOpenEmptyMap(PlayerInteractEvent event) {

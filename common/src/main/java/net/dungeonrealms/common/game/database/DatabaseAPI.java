@@ -447,6 +447,7 @@ public class DatabaseAPI {
                                 .append("currentLocation", "")
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
+                                .append("ignored", new ArrayList<>())
                                 .append("alignment", "lawful")
                                 .append("alignmentTime", 0)
                                 .append("guild", "")

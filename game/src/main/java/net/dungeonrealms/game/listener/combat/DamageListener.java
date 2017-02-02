@@ -13,6 +13,7 @@ import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -766,14 +767,14 @@ public class DamageListener implements Listener {
                 return;
             }
         }
-//        if (!RestrictionListener.canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand()))) {
-//            player.sendMessage(org.bukkit.ChatColor.RED + "You must to be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
-//                    + RestrictionListener.getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand())) + " to use this weapon.");
-//            event.setCancelled(true);
-//            event.setUseItemInHand(Event.Result.DENY);
-//            EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
-//            return;
-//        }
+        if (!RestrictionListener.canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand()))) {
+            player.sendMessage(org.bukkit.ChatColor.RED + "You must to be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
+                    + RestrictionListener.getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand())) + " to use this weapon.");
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
+            return;
+        }
 
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
             event.setCancelled(true);
@@ -1033,14 +1034,14 @@ public class DamageListener implements Listener {
             }
         }
 
-//        if (!RestrictionListener.canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(hand))) {
-//            player.sendMessage(org.bukkit.ChatColor.RED + "You must to be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
-//                    + RestrictionListener.getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(hand)) + " to use this weapon.");
-//            event.setCancelled(true);
-//            event.setUseItemInHand(Event.Result.DENY);
-//            EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
-//            return;
-//        }
+        if (!RestrictionListener.canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(hand))) {
+            player.sendMessage(org.bukkit.ChatColor.RED + "You must to be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
+                    + RestrictionListener.getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(hand)) + " to use this weapon.");
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
+            return;
+        }
 
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
             event.setCancelled(true);

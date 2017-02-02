@@ -89,11 +89,11 @@ public class Rank {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
         return rank.equalsIgnoreCase("dev") && Arrays.asList(Constants.DEVELOPERS).contains(player.getName());
     }
-    
+
     public static boolean isDev(CommandSender commandSender) {
 		return commandSender instanceof ConsoleCommandSender || (commandSender instanceof Player && Rank.isDev(((OfflinePlayer)commandSender)));
 	}
-    
+
     public static boolean isDev(Player player){//This is for legacy purposes.
     	return isDev((OfflinePlayer)player);
     }
@@ -157,9 +157,12 @@ public class Rank {
      */
     public static boolean isPMOD(OfflinePlayer player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+        return isAtleastPMOD(rank);
     }
 
+    public static boolean isAtleastPMOD(String rank){
+        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+    }
     /**
      * Returns true if the user has the rank "dev", "gm", "pmod" or "youtube".
      *

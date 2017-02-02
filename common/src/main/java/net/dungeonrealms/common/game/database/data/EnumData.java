@@ -22,6 +22,7 @@ public enum EnumData {
     HEARTHSTONE("info.hearthstone"),
     ECASH("info.ecash"),
     FRIENDS("info.friends"),
+    IGNORED("info.ignored"),
     ALIGNMENT("info.alignment"),
     ALIGNMENT_TIME("info.alignmentTime"),
     CURRENT_LOCATION("info.currentLocation"),

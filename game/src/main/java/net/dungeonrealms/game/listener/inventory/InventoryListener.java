@@ -224,7 +224,8 @@ public class InventoryListener implements Listener {
         Player player = event.getPlayer();
         if (!GameAPI.isArmor(event.getNewArmorPiece()) && !GameAPI.isArmor(event.getOldArmorPiece())) return;
         // Level restrictions on equipment removed on 7/18/16 Build#131
-        /*if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
+        // Level restrictions added back on 2/2/2017
+        if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
             if (playerLevel < a.getItemTier().getRangeValues()[0]) {
@@ -234,7 +235,7 @@ public class InventoryListener implements Listener {
                 player.updateInventory();
                 return;
             }
-        }*/
+        }
         if (!CombatLog.isInCombat(player)) {
             if (GameAPI.getGamePlayer(player) == null) {
                 return;

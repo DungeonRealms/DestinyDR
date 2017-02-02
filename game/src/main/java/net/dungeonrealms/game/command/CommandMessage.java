@@ -45,7 +45,7 @@ public class CommandMessage extends BaseCommand {
         }
         String finalMessage = message;
 
-        Chat.sendPrivateMessage(player, playerName, finalMessage);
+        Chat.sendPrivateMessage(player, playerName, finalMessage.trim());
         return true;
     }
 

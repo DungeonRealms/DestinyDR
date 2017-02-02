@@ -498,6 +498,7 @@ public class DungeonRealms extends JavaPlugin {
 
             cm.registerCommand(new FriendsCommand("friends", "/<command> [args]", "Open friends list!", Arrays.asList("buddy", "buddys")));
             cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
+            cm.registerCommand(new CommandIgnore());
         }
 
         // Commands exclusive to support agents on their special server.

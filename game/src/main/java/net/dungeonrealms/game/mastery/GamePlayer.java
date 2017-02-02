@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mastery;
 
+import io.netty.util.concurrent.CompleteFuture;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
@@ -31,8 +32,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -53,6 +57,9 @@ public class GamePlayer {
      */
     private Map<String, Integer[]> attributes;
     private Map<AttributeType, Float> attributeBonusesFromStats;
+
+    @Getter
+    private ArrayList<String> ignoredPlayers = new ArrayList<>();
     private boolean attributesLoaded;
     private String currentWeapon; // used so we only reload weapon stats when we need to.
 
@@ -85,6 +92,15 @@ public class GamePlayer {
         this.isStreamMode = false;
         this.lastMessager = null;
         this.pvpTaggedUntil = 0;
+
+//        CompletableFuture.
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            this.ignoredPlayers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.IGNORED, player.getUniqueId());
+            if (this.ignoredPlayers == null) this.ignoredPlayers = new ArrayList<>();
+
+            if (this.ignoredPlayers.size() > 0)
+                Bukkit.getLogger().info("Loaded " + this.ignoredPlayers.size() + " Ignored players for " + player.getName());
+        });
     }
 
     /**
@@ -486,7 +502,7 @@ public class GamePlayer {
 
     public void setInvulnerable(boolean flag) {
         if (CombatLog.isInCombat(T)) CombatLog.removeFromCombat(T);
-        if(CombatLog.inPVP(T)) CombatLog.removeFromPVP(T);
+        if (CombatLog.inPVP(T)) CombatLog.removeFromPVP(T);
         isInvulnerable = flag;
     }
 
