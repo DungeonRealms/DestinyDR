@@ -129,6 +129,7 @@ public class AntiDuplication implements GenericMechanic {
                     builder.append(", ").append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
                 i++;
             }
+            p.sendMessage(ChatColor.GOLD + "Found a dupe? Don't " + ChatColor.RED + "abuse" + ChatColor.GOLD + " it! Report it and you're eligible for " + ChatColor.YELLOW + ChatColor.BOLD + "SUB++" + ChatColor.GOLD + "!");
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
                     ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
         }
