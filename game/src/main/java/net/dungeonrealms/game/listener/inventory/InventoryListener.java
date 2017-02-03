@@ -1387,6 +1387,7 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerClickStatsInventory(InventoryClickEvent event) {
+    	if(GameAPI.isShop(event.getInventory())) return;
         if (event.getInventory().getTitle().contains("Stat Points")) {
             //Stat Points Inv
             event.setCancelled(true);
