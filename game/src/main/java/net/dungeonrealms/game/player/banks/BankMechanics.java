@@ -294,7 +294,16 @@ public class BankMechanics implements GenericMechanic {
      */
     public static ItemStack createBankNote(int amount, String whoSigned) {
         if(whoSigned != null && whoSigned.isEmpty())whoSigned = null;
-
+        
+        if(amount >= 50000){
+        	String lastSigner = whoSigned;
+        	if(lastSigner.contains(",")){
+        		String[] allSigners = lastSigner.split(",");
+        		lastSigner = allSigners[allSigners.length - 1];
+        	}
+        	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[WARNING] " + ChatColor.WHITE + lastSigner + " created a Bank Note worth " + ChatColor.GREEN + amount + ChatColor.WHITE + " on " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid + ChatColor.WHITE + ".");
+        }
+        
         ItemStack stack = BankMechanics.banknote.clone();
         ItemMeta meta = stack.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
