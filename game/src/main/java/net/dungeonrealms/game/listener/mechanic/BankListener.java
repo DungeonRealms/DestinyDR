@@ -121,7 +121,7 @@ public class BankListener implements Listener {
 
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             Player player = event.getPlayer();
-            if (player.getOpenInventory() != null && player.getOpenInventory().getTitle().contains("@")) {
+            if (player.getOpenInventory() != null && GameAPI.isShop(player.getOpenInventory())) {
                 // Player is browsing a shop
                 event.setCancelled(true);
                 return;

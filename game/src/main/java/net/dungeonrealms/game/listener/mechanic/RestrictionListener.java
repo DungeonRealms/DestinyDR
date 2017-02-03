@@ -211,7 +211,7 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void itemPickupOpenInventory(PlayerPickupItemEvent event) {
         if (event.getPlayer().getOpenInventory() == null) return;
-        if (!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
+        if (!GameAPI.isShop(event.getPlayer().getOpenInventory())) return;
 
         String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
         if (ownerName == null) return;
@@ -244,7 +244,7 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getPlayer().getOpenInventory() == null) return;
-        if (!event.getPlayer().getOpenInventory().getTitle().contains("@")) return;
+        if (!GameAPI.isShop(event.getPlayer().getOpenInventory())) return;
         if (GameAPI.isInSafeRegion(event.getPlayer().getLocation())) {
             String ownerName = event.getPlayer().getOpenInventory().getTitle().split("@")[1];
             if (ownerName == null) return;

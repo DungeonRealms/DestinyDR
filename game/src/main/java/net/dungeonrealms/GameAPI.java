@@ -13,6 +13,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
@@ -70,6 +71,7 @@ import net.dungeonrealms.network.GameClient;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
+
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bukkit.*;
@@ -84,6 +86,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -2141,5 +2144,13 @@ public class GameAPI {
     public static boolean isPlayerHidden(Document document) {
         final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, document);
         return isVanished != null && (Boolean) isVanished;
+    }
+    
+    public static boolean isShop(InventoryView inventoryView){
+    	return inventoryView.getTitle().contains("@");
+    }
+    
+    public static boolean isShop(Inventory inventory){
+    	return inventory.getTitle().contains("@");
     }
 }

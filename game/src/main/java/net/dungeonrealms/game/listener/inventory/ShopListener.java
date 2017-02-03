@@ -96,7 +96,7 @@ public class ShopListener implements Listener {
 
     @EventHandler
     public void playerCloseShopInventory(InventoryCloseEvent event) {
-        if (!event.getInventory().getTitle().contains("@")) return;
+        if (!GameAPI.isShop(event.getInventory())) return;
         event.getPlayer().setCanPickupItems(true);
     }
 
@@ -139,7 +139,7 @@ public class ShopListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void playerClickShopInventory(InventoryClickEvent event) {
-        if (!event.getInventory().getTitle().contains("@")) return;
+        if (!GameAPI.isShop(event.getInventory())) return;
 
         String ownerName = event.getInventory().getTitle().split("@")[1];
         if (ownerName == null) return;
@@ -726,7 +726,7 @@ public class ShopListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerOpenShopInventory(InventoryOpenEvent event) {
-        if (!event.getInventory().getTitle().contains("@")) return;
+        if (!GameAPI.isShop(event.getInventory())) return;
         String ownerName = event.getInventory().getTitle().split("@")[1];
         if (ownerName == null) return;
         Shop shop = ShopMechanics.getShop(ownerName);

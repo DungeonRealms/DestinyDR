@@ -62,7 +62,7 @@ public class CommandCloseShop extends BaseCommand {
 
             if (player != null && player.isOnline()) {
                 // Check if the player is viewing his shop
-                if (player.getOpenInventory().getTitle().contains("@")) {
+                if (GameAPI.isShop(player.getOpenInventory())) {
                     // Don't allow the shop to be removed if the owner is viewing his shop GUI
                     commandSender.sendMessage(ChatColor.RED + player.getName() + " is currently viewing his shop, action denied");
                     commandSender.sendMessage(ChatColor.RED + "This it to prevent duplication exploitation, please manually close the shop");
@@ -81,7 +81,7 @@ public class CommandCloseShop extends BaseCommand {
             //  A player types /closeshop
             if (commandSender instanceof Player) {
                 Player player = (Player) commandSender;
-                if (player.getOpenInventory().getTitle().contains("@")) {
+                if (GameAPI.isShop(player.getOpenInventory())) {
                     // Uh oh, someone is hacking? He is performing a command whilst having his shop GUI open
                     player.sendMessage(ChatColor.RED + "Illegal inventory session ID");
                     player.sendMessage(ChatColor.RED + "Close your shop GUI to close your shop");
