@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
@@ -380,6 +381,12 @@ public class ItemListener implements Listener {
             }
             if (event.getItem().getType() == Material.FIREWORK) {
                 if (nms.hasTag() && nms.getTag().hasKey("globalMessenger")) {
+                	
+                	if (PunishAPI.isMuted(event.getPlayer().getUniqueId())) {
+                        event.getPlayer().sendMessage(PunishAPI.getMutedMessage(event.getPlayer().getUniqueId()));
+                        return;
+                    }
+                	
                     event.getPlayer().sendMessage("");
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "Please enter the message you'd like to send to " + ChatColor.UNDERLINE + "all servers" + ChatColor.YELLOW
                             + " -- think before you speak!");
