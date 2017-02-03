@@ -236,7 +236,7 @@ public class ItemManager {
         tag.set("type", new NBTTagString("teleport"));
         tag.set("usage", new NBTTagString(teleportLocation));
         nmsStack.setTag(tag);
-        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
     /**
