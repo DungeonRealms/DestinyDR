@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.profession;
 
 import com.google.common.collect.Maps;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -12,7 +13,9 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -813,6 +816,17 @@ public class Mining implements GenericMechanic {
      */
     private void placeOre() {
         ORE_LOCATIONS.keySet().forEach(loc -> loc.getWorld().getBlockAt(loc).setType(ORE_LOCATIONS.get(loc)));
+    }
+    
+    public boolean isMineable(Block block){
+    	return isMineable(block.getLocation());
+    }
+    
+    public boolean isMineable(Location loc){
+    	for(Location check : ORE_LOCATIONS.keySet())
+    		if(check.distance(loc) == 0D)
+    			return true;
+		return false;
     }
 
     @Override
