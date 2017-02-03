@@ -162,6 +162,8 @@ public class BlockListener implements Listener {
         if (block == null) return;
         if (e.getPlayer().getEquipment().getItemInMainHand() == null || e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
             return;
+        if(!Mining.getInstance().isMineable(block))
+        	return;
         if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
             e.setCancelled(true);
             ItemStack stackInHand = e.getPlayer().getEquipment().getItemInMainHand();
