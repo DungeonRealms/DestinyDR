@@ -120,7 +120,7 @@ public enum LootType {
                         case FLOWER_POT:
                         case FLOWER_POT_ITEM:
                             //Quiver drops, replace these with gems for now.
-                            item = BankMechanics.createBankNote(120);
+                            item = BankMechanics.createBankNote(120, "");
                             break;
                         case EMERALD:
                             int min_amount = Integer.parseInt(s.substring(s.indexOf(":") + 1, s.indexOf("-")));
@@ -133,7 +133,7 @@ public enum LootType {
                             }
 
                             if (amount_to_spawn > 64) {
-                                item = BankMechanics.createBankNote(amount_to_spawn);
+                                item = BankMechanics.createBankNote(amount_to_spawn, "");
                             } else {
                                 item = BankMechanics.gem.clone();
                                 item.setAmount(amount_to_spawn);

@@ -264,7 +264,7 @@ public class TradeCalculator {
                 t5_pot -= 2;
                 ItemStack pot = ItemManager.createHealthPotion(5, false, false);
                 merchant_offer.add(pot);
-                ItemStack gems = BankMechanics.createBankNote(100);
+                ItemStack gems = BankMechanics.createBankNote(100, "Merchant");
                 merchant_offer.add(gems);
             }
         }
@@ -302,7 +302,7 @@ public class TradeCalculator {
                 t5_Splash_pot -= 2;
                 ItemStack pot = ItemManager.createHealthPotion(5, false, true);
                 merchant_offer.add(pot);
-                ItemStack gems = BankMechanics.createBankNote(200);
+                ItemStack gems = BankMechanics.createBankNote(200, "Merchant");
                 merchant_offer.add(gems);
             }
         }

@@ -980,7 +980,7 @@ public class MainListener implements Listener {
                 continue;
             }
             if (itemStack.getType() == Material.EMERALD) {
-                itemStack = BankMechanics.createBankNote(itemStack.getAmount());
+                itemStack = BankMechanics.createBankNote(itemStack.getAmount(), player);
             }
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItemNaturally(player.getLocation(), itemStack);

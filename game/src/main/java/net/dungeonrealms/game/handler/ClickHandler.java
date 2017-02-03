@@ -411,7 +411,7 @@ public class ClickHandler {
                                 continue;
                             }
                             if (itemStack.getType() == Material.EMERALD) {
-                                itemStack = BankMechanics.createBankNote(itemStack.getAmount());
+                                itemStack = BankMechanics.createBankNote(itemStack.getAmount(), player);
                             }
                             player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
                         }

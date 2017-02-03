@@ -331,7 +331,7 @@ public class CommandAdd extends BaseCommand {
                             break;
                         }
                     }
-                    player.getInventory().addItem(BankMechanics.createBankNote(quantity));
+                    player.getInventory().addItem(BankMechanics.createBankNote(quantity, player));
                     player.sendMessage(ChatColor.GREEN + "Successfully created a bank note worth " + NumberFormat.getIntegerInstance().format(quantity) + " gems.");
                     break;
                 case "displayitem":

@@ -11,6 +11,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -176,7 +177,7 @@ public class BankMechanics implements GenericMechanic {
             if (paid_off < 64) {
                 p.getInventory().addItem(createGems(paid_off));
             } else {
-                p.getInventory().addItem(createBankNote(paid_off));
+                p.getInventory().addItem(createBankNote(paid_off, p));
             }
         }
         return false;
@@ -184,7 +185,7 @@ public class BankMechanics implements GenericMechanic {
 
 
     public void updateMoney(Player p, int slot, int new_amount) {
-        p.getInventory().setItem(slot, createBankNote(new_amount));
+        p.getInventory().setItem(slot, createBankNote(new_amount, p));
     }
 
     /**
@@ -280,24 +281,71 @@ public class BankMechanics implements GenericMechanic {
         banknote = CraftItemStack.asBukkitCopy(nms2);
     }
 
+
+    public static ItemStack createBankNote(int amount, Player whoSigned) {
+        return createBankNote(amount, whoSigned != null ? whoSigned.getName() : null);
+    }
+
     /**
      * Creates a new Bank Note for the set amount
      *
      * @param amount
      * @return
      */
-    public static ItemStack createBankNote(int amount) {
+    public static ItemStack createBankNote(int amount, String whoSigned) {
+        if(whoSigned != null && whoSigned.isEmpty())whoSigned = null;
 
         ItemStack stack = BankMechanics.banknote.clone();
         ItemMeta meta = stack.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.WHITE.toString() + ChatColor.BOLD + "Value: " + ChatColor.WHITE + amount + " Gems");
         lore.add(ChatColor.GRAY + "Exchange at any bank for GEM(s)");
+
+        //Multiple signers, dont display just keep track really.
+        if (whoSigned != null && !whoSigned.contains(",")) {
+            lore.add(ChatColor.GRAY + "Signed by " + ChatColor.WHITE + whoSigned);
+        }
         meta.setLore(lore);
         stack.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
         nms1.getTag().setInt("worth", amount);
+        if (whoSigned != null)
+            nms1.getTag().setString("whoSigned", whoSigned);
+
         return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms1));
+    }
+
+    public static String getBankSigners(ItemStack item) {
+        NBTWrapper wrapper = new NBTWrapper(item);
+        if (wrapper.hasTag("whoSigned")) return wrapper.getString("whoSigned");
+        return null;
+    }
+
+    public static String combineBankSigners(String firstSigners, String secondSigners) {
+        //Only combine the person if they are not already involved in this note transaction.
+        if (firstSigners != null) {
+            if (firstSigners.contains(",")) {
+                if (secondSigners != null) {
+                    for (String signer : firstSigners.split(",")) {
+                        if (!secondSigners.contains(signer)) {
+                            secondSigners += "," + signer;
+                        }
+                    }
+                } else {
+                    secondSigners = firstSigners;
+                }
+            } else {
+                if (secondSigners == null) {
+                    secondSigners = firstSigners;
+                } else {
+                    if (secondSigners.contains(firstSigners)) {
+                        secondSigners += "," + firstSigners;
+                    }
+                }
+            }
+        }
+
+        return secondSigners;
     }
 
     /**

@@ -345,7 +345,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
             groupSize++;
         }
         int perPlayerDrop = Math.round(gemDrop / groupSize);
-        ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop);
+        ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Burick The Fanatic");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "The boss has dropped " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + gemDrop + ChatColor.DARK_PURPLE + " gems.");

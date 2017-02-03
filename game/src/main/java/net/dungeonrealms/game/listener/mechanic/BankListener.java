@@ -6,10 +6,12 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 
+import net.dungeonrealms.game.world.entity.powermove.type.WhirlWind;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -108,10 +110,10 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
 
-        if(event.getItem().hasMetadata("whitelist") && event.getItem().getTicksLived() < 60 * 20 * 2){
+        if (event.getItem().hasMetadata("whitelist") && event.getItem().getTicksLived() < 60 * 20 * 2) {
             //Whitelisted item, dont let them pick it up.
             String allowed = event.getItem().getMetadata("whitelist").get(0).asString();
-            if(!allowed.equals(event.getPlayer().getName())){
+            if (!allowed.equals(event.getPlayer().getName())) {
                 event.setCancelled(true);
                 return;
             }
@@ -119,7 +121,7 @@ public class BankListener implements Listener {
 
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             Player player = event.getPlayer();
-            if(player.getOpenInventory() != null && player.getOpenInventory().getTitle().contains("@")) {
+            if (player.getOpenInventory() != null && player.getOpenInventory().getTitle().contains("@")) {
                 // Player is browsing a shop
                 event.setCancelled(true);
                 return;
@@ -264,7 +266,7 @@ public class BankListener implements Listener {
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "I'm sorry, but you only have " + currentGems + " GEM(s) stored in our bank.");
                                         player.sendMessage(ChatColor.GRAY + "You cannot withdraw more GEM(s) than you have stored.");
                                     } else {
-                                        player.getInventory().addItem(BankMechanics.createBankNote(number));
+                                        player.getInventory().addItem(BankMechanics.createBankNote(number, player));
                                         DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC, EnumData.GEMS, -number, false);
                                         player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                         player.sendMessage(ChatColor.GRAY + "You have converted " + number + " GEM(s) from your bank account into a " + ChatColor.BOLD.toString() + "GEM NOTE.");
@@ -520,6 +522,15 @@ public class BankListener implements Listener {
                 if (BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && BankMechanics.getInstance().isBankNote(e.getCursor())) {
                     int note1Worth = BankMechanics.getInstance().getNoteValue(e.getCurrentItem());
                     int note2Worth = BankMechanics.getInstance().getNoteValue(e.getCursor());
+
+                    String combined = BankMechanics.combineBankSigners(BankMechanics.getBankSigners(e.getCurrentItem()), BankMechanics.getBankSigners(e.getCursor()));
+
+                    if (combined == null) {
+                        combined = player.getName();
+                    } else {
+                        if (!combined.contains(player.getName()))
+                            combined += "," + player.getName();
+                    }
                     int worth = note1Worth + note2Worth;
                     if (worth > 100000) {
                         player.sendMessage(ChatColor.RED + "You cannot create a banknote of this value.");
@@ -527,7 +538,7 @@ public class BankListener implements Listener {
                         return;
                     }
                     e.setCursor(null);
-                    e.setCurrentItem(BankMechanics.createBankNote(worth));
+                    e.setCurrentItem(BankMechanics.createBankNote(worth, combined));
                     player.sendMessage(ChatColor.GRAY + "You have combined bank notes " + ChatColor.ITALIC + note1Worth + "G + " + note2Worth + "G " + ChatColor.GRAY + "with the value of " + ChatColor.BOLD + worth + "G");
                 }
             }
@@ -566,9 +577,9 @@ public class BankListener implements Listener {
                     item = e.getCursor();
                 }
             }
-            if((e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP) && e.getRawSlot() < e.getInventory().getSize())
-            	item = e.getView().getBottomInventory().getItem(e.getHotbarButton());
-            
+            if ((e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP) && e.getRawSlot() < e.getInventory().getSize())
+                item = e.getView().getBottomInventory().getItem(e.getHotbarButton());
+
             if (!GameAPI.isItemTradeable(item) || !GameAPI.isItemDroppable(item)) {
                 p.sendMessage(ChatColor.RED + "You can't store this item!");
                 e.setCancelled(true);
@@ -590,6 +601,17 @@ public class BankListener implements Listener {
                 ItemStack heldItem = interactEvent.getPlayer().getEquipment().getItemInMainHand().clone();
                 interactEvent.getPlayer().getInventory().setItemInMainHand(null);
 
+                String whoSigned = BankMechanics.getBankSigners(heldItem);
+                if (whoSigned == null)
+                    whoSigned = player.getName();
+                else {
+                    if (!whoSigned.contains(player.getName())) {
+                        //Add this player to the list of signed players...
+                        whoSigned += "," + player.getName();
+                    }
+                }
+
+                String signed = whoSigned;
                 Chat.listenForMessage(player, event -> {
                     if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("c")) {
                         player.getInventory().addItem(heldItem);
@@ -617,8 +639,8 @@ public class BankListener implements Listener {
                                 return;
                             }
                             int newValue = noteWorth - number;
-                            player.getInventory().addItem(BankMechanics.createBankNote(newValue));
-                            player.getInventory().addItem(BankMechanics.createBankNote(number));
+                            player.getInventory().addItem(BankMechanics.createBankNote(newValue, signed));
+                            player.getInventory().addItem(BankMechanics.createBankNote(number, signed));
                         } else {
                             player.sendMessage(ChatColor.RED + "You do not have enough space in your inventory to perform this action.");
                         }

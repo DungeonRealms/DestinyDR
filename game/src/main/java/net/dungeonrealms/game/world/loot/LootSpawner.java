@@ -77,7 +77,7 @@ public class LootSpawner {
                     int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
                     stack = ItemManager.createProtectScroll(tier);
                 } else if (BankMechanics.getInstance().isBankNote(stack)) {
-                    stack = BankMechanics.createBankNote(CraftItemStack.asNMSCopy(stack).getTag().getInt("worth"));
+                    stack = BankMechanics.createBankNote(CraftItemStack.asNMSCopy(stack).getTag().getInt("worth"), "");
                 }
 
                 count++;
