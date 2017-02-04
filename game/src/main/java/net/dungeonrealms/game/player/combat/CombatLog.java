@@ -64,7 +64,7 @@ public class CombatLog implements GenericMechanic {
     private ConcurrentMap<UUID, CombatLogger> COMBAT_LOGGERS = new ConcurrentHashMap<>();
 
     public static boolean isInCombat(Player player) {
-        return COMBAT.containsKey(player);
+        return COMBAT.containsKey(player) && !DungeonRealms.getInstance().isAlmostRestarting();
     }
 
     // PVP COMBAT
@@ -205,7 +205,7 @@ public class CombatLog implements GenericMechanic {
      * @return Boolean
      */
     public static boolean inPVP(Player player) {
-        return PVP_COMBAT.containsKey(player);
+        return PVP_COMBAT.containsKey(player) && !DungeonRealms.getInstance().isAlmostRestarting();
     }
 
     // END PVP COMBAT

@@ -114,6 +114,7 @@ public class DungeonRealms extends JavaPlugin {
     private static TabCompleteCommands tcc;
 
     @Getter
+    @Setter
     private boolean almostRestarting = false;
 
     // Shard Config

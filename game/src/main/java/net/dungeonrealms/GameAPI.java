@@ -383,6 +383,7 @@ public class GameAPI {
      * Stops DungeonRealms server
      */
     public static void stopGame() {
+    	DungeonRealms.getInstance().setAlmostRestarting(true);
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
         final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
