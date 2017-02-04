@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listener;
 
 import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
@@ -48,6 +49,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -90,6 +92,7 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandWhilstSharding(PlayerCommandPreprocessEvent event) {
+    	GameAPI.runAsSpectators(event.getPlayer(), p -> p.sendMessage(ChatColor.RED + event.getPlayer().getName() + "> " + event.getMessage()));
         if (event.getPlayer().hasMetadata("sharding")) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot perform commands whilst sharding!");
@@ -507,6 +510,14 @@ public class MainListener implements Listener {
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutMount);
                 }
             });
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
+        if(event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Rank.isTrialGM(event.getPlayer())){
+        	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getPlayer().getName() + " has attempted GM3 teleport on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+        	event.setCancelled(true);
         }
     }
 
@@ -1070,7 +1081,21 @@ public class MainListener implements Listener {
         Player player = (Player) event.getPlayer();
         if (player.hasMetadata("sharding") || GameAPI.getGamePlayer(player).isSharding()) {
             event.setCancelled(true);
+            return;
         }
+        
+        GameAPI.runAsSpectators(event.getPlayer(), (p) -> {
+        	p.sendMessage(ChatColor.YELLOW + player.getName() + " opened " + event.getInventory().getName());
+			p.openInventory(event.getInventory());
+    	});
+    }
+    
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event){
+    	GameAPI.runAsSpectators(event.getPlayer(), (player) -> {
+    		player.sendMessage(ChatColor.YELLOW + event.getPlayer().getName() + " closed " + event.getInventory().getName());
+			player.closeInventory();
+    	});
     }
 
     /**
@@ -1137,7 +1162,7 @@ public class MainListener implements Listener {
         if (trader == null)
             return;
 
-        if (GameAPI._hiddenPlayers.contains(trader)) return;
+        if (GameAPI._hiddenPlayers.contains(trader) || trader.getGameMode() == GameMode.SPECTATOR) return;
 
         if (!(boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, trader.getUniqueId()) && !Rank.isTrialGM(pl)) {
             pl.sendMessage(ChatColor.RED + trader.getName() + " has Trades disabled.");
@@ -1278,7 +1303,7 @@ public class MainListener implements Listener {
             p.openInventory(inv);
         }
     }
-
+    
     @EventHandler(priority = EventPriority.HIGHEST)
     public void unLeashMule(EntityUnleashEvent event) {
         if (!(event.getEntity() instanceof Horse)) return;

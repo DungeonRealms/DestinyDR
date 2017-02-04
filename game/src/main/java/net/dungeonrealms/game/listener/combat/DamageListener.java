@@ -1081,11 +1081,6 @@ public class DamageListener implements Listener {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             event.setCancelled(true);
         }
-
-        if(event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Rank.isTrialGM(event.getPlayer())){
-        	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getPlayer().getName() + " has attempted GM3 teleport on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
-        	event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

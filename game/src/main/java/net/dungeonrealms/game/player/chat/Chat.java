@@ -148,6 +148,7 @@ public class Chat {
     public void doMessageChatListener(AsyncPlayerChatEvent event) {
         Consumer<? super AsyncPlayerChatEvent> messageListener = chatListeners.remove(event.getPlayer());
         if (messageListener != null) {
+        	GameAPI.runAsSpectators(event.getPlayer(), (player) -> player.sendMessage(ChatColor.RED + event.getPlayer().getName() + " answered a chat prompt> " + event.getMessage()));
             messageListener.accept(event);
             orElseListeners.remove(event.getPlayer());
             event.setCancelled(true);

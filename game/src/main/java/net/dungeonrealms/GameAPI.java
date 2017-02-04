@@ -795,7 +795,7 @@ public class GameAPI {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
         if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return;
-
+        
         Utils.log.info("Handling logout for " + uuid.toString());
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
@@ -2152,5 +2152,17 @@ public class GameAPI {
     
     public static boolean isShop(Inventory inventory){
     	return inventory.getTitle().contains("@");
+    }
+    
+    public static void runAsSpectators(Entity spectated, Consumer<Player> callback){
+    	List<Entity> nearby = spectated.getNearbyEntities(1, 1, 1);
+        for(Entity ent : nearby){
+        	if(ent instanceof Player){
+        		Player p = (Player)ent;
+        		if(Rank.isTrialGM(p) && p.getGameMode() == GameMode.SPECTATOR && p.getSpectatorTarget() != null && p.getSpectatorTarget() == spectated){
+        			callback.accept(p);
+        		}
+        	}
+        }
     }
 }
