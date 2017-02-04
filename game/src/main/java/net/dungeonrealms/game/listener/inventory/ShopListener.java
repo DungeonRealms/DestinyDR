@@ -60,6 +60,10 @@ public class ShopListener implements Listener {
             return;
         }
 
+        if(p.hasMetadata("sharding")){
+            p.sendMessage(ChatColor.RED + "You cannot open a shop whiling changing shards.");
+            return;
+        }
         ItemStack[] inventory = p.getInventory().getContents();
         int freeInvSlots = 0;
 
@@ -580,6 +584,12 @@ public class ShopListener implements Listener {
                                 clicker.sendMessage(ChatColor.GRAY + "" + quantity + " X " + itemPrice + " gem(s)/ea = " + totalPrice + " gem(s).");
                                 return;
                             }
+
+                            if(clicker.hasMetadata("sharding")){
+                                clicker.sendMessage(ChatColor.RED + "You cannot purchase an item while sharding.");
+                                return;
+                            }
+
                             BankMechanics.getInstance().takeGemsFromInventory(totalPrice, clicker);
                             ItemStack toGive = itemClicked.clone();
                             ItemMeta meta = toGive.getItemMeta();
