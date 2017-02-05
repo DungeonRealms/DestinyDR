@@ -5,7 +5,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.player.menu.Profile;
+import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
@@ -71,7 +71,7 @@ public class CommandPet extends BaseCommand {
                 PlayerMenus.openPlayerPetMenu(player);
                 return true;
             } else if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("a") || args[0].equalsIgnoreCase("g") || args[0].equalsIgnoreCase("get")) {
-                Profile.addPetItem(player);
+                CraftingMenu.addPetItem(player);
                 return true;
             } else {
                 return true;

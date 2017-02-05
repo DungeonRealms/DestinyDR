@@ -1085,7 +1085,7 @@ public class MainListener implements Listener {
         }
         
         GameAPI.runAsSpectators(event.getPlayer(), (p) -> {
-        	p.sendMessage(ChatColor.YELLOW + player.getName() + " opened " + event.getInventory().getName());
+        	p.sendMessage(ChatColor.YELLOW + player.getName() + event.getInventory().getName() + ".");
 			p.openInventory(event.getInventory());
     	});
     }
@@ -1093,9 +1093,8 @@ public class MainListener implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event){
     	GameAPI.runAsSpectators(event.getPlayer(), (player) -> {
-    		player.sendMessage(ChatColor.YELLOW + event.getPlayer().getName() + " closed " + event.getInventory().getName());
-			if(!event.getInventory().getName().equals("container.crafting"))
-				player.closeInventory();
+    		player.sendMessage(ChatColor.YELLOW + event.getPlayer().getName() + " closed " + (event.getInventory().getName().equals("container.crafting") ? "their inventory" : event.getInventory().getName()) + ".");
+			player.closeInventory();
     	});
     }
 

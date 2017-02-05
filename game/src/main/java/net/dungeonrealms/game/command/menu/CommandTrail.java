@@ -6,7 +6,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.player.menu.Profile;
+import net.dungeonrealms.game.player.menu.CraftingMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -51,7 +51,7 @@ public class CommandTrail extends BaseCommand {
                 PlayerMenus.openPlayerParticleMenu((Player) sender);
                 return true;
             } else if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("a") || args[0].equalsIgnoreCase("g") || args[0].equalsIgnoreCase("get")) {
-                Profile.addTrailItem(player);
+            	CraftingMenu.addTrailItem(player);
                 return true;
             } else {
                 return true;

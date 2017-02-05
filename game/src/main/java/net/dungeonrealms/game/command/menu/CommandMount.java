@@ -7,10 +7,11 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.player.menu.Profile;
+import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.minecraft.server.v1_9_R2.Entity;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -102,7 +103,7 @@ public class CommandMount extends BaseCommand {
                 PlayerMenus.openPlayerMountMenu((Player) sender);
                 return true;
             } else if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("a") || args[0].equalsIgnoreCase("g") || args[0].equalsIgnoreCase("get")) {
-                Profile.addMountItem(player);
+                CraftingMenu.addMountItem(player);
                 return true;
             } else {
                 return true;
