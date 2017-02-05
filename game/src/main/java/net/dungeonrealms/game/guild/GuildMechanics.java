@@ -443,6 +443,7 @@ public class GuildMechanics {
                     if (player.getName().equalsIgnoreCase(s))
                         continue loop;
                 player.sendMessage(message);
+                GameAPI.runAsSpectators(player, (spectator) -> spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD +"(AS " + player.getName() + ") " + message));
             }
         }
     }

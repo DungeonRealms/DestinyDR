@@ -1094,7 +1094,8 @@ public class MainListener implements Listener {
     public void onInventoryClose(InventoryCloseEvent event){
     	GameAPI.runAsSpectators(event.getPlayer(), (player) -> {
     		player.sendMessage(ChatColor.YELLOW + event.getPlayer().getName() + " closed " + event.getInventory().getName());
-			player.closeInventory();
+			if(!event.getInventory().getName().equals("container.crafting"))
+				player.closeInventory();
     	});
     }
 
