@@ -758,6 +758,7 @@ public class ItemManager {
         stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book", new String[]{ChatColor.GRAY + "Right click to reset your stat", ChatColor.GRAY + "allocated points to free points.", ChatColor.DARK_GRAY + "One time use."});
         nms = CraftItemStack.asNMSCopy(stack);
         tag.setString("retrainingBook", "true");
+        tag.setInt("untradeable", 1);
         nms.setTag(tag);
         return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
@@ -771,6 +772,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("globalMessenger", new NBTTagString("true"));
+        tag.setInt("untradeable", 1);
         nmsStack.setTag(tag);
 
         return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));

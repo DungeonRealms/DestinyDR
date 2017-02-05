@@ -71,18 +71,15 @@ public class ItemListener implements Listener {
     public void onItemDrop(PlayerDropItemEvent event) {
         Player p = event.getPlayer();
         ItemStack item = event.getItemDrop().getItemStack();
-
+        
         if (GameAPI.isItemSoulbound(item)) {
-            event.setCancelled(true);
+            //event.setCancelled(true);
             event.getItemDrop().remove();
             p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor.RED + " this Soulbound item? ");
             p.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.GRAY + " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N" + ChatColor.GRAY + " to confirm.");
             p.playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1.2F);
-            //Confirm destruction.
-            //REmove 1 tick later once its actually back in their inventory.
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> p.getInventory().removeItem(item), 1);
+            //p.getInventory().remove(item);
             Chat.listenForMessage(p, (message) -> {
-                message.setCancelled(true);
                 if (message.getMessage().equalsIgnoreCase("yes") || message.getMessage().equalsIgnoreCase("y")) {
                     p.sendMessage(ChatColor.RED + "Item " + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() + " " : "") + ChatColor.RED + "has been " + ChatColor.UNDERLINE + "destroyed.");
                 } else {
@@ -90,7 +87,7 @@ public class ItemListener implements Listener {
                         p.sendMessage(ChatColor.RED + "Your inventory was " + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " so your Soulbound item has been destroyed.");
                     } else {
                         p.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
-                        p.getInventory().addItem(item);
+                        p.getInventory().addItem(item.clone());
                     }
                 }
             }, (player) -> {
@@ -98,7 +95,7 @@ public class ItemListener implements Listener {
                     player.sendMessage(ChatColor.RED + "Your inventory was " + ChatColor.UNDERLINE + "FULL" + ChatColor.RED + " so your Soulbound item has been destroyed.");
                 } else {
                     player.sendMessage(ChatColor.RED + "Soulbound item destruction " + ChatColor.UNDERLINE + "CANCELLED");
-                    p.getInventory().addItem(item);
+                    p.getInventory().addItem(item.clone());
                 }
             });
 
@@ -362,25 +359,37 @@ public class ItemListener implements Listener {
     public void useEcashItem(PlayerInteractEvent event) {
         if (event.getItem() != null) {
             Player player = event.getPlayer();
+            
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
             if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
-                if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
+            	if (event.getItem().getAmount() > 1){
+                	player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
+                	return;
+                }
+            	if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
                     event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm.");
+                    ItemStack resetBook = event.getItem().clone();
+                    event.getPlayer().getInventory().remove(resetBook);
                     Chat.listenForMessage(event.getPlayer(), chat -> {
                         if (chat.getMessage().equalsIgnoreCase("Yes") || chat.getMessage().equalsIgnoreCase("y")) {
-                            if (event.getItem().getAmount() > 1) {
-                                event.getItem().setAmount(event.getItem().getAmount() - 1);
-                            } else {
-                                event.getPlayer().getInventory().remove(event.getItem());
-                            }
                             GameAPI.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
                             event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
+                        }else{
+                        	event.getPlayer().getInventory().addItem(resetBook);
+                        	event.getPlayer().sendMessage(ChatColor.RED + "Cancelled");
                         }
-                    }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+                    }, p -> {
+                    	event.getPlayer().getInventory().addItem(resetBook);
+                    	p.sendMessage(ChatColor.RED + "Action cancelled.");
+                    });
                 }
             }
             if (event.getItem().getType() == Material.FIREWORK) {
                 if (nms.hasTag() && nms.getTag().hasKey("globalMessenger")) {
+                	if (event.getItem().getAmount() > 1){
+                    	player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
+                    	return;
+                    }
                 	
                 	if (PunishAPI.isMuted(event.getPlayer().getUniqueId())) {
                         event.getPlayer().sendMessage(PunishAPI.getMutedMessage(event.getPlayer().getUniqueId()));
@@ -392,8 +401,11 @@ public class ItemListener implements Listener {
                             + " -- think before you speak!");
                     event.getPlayer().sendMessage(ChatColor.GRAY + "Type 'cancel' (no apostrophes) to cancel this and get your Global Messenger back.");
                     event.getPlayer().sendMessage("");
+                    ItemStack messengerItem = event.getItem().clone();
+                    event.getPlayer().getInventory().remove(messengerItem);
                     Chat.listenForMessage(event.getPlayer(), chat -> {
                         if (chat.getMessage().equalsIgnoreCase("cancel")) {
+                        	event.getPlayer().getInventory().addItem(messengerItem);
                             event.getPlayer().sendMessage(ChatColor.RED + "Global Messenger - " + ChatColor.BOLD + "CANCELLED");
                             return;
                         }
@@ -401,17 +413,11 @@ public class ItemListener implements Listener {
                         String msg = chat.getMessage();
                         if (msg.contains(".com") || msg.contains(".net") || msg.contains(".org") || msg.contains("http://") || msg.contains("www.")) {
                             if (!Rank.isDev(event.getPlayer())) {
+                            	event.getPlayer().getInventory().addItem(messengerItem);
                                 event.getPlayer().sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in your global messages please!");
                                 return;
                             }
                         }
-
-                        if (event.getItem().getAmount() > 1) {
-                            event.getItem().setAmount(event.getItem().getAmount() - 1);
-                        } else {
-                            event.getPlayer().getInventory().remove(event.getItem());
-                        }
-
 
                         final String fixedMessage = Chat.getInstance().checkForBannedWords(msg);
 
@@ -420,7 +426,10 @@ public class ItemListener implements Listener {
                         out.writeUTF(" \n" + ChatColor.GOLD.toString() + ChatColor.BOLD + ">>" + ChatColor.GOLD + " (" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(event.getPlayer()) + ChatColor.GOLD + fixedMessage + "\n ");
 
                         event.getPlayer().sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
-                    }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+                    }, p -> {
+                    	event.getPlayer().getInventory().addItem(messengerItem);
+                    	p.sendMessage(ChatColor.RED + "Action cancelled.");
+                    });
                 }
             } else if (event.getItem().getType() == Material.ENDER_CHEST) {
                 if (nms.hasTag() && nms.getTag().hasKey("type")) {
@@ -448,7 +457,13 @@ public class ItemListener implements Listener {
                     }
                 }
             } else if (nms.hasTag() && nms.getTag().hasKey("buff")) {
-                String itemName = ChatColor.stripColor(event.getItem().getItemMeta().getDisplayName());
+                
+            	if (event.getItem().getAmount() > 1){
+                	player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
+                	return;
+                }
+            	
+            	String itemName = ChatColor.stripColor(event.getItem().getItemMeta().getDisplayName());
                 int duration = nms.getTag().getInt("duration");
                 int bonusAmount = nms.getTag().getInt("bonusAmount");
                 String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
@@ -481,17 +496,21 @@ public class ItemListener implements Listener {
 
                 player.sendMessage(ChatColor.GRAY + "Type '" + ChatColor.GREEN + "Y" + ChatColor.GRAY + "' to confirm, or any other message to cancel.");
                 player.sendMessage("");
-
+                ItemStack buffItem = event.getItem().clone();
+                event.getPlayer().getInventory().remove(event.getItem());
                 Chat.listenForMessage(player, e -> {
                     if (e.getMessage().equalsIgnoreCase("y")) {
-                        event.getPlayer().getInventory().remove(event.getItem());
                         GameAPI.sendNetworkMessage("buff", buffType, String.valueOf(nms.getTag().getInt("duration"))
                                 , String.valueOf(nms.getTag().getInt("bonusAmount")), GameChat.getFormattedName
                                         (player), DungeonRealms.getInstance().bungeeName);
                     } else {
+                    	event.getPlayer().getInventory().addItem(buffItem);
                         player.sendMessage(ChatColor.RED + itemName + " - CANCELLED");
                     }
-                }, p -> p.sendMessage(ChatColor.RED + itemName + " - CANCELLED"));
+                }, p -> {
+                	event.getPlayer().getInventory().addItem(buffItem);
+                	p.sendMessage(ChatColor.RED + itemName + " - CANCELLED");
+                });
             }
         }
     }

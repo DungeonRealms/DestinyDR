@@ -2090,7 +2090,7 @@ public class GameAPI {
                 return false;
             }
         }
-        return true;
+        return !isItemPermanentlyUntradeable(itemStack);
     }
 
     public static boolean isItemUntradeable(ItemStack item) {
@@ -2108,7 +2108,7 @@ public class GameAPI {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (nms == null || nms.getTag() == null) return false;
         NBTTagCompound tag = nms.getTag();
-        return tag.hasKey("untradeable") && tag.getInt("untradeable") == 1;
+        return (tag.hasKey("untradeable") && tag.getInt("untradeable") == 1) || (tag.hasKey("puntradeable") && tag.getInt("puntradeable") == 1);
     }
 
     /**
