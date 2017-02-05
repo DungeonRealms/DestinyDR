@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.menu.ShardSwitcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,6 +37,11 @@ public class CommandShard extends BaseCommand {
 
         if (args.length == 0 || !Rank.isTrialGM(player)) {
 
+            if (Chat.listened(player)) {
+                player.sendMessage(ChatColor.RED + "You cannot /shard while interacting with chat.");
+                player.sendMessage(ChatColor.GRAY + "Please finish what you were doing and try again.");
+                return true;
+            }
             submitAsyncCallback(() -> new ShardSwitcher(player), menu -> {
                 try {
                     player.closeInventory();

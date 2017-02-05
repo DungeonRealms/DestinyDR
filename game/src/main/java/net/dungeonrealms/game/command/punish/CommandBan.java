@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.punishment.TimeFormat;
 import net.dungeonrealms.game.mastery.UUIDFetcher;
 import net.dungeonrealms.game.mastery.Utils;
 
+import net.dungeonrealms.game.player.combat.CombatLog;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -124,6 +125,12 @@ public class CommandBan extends BaseCommand {
             } else {
                 sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
                 GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has permanently banned " + ChatColor.BOLD + p_name + friendlyMessage + ".");
+            }
+
+            Player online = Bukkit.getPlayer(p_uuid);
+            if(online != null){
+                CombatLog.removeFromCombat(online);
+                CombatLog.removeFromPVP(online);
             }
             PunishAPI.ban(p_uuid, p_name, sender.getName(), duration, reasonString + " [" + sender.getName() + "]", null);
         });
