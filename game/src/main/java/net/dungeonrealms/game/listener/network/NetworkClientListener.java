@@ -209,6 +209,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                         gp.setLastMessager(fromPlayer);
                                     }
                                     player.sendMessage(msg);
+                                    GameAPI.runAsSpectators(player, (spectator) -> spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD +"(AS " + player.getName() + ") " + msg));
                                 }
                                 break;
                             }
