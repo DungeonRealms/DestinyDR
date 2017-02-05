@@ -4,9 +4,11 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.menu.ShardSwitcher;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -51,23 +53,14 @@ public class CommandShard extends BaseCommand {
                 }
             });
         } else {
-            String serverName = args[0];
+            ShardInfo shardInfo = ShardInfo.getByPseudoName(args[0]);
+            
+            if(shardInfo == null){
+            	sender.sendMessage(ChatColor.RED + "Shard Not Found!");
+            	return true;
+            }
 
-            // Doesn't check if the server is online, but better than nothing.
-//            if (!BungeeUtils.doesServerExist(serverName)) {
-//                player.sendMessage(ChatColor.RED + "Could not find a shard named " + serverName);
-//                return true;
-//            }
-
-            player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-            GameAPI.getGamePlayer(player).setSharding(true);
-            GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
-            handleLogout(player.getUniqueId(), true, consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + args[0] + ChatColor.YELLOW + "...");
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                        () -> BungeeUtils.sendToServer(player.getName(), args[0]), 10);
-            }));
+            GameAPI.sendToShard(player, shardInfo);
 
         }
 

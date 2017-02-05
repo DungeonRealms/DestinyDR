@@ -427,8 +427,13 @@ public class DatabaseAPI {
      */
 
     private void addNewPlayer(UUID uuid, boolean async) {
-        Document newPlayerDocument =
-                new Document("info",
+        DatabaseInstance.playerData.insertOne(createCleanPlayerData(uuid));
+        requestPlayer(uuid, async);
+        Constants.log.info("[Database] Requesting new data for : " + uuid);
+    }
+    
+    public Document createCleanPlayerData(UUID uuid){
+    	return new Document("info",
                         new Document("uuid", uuid.toString())
                                 .append("username", "")
                                 .append("health", 50)
@@ -548,10 +553,6 @@ public class DatabaseAPI {
                                         .append("ecash_spent", 0)
                                         .append("gems_earned", 0)
                                         .append("gems_spent", 0));
-
-        DatabaseInstance.playerData.insertOne(newPlayerDocument);
-        requestPlayer(uuid, async);
-        Constants.log.info("[Database] Requesting new data for : " + uuid);
     }
 
 

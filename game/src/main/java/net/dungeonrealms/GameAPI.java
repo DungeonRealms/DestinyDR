@@ -1,5 +1,7 @@
 package net.dungeonrealms;
 
+import static net.dungeonrealms.GameAPI.handleLogout;
+
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
@@ -2165,5 +2167,22 @@ public class GameAPI {
         		}
         	}
         }
+    }
+    /**
+     * Teleports a player to another shard (Unconditionally)
+     * 
+     * @param Player
+     * @param ShardInfo
+     */
+    public static void sendToShard(Player player, ShardInfo shard){
+    	player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+        GameAPI.getGamePlayer(player).setSharding(true);
+        GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
+        handleLogout(player.getUniqueId(), true, consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            player.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.BOLD + ChatColor.UNDERLINE + shard.getPseudoName() + ChatColor.YELLOW + "...");
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                    () -> BungeeUtils.sendToServer(player.getName(), shard.getPseudoName()), 10);
+        }));
     }
 }

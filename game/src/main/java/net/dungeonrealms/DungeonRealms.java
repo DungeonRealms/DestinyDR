@@ -367,6 +367,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));
         cm.registerCommand(new CommandEss("dr", "/<command> [args]", "Developer command with the core essentials."));
         cm.registerCommand(new CommandVote("vote", "/<command> [args]", "Gives the link to vote for rewards."));
+        cm.registerCommand(new CommandSend("drsend", "/<command> [args]", "Sends a player to a shard."));
         cm.registerCommand(new CommandInterface("interface", "/<command> [args]", "Development command for accessing interfaces."));
         cm.registerCommand(new CommandTell("tell", "/<command> [args]", "Send a private message to a player."));
         cm.registerCommand(new CommandISay("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
@@ -466,7 +467,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
             cm.registerCommand(new CommandRealmFix("realmfix", "/<command> [args]", "Realm fix command"));
             cm.registerCommand(new CommandRealmWipe("realmwipe", "/<command> [args]", "Realm wipe command"));
-
+            
             cm.registerCommand(new CommandBan("ban", "/ban <player> <duration | eg. 15m / 5d> [reason ...]", "Ban command", "drban"));
             cm.registerCommand(new CommandUnban("unban", "/<command> [args]", "Unban command", "drunban", "drpardon"));
             cm.registerCommand(new CommandMute("mute", "/mute <player> <duration | eg. 15m / 5d> [reason ...]", "Mute command", "drmute"));
