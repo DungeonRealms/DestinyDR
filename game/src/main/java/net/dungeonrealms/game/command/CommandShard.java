@@ -35,7 +35,7 @@ public class CommandShard extends BaseCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        if (args.length == 0 || !Rank.isTrialGM(player)) {
+        if (args.length == 0 || !Rank.isGM(player)) {
 
             if (Chat.listened(player)) {
                 player.sendMessage(ChatColor.RED + "You cannot /shard while interacting with chat.");
