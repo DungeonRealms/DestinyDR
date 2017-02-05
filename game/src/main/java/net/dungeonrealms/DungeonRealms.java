@@ -57,8 +57,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.ForceField;
-import net.dungeonrealms.game.player.menu.HearthStone;
-import net.dungeonrealms.game.player.menu.Profile;
+import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
@@ -109,8 +108,7 @@ public class DungeonRealms extends JavaPlugin {
     private static GameClient client;
 
     private static DungeonRealms instance = null;
-    private static HearthStone hs;
-    private static Profile ps;
+    private static CraftingMenu cm;
     private static TabCompleteCommands tcc;
 
     @Getter
@@ -318,11 +316,9 @@ public class DungeonRealms extends JavaPlugin {
             //TODO: Fix.
             pm.registerEvents(new ShopListener(), this);
             pm.registerEvents(new AchievementManager(), this);
-            hs = new HearthStone();
-            ps = new Profile();
+            cm = new CraftingMenu();
             tcc = new TabCompleteCommands();
-            hs.onEnable();
-            ps.onEnable();
+            cm.onEnable();
             tcc.onEnable();
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new DungeonListener(), this);
@@ -617,8 +613,7 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
-        ps.onDisable();
-        hs.onDisable();
+        cm.onDisable();
         tcc.onDisable();
         if (!mm.isShutdown())
             mm.stopInvocation();
