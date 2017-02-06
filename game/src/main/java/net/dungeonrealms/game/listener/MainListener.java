@@ -1085,7 +1085,7 @@ public class MainListener implements Listener {
         }
         
         GameAPI.runAsSpectators(event.getPlayer(), (p) -> {
-        	p.sendMessage(ChatColor.YELLOW + player.getName() + event.getInventory().getName() + ".");
+        	p.sendMessage(ChatColor.YELLOW + player.getName() + " opened " + event.getInventory().getName() + ".");
 			p.openInventory(event.getInventory());
     	});
     }

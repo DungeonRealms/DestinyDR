@@ -674,18 +674,22 @@ public class GameAPI {
         return getWorldGuard().getRegionManager(Bukkit.getPlayer(uuid).getWorld())
                 .getApplicableRegions(Bukkit.getPlayer(uuid).getLocation()).getRegions().contains(region);
     }
-
+    
+    public static List<Player> getNearbyPlayers(Location location, int radius) {
+    	return getNearbyPlayers(location, radius, false);
+    }
     /**
      * Gets the a list of nearby players from a location within a given radius
      *
      * @param location
      * @param radius
+     * @param 
      * @since 1.0
      */
-    public static List<Player> getNearbyPlayers(Location location, int radius) {
+    public static List<Player> getNearbyPlayers(Location location, int radius, boolean ignoreVanish) {
         List<Player> playersNearby = new ArrayList<>();
         for (Player player : location.getWorld().getPlayers()) {
-            if (!GameAPI.isPlayer(player) || GameAPI._hiddenPlayers.contains(player)) {
+            if ((!GameAPI.isPlayer(player) || GameAPI._hiddenPlayers.contains(player)) && !ignoreVanish) {
                 continue;
             }
             if (location.distanceSquared(player.getLocation()) <= radius * radius) {

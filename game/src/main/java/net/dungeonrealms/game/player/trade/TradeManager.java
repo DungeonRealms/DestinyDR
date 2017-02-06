@@ -1,9 +1,12 @@
 package net.dungeonrealms.game.player.trade;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
+
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -68,6 +71,11 @@ public class TradeManager {
         if (getTrade(uniqueId) != null) {
             return false;
         }
+        
+        if(p.getGameMode() == GameMode.SPECTATOR || GameAPI._hiddenPlayers.contains(p)){
+        	return false;
+        }
+        
         return true;
     }
 
