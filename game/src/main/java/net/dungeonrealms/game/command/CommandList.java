@@ -51,10 +51,12 @@ public class CommandList extends BaseCommand {
         int onlinePlayers = 0; // Use an int that increments so we can refine the search.
         final JSONMessage message = new JSONMessage("", ChatColor.GREEN);
         for (Player player : Bukkit.getOnlinePlayers()) {
+            String playerRank = Rank.getInstance().getRank(player.getUniqueId());
+
             // Searching for staff but player isn't staff, skip...
             if (staffOnly && !Rank.isPMOD(player)) continue;
             // Searching for mods only but player isn't a mod, skip...
-            if (pmodsOnly && !Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("pmod")) continue;
+            if (pmodsOnly && !playerRank.equalsIgnoreCase("pmod") && !playerRank.equalsIgnoreCase("hiddenmod")) continue;
 
             onlinePlayers++;
 

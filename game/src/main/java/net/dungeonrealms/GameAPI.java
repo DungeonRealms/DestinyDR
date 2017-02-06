@@ -1185,7 +1185,7 @@ public class GameAPI {
             // If they lose it, we don't want to account them for paying for a rank they've not.
             if (!rank.equals("pmod")) {
                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER);
-                if (!rank.equals("sub")) {
+                if (!rank.equals("sub") && !rank.equals("hiddenmod")) {
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS);
                     if (!rank.equals("sub+")) {
                         Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS_PLUS);

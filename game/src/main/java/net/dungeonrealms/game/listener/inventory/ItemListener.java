@@ -824,7 +824,7 @@ public class ItemListener implements Listener {
                 ChatColor prefix = ChatColor.WHITE;
                 if (Rank.isSubscriber(player)) {
                     String rank = Rank.getInstance().getRank(player.getUniqueId());
-                    if (rank.equalsIgnoreCase("sub")) {
+                    if (rank.equalsIgnoreCase("sub") || rank.equalsIgnoreCase("hiddenmod")) {
                         prefix = ChatColor.GREEN;
                     } else if (rank.equalsIgnoreCase("sub+")) {
                         prefix = ChatColor.GOLD;

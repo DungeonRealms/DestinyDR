@@ -161,7 +161,7 @@ public class Rank {
     }
 
     public static boolean isAtleastPMOD(String rank){
-        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
+        return rank.equalsIgnoreCase("hiddenmod") || rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("trialgm") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("headgm") || rank.equalsIgnoreCase("dev");
     }
     /**
      * Returns true if the user has the rank "dev", "gm", "pmod" or "youtube".
@@ -187,12 +187,12 @@ public class Rank {
 
     public static boolean isSubscriberPlus(Player player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub");
+        return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub") && !rank.equalsIgnoreCase("hiddenmod");
     }
 
     public static boolean isSubscriberLifetime(Player player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub") && !rank.equalsIgnoreCase("sub+");
+        return rank != null && !rank.equalsIgnoreCase("default") && !rank.equalsIgnoreCase("sub") && !rank.equalsIgnoreCase("sub+") && !rank.equalsIgnoreCase("hiddenmod");
     }
 
     public static String rankFromPrefix(String prefix) {
@@ -207,6 +207,8 @@ public class Rank {
                 return ChatColor.AQUA + "Trial Game Master";
             case "pmod":
                 return ChatColor.WHITE + "Player Moderator";
+            case "hiddenmod":
+                return ChatColor.GREEN + "Hidden Player Moderator";
             case "support":
                 return ChatColor.BLUE + "Support Agent";
             case "youtube":
@@ -248,6 +250,7 @@ public class Rank {
             case "sub+":
                 return ChatColor.GOLD;
             case "sub":
+            case "hiddenmod":
                 return ChatColor.GREEN;
             case "default":
                 return ChatColor.GRAY;
