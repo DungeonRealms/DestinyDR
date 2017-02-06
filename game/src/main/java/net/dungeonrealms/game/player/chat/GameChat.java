@@ -120,6 +120,7 @@ public final class GameChat {
             case "support":
             case "youtube":
             case "pmod":
+            case "hiddenmod":
             default:
                 String alignmentName = (String) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(name)));
                 return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + name + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
@@ -142,6 +143,7 @@ public final class GameChat {
             case "support":
             case "youtube":
             case "pmod":
+            case "hiddenmod":
             default:
                 String alignmentName = GameAPI.getGamePlayer(player).getPlayerAlignment().name();
                 return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
@@ -151,6 +153,7 @@ public final class GameChat {
     public static String getRankPrefix(String rank) {
         switch (rank.toLowerCase()) {
             case "sub":
+            case "hiddenmod":
                 return SUB;
             case "sub+":
                 return SUBPLUS;
