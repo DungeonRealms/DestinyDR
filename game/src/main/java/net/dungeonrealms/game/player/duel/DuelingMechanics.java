@@ -3,7 +3,9 @@ package net.dungeonrealms.game.player.duel;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.network.ShardInfo;
 import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -30,6 +32,13 @@ public class DuelingMechanics {
      * @param requested
      */
     public static void sendDuelRequest(Player sender, Player requested) {
+    	
+    	if(DungeonRealms.getShard() == ShardInfo.US1){
+    		sender.sendMessage(ChatColor.RED + "Dueling is temporarily disabled on " + ChatColor.UNDERLINE + "US-1" + ChatColor.RED + " for testing purposes.");
+    		sender.sendMessage(ChatColor.RED + "You can duel on another shard in the mean-time.");
+    		return;
+    	}
+    	
         if (isOnCooldown(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You're currently on cooldown for sending duel requests!");
             return;
