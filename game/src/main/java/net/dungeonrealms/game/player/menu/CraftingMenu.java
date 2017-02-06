@@ -97,7 +97,7 @@ public class CraftingMenu implements Listener {
     public void inventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player && event.getInventory() instanceof CraftingInventory && event.getInventory().getSize() == 5) {
             if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE) return;
-            if(event.getRawSlot() <= 2)
+            if(event.getRawSlot() == 2 || event.getRawSlot() == 1)
             	event.setCancelled(true);
             if(event.getRawSlot() == 1)
             	openProfile((Player) event.getWhoClicked());
