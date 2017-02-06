@@ -581,6 +581,11 @@ public class InventoryListener implements Listener {
             trade.p1.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
             trade.p2.sendMessage(ChatColor.RED + "Trade modified by " + ChatColor.BOLD.toString() + clicker.getName());
             trade.changeReady();
+            trade.setDividerColor(DyeColor.RED);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            	if(trade != null && trade.inv != null && trade.inv.getViewers().size() > 0)
+            		trade.setDividerColor(DyeColor.WHITE);
+            }, 20L);
         }
 
     }

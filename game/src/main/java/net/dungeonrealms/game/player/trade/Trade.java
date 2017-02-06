@@ -53,7 +53,6 @@ public class Trade {
         Bukkit.getPlayer(p2.getUniqueId()).closeInventory();
         p1.setCanPickupItems(false);
         p2.setCanPickupItems(false);
-        ItemStack separator = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, " ", null, (short) 0);
         ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP",
                 null, DyeColor.GRAY.getDyeData());
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
@@ -63,12 +62,17 @@ public class Trade {
         nms.c(ChatColor.YELLOW + "READY UP");
         inv.setItem(0, CraftItemStack.asBukkitCopy(nms));
         inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
-        inv.setItem(4, separator);
+        setDividerColor(DyeColor.WHITE);
+        p1.openInventory(inv);
+        p2.openInventory(inv);
+    }
+    
+    public void setDividerColor(DyeColor dye){
+    	ItemStack separator = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, " ", null, (short) dye.getData());
+    	inv.setItem(4, separator);
         inv.setItem(13, separator);
         inv.setItem(22, separator);
         inv.setItem(31, separator);
-        p1.openInventory(inv);
-        p2.openInventory(inv);
     }
 
 
