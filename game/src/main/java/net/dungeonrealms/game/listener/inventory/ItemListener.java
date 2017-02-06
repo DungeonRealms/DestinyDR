@@ -67,8 +67,9 @@ public class ItemListener implements Listener {
      *
      * @param event
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemDrop(PlayerDropItemEvent event) {
+    	if(event.isCancelled()) return;
         Player p = event.getPlayer();
         ItemStack item = event.getItemDrop().getItemStack();
         
