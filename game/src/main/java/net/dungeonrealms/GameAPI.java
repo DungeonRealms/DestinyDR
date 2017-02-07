@@ -2096,7 +2096,7 @@ public class GameAPI {
                 return false;
             }
         }
-        return !isItemPermanentlyUntradeable(itemStack);
+        return true;
     }
 
     public static boolean isItemUntradeable(ItemStack item) {
