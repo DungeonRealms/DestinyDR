@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
@@ -11,9 +12,12 @@ import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -47,6 +51,9 @@ public class DRWitch extends EntityWitch implements DRMonster {
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
+        this.goalSelector.a(2, new PathfinderGoalArrowAttack(this, 1.0D, 60, 10.0F));
+        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSkullItem(monster)));
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
@@ -112,13 +119,13 @@ public class DRWitch extends EntityWitch implements DRMonster {
         return null;
     }
 
-//    @Override
-//    public void a(EntityLiving entity, float f) {
-//        Projectile projectile = ((CraftLivingEntity) this.getBukkitEntity()).launchProjectile(ThrownPotion.class);
-//        MetadataUtils.registerProjectileMetadata(this.getAttributes(), CraftItemStack.asNMSCopy(weapon).getTag(),
-//                projectile);
-//
-//    }
+    @Override
+    public void a(EntityLiving entity, float f) {
+        Projectile projectile = ((CraftLivingEntity) this.getBukkitEntity()).launchProjectile(ThrownPotion.class);
+        MetadataUtils.registerProjectileMetadata(this.getAttributes(), CraftItemStack.asNMSCopy(weapon).getTag(),
+                projectile);
+
+    }
 
     @Override
     public void enderTeleportTo(double d0, double d1, double d2) {
