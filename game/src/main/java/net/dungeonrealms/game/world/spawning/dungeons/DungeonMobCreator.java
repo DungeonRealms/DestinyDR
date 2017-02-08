@@ -38,6 +38,14 @@ public class DungeonMobCreator {
             String customName = "";
             Location location = entry.getKey();
             String data = entry.getValue();
+            //xyz=enderman*(The_Devastator):4;3+@0-2$
+
+            //I think the + is useless?
+            //(<name>) = Custom name.
+            //* = isElite
+            //:<num>; = tier
+            //;<num>+@ = amount to spawn.
+            //@<range>$ = range to spawn around spawn given.
             String tierString = data.substring(data.indexOf(":"), data.indexOf(";"));
             tierString = tierString.substring(1);
             tier = Integer.parseInt(tierString);
