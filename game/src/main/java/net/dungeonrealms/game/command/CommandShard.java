@@ -55,9 +55,12 @@ public class CommandShard extends BaseCommand {
         } else {
             ShardInfo shardInfo = ShardInfo.getByPseudoName(args[0]);
             
-            if(shardInfo == null){
-            	sender.sendMessage(ChatColor.RED + "Shard Not Found!");
+            if (shardInfo == null){
+            	sender.sendMessage(ChatColor.RED + "The shard " + ChatColor.UNDERLINE + args[0] + ChatColor.RED + " does not exist.");
             	return true;
+            } else if (args[0].equalsIgnoreCase(DungeonRealms.getShard().getPseudoName())) {
+                sender.sendMessage(ChatColor.RED + "You are currently on shard " + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.RED + ".");
+                return true;
             }
 
             GameAPI.sendToShard(player, shardInfo);
