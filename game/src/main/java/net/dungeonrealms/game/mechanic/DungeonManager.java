@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanic;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -15,6 +16,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
+import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.spawning.dungeons.DungeonMobCreator;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -36,6 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -329,8 +332,9 @@ public class DungeonManager implements GenericMechanic {
     public void removeInstance(DungeonObject dungeonObject) {
         if (CrashDetector.crashDetected) return;
 
+        World dungeon = Bukkit.getWorld(dungeonObject.getWorldName());
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
+            dungeon.getPlayers().forEach(player -> {
                 if (player != null) if (Bukkit.getPlayer(player.getUniqueId()) != null)
                     if (GameAPI.getGamePlayer(player) != null) if (GameAPI.getGamePlayer(player).isInDungeon()) {
                         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
@@ -341,10 +345,33 @@ public class DungeonManager implements GenericMechanic {
                                 player.getInventory().remove(stack);
                     }
             });
-
             Bukkit.getWorlds().remove(Bukkit.getWorld(dungeonObject.getWorldName()));
             Utils.log.info("[DUNGEONS] Removing world: " + dungeonObject.getWorldName() + " from worldList().");
-            Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
+
+            if (dungeonObject.isEditMode()) {
+                //Remove entities so they are not saved.
+                for (org.bukkit.entity.Entity ent : dungeon.getEntities()) {
+                    if (!(ent instanceof Player)) {
+                        ent.remove();
+                    }
+                }
+
+                for(Chunk loaded : dungeon.getLoadedChunks()){
+                    loaded.unload(true);
+                }
+
+                Bukkit.unloadWorld(dungeonObject.getWorldName(), true);
+                try {
+                    Bukkit.getLogger().info("Saving dungeon " + dungeonObject.instanceName + " from " + dungeonObject.worldName + " Exempt: " + dungeonObject.worldName);
+                    RealmInstance.getInstance().zip(dungeonObject.worldName + "/", "plugins/DungeonRealms" + dungeonObject.getType().getLocation());
+                    Bukkit.getLogger().info("Dungeon saved.");
+                } catch (Exception e) {
+                    Bukkit.getLogger().info("Error saving dungeon to zip file: " + dungeonObject.instanceName + " World name: " + dungeonObject.worldName);
+                    e.printStackTrace();
+                }
+            } else {
+                Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
+            }
             Utils.log.info("[DUNGEONS] Unloading world: " + dungeonObject.getWorldName() + " in preparation for deletion!");
             Bukkit.getScheduler().cancelTask(dungeonObject.spawningTaskID);
 
@@ -369,19 +396,21 @@ public class DungeonManager implements GenericMechanic {
      * @param playerList List of players to enter!
      * @since 1.0
      */
-    public void createNewInstance(DungeonType type, Map<Player, Boolean> playerList, String instanceName) {
-        if(!DungeonRealms.getInstance().isAlmostRestarting()) {
+    public DungeonObject createNewInstance(DungeonType type, Map<Player, Boolean> playerList, String instanceName) {
+        if (!DungeonRealms.getInstance().isAlmostRestarting()) {
             if (!instance_mob_spawns.containsKey(instanceName)) {
                 loadDungeonMobSpawns(instanceName);
             }
             DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000L), instanceName);
             Dungeons.add(dungeonObject);
             dungeonObject.load();
+            return dungeonObject;
         } else {
-            for(Player player : playerList.keySet()) {
+            for (Player player : playerList.keySet()) {
                 player.sendMessage(ChatColor.RED + "You can't enter a dungeon if the shard is almost restarting");
             }
         }
+        return null;
     }
 
     public boolean canCreateInstance() {
@@ -443,6 +472,10 @@ public class DungeonManager implements GenericMechanic {
         public boolean hasBossSpawned;
         public int keysDropped;
         public boolean triedTeleportingOut;
+
+        @Getter
+        @Setter
+        public boolean editMode = false;
 
         DungeonObject(DungeonType type, Integer time, Map<Player, Boolean> playerList, String worldName, String instanceName) {
             this.type = type;
@@ -560,7 +593,8 @@ public class DungeonManager implements GenericMechanic {
                     shardsToGive = 100 + new Random().nextInt(275);
                     break;
                 case 4:
-                    shardsToGive = 1200 + new Random().nextInt(750);
+                    //150 - 200 points.
+                    shardsToGive = 150 + new Random().nextInt(100);
                     break;
                 case 5:
                     shardsToGive = 1500 + new Random().nextInt(1000);
@@ -760,7 +794,7 @@ public class DungeonManager implements GenericMechanic {
 
     private void deleteFolder(File folder) {
         try {
-            if (folder == null) return;
+            if (folder == null || !folder.exists()) return;
             FileUtils.forceDelete(folder);
         } catch (IOException e) {
             e.printStackTrace();

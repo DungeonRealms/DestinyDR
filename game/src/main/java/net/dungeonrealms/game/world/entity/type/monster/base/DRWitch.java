@@ -101,7 +101,8 @@ public class DRWitch extends EntityWitch implements DRMonster {
     }
 
     @Override
-    public void collide(Entity e) {}
+    public void collide(Entity e) {
+    }
 
     @Override
     public void onMonsterAttack(Player p) {
@@ -109,7 +110,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     @Override
     public void onMonsterDeath(Player killer) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monster, this.getBukkitEntity(), killer);
         });
     }
@@ -119,12 +120,37 @@ public class DRWitch extends EntityWitch implements DRMonster {
         return null;
     }
 
-    @Override
-    public void a(EntityLiving entity, float f) {
-        Projectile projectile = ((CraftLivingEntity) this.getBukkitEntity()).launchProjectile(ThrownPotion.class);
-        MetadataUtils.registerProjectileMetadata(this.getAttributes(), CraftItemStack.asNMSCopy(weapon).getTag(),
-                projectile);
+    //    @Override
+//    public void a(EntityLiving entity, float f) {
+//        Projectile projectile = ((CraftLivingEntity) this.getBukkitEntity()).launchProjectile(ThrownPotion.class);
+//        MetadataUtils.registerProjectileMetadata(this.getAttributes(), CraftItemStack.asNMSCopy(weapon).getTag(),
+//                projectile);
+//
+//    }
+    public void a(EntityLiving var1, float var2) {
+        if (!this.o()) {
+            double var3 = var1.locY + (double) var1.getHeadHeight() - 1.100000023841858D;
+            double var5 = var1.locX + var1.motX - this.locX;
+            double var7 = var3 - this.locY;
+            double var9 = var1.locZ + var1.motZ - this.locZ;
+            float var11 = MathHelper.sqrt(var5 * var5 + var9 * var9);
+            PotionRegistry var12 = Potions.x;
+            if (var11 >= 8.0F && !var1.hasEffect(MobEffects.SLOWER_MOVEMENT)) {
+                var12 = Potions.r;
+            } else if (var1.getHealth() >= 8.0F && !var1.hasEffect(MobEffects.POISON)) {
+                var12 = Potions.z;
+            } else if (var11 <= 3.0F && !var1.hasEffect(MobEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
+                var12 = Potions.I;
+            }
 
+            EntityPotion var13 = new EntityPotion(this.world, this, PotionUtil.a(new net.minecraft.server.v1_9_R2.ItemStack(Items.SPLASH_POTION), var12));
+            var13.pitch -= -20.0F;
+            var13.shoot(var5, var7 + (double) (var11 * 0.2F), var9, 0.75F, 8.0F);
+            this.world.a((EntityHuman) null, this.locX, this.locY, this.locZ, SoundEffects.gE, this.bA(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+            this.world.addEntity(var13);
+            //Make sure its registering the data.
+            MetadataUtils.registerProjectileMetadata(this.getAttributes(), CraftItemStack.asNMSCopy(weapon).getTag(), (Projectile)var13.getBukkitEntity());
+        }
     }
 
     @Override

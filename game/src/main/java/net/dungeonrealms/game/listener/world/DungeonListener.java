@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
@@ -17,6 +18,8 @@ import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -28,6 +31,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -434,6 +438,24 @@ public class DungeonListener implements Listener {
                             + " DMG " + ChatColor.YELLOW + "will be inflicted in 90s unless another beacon is activated.");
                 }
                 event.getEntity().remove();
+            }
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        if(!event.hasBlock())return;
+        if (event.getClickedBlock().getType() == Material.HOPPER) {
+            if (!event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+
+            DungeonManager.DungeonObject object = DungeonManager.getInstance().getDungeon(event.getPlayer().getWorld());
+            if (object != null && object.getType() != DungeonManager.DungeonType.THE_INFERNAL_ABYSS) return;
+            if (Rank.isGMRank(Rank.getInstance().getRank(event.getPlayer().getUniqueId()))) return;
+
+            //Prevent oppening of hoppers if a hopper is above.
+            if (event.getClickedBlock().getRelative(BlockFace.UP).getType() == Material.HOPPER) {
+                event.setCancelled(true);
+                event.getPlayer().closeInventory();
             }
         }
     }

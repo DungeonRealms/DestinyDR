@@ -29,6 +29,7 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
     @Getter
     protected Map<String, Integer[]> attributes = new HashMap<>();
 
+
     protected DREnderman(World world, EnumMonster monsterType, int tier) {
         this(world);
         this.monsterType = monsterType;
@@ -102,6 +103,12 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
         });
+    }
+
+
+    @Override
+    protected boolean db() {
+        return false;
     }
 
     @Override

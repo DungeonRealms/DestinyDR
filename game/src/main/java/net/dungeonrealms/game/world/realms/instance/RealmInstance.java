@@ -995,7 +995,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     }
 
 
-    private void zip(String targetFolderPath, String destinationFilePath) throws ZipException {
+    public void zip(String targetFolderPath, String destinationFilePath) throws ZipException {
         ZipParameters parameters = new ZipParameters();
         parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
         parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);

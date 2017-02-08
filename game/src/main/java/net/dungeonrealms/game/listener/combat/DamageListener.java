@@ -319,7 +319,7 @@ public class DamageListener implements Listener {
 
         if (!GameAPI.isNonPvPRegion(p1.getLocation()) && !GameAPI.isNonPvPRegion(p2.getLocation())) return;
 
-        if(!Bukkit.getWorlds().get(0).getName().equals(p1.getWorld().getName()))return;
+        if (!Bukkit.getWorlds().get(0).getName().equals(p1.getWorld().getName())) return;
 
         if (event.isCancelled() && p1.isSneaking()) {
             if (!(p1.hasMetadata("duel_cooldown") && p1.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
@@ -882,9 +882,10 @@ public class DamageListener implements Listener {
             return;
 
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
-            //Dont even despawn the boss..
-            if(event.getEntity().hasMetadata("boss"))return;
+            //Dont even despawn the boss.. or elites
+            if (event.getEntity().hasMetadata("boss") || event.getEntity().hasMetadata("elite")) return;
 
+            Bukkit.getLogger().info("Removing entity " + event.getEntity().getType() + " at " + event.getEntity().getLocation().toString() + " inside: " + event.getEntity().getLocation().getBlock().getType().name());
             event.getEntity().remove();
             return;
         }

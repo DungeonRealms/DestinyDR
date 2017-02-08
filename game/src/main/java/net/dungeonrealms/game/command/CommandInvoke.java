@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -32,6 +33,8 @@ public class CommandInvoke extends BaseCommand {
         }
         if (args.length > 0) {
             if (DungeonManager.getInstance().canCreateInstance()) {
+
+                DungeonManager.DungeonObject object = null;
                 switch (args[0].toLowerCase()) {
                     case "bandittrove":
                     case "t1dungeon":
@@ -45,7 +48,7 @@ public class CommandInvoke extends BaseCommand {
                                 }
                             }
                             partyList.put(player, true);
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
+                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
                         } else {
                             Affair.getInstance().createParty(player);
                             Map<Player, Boolean> partyList = new HashMap<>();
@@ -57,7 +60,7 @@ public class CommandInvoke extends BaseCommand {
                                 }
                             }
                             partyList.put(player, true);
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
+                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
                         }
                         break;
                     case "varenglade":
@@ -72,7 +75,7 @@ public class CommandInvoke extends BaseCommand {
                                 }
                             }
                             partyList.put(player, true);
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
+                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
                         } else {
                             Affair.getInstance().createParty(player);
                             Map<Player, Boolean> partyList = new HashMap<>();
@@ -84,7 +87,7 @@ public class CommandInvoke extends BaseCommand {
                                 }
                             }
                             partyList.put(player, true);
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
+                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
                         }
                         break;
                     case "infernal_abyss":
@@ -100,7 +103,7 @@ public class CommandInvoke extends BaseCommand {
                                 }
                             }
                             partyList.put(player, true);
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
+                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
                         } else {
                             Affair.getInstance().createParty(player);
                             Map<Player, Boolean> partyList = new HashMap<>();
@@ -112,12 +115,20 @@ public class CommandInvoke extends BaseCommand {
                                 }
                             }
                             partyList.put(player, true);
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
+                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
                         }
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + "Unknown instance " + args[0] + "!");
                         break;
+                }
+                if(object != null){
+                    if(args.length == 2 && args[1].equalsIgnoreCase("edit") && Rank.isHeadGM(player)){
+                        object.setEditMode(true);
+                        player.sendMessage(ChatColor.RED + "You have entered EDIT MODE.");
+                        player.sendMessage(ChatColor.RED + "All changes upon leaving of this instance will be saved to disk.");
+                        player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1, 1);
+                    }
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "There are no dungeons available at this time.");
