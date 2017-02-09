@@ -19,6 +19,7 @@ import net.dungeonrealms.game.world.entity.type.mounts.Horse;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.EntityArrow;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -32,6 +33,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
@@ -43,6 +48,7 @@ import java.util.Set;
 public class DamageAPI {
 
     public static Set<Entity> polearmAOEProcessing = new HashSet<>();
+    private static HashMap<Hologram, Integer> DAMAGE_HOLOGRAMS = new HashMap<Hologram, Integer>();
 
     /**
      * Calculates the weapon damage based on the nbt tag of an item, the attacker and receiver
@@ -1229,5 +1235,38 @@ public class DamageAPI {
 
     public static void removeInvulnerable(Entity ent) {
         if (ent.hasMetadata("invulnerable")) ent.removeMetadata("invulnerable", DungeonRealms.getInstance());
+    }
+    
+    public static void createDamageHologram(Player createFor, Location createAround, double hp){
+    	createDamageHologram(createFor, createAround, (int)hp + " " + ChatColor.RED + "❤");
+    }
+    
+    /**
+     * Create a hologram that floats up and deletes itself.
+     * 
+     * @param Player who caused the created of this. (Nullable, doesn't summon if player has Debug off)
+     * @param Location to create around
+     * @param What should the hologram display?
+     */
+    public static void createDamageHologram(Player createFor, Location createAround, String display){
+    	if(createFor != null && !Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, createFor.getUniqueId()).toString()))
+    		return;
+    	double xDif = (Utils.randInt(0, 20) - 10) / 10D;
+    	double yDif = Utils.randInt(0, 15) / 10D;
+    	double zDif = (Utils.randInt(0, 20) - 10) / 10D;
+    	Hologram hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), createAround.add(xDif, yDif, zDif));
+    	hologram.appendTextLine(display);
+    	hologram.getVisibilityManager().setVisibleByDefault(true);
+    	
+    	int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+    		hologram.teleport(hologram.getLocation().add(0.0, 0.03125D, 0.0));
+    	}, 0, 1l);
+    	DAMAGE_HOLOGRAMS.put(hologram, taskId);
+    	
+    	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+    		Bukkit.getScheduler().cancelTask(DAMAGE_HOLOGRAMS.get(hologram));
+    		DAMAGE_HOLOGRAMS.remove(hologram);
+    		hologram.delete();
+    	}, 60l);
     }
 }

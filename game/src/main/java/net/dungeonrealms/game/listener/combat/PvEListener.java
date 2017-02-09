@@ -140,17 +140,20 @@ public class PvEListener implements Listener {
         }
         if (armorReducedDamage == -1) {
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*DODGE*");
             //The defender dodged the attack
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             finalDamage = 0;
         } else if (armorReducedDamage == -2) {
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*BLOCK*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             finalDamage = 0;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
         } else {
             finalDamage = finalDamage - armorCalculation[0];
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
         }
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
         DamageAPI.handlePolearmAOE(event, finalDamage / 2, damager);
@@ -219,16 +222,19 @@ public class PvEListener implements Listener {
         if (armorReducedDamage == -1) {
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + ChatColor.RED + ")");
             //The defender dodged the attack
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*DODGE*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             finalDamage = 0;
         } else if (armorReducedDamage == -2) {
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*BLOCK*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             finalDamage = 0;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
         } else {
             finalDamage = finalDamage - armorCalculation[0];
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
         }
         HealthHandler.getInstance().handleMonsterBeingDamaged(receiver, damager, finalDamage);
 
@@ -254,6 +260,7 @@ public class PvEListener implements Listener {
                 return;
             }
         }
+        DamageAPI.createDamageHologram(killer, monster.getLocation(), "☠");
         HealthHandler.getInstance().getMonsterTrackers().remove(monster.getUniqueId());
         ((DRMonster) ((CraftLivingEntity) monster).getHandle()).onMonsterDeath(highestDamage);
         int exp = GameAPI.getMonsterExp(highestDamage, monster);
