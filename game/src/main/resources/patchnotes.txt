@@ -1,8 +1,4 @@
 Build <build>
 
 &8Changes&0
-- Added /ignore for private messages
-- Added Level Restrictions for gear usage
-
-&4Bug Fixes&0
-- Fix regenerating HP in PVP Combat
+- Update The Infernal Abyss Dungeon
