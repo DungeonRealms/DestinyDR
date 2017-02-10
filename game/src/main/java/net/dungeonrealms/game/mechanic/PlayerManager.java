@@ -67,7 +67,8 @@ public class PlayerManager {
         PVP(5, EnumData.TOGGLE_PVP, "togglepvp", "Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
         DUEL(6, EnumData.TOGGLE_DUEL, "toggleduel", "Toggles dueling requests.", "Dueling Requests"),
         CHAOTIC_PREVENTION(7, EnumData.TOGGLE_CHAOTIC_PREVENTION, "togglechaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
-        TIPS(8, EnumData.TOGGLE_TIPS, "toggletips", "Toggles the receiving of informative tips", "Tip display");
+        DAMAGE_INDICATORS(8, EnumData.TOGGLE_DAMAGE_INDICATORS, "togglefloatdamage", "Toggles floating damage values.", "Damage Indicators"),
+        TIPS(9, EnumData.TOGGLE_TIPS, "toggletips", "Toggles the receiving of informative tips", "Tip display");
 
         private int id;
         private EnumData dbField;

@@ -1212,6 +1212,7 @@ public class GameAPI {
         // Anticheat
         AntiDuplication.getInstance().handleLogin(player);
 
+        createNewData(uuid);
 
         // Newbie Protection
         //ProtectionHandler.getInstance().handleLogin(player);
@@ -1354,7 +1355,20 @@ public class GameAPI {
             DonationEffects.getInstance().doLogin(player);
         }, 100L);
     }
-
+    
+    /**
+     * Creates data that was not present on the original release of DR.
+     * (Prevents NPEs)
+     */
+    private static void createNewData(UUID uuid){
+    	createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
+    }
+    
+    private static void createIfMissing(UUID uuid, EnumData data, Object setTo){
+    	if(DatabaseAPI.getInstance().getData(data, uuid) == null)
+    		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, data, setTo, true);
+    }
+    
     /**
      * type used to switch shard
      *

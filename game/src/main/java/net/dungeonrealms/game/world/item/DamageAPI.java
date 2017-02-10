@@ -48,7 +48,7 @@ import java.util.Set;
 public class DamageAPI {
 
     public static Set<Entity> polearmAOEProcessing = new HashSet<>();
-    private static HashMap<Hologram, Integer> DAMAGE_HOLOGRAMS = new HashMap<Hologram, Integer>();
+    private static HashMap<Player, HashMap<Hologram, Integer>> DAMAGE_HOLOGRAMS = new HashMap<Player, HashMap<Hologram, Integer>>();
 
     /**
      * Calculates the weapon damage based on the nbt tag of an item, the attacker and receiver
@@ -1238,18 +1238,18 @@ public class DamageAPI {
     }
     
     public static void createDamageHologram(Player createFor, Location createAround, double hp){
-    	createDamageHologram(createFor, createAround, (int)hp + " " + ChatColor.RED + "❤");
+    	createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int)hp + " ❤");
     }
     
     /**
      * Create a hologram that floats up and deletes itself.
      * 
-     * @param Player who caused the created of this. (Nullable, doesn't summon if player has Debug off)
+     * @param Player that attacked an entity.
      * @param Location to create around
      * @param What should the hologram display?
      */
     public static void createDamageHologram(Player createFor, Location createAround, String display){
-    	if(createFor != null && !Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, createFor.getUniqueId()).toString()))
+    	if(createFor != null && !Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DAMAGE_INDICATORS, createFor.getUniqueId()).toString()))
     		return;
     	double xDif = (Utils.randInt(0, 20) - 10) / 10D;
     	double yDif = Utils.randInt(0, 15) / 10D;
@@ -1259,14 +1259,25 @@ public class DamageAPI {
     	hologram.getVisibilityManager().setVisibleByDefault(true);
     	
     	int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-    		hologram.teleport(hologram.getLocation().add(0.0, 0.03125D, 0.0));
+    		hologram.teleport(hologram.getLocation().add(0.0, 0.1D, 0.0));
     	}, 0, 1l);
-    	DAMAGE_HOLOGRAMS.put(hologram, taskId);
+    	if(!DAMAGE_HOLOGRAMS.containsKey(createFor))
+    		DAMAGE_HOLOGRAMS.put(createFor, new HashMap<Hologram, Integer>());
     	
-    	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-    		Bukkit.getScheduler().cancelTask(DAMAGE_HOLOGRAMS.get(hologram));
-    		DAMAGE_HOLOGRAMS.remove(hologram);
-    		hologram.delete();
-    	}, 60l);
+    	HashMap<Hologram, Integer> holograms = DAMAGE_HOLOGRAMS.get(createFor);
+    	holograms.put(hologram, taskId);
+    	if(holograms.keySet().size() > 4)
+    		removeDamageHologram(createFor, holograms.keySet().toArray(new Hologram[1])[0]);
+    	
+    	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), 
+    			() -> removeDamageHologram(createFor, hologram), 20l);
+    }
+    
+    private static void removeDamageHologram(Player player, Hologram hologram){
+    	if(hologram.isDeleted())
+    		return;
+    	Bukkit.getScheduler().cancelTask(DAMAGE_HOLOGRAMS.get(player).get(hologram));
+		DAMAGE_HOLOGRAMS.get(player).remove(hologram);
+		hologram.delete();
     }
 }
