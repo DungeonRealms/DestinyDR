@@ -2,4 +2,9 @@ Build <build>
 
 &8Changes&0
 - Update The Infernal Abyss Dungeon
-- Added Damage Indicators (/toggledebug)
+- Added Damage Indicators (/togglefloatdamage)
+
+&8Bugfixes&0
+- Alignment timer now stacks.
+- Minor Fishing Bugs
+- Ducks Removed?

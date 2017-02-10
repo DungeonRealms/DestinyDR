@@ -708,6 +708,12 @@ public class MainListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
+            int rodTier = Fishing.getRodTier(pl.getEquipment().getItemInMainHand());
+            int areaTier = Fishing.getInstance().getFishingSpotTier(loc);
+            if(areaTier > rodTier){
+            	e.getPlayer().sendMessage(ChatColor.RED + "This area is a Tier " + areaTier + " fishing zone.");
+            	e.getPlayer().sendMessage(ChatColor.RED + "Your current pole is too weak to catch any fish here.");
+            }
         }
 
         if (e.getState() == State.CAUGHT_FISH) {

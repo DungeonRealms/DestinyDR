@@ -197,6 +197,8 @@ public class KarmaHandler implements GenericMechanic {
         }
         EnumPlayerAlignments alignmentPlayer = alignmentFrom != null ? alignmentFrom : gamePlayer.getPlayerAlignment();
         int alignmentTime = 0;
+        if(PLAYER_ALIGNMENT_TIMES.containsKey(player))
+        	alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
         if (login) {
             alignmentTime = (int) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT_TIME, player.getUniqueId());
         }
@@ -214,15 +216,10 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, gamePlayer.getLevel());
                 /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
                     Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
                 }*/
-                PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                if (alignmentPlayer != alignmentTo) {
-                    PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, gamePlayer.getLevel());
-                }
+                alignmentTime = 0;
                 break;
             case NEUTRAL:
                 if ((alignmentPlayer != EnumPlayerAlignments.NEUTRAL) && !login) {
@@ -233,14 +230,7 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                if (alignmentTime == 0) {
-                    alignmentTime = 120;
-                }
-                PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
-                if (alignmentPlayer != alignmentTo) {
-                    PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, gamePlayer.getLevel());
-                }
+                alignmentTime += 120;
                 break;
             case CHAOTIC:
                 if ((alignmentPlayer != EnumPlayerAlignments.CHAOTIC) && !login) {
@@ -251,18 +241,16 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                if (alignmentTime == 0) {
-                    alignmentTime = 1200;
-                }
-                PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
-                if (alignmentPlayer != alignmentTo) {
-                    PLAYER_ALIGNMENTS.put(player, alignmentTo);
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, gamePlayer.getLevel());
-                }
+                alignmentTime += 1200;
                 break;
             default:
                 Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
                 break;
+        }
+        PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
+        if (alignmentPlayer != alignmentTo) {
+            PLAYER_ALIGNMENTS.put(player, alignmentTo);
+            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, alignmentTo.alignmentColor, gamePlayer.getLevel());
         }
     }
 
@@ -349,7 +337,7 @@ public class KarmaHandler implements GenericMechanic {
         if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, alignmentPlayer, false);
         } else if (alignmentPlayer == EnumPlayerAlignments.NEUTRAL) {
-            PLAYER_ALIGNMENT_TIMES.put(player, 120);
+            PLAYER_ALIGNMENT_TIMES.put(player, PLAYER_ALIGNMENT_TIMES.get(player) + 120);
         }
     }
 
