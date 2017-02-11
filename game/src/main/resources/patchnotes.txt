@@ -8,3 +8,4 @@ Build <build>
 - Alignment timer now stacks.
 - Minor Fishing Bugs
 - Ducks Removed?
+- Fixed Armor % on gear
