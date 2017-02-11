@@ -490,6 +490,10 @@ public class HealthHandler implements GenericMechanic {
                 == null || gp.isInvulnerable())
             return;
 
+        if(armourReducedDamage > 0){
+//            Bukkit.getLogger().info("Subtracting " + armourReducedDamage + " damage from " + damage + " due to " + totalArmor + " armor from " + player.getName());
+            damage -= armourReducedDamage;
+        }
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
