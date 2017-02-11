@@ -125,8 +125,12 @@ public class ShopMechanics implements GenericMechanic, Listener {
                 player.sendMessage(ChatColor.RED + "Invalid character '@' in name.");
                 return;
             }
+            if(player.getWorld() != block.getWorld()){
+            	player.sendMessage(ChatColor.RED + "You cannot place a shop in this world.");
+            	return;
+            }
 
-            Block b = player.getWorld().getBlockAt(block.getLocation().add(0, 1, 0));
+            Block b = block.getWorld().getBlockAt(block.getLocation().add(0, 1, 0));
             Block block2 = block.getWorld().getBlockAt(block.getLocation().add(1, 1, 0));
             if (b.getType() == Material.AIR && block2.getType() == Material.AIR) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

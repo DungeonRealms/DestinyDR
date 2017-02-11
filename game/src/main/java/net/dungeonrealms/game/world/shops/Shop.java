@@ -119,7 +119,6 @@ public class Shop {
         uniqueViewers.clear();
         if (shutDown) {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
-            saveCollectionBin();
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
         } else {
             if (Bukkit.getPlayer(ownerUUID) != null) {
