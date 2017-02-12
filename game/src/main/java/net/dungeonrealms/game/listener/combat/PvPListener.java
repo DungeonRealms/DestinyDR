@@ -8,6 +8,7 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
@@ -24,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 
 /**
@@ -65,6 +67,9 @@ public class PvPListener implements Listener {
         //Dont tag them if they are in a duel..
         if (!isDuel)
             damagerGP.setPvpTaggedUntil(System.currentTimeMillis() + 1000 * 10L);
+        else
+            //So you dont regenerate in a duel if you take damage.
+            receiver.setMetadata("lastDamageTaken", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
 
         if (!GameAPI.isWeapon(damager.getEquipment().getItemInMainHand())) {
 
@@ -81,7 +86,10 @@ public class PvPListener implements Listener {
 //        Item.ItemType weaponType = new Attribute(damager.getInventory().getItemInMainHand()).getItemType();
 //        Item.ItemTier tier = new Attribute(damager.getInventory().getItemInMainHand()).getItemTier();
 
-        KarmaHandler.getInstance().handleAlignmentChanges(damager);
+        //Dont change alignments based on duel contact at all.
+        if (!isDuel)
+            KarmaHandler.getInstance().handleAlignmentChanges(damager);
+
         event.setCancelled(true);
         damager.updateInventory();
 
@@ -108,8 +116,8 @@ public class PvPListener implements Listener {
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
         }
-        if(finalDamage > 0)
-        	DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
+        if (finalDamage > 0)
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1], !isDuel);
 
         DamageAPI.handlePolearmAOE(event, calculatedDamage / 2, damager);
@@ -205,8 +213,8 @@ public class PvPListener implements Listener {
             finalDamage = 0;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
-        }else{
-        	DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
+        } else {
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
         }
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1], !isDuel);
     }

@@ -9,3 +9,4 @@ Build <build>
 - Minor Fishing Bugs
 - Ducks Removed?
 - Fixed Armor % on gear
+- Fixed Regen in duels

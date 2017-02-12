@@ -318,7 +318,8 @@ public class HealthHandler implements GenericMechanic {
      */
     private void regenerateHealth() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (CombatLog.isInCombat(player) || CombatLog.inPVP(player)) {
+            //10 seconds of taking damage in a duel
+            if (CombatLog.isInCombat(player) || CombatLog.inPVP(player) || player.hasMetadata("lastDamageTaken") && (System.currentTimeMillis() - player.getMetadata("lastDamageTaken").get(0).asLong()) < 10_000L) {
                 continue;
             }
             if (getPlayerHPLive(player) <= 0 && player.getHealth() <= 0) {
