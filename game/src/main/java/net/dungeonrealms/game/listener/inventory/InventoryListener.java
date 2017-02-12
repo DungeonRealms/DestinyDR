@@ -8,7 +8,6 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.command.moderation.*;
-import net.dungeonrealms.game.command.punish.CommandBan;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.ClickHandler;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -78,14 +77,14 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClose(InventoryCloseEvent event) {
         if (!CommandInvsee.offline_inv_watchers.containsKey(event.getPlayer().getUniqueId())) return;
-        
-        if(event.getInventory().getName().contains("'s Offline Inventory View")){
-        	UUID target = CommandInvsee.offline_inv_watchers.get(event.getPlayer().getUniqueId());
-        	
-        	String inventory = ItemSerialization.toString(event.getInventory());
-        	DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true, true, null);
+
+        if (event.getInventory().getName().contains("'s Offline Inventory View")) {
+            UUID target = CommandInvsee.offline_inv_watchers.get(event.getPlayer().getUniqueId());
+
+            String inventory = ItemSerialization.toString(event.getInventory());
+            DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY, inventory, true, true, null);
         }
-        
+
         CommandInvsee.offline_inv_watchers.remove(event.getPlayer().getUniqueId());
     }
 
@@ -94,24 +93,24 @@ public class InventoryListener implements Listener {
         if (!CommandArmorsee.offline_armor_watchers.containsKey(event.getPlayer().getUniqueId())) return;
 
         UUID target = CommandArmorsee.offline_armor_watchers.get(event.getPlayer().getUniqueId());
-        if(event.getInventory().getTitle().contains("'s Offline Armor View (Last slot is offhand")){
-        	ArrayList<String> armor = new ArrayList<>();
-        	for (int i = 0; i < 4; i++) {
-            	ItemStack stack = event.getInventory().getContents()[i];
-            	if (stack == null || stack.getType() == Material.AIR) {
-                	armor.add("");
-            	} else {
-            		armor.add(ItemSerialization.itemStackToBase64(stack));
-            	}
-        	}
-        	ItemStack offHand = event.getInventory().getContents()[4];
-        	if (offHand == null || offHand.getType() == Material.AIR) {
-            	armor.add("");
-        	} else {
-            	armor.add(ItemSerialization.itemStackToBase64(offHand));
-        	}
+        if (event.getInventory().getTitle().contains("'s Offline Armor View (Last slot is offhand")) {
+            ArrayList<String> armor = new ArrayList<>();
+            for (int i = 0; i < 4; i++) {
+                ItemStack stack = event.getInventory().getContents()[i];
+                if (stack == null || stack.getType() == Material.AIR) {
+                    armor.add("");
+                } else {
+                    armor.add(ItemSerialization.itemStackToBase64(stack));
+                }
+            }
+            ItemStack offHand = event.getInventory().getContents()[4];
+            if (offHand == null || offHand.getType() == Material.AIR) {
+                armor.add("");
+            } else {
+                armor.add(ItemSerialization.itemStackToBase64(offHand));
+            }
 
-        	DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.ARMOR, armor, true, true, null);
+            DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.ARMOR, armor, true, true, null);
         }
         CommandArmorsee.offline_armor_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -122,12 +121,12 @@ public class InventoryListener implements Listener {
 
         UUID target = CommandBanksee.offline_bank_watchers.get(event.getPlayer().getUniqueId());
 
-        if(event.getInventory().getTitle().contains("Storage Chest")){
-        	Inventory inv = event.getInventory();
-        	if (inv == null) return;
+        if (event.getInventory().getTitle().contains("Storage Chest")) {
+            Inventory inv = event.getInventory();
+            if (inv == null) return;
 
-        	String serializedInv = ItemSerialization.toString(inv);
-        	DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, true, true, null);
+            String serializedInv = ItemSerialization.toString(inv);
+            DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, true, true, null);
         }
         CommandBanksee.offline_bank_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -174,12 +173,12 @@ public class InventoryListener implements Listener {
         if (!(CommandBinsee.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId()))) return;
 
         UUID target = CommandBinsee.offline_bin_watchers.get(event.getPlayer().getUniqueId());
-        if(event.getInventory().getTitle().contains("Collection Bin")){
-        	Inventory inv = event.getInventory();
-        	if (inv == null) return;
-        
-        	String serializedInv = ItemSerialization.toString(inv);
-        	DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, true, true, null);
+        if (event.getInventory().getTitle().contains("Collection Bin")) {
+            Inventory inv = event.getInventory();
+            if (inv == null) return;
+
+            String serializedInv = ItemSerialization.toString(inv);
+            DatabaseAPI.getInstance().update(target, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, true, true, null);
         }
         CommandBinsee.offline_bin_watchers.remove(event.getPlayer().getUniqueId());
     }
@@ -193,6 +192,46 @@ public class InventoryListener implements Listener {
         if (event.getInventory().getTitle().contains("VS.") || event.getInventory().getTitle().contains("Bank")
                 || event.getInventory().getTitle().contains("@") || event.getInventory().getTitle().contains("Trade"))
             event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        StringBuilder msg = new StringBuilder();
+        GameAPI.runAsSpectators(player, (spectator) -> {
+
+            if (msg.length() == 0) {
+                if (event.getClickedInventory() == null) {
+                    msg.append(ChatColor.YELLOW + player.getName() + " clicked on the outside of the inventory, top: " + getInventoryName(event.getInventory().getName()));
+                } else {
+
+                    String name = getInventoryName(event.getClickedInventory().getName());
+
+                    msg.append(ChatColor.YELLOW + player.getName() + " clicked slot " + ChatColor.GOLD + event.getRawSlot() + ChatColor.YELLOW + " in " + ChatColor.GOLD + name + ChatColor.YELLOW
+                             + " with action " + ChatColor.GOLD + event.getAction().name());
+                    if (name.equals("their inventory")) {
+                        msg.append(ChatColor.YELLOW + " top inventory: " + getInventoryName(event.getInventory().getName()));
+                    }
+
+                }
+
+
+                if (event.getCursor() != null) {
+                    msg.append(" cursor: ").append(ChatColor.GRAY.toString()).append(event.getCursor().getAmount()).append("x ").append(event.getCursor().hasItemMeta() && event.getCursor().getItemMeta().hasDisplayName() ? event.getCursor().getItemMeta().getDisplayName() : event.getCursor().getType().name());
+                }
+
+                if (event.getCurrentItem() != null) {
+                    msg.append(ChatColor.YELLOW).append(" clicked item: ").append(ChatColor.GRAY).append(event.getCurrentItem().getAmount()).append("x ").append((event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() ? event.getCurrentItem().getItemMeta().getDisplayName() : event.getCurrentItem().getType().name()));
+                }
+            }
+
+            spectator.sendMessage(msg.toString());
+        });
+    }
+
+    private String getInventoryName(String name) {
+        if (name.equals("container.inventory")) return "their inventory";
+        return name;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -270,6 +309,7 @@ public class InventoryListener implements Listener {
      * @param newArmor
      * @param p
      */
+
     private static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
         if (!GameAPI.isArmor(newArmor) && !GameAPI.isArmor(oldArmor)) return;
 
@@ -395,7 +435,7 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClosed(InventoryCloseEvent event) {
-    	if(GameAPI.isShop(event.getInventory())) return;
+        if (GameAPI.isShop(event.getInventory())) return;
         Player p = (Player) event.getPlayer();
         if (event.getInventory().getTitle().contains("Storage Chest") && !CommandBanksee.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
@@ -462,7 +502,7 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onTradeInvClicked(InventoryClickEvent event) {
-    	if(GameAPI.isShop(event.getInventory())) return;
+        if (GameAPI.isShop(event.getInventory())) return;
         Player player = (Player) event.getWhoClicked();
 
 //        System.out.println("---------");
@@ -583,8 +623,8 @@ public class InventoryListener implements Listener {
             trade.changeReady();
             trade.setDividerColor(DyeColor.RED);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            	if(trade != null && trade.inv != null && trade.inv.getViewers().size() > 0)
-            		trade.setDividerColor(DyeColor.WHITE);
+                if (trade != null && trade.inv != null && trade.inv.getViewers().size() > 0)
+                    trade.setDividerColor(DyeColor.WHITE);
             }, 20L);
         }
 
@@ -1392,7 +1432,7 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerClickStatsInventory(InventoryClickEvent event) {
-    	if(GameAPI.isShop(event.getInventory())) return;
+        if (GameAPI.isShop(event.getInventory())) return;
         if (event.getInventory().getTitle().contains("Stat Points")) {
             //Stat Points Inv
             event.setCancelled(true);
