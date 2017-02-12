@@ -441,7 +441,7 @@ public class DamageAPI {
                     if (damagerIsMob) {
                         double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
                         if (damage - armorCalculation[0] <= 0) continue;
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage, armorCalculation[0], armorCalculation[1]);
                     } else if (!GameAPI.isNonPvPRegion(entity.getLocation())) {
                         if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
                             if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, damager.getUniqueId()).toString())) {
@@ -823,6 +823,7 @@ public class DamageAPI {
             // BASE ARMOR
             totalArmor = Utils.randInt(defenderAttributes.get("armor")[0], defenderAttributes.get("armor")[1]);
 
+            if(totalArmor > 75)totalArmor = 75;
             // ARMOR PENETRATION
             if (projectile == null && attackerAttributes.get("armorPenetration")[1] != 0) {
                 totalArmor -= attackerAttributes.get("armorPenetration")[1];

@@ -276,7 +276,7 @@ public class DamageListener implements Listener {
             }
 
             double[] armorCalculation = DamageAPI.calculateArmorReduction(leDamageSource, player, finalDamage, null);
-            finalDamage = finalDamage - armorCalculation[0];
+//            finalDamage = finalDamage - armorCalculation[0];
             double armorReducedDamage = armorCalculation[0];
             String attackerName;
             if (leDamageSource.hasMetadata("customname")) {
@@ -295,9 +295,8 @@ public class DamageListener implements Listener {
                 finalDamage = 0;
             } else if (armorReducedDamage == -3) {
                 //Reflect when its fixed. @TODO
-            } else {
-                finalDamage = finalDamage - armorCalculation[0];
             }
+
             HealthHandler.getInstance().handlePlayerBeingDamaged(player, leDamageSource, finalDamage, armorCalculation[0], armorCalculation[1]);
         }
     }
@@ -709,7 +708,7 @@ public class DamageListener implements Listener {
             double damage = DamageAPI.calculateProjectileDamage(leShooter, le, event.getPotion());
             double[] armorResult = DamageAPI.calculateArmorReduction(leShooter, le, damage, event.getPotion());
 
-            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) le, leShooter, damage - armorResult[0], armorResult[0], armorResult[1]);
+            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) le, leShooter, damage, armorResult[0], armorResult[1]);
         }
     }
 
@@ -1096,7 +1095,7 @@ public class DamageListener implements Listener {
                         double damage = DamageAPI.calculateProjectileDamage(shooter, (LivingEntity) ent, event.getEntity());
                         double[] armorResult = DamageAPI.calculateArmorReduction(shooter, (LivingEntity) ent, damage, event.getEntity());
 
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) ent, shooter, damage - armorResult[0], armorResult[0], armorResult[1]);
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) ent, shooter, damage, armorResult[0], armorResult[1]);
                     }
                 }
 

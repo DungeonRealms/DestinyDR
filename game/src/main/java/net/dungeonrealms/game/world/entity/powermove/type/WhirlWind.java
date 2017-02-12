@@ -70,7 +70,7 @@ public class WhirlWind extends PowerMove {
                         double[] result = DamageAPI.calculateArmorReduction(entity, p, dmg, null);
                         int armourReducedDamage = (int) result[0];
                         int totalArmor = (int) result[1];
-                        HealthHandler.getInstance().handlePlayerBeingDamaged(p, entity, (dmg - armourReducedDamage), armourReducedDamage, totalArmor);
+                        HealthHandler.getInstance().handlePlayerBeingDamaged(p, entity, dmg, armourReducedDamage, totalArmor);
                     });
 
                     entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 0.5F);
