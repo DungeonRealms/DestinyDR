@@ -31,6 +31,7 @@ import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.anticheat.PacketLogger;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
@@ -397,6 +398,7 @@ public class GameAPI {
         DungeonRealms.getInstance().saveConfig();
         CombatLog.getInstance().getCOMBAT_LOGGERS().values().forEach(CombatLogger::handleTimeOut);
         Bukkit.getScheduler().cancelAllTasks();
+        PacketLogger.INSTANCE.onDisable();
         GameAPI.logoutAllPlayers();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

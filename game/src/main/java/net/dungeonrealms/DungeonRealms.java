@@ -18,6 +18,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.anticheat.PacketLogger;
 import net.dungeonrealms.game.command.*;
 import net.dungeonrealms.game.command.dungeon.*;
 import net.dungeonrealms.game.command.friend.AcceptCommand;
@@ -320,6 +321,7 @@ public class DungeonRealms extends JavaPlugin {
             tcc = new TabCompleteCommands();
             cm.onEnable();
             tcc.onEnable();
+            pm.registerEvents(new PacketLogger(), this);
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new DungeonListener(), this);
             pm.registerEvents(new BossListener(), this);
@@ -445,6 +447,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandSetRank("setrank", "/<command> [args]", "Sets the rank of a player."));
             cm.registerCommand(new CommandArmorSee("armorsee", "/<command> [args]", "Shows the armor of a player or entity."));
             cm.registerCommand(new CommandWhois("whois", "/<command> [args]", "Get which shard a player is playing on if any."));
+            cm.registerCommand(new CommandPacketLog("packetlog", "/<command> [args]", "Log all data a user sends"));
             cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "Manage your received mail and send your own mail."));
             cm.registerCommand(new CommandReboot("reboot", "/<command>", "Displays the time until the shard will next reboot."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
