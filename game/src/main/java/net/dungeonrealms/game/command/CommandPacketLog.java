@@ -19,16 +19,18 @@ public class CommandPacketLog extends BaseCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !Rank.isPMOD((Player)sender)) return true;
+		if (sender instanceof Player && !Rank.isGM((Player)sender)) return true;
 		
 		if (args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Usage: /packetlog <Player> [Time]");
 			return true;
 		}
 		
-		int time = -1;
+		int time = Rank.isDev((Player)sender) ? -1 : 60;
 		try{
 			time = Integer.parseInt(args[1]);
+			if(!Rank.isDev((Player)sender) && time > 60)
+				time = 60;
 		}catch (Exception e) {
 			
 		}
