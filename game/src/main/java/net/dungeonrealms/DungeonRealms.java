@@ -7,6 +7,7 @@ import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.Database;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
@@ -132,6 +133,7 @@ public class DungeonRealms extends JavaPlugin {
     public boolean isBrazilianShard = false; // Brazilian shard - eventually create DR localization, etc.
     public boolean isRoleplayShard = false; // Role playing shard - prompt user its a RP shard.
     public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
+    public boolean isEventShard = false; //Event shard - Unknown use. Has sepereate database
     public boolean isGMExtendedPermissions = false; // Does the GM have extended permissions (events / spawning / etc).
     // End of Shard Config
 
@@ -208,6 +210,10 @@ public class DungeonRealms extends JavaPlugin {
             isBrazilianShard = ini.get("Settings", "brazilian_shard", Boolean.class);
             isRoleplayShard = ini.get("Settings", "roleplay_shard", Boolean.class);
             isBetaShard = ini.get("Settings", "beta_shard", Boolean.class);
+            if(ini.get("Settings").containsKey("event_shard"))
+            	isEventShard = ini.get("Settings", "event_shard", Boolean.class);
+            else
+            	ini.add("Settings", "event_shard", false); 
         } catch (InvalidFileFormatException e1) {
             Utils.log.info("InvalidFileFormat in shard config!");
         } catch (FileNotFoundException e1) {
@@ -221,7 +227,7 @@ public class DungeonRealms extends JavaPlugin {
         BungeeUtils.setPlugin(this);
         BungeeUtils.fetchServers();
 
-        DatabaseInstance.getInstance().startInitialization(true);
+        DatabaseInstance.getInstance().startInitialization(true, (isMasterShard || isEventShard ? Database.DEV : Database.NORMAL));
         DatabaseAPI.getInstance().startInitialization(bungeeName);
         AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();

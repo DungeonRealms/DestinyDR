@@ -5,9 +5,12 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.Database;
 import net.dungeonrealms.common.game.database.concurrent.MongoAccessThread;
 import net.dungeonrealms.common.game.util.AsyncUtils;
+
 import org.bson.Document;
 
 import java.util.List;
@@ -37,14 +40,14 @@ public class DatabaseInstance {
     public static MongoCollection<Document> playerData, shardData, bans, guilds, quests;
     protected boolean cacheData = true;
 
-    public void startInitialization(boolean cacheData) {
+    public void startInitialization(boolean cacheData, Database db) {
         this.cacheData = cacheData;
-        mongoClientURI = new MongoClientURI(Constants.DATABASE_URI);
+        mongoClientURI = new MongoClientURI(db.getURI());
 
         Constants.log.info("DungeonRealms Database connection pool is being created...");
         mongoClient = new MongoClient(mongoClientURI);
 
-        database = mongoClient.getDatabase("dungeonrealms");
+        database = mongoClient.getDatabase(db.getDatabaseName());
         playerData = database.getCollection("player_data");
         shardData = database.getCollection("shard_data");
         bans = database.getCollection("bans");

@@ -217,7 +217,12 @@ public class DatabaseAPI {
             if (Constants.debug) currentTime = System.currentTimeMillis();
 
             doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-
+            
+            if(doc == null){
+            	addNewPlayer(uuid, false);
+            	return getData(data, uuid);
+            }
+            
             if (Constants.debug) {
                 Constants.log.info("[Database] Player document retrieved in " + String.valueOf(System.currentTimeMillis() - currentTime) + " ms.");
                 printTrace();
@@ -291,6 +296,10 @@ public class DatabaseAPI {
     public void requestPlayer(UUID uuid, boolean async) {
         requestPlayer(uuid, async, null);
     }
+    
+    /*private void logDocument(Document doc){
+    	System.out.println(doc.toJson());
+    }*/
 
     /**
      * Is fired to grab a player from Mongo

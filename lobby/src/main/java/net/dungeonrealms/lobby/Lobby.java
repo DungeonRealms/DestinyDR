@@ -2,6 +2,7 @@ package net.dungeonrealms.lobby;
 
 import lombok.Getter;
 import net.dungeonrealms.common.Constants;
+import net.dungeonrealms.common.Database;
 import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
@@ -14,6 +15,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.lobby.effect.GhostFactory;
+
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -52,7 +54,7 @@ public class Lobby extends JavaPlugin implements Listener {
         Constants.build();
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(3L);
-        DatabaseInstance.getInstance().startInitialization(true);
+        DatabaseInstance.getInstance().startInitialization(true, Database.NORMAL);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         ghostFactory = new GhostFactory(this);

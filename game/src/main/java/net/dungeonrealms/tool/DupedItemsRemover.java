@@ -1,7 +1,9 @@
 package net.dungeonrealms.tool;
 
 import com.mongodb.Block;
+
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.Database;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
@@ -11,6 +13,7 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bson.Document;
 import org.bukkit.Material;
@@ -36,7 +39,7 @@ public class DupedItemsRemover implements GenericMechanic {
         final int[] totalQueries = {0};
         final int[] totalQueriesWithDupes = {0};
         long currTotalTime = System.currentTimeMillis();
-        DatabaseInstance.getInstance().startInitialization(true);
+        DatabaseInstance.getInstance().startInitialization(true, Database.NORMAL);
 
         DatabaseInstance.playerData.find().forEach(new Block<Document>() {
             @Override

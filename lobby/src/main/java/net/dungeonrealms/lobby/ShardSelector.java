@@ -144,6 +144,7 @@ public class ShardSelector extends AbstractMenu {
         else if (shardID.startsWith("YT-")) return new ItemStack(Material.GOLD_NUGGET);
         else if (shardID.startsWith("BR-")) return new ItemStack(Material.SAPLING, 1, (byte) 3);
         else if (shardID.startsWith("SUB-")) return new ItemStack(Material.EMERALD);
+        else if(shardID.startsWith("EVENT-")) return new ItemStack(Material.GOLD_INGOT);
 
         return new ItemStack(Material.END_CRYSTAL);
     }

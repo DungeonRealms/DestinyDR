@@ -401,13 +401,15 @@ public class RestrictionListener implements Listener {
                 return;
             }
         }
-
+        
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (event.hasBlock() && event.getClickedBlock().getType() == Material.CAKE_BLOCK) {
-                event.setCancelled(true);
-                event.setUseInteractedBlock(Event.Result.DENY);
-            }
+            if (event.hasBlock()){
+            	if(event.getClickedBlock().getType() == Material.CAKE_BLOCK || event.getClickedBlock().getType() == Material.GRASS) {
+            		event.setCancelled(true);
+            		event.setUseInteractedBlock(Event.Result.DENY);
+            	}
+        	}
         }
     }
 
