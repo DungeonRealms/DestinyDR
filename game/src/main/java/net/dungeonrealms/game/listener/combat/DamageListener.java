@@ -467,7 +467,7 @@ public class DamageListener implements Listener {
             event.getDrops().clear();
         }
 
-        new ArrayList<>(event.getDrops()).stream().filter(itemStack -> !GameAPI.isItemDroppable(itemStack) || GameAPI.isItemUntradeable(itemStack)).forEach(itemStack -> {
+        new ArrayList<>(event.getDrops()).stream().filter(itemStack -> !GameAPI.isItemPermanentlyUntradeable(itemStack) && (!GameAPI.isItemDroppable(itemStack) || GameAPI.isItemUntradeable(itemStack))).forEach(itemStack -> {
             event.getDrops().remove(itemStack);
         });
 
