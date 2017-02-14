@@ -39,6 +39,9 @@ public class KarmaHandler implements GenericMechanic {
     public static ConcurrentHashMap<Player, Integer> PLAYER_ALIGNMENT_TIMES = new ConcurrentHashMap<>();
     public static HashMap<Player, EnumPlayerAlignments> PLAYER_LOCATIONS = new HashMap<>();
     public static List<Location> CHAOTIC_RESPAWNS = new ArrayList<>();
+    
+    private static int CHAOTIC_COOLDOWN = 1200;
+    private static int NEUTRAL_COOLDOWN = 120;
 
     public enum EnumPlayerAlignments {
         LAWFUL(0, "lawful", ChatColor.WHITE, "-30% Durability Arm/Wep on Death"),
@@ -117,7 +120,7 @@ public class KarmaHandler implements GenericMechanic {
                 EnumPlayerAlignments currentAlignment = alignment.getValue();
                 if (currentAlignment == EnumPlayerAlignments.CHAOTIC) {
                     setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, currentAlignment, false);
-                    PLAYER_ALIGNMENT_TIMES.put(player, 120);
+                    PLAYER_ALIGNMENT_TIMES.put(player, NEUTRAL_COOLDOWN);
                 } else if (currentAlignment == EnumPlayerAlignments.NEUTRAL) {
                     setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL, currentAlignment, false);
                     PLAYER_ALIGNMENT_TIMES.remove(player);
@@ -196,6 +199,7 @@ public class KarmaHandler implements GenericMechanic {
             return;
         }
         EnumPlayerAlignments alignmentPlayer = alignmentFrom != null ? alignmentFrom : gamePlayer.getPlayerAlignment();
+        System.out.println("Setting " + player.getName() + "'s alignment to " + alignmentTo.name());
         int alignmentTime = 0;
         if(PLAYER_ALIGNMENT_TIMES.containsKey(player))
         	alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
@@ -205,6 +209,10 @@ public class KarmaHandler implements GenericMechanic {
         if (alignmentTo == null || alignmentTo == EnumPlayerAlignments.NONE) {
             alignmentTo = EnumPlayerAlignments.LAWFUL;
         }
+        
+        System.out.println("Current Alignment: " + alignmentPlayer.name());
+        System.out.println("Current Time: " + alignmentTime);
+        
         switch (alignmentTo) {
             case LAWFUL:
                 // Don't show alignment on player login.
@@ -230,7 +238,7 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                alignmentTime = 120;
+                alignmentTime = NEUTRAL_COOLDOWN;
                 break;
             case CHAOTIC:
                 if ((alignmentPlayer != EnumPlayerAlignments.CHAOTIC) && !login) {
@@ -241,12 +249,13 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                alignmentTime += 1200;
+                alignmentTime += CHAOTIC_COOLDOWN;
                 break;
             default:
                 Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
                 break;
         }
+        System.out.println("New Time: " + alignmentTime);
         PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
         if (alignmentPlayer != alignmentTo) {
             PLAYER_ALIGNMENTS.put(player, alignmentTo);
@@ -337,7 +346,7 @@ public class KarmaHandler implements GenericMechanic {
         if (alignmentPlayer == EnumPlayerAlignments.LAWFUL) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL, alignmentPlayer, false);
         } else if (alignmentPlayer == EnumPlayerAlignments.NEUTRAL) {
-            PLAYER_ALIGNMENT_TIMES.put(player, PLAYER_ALIGNMENT_TIMES.get(player) + 120);
+            PLAYER_ALIGNMENT_TIMES.put(player, NEUTRAL_COOLDOWN);
         }
     }
 

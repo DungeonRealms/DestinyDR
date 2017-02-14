@@ -178,13 +178,16 @@ public class CommandSet extends BaseCommand {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, false);
                 break;
             case "chaotic":
-                KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.CHAOTIC, null, false);
-                break;
             case "neutral":
-                KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.NEUTRAL, null, false);
-                break;
             case "lawful":
-                KarmaHandler.getInstance().setPlayerAlignment(player, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
+            	Player target = null;
+            	if(args.length > 1)
+            		target = Bukkit.getPlayer(args[1]);
+            	if(target == null)
+            		target = player;
+            	
+                KarmaHandler.getInstance().setPlayerAlignment(target, KarmaHandler.EnumPlayerAlignments.valueOf(args[0].toUpperCase()), null, false);
+                player.sendMessage(ChatColor.GREEN + "Set " + target.getName() + "'s alignment to " + args[0] + ".");
                 break;
             case "g":
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
