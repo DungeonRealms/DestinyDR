@@ -508,8 +508,8 @@ public class DatabaseAPI {
                                         .append("pvp", false)
                                         .append("duel", true)
                                         .append("chaoticPrevention", true)
-                                        .append("tips", true))
-                                        .append("damageIndicators",  true)
+                                        .append("tips", true)
+                                        .append("damageIndicators",  true))
                         .append("portalKeyShards",
                                 new Document("tier1", 0)
                                         .append("tier2", 0)
