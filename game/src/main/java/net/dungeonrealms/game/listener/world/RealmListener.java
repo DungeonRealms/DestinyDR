@@ -140,6 +140,22 @@ public class RealmListener implements Listener {
         if (realm != null && !realm.isSettingSpawn() && event.getBlock().getType().equals(Material.PORTAL))
             event.setCancelled(true);
     }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void playerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (event.hasBlock()){
+            	if (player.getGameMode() == GameMode.CREATIVE || event.getClickedBlock().getWorld() == Bukkit.getWorlds().get(0))
+                    return;
+                
+            	if(event.getItem() != null && GameAPI.isWeapon(event.getItem()) && event.getClickedBlock().getType() == Material.GRASS) {
+            		event.setCancelled(true);
+            		event.setUseInteractedBlock(Event.Result.DENY);
+            	}
+        	}
+        }
+    }
 
     @EventHandler
     public void RealmBlockProcessor(UpdateEvent e) {
