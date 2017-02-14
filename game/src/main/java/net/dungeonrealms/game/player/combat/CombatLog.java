@@ -331,10 +331,12 @@ public class CombatLog implements GenericMechanic {
         combatLogger.setArmorToSave(armorToSave);
         CombatLog.getInstance().getCOMBAT_LOGGERS().put(player.getUniqueId(), combatLogger);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            //Just hold the player in memory? I like it.
             if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(player.getUniqueId())) {
                 CombatLog.getInstance().getCOMBAT_LOGGERS().get(player.getUniqueId()).handleTimeOut();
             }
-        }, 250L);
+
+        }, 200L);
     }
 
     @Override

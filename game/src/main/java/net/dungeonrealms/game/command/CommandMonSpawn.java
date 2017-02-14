@@ -40,7 +40,7 @@ public class CommandMonSpawn extends BaseCommand {
             BlockCommandSender bcs = (BlockCommandSender) s;
             Location location = bcs.getBlock().getLocation().add(0, 2, 0);
             World nmsWorld = ((CraftWorld) bcs.getBlock().getWorld()).getHandle();
-            if (args.length != 4) return true;
+            if (args.length != 5) return true;
             String monsterType = args[0];
             int tier = Integer.parseInt(args[1]);
             boolean elite = false;
