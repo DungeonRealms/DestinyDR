@@ -939,7 +939,7 @@ public class GameAPI {
                     gp.setAbleToDrop(false);
                 }
 
-                if (DungeonRealms.getInstance().isDrStopAll || (DungeonRealms.getInstance().isMasterShard || DungeonRealms.getInstance().isEventShard)) {
+                if (DungeonRealms.getInstance().isDrStopAll) {
 
                     // SEND THEM TO THE LOBBY NORMALLY INSTEAD //
                     BungeeUtils.sendToServer(player.getName(), "Lobby");
