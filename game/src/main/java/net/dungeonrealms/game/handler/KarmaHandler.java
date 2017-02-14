@@ -199,7 +199,6 @@ public class KarmaHandler implements GenericMechanic {
             return;
         }
         EnumPlayerAlignments alignmentPlayer = alignmentFrom != null ? alignmentFrom : gamePlayer.getPlayerAlignment();
-        System.out.println("Setting " + player.getName() + "'s alignment to " + alignmentTo.name());
         int alignmentTime = 0;
         if(PLAYER_ALIGNMENT_TIMES.containsKey(player))
         	alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
@@ -209,9 +208,6 @@ public class KarmaHandler implements GenericMechanic {
         if (alignmentTo == null || alignmentTo == EnumPlayerAlignments.NONE) {
             alignmentTo = EnumPlayerAlignments.LAWFUL;
         }
-        
-        System.out.println("Current Alignment: " + alignmentPlayer.name());
-        System.out.println("Current Time: " + alignmentTime);
         
         switch (alignmentTo) {
             case LAWFUL:
@@ -255,7 +251,7 @@ public class KarmaHandler implements GenericMechanic {
                 Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
                 break;
         }
-        System.out.println("New Time: " + alignmentTime);
+       
         PLAYER_ALIGNMENT_TIMES.put(player, alignmentTime);
         if (alignmentPlayer != alignmentTo) {
             PLAYER_ALIGNMENTS.put(player, alignmentTo);
