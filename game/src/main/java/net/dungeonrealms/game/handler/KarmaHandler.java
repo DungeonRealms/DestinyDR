@@ -230,7 +230,7 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                alignmentTime += 120;
+                alignmentTime = 120;
                 break;
             case CHAOTIC:
                 if ((alignmentPlayer != EnumPlayerAlignments.CHAOTIC) && !login) {
