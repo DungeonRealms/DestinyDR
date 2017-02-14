@@ -401,7 +401,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "View and manage your profile toggles.", Collections.singletonList("toggle")));
         cm.registerCommand(new CommandToggleDebug("toggledebug", "/<command> [args]", "Toggles displaying combat debug messages.", Collections.singletonList("debug")));
         cm.registerCommand(new CommandToggleChaos("togglechaos", "/<command> [args]", "Toggles killing blows on lawful players (anti-chaotic)."));
-        cm.registerCommand(new CommandToggleChaos("togglefloatdamage", "/<command> [args]", "Toggles Floating Damage Indicators."));
+        cm.registerCommand(new CommandToggleDamageIndicators("togglefloatdamage", "/<command> [args]", "Toggles Floating Damage Indicators."));
         cm.registerCommand(new CommandToggleGlobalChat("toggleglobalchat", "/<command> [args]", "Toggles talking only in global chat."));
         cm.registerCommand(new CommandTogglePvp("togglepvp", "/<command> [args]", "Toggles all outgoing PvP damage (anti-neutral)."));
         cm.registerCommand(new CommandToggleTells("toggletells", "/<command> [args]", "Toggles receiving NON-BUD /tell.", Collections.singletonList("dnd")));

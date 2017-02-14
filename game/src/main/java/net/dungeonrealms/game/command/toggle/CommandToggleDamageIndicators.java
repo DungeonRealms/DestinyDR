@@ -15,8 +15,8 @@ import java.util.List;
 
 public class CommandToggleDamageIndicators extends BaseCommand {
 
-    public CommandToggleDamageIndicators(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandToggleDamageIndicators(String command, String usage, String description) {
+        super(command, usage, description);
     }
 
     @Override
