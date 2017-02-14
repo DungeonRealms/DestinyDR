@@ -116,6 +116,14 @@ public class DRWitch extends EntityWitch implements DRMonster {
     }
 
     @Override
+    public boolean damageEntity(DamageSource damagesource, float f) {
+        if(damagesource == DamageSource.MAGIC){
+            return false;
+        }
+        return super.damageEntity(damagesource, f);
+    }
+
+    @Override
     public EnumMonster getEnum() {
         return null;
     }
@@ -152,6 +160,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
             MetadataUtils.registerProjectileMetadata(this.getAttributes(), CraftItemStack.asNMSCopy(weapon).getTag(), (Projectile)var13.getBukkitEntity());
         }
     }
+
 
     @Override
     public void enderTeleportTo(double d0, double d1, double d2) {
