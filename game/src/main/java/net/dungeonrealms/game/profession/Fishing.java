@@ -166,7 +166,7 @@ public class Fishing implements GenericMechanic {
 
 
     public static ItemStack getFishDrop(int tier) {
-        EnumFish fishType = EnumFish.values()[( (tier - 1) * 3) + random.nextInt(3)]; // 0, 1, 2
+        EnumFish fishType = EnumFish.values()[((tier - 1) * 3) + random.nextInt(3)]; // 0, 1, 2
         ChatColor fishColor = ChatColor.RED;
         String fishName = fishType.name();
         int hunger_to_heal = 0;
@@ -180,7 +180,7 @@ public class Fishing implements GenericMechanic {
         if (tier == 1) {
             buff_chance = 20;
             hunger_to_heal = 10;// %
-            
+
             fishColor = ChatColor.WHITE;
 
             if (buff_chance >= do_i_buff) {
@@ -222,7 +222,7 @@ public class Fishing implements GenericMechanic {
             buff_chance = 25;
             hunger_to_heal = 20;// %
             fishColor = ChatColor.GREEN;
-            
+
             if (buff_chance >= do_i_buff) {
                 fish_buff = true;
                 int buff_type = random.nextInt(100);
@@ -441,20 +441,24 @@ public class Fishing implements GenericMechanic {
 
         List<String> fishLore = new ArrayList<>();
         if (fish_buff) {
-        	fishLore.add(fish_buff_s);
+            fishLore.add(fish_buff_s);
         }
         fishLore.add(ChatColor.RED + "-" + hunger_to_heal + "% HUNGER " + ChatColor.GRAY.toString() + "(instant)");
         fishLore.add(ChatColor.GRAY.toString() + EnumFish.getFishDesc(fishName));
 
+        fishName = fishColor + "Raw " + fishName;
+
         ItemStack fish = fishType.buildFish();
 
+
         ItemMeta im = fish.getItemMeta();
+        im.setDisplayName(fishName);
         im.setLore(fishLore);
         fish.setItemMeta(im);
-        
+
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(fish);
         nms.getTag().setInt("itemTier", tier);
-        
+
         return CraftItemStack.asBukkitCopy(nms);
     }
 
