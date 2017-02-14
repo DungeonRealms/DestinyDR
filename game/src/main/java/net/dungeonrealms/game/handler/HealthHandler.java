@@ -500,9 +500,9 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
-        if(damage <= 0){
+        if(damage < 0){
             Bukkit.getLogger().info("Negative damage dealt to " + player.getName() + " Damager: " + damager.getName() + " Damage: " + damage);
-            damage = 0;
+            damage = 1;
         }
 
         double maxHP = getPlayerMaxHPLive(player);
