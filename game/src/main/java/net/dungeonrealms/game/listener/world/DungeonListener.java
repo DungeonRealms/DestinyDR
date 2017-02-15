@@ -209,11 +209,15 @@ public class DungeonListener implements Listener {
                                 return;
                             }
                         }
-                        event.setCancelled(true);
-                        slotItem = ItemManager.createItem(Material.FIREBALL, ChatColor.LIGHT_PURPLE + "The Inferno Seal", new String[]{
-                                ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A demonic aura surrounds the relic.", ChatColor.RED + "Dungeon Item"});
-                        event.setCursor(null);
-                        event.setCurrentItem(slotItem);
+
+                        event.getWhoClicked().sendMessage(ChatColor.RED + "Use the 2 Hearts to activate the Inferno.");
+                        return;
+
+//                        event.setCancelled(true);
+//                        slotItem = ItemManager.createItem(Material.FIREBALL, ChatColor.LIGHT_PURPLE + "The Inferno Seal", new String[]{
+//                                ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A demonic aura surrounds the relic.", ChatColor.RED + "Dungeon Item"});
+//                        event.setCursor(null);
+//                        event.setCurrentItem(slotItem);
                     }
                 }
             }
@@ -232,11 +236,15 @@ public class DungeonListener implements Listener {
                                 return;
                             }
                         }
-                        event.setCancelled(true);
-                        slotItem = ItemManager.createItem(Material.FIREBALL, ChatColor.LIGHT_PURPLE + "The Inferno Seal", new String[]{
-                                ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A demonic aura surrounds the relic.", ChatColor.RED + "Dungeon Item"});
-                        event.setCursor(null);
-                        event.setCurrentItem(slotItem);
+
+                        event.getWhoClicked().sendMessage(ChatColor.RED + "Use the 2 Hearts to activate the Inferno.");
+                        return;
+
+//                        event.setCancelled(true);
+//                        slotItem = ItemManager.createItem(Material.FIREBALL, ChatColor.LIGHT_PURPLE + "The Inferno Seal", new String[]{
+//                                ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A demonic aura surrounds the relic.", ChatColor.RED + "Dungeon Item"});
+//                        event.setCursor(null);
+//                        event.setCurrentItem(slotItem);
                     }
                 }
             }
