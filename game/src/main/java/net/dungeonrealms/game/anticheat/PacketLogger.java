@@ -1,6 +1,14 @@
 package net.dungeonrealms.game.anticheat;
 
 import static com.comphenix.protocol.PacketType.Play.Client.*;
+import static com.comphenix.protocol.PacketType.Play.Server.CLOSE_WINDOW;
+import static com.comphenix.protocol.PacketType.Play.Server.OPEN_WINDOW;
+import static com.comphenix.protocol.PacketType.Play.Server.SET_SLOT;
+import static com.comphenix.protocol.PacketType.Play.Server.KICK_DISCONNECT;
+import static com.comphenix.protocol.PacketType.Play.Server.WORLD_EVENT;
+import static com.comphenix.protocol.PacketType.Play.Server.WINDOW_DATA;
+import static com.comphenix.protocol.PacketType.Play.Server.WINDOW_ITEMS;
+import static com.comphenix.protocol.PacketType.Play.Server.TRANSACTION;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -46,28 +54,28 @@ public class PacketLogger implements Listener {
 	private HashMap<Player, PacketLog> loggedPlayers = new HashMap<Player, PacketLog>();
 	
 	private PacketListener listener;
-	private PacketType[] ALL_INCOMING_PACKETS = new PacketType[] {ABILITIES, ARM_ANIMATION, BLOCK_DIG, BLOCK_PLACE, BOAT_MOVE, CHAT, CLIENT_COMMAND, CLOSE_WINDOW, CUSTOM_PAYLOAD, ENCHANT_ITEM, ENTITY_ACTION, FLYING, HELD_ITEM_SLOT, KEEP_ALIVE, POSITION, LOOK, POSITION_LOOK, RESOURCE_PACK_STATUS, SET_CREATIVE_SLOT, SETTINGS, SPECTATE, STEER_VEHICLE, TAB_COMPLETE, TELEPORT_ACCEPT, TRANSACTION, UPDATE_SIGN, USE_ENTITY, USE_ITEM, VEHICLE_MOVE, WINDOW_CLICK};
+	private PacketType[] ALL_LOGGED_PACKETS = new PacketType[] {ABILITIES, ARM_ANIMATION, BLOCK_DIG, BLOCK_PLACE, BOAT_MOVE, PacketType.Play.Client.CHAT, CLIENT_COMMAND, CLOSE_WINDOW, CUSTOM_PAYLOAD, ENCHANT_ITEM, ENTITY_ACTION, FLYING, PacketType.Play.Client.HELD_ITEM_SLOT, KEEP_ALIVE, POSITION, LOOK, POSITION_LOOK, RESOURCE_PACK_STATUS, SET_CREATIVE_SLOT, SETTINGS, SPECTATE, STEER_VEHICLE, TAB_COMPLETE, TELEPORT_ACCEPT, TRANSACTION, UPDATE_SIGN, USE_ENTITY, USE_ITEM, VEHICLE_MOVE, WINDOW_CLICK, /* SERVER */ OPEN_WINDOW, SET_SLOT, CLOSE_WINDOW, PacketType.Play.Server.HELD_ITEM_SLOT, PacketType.Play.Server.CHAT, KICK_DISCONNECT, WORLD_EVENT, WINDOW_DATA, WINDOW_ITEMS, TRANSACTION};
 	
 	public PacketLogger(){
 		INSTANCE = this;
 		File logDir = new File("./packetlog/");
 	    if(!logDir.exists())
 	    	logDir.mkdir();
-	    listener = new PacketAdapter(DungeonRealms.getInstance(), ALL_INCOMING_PACKETS) {
+	    listener = new PacketAdapter(DungeonRealms.getInstance(), ALL_LOGGED_PACKETS) {
 	    	@Override
 	    	public void onPacketReceiving(PacketEvent event) {
 	    		Player player = event.getPlayer();
 	    		PacketContainer packet = event.getPacket();
-	    		if(!loggedPlayers.containsKey(player))
-	    			return;
-	    		try{
-	    			String loggedPacket = packet.getType().name() + ") ";
-	    			
-	    			loggedPacket += PrettyPrinter.printObject(packet.getHandle());
-	    			loggedPlayers.get(player).getWriter().write(loggedPacket + "\n");
-	    		}catch(Exception e){
-	    			e.printStackTrace();
-	    		}
+	    		if(loggedPlayers.containsKey(player))
+	    			loggedPlayers.get(player).write("C -> S", packet);
+	    	}
+	    	
+	    	@Override
+	    	public void onPacketSending(PacketEvent event) {
+	    		Player player = event.getPlayer();
+	    		PacketContainer packet = event.getPacket();
+	    		if(loggedPlayers.containsKey(player))
+	    			loggedPlayers.get(player).write("S -> C", packet);
 	    	}
 	    };
 	    ProtocolLibrary.getProtocolManager().addPacketListener(listener);
@@ -76,7 +84,7 @@ public class PacketLogger implements Listener {
 	public void onDisable() {
 		ProtocolLibrary.getProtocolManager().removePacketListener(listener);
 		HandlerList.unregisterAll(this);
-		this.loggedPlayers.keySet().forEach(player -> stopLogging(player));
+		this.loggedPlayers.keySet().forEach(player -> stopLogging(player, "Server Shutdown"));
 	}
 	    
 	public void startLogging(Player player){
@@ -85,10 +93,15 @@ public class PacketLogger implements Listener {
 		}
 	}
 	    
-	public void stopLogging(Player player){
+	public void stopLogging(Player player, String reason){
+		if(!Bukkit.isPrimaryThread()){
+			Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> stopLogging(player, reason));
+			return;
+		}
 		if(loggedPlayers.containsKey(player)){
 			try {
 				PacketLog pl = loggedPlayers.get(player);
+				pl.getWriter().write("Capture Complete: " + reason);
 				pl.getWriter().close();
 				loggedPlayers.remove(player);
 				Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> uploadPacketLog(pl.getFile()));
@@ -110,17 +123,17 @@ public class PacketLogger implements Listener {
 	 */
 	public void logPlayerTime(Player player, int seconds){
 		startLogging(player);
-		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> stopLogging(player), seconds * 20);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> stopLogging(player, "Finished Logging"), seconds * 20);
 	}
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent evt){
-		stopLogging(evt.getPlayer());
+		stopLogging(evt.getPlayer(), "Logout");
 	}
 	
 	@EventHandler
-	public void onPlayerLeave(PlayerKickEvent evt){
-		stopLogging(evt.getPlayer());
+	public void onPlayerKick(PlayerKickEvent evt){
+		stopLogging(evt.getPlayer(), "Kicked (" + evt.getReason() + ")");
 	}
 	
 	private void uploadPacketLog(File file) {
@@ -176,6 +189,16 @@ public class PacketLogger implements Listener {
 		
 		public BufferedWriter getWriter(){
 			return this.bw;
+		}
+		
+		public void write(String prefix, PacketContainer packet){
+			try{
+    			String loggedPacket = "[" + prefix + "] " + packet.getType().name() + ") ";
+    			loggedPacket += PrettyPrinter.printObject(packet.getHandle());
+    			this.getWriter().write(loggedPacket + "\n");
+    		}catch(Exception e){
+    			e.printStackTrace();
+    		}
 		}
 	}
 }

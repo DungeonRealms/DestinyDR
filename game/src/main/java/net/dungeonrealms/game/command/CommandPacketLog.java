@@ -58,7 +58,7 @@ public class CommandPacketLog extends BaseCommand {
 		}else{
 			if(PacketLogger.INSTANCE.isLogging(player)){
 				sender.sendMessage(ChatColor.AQUA + "Stopped logging " + player.getName() + ".");
-				PacketLogger.INSTANCE.stopLogging(player);
+				PacketLogger.INSTANCE.stopLogging(player, "Manually stopped by " + sender.getName());
 			}else{
 				sender.sendMessage(ChatColor.AQUA + "Started logging " + player.getName() + ".");
 				PacketLogger.INSTANCE.startLogging(player);
