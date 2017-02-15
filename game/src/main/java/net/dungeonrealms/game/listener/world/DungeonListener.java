@@ -15,6 +15,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.EnderCrystal;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -140,16 +141,25 @@ public class DungeonListener implements Listener {
                 }
                 DungeonManager.getInstance().getDungeon_Wither_Effect().remove(event.getEntity().getWorld().getName());
             } else if (name.equalsIgnoreCase("Fire Lord Of The Abyss")) {
-                ItemStack key = ItemManager.createItem(Material.BLAZE_POWDER, ChatColor.RED + "A Heart of Fire", new String[]{
-                        ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "An ingredient taken from a Fire Lord", ChatColor.RED + "Dungeon Item"});
+                ItemStack key = ItemGenerator.getNamedItem("firelord");
+                if(key == null){
+                    Bukkit.getLogger().severe("MISSING ICELORD KEY FROM icelord.item FILE!");
+                    return;
+                }
+//                ItemStack key = ItemManager.createItem(Material.BLAZE_POWDER, ChatColor.RED + "A Heart of Fire", new String[]{
+//                        ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "An ingredient taken from a Fire Lord", ChatColor.RED + "Dungeon Item"});
                 if (event.getEntity().getKiller() != null) {
                     event.getEntity().getKiller().getInventory().addItem(key);
                 } else {
                     event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
                 }
             } else if (name.equalsIgnoreCase("Ice Lord Of The Abyss")) {
-                ItemStack key = ItemManager.createItem(Material.ICE, ChatColor.BLUE + "A Heart of Ice", new String[]{
-                        ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "An ingredient taken from an Ice Lord", ChatColor.RED + "Dungeon Item"});
+
+                ItemStack key = ItemGenerator.getNamedItem("icelord");
+                if(key == null){
+                    Bukkit.getLogger().severe("MISSING ICELORD KEY FROM icelord.item FILE!");
+                    return;
+                }
                 if (event.getEntity().getKiller() != null) {
                     event.getEntity().getKiller().getInventory().addItem(key);
                 } else {
@@ -178,10 +188,14 @@ public class DungeonListener implements Listener {
                 if (slotItem.hasItemMeta() && cursorItem.hasItemMeta()) {
                     if (DungeonManager.getInstance().isDungeonItem(slotItem) && DungeonManager.getInstance().isDungeonItem(cursorItem)) {
                         if (!dungeonObject.canSpawnBoss) {
-                            int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
-                            int killed = dungeonObject.killed;
-                            event.getWhoClicked().sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to create this item.");
-                            return;
+                            boolean allOps = DungeonManager.getInstance().isAllOppedPlayers(event.getWhoClicked().getWorld());
+
+                            if (!allOps) {
+                                int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
+                                int killed = dungeonObject.killed;
+                                event.getWhoClicked().sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to create this item.");
+                                return;
+                            }
                         }
                         event.setCancelled(true);
                         slotItem = ItemManager.createItem(Material.FIREBALL, ChatColor.LIGHT_PURPLE + "The Inferno Seal", new String[]{
@@ -197,10 +211,14 @@ public class DungeonListener implements Listener {
                 if (slotItem.hasItemMeta() && cursorItem.hasItemMeta()) {
                     if (DungeonManager.getInstance().isDungeonItem(slotItem) && DungeonManager.getInstance().isDungeonItem(cursorItem)) {
                         if (!dungeonObject.canSpawnBoss) {
-                            int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
-                            int killed = dungeonObject.killed;
-                            event.getWhoClicked().sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to create this item.");
-                            return;
+                            boolean allOps = DungeonManager.getInstance().isAllOppedPlayers(event.getWhoClicked().getWorld());
+
+                            if (!allOps) {
+                                int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
+                                int killed = dungeonObject.killed;
+                                event.getWhoClicked().sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to create this item.");
+                                return;
+                            }
                         }
                         event.setCancelled(true);
                         slotItem = ItemManager.createItem(Material.FIREBALL, ChatColor.LIGHT_PURPLE + "The Inferno Seal", new String[]{
@@ -439,7 +457,7 @@ public class DungeonListener implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if(!event.hasBlock())return;
+        if (!event.hasBlock()) return;
         if (event.getClickedBlock().getType() == Material.HOPPER) {
             if (!event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
 

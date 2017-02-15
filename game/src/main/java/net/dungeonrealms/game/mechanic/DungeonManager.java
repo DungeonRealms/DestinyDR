@@ -390,6 +390,16 @@ public class DungeonManager implements GenericMechanic {
         });
     }
 
+    public boolean isAllOppedPlayers(World world) {
+        boolean allOps = false;
+        for (Player pl : world.getPlayers()) {
+            if (!pl.isOp()) {
+                return false;
+            }
+            allOps = true;
+        }
+        return allOps;
+    }
 
     /**
      * @param type       DungeonType
@@ -794,7 +804,7 @@ public class DungeonManager implements GenericMechanic {
 
     private void deleteFolder(File folder) {
         try {
-            if (folder == null || folder.exists()) return;
+            if (folder == null || !folder.exists()) return;
             FileUtils.forceDelete(folder);
         } catch (IOException e) {
             e.printStackTrace();

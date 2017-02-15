@@ -38,12 +38,14 @@ public class BossTeleport extends BaseCommand {
         if (!bcs.getBlock().getWorld().getName().contains("DUNGEON")) return true;
         DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(bcs.getBlock().getWorld());
         if (!dungeonObject.canSpawnBoss) {
-            for (Player p : bcs.getBlock().getWorld().getPlayers()) {
+            if(!DungeonManager.getInstance().isAllOppedPlayers(bcs.getBlock().getWorld())) {
                 int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
                 int killed = dungeonObject.killed;
-                p.sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to spawn the boss.");
+                for (Player p : bcs.getBlock().getWorld().getPlayers()) {
+                    p.sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to spawn the boss.");
+                }
+                return true;
             }
-            return true;
         }
         if (dungeonObject.hasBossSpawned || dungeonObject.beingRemoved) {
             return true;
