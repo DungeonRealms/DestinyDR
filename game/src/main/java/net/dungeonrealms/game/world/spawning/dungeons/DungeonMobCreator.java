@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
@@ -31,6 +32,12 @@ public class DungeonMobCreator {
         ConcurrentHashMap<Entity, Location> toSpawn = new ConcurrentHashMap<>();
         Map<Location, String> spawnData = DungeonManager.instance_mob_spawns.get(instanceName);
         net.minecraft.server.v1_9_R2.World craftWorld = ((CraftWorld) world).getHandle();
+
+        DungeonManager.DungeonObject object = DungeonManager.getInstance().getDungeon(world);
+//        if(object != null && object.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS){
+//            //Get Lords Guard?
+//
+//        }
         for (Map.Entry<Location, String> entry : spawnData.entrySet()) {
             int tier;
             boolean hasCustomName = false;
@@ -78,8 +85,11 @@ public class DungeonMobCreator {
                     }
                 } else if (customName.toLowerCase().contains("mountain")) {
                     monsterType = "frozenskeleton";
+
                 } else if (customName.toLowerCase().contains("bandit pyromancer")) {
                     tier = 1;
+                } else if(customName.toLowerCase().contains("lords guard")){
+                    monsterType = "lordsguard";
                 }
             }
             enumMonster = EnumMonster.getMonsterByString(monsterType);
@@ -98,6 +108,7 @@ public class DungeonMobCreator {
                 }
                 Entity entity = SpawningMechanics.getMob(craftWorld, tier, enumMonster);
                 if (entity == null) {
+                    //Custom?
                     continue;
                 }
                 int level = Utils.getRandomFromTier(tier + 1, spawnRange);

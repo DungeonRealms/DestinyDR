@@ -656,6 +656,10 @@ public class HealthHandler implements GenericMechanic {
                         causeColor = ChatColor.RED;
                         damageCauseName = "(ON FIRE)";
                         break;
+                    case WITHER:
+                        causeColor = ChatColor.DARK_RED;
+                        damageCauseName = "(WITHER)";
+                        break;
                     case POISON:
                         causeColor = ChatColor.DARK_GREEN;
                         damageCauseName = "(POISON)";

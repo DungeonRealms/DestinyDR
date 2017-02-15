@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedZombie;
@@ -285,6 +286,9 @@ public class SpawningMechanics implements GenericMechanic {
         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
         Entity entity;
         switch (monsEnum) {
+            case LordsGuard:
+                entity = new InfernalLordsGuard(world, tier);
+                break;
             case Bandit:
             case Bandit1:
                 switch (new Random().nextInt(4)) {

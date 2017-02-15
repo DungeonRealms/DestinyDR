@@ -29,6 +29,7 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entity.powermove.type.PowerStrike;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
+import net.dungeonrealms.game.world.entity.type.monster.base.DREnderman;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitch;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
@@ -50,6 +51,7 @@ import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -884,9 +886,9 @@ public class DamageListener implements Listener {
 
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
 
-            if(event.getEntity().hasMetadata("boss") && event.getEntity() instanceof CraftLivingEntity){
+            if (event.getEntity().hasMetadata("boss") && event.getEntity() instanceof CraftLivingEntity) {
                 DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) event.getEntity()).getHandle();
-                if (b.getEnumBoss() == EnumDungeonBoss.InfernalGhast){
+                if (b.getEnumBoss() == EnumDungeonBoss.InfernalGhast) {
                     //Dont suffocate the ghast, teleport him to the middle.
                     event.getEntity().teleport(new Location(event.getEntity().getWorld(), -53, 170, 660));
                     return;
@@ -898,6 +900,12 @@ public class DamageListener implements Listener {
             Bukkit.getLogger().info("Removing entity " + event.getEntity().getType() + " at " + event.getEntity().getLocation().toString() + " inside: " + event.getEntity().getLocation().getBlock().getType().name());
             event.getEntity().remove();
             return;
+        } else if (event.getCause() == DamageCause.POISON) {
+            //Endermen and witches immune to poison?
+            if (((CraftEntity) event.getEntity()).getHandle() instanceof DRWitch || ((CraftEntity) event.getEntity()).getHandle() instanceof DREnderman) {
+                event.setCancelled(true);
+                event.setDamage(0);
+            }
         }
     }
 
@@ -952,6 +960,12 @@ public class DamageListener implements Listener {
 
                     }
                 }
+                break;
+            case WITHER:
+                if (GameAPI.isPlayer(event.getEntity())) {
+                    dmg = 50;
+                } else
+                    dmg = 0;
                 break;
             case DROWNING:
                 if (GameAPI.isPlayer(event.getEntity())) {

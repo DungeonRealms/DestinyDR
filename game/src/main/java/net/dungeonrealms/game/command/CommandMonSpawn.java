@@ -44,7 +44,7 @@ public class CommandMonSpawn extends BaseCommand {
             String monsterType = args[0];
             int tier = Integer.parseInt(args[1]);
             boolean elite = false;
-            if (args[2].equalsIgnoreCase("true")) {
+            if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("elite")) {
                 elite = true;
             }
             String meta = args[3];

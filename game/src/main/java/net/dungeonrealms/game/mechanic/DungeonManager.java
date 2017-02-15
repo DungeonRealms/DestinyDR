@@ -157,8 +157,10 @@ public class DungeonManager implements GenericMechanic {
             if (dungeonObject.getTime() > 10) {
                 if (dungeonObject.getType() == DungeonType.THE_INFERNAL_ABYSS) {
                     Bukkit.getWorld(dungeonObject.worldName).getPlayers().stream().filter(player -> player.hasPotionEffect(PotionEffectType.WITHER)).forEach(player -> {
-                        player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType() == PotionEffectType.WITHER).filter(potionEffect ->
-                                !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1));
+                        player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType().getName().equals(PotionEffectType.WITHER.getName())).filter(potionEffect ->
+                                !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> {
+                                    dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1);
+                        });
                     });
                 }
             }
@@ -183,6 +185,8 @@ public class DungeonManager implements GenericMechanic {
                         pl.setHealth(1);
                         HealthHandler.getInstance().setPlayerHPLive(pl, 1);
                         pl.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 2, 1.3F);
+                        pl.removePotionEffect(PotionEffectType.WITHER);
                     }
                     dungeon_Wither_Effect.remove(worldName);
                     continue;
@@ -190,7 +194,8 @@ public class DungeonManager implements GenericMechanic {
 
                 dungeon_Wither_Effect.put(worldName, secondsLeft);
             }
-        }), 200L, 60L);
+            //Needs to be once a second..
+        }), 200L, 20);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.forEach(dungeonObject -> {
             int time = dungeonObject.getTime();

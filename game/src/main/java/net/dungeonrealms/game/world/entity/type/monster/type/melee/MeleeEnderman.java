@@ -7,6 +7,7 @@ import net.dungeonrealms.game.world.entity.type.monster.base.DREnderman;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -20,6 +21,8 @@ public class MeleeEnderman extends DREnderman {
     public MeleeEnderman(World world, int tier) {
         super(world, EnumMonster.Enderman, tier);
         setWeapon(tier);
+
+        getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
     }
 
     public MeleeEnderman(World world) {
