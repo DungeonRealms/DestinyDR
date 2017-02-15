@@ -123,17 +123,23 @@ public class DungeonListener implements Listener {
                     ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.GREEN + "Doorkey A", new String[]{
                             ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A key required in the Infernal Abyss Dungeon", ChatColor.RED + "Dungeon Item"});
                     if (event.getEntity().getKiller() != null) {
-                        event.getEntity().getKiller().getInventory().addItem(key);
+                        if (event.getEntity().getKiller().getInventory().firstEmpty() != -1)
+                            event.getEntity().getKiller().getInventory().addItem(key);
+                        else
+                            event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
                     } else {
-                        event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
+                        event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
                     }
                 } else if (name.equalsIgnoreCase("The Annihilator")) {
                     ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.GREEN + "Doorkey B", new String[]{
                             ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A key required in the Infernal Abyss Dungeon", ChatColor.RED + "Dungeon Item"});
                     if (event.getEntity().getKiller() != null) {
-                        event.getEntity().getKiller().getInventory().addItem(key);
+                        if (event.getEntity().getKiller().getInventory().firstEmpty() != -1)
+                            event.getEntity().getKiller().getInventory().addItem(key);
+                        else
+                            event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
                     } else {
-                        event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
+                        event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
                     }
                 }
                 for (Player player : event.getEntity().getWorld().getPlayers()) {
@@ -142,28 +148,34 @@ public class DungeonListener implements Listener {
                 DungeonManager.getInstance().getDungeon_Wither_Effect().remove(event.getEntity().getWorld().getName());
             } else if (name.equalsIgnoreCase("Fire Lord Of The Abyss")) {
                 ItemStack key = ItemGenerator.getNamedItem("firelord");
-                if(key == null){
+                if (key == null) {
                     Bukkit.getLogger().severe("MISSING ICELORD KEY FROM icelord.item FILE!");
                     return;
                 }
 //                ItemStack key = ItemManager.createItem(Material.BLAZE_POWDER, ChatColor.RED + "A Heart of Fire", new String[]{
 //                        ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "An ingredient taken from a Fire Lord", ChatColor.RED + "Dungeon Item"});
                 if (event.getEntity().getKiller() != null) {
-                    event.getEntity().getKiller().getInventory().addItem(key);
+                    if (event.getEntity().getKiller().getInventory().firstEmpty() != -1)
+                        event.getEntity().getKiller().getInventory().addItem(key);
+                    else
+                        event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
                 } else {
-                    event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
+                    event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
                 }
             } else if (name.equalsIgnoreCase("Ice Lord Of The Abyss")) {
 
                 ItemStack key = ItemGenerator.getNamedItem("icelord");
-                if(key == null){
+                if (key == null) {
                     Bukkit.getLogger().severe("MISSING ICELORD KEY FROM icelord.item FILE!");
                     return;
                 }
                 if (event.getEntity().getKiller() != null) {
-                    event.getEntity().getKiller().getInventory().addItem(key);
+                    if (event.getEntity().getKiller().getInventory().firstEmpty() != -1)
+                        event.getEntity().getKiller().getInventory().addItem(key);
+                    else
+                        event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
                 } else {
-                    event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
+                    event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
                 }
             }
         }
