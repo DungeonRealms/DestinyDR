@@ -563,10 +563,12 @@ public class ItemGenerator {
         ItemStack is = null;
 
         BufferedReader reader = null;
+        boolean foundStats = false;
         try {
             reader = new BufferedReader(new FileReader(template));
 
             String line;
+
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("item_name=")) {
                     line = ChatColor.translateAlternateColorCodes('&', line);
@@ -598,6 +600,7 @@ public class ItemGenerator {
                             int lower = Integer.parseInt(s.substring(0, s.indexOf("~")));
                             int upper = Integer.parseInt(s.substring(s.indexOf("~") + 1, s.indexOf(")")));
 
+                            foundStats = true;
                             int val = rand.nextInt((upper - lower)) + lower;
                             if (line.contains("+") || line.contains("-")) {
                                 line = line.replace("(" + lower + "~" + upper + ")", String.valueOf(val));
@@ -626,11 +629,14 @@ public class ItemGenerator {
 
                             NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowInt));
                             NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highInt));
+                            foundStats = true;
                         } else { // static val
                             int val = Integer.parseInt(line.replaceAll("\\D", ""));
 
                             NBTModifiers.put(attribute.getNBTName(), new NBTTagInt(val));
+                            foundStats = true;
                         }
+
                     } else if (Item.ItemType.isArmor(is)) {
                         Item.ArmorAttributeType attribute = Item.ArmorAttributeType.getByName(modifierName);
 
@@ -648,9 +654,11 @@ public class ItemGenerator {
 
                             NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowInt));
                             NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highInt));
+                            foundStats = true;
                         } else { // static val
                             int val = Integer.parseInt(line.replaceAll("\\D", ""));
                             NBTModifiers.put(attribute.getNBTName(), new NBTTagInt(val));
+                            foundStats = true;
                         }
                     }
 
@@ -702,12 +710,12 @@ public class ItemGenerator {
             }
             if (rarity != null) break;
         }
+
         if (rarity == null) {
+            if(!foundStats)return is;
             // Add rarity if needed.
             rarity = Item.ItemRarity.UNIQUE; // default to unique
-//            item_lore.remove(ChatColor.DARK_RED + "Soulbound");
             item_lore.add(rarity.getName());
-//            item_lore.add(ChatColor.DARK_RED + "Soulbound");
             im.setLore(item_lore);
             is.setItemMeta(im);
             RepairAPI.setCustomItemDurability(is, 1500);
