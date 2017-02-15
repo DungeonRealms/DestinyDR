@@ -1,7 +1,8 @@
 Build <build>
 
 &8Changes&0
-- Update The Infernal Abyss Dungeon
+- US4 has been changed to BR1.
+- Updated the Infernal Abyss Dungeon.
 - Added Damage Indicators (/togglefloatdamage)
 
 &8Bugfixes&0

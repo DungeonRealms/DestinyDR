@@ -65,7 +65,16 @@ public class CommandSetRank extends BaseCommand {
 
                 // Always update the database with the new rank.
                 GameAPI.submitAsyncCallback(() -> {
+                    // Update the user's rank.
                     DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank, false);
+
+                    // The rank wasn't a subscription rank and therefore we should also expire their rank.
+                    // This is useful for when user's chargeback, etc.
+                    if (!rank.toLowerCase().contains("sub") || rank.equalsIgnoreCase("sub++")) {
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, 0, true);
+                    }
+
+                    // We were successful.
                     return true;
                 }, result -> {
                     // Only update the server rank if the user is currently logged in.
