@@ -104,6 +104,11 @@ public class WhirlWind extends PowerMove {
                 loc.setYaw(yaw);
 //                EntityLiving el = (EntityLiving) ((CraftEntity) entity).getHandle();
 //                el.yaw = yaw;
+                if(!(((CraftEntity) entity).getHandle() instanceof EntityCreature)){
+                    chargedMonsters.remove(entity.getUniqueId());
+                    return;
+                }
+
                 EntityCreature ec = (EntityCreature) ((CraftEntity) entity).getHandle();
                 ec.setGoalTarget(null);
 //                ec.yaw = yaw;

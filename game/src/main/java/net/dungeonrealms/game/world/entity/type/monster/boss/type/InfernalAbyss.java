@@ -379,7 +379,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             }
             groupSize++;
         }
-        int perPlayerDrop = Math.round(gemDrop / groupSize);
+        int perPlayerDrop = groupSize == 0 ? 1 : Math.round(gemDrop / groupSize);
         ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Infernal Abyss");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {
@@ -393,19 +393,23 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
                 continue;
             }
             partyMembers += player.getName() + ", ";
-            if (player.getInventory().firstEmpty() == -1) {
-                player.getWorld().dropItem(player.getLocation(), banknote);
-                player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");
-            } else {
-                player.getInventory().addItem(banknote);
+
+            if (groupSize > 0) {
+                if (player.getInventory().firstEmpty() == -1) {
+                    player.getWorld().dropItem(player.getLocation(), banknote);
+                    player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");
+                } else {
+                    player.getInventory().addItem(banknote);
+                }
+                GameAPI.getGamePlayer(player).addExperience(50000, false, true);
             }
-            GameAPI.getGamePlayer(player).addExperience(50000, false, true);
         }
         final String adventurers = partyMembers.substring(0, partyMembers.length() - 2);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + ChatColor.GOLD + "The evil fire demon known as " + ChatColor.UNDERLINE + "The Infernal Abyss" + ChatColor.RESET + ChatColor.GOLD + " has been slain by a group of adventurers!");
             Bukkit.broadcastMessage(ChatColor.GRAY + "Group: " + adventurers);
         }, 60L);
+
     }
 
     private List<Block> getNearbyBlocks(Location loc, int maxradius) {

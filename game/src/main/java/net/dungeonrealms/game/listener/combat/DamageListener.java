@@ -30,6 +30,8 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.entity.powermove.type.PowerStrike;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitch;
+import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -881,8 +883,17 @@ public class DamageListener implements Listener {
             return;
 
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
+
+            if(event.getEntity().hasMetadata("boss") && event.getEntity() instanceof CraftLivingEntity){
+                DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) event.getEntity()).getHandle();
+                if (b.getEnumBoss() == EnumDungeonBoss.InfernalGhast){
+                    //Dont suffocate the ghast, teleport him to the middle.
+                    event.getEntity().teleport(new Location(event.getEntity().getWorld(), -53, 170, 660));
+                    return;
+                }
+            }
             //Dont even despawn the boss.. or elites
-            if (event.getEntity().hasMetadata("boss") || event.getEntity().hasMetadata("elite")) return;
+            if (event.getEntity().hasMetadata("elite")) return;
 
             Bukkit.getLogger().info("Removing entity " + event.getEntity().getType() + " at " + event.getEntity().getLocation().toString() + " inside: " + event.getEntity().getLocation().getBlock().getType().name());
             event.getEntity().remove();
