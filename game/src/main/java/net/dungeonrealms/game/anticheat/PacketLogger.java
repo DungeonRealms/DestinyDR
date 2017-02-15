@@ -1,14 +1,6 @@
 package net.dungeonrealms.game.anticheat;
 
 import static com.comphenix.protocol.PacketType.Play.Client.*;
-import static com.comphenix.protocol.PacketType.Play.Server.CLOSE_WINDOW;
-import static com.comphenix.protocol.PacketType.Play.Server.OPEN_WINDOW;
-import static com.comphenix.protocol.PacketType.Play.Server.SET_SLOT;
-import static com.comphenix.protocol.PacketType.Play.Server.KICK_DISCONNECT;
-import static com.comphenix.protocol.PacketType.Play.Server.WORLD_EVENT;
-import static com.comphenix.protocol.PacketType.Play.Server.WINDOW_DATA;
-import static com.comphenix.protocol.PacketType.Play.Server.WINDOW_ITEMS;
-import static com.comphenix.protocol.PacketType.Play.Server.TRANSACTION;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -54,7 +46,7 @@ public class PacketLogger implements Listener {
 	private HashMap<Player, PacketLog> loggedPlayers = new HashMap<Player, PacketLog>();
 	
 	private PacketListener listener;
-	private PacketType[] ALL_LOGGED_PACKETS = new PacketType[] {ABILITIES, ARM_ANIMATION, BLOCK_DIG, BLOCK_PLACE, BOAT_MOVE, PacketType.Play.Client.CHAT, CLIENT_COMMAND, CLOSE_WINDOW, CUSTOM_PAYLOAD, ENCHANT_ITEM, ENTITY_ACTION, FLYING, PacketType.Play.Client.HELD_ITEM_SLOT, KEEP_ALIVE, POSITION, LOOK, POSITION_LOOK, RESOURCE_PACK_STATUS, SET_CREATIVE_SLOT, SETTINGS, SPECTATE, STEER_VEHICLE, TAB_COMPLETE, TELEPORT_ACCEPT, TRANSACTION, UPDATE_SIGN, USE_ENTITY, USE_ITEM, VEHICLE_MOVE, WINDOW_CLICK, /* SERVER */ OPEN_WINDOW, SET_SLOT, CLOSE_WINDOW, PacketType.Play.Server.HELD_ITEM_SLOT, PacketType.Play.Server.CHAT, KICK_DISCONNECT, WORLD_EVENT, WINDOW_DATA, WINDOW_ITEMS, TRANSACTION};
+	private PacketType[] ALL_LOGGED_PACKETS = new PacketType[] {ABILITIES, ARM_ANIMATION, BLOCK_DIG, BLOCK_PLACE, BOAT_MOVE, PacketType.Play.Client.CHAT, CLIENT_COMMAND, CLOSE_WINDOW, CUSTOM_PAYLOAD, ENCHANT_ITEM, ENTITY_ACTION, FLYING, PacketType.Play.Client.HELD_ITEM_SLOT, KEEP_ALIVE, POSITION, LOOK, POSITION_LOOK, RESOURCE_PACK_STATUS, SET_CREATIVE_SLOT, SETTINGS, SPECTATE, STEER_VEHICLE, TAB_COMPLETE, TELEPORT_ACCEPT, TRANSACTION, UPDATE_SIGN, USE_ENTITY, USE_ITEM, VEHICLE_MOVE, WINDOW_CLICK, /* SERVER  OPEN_WINDOW, SET_SLOT, CLOSE_WINDOW, PacketType.Play.Server.HELD_ITEM_SLOT, PacketType.Play.Server.CHAT, KICK_DISCONNECT, WORLD_EVENT, WINDOW_DATA, WINDOW_ITEMS, TRANSACTION */};
 	
 	public PacketLogger(){
 		INSTANCE = this;
@@ -70,13 +62,14 @@ public class PacketLogger implements Listener {
 	    			loggedPlayers.get(player).write("C -> S", packet);
 	    	}
 	    	
+	    	/* Something internal in ProtocolLib breaks when this is enabled, and it kicks anyone if they open their inventory in gm0
 	    	@Override
 	    	public void onPacketSending(PacketEvent event) {
 	    		Player player = event.getPlayer();
 	    		PacketContainer packet = event.getPacket();
 	    		if(loggedPlayers.containsKey(player))
 	    			loggedPlayers.get(player).write("S -> C", packet);
-	    	}
+	    	}*/
 	    };
 	    ProtocolLibrary.getProtocolManager().addPacketListener(listener);
 	}
