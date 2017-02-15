@@ -794,7 +794,7 @@ public class DungeonManager implements GenericMechanic {
 
     private void deleteFolder(File folder) {
         try {
-            if (folder == null || !folder.exists()) return;
+            if (folder == null || folder.exists()) return;
             FileUtils.forceDelete(folder);
         } catch (IOException e) {
             e.printStackTrace();
