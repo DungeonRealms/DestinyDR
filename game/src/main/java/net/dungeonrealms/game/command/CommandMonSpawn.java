@@ -5,6 +5,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
@@ -108,6 +109,11 @@ public class CommandMonSpawn extends BaseCommand {
             } else {
                 entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
                 entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
+            }
+            DungeonManager.DungeonObject object = DungeonManager.getInstance().getDungeon(bcs.getBlock().getWorld());
+            if(object != null){
+                object.aliveMonsters.add(entity);
+                DungeonManager.getInstance().TRACKED_SPAWNS.put(entity.getUniqueID(), location);
             }
             return true;
         } else if (s instanceof Player) {
