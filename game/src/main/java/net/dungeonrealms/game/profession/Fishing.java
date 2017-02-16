@@ -122,28 +122,6 @@ public class Fishing implements GenericMechanic {
             return fishList.get(random.nextInt(fishList.size() - 1));
         }
 
-        public ItemStack buildFish() {
-            ItemStack stack = null;
-            switch (this.tier) {
-                case 1:
-                    stack = new ItemStack(Material.RAW_FISH, 1, (short) 0);
-                    break;
-                case 2:
-                    stack = new ItemStack(Material.RAW_FISH, 1, (short) 2);
-                    break;
-                case 3:
-                    stack = new ItemStack(Material.RAW_FISH, 1, (short) 1);
-                    break;
-                case 4:
-                    stack = new ItemStack(Material.RAW_FISH, 1, (short) 3);
-                    break;
-                case 5:
-                    stack = new ItemStack(Material.COOKED_FISH, 1);
-                    break;
-            }
-            return stack;
-        }
-
         private static List<EnumFish> getTieredFishList(int tier) {
             List<EnumFish> fishList = new ArrayList<>();
             for (EnumFish fish : values()) {
@@ -168,6 +146,7 @@ public class Fishing implements GenericMechanic {
     public static ItemStack getFishDrop(int tier) {
         EnumFish fishType = EnumFish.values()[((tier - 1) * 3) + random.nextInt(3)]; // 0, 1, 2
         ChatColor fishColor = ChatColor.RED;
+        ItemStack fishItem = new ItemStack(Material.RAW_FISH, 1);
         String fishName = fishType.name();
         int hunger_to_heal = 0;
 
@@ -199,7 +178,8 @@ public class Fishing implements GenericMechanic {
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 25 && buff_type <= 50) {
                     // Of Speed 15 seconds of speed I.
-                    fishName += " of Lesser Agility";
+                    fishItem.setDurability((short)1);
+                	fishName += " of Lesser Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(15s)";
                 } else if (buff_type > 50 && buff_type <= 60) {
                     // Of Satiety, fill up 20% of food (2 full squares)
@@ -248,6 +228,7 @@ public class Fishing implements GenericMechanic {
                     fishName = ChatColor.GREEN.toString() + "Healing " + fishName;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
+                    fishItem.setDurability((short)1);
                     fishName += " of Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(20s)";
                 } else if (buff_type > 55 && buff_type <= 65) {
@@ -297,6 +278,7 @@ public class Fishing implements GenericMechanic {
                     fishName = ChatColor.AQUA.toString() + "Large, Healing " + fishName;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
+                    fishItem.setDurability((short)1);
                     fishName += " of Lasting Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(30s)";
                 } else if (buff_type > 55 && buff_type <= 65) {
@@ -348,6 +330,7 @@ public class Fishing implements GenericMechanic {
                     fishName = ChatColor.LIGHT_PURPLE.toString() + "Healthy " + fishName;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
+                    fishItem.setDurability((short)1);
                     fishName += " of Bursting Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (II) BUFF " + ChatColor.GRAY.toString() + "(15s)";
                 } else if (buff_type > 55 && buff_type <= 65) {
@@ -404,6 +387,7 @@ public class Fishing implements GenericMechanic {
                     fishName = ChatColor.YELLOW.toString() + "Legendary " + fishName + " of Medicine";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 45) {
+                    fishItem.setDurability((short)1);
                     fishName += " of Godlike Speed";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (II) BUFF " + ChatColor.GRAY.toString() + "(30s)";
                 } else if (buff_type > 45 && buff_type <= 50) {
@@ -448,15 +432,12 @@ public class Fishing implements GenericMechanic {
 
         fishName = fishColor + "Raw " + fishName;
 
-        ItemStack fish = fishType.buildFish();
-
-
-        ItemMeta im = fish.getItemMeta();
+        ItemMeta im = fishItem.getItemMeta();
         im.setDisplayName(fishName);
         im.setLore(fishLore);
-        fish.setItemMeta(im);
+        fishItem.setItemMeta(im);
 
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(fish);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(fishItem);
         nms.getTag().setInt("itemTier", tier);
 
         return CraftItemStack.asBukkitCopy(nms);
