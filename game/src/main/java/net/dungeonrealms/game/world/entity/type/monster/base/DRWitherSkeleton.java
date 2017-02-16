@@ -14,6 +14,7 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -104,8 +105,51 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
 
     @Override
     public boolean B(Entity entity) {
-        return super.B(entity);
+      return damage(entity);
         //Should prevent wither effect being added on.
+    }
+
+    public boolean damage(Entity entity) {
+        float f = (float)this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
+        int i = 0;
+        if(entity instanceof EntityLiving) {
+            f += EnchantmentManager.a(this.getItemInMainHand(), ((EntityLiving)entity).getMonsterType());
+            i += EnchantmentManager.a(this);
+        }
+
+        boolean flag = entity.damageEntity(DamageSource.mobAttack(this), f);
+        if(flag) {
+            if(i > 0 && entity instanceof EntityLiving) {
+                ((EntityLiving)entity).a(this, (float)i * 0.5F, (double)MathHelper.sin(this.yaw * 0.017453292F), (double)(-MathHelper.cos(this.yaw * 0.017453292F)));
+                this.motX *= 0.6D;
+                this.motZ *= 0.6D;
+            }
+
+            int j = EnchantmentManager.getFireAspectEnchantmentLevel(this);
+            if(j > 0) {
+                EntityCombustByEntityEvent entityhuman = new EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), j * 4);
+                Bukkit.getPluginManager().callEvent(entityhuman);
+                if(!entityhuman.isCancelled()) {
+                    entity.setOnFire(entityhuman.getDuration());
+                }
+            }
+
+            if(entity instanceof EntityHuman) {
+                EntityHuman entityhuman1 = (EntityHuman)entity;
+                net.minecraft.server.v1_9_R2.ItemStack itemstack = this.getItemInMainHand();
+                net.minecraft.server.v1_9_R2.ItemStack itemstack1 = entityhuman1.ct()?entityhuman1.cw():null;
+                if(itemstack != null && itemstack1 != null && itemstack.getItem() instanceof ItemAxe && itemstack1.getItem() == Items.SHIELD) {
+                    float f1 = 0.25F + (float)EnchantmentManager.getDigSpeedEnchantmentLevel(this) * 0.05F;
+                    if(this.random.nextFloat() < f1) {
+                        entityhuman1.db().a(Items.SHIELD, 100);
+                    }
+                }
+            }
+
+            this.a(this, entity);
+        }
+
+        return flag;
     }
 
     protected String getCustomEntityName() {
