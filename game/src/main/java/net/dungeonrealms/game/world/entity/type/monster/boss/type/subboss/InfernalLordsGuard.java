@@ -63,7 +63,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
      * @return
      */
     private ItemStack getWeapon() {
-        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(ItemRarity.RARE).generateItem().getItem();
+        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(random.nextDouble() <= 0.75 ? ItemRarity.UNCOMMON : ItemRarity.RARE).generateItem().getItem();
     }
 
     @Override
