@@ -45,7 +45,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
         this.fireProof = true;
         this.setOnFire(Integer.MAX_VALUE);
         this.getBukkitEntity().setCustomNameVisible(true);
-        int level = 40;
+        int level = 30;
         MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, 4, level);
 //		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), lordsguard));
 //		EntityStats.setMonsterElite(this, EnumNamedElite.NONE, 4, EnumMonster.LordsGuard, level, true);
@@ -53,7 +53,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
 //		for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
 //			p.sendMessage(ChatColor.RED.toString() + "The Infernal Lords Guard" + ChatColor.RESET.toString() + ": " + "I shall protect you my lord.");
 //		}
-        this.setSize(0.7F, 4.4F);
+        this.setSize(0.7F, 2.4F);
         this.setSkeletonType(1);
         setArmor(4);
 //		System.out.println("Main called: " + world.getWorld().getName());
@@ -63,7 +63,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
      * @return
      */
     private ItemStack getWeapon() {
-        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(random.nextDouble() <= 0.75 ? ItemRarity.UNCOMMON : ItemRarity.RARE).generateItem().getItem();
+        return new ItemGenerator().setType(random.nextDouble() <= 0.75 ? ItemType.POLEARM : ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(ItemRarity.COMMON).generateItem().getItem();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
     }
 
     private ItemStack[] getArmor() {
-        return new ItemGenerator().setTier(ItemTier.getByTier(4)).setRarity(random.nextDouble() <= 0.75 ? ItemRarity.UNCOMMON : ItemRarity.RARE).getArmorSet();
+        return new ItemGenerator().setTier(ItemTier.getByTier(4)).setRarity(ItemRarity.COMMON).getArmorSet();
     }
 
 //	@Override
