@@ -629,7 +629,9 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Banker") || npcNameStripped.equalsIgnoreCase("Roaming Banker")
-                || npcNameStripped.equalsIgnoreCase("Wandering Banker")) {
+                || npcNameStripped.equalsIgnoreCase("Wandering Banker") || npcNameStripped.equalsIgnoreCase("Hallen")
+                || npcNameStripped.equalsIgnoreCase("Shakhtan") || npcNameStripped.equalsIgnoreCase("Lakhtar")
+                || npcNameStripped.equalsIgnoreCase("Aeylah")) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             event.getPlayer().openInventory(storage.inv);
         }
