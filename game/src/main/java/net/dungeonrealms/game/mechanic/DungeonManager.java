@@ -7,6 +7,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.HealthHandler;
@@ -77,6 +78,16 @@ public class DungeonManager implements GenericMechanic {
     @Override
     public EnumPriority startPriority() {
         return EnumPriority.ARCHBISHOPS;
+    }
+
+    public static void sendStaffAlert(World world, String msg){
+        for(Player player : world.getPlayers()){
+            if(Rank.isTrialGM(player)){
+                player.sendMessage(msg);
+            }
+        }
+        Bukkit.getLogger().info("Dungeon Message: " + msg);
+
     }
 
     @Override

@@ -127,9 +127,15 @@ public class DungeonListener implements Listener {
                             event.getEntity().getKiller().getInventory().addItem(key);
                         else
                             event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
+
+                        DungeonManager.sendStaffAlert(event.getEntity().getWorld(), "Dropping key A for " + event.getEntity().getKiller().getName() + "!");
+//                        Bukkit.getLogger().info("Dropping key A for " + event.getEntity().getKiller().getName() + "!");
                     } else {
                         event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
+                        DungeonManager.sendStaffAlert(event.getEntity().getWorld(), "Dropping key A on the ground!");
                     }
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, event.getEntity().getLocation().clone().add(0, 1, 0), .75F, .75F, .75F, .06F, 50);
+                    event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 10, .7F);
                 } else if (name.equalsIgnoreCase("The Annihilator")) {
                     ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.GREEN + "Doorkey B", new String[]{
                             ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A key required in the Infernal Abyss Dungeon", ChatColor.RED + "Dungeon Item"});
@@ -138,9 +144,15 @@ public class DungeonListener implements Listener {
                             event.getEntity().getKiller().getInventory().addItem(key);
                         else
                             event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
+                        DungeonManager.sendStaffAlert(event.getEntity().getWorld(), "Dropping key B for " + event.getEntity().getKiller().getName() + "!");
+
                     } else {
                         event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), event.getEntity().getLocation().getZ()), key);
+                        DungeonManager.sendStaffAlert(event.getEntity().getWorld(), "Dropping key B on the ground!");
                     }
+
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, event.getEntity().getLocation().clone().add(0, 1, 0), .75F, .75F, .75F, .06F, 50);
+                    event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 10, .7F);
                 }
                 for (Player player : event.getEntity().getWorld().getPlayers()) {
                     player.removePotionEffect(PotionEffectType.WITHER);

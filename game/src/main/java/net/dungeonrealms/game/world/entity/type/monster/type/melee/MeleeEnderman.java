@@ -49,24 +49,25 @@ public class MeleeEnderman extends DREnderman {
 
     @Override
     protected boolean db() {
-        if (teleport) {
-            return super.db();
-        }
-        double d0 = this.locX + (this.random.nextDouble() - 0.5D) * 5.0D;
-        double d1 = this.locY + (double) (this.random.nextInt(10));
-        double d2 = this.locZ + (this.random.nextDouble() - 0.5D) * 5.0D;
-        return this.l(d0, d1, d2);
+        return false;
+    }
+
+    @Override
+    public boolean k(double d0, double d1, double d2) {
+        return false;
     }
 
     private boolean l(double d0, double d1, double d2) {
         boolean flag = this.k(d0, d1, d2);
-        if(flag) {
-            this.world.a((EntityHuman)null, this.lastX, this.lastY, this.lastZ, SoundEffects.ba, this.bA(), 1.0F, 1.0F);
+        if (flag) {
+            this.world.a((EntityHuman) null, this.lastX, this.lastY, this.lastZ, SoundEffects.ba, this.bA(), 1.0F, 1.0F);
             this.a(SoundEffects.ba, 1.0F, 1.0F);
         }
 
         return flag;
     }
+
+
     @Override
     public EnumMonster getEnum() {
         return this.monsterType;
