@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
+import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeEnderman;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.Entity;
@@ -103,6 +104,10 @@ public class CommandMonSpawn extends BaseCommand {
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
             nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+
+            if(entity instanceof MeleeEnderman && DungeonManager.getInstance().getDungeon(nmsWorld.getWorld()) != null){
+                ((MeleeEnderman)entity).setTeleport(false);
+            }
             if (!customName.equals("")) {
                 entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
                 entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
