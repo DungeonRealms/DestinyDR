@@ -46,6 +46,7 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -743,6 +744,8 @@ public class GameAPI {
             inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
             if (inv != null)
                 operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.INVENTORY_COLLECTION_BIN.getKey(), ItemSerialization.toString(inv)))));
+
+            //Currency Tab?
         }
 
         // PLAYER ARMOR AND INVENTORY
@@ -1064,6 +1067,11 @@ public class GameAPI {
             Storage storageTemp = new Storage(uuid);
             BankMechanics.storage.put(uuid, storageTemp);
         }
+
+        CurrencyTab currencyTab = new CurrencyTab(player.getUniqueId());
+        currencyTab.loadCurrencyTab(tab -> Bukkit.getLogger().info("Loaded currency tab for " + player.getName()));
+        BankMechanics.getInstance().getCurrencyTab().put(player.getUniqueId(), currencyTab);
+
         String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
         int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
         if (muleLevel > 3) {

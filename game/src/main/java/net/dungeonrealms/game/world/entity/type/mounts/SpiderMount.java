@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.world.entity.type.mounts;
 
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 
@@ -9,29 +7,20 @@ import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.UUID;
 
-/**
- * Created by Kieran on 9/19/2015.
- */
-public class EnderDragon extends EntityEnderDragon {
+public class SpiderMount extends EntitySpider {
 
-    public String mobName;
-    private UUID ownerUUID;
-    private EnumEntityType entityType;
-
-    public EnderDragon(World world, UUID ownerUUID, EnumEntityType entityType) {
+    public UUID owner;
+    public SpiderMount(World world, UUID owner) {
         super(world);
-        this.ownerUUID = ownerUUID;
-        this.entityType = entityType;
-        this.getBukkitEntity().setCustomNameVisible(true);
-        this.canPickUpLoot = false;
-        this.persistent = true;
-
-        MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
+        this.owner = owner;
 
         clearGoalSelectors();
 
-        this.goalSelector.a(3, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 20));
+        this.goalSelector.a(0, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 20F));
+
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue() * 1.3);
     }
+
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
@@ -70,7 +59,7 @@ public class EnderDragon extends EntityEnderDragon {
 
         if (jump != null && this.onGround) {    // Wouldn't want it jumping while on the ground would we?
             jump.setAccessible(true);
-            try {
+                try {
                 if (jump.getBoolean(entityliving)) {
                     double jumpHeight = 0.5D;//Here you can set the jumpHeight
                     this.motY = jumpHeight;    // Used all the time in NMS for entity jumping
@@ -115,9 +104,5 @@ public class EnderDragon extends EntityEnderDragon {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-    }
-
-    public EnderDragon(World world) {
-        super(world);
     }
 }

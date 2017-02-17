@@ -382,16 +382,18 @@ public class DamageListener implements Listener {
                     }
                 }
                 if (p == null) return;
-                Horse horse = (Horse) event.getEntity();
-                if (!horse.getVariant().equals(Variant.MULE)) return;
-                if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
-                    if (!GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
-                        // Not in a safezone
-                        EntityAPI.removePlayerMountList(p.getUniqueId());
-                        horse.remove();
-                    } else {
-                        if (event.getDamager() instanceof Player) {
-                            event.getDamager().sendMessage(org.bukkit.ChatColor.RED + "You cannot damage a mount in a " + org.bukkit.ChatColor.UNDERLINE + "safezone");
+                if(event.getEntity() instanceof Horse) {
+                    Horse horse = (Horse) event.getEntity();
+                    if (!horse.getVariant().equals(Variant.MULE)) return;
+                    if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
+                        if (!GameAPI.isInSafeRegion(event.getEntity().getLocation())) {
+                            // Not in a safezone
+                            EntityAPI.removePlayerMountList(p.getUniqueId());
+                            horse.remove();
+                        } else {
+                            if (event.getDamager() instanceof Player) {
+                                event.getDamager().sendMessage(org.bukkit.ChatColor.RED + "You cannot damage a mount in a " + org.bukkit.ChatColor.UNDERLINE + "safezone");
+                            }
                         }
                     }
                 }

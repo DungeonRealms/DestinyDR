@@ -21,6 +21,7 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.Infern
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
 import net.dungeonrealms.game.world.entity.type.mounts.EnderDragon;
 import net.dungeonrealms.game.world.entity.type.mounts.Horse;
+import net.dungeonrealms.game.world.entity.type.mounts.SpiderMount;
 import net.dungeonrealms.game.world.entity.type.pet.*;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.*;
@@ -124,7 +125,7 @@ public class EntityMechanics implements GenericMechanic {
         nmsUtils.registerEntity("PetSlime", 55, EntitySlime.class, Slime.class);
         nmsUtils.registerEntity("PetMagmaCube", 62, EntityMagmaCube.class, MagmaCube.class);
         nmsUtils.registerEntity("PetCreeper", 50, EntityCreeper.class, Creeper.class);
-
+        nmsUtils.registerEntity("MountSpider", 52, EntitySpider.class, SpiderMount.class);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0, 20L);
     }
 
@@ -159,9 +160,9 @@ public class EntityMechanics implements GenericMechanic {
                     if (MONSTER_LAST_ATTACK.get(entity) == 11) {
                         EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity) entity).getHandle();
                         if (entityInsentient != null && entityInsentient.getGoalTarget() != null) {
-                            if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distance(entity.getLocation()) >= 2 && entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distance(entity.getLocation()) <= 6) {
+                            Location loc = entityInsentient.getGoalTarget().getBukkitEntity().getLocation();
+                            if (loc.getWorld() == entity.getWorld() && loc.distance(entity.getLocation()) >= 2 && loc.distance(entity.getLocation()) <= 6) {
                                 if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().getBlockY() != entity.getLocation().getBlockY()) {
-                                    Location loc = entityInsentient.getGoalTarget().getBukkitEntity().getLocation();
                                     ((CraftEntity) entity).getHandle().setLocation(loc.getX(), loc.getY() + 1, loc.getZ(), loc.getYaw(), loc.getPitch());
                                     MONSTER_LAST_ATTACK.put(entity, 15);
                                 }

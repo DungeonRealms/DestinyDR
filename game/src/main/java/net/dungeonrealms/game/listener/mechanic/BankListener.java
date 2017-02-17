@@ -1,21 +1,22 @@
 package net.dungeonrealms.game.listener.mechanic;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 
 import net.dungeonrealms.game.world.entity.powermove.type.WhirlWind;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.apache.commons.io.input.BOMInputStream;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -502,6 +504,7 @@ public class BankListener implements Listener {
                     }
                 }
             }
+
         } else if (e.getInventory().getTitle().equalsIgnoreCase("Collection Bin")) {
             if (e.isShiftClick()) {
                 e.setCancelled(true);
@@ -705,6 +708,37 @@ public class BankListener implements Listener {
         net.minecraft.server.v1_9_R2.ItemStack storagenms = CraftItemStack.asNMSCopy(storage);
         storagenms.getTag().setString("type", "storage");
         inv.setItem(0, CraftItemStack.asBukkitCopy(storagenms));
+
+
+        List<String> currencyLore = Lists.newArrayList();
+
+        CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(uuid);
+        if (tab != null && tab.hasAccess) {
+            currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
+            currencyLore.add(ChatColor.GRAY + "Max of 250 can be stored of each type.");
+            currencyLore.add("");
+            currencyLore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Stored");
+            currencyLore.add(ChatColor.GREEN.toString() + tab.getTotalScrapStored() + ChatColor.BOLD + " / " + ChatColor.GREEN + "500");
+            currencyLore.add("");
+//            currencyLore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "UNLOCKED");
+            currencyLore.add(ChatColor.GRAY + "Click to view your Scrap Tab.");
+        } else {
+            currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
+            currencyLore.add("");
+            currencyLore.add(ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED");
+            currencyLore.add("");
+            currencyLore.add(ChatColor.GRAY + "You can unlock this Scrap Tab");
+            currencyLore.add(ChatColor.GRAY + "at " + ChatColor.UNDERLINE + "http://dungeonrealms.net/store" + ChatColor.GRAY + "!");
+        }
+
+        ItemStack currencyTab = new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, DyeColor.YELLOW.getDyeData()))
+                .setName(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Tab").setLore(currencyLore).build();
+
+        NBTWrapper wrapper = new NBTWrapper(currencyTab);
+        wrapper.setString("scrapTab", "true");
+        wrapper.setString("ench", "");
+        inv.setItem(1, wrapper.build());
+
 
         ItemMeta meta = bankItem.getItemMeta();
         meta.setDisplayName(ChatColor.GREEN + String.valueOf(getPlayerGems(uuid)) + ChatColor.GREEN + ChatColor.BOLD.toString() + " GEM(s)");

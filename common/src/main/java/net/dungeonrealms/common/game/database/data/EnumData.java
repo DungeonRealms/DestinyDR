@@ -46,6 +46,13 @@ public enum EnumData {
     RANK_SUB_EXPIRATION("rank.expiration_date"),
     PURCHASE_HISTORY("rank.purchaseHistory"),
 
+    CURRENCY_TAB_ACCESS("currencytab.access"),
+    CURRENCY_TAB_T1("currencytab.t1"),
+    CURRENCY_TAB_T2("currencytab.t2"),
+    CURRENCY_TAB_T3("currencytab.t3"),
+    CURRENCY_TAB_T4("currencytab.t4"),
+    CURRENCY_TAB_T5("currencytab.t5"),
+
     INVENTORY_COLLECTION_BIN("inventory.collection_bin"),
     INVENTORY_MULE("inventory.mule"),
     INVENTORY_STORAGE("inventory.storage"),

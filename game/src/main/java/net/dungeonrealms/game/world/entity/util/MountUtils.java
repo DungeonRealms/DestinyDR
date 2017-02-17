@@ -9,9 +9,7 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTItem;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entity.type.mounts.Horse;
+import net.dungeonrealms.game.world.entity.type.mounts.*;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.minecraft.server.v1_9_R2.World;
@@ -71,6 +69,32 @@ public class MountUtils {
             return;
         }
         World world = ((CraftWorld) player.getWorld()).getHandle();
+
+        //Temp code
+        if(mountType.equals("SPIDER")){
+            SpiderMount mountSpider = new SpiderMount(world, player.getUniqueId());
+            mountSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+            world.addEntity(mountSpider, CreatureSpawnEvent.SpawnReason.CUSTOM);
+            mountSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+            mountSpider.getBukkitEntity().setPassenger(player);
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1F, 1F);
+            player.sendMessage("Mount Spawned!");
+            EntityAPI.addPlayerMountList(player.getUniqueId(), mountSpider);
+            player.closeInventory();
+            return;
+        }else if(mountType.equals("ENDERDRAGON")){
+            EnderDragon mountEnderDragon = new EnderDragon(world, player.getUniqueId(), EnumEntityType.MOUNT);
+            mountEnderDragon.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+            world.addEntity(mountEnderDragon, CreatureSpawnEvent.SpawnReason.CUSTOM);
+            mountEnderDragon.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+            mountEnderDragon.getBukkitEntity().setPassenger(player);
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1F, 1F);
+            player.sendMessage("Mount Spawned!");
+            EntityAPI.addPlayerMountList(player.getUniqueId(), mountEnderDragon);
+            player.closeInventory();
+            return;
+        }
+
         if (!GameAPI.isStringMount(mountType)) {
             player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [MountType]");
             return;
@@ -201,18 +225,6 @@ public class MountUtils {
                     inventories.put(uuid, inv);
                 }
             }
-            /*case 7: {
-                EnderDragon mountEnderDragon = new EnderDragon(world, player.getUniqueId(), EnumEntityType.MOUNT);
-                mountEnderDragon.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                world.addEntity(mountEnderDragon, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                mountEnderDragon.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                mountEnderDragon.getBukkitEntity().setPassenger(player);
-                player.playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 1F, 1F);
-                player.sendMessage("Mount Spawned!");
-                EntityAPI.addPlayerMountList(player.getUniqueId(), mountEnderDragon);
-                player.closeInventory();
-                break;
-            }*/
         }
     }
 }

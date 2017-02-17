@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
@@ -38,7 +39,7 @@ public class CommandMount extends BaseCommand {
             return false;
         }
         Player player = (Player) sender;
-        if (args.length == 0) {
+        if (args.length == 0 || (args.length == 1 && (args[0].equalsIgnoreCase("spider") || args[0].equalsIgnoreCase("enderdragon")) && Rank.isDev(player))) {
             if (EntityAPI.hasMountOut(player.getUniqueId())) {
                 Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
                 if (entity.isAlive()) {
@@ -63,6 +64,12 @@ public class CommandMount extends BaseCommand {
             if (mountType == null || mountType.equals("")) {
                 player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
                 player.closeInventory();
+                return true;
+            }
+
+            if(args.length == 1){
+                //Spawn spider..
+                MountUtils.spawnMount(player.getUniqueId(), args[0], null);
                 return true;
             }
             player.sendMessage(ChatColor.GREEN + "Your mount is being summoned into this world!");

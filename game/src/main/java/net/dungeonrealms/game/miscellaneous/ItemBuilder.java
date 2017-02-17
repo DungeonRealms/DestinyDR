@@ -52,7 +52,14 @@ public class ItemBuilder {
         this.itemStack = item;
         return this;
     }
-
+    public ItemBuilder setLore(List<String> lore) {
+        ItemStack item = itemStack;
+        ItemMeta meta = item.getItemMeta();
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        this.itemStack = item;
+        return this;
+    }
     public ItemBuilder addLore(String lore, String... moreLore) {
         ItemStack item = itemStack;
         ItemMeta meta = item.getItemMeta();

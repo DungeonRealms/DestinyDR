@@ -167,7 +167,9 @@ public class DungeonManager implements GenericMechanic {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.forEach(dungeonObject -> {
             if (dungeonObject.getTime() > 10) {
                 if (dungeonObject.getType() == DungeonType.THE_INFERNAL_ABYSS) {
-                    Bukkit.getWorld(dungeonObject.worldName).getPlayers().stream().filter(player -> player.hasPotionEffect(PotionEffectType.WITHER)).forEach(player -> {
+                    World world = Bukkit.getWorld(dungeonObject.worldName);
+                    if(world == null)return;
+                    world.getPlayers().stream().filter(player -> player.hasPotionEffect(PotionEffectType.WITHER)).forEach(player -> {
                         player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType().getName().equals(PotionEffectType.WITHER.getName())).filter(potionEffect ->
                                 !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> {
                                     dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1);

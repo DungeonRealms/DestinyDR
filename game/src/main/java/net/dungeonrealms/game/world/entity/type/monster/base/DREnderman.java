@@ -110,6 +110,7 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
 
     @Override
     protected void r() {
+
         this.goalSelector.a(0, new PathfinderGoalFloat(this));
         this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 2.0D, false));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));

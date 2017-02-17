@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.banks;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -33,8 +34,11 @@ public class BankMechanics implements GenericMechanic {
     public static ItemStack gem;
     public static ItemStack banknote;
     public static HashMap<UUID, Storage> storage = new HashMap<>();
+
     public static HashMap<String, ItemStack> shopPricing = new HashMap<>();
 
+    @Getter
+    public Map<UUID, CurrencyTab> currencyTab = new HashMap<>();
     private static BankMechanics instance = null;
 
     public static BankMechanics getInstance() {

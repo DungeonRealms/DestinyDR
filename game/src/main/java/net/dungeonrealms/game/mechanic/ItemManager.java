@@ -13,6 +13,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
+import net.dungeonrealms.game.miscellaneous.ScrapTier;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.profession.Fishing;
@@ -269,45 +270,22 @@ public class ItemManager {
      * @since 1.0
      */
     public static ItemStack createArmorScrap(int tier) {
-        ItemStack rawStack = null;
-        String name = "";
-        switch (tier) {
-            case 1:
-                rawStack = new ItemStack(Material.LEATHER, 64);
-                name = ChatColor.WHITE + "Leather";
-                break;
-            case 2:
-                rawStack = new ItemStack(Material.IRON_FENCE, 64);
-                name = ChatColor.GREEN + "Chain";
-                break;
-            case 3:
-                rawStack = new ItemStack(Material.INK_SACK, 64, (short) 7);
-                name = ChatColor.AQUA + "Iron";
-                break;
-            case 4:
-                rawStack = new ItemStack(Material.INK_SACK, 64, DyeColor.LIGHT_BLUE.getDyeData());
-                name = ChatColor.LIGHT_PURPLE + "Diamond";
-                break;
-            case 5:
-                rawStack = new ItemStack(Material.INK_SACK, 64, DyeColor.YELLOW.getDyeData());
-                name = ChatColor.YELLOW + "Gold";
-                break;
-            default:
-                break;
-        }
-        if (rawStack != null) {
-            ItemMeta meta = rawStack.getItemMeta();
-            meta.setDisplayName(name + " Scrap");
-            meta.setLore(Collections.singletonList(ChatColor.GRAY + "Repairs 3% durability on " + name + ChatColor.GRAY + " equipment."));
-            rawStack.setItemMeta(meta);
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("type", new NBTTagString("scrap"));
-            tag.setInt("itemTier", tier);
-            nmsStack.setTag(tag);
-            return CraftItemStack.asBukkitCopy(nmsStack);
-        }
-        return null;
+
+        ScrapTier scrapTier = ScrapTier.getScrapTier(tier);
+
+        if (scrapTier == null) return null;
+
+        ItemStack rawStack = scrapTier.getRawStack();
+        ItemMeta meta = rawStack.getItemMeta();
+        meta.setDisplayName(scrapTier.getName() + " Scrap");
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "Repairs 3% durability on " + scrapTier.getName() + ChatColor.GRAY + " equipment."));
+        rawStack.setItemMeta(meta);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("scrap"));
+        tag.setInt("itemTier", tier);
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
     public static ItemStack getPlayerMuleItem(MuleTier tier) {

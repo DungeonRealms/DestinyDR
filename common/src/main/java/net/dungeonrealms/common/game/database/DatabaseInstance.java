@@ -2,6 +2,7 @@ package net.dungeonrealms.common.game.database;
 
 import com.google.common.collect.Lists;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -42,11 +43,10 @@ public class DatabaseInstance {
 
     public void startInitialization(boolean cacheData, Database db) {
         this.cacheData = cacheData;
-        mongoClientURI = new MongoClientURI(db.getURI());
+        mongoClientURI = new MongoClientURI(db.getURI(), new MongoClientOptions.Builder().maxConnectionIdleTime(0));
 
         Constants.log.info("DungeonRealms Database connection pool is being created...");
         mongoClient = new MongoClient(mongoClientURI);
-
         database = mongoClient.getDatabase(db.getDatabaseName());
         playerData = database.getCollection("player_data");
         shardData = database.getCollection("shard_data");

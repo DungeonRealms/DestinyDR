@@ -17,6 +17,7 @@ import net.dungeonrealms.common.network.ShardInfo;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 
+import javax.print.Doc;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -190,6 +191,31 @@ public class DatabaseAPI {
     }
 
 
+    public Document getDocument(UUID uuid) {
+        Document found = PLAYERS.get(uuid);
+        if (found != null) return found;
+
+        long currentTime = 0;
+        // we should never be getting offline data sync.
+
+        if (Bukkit.isPrimaryThread()) {
+            Constants.log.info("[Database] Requested for " + uuid + "'s document from the database on the main thread.");
+
+            if (Constants.debug)
+                printTrace();
+        }
+
+        if (Constants.debug) currentTime = System.currentTimeMillis();
+
+        Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
+
+        if (doc == null) {
+            return addNewPlayer(uuid, false);
+        }
+
+        return doc;
+    }
+
     /**
      * Safely Returns the object that's requested
      * based on UUID.
@@ -217,12 +243,12 @@ public class DatabaseAPI {
             if (Constants.debug) currentTime = System.currentTimeMillis();
 
             doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-            
-            if(doc == null){
-            	addNewPlayer(uuid, false);
-            	return getData(data, uuid);
+
+            if (doc == null) {
+                addNewPlayer(uuid, false);
+                return getData(data, uuid);
             }
-            
+
             if (Constants.debug) {
                 Constants.log.info("[Database] Player document retrieved in " + String.valueOf(System.currentTimeMillis() - currentTime) + " ms.");
                 printTrace();
@@ -298,7 +324,7 @@ public class DatabaseAPI {
     }
     
     /*private void logDocument(Document doc){
-    	System.out.println(doc.toJson());
+        System.out.println(doc.toJson());
     }*/
 
     /**
@@ -435,134 +461,143 @@ public class DatabaseAPI {
      * @since 1.0
      */
 
-    private void addNewPlayer(UUID uuid, boolean async) {
-        DatabaseInstance.playerData.insertOne(createCleanPlayerData(uuid));
+    private Document addNewPlayer(UUID uuid, boolean async) {
+        Document playerData = createCleanPlayerData(uuid);
+        DatabaseInstance.playerData.insertOne(playerData);
         requestPlayer(uuid, async);
         Constants.log.info("[Database] Requesting new data for : " + uuid);
+        return playerData;
     }
-    
-    public Document createCleanPlayerData(UUID uuid){
-    	return new Document("info",
-                        new Document("uuid", uuid.toString())
-                                .append("username", "")
-                                .append("health", 50)
-                                .append("gems", 0)
-                                .append("ecash", 0)
-                                .append("isCombatLogged", false)
-                                .append("ipAddress", "")
-                                .append("firstLogin", System.currentTimeMillis() / 1000L)
-                                .append("lastLogin", 0L)
-                                .append("lastLogout", 0L)
-                                .append("freeEcash", 0L)
-                                .append("lastShardTransfer", 0L)
-                                .append("netLevel", 1)
-                                .append("experience", 0)
-                                .append("hearthstone", "Cyrennica")
-                                .append("currentLocation", "")
-                                .append("isPlaying", true)
-                                .append("friends", new ArrayList<>())
-                                .append("ignored", new ArrayList<>())
-                                .append("alignment", "lawful")
-                                .append("alignmentTime", 0)
-                                .append("guild", "")
-                                .append("shopOpen", false)
-                                .append("foodLevel", 20)
-                                .append("shopLevel", 1)
-                                .append("muleLevel", 1)
-                                .append("loggerdied", false)
-                                .append("enteringrealm", "")
-                                .append("activepet", "")
-                                .append("activemount", "")
-                                .append("activetrail", "")
-                                .append("activemountskin", "")
-                                .append("loggerInventory", "")
-                                .append("loggerArmor", new ArrayList<>()))
-                        .append("attributes",
-                                new Document("bufferPoints", 6)
-                                        .append("strength", 0)
-                                        .append("dexterity", 0)
-                                        .append("intellect", 0)
-                                        .append("vitality", 0)
-                                        .append("resets", 0)
-                                        .append("freeresets", 0))
-                        .append("realm",
-                                new Document("uploading", false)
-                                        .append("title", "")
-                                        .append("lastReset", 0L)
-                                        .append("upgrading", false)
-                                        .append("tier", 1))
-                        .append("collectibles",
-                                new Document("achievements", new ArrayList<String>())
-                                        .append("mounts", new ArrayList<String>())
-                                        .append("pets", new ArrayList<String>())
-                                        .append("buffs", new ArrayList<String>())
-                                        .append("particles", new ArrayList<String>())
-                                        .append("mountskins", new ArrayList<String>()))
-                        .append("toggles",
-                                new Document("debug", true)
-                                        .append("trade", false)
-                                        .append("tradeChat", true)
-                                        .append("globalChat", false)
-                                        .append("receiveMessage", true)
-                                        .append("soundtrack", true)
-                                        .append("pvp", false)
-                                        .append("duel", true)
-                                        .append("chaoticPrevention", true)
-                                        .append("tips", true)
-                                        .append("damageIndicators",  true))
-                        .append("portalKeyShards",
-                                new Document("tier1", 0)
-                                        .append("tier2", 0)
-                                        .append("tier3", 0)
-                                        .append("tier4", 0)
-                                        .append("tier5", 0))
-                        .append("notices",
-                                new Document("guildInvitation", null)
-                                        .append("friendRequest", new ArrayList<String>())
-                                        .append("mailbox", new ArrayList<String>())
-                                        .append("lastBuild", "")
-                                        .append("lastVote", 0L))
-                        .append("rank",
-                                new Document("expiration_date", 0)
-                                        .append("rank", "DEFAULT"))
-                        .append("punishments",
-                                new Document("muted", 0L)
-                                        .append("banned", 0L)
-                                        .append("muteReason", "")
-                                        .append("banReason", ""))
-                        .append("inventory",
-                                new Document("collection_bin", "")
-                                        .append("mule", "empty")
-                                        .append("storage", "")
-                                        .append("level", 1)
-                                        .append("player", "")
-                                        .append("armor", new ArrayList<String>())
-                                        .append("itemuids", new HashSet<String>()))
-                        .append("stats",
-                                new Document("player_kills", 0)
-                                        .append("lawful_kills", 0)
-                                        .append("unlawful_kills", 0)
-                                        .append("deaths", 0)
-                                        .append("monster_kills_t1", 0)
-                                        .append("monster_kills_t2", 0)
-                                        .append("monster_kills_t3", 0)
-                                        .append("monster_kills_t4", 0)
-                                        .append("monster_kills_t5", 0)
-                                        .append("boss_kills_mayel", 0)
-                                        .append("boss_kills_burick", 0)
-                                        .append("boss_kills_infernalAbyss", 0)
-                                        .append("loot_opened", 0)
-                                        .append("duels_won", 0)
-                                        .append("duels_lost", 0)
-                                        .append("ore_mined", 0)
-                                        .append("fish_caught", 0)
-                                        .append("orbs_used", 0)
-                                        .append("time_played", 0)
-                                        .append("successful_enchants", 0)
-                                        .append("failed_enchants", 0)
-                                        .append("ecash_spent", 0)
-                                        .append("gems_earned", 0)
-                                        .append("gems_spent", 0));
+
+    public Document createCleanPlayerData(UUID uuid) {
+        return new Document("info",
+                new Document("uuid", uuid.toString())
+                        .append("username", "")
+                        .append("health", 50)
+                        .append("gems", 0)
+                        .append("ecash", 0)
+                        .append("isCombatLogged", false)
+                        .append("ipAddress", "")
+                        .append("firstLogin", System.currentTimeMillis() / 1000L)
+                        .append("lastLogin", 0L)
+                        .append("lastLogout", 0L)
+                        .append("freeEcash", 0L)
+                        .append("lastShardTransfer", 0L)
+                        .append("netLevel", 1)
+                        .append("experience", 0)
+                        .append("hearthstone", "Cyrennica")
+                        .append("currentLocation", "")
+                        .append("isPlaying", true)
+                        .append("friends", new ArrayList<>())
+                        .append("ignored", new ArrayList<>())
+                        .append("alignment", "lawful")
+                        .append("alignmentTime", 0)
+                        .append("guild", "")
+                        .append("shopOpen", false)
+                        .append("foodLevel", 20)
+                        .append("shopLevel", 1)
+                        .append("muleLevel", 1)
+                        .append("loggerdied", false)
+                        .append("enteringrealm", "")
+                        .append("activepet", "")
+                        .append("activemount", "")
+                        .append("activetrail", "")
+                        .append("activemountskin", "")
+                        .append("loggerInventory", "")
+                        .append("loggerArmor", new ArrayList<>()))
+                .append("attributes",
+                        new Document("bufferPoints", 6)
+                                .append("strength", 0)
+                                .append("dexterity", 0)
+                                .append("intellect", 0)
+                                .append("vitality", 0)
+                                .append("resets", 0)
+                                .append("freeresets", 0))
+                .append("realm",
+                        new Document("uploading", false)
+                                .append("title", "")
+                                .append("lastReset", 0L)
+                                .append("upgrading", false)
+                                .append("tier", 1))
+                .append("collectibles",
+                        new Document("achievements", new ArrayList<String>())
+                                .append("mounts", new ArrayList<String>())
+                                .append("pets", new ArrayList<String>())
+                                .append("buffs", new ArrayList<String>())
+                                .append("particles", new ArrayList<String>())
+                                .append("mountskins", new ArrayList<String>()))
+                .append("toggles",
+                        new Document("debug", true)
+                                .append("trade", false)
+                                .append("tradeChat", true)
+                                .append("globalChat", false)
+                                .append("receiveMessage", true)
+                                .append("soundtrack", true)
+                                .append("pvp", false)
+                                .append("duel", true)
+                                .append("chaoticPrevention", true)
+                                .append("tips", true)
+                                .append("damageIndicators", true))
+                .append("portalKeyShards",
+                        new Document("tier1", 0)
+                                .append("tier2", 0)
+                                .append("tier3", 0)
+                                .append("tier4", 0)
+                                .append("tier5", 0))
+                .append("notices",
+                        new Document("guildInvitation", null)
+                                .append("friendRequest", new ArrayList<String>())
+                                .append("mailbox", new ArrayList<String>())
+                                .append("lastBuild", "")
+                                .append("lastVote", 0L))
+                .append("rank",
+                        new Document("expiration_date", 0)
+                                .append("rank", "DEFAULT"))
+                .append("punishments",
+                        new Document("muted", 0L)
+                                .append("banned", 0L)
+                                .append("muteReason", "")
+                                .append("banReason", ""))
+                .append("inventory",
+                        new Document("collection_bin", "")
+                                .append("mule", "empty")
+                                .append("storage", "")
+                                .append("level", 1)
+                                .append("player", "")
+                                .append("armor", new ArrayList<String>())
+                                .append("itemuids", new HashSet<String>()))
+                .append("currencytab",
+                        new Document("access", false)
+                                .append("t1", 0)
+                                .append("t2", 0)
+                                .append("t3", 0)
+                                .append("t4", 0)
+                                .append("t5", 0))
+                .append("stats",
+                        new Document("player_kills", 0)
+                                .append("lawful_kills", 0)
+                                .append("unlawful_kills", 0)
+                                .append("deaths", 0)
+                                .append("monster_kills_t1", 0)
+                                .append("monster_kills_t2", 0)
+                                .append("monster_kills_t3", 0)
+                                .append("monster_kills_t4", 0)
+                                .append("monster_kills_t5", 0)
+                                .append("boss_kills_mayel", 0)
+                                .append("boss_kills_burick", 0)
+                                .append("boss_kills_infernalAbyss", 0)
+                                .append("loot_opened", 0)
+                                .append("duels_won", 0)
+                                .append("duels_lost", 0)
+                                .append("ore_mined", 0)
+                                .append("fish_caught", 0)
+                                .append("orbs_used", 0)
+                                .append("time_played", 0)
+                                .append("successful_enchants", 0)
+                                .append("failed_enchants", 0)
+                                .append("ecash_spent", 0)
+                                .append("gems_earned", 0)
+                                .append("gems_spent", 0));
     }
 
 
