@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.anticheat;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Sets;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Tuple;
@@ -21,11 +23,15 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,7 +44,7 @@ import java.util.stream.Collectors;
  * Created by Nick on 10/1/2015.
  */
 
-public class AntiDuplication implements GenericMechanic {
+public class AntiDuplication implements GenericMechanic, Listener {
 
     static AntiDuplication instance = null;
 
@@ -63,6 +69,7 @@ public class AntiDuplication implements GenericMechanic {
 
     @Override
     public void startInitialization() {
+    	Bukkit.getPluginManager().registerEvents(this, DungeonRealms.getInstance());
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(),
                 () -> Bukkit.getOnlinePlayers().stream().forEach(p -> checkForSuspiciousDupedItems(p, new HashSet<>(Collections.singletonList(p.getInventory())))), 0, CHECK_TICK_FREQUENCY);
     }
@@ -242,5 +249,10 @@ public class AntiDuplication implements GenericMechanic {
         return nbtItem.getItem();
     }
 
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent evt){
+    	if(evt.getPlayer() instanceof Player)
+    		checkForSuspiciousDupedItems((Player)evt.getPlayer(), new HashSet<>(Arrays.asList(evt.getPlayer().getInventory(), evt.getInventory())) );
+    }
 
 }
