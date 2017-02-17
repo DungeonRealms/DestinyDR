@@ -4,6 +4,7 @@ import static net.dungeonrealms.GameAPI.handleLogout;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -55,6 +56,7 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
+import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
@@ -128,7 +130,7 @@ public class GameAPI {
     public static Map<String, GamePlayer> GAMEPLAYERS = new ConcurrentHashMap<>();
     public static Set<Player> _hiddenPlayers = new HashSet<>();
 
-    public static CooldownProvider SAVE_DATA_COOLDOWN = new CooldownProvider();
+    //public static CooldownProvider SAVE_DATA_COOLDOWN = new CooldownProvider();
 
     /**
      * Used to avoid double saving player data
@@ -726,12 +728,9 @@ public class GameAPI {
     public static boolean savePlayerData(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
         Player player = Bukkit.getPlayer(uuid);
 
-        if (SAVE_DATA_COOLDOWN.isCooldown(uuid))
+        if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())){	
             return false;
-
-        if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId()))
-            return false;
-
+    	}
         List<UpdateOneModel<Document>> operations = new ArrayList<>();
         Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
 
@@ -815,11 +814,15 @@ public class GameAPI {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
 
         GuildMechanics.getInstance().doLogout(player);
+        
+        if(Quests.isEnabled())
+        	Quests.getInstance().handleLogoutEvents(player);
 
         // HANDLE REALM LOGOUT SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
 
         // save player data
+        System.out.println("Attempting to save.");
         savePlayerData(uuid, async, doAfterSave -> {
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
@@ -846,6 +849,7 @@ public class GameAPI {
                 GameAPI._hiddenPlayers.remove(player);
             }
             if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+            	Utils.log.info(player.getUniqueId() + " has already been saved.");
                 return;
             }
             if (CombatLog.isInCombat(player)) {
@@ -996,12 +1000,14 @@ public class GameAPI {
         } else {
             return;
         }
+        
+        createNewData(player);
 
         try {
             if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_COMBAT_LOGGED, uuid)) {
                 if (!DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid).equals(DungeonRealms.getShard().getPseudoName())) {
                     String lastShard = ShardInfo.getByPseudoName((String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid)).getShardID();
-                    player.kickPlayer(ChatColor.RED + "You have been combat logged. Please connect to Shard " + lastShard);
+                    player.kickPlayer(ChatColor.RED + "You have combat logged. Please connect to Shard " + lastShard);
                     return;
                 }
             }
@@ -1017,8 +1023,12 @@ public class GameAPI {
 
         gp.setAbleToDrop(false);
         gp.setAbleToSuicide(false);
+        gp.setAbleToOpenInventory(false);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToDrop(true), 20L * 10L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+        	gp.setAbleToDrop(true);
+        	gp.setAbleToOpenInventory(true);
+        }, 20L * 10L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
 
         // Hide invisible users from non-GMs.
@@ -1099,7 +1109,7 @@ public class GameAPI {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
+            sendNetworkMessage("Broadcast", ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
             ItemManager.giveStarter(player);
 
             // Fix missing journal & portal rune
@@ -1203,7 +1213,11 @@ public class GameAPI {
                 }
             }
         }
-
+        
+        // Quests
+        if(Quests.isEnabled())
+        	Quests.getInstance().handleLogin(player);
+        
         // Fatigue
         EnergyHandler.getInstance().handleLoginEvents(player);
 
@@ -1222,7 +1236,7 @@ public class GameAPI {
         // Anticheat
         AntiDuplication.getInstance().handleLogin(player);
 
-        createNewData(uuid);
+        createNewData(player);
 
         // Newbie Protection
         //ProtectionHandler.getInstance().handleLogin(player);
@@ -1260,7 +1274,6 @@ public class GameAPI {
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         instance.setBaseValue(1024.0D);
-        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
 
         // Permissions
         if (!Rank.isDev(player)) {
@@ -1370,8 +1383,10 @@ public class GameAPI {
      * Creates data that was not present on the original release of DR.
      * (Prevents NPEs)
      */
-    private static void createNewData(UUID uuid){
+    private static void createNewData(Player player){
+    	UUID uuid = player.getUniqueId();
     	createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
+    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
     }
     
     private static void createIfMissing(UUID uuid, EnumData data, Object setTo){
@@ -2095,6 +2110,50 @@ public class GameAPI {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(is);
         return !(nms == null || nms.getTag() == null) && is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
+    
+    public static String getCustomID(ItemStack i) {
+    	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
+        if (nms == null || nms.getTag() == null) return null;
+        NBTTagCompound tag = nms.getTag();
+        return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
+	}
+    
+    public static boolean isQuestBound(ItemStack item) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        if (nms == null || nms.getTag() == null) {
+            return false;
+        }
+        NBTTagCompound tag = nms.getTag();
+        if (tag.hasKey("questBound") && tag.getInt("questBound") == 1) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static ItemStack setQuestBound(ItemStack item, String owner, UUID uuid){
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+        lore.add(ChatColor.DARK_RED + "Quest Item");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        NBTItem nbtItem = new NBTItem(item);
+        nbtItem.setInteger("questBound", 1);
+        nbtItem.setString("owner", owner);
+        nbtItem.setString("ownerUUID", uuid.toString());
+        return nbtItem.getItem();
+    }
+    
+    public static boolean isRightfulOwnerOfQuestItem(Player player, ItemStack item){
+    	if(!isQuestBound(item))
+    		return true;
+    	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        if (nms == null || nms.getTag() == null) return false;
+        NBTTagCompound tag = nms.getTag();
+        boolean isOwner = tag.hasKey("ownerUUID") && tag.getString("ownerUUID").equals(player.getUniqueId().toString());
+        if(!isOwner)
+        	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + player.getName() + " is trying to use a Quest Item owned by " + tag.getString("owner") + " on " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.WHITE + ".");
+    	return isOwner;
+    }
 
     public static boolean isItemTradeable(ItemStack itemStack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
@@ -2212,5 +2271,52 @@ public class GameAPI {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                     () -> BungeeUtils.sendToServer(player.getName(), shard.getPseudoName()), 10);
         }));
+    }
+    
+    /**
+     * Formats milliseconds into a viewable string.
+     * 
+     * Example Input: 90000
+     * Example Output: "1min 30s"
+     * @param ms
+     */
+    public static String formatTime(long time){
+    	time /= 1000;
+    	String formatted = "";
+    	for(int i = 0; i < TimeInterval.values().length; i++){
+    		TimeInterval iv = TimeInterval.values()[TimeInterval.values().length - i - 1];
+    		if(time >= iv.getInterval()){
+    			int temp = (int) (time - (time % iv.getInterval()));
+    			int add = temp / iv.getInterval();
+    			formatted += " " + add + iv.getSuffix() + (add > 1 && iv != TimeInterval.SECOND ? "s" : "");
+    			time -= temp;
+    		}
+    	}
+    	return formatted.equals("") ? "" : formatted.substring(1);
+    }
+    
+    private enum TimeInterval {
+    	SECOND("s", 1),
+    	MINUTE("min", 60 * SECOND.getInterval()),
+    	HOUR("hr", 60 * MINUTE.getInterval()),
+    	DAY("day", 24 * HOUR.getInterval()),
+    	MONTH("month", 30 * DAY.getInterval()),
+    	YEAR("yr", 365 * DAY.getInterval());
+    	
+    	private String suffix;
+    	private int interval;
+    	
+    	TimeInterval(String s, int i){
+    		this.suffix = s;
+    		this.interval = i;
+    	}
+    	
+    	public int getInterval(){
+    		return this.interval;
+    	}
+    	
+    	public String getSuffix(){
+    		return this.suffix;
+    	}
     }
 }

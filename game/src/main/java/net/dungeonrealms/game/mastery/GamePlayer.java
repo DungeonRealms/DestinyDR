@@ -74,6 +74,7 @@ public class GamePlayer {
 
     private boolean ableToDrop;
     private boolean ableToSuicide;
+    private boolean ableToOpenInventory;
 
     private String lastMessager;
 

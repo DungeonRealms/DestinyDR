@@ -14,6 +14,7 @@ import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.event.PlayerMessagePlayerEvent;
@@ -203,6 +204,11 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+    	if(DungeonRealms.getInstance().getLoggingOut().contains(event.getName())){
+    		event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
+    		return;
+    	}
+    	
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
             if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
@@ -260,7 +266,7 @@ public class MainListener implements Listener {
             return;
         }
 
-        GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
+        //GameAPI.SAVE_DATA_COOLDOWN.submitCooldown(player, 2000L);
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 
         CombatLog.checkCombatLog(player.getUniqueId());
@@ -1087,7 +1093,8 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryOpen(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
-        if (player.hasMetadata("sharding") || GameAPI.getGamePlayer(player).isSharding()) {
+        GamePlayer gp = GameAPI.getGamePlayer(player);
+        if (player.hasMetadata("sharding") || !gp.isAbleToOpenInventory() || gp.isSharding()) {
             event.setCancelled(true);
             return;
         }
