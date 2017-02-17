@@ -1,10 +1,7 @@
 package net.dungeonrealms;
 
-import static net.dungeonrealms.GameAPI.handleLogout;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,7 +13,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
@@ -25,7 +21,6 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.database.player.rank.Subscription;
 import net.dungeonrealms.common.game.util.AsyncUtils;
-import net.dungeonrealms.common.game.util.CooldownProvider;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.AchievementManager;
@@ -52,11 +47,9 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
-import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
-import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
@@ -69,7 +62,6 @@ import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -77,7 +69,6 @@ import net.dungeonrealms.network.GameClient;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
-
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bukkit.*;
@@ -815,8 +806,8 @@ public class GameAPI {
 
         GuildMechanics.getInstance().doLogout(player);
         
-        if(Quests.isEnabled())
-        	Quests.getInstance().handleLogoutEvents(player);
+//        if(Quests.isEnabled())
+//        	Quests.getInstance().handleLogoutEvents(player);
 
         // HANDLE REALM LOGOUT SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
@@ -1215,8 +1206,8 @@ public class GameAPI {
         }
         
         // Quests
-        if(Quests.isEnabled())
-        	Quests.getInstance().handleLogin(player);
+//        if(Quests.isEnabled())
+//        	Quests.getInstance().handleLogin(player);
         
         // Fatigue
         EnergyHandler.getInstance().handleLoginEvents(player);
@@ -1386,7 +1377,7 @@ public class GameAPI {
     private static void createNewData(Player player){
     	UUID uuid = player.getUniqueId();
     	createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
-    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
+//    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
     }
     
     private static void createIfMissing(UUID uuid, EnumData data, Object setTo){
