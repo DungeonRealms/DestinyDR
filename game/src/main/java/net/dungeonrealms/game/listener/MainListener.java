@@ -206,6 +206,7 @@ public class MainListener implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
     	if(DungeonRealms.getInstance().getLoggingOut().contains(event.getName())){
     		event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
+    		DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
     		return;
     	}
     	
