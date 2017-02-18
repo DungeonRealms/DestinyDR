@@ -670,7 +670,7 @@ public class GameAPI {
         return getWorldGuard().getRegionManager(Bukkit.getPlayer(uuid).getWorld())
                 .getApplicableRegions(Bukkit.getPlayer(uuid).getLocation()).getRegions().contains(region);
     }
-    
+
     public static List<Player> getNearbyPlayers(Location location, int radius) {
     	return getNearbyPlayers(location, radius, false);
     }
@@ -679,7 +679,7 @@ public class GameAPI {
      *
      * @param location
      * @param radius
-     * @param 
+     * @param
      * @since 1.0
      */
     public static List<Player> getNearbyPlayers(Location location, int radius, boolean ignoreVanish) {
@@ -719,7 +719,7 @@ public class GameAPI {
     public static boolean savePlayerData(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
         Player player = Bukkit.getPlayer(uuid);
 
-        if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())){	
+        if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())){
             return false;
     	}
         List<UpdateOneModel<Document>> operations = new ArrayList<>();
@@ -797,7 +797,7 @@ public class GameAPI {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
         if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return;
-        
+
         Utils.log.info("Handling logout for " + uuid.toString());
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
@@ -805,7 +805,7 @@ public class GameAPI {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
 
         GuildMechanics.getInstance().doLogout(player);
-        
+
 //        if(Quests.isEnabled())
 //        	Quests.getInstance().handleLogoutEvents(player);
 
@@ -991,7 +991,7 @@ public class GameAPI {
         } else {
             return;
         }
-        
+
         createNewData(player);
 
         try {
@@ -1070,7 +1070,10 @@ public class GameAPI {
         }
 
         CurrencyTab currencyTab = new CurrencyTab(player.getUniqueId());
-        currencyTab.loadCurrencyTab(tab -> Bukkit.getLogger().info("Loaded currency tab for " + player.getName()));
+        currencyTab.loadCurrencyTab(tab -> {
+            if (tab.hasAccess)
+                Bukkit.getLogger().info("Loaded currency tab for " + player.getName());
+        });
         BankMechanics.getInstance().getCurrencyTab().put(player.getUniqueId(), currencyTab);
 
         String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
@@ -1204,11 +1207,11 @@ public class GameAPI {
                 }
             }
         }
-        
+
         // Quests
 //        if(Quests.isEnabled())
 //        	Quests.getInstance().handleLogin(player);
-        
+
         // Fatigue
         EnergyHandler.getInstance().handleLoginEvents(player);
 
@@ -1369,7 +1372,7 @@ public class GameAPI {
             DonationEffects.getInstance().doLogin(player);
         }, 100L);
     }
-    
+
     /**
      * Creates data that was not present on the original release of DR.
      * (Prevents NPEs)
@@ -1379,12 +1382,12 @@ public class GameAPI {
     	createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
 //    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
     }
-    
+
     private static void createIfMissing(UUID uuid, EnumData data, Object setTo){
     	if(DatabaseAPI.getInstance().getData(data, uuid) == null)
     		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, data, setTo, true);
     }
-    
+
     /**
      * type used to switch shard
      *
@@ -2101,14 +2104,14 @@ public class GameAPI {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(is);
         return !(nms == null || nms.getTag() == null) && is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
-    
+
     public static String getCustomID(ItemStack i) {
     	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
         if (nms == null || nms.getTag() == null) return null;
         NBTTagCompound tag = nms.getTag();
         return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
 	}
-    
+
     public static boolean isQuestBound(ItemStack item) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (nms == null || nms.getTag() == null) {
@@ -2120,7 +2123,7 @@ public class GameAPI {
         }
         return false;
     }
-    
+
     public static ItemStack setQuestBound(ItemStack item, String owner, UUID uuid){
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
@@ -2133,7 +2136,7 @@ public class GameAPI {
         nbtItem.setString("ownerUUID", uuid.toString());
         return nbtItem.getItem();
     }
-    
+
     public static boolean isRightfulOwnerOfQuestItem(Player player, ItemStack item){
     	if(!isQuestBound(item))
     		return true;
@@ -2226,15 +2229,15 @@ public class GameAPI {
         final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, document);
         return isVanished != null && (Boolean) isVanished;
     }
-    
+
     public static boolean isShop(InventoryView inventoryView){
     	return inventoryView.getTitle().contains("@");
     }
-    
+
     public static boolean isShop(Inventory inventory){
     	return inventory.getTitle().contains("@");
     }
-    
+
     public static void runAsSpectators(Entity spectated, Consumer<Player> callback){
     	List<Entity> nearby = spectated.getNearbyEntities(1, 1, 1);
         for(Entity ent : nearby){
@@ -2248,7 +2251,7 @@ public class GameAPI {
     }
     /**
      * Teleports a player to another shard (Unconditionally)
-     * 
+     *
      * @param Player
      * @param ShardInfo
      */
@@ -2263,10 +2266,10 @@ public class GameAPI {
                     () -> BungeeUtils.sendToServer(player.getName(), shard.getPseudoName()), 10);
         }));
     }
-    
+
     /**
      * Formats milliseconds into a viewable string.
-     * 
+     *
      * Example Input: 90000
      * Example Output: "1min 30s"
      * @param ms
@@ -2285,7 +2288,7 @@ public class GameAPI {
     	}
     	return formatted.equals("") ? "" : formatted.substring(1);
     }
-    
+
     private enum TimeInterval {
     	SECOND("s", 1),
     	MINUTE("min", 60 * SECOND.getInterval()),
@@ -2293,19 +2296,19 @@ public class GameAPI {
     	DAY("day", 24 * HOUR.getInterval()),
     	MONTH("month", 30 * DAY.getInterval()),
     	YEAR("yr", 365 * DAY.getInterval());
-    	
+
     	private String suffix;
     	private int interval;
-    	
+
     	TimeInterval(String s, int i){
     		this.suffix = s;
     		this.interval = i;
     	}
-    	
+
     	public int getInterval(){
     		return this.interval;
     	}
-    	
+
     	public String getSuffix(){
     		return this.suffix;
     	}

@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener.inventory;
 
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.miscellaneous.ScrapTier;
@@ -210,7 +211,7 @@ public class CurrencyTabListener implements Listener {
                 }
 
             }
-        } else if (event.getInventory().getName().equalsIgnoreCase("Bank Chest")) {
+        } else if (event.getInventory().getName().equalsIgnoreCase("Bank Chest") && (CurrencyTab.isEnabled() || Rank.isHeadGM((Player) event.getWhoClicked()))) {
             if (event.getRawSlot() == 1) {
                 Player player = (Player) event.getWhoClicked();
                 event.setCancelled(true);

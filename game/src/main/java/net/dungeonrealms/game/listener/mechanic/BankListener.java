@@ -710,35 +710,36 @@ public class BankListener implements Listener {
         inv.setItem(0, CraftItemStack.asBukkitCopy(storagenms));
 
 
-        List<String> currencyLore = Lists.newArrayList();
+        if(CurrencyTab.isEnabled()) {
+            List<String> currencyLore = Lists.newArrayList();
 
-        CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(uuid);
-        if (tab != null && tab.hasAccess) {
-            currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
-            currencyLore.add(ChatColor.GRAY + "Max of 250 can be stored of each type.");
-            currencyLore.add("");
-            currencyLore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Stored");
-            currencyLore.add(ChatColor.GREEN.toString() + tab.getTotalScrapStored() + ChatColor.BOLD + " / " + ChatColor.GREEN + "500");
-            currencyLore.add("");
-//            currencyLore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "UNLOCKED");
-            currencyLore.add(ChatColor.GRAY + "Click to view your Scrap Tab.");
-        } else {
-            currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
-            currencyLore.add("");
-            currencyLore.add(ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED");
-            currencyLore.add("");
-            currencyLore.add(ChatColor.GRAY + "You can unlock this Scrap Tab");
-            currencyLore.add(ChatColor.GRAY + "at " + ChatColor.UNDERLINE + "http://dungeonrealms.net/store" + ChatColor.GRAY + "!");
+            CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(uuid);
+            if (tab != null && tab.hasAccess) {
+                currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
+                currencyLore.add(ChatColor.GRAY + "Max of 250 can be stored of each type.");
+                currencyLore.add("");
+                currencyLore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Stored");
+                currencyLore.add(ChatColor.GREEN.toString() + tab.getTotalScrapStored() + ChatColor.BOLD + " / " + ChatColor.GREEN + "500");
+                currencyLore.add("");
+                currencyLore.add(ChatColor.GRAY + "Click to view your Scrap Tab.");
+            } else {
+                currencyLore.add(ChatColor.GRAY + "Hold up to 500 additional scrap.");
+                currencyLore.add("");
+                currencyLore.add(ChatColor.RED + ChatColor.BOLD.toString() + "LOCKED");
+                currencyLore.add("");
+                currencyLore.add(ChatColor.GRAY + "You can unlock this Scrap Tab");
+                currencyLore.add(ChatColor.GRAY + "at " + ChatColor.UNDERLINE + "http://dungeonrealms.net/store" + ChatColor.GRAY + "!");
+            }
+
+            ItemStack currencyTab = new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, DyeColor.YELLOW.getDyeData()))
+                    .setName(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Tab").setLore(currencyLore).build();
+
+            NBTWrapper wrapper = new NBTWrapper(currencyTab);
+            wrapper.setString("scrapTab", "true");
+            wrapper.setString("ench", "");
+            inv.setItem(1, wrapper.build());
+
         }
-
-        ItemStack currencyTab = new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, DyeColor.YELLOW.getDyeData()))
-                .setName(ChatColor.GREEN.toString() + ChatColor.BOLD + "Scrap Tab").setLore(currencyLore).build();
-
-        NBTWrapper wrapper = new NBTWrapper(currencyTab);
-        wrapper.setString("scrapTab", "true");
-        wrapper.setString("ench", "");
-        inv.setItem(1, wrapper.build());
-
 
         ItemMeta meta = bankItem.getItemMeta();
         meta.setDisplayName(ChatColor.GREEN + String.valueOf(getPlayerGems(uuid)) + ChatColor.GREEN + ChatColor.BOLD.toString() + " GEM(s)");

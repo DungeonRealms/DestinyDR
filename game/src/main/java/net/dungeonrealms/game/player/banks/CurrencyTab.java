@@ -31,6 +31,9 @@ import java.util.function.Consumer;
 public class CurrencyTab {
 
     @Getter
+    public static boolean enabled = false;
+
+    @Getter
     private Map<ScrapTier, Integer> scrapStorage = new LinkedHashMap<>();
 
     private UUID owner;
@@ -55,9 +58,6 @@ public class CurrencyTab {
                     for (ScrapTier tier : ScrapTier.values()) {
                         Integer found = (Integer) DatabaseAPI.getInstance().getData(tier.getDbData(), owner);
                         scrapStorage.put(tier, found == null ? 0 : found);
-                        if (found != null) {
-                            Bukkit.getLogger().info("Loaded " + found + " " + tier.getName() + " for " + owner);
-                        }
                     }
                 }
 
