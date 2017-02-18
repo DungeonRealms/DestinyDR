@@ -6,10 +6,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityCreature;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -58,11 +55,19 @@ public class WhirlWind extends PowerMove {
                 if (step == 5) {
                     GameAPI.getNearbyPlayers(entity.getLocation(), 8).forEach(p -> {
                         Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
+
+                        if(unitVector.getX() == Double.NaN || unitVector.getY() == Double.NaN || unitVector.getZ() == Double.NaN){
+                            Bukkit.getLogger().info("SERVER CRASH PREVENTED: " + p.getName() + " ENTITY CAUSING: " + entity.toString() + " To set: " + unitVector.toString());
+                            return;
+                        }
+
                         double e_y = entity.getLocation().getY();
                         double p_y = p.getLocation().getY();
                         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
                         if ((p_y - 1) <= e_y || m == Material.AIR) {
-                            p.setVelocity(unitVector.multiply(3));
+                            Vector vect = unitVector.multiply(3);
+                            p.setVelocity(vect);
+
                         }
                         // * 4 for whirlwind
                         double multiplier = entity.hasMetadata("boss") ? 1.3 : 4;
