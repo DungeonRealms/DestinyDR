@@ -33,12 +33,12 @@ public class DuelingMechanics {
      */
     public static void sendDuelRequest(Player sender, Player requested) {
     	
-    	if(DungeonRealms.getShard() == ShardInfo.US1){
-    		sender.sendMessage(ChatColor.RED + "Dueling is temporarily disabled on this server.");
-    		sender.sendMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "You can duel on another shard in the meantime.");
-    		return;
-    	}
-    	
+//    	if(DungeonRealms.getShard() == ShardInfo.US1){
+//    		sender.sendMessage(ChatColor.RED + "Dueling is temporarily disabled on this server.");
+//    		sender.sendMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "You can duel on another shard in the meantime.");
+//    		return;
+//    	}
+//
         if (isOnCooldown(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You're currently on cooldown for sending duel requests!");
             return;
