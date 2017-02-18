@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 public class CurrencyTab {
 
     @Getter
-    public static boolean enabled = false;
+    public static boolean enabled = true;
 
     @Getter
     private Map<ScrapTier, Integer> scrapStorage = new LinkedHashMap<>();

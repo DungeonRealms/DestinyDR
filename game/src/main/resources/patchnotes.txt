@@ -3,8 +3,10 @@ Build <build>
 &8Changes&0
 - Updated player knockback mechanic
 - Re-add fall damage
+- Release Scrap Tab
 
 &8Bugfixes&0
 - Fix Horses taking damage in SafeZone
 - Updated horse logic to lessen rubber banding.
 - Adjusted Infernal Enderman code, should hopefully resolve despawning issues.
+- Fix losing weapon when combat logging as Lawful
