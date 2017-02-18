@@ -54,19 +54,18 @@ public class WhirlWind extends PowerMove {
                 step++;
                 if (step == 5) {
                     GameAPI.getNearbyPlayers(entity.getLocation(), 8).forEach(p -> {
-                        Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
+                        Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize().multiply(3);
 
-                        if(unitVector.getX() == Double.NaN || unitVector.getY() == Double.NaN || unitVector.getZ() == Double.NaN){
-                            Bukkit.getLogger().info("SERVER CRASH PREVENTED: " + p.getName() + " ENTITY CAUSING: " + entity.toString() + " To set: " + unitVector.toString());
+                        if (Double.isNaN(unitVector.getX()) || Double.isNaN(unitVector.getY()) || Double.isNaN(unitVector.getZ())) {
+                            Bukkit.getLogger().info("SERVER CRASH PREVENTED: " + p.getName() + " ENTITY CAUSING: " + entity.toString() + " To set: " + unitVector.toString() + " AT " + p.getLocation());
                             return;
                         }
-
                         double e_y = entity.getLocation().getY();
                         double p_y = p.getLocation().getY();
                         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
                         if ((p_y - 1) <= e_y || m == Material.AIR) {
-                            Vector vect = unitVector.multiply(3);
-                            p.setVelocity(vect);
+
+                            p.setVelocity(unitVector);
 
                         }
                         // * 4 for whirlwind
@@ -109,7 +108,7 @@ public class WhirlWind extends PowerMove {
                 loc.setYaw(yaw);
 //                EntityLiving el = (EntityLiving) ((CraftEntity) entity).getHandle();
 //                el.yaw = yaw;
-                if(!(((CraftEntity) entity).getHandle() instanceof EntityCreature)){
+                if (!(((CraftEntity) entity).getHandle() instanceof EntityCreature)) {
                     chargedMonsters.remove(entity.getUniqueId());
                     return;
                 }
