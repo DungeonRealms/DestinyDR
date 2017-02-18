@@ -1173,6 +1173,19 @@ public class DamageAPI {
         ent.setVelocity(unitVector.multiply(speed));
     }
 
+    public static void newKnockbackEntity(Player p, Entity ent, double speed) {
+        if (ent instanceof Horse) {
+            return;
+        }
+        // Get velocity unit vector:
+        org.bukkit.util.Vector unitVector = ent.getLocation().toVector().subtract(p.getLocation().toVector()).normalize();
+        unitVector.setY(p.isOnGround() ? 0.35 : 0.2);
+        if (speed > 1) unitVector.setY(0.2);
+        if (p.getVelocity().getY() > 0) unitVector.setY(0);
+        // Set speed and push entity:
+        ent.setVelocity(unitVector.multiply(speed));
+    }
+
     public static boolean isStaffProjectile(Entity entity) {
         EntityType type = entity.getType();
         return type == EntityType.SNOWBALL || type == EntityType.SMALL_FIREBALL || type == EntityType.ENDER_PEARL ||

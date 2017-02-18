@@ -80,6 +80,7 @@ public class MountUtils {
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_DEATH, 1F, 1F);
             player.sendMessage("Mount Spawned!");
             EntityAPI.addPlayerMountList(player.getUniqueId(), mountSpider);
+            mountSpider.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "mount"));
             player.closeInventory();
             return;
         }else if(mountType.equals("ENDERDRAGON")){
@@ -91,6 +92,7 @@ public class MountUtils {
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1F, 1F);
             player.sendMessage("Mount Spawned!");
             EntityAPI.addPlayerMountList(player.getUniqueId(), mountEnderDragon);
+            mountEnderDragon.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "mount"));
             player.closeInventory();
             return;
         }

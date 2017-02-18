@@ -103,7 +103,7 @@ public class EntityMechanics implements GenericMechanic {
 
         // Tier 4 Boss
         nmsUtils.registerEntity("InfernalAbyss", 51, EntitySkeleton.class, InfernalAbyss.class);
-
+        nmsUtils.registerEntity("InfernalEnderman", 58, EntityEnderman.class, InfernalEndermen.class);
         // Tier 4 Sub-bosses
         nmsUtils.registerEntity("DRGhast", 56, EntityGhast.class, InfernalGhast.class);
         nmsUtils.registerEntity("LordsGuard", 51, EntitySkeleton.class, InfernalLordsGuard.class);

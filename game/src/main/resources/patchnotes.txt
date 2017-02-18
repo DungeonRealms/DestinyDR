@@ -1,14 +1,10 @@
 Build <build>
 
 &8Changes&0
-- US4 has been changed to BR1.
-- Updated the Infernal Abyss Dungeon.
-- Added Damage Indicators (/togglefloatdamage)
+- Updated player knockback mechanic
+- Re-add fall damage
 
 &8Bugfixes&0
-- Alignment timer now stacks.
-- Minor Fishing Bugs
-- Ducks Removed?
-- Fixed Armor % on gear
-- Fixed Regen in duels
-- Fix DPS not displaying correct info in TAB
+- Fix Horses taking damage in SafeZone
+- Updated horse logic to lessen rubber banding.
+- Adjusted Infernal Enderman code, should hopefully resolve despawning issues.

@@ -8,8 +8,10 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
+import net.dungeonrealms.game.world.entity.type.monster.type.melee.InfernalEndermen;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeEnderman;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
+import net.dungeonrealms.game.world.spawning.EliteMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.World;
@@ -86,6 +88,18 @@ public class CommandMonSpawn extends BaseCommand {
             if (enumMonster == null) {
                 enumMonster = EnumMonster.Undead;
             }
+
+            DungeonManager.DungeonObject dungeonInstance = DungeonManager.getInstance().getDungeon(bcs.getBlock().getWorld());
+            if (enumMonster == EnumMonster.Enderman && dungeonInstance != null) {
+                if (dungeonInstance != null && dungeonInstance.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS) {
+                    //Custom endermen?
+                    if (customName.contains("The Devastator") || customName.contains("The Annihilator")) {
+                        //Custom endermen type.
+                        enumMonster = EnumMonster.InfernalEndermen;
+                    }
+                }
+            }
+
             Entity entity = SpawningMechanics.getMob(nmsWorld, tier, enumMonster);
             if (entity == null) {
                 return true;
@@ -105,8 +119,8 @@ public class CommandMonSpawn extends BaseCommand {
             nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 
-            if(entity instanceof MeleeEnderman && DungeonManager.getInstance().getDungeon(nmsWorld.getWorld()) != null){
-                ((MeleeEnderman)entity).setTeleport(false);
+            if (entity instanceof InfernalEndermen && DungeonManager.getInstance().getDungeon(nmsWorld.getWorld()) != null) {
+                ((InfernalEndermen) entity).setTeleport(false);
             }
             if (!customName.equals("")) {
                 entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
@@ -115,10 +129,13 @@ public class CommandMonSpawn extends BaseCommand {
                 entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
                 entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
             }
-            DungeonManager.DungeonObject object = DungeonManager.getInstance().getDungeon(bcs.getBlock().getWorld());
-            if(object != null){
-                object.aliveMonsters.add(entity);
+
+            if (dungeonInstance != null) {
+                dungeonInstance.aliveMonsters.add(entity);
                 DungeonManager.getInstance().TRACKED_SPAWNS.put(entity.getUniqueID(), location);
+//                if(elite){
+//                    EliteMobSpawner
+//                }
             }
             return true;
         } else if (s instanceof Player) {

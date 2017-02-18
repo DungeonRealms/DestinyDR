@@ -56,7 +56,13 @@ public class PvPListener implements Listener {
         }
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()), isDuel);
         receiver.playEffect(EntityEffect.HURT);
-        DamageAPI.knockbackEntity(damager, receiver, 0.3);
+
+        //KNOCKBACK
+//        org.bukkit.util.Vector unitVector = receiver.getLocation().toVector()
+//                .subtract(damager.getLocation().toVector()).normalize();
+//        receiver.setVelocity(unitVector.multiply(0.5F));
+
+        DamageAPI.newKnockbackEntity(damager, receiver, 0.275);
         receiver.setSprinting(false);
 
         GamePlayer damagerGP = GameAPI.getGamePlayer(damager);

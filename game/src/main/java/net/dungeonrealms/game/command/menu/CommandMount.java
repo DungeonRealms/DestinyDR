@@ -39,7 +39,7 @@ public class CommandMount extends BaseCommand {
             return false;
         }
         Player player = (Player) sender;
-        if (args.length == 0 || (args.length == 1 && (args[0].equalsIgnoreCase("spider") || args[0].equalsIgnoreCase("enderdragon")) && Rank.isDev(player))) {
+        if (args.length == 0 || (args.length == 1 && (args[0].equalsIgnoreCase("spider") || args[0].equalsIgnoreCase("enderdragon")) && Rank.isHeadGM(player))) {
             if (EntityAPI.hasMountOut(player.getUniqueId())) {
                 Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
                 if (entity.isAlive()) {

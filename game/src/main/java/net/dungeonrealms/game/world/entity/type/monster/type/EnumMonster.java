@@ -13,6 +13,7 @@ import java.util.Random;
  */
 public enum EnumMonster {
 
+    InfernalEndermen("infernalendermen", "Endermen", "", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 20),
     Troll("troll", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}, Collections.singletonList("poison"), 20),
     Troll1("troll1", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}, Collections.singletonList("poison"), 20),
     Goblin("goblin", "Goblin", "Shrek", new String[]{"Short", "Ugly", "Smelly"}, new String[]{""}, Collections.singletonList("fire"), 20),

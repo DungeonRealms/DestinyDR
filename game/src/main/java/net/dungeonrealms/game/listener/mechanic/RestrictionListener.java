@@ -580,6 +580,7 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAttackHorse(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Horse)) return;
+        if(GameAPI.isInSafeRegion(event.getEntity().getLocation()) && (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile))return;
         Horse horse = (Horse) event.getEntity();
         LivingEntity passenger = (LivingEntity) horse.getPassenger();
         horse.eject();
