@@ -951,13 +951,13 @@ public class DamageListener implements Listener {
 
         switch (event.getCause()) {
             case FALL:
+                if (GameAPI.isPlayer(event.getEntity())) {
                 float blocks = event.getEntity().getFallDistance();
 
                 if (blocks >= 2) {
                     //Same OB algorithm
                     dmg = maxHP * 0.02D * dmg;
                 }
-                if (GameAPI.isPlayer(event.getEntity())) {
                     Player p = (Player) event.getEntity();
                     GamePlayer gp = GameAPI.getGamePlayer(p);
                     if (dmg >= gp.getPlayerCurrentHP()) {
@@ -967,6 +967,9 @@ public class DamageListener implements Listener {
                         Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.LEAP_OF_FAITH);
 
                     }
+                }else {
+                    //No fall damage for mobs?
+                    dmg = 0;
                 }
                 break;
             case WITHER:
