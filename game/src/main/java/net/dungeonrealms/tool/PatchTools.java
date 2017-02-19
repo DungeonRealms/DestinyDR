@@ -78,7 +78,7 @@ public class PatchTools implements GenericMechanic {
         }
 
         ItemStack patchBook = ItemManager.createItem(Material.WRITTEN_BOOK,
-                ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER, new String[]{});
+                ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for Build " + Constants.BUILD_NUMBER, new String[]{});
         BookMeta bm = (BookMeta) patchBook.getItemMeta();
 
         bm.setAuthor("DungeonRealms Development Team");

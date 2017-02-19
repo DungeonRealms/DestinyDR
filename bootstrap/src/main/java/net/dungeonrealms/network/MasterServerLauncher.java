@@ -33,7 +33,7 @@ public class MasterServerLauncher {
         Constants.build();
 
         Log.info("");
-        Log.info("Master server initiated on " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER);
+        Log.info("Master server initiated on Build " + Constants.BUILD_NUMBER);
         Log.info("Ready to sit back relax and relay packets");
 
         try {

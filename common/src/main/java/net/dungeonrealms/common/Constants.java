@@ -34,9 +34,6 @@ public class Constants {
 
     public static int NET_WRITE_BUFFER_SIZE = 32768;
 
-    // BUILD VERSION //
-    public static String BUILD_VERSION = "v0";
-
     // BUILD NUMBER //
     public static String BUILD_NUMBER = "#0";
 
@@ -62,7 +59,6 @@ public class Constants {
         MASTER_SERVER_PORT = 22964;
         NET_READ_BUFFER_SIZE = 16384;
         NET_WRITE_BUFFER_SIZE = 32768;
-        BUILD_VERSION = "UNSTABLE BUILD";
         BUILD_NUMBER = "#0";
         FTP_HOST_NAME = "167.114.65.102";
         FTP_USER_NAME = "dungeonrealms.53";
