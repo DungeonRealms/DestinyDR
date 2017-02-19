@@ -162,6 +162,16 @@ public class PunishAPI {
         }
     }
 
+    public static Document getBanDocument(UUID uuid) {
+        try {
+            Document bansDoc = DatabaseInstance.bans.find(Filters.eq("bans.uuid", uuid.toString())).first();
+            if (bansDoc == null) return null;
+            return bansDoc;
+        } catch (NullPointerException ignored) {
+            return null;
+        }
+    }
+
     public static boolean isMuted(UUID uuid) {
         long muteTime = ((Long) DatabaseAPI.getInstance().getData(EnumData.MUTE_TIME, uuid));
         return (muteTime != 0 && System.currentTimeMillis() < muteTime);
