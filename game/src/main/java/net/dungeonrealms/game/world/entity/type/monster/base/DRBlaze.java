@@ -115,7 +115,9 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
 	}
     
 	@Override
-	public abstract EnumMonster getEnum();
+	public EnumMonster getEnum(){
+		return this.monsterType;
+	}
 
 	@Override
 	public void onMonsterDeath(Player killer) {

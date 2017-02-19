@@ -196,7 +196,6 @@ public class BankListener implements Listener {
                         if (e.getCursor() != null) {
                             if (e.getClick() == ClickType.LEFT) {
                                 int currentGems = getPlayerGems(player.getUniqueId());
-                                player.closeInventory();
                                 player.playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1F, 1F);
                                 player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Current Balance: " + ChatColor.GREEN + currentGems + " GEM(s)");
                                 player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "How much would you like to WITHDRAW today, " + player.getDisplayName() + "?");
@@ -243,7 +242,6 @@ public class BankListener implements Listener {
                                 }, p -> p.sendMessage(ChatColor.RED + "Withdrawal operation - " + ChatColor.BOLD + "CANCELLED"));
                             } else if (e.getClick() == ClickType.RIGHT) {
                                 int currentGems = getPlayerGems(player.getUniqueId());
-                                player.closeInventory();
                                 player.playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1F, 1F);
                                 player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Current Balance: " + ChatColor.GREEN + currentGems + " GEM(s)");
                                 player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "How much would you like to CONVERT today, " + player.getDisplayName() + "?");

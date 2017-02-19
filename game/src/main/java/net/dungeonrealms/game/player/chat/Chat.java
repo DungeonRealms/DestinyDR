@@ -61,16 +61,75 @@ public class Chat {
      * @param orElse   the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
      */
     public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
-        if (chatListeners.remove(player) != null) {
+        if(player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting"))
+        	player.closeInventory();
+        
+    	if (chatListeners.remove(player) != null) {
             Consumer<? super Player> old = orElseListeners.remove(player);
             if (old != null) {
                 old.accept(player);
             }
         }
+    	
         if (consumer != null) {
             chatListeners.put(player, consumer);
             if (orElse != null) orElseListeners.put(player, orElse);
         }
+    }
+    
+    public static void promptPlayerYesNo(Player player, Consumer<Boolean> response){
+    	listenForMessage(player, (event) -> {
+    		String message = event.getMessage();
+    		if(message.equalsIgnoreCase("yes") || message.equalsIgnoreCase("y")){
+    			response.accept(true);
+    		}else if(message.equalsIgnoreCase("no") || message.equalsIgnoreCase("n")){
+    			response.accept(false);
+    		}else{
+    			player.sendMessage(ChatColor.RED + "Unknown response, defaulting to \"No\".");
+    			response.accept(false);
+    		}
+    	}, o -> response.accept(false));
+    }
+    
+    public static void listenForNumber(Player player, Consumer<Integer> successCallback, Consumer<? super Player> failCallback){
+    	listenForNumber(player, Integer.MIN_VALUE, Integer.MAX_VALUE, successCallback, failCallback);
+    }
+    
+    /**
+     * Listens for a number.
+     * Cancel callback will be run if "cancel", a non-number, a number larger than the max, or a number smaller than the minimum is entered.
+     * 
+     * @param consumer Success Callback
+     * @param Consumer Fail Callback
+     */
+    public static void listenForNumber(Player player, int min, int max, Consumer<Integer> successCallback, Consumer<? super Player> failCallback){
+    	Chat.listenForMessage(player, (evt) -> {
+    		int num;
+    		
+    		if(evt.getMessage().equalsIgnoreCase("cancel") || evt.getMessage().equalsIgnoreCase("c")){
+    			player.sendMessage(ChatColor.RED + "Cancelled.");
+    			failCallback.accept(player);
+    			return;
+    		}
+    		
+    		try{
+    			num = Integer.parseInt(evt.getMessage());
+    		}catch(Exception e){
+    			player.sendMessage(ChatColor.RED + "This is not a valid number!");
+    			failCallback.accept(player);
+    			return;
+    		}
+    		
+    		if(num > max || num < min){
+    			player.sendMessage(ChatColor.RED + "Invalid Number. Range = [" + min + "," + max + "]");
+    			failCallback.accept(player);
+    			return;
+    		}
+    		successCallback.accept(num);
+    	}, (p) -> {
+    		if(failCallback != null)
+    			failCallback.accept(p);
+    	});
     }
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore",

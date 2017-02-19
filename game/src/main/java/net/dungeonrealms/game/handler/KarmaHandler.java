@@ -44,10 +44,10 @@ public class KarmaHandler implements GenericMechanic {
     private static int NEUTRAL_COOLDOWN = 120;
 
     public enum EnumPlayerAlignments {
-        LAWFUL(0, "lawful", ChatColor.WHITE, "-30% Durability Arm/Wep on Death"),
-        NEUTRAL(1, "neutral", ChatColor.YELLOW, "25%/50% Arm/Wep LOST on Death"),
+        LAWFUL(0, "lawful", ChatColor.WHITE, "-30% Durability Keep Arm/Wep on Death"),
+        NEUTRAL(1, "neutral", ChatColor.YELLOW, "25%/50% Lose Arm/Wep on Death"),
         CHAOTIC(2, "chaotic", ChatColor.RED, "Inventory LOST on Death"),
-        NONE(3, "none", ChatColor.GRAY, "-30% Durability Arm/Wep on Death");
+        NONE(3, "none", ChatColor.GRAY, "-30% Durability Keep Arm/Wep on Death");
 
         private int id;
         private String name;

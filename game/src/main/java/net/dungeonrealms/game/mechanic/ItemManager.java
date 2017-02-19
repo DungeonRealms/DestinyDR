@@ -18,6 +18,10 @@ import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.QuestPlayerData;
+import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
+import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
@@ -25,6 +29,7 @@ import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.minecraft.server.v1_9_R2.*;
+
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -853,10 +858,11 @@ public class ItemManager {
         BookMeta bm = (BookMeta) stack.getItemMeta();
         List<String> pages = new ArrayList<>();
         String page1_string;
+        String questPage_string;
         String page2_string;
         String page3_string;
         String page4_string;
-        String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
+        String new_line = "\n" + ChatColor.BLACK.toString() + " " + "\n";
         GamePlayer gp = GameAPI.getGamePlayer(p);
         if (gp == null)
             return stack;
@@ -868,7 +874,7 @@ public class ItemManager {
 
         if (pretty_align.contains("CHAOTIC") || pretty_align.contains("NEUTRAL")) {
             String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
-            page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n"
+            page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character  \n\n"
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" + playerAlignment.getAlignmentColor().toString() + ChatColor.BOLD + time + "s.." + new_line
                     + ChatColor.BLACK.toString() + playerAlignment.description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
                     + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
@@ -879,7 +885,7 @@ public class ItemManager {
                     + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
         } else {
-            page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" + new_line
+            page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character  " + "\n\n"
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + new_line
                     + ChatColor.BLACK.toString() + playerAlignment.description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
                     + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
@@ -890,6 +896,29 @@ public class ItemManager {
                     + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
         }
+        
+        questPage_string = ChatColor.BLACK + "" + ChatColor.BOLD + ChatColor.UNDERLINE + "  Quest Progress  \n\n";
+        int quests = 0;
+        
+        if(Quests.isEnabled()){
+        	QuestPlayerData data = Quests.getInstance().playerDataMap.get(p);
+        	if(data != null){
+        		//TODO: Multi page support. (Does vanilla do this automatically?)
+        		for(Quest doing : data.getCurrentQuests()){
+        			quests++;
+        			QuestProgress qp = data.getQuestProgress(doing);
+        			
+        			questPage_string += ChatColor.BLACK + doing.getQuestName() + "> " + ChatColor.GREEN;
+        			if(qp.getCurrentStage().getPrevious() == null){
+        				questPage_string += "Start by talking to " + qp.getCurrentStage().getNPC().getName();
+        			}else{
+        				questPage_string += qp.getCurrentStage().getPrevious().getObjective().getTaskDescription(p, qp.getCurrentStage());
+        			}
+        			questPage_string += "\n\n";
+        		}
+        	}
+        }
+        
         page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "          XP" + "\n" + ChatColor.BLACK + "       " + gp.getExperience() + "/"
@@ -902,8 +931,8 @@ public class ItemManager {
                 + ChatColor.DARK_GRAY.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T1, p.getUniqueId()) + "\n"
                 + ChatColor.GREEN.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T2, p.getUniqueId()) + "\n"
                 + ChatColor.AQUA.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T3, p.getUniqueId()) + "\n"
-                + ChatColor.LIGHT_PURPLE.toString() + "Portal Shards: " + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T4, p.getUniqueId())
-                + "\n" + ChatColor.GOLD.toString() + "Portal Shards: " + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T5, p.getUniqueId());
+                + ChatColor.LIGHT_PURPLE.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T4, p.getUniqueId())
+                + "\n" + ChatColor.GOLD.toString() + "Portal Shards: " + ChatColor.BLACK + DatabaseAPI.getInstance().getData(EnumData.PORTAL_SHARDS_T5, p.getUniqueId());
 
         page3_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/msg" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
@@ -930,6 +959,8 @@ public class ItemManager {
 
         bm.setAuthor("King Bulwar");
         pages.add(page1_string);
+        if(quests > 0)
+        	pages.add(questPage_string);
         pages.add(page2_string);
         pages.add(portalShardPage);
         pages.add(page3_string);

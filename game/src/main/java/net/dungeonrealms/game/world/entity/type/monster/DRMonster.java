@@ -38,6 +38,10 @@ public interface DRMonster {
     EnumMonster getEnum();
 
     Map<String, Integer[]> getAttributes();
+    
+    default int getTier(Entity entity){
+    	return entity.getMetadata("tier").get(0).asInt();
+    }
 
     default void checkItemDrop(int tier, EnumMonster nullArgs, Entity ent, Player killer) {
         if (ent.getWorld().getName().contains("DUNGEON")) {

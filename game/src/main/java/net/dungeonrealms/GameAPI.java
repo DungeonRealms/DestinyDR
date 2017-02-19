@@ -1,7 +1,5 @@
 package net.dungeonrealms;
 
-import static net.dungeonrealms.GameAPI.handleLogout;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonArray;
@@ -91,6 +89,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -822,7 +822,6 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
 
         // save player data
-        System.out.println("Attempting to save.");
         savePlayerData(uuid, async, doAfterSave -> {
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
@@ -2118,19 +2117,11 @@ public class GameAPI {
         return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
 	}
     
-    public static boolean isQuestBound(ItemStack item) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        if (nms == null || nms.getTag() == null) {
-            return false;
-        }
-        NBTTagCompound tag = nms.getTag();
-        if (tag.hasKey("questBound") && tag.getInt("questBound") == 1) {
-            return true;
-        }
-        return false;
-    }
-    
-    public static ItemStack setQuestBound(ItemStack item, String owner, UUID uuid){
+    /*
+     This stuff is disabled because Soulbound achieves the same thing, and we should avoid giving items that we take back later.
+     (Because there are way too many ways to lose those items such as breaking, dropping, etc. etc.)
+     
+     public static ItemStack setQuestBound(ItemStack item, String owner, UUID uuid){
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
         lore.add(ChatColor.DARK_RED + "Quest Item");
@@ -2143,6 +2134,20 @@ public class GameAPI {
         return nbtItem.getItem();
     }
     
+    public static boolean isQuestBound(ItemStack item) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        if (nms == null || nms.getTag() == null) {
+            return false;
+        }
+        NBTTagCompound tag = nms.getTag();
+        return tag.hasKey("questBound") && tag.getInt("questBound") == 1;
+    }
+    
+    /**
+     * Is this player the original owner of the quest item?
+     * This will return true if the item is not questbound.
+     * 
+     *
     public static boolean isRightfulOwnerOfQuestItem(Player player, ItemStack item){
     	if(!isQuestBound(item))
     		return true;
@@ -2151,9 +2156,9 @@ public class GameAPI {
         NBTTagCompound tag = nms.getTag();
         boolean isOwner = tag.hasKey("ownerUUID") && tag.getString("ownerUUID").equals(player.getUniqueId().toString());
         if(!isOwner)
-        	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + player.getName() + " is trying to use a Quest Item owned by " + tag.getString("owner") + " on " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getShard().getShardID() + ChatColor.WHITE + ".");
+        	player.sendMessage(ChatColor.RED + "This quest item does not belong to you.");
     	return isOwner;
-    }
+    }*/
 
     public static boolean isItemTradeable(ItemStack itemStack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
@@ -2190,7 +2195,7 @@ public class GameAPI {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (nms == null || nms.getTag() == null) return false;
         NBTTagCompound tag = nms.getTag();
-        return tag.hasKey("soulbound") && tag.getInt("soulbound") == 1;
+        return (tag.hasKey("soulbound") && tag.getInt("soulbound") == 1);
     }
 
     public static boolean isItemPermanentlyUntradeable(ItemStack item) {
@@ -2318,5 +2323,23 @@ public class GameAPI {
     	public String getSuffix(){
     		return this.suffix;
     	}
+    }
+    
+    /**
+     * Returns the item the player is interacting with from an InventoryClickEvent.
+     * The item will be the item you're trying to place as this is mainly used to block placing items.
+     */
+    public static ItemStack getItemToCheck(InventoryClickEvent event){
+    	ItemStack item = event.getCursor();
+    	if (event.getAction().name().contains("PICKUP") || event.isShiftClick()){
+    		item = event.getCurrentItem();
+    		System.out.println("Pickup / Shift");
+    	}
+        if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD){
+        	item = event.getRawSlot() < event.getInventory().getSize() ? event.getView().getBottomInventory().getItem(event.getHotbarButton()) : event.getCurrentItem();
+        	System.out.println("Hotbar");
+        }
+        System.out.println("Returning " + item.getType() + " from action = " + event.getAction().name());
+        return item;
     }
 }

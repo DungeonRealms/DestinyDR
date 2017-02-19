@@ -38,6 +38,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
         this.getAttributeInstance(GenericAttributes.c).setValue(1.00d);
         this.monsterType = monster;
+        
         this.name = monster.name;
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
@@ -49,6 +50,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSkullItem(monster)));
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
+        System.out.println("Hello from " + livingEntity.getEntityId() + ", I am " + monster.name());
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
     }
@@ -103,7 +105,9 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
 	}
 	
 	@Override
-	public abstract EnumMonster getEnum();
+	public EnumMonster getEnum(){
+		return this.monsterType;
+	}
 	
 	@Override
 	public void onMonsterDeath(Player killer) {

@@ -10,6 +10,8 @@ import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.teleportation.WorldRegion;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -109,78 +111,8 @@ public class AchievementManager implements GenericMechanic, Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onRegionEnter(PlayerEnterRegionEvent event) {
-        Player pl = event.getPlayer();
-        String region = event.getRegion().toLowerCase();
-        switch (region) {
-            case "villagesafe":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.HARRISONS_FIELD);
-                break;
-            case "plainsofcyrenne":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.PLAINS_OF_CYRENE);
-                break;
-            case "darkoakwild2":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.DARKOAK);
-                break;
-            case "infrontoftavern":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.JAGGED_ROCKS);
-                break;
-            case "goblincity":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.GOBLIN_CITY);
-                break;
-            case "trollcity1":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.TROLLINGOR);
-                break;
-            case "crystalpeakt":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CRYSTALPEAK_TOWER);
-                break;
-            case "transitional3":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.HELMCHEN);
-                break;
-            case "alsahra":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.AL_SAHRA);
-                break;
-            case "savannahsafezone":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.TRIPOLI);
-                break;
-            case "swampvillage_2":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.DREADWOOD);
-                break;
-            case "swamp_1":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.GLOOMY_HOLLOWS);
-                break;
-            case "crestguard":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CREST_GUARD);
-                break;
-            case "cstrip6":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.FROZEN_NORTH);
-                break;
-            case "underworld":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.UNDER_WORLD);
-                break;
-            case "cheifs":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CHIEF);
-                break;
-            case "deadpeaks":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.DEAD_PEAKS);
-                break;
-            case "mure":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.MURE);
-                break;
-            case "sebrata":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.SEBRATA);
-                break;
-            case "fireydungeon":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.FIERY_DUNGEON);
-                break;
-            /*case "tutorial_island":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.TUTORIAL_ISLAND);
-                break; */
-            case "achievement_easteregg_portal_cakelie":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CAKE_IS_A_LIE);
-                break;
-            case "cityofcyrennica":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CYRENNICA);
-                break;
-        }
+        WorldRegion region = WorldRegion.getByRegionName(event.getRegion());
+        if(region != null)
+        	region.giveAchievement(event.getPlayer());
     }
 }

@@ -124,7 +124,7 @@ public enum EnumMonster {
         return possibleElementalTypes.get(new Random().nextInt(possibleElementalTypes.size()));
     }
 
-    public ItemStack getSkullItem(EnumMonster monster) {
+    public static ItemStack getSkullItem(EnumMonster monster) {
         switch (monster) {
             case Pirate:
             case MayelPirate:

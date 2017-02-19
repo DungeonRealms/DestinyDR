@@ -710,7 +710,7 @@ public class ItemGenerator {
             }
             if (rarity != null) break;
         }
-
+        
         if (rarity == null) {
             if(!foundStats)return is;
             // Add rarity if needed.
@@ -778,6 +778,7 @@ public class ItemGenerator {
         }
 
         tag.set("modifiers", modifiersList);
+        tag.set("drItemId", new NBTTagString(template_name));
 
 //        tag.a(CraftItemStack.asNMSCopy(is).getTag());
         nmsStack.setTag(tag);

@@ -37,6 +37,7 @@ public enum EnumData {
     ACTIVE_PET("info.activepet"),
     ACTIVE_TRAIL("info.activetrail"),
     ACTIVE_MOUNT_SKIN("info.activemountskin"),
+    QUEST_DATA("info.questData"),
 
     GEMS_COUNT("info.gemsCount"),
 

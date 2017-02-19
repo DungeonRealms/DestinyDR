@@ -99,22 +99,6 @@
           <artifactId>craftbukkit</artifactId>
           <groupId>org.bukkit</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>json</artifactId>
-          <groupId>org.json</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>reflectionhelper</artifactId>
-          <groupId>org.inventivetalent</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>api</artifactId>
-          <groupId>org.inventivetalent.packetlistener</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>api</artifactId>
-          <groupId>org.inventivetalent.nicknamer</groupId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -180,6 +164,13 @@
       <artifactId>lombok</artifactId>
       <version>1.14.2</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.citizensnpcs</groupId>
+      <artifactId>Citizens2</artifactId>
+      <version>1.0.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/citizens-DungeonRealms.1.9.4.Fix.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com.codingforcookies</groupId>

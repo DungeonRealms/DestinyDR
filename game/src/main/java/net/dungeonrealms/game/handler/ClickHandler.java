@@ -482,7 +482,6 @@ public class ClickHandler {
                 }
                 if (slot == 0) {
                     player.sendMessage(ChatColor.GREEN + "Please enter the name of the player you would like to add...");
-                    player.closeInventory();
                     Chat.listenForMessage(player, chat -> {
                         Player target = Bukkit.getPlayer(chat.getMessage());
                         if (target != null) {
@@ -579,7 +578,6 @@ public class ClickHandler {
                             petName = nmsStack.getTag().getString("petName");
                         }
                         player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
-                        player.closeInventory();
                         String finalPetName = petName;
                         Chat.listenForMessage(player, newPetName -> {
                             if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
@@ -812,7 +810,6 @@ public class ClickHandler {
                 if (gp.getLevel() >= 10) {
                     if (gp.getStats().resetAmounts > 0) {
                         player.sendMessage(ChatColor.GREEN + "One free stat reset available. Type 'yes' or 'y' to continue.");
-                        player.closeInventory();
                         Chat.listenForMessage(player, e -> {
                             if (e.getMessage().equalsIgnoreCase("Yes") || e.getMessage().equalsIgnoreCase("y")) {
                                 gp.getStats().freeResets -= 1;
@@ -1179,7 +1176,6 @@ public class ClickHandler {
 
                 if (subscriptionRank != null && subscriptionType != null) {
                     player.sendMessage(ChatColor.YELLOW + "Please enter the number of days you would to " + subscriptionType + ":");
-                    player.closeInventory();
 
                     final String customSubscriptionRank = subscriptionRank;
                     final String customSubscriptionType = subscriptionType;
@@ -1243,7 +1239,6 @@ public class ClickHandler {
                 }
 
                 player.sendMessage(ChatColor.YELLOW + "Please enter the amount you would to " + levelType + ":");
-                player.closeInventory();
                 final String customLevelType = levelType;
                 final String finalVariableName = variableName;
                 Chat.listenForMessage(player, customAmount -> {
@@ -1310,7 +1305,6 @@ public class ClickHandler {
 
                 if (customInput) {
                     player.sendMessage(ChatColor.YELLOW + "Please enter the amount you would to " + ecashType + ":");
-                    player.closeInventory();
                     final String customEcashType = ecashType;
                     Chat.listenForMessage(player, customAmount -> {
                         if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
@@ -1355,7 +1349,6 @@ public class ClickHandler {
                 }
 
                 player.sendMessage(ChatColor.YELLOW + "Please enter the amount you would to " + bankType + ":");
-                player.closeInventory();
                 final String customBankType = bankType;
                 Chat.listenForMessage(player, customAmount -> {
                     if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {

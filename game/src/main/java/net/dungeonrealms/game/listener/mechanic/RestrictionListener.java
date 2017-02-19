@@ -419,7 +419,7 @@ public class RestrictionListener implements Listener {
 
         if (!p.isInsideVehicle()) return;
         if (!(p.getVehicle() instanceof Horse)) return;
-        if(event.getCurrentItem() == null)return;
+        if (event.getCurrentItem() == null) return;
         if (event.getCurrentItem().getType().toString().contains("BARDING") || event.getCurrentItem().getType() == Material.SADDLE) {
             event.setCancelled(true);
             event.setResult(Event.Result.DENY);

@@ -105,7 +105,9 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     }
     
 	@Override
-	public abstract EnumMonster getEnum();
+	public EnumMonster getEnum(){
+		return this.monsterType;
+	};
 
 	@Override
 	public void onMonsterDeath(Player killer) {

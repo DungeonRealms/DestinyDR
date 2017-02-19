@@ -57,7 +57,9 @@ public abstract class DRGolem extends EntityIronGolem implements DRMonster {
     protected abstract void setStats();
 
     @Override
-    public  abstract EnumMonster getEnum();
+    public EnumMonster getEnum(){
+    	return this.monsterType;
+    }
 
     public void setArmor(int tier) {
         org.bukkit.inventory.ItemStack[] armor = GameAPI.getTierArmor(tier);

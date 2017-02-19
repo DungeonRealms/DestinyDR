@@ -125,7 +125,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     @Override
     public EnumMonster getEnum() {
-        return null;
+        return this.monster;
     }
 
     //    @Override
