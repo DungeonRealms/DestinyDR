@@ -17,6 +17,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -108,6 +109,33 @@ public class CommandSet extends BaseCommand {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, 1500, false);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, false);
                 break;
+            case "durability":
+                if (args.length < 3) {
+                    player.sendMessage(ChatColor.RED + "Invalid usage! /set durability SUBTRACT #");
+                    break;
+                } else if (player.getInventory().getItemInMainHand() == null) {
+                    player.sendMessage(ChatColor.RED + "Error! You must have an item in your main hand.");
+                    break;
+                }
+
+                switch (args[1].toLowerCase()) {
+                    case "add":
+                        if (RepairAPI.canItemBeRepaired(player.getInventory().getItemInMainHand())) {
+                            player.sendMessage(ChatColor.RED + "Error! You cannot repair this item.");
+                            break;
+                        }
+
+                        player.sendMessage(ChatColor.RED + "Error! Coming soon...");
+                        break;
+                    case "subtract":
+                        RepairAPI.subtractCustomDurability(player, player.getInventory().getItemInMainHand(), Integer.parseInt(args[2]));
+                        player.sendMessage(ChatColor.GREEN + "Subtracted " + args[2] + " from item in your main hand.");
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + "Error! " + args[1] + " is invalid.");
+                        break;
+                }
+                break;
             case "spawner":
                 if (args.length < 4) {
                     player.sendMessage("/set spawner monster tier (* on monster for elite chance), (MOBS TO SPAWN x2)");
@@ -152,7 +180,7 @@ public class CommandSet extends BaseCommand {
                 Mining.lvlUp(Mining.getPickTier(player.getEquipment().getItemInMainHand()), player);
                 player.updateInventory();
                 break;
-            case "fishing":
+            case "rod":
                 Fishing.lvlUp(Fishing.getRodTier(player.getEquipment().getItemInMainHand()), player);
                 player.updateInventory();
                 break;
