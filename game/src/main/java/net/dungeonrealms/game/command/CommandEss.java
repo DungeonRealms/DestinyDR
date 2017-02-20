@@ -72,7 +72,7 @@ public class CommandEss extends BaseCommand {
                     Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         String uuid = DatabaseAPI.getInstance().getUUIDFromName(args[1]);
                         if (uuid == null || uuid.equals("")) {
-                            commandSender.sendMessage(ChatColor.RED + "No uuid found for that name");
+                            commandSender.sendMessage(ChatColor.RED + "Failed to find a user with the name " + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ".");
                             return;
                         }
 
