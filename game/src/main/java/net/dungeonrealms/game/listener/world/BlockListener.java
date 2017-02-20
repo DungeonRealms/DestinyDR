@@ -426,9 +426,8 @@ public class BlockListener implements Listener {
                 Player pl = Bukkit.getPlayer(currentRepair.getRepairing());
                 if (pl != null) {
                     //They are too far away.
-                    currentRepair.getRepairItem().remove();
                     pl.sendMessage(ChatColor.RED + "You were > 10 blocks from the anvil.");
-                    returnItem(pl, currentRepair.getItem());
+                    Chat.listenForMessage(pl, null, null);
                 }
                 //Player isnt nearby anymore?
                 repairMap.remove(block.getLocation());
@@ -463,12 +462,6 @@ public class BlockListener implements Listener {
             player.sendMessage(ChatColor.YELLOW + "It will cost " + ChatColor.GREEN + ChatColor.BOLD.toString() + newCost + "G" + ChatColor.YELLOW + " to repair '" + name + ChatColor.YELLOW + "'");
             player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD.toString() + "Y" + ChatColor.GRAY + " to confirm this repair. Or type " + ChatColor.RED + ChatColor.BOLD.toString() + "N" + ChatColor.GRAY + " to cancel.");
             Chat.listenForMessage(player, chat -> {
-                // Anvil is in use by someone else, we can't return them this item again.
-                if (!repairMap.containsKey(block.getLocation()) || !repairMap.get(block.getLocation()).getRepairing().equalsIgnoreCase(player.getName())) {
-                    itemEntity.remove();
-                    player.setCanPickupItems(true);
-                    return;
-                }
 
                 if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
                     //Not enough? cya.
@@ -513,13 +506,10 @@ public class BlockListener implements Listener {
                     player.setCanPickupItems(true);
                 }
             }, p -> {
-                // Anvil is in use by the current user, return those items.
-                if (repairMap.containsKey(block.getLocation()) && repairMap.get(block.getLocation()).getRepairing().equalsIgnoreCase(player.getName()))
-                    returnItem(player, item);
-
                 itemEntity.remove();
                 repairMap.remove(block.getLocation());
                 p.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
+                returnItem(player, item);
                 player.setCanPickupItems(true);
             });
         } else {
