@@ -47,6 +47,8 @@ public class Storage {
 //                    inv.addItem(stack);
 //        }
         String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
+        //Without this VV Players can /closeshop and dupe their items.
+        DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true);
         if (stringInv.length() > 1) {
             Inventory inv = ItemSerialization.fromString(stringInv);
             for (ItemStack item : inv.getContents()) {
