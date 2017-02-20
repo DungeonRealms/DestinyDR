@@ -93,7 +93,7 @@ public class ObjectiveKill implements QuestObjective {
 			DRMonster monster = (DRMonster)nmsEnt;
 			Player killer = (Player)evt.getEntity().getKiller();
 			
-			System.out.println("Hello from " + evt.getEntity().getEntityId() + " I am " + monster.getEnum());
+			System.out.println("Hello from DYING " + evt.getEntity().getEntityId() + " I am " + monster.getEnum());
 			
 			if(monster.getEnum() == null || this.monsterType != monster.getEnum()){
 				System.out.println("Wrong Type");
