@@ -249,7 +249,7 @@ public class PvEListener implements Listener {
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
 
-            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, 0, 0);
+            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, -5, 0);
             return;
         } else {
             finalDamage = finalDamage - armorCalculation[0];

@@ -120,10 +120,10 @@ public class PvPListener implements Listener {
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + receiver.getName() + ChatColor.RED + ")");
-            receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *REFLECT* (" + ChatColor.RED + damager.getName() + ChatColor.DARK_GREEN + ")");
+            receiver.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "                        *REFLECT* (" + ChatColor.RED + damager.getName() + ChatColor.GOLD + ")");
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
-            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, 0, 0);
+            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, -5, 0);
             finalDamage = 0;
             return;
         }
@@ -239,7 +239,7 @@ public class PvPListener implements Listener {
                 DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
                 //Reflect in pvp.
-                HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, damage, 0, 0);
+                HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, damage, -5, 0);
             }, 1L);
 //            finalDamage = 0;
             return;
