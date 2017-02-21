@@ -1,7 +1,10 @@
 package net.dungeonrealms.game.world.spawning;
 
+import com.google.common.collect.Lists;
+import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.Utils;
@@ -9,8 +12,10 @@ import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
+import net.dungeonrealms.game.world.item.*;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,67 +31,57 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran Quigley (Proxying) on 10-Jun-16.
  */
-public class EliteMobSpawner {
+public class EliteMobSpawner extends MobSpawner {
 
-    private Location location;
-    private String spawnType;
-    private EntityArmorStand armorstand;
-    private int tier;
     private List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
-    private int id;
-    private int timerID = -1;
-    private String levelRange;
-    private String customName;
     private EnumMonster monsterType;
     private EnumNamedElite eliteType;
-    private boolean hasCustomName = false;
-    private int respawnDelay;
-    private int counter;
-    private int mininmumXZ;
-    private int maximumXZ;
+    @Setter
     private boolean isRemoved = false;
 
     public EliteMobSpawner(Location loc, String type, int tier, int configid, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ) {
-        if (type.contains("(")) {
-            hasCustomName = true;
-            customName = type.substring(type.indexOf("(") + 1, type.indexOf(")"));
-            customName = customName.replaceAll("_", " ");
-            type = type.substring(0, type.indexOf("("));
-        }
-        type = type.replace("*", "");
-        this.levelRange = lvlRange;
-        this.location = loc;
-        this.id = configid;
-        this.spawnType = type;
-        this.tier = tier;
-        this.respawnDelay = respawnDelay;
-        this.counter = 0;
-        this.mininmumXZ = mininmumXZ;
-        this.maximumXZ = maximumXZ;
-        World world = ((CraftWorld) location.getWorld()).getHandle();
-        armorstand = new EntityArmorStand(world);
-        armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
-        armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
-        armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
-        List<org.bukkit.entity.Entity> list = armorstand.getBukkitEntity().getNearbyEntities(1, 1, 1);
-        if (list.size() > 0) {
-            list.stream().filter(entity -> entity instanceof ArmorStand).forEach(entity -> {
-                entity.remove();
-                ((ArmorStand) entity).setHealth(0);
-                if (armorstand.getBukkitEntity().getWorld().getBlockAt(location).getType() == Material.ARMOR_STAND)
-                    armorstand.getBukkitEntity().getWorld().getBlockAt(location).setType(Material.AIR);
-            });
-        }
-        armorstand.setPosition(location.getX(), location.getY(), location.getZ());
-        world.addEntity(armorstand, CreatureSpawnEvent.SpawnReason.CUSTOM);
-        armorstand.setPosition(location.getX(), location.getY(), location.getZ());
+//        if (type.contains("(")) {
+//            hasCustomName = true;
+//            customName = type.substring(type.indexOf("(") + 1, type.indexOf(")"));
+//            customName = customName.replaceAll("_", " ");
+//            type = type.substring(0, type.indexOf("("));
+//        }
+//        type = type.replace("*", "");
+//        this.levelRange = lvlRange;
+//        this.location = loc;
+//        this.id = configid;
+//        this.spawnType = type;
+//        this.tier = tier;
+//        this.respawnDelay = respawnDelay;
+//        this.counter = 0;
+//        this.mininmumXZ = mininmumXZ;
+//        this.maximumXZ = maximumXZ;
+//        World world = ((CraftWorld) location.getWorld()).getHandle();
+//        armorstand = new EntityArmorStand(world);
+//        armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
+//        armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
+//        armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
+//        List<org.bukkit.entity.Entity> list = armorstand.getBukkitEntity().getNearbyEntities(1, 1, 1);
+//        if (list.size() > 0) {
+//            list.stream().filter(entity -> entity instanceof ArmorStand).forEach(entity -> {
+//                entity.remove();
+//                ((ArmorStand) entity).setHealth(0);
+//                if (armorstand.getBukkitEntity().getWorld().getBlockAt(location).getType() == Material.ARMOR_STAND)
+//                    armorstand.getBukkitEntity().getWorld().getBlockAt(location).setType(Material.AIR);
+//            });
+//        }
+//        armorstand.setPosition(location.getX(), location.getY(), location.getZ());
+//        world.addEntity(armorstand, CreatureSpawnEvent.SpawnReason.CUSTOM);
+//        armorstand.setPosition(location.getX(), location.getY(), location.getZ());
+        super(loc, type, tier, 1, configid, lvlRange, respawnDelay, mininmumXZ, maximumXZ);
     }
 
-    void init() {
+    public void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (timerID == -1) {
                 timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -99,8 +94,8 @@ public class EliteMobSpawner {
         }, 0L, 40L);
     }
 
-    private void spawnIn() {
-        boolean playersNearby = GameAPI.arePlayersNearby(location, 24);
+    public void spawnIn() {
+        boolean playersNearby = GameAPI.arePlayersNearby(loc, 24);
         if (!SPAWNED_MONSTERS.isEmpty()) {
             for (Entity monster : SPAWNED_MONSTERS) {
                 LivingEntity livingEntity = (LivingEntity) monster.getBukkitEntity();
@@ -109,14 +104,14 @@ public class EliteMobSpawner {
                         if (livingEntity instanceof Creature) {
                             ((Creature) livingEntity).setTarget(null);
                         }
-                        monster.setPosition(location.getX(), location.getY(), location.getZ());
+                        monster.setPosition(loc.getX(), loc.getY(), loc.getZ());
                         return;
                     }
-                    if (livingEntity.getLocation().distance(location) >= 35) {
+                    if (livingEntity.getLocation().distance(loc) >= 35) {
                         if (livingEntity instanceof Creature) {
                             ((Creature) livingEntity).setTarget(null);
                         }
-                        monster.setPosition(location.getX() + 2, location.getY(), location.getZ() + 2);
+                        monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                     }
                 } else {
                     SPAWNED_MONSTERS.remove(monster);
@@ -128,8 +123,8 @@ public class EliteMobSpawner {
                 //Mobs haven't passed their respawn timer yet.
                 return;
             }
-            Location toSpawn = getRandomLocation(location, ((location.getX() - mininmumXZ) - maximumXZ), ((location.getX() + mininmumXZ) + maximumXZ),
-                    ((location.getZ() - mininmumXZ) - maximumXZ), ((location.getZ() + mininmumXZ) + maximumXZ));
+            Location toSpawn = getRandomLocation(loc, ((loc.getX() - mininmumXZ) - maximumXZ), ((loc.getX() + mininmumXZ) + maximumXZ),
+                    ((loc.getZ() - mininmumXZ) - maximumXZ), ((loc.getZ() + mininmumXZ) + maximumXZ));
             if (toSpawn.getBlock().getType() != Material.AIR) {
                 if (toSpawn.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) {
                     toSpawn.add(0, 1, 0);
@@ -148,14 +143,14 @@ public class EliteMobSpawner {
             if (monsterType == null) {
                 String mob = spawnType;
                 if (hasCustomName) {
-                    if (customName.toLowerCase().contains("undead")) {
+                    if (monsterCustomName.toLowerCase().contains("undead")) {
                         String spawnTypeLower = spawnType.toLowerCase();
                         if (!spawnTypeLower.equals("skeleton") && !spawnTypeLower.equals("skeleton1") && !spawnTypeLower.equals("skeleton2")) {
                             mob = "undead";
                         }
-                    } else if (customName.toLowerCase().contains("mountain")) {
+                    } else if (monsterCustomName.toLowerCase().contains("mountain")) {
                         mob = "frozenskeleton";
-                    } else if (customName.toLowerCase().contains("daemon")) {
+                    } else if (monsterCustomName.toLowerCase().contains("daemon")) {
                         mob = "daemon2";
                     }
                 }
@@ -168,7 +163,7 @@ public class EliteMobSpawner {
             if (eliteType == null) {
                 if (hasCustomName) {
                     for (EnumNamedElite namedElite : EnumNamedElite.values()) {
-                        if (namedElite.getConfigName().equalsIgnoreCase(customName)) {
+                        if (namedElite.getConfigName().equalsIgnoreCase(monsterCustomName)) {
                             eliteType = namedElite;
                         }
                     }
@@ -186,20 +181,42 @@ public class EliteMobSpawner {
                 entity = SpawningMechanics.getEliteMob(world, tier, eliteType);
             }
             if (entity == null) {
+                Bukkit.getLogger().info("Unable to create elite mob " + eliteType + " at " + toSpawn.toString());
                 return;
             }
-            int level = Utils.getRandomFromTier(tier, levelRange);
+            int level = Utils.getRandomFromTier(tier, lvlRange);
             EntityStats.setMonsterElite(entity, eliteType, tier, monsterType, level, false);
             giveCustomEquipment(eliteType, entity);
+
+
+            ItemStack forceWeap = getWeaponType() != null ? AntiDuplication.getInstance().applyAntiDupe(new ItemGenerator()
+                    .setType(net.dungeonrealms.game.world.item.Item.ItemType.getByName(getWeaponType()))
+                    .setTier(net.dungeonrealms.game.world.item.Item.ItemTier.getByTier(tier))
+                    .setRarity(GameAPI.getItemRarity(true)).generateItem().getItem()) : null;
+
+            if (entity.getBukkitEntity() instanceof LivingEntity && forceWeap != null) {
+                LivingEntity ent = (LivingEntity) entity.getBukkitEntity();
+
+                ent.getEquipment().setItemInMainHand(forceWeap);
+            }
+
+
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             SPAWNED_MONSTERS.add(entity);
+
+            if (this.getElementalDamage() != null) {
+                if(ThreadLocalRandom.current().nextInt(100) <= this.getElementChance()) {
+                    //Set the element ourselves.
+                    GameAPI.setMobElement(entity, this.getElementalDamage());
+                }
+            }
             entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
             if (hasCustomName) {
-                entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
-                entity.getBukkitEntity().setMetadata("namedElite", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
+                entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
+                entity.getBukkitEntity().setMetadata("namedElite", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
             } else {
                 entity.setCustomName(GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim());
                 entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim()));
@@ -336,24 +353,8 @@ public class EliteMobSpawner {
     }
 
     public void remove() {
-        kill();
-        armorstand.getWorld().removeEntity(armorstand);
-        armorstand.getBukkitEntity().remove();
-        SpawningMechanics.SPAWNER_CONFIG.set(id, null);
-        DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-        DungeonRealms.getInstance().saveConfig();
+        super.remove();
         isRemoved = true;
-    }
-
-    void kill() {
-        if (SPAWNED_MONSTERS.size() > 0) {
-            for (Entity spawnedMonster : SPAWNED_MONSTERS) {
-                spawnedMonster.getBukkitEntity().remove();
-                spawnedMonster.dead = true;
-                armorstand.getWorld().kill(spawnedMonster);
-            }
-            SPAWNED_MONSTERS.clear();
-        }
     }
 
     //Checks whether mobs can spawn based on their delay set in config.
@@ -394,7 +395,7 @@ public class EliteMobSpawner {
     }
 
     public Location getLocation() {
-        return location;
+        return loc;
     }
 
     public EntityArmorStand getArmorstand() {
@@ -417,12 +418,9 @@ public class EliteMobSpawner {
         return timerID;
     }
 
-    public String getLevelRange() {
-        return levelRange;
-    }
 
     public String getCustomName() {
-        return customName;
+        return monsterCustomName;
     }
 
     public EnumNamedElite getEliteType() {

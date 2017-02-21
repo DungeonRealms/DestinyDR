@@ -34,6 +34,7 @@ public class NBTWrapper {
         return this;
     }
 
+    public NBTBase get(String string){ return getCompound().get(string);}
     public int getInt(String string) {
         return getCompound().getInt(string);
     }

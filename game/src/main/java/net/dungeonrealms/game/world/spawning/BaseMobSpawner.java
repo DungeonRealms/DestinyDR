@@ -2,9 +2,12 @@ package net.dungeonrealms.game.world.spawning;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
+import net.dungeonrealms.game.world.item.Item;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.World;
@@ -17,6 +20,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
@@ -24,76 +28,62 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Chase on Sep 25, 2015
  */
-public class BaseMobSpawner {
+public class BaseMobSpawner extends MobSpawner {
 
-    private Location loc;
-    private String spawnType;
-    private EntityArmorStand armorstand;
-    private int tier;
     private List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
     private Map<Entity, Integer> RESPAWN_TIMES = new ConcurrentHashMap<>();
-    private int spawnAmount;
-    private int id;
-    private int timerID = -1;
-    private String lvlRange;
-    private String monsterCustomName;
-    private EnumMonster monsterType;
-    private boolean firstSpawn = true;
-    private boolean hasCustomName = false;
-    private int respawnDelay;
-    private int counter;
-    private int mininmumXZ;
-    private int maximumXZ;
 
     public BaseMobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ) {
-        if (type.contains("(")) {
-            hasCustomName = true;
-        }
-        if (hasCustomName) {
-            monsterCustomName = type.substring(type.indexOf("(") + 1, type.indexOf(")"));
-            monsterCustomName = monsterCustomName.replace("_", " ");
-            type = type.substring(0, type.indexOf("("));
-        }
-        if (spawnAmount > 6) {
-            spawnAmount = 6;
-        }
-        this.lvlRange = lvlRange;
-        this.spawnAmount = spawnAmount;
-        this.loc = location;
-        this.id = configid;
-        this.spawnType = type;
-        this.tier = tier;
-        this.respawnDelay = respawnDelay;
-        this.counter = 0;
-        this.mininmumXZ = mininmumXZ;
-        this.maximumXZ = maximumXZ;
-        World world = ((CraftWorld) location.getWorld()).getHandle();
-        armorstand = new EntityArmorStand(world);
-        armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
-        armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
-        armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
-        List<org.bukkit.entity.Entity> list = armorstand.getBukkitEntity().getNearbyEntities(loc.getX(), loc.getY(), loc.getZ());
-        if (list.size() > 0) {
-            list.stream().filter(entity -> entity instanceof ArmorStand).forEach(entity -> {
-                entity.remove();
-                ((ArmorStand) entity).setHealth(0);
-                if (armorstand.getBukkitEntity().getWorld().getBlockAt(loc).getType() == Material.ARMOR_STAND)
-                    armorstand.getBukkitEntity().getWorld().getBlockAt(loc).setType(Material.AIR);
-            });
-        }
-        armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
-        world.addEntity(armorstand, SpawnReason.CUSTOM);
-        armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
+//        if (type.contains("(")) {
+//            hasCustomName = true;
+//        }
+//        if (hasCustomName) {
+//            monsterCustomName = type.substring(type.indexOf("(") + 1, type.indexOf(")"));
+//            monsterCustomName = monsterCustomName.replace("_", " ");
+//            type = type.substring(0, type.indexOf("("));
+//        }
+//        if (spawnAmount > 6) {
+//            spawnAmount = 6;
+//        }
+//        this.lvlRange = lvlRange;
+//        this.spawnAmount = spawnAmount;
+//        this.loc = location;
+//        this.id = configid;
+//        this.spawnType = type;
+//        this.tier = tier;
+//        this.respawnDelay = respawnDelay;
+//        this.counter = 0;
+//        this.mininmumXZ = mininmumXZ;
+//        this.maximumXZ = maximumXZ;
+//        World world = ((CraftWorld) location.getWorld()).getHandle();
+//        armorstand = new EntityArmorStand(world);
+//        armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
+//        armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
+//        armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
+//        List<org.bukkit.entity.Entity> list = armorstand.getBukkitEntity().getNearbyEntities(loc.getX(), loc.getY(), loc.getZ());
+//        if (list.size() > 0) {
+//            list.stream().filter(entity -> entity instanceof ArmorStand).forEach(entity -> {
+//                entity.remove();
+//                ((ArmorStand) entity).setHealth(0);
+//                if (armorstand.getBukkitEntity().getWorld().getBlockAt(loc).getType() == Material.ARMOR_STAND)
+//                    armorstand.getBukkitEntity().getWorld().getBlockAt(loc).setType(Material.AIR);
+//            });
+//        }
+//        armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
+//        world.addEntity(armorstand, SpawnReason.CUSTOM);
+//        armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
+        super(location, type, tier, spawnAmount, configid, lvlRange, respawnDelay, mininmumXZ, maximumXZ);
     }
 
     /**
      * Does 1 rotation of spawning for this mob spawner.
      */
-    private void spawnIn() {
+    public void spawnIn() {
         if (!SPAWNED_MONSTERS.isEmpty()) {
             for (Entity monster : SPAWNED_MONSTERS) {
                 if (monster.isAlive()) {
@@ -169,11 +159,30 @@ public class BaseMobSpawner {
             if (entity == null) {
                 return;
             }
+
+            ItemStack forcedWeapon = getWeaponType() != null ?  AntiDuplication.getInstance().applyAntiDupe(new ItemGenerator()
+                    .setType(Item.ItemType.getByName(getWeaponType()))
+                    .setTier(Item.ItemTier.getByTier(tier))
+                    .setRarity(GameAPI.getItemRarity(false)).generateItem().getItem()) : null;
+
+
+            if (entity.getBukkitEntity() instanceof LivingEntity && forcedWeapon != null) {
+                LivingEntity ent = (LivingEntity) entity.getBukkitEntity();
+                ent.getEquipment().setItemInMainHand(forcedWeapon);
+            }
+
             if (!isFriendlyMob(monsterType)) {
                 int level = Utils.getRandomFromTier(tier, lvlRange);
                 EntityStats.setMonsterRandomStats(entity, level, tier);
-                SpawningMechanics.rollElement(entity, monsterType);
-                String lvlName = ChatColor.AQUA.toString() + "[Lvl. "+ level + "] ";
+                if (this.getElementalDamage() != null && !entity.getBukkitEntity().hasMetadata("element")) {
+                    if (ThreadLocalRandom.current().nextInt(100) <= this.getElementChance()) {
+                        //Set the element ourselves.
+                        GameAPI.setMobElement(entity, this.getElementalDamage());
+                    }
+                } else {
+                    SpawningMechanics.rollElement(entity, monsterType);
+                }
+                String lvlName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
                 String mobName;
                 try {
                     mobName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
@@ -212,8 +221,17 @@ public class BaseMobSpawner {
                     }
                     if (!isFriendlyMob(monsterType)) {
                         int newLevel = Utils.getRandomFromTier(tier, lvlRange);
+                        if (!newEntity.getBukkitEntity().hasMetadata("element")) {
+                            if (this.getElementalDamage() != null) {
+                                if (ThreadLocalRandom.current().nextInt(100) <= this.getElementChance()) {
+                                    //Set the element ourselves.
+                                    GameAPI.setMobElement(newEntity, this.getElementalDamage());
+                                }
+                            } else {
+                                SpawningMechanics.rollElement(newEntity, monsterType);
+                            }
+                        }
                         EntityStats.setMonsterRandomStats(newEntity, newLevel, tier);
-                        SpawningMechanics.rollElement(newEntity, monsterType);
                         String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + newLevel + "] ";
                         String newMobName;
                         try {
@@ -228,6 +246,20 @@ public class BaseMobSpawner {
                             newEntity.setCustomName(newLevelName + GameAPI.getTierColor(tier) + newMobName.trim());
                             newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), GameAPI.getTierColor(tier) + newMobName.trim()));
                         }
+
+                        ItemStack forceWeap = getWeaponType() != null ? AntiDuplication.getInstance().applyAntiDupe(new ItemGenerator()
+                                .setType(Item.ItemType.getByName(getWeaponType()))
+                                .setTier(Item.ItemTier.getByTier(tier))
+                                .setRarity(GameAPI.getItemRarity(false)).generateItem().getItem()) : null;
+
+                        if (newEntity.getBukkitEntity() instanceof LivingEntity && forceWeap != null) {
+                            LivingEntity ent = (LivingEntity) newEntity.getBukkitEntity();
+
+
+                            ent.getEquipment().setItemInMainHand(forceWeap);
+                            System.out.println("Weapon: " + ent);
+                        }
+
                     }
                     newEntity.setLocation(firstSpawn.getX(), firstSpawn.getY(), firstSpawn.getZ(), 1, 1);
                     world.addEntity(newEntity, SpawnReason.CUSTOM);
@@ -247,23 +279,12 @@ public class BaseMobSpawner {
      * Kill all spawnedMonsters for this Mob Spawner
      */
     public void kill() {
-        if (SPAWNED_MONSTERS.size() > 0)
-            for (Entity spawnedMonster : SPAWNED_MONSTERS) {
-                spawnedMonster.getBukkitEntity().remove();
-                spawnedMonster.dead = true;
-                armorstand.getWorld().kill(spawnedMonster);
-            }
+        super.kill();
         firstSpawn = true;
-        SPAWNED_MONSTERS.clear();
     }
 
     public void remove() {
-        kill();
-        armorstand.getWorld().removeEntity(armorstand);
-        armorstand.getBukkitEntity().remove();
-        SpawningMechanics.SPAWNER_CONFIG.set(id, null);
-        DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-        DungeonRealms.getInstance().saveConfig();
+        super.remove();
         isRemoved = true;
     }
 
@@ -279,7 +300,7 @@ public class BaseMobSpawner {
     /**
      * Initialize spawner
      */
-    void init() {
+    public void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             boolean playersNearby = GameAPI.arePlayersNearby(loc, 32);
             if (playersNearby) {

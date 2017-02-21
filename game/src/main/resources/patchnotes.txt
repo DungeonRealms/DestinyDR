@@ -4,8 +4,11 @@ Build <build>
 - Updated player knockback mechanic
 - Re-add fall damage
 - Release Scrap Tab
+- Elemental Resistance now applies to world damage (EX: Fire / Poison)
+- Re-enabled Reflection on gear
 
 &8Bugfixes&0
+- Infernal Guards will now target farther away.
 - Fix Horses taking damage in SafeZone
 - Updated horse logic to lessen rubber banding.
 - Adjusted Infernal Enderman code, should hopefully resolve despawning issues.

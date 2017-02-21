@@ -57,18 +57,21 @@ public class CommandWhois extends BaseCommand {
                 String reason = bansDoc.getString("reason");
                 String by = bansDoc.getString("bannedBy");
 
+                if (banTime != 0) {
+                    if (banTime == -1 || banTime > System.currentTimeMillis()) {
+                        sender.sendMessage(ChatColor.RED + p_name + " is currently banned for " + reason + " by " + by);
 
-                sender.sendMessage(ChatColor.RED + p_name + " is currently banned for " + reason + " by " + by);
-
-                if (banTime > 0) {
-                    String whenUnbanned = PunishAPI.timeString((int) ((banTime - System.currentTimeMillis()) / 60000));
-                    sender.sendMessage(ChatColor.RED + p_name + " will be unbanned in " + whenUnbanned);
-                } else {
-                    sender.sendMessage(ChatColor.RED + p_name + " is never set to be unbanned.");
+                        if (banTime > 0) {
+                            String whenUnbanned = PunishAPI.timeString((int) ((banTime - System.currentTimeMillis()) / 60000));
+                            sender.sendMessage(ChatColor.RED + p_name + " will be unbanned in " + whenUnbanned);
+                        } else if (banTime == -1) {
+                            sender.sendMessage(ChatColor.RED + p_name + " is never set to be unbanned.");
+                        }
+                    }
                 }
             }
 
-            if(isPlaying) {
+            if (isPlaying) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     if (Bukkit.getPlayer(p_name) == null)
                         sender.sendMessage(ChatColor.YELLOW + p_name + ", currently on server " + ChatColor.UNDERLINE + server);

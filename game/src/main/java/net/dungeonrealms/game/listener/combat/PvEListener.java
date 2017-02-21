@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.combat;
 
+import com.sun.org.apache.regexp.internal.RE;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
@@ -144,13 +145,23 @@ public class PvEListener implements Listener {
             //The defender dodged the attack
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             finalDamage = 0;
+            return;
         } else if (armorReducedDamage == -2) {
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*BLOCK*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             finalDamage = 0;
+            return;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
+
+            //Against elites / bosses maybe do 50% less?
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + receiver.getName() + ChatColor.RED + ")");
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+
+            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, 0, 0);
+            return;
         } else {
             finalDamage = finalDamage - armorCalculation[0];
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
@@ -225,13 +236,21 @@ public class PvEListener implements Listener {
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*DODGE*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             finalDamage = 0;
+            return;
         } else if (armorReducedDamage == -2) {
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*BLOCK*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             finalDamage = 0;
+            return;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + receiver.getName() + ChatColor.RED + ")");
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+
+            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, 0, 0);
+            return;
         } else {
             finalDamage = finalDamage - armorCalculation[0];
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);

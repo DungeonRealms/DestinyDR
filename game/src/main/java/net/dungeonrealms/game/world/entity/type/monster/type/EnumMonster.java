@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.type;
 
+import lombok.Getter;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import org.bukkit.inventory.ItemStack;
 
@@ -56,6 +57,7 @@ public enum EnumMonster {
     Cow("cow", "Cow", "", new String[]{""}, new String[]{""}),
     Ocelot("ocelot", "Ocelot", "", new String[]{""}, new String[]{""});
 
+    @Getter
 	public String idName;
     public String name;
     public String mobHead;

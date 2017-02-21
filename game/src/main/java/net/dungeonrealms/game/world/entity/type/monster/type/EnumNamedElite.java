@@ -34,4 +34,11 @@ public enum EnumNamedElite {
         this.templateStarter = templateStarter;
         this.configName = configName;
     }
+
+    public static EnumNamedElite getFromName(String name){
+        for(EnumNamedElite elite : values()){
+            if(elite.getConfigName().equalsIgnoreCase(name))return elite;
+        }
+        return EnumNamedElite.NONE;
+    }
 }

@@ -18,7 +18,6 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -45,7 +44,6 @@ import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
@@ -75,10 +73,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -141,27 +136,27 @@ public class DamageListener implements Listener {
             event.getEntity().remove();
             return;
         }
-        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")) {
-            Player attacker = (Player) event.getDamager();
-            if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
-                ArrayList<BaseMobSpawner> list = SpawningMechanics.getALLSPAWNERS();
-                for (BaseMobSpawner current : list) {
-                    if (current.getLoc().getBlockX() == event.getEntity().getLocation().getBlockX() && current.getLoc().getBlockY() == event.getEntity().getLocation().getBlockY() &&
-                            current.getLoc().getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
-                        current.remove();
-                        current.kill();
-                        break;
-                    }
-                }
-            } else {
-
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-        } else {
-            event.setDamage(0);
-            event.setCancelled(true);
-        }
+//        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")) {
+//            Player attacker = (Player) event.getDamager();
+//            if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
+//                ArrayList<BaseMobSpawner> list = SpawningMechanics.getALLSPAWNERS();
+//                for (BaseMobSpawner current : list) {
+//                    if (current.getLoc().getBlockX() == event.getEntity().getLocation().getBlockX() && current.getLoc().getBlockY() == event.getEntity().getLocation().getBlockY() &&
+//                            current.getLoc().getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
+//                        current.remove();
+//                        current.kill();
+//                        break;
+//                    }
+//                }
+//            } else {
+//
+//                event.setDamage(0);
+//                event.setCancelled(true);
+//            }
+//        } else {
+        event.setDamage(0);
+        event.setCancelled(true);
+//        }
     }
 
 
@@ -219,9 +214,9 @@ public class DamageListener implements Listener {
 
         double finalDamage = 0;
         Player player = (Player) event.getEntity();
+        LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
+                : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
         if (!player.hasMetadata("loggingIn")) {
-            LivingEntity leDamageSource = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
-                    : (LivingEntity) ((Projectile) event.getDamager()).getShooter();
             if (event.getDamager() instanceof LivingEntity) {
                 LivingEntity attacker = (LivingEntity) event.getDamager();
                 EntityEquipment attackerEquipment = attacker.getEquipment();
@@ -299,6 +294,14 @@ public class DamageListener implements Listener {
                 finalDamage = 0;
             } else if (armorReducedDamage == -3) {
                 //Reflect when its fixed. @TODO
+                DamageAPI.createDamageHologram(player, player.getLocation(), org.bukkit.ChatColor.RED + "*REFLECT*");
+                player.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                      *REFLECTED* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+
+                if (leDamageSource.hasMetadata("elite") || leDamageSource.hasMetadata("boss"))
+                    finalDamage = (finalDamage * 0.40);
+                HealthHandler.getInstance().handleMonsterBeingDamaged(leDamageSource, player, finalDamage);
+                return;
             }
 
             HealthHandler.getInstance().handlePlayerBeingDamaged(player, leDamageSource, finalDamage, armorCalculation[0], armorCalculation[1]);
@@ -382,7 +385,7 @@ public class DamageListener implements Listener {
                     }
                 }
                 if (p == null) return;
-                if(event.getEntity() instanceof Horse) {
+                if (event.getEntity() instanceof Horse) {
                     Horse horse = (Horse) event.getEntity();
                     if (!horse.getVariant().equals(Variant.MULE)) return;
                     if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
@@ -889,7 +892,7 @@ public class DamageListener implements Listener {
         if (event.getCause() == DamageCause.VOID || event.getCause() == DamageCause.SUFFOCATION) {
 
             if (event.getEntity().hasMetadata("boss")) {
-                if(event.getEntity() instanceof CraftLivingEntity){
+                if (event.getEntity() instanceof CraftLivingEntity) {
                     DungeonBoss b = (DungeonBoss) ((CraftLivingEntity) event.getEntity()).getHandle();
                     if (b.getEnumBoss() == EnumDungeonBoss.InfernalGhast) {
                         //Dont suffocate the ghast, teleport him to the middle.
@@ -952,12 +955,12 @@ public class DamageListener implements Listener {
         switch (event.getCause()) {
             case FALL:
                 if (GameAPI.isPlayer(event.getEntity())) {
-                float blocks = event.getEntity().getFallDistance();
+                    float blocks = event.getEntity().getFallDistance();
 
-                if (blocks >= 2) {
-                    //Same OB algorithm
-                    dmg = maxHP * 0.02D * dmg;
-                }
+                    if (blocks >= 2) {
+                        //Same OB algorithm
+                        dmg = maxHP * 0.02D * dmg;
+                    }
                     Player p = (Player) event.getEntity();
                     GamePlayer gp = GameAPI.getGamePlayer(p);
                     if (dmg >= gp.getPlayerCurrentHP()) {
@@ -967,7 +970,7 @@ public class DamageListener implements Listener {
                         Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.LEAP_OF_FAITH);
 
                     }
-                }else {
+                } else {
                     //No fall damage for mobs?
                     dmg = 0;
                 }
@@ -1008,13 +1011,51 @@ public class DamageListener implements Listener {
             default:
                 return;
         }
-        if (dmg > 0) {
+        Map<String, Integer[]> attributes = null;
+        if (event.getEntity() instanceof Player) {
+            GamePlayer gp = GameAPI.getGamePlayer((Player) event.getEntity());
+
+            Player player = (Player) event.getEntity();
+            // a player switches weapons, so we need to recalculate weapon attributes
+            if (!gp.getCurrentWeapon().equals(GameAPI.getItemUID(player.getItemInHand()))) {
+                GameAPI.calculateAllAttributes((Player) event.getEntity());
+                gp.setCurrentWeapon(GameAPI.getItemUID(player.getItemInHand()));
+            }
+
+            attributes = gp.getAttributes();
+        } else if (((CraftLivingEntity) event.getEntity()).getHandle() instanceof DRMonster) {
+            attributes = ((DRMonster) ((CraftLivingEntity) event.getEntity()).getHandle()).getAttributes();
+        }
+
+        if (attributes != null) {
+            //Check for fire / poison resistances.
+
+            //Apply fire resistance to fire / lava / fire tick damage.
+            String resistName = null;
+            if (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.LAVA)
+                resistName = "fireResistance";
+            else if (event.getCause() == DamageCause.POISON)
+                resistName = "poisonResistance";
+
+
+            if (resistName != null) {
+                double resistanceToApply = Math.min(attributes.get(resistName)[1], 75);
+
+                if (resistanceToApply > 0)
+                    dmg = dmg * ((100D - resistanceToApply) / 100D);
+            }
+        }
+
+        if (dmg > 0)
+
+        {
             if (event.getEntity() instanceof Player) {
                 HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, dmg, 0, 0, event.getCause());
             } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, dmg);
             }
         }
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -1112,10 +1153,24 @@ public class DamageListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             event.setCancelled(true);
+        }
+
+        //Wont auto teleport?
+        if (event.getTo().getWorld() != event.getFrom().getWorld() || event.getTo().distance(event.getFrom()) > 100) {
+
+            List<Player> spectators = GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 1).stream().filter((pl) -> pl.getGameMode() == GameMode.SPECTATOR && Rank.isTrialGM(pl) && pl.getSpectatorTarget() != null && pl.getSpectatorTarget().equals(event.getPlayer())).collect(Collectors.toList());
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                spectators.forEach((p) -> {
+                    p.teleport(event.getPlayer());
+                    p.sendMessage(ChatColor.RED + "Teleporting to " + event.getPlayer().getName());
+                    p.setSpectatorTarget(null);
+                    p.setSpectatorTarget(event.getPlayer());
+                });
+            }, 1);
         }
     }
 

@@ -380,7 +380,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             groupSize++;
         }
         int perPlayerDrop = groupSize == 0 ? 1 : Math.round(gemDrop / groupSize);
-        ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Infernal Abyss");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "The boss has dropped " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + gemDrop + ChatColor.DARK_PURPLE + " gems.");
@@ -395,6 +394,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             partyMembers += player.getName() + ", ";
 
             if (groupSize > 0) {
+                ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Infernal Abyss");
                 if (player.getInventory().firstEmpty() == -1) {
                     player.getWorld().dropItem(player.getLocation(), banknote);
                     player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");

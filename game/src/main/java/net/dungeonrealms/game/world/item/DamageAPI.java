@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 9/21/2015.
@@ -815,11 +816,11 @@ public class DamageAPI {
                 return new double[]{Math.round(totalArmorReduction), totalArmor};
             }
             // REFLECT
-//            int reflectChance = defenderAttributes.get("reflection")[1];
-//            if (new Random().nextInt(100) < reflectChance) {
-//                totalArmorReduction = -3;
-//                return new double[]{Math.round(totalArmorReduction), totalArmor};
-//            }
+            int reflectChance = defenderAttributes.get("reflection")[1];
+            if (ThreadLocalRandom.current().nextInt(100) < Math.min(75, reflectChance)) {
+                totalArmorReduction = -3;
+                return new double[]{Math.round(totalArmorReduction), totalArmor};
+            }
             // BASE ARMOR
             totalArmor = Utils.randInt(defenderAttributes.get("armor")[0], defenderAttributes.get("armor")[1]);
 
@@ -1258,9 +1259,6 @@ public class DamageAPI {
     /**
      * Create a hologram that floats up and deletes itself.
      * 
-     * @param Player that attacked an entity.
-     * @param Location to create around
-     * @param What should the hologram display?
      */
     public static void createDamageHologram(Player createFor, Location createAround, String display){
     	if(createFor != null && !Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DAMAGE_INDICATORS, createFor.getUniqueId()).toString()))
