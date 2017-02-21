@@ -754,18 +754,22 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
     @Override
     public RealmToken getToken(Location portalLocation) {
-        for (RealmToken realm : getCache().values())
-            if (realm.getPortalLocation() != null && realm.getPortalLocation().getWorld() == portalLocation.getWorld()) {
-                if (realm.getPortalLocation().distance(portalLocation.clone()) <= 2) {
-                    return realm;
+        for (RealmToken realm : getCache().values()) {
+            if (realm.getPortalLocation() != null) {
+                if (realm.getPortalLocation().getWorld() == portalLocation.getWorld()) {
+                    if (realm.getPortalLocation().distance(portalLocation.clone()) <= 2) {
+                        return realm;
+                    }
+                } else {
+                    Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
+                    Utils.log.warning("PORTAL LOCATION IS NOT IN REQUESTS TOKEN WORLD");
+                    Utils.log.warning("WAS TRYING TO REPLY WITH REALM: " + realm.getOwner().toString());
+                    Utils.log.warning("SERVER CRASH PREVENTED - WORLDS COMPARE: " + (realm.getPortalLocation().getWorld() == null ? realm.getOwner() + "'s Null Realm"
+                            : realm.getPortalLocation().getWorld().getName()) + " and " + (portalLocation.getWorld() != null ? "N/A" : portalLocation.getWorld().getName()));
                 }
-            } else {
-                Utils.log.warning("!!!!!!!!!!!!!!!!! HUGE REALM ERROR !!!!!!!!!!!!!!!!!");
-                Utils.log.warning("PORTAL LOCATION IS NOT IN REQUESTS TOKEN WORLD");
-                Utils.log.warning("WAS TRYING TO REPLY WITH REALM: " + realm.getOwner().toString());
-                Utils.log.warning("SERVER CRASH PREVENTED - WORLDS COMPARE: " + realm.getPortalLocation().getWorld().getName() + " and " + portalLocation.getWorld().getName());
-            }
 
+            }
+        }
         return null;
     }
 
