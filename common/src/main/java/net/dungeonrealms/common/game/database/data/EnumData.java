@@ -68,6 +68,7 @@ public enum EnumData {
     FRIEND_REQUESTS("notices.friendRequest"),
     MAILBOX("notices.mailbox"),
     LAST_BUILD("notices.lastBuild"),
+    LAST_NOTES_SIZE("notices.lastBuildNotesSize"),
     LAST_VOTE("notices.lastVote"),
 
     BANNED_TIME("punishments.banned"),

@@ -10,6 +10,8 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.handler.MailHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.tool.PatchTools;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -56,8 +58,15 @@ public class Notice {
             MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + " ✉ You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail! ✉ ");
 
         String lastViewedBuild = (String) DatabaseAPI.getInstance().getData(EnumData.LAST_BUILD, player.getUniqueId());
-
-        if (lastViewedBuild == null || !lastViewedBuild.equals(Constants.BUILD_NUMBER))
+        
+        int lastSeenBuild = -1;
+        int serverBuild = Integer.parseInt(Constants.BUILD_NUMBER.substring(1));
+        if(lastViewedBuild != null)
+        	lastSeenBuild = Integer.parseInt(lastViewedBuild.substring(1));
+        
+        Object noteSize = DatabaseAPI.getInstance().getData(EnumData.LAST_NOTES_SIZE, player.getUniqueId());
+        
+        if (lastViewedBuild == null || (serverBuild > lastSeenBuild && (noteSize == null || PatchTools.getInstance().getSize() != (Integer)noteSize)))
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeBuildNotice(player), 150);
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> executeVoteReminder(player), 300);
@@ -76,6 +85,7 @@ public class Notice {
 
         // UPDATE LAST VIEWED BUILD NUMBER //
         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LAST_BUILD, Constants.BUILD_NUMBER, true);
+        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LAST_NOTES_SIZE, PatchTools.getInstance().getSize(), true);
     }
 
     private void executeVoteReminder(Player p) {

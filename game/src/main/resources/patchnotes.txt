@@ -13,3 +13,4 @@ Build <build>
 - Updated horse logic to lessen rubber banding.
 - Adjusted Infernal Enderman code, should hopefully resolve despawning issues.
 - Fix losing weapon when combat logging as Lawful
+- Patchnotes notification only shows when they change.
