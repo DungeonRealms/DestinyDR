@@ -454,8 +454,12 @@ public class DamageListener implements Listener {
         }
 
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
-            event.setCancelled(true);
-            event.getEntity().teleport(Teleportation.Cyrennica);
+        	event.setCancelled(true);
+        	//Running this one tick later avoids a screen lock. (Player cannot move and is frozen in place under the map)
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+            	event.getEntity().teleport(Teleportation.Cyrennica);
+            	event.getEntity().setFallDistance(0);
+            });
         }
 
         if (!(event.getEntity() instanceof Player) && event.getCause() == DamageCause.FALL) {
