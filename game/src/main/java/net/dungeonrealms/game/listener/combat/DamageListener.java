@@ -295,7 +295,7 @@ public class DamageListener implements Listener {
             } else if (armorReducedDamage == -3) {
                 //Reflect when its fixed. @TODO
                 DamageAPI.createDamageHologram(player, player.getLocation(), org.bukkit.ChatColor.RED + "*REFLECT*");
-                player.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                      *REFLECTED* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
+                player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "                      *REFLECTED* (" + ChatColor.RED + attackerName + ChatColor.DARK_GREEN + ")");
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
 
                 if (leDamageSource.hasMetadata("elite") || leDamageSource.hasMetadata("boss"))
