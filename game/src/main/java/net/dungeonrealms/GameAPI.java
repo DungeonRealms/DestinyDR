@@ -1027,7 +1027,8 @@ public class GameAPI {
 
         gp.setAbleToDrop(false);
         gp.setAbleToSuicide(false);
-        gp.setAbleToOpenInventory(false);
+        if(!Rank.isTrialGM(player))
+        	gp.setAbleToOpenInventory(false);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             gp.setAbleToDrop(true);
