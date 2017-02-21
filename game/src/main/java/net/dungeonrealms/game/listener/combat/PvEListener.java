@@ -156,7 +156,7 @@ public class PvEListener implements Listener {
             //Reflect when its fixed. @TODO
 
             //Against elites / bosses maybe do 50% less?
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + receiver.getName() + ChatColor.RED + ")");
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + defenderName + ChatColor.RED + ")");
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
 
@@ -245,7 +245,7 @@ public class PvEListener implements Listener {
             return;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
-            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + receiver.getName() + ChatColor.RED + ")");
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + defenderName + ChatColor.RED + ")");
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
 
