@@ -7,14 +7,16 @@ import net.dungeonrealms.common.game.command.CommandManager;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.DatabaseInstance;
 import net.dungeonrealms.common.game.database.data.EnumData;
-import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.lobby.commands.CommandLogin;
+import net.dungeonrealms.lobby.commands.CommandSetPin;
 import net.dungeonrealms.lobby.commands.CommandShard;
 import net.dungeonrealms.lobby.effect.GhostFactory;
+import net.dungeonrealms.network.GameClient;
 
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -32,7 +34,15 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.esotericsoftware.minlog.Log;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 
 /**
@@ -40,11 +50,16 @@ import java.util.concurrent.Executors;
  */
 public class Lobby extends JavaPlugin implements Listener {
 
+	@Getter
+	private GameClient client;
+	
     @Getter
     private static Lobby instance;
 
     @Getter
     private GhostFactory ghostFactory;
+    
+    private ArrayList<UUID> allowedStaff = new ArrayList<UUID>();
 
     @Override
     public void onEnable() {
@@ -60,9 +75,19 @@ public class Lobby extends JavaPlugin implements Listener {
         ghostFactory = new GhostFactory(this);
         Bukkit.getPluginManager().registerEvents(this, this);
         CommandManager cm = new CommandManager();
+        
+        client = new GameClient();
 
-        // Commands always registered regardless of server.
+        try {
+            client.connect();
+            Log.set(Log.LEVEL_INFO);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command.", Collections.singletonList("connect")));
+        cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
+        cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));
     }
 
     @EventHandler
@@ -115,6 +140,16 @@ public class Lobby extends JavaPlugin implements Listener {
 
             ghostFactory.addPlayer(player);
             ghostFactory.setGhost(player, !Rank.isPMOD(player) && !Rank.isSubscriber(player));
+            
+            if(Rank.isPMOD(player)){
+            	if(DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null){
+            		player.sendMessage(ChatColor.RED + "Please set a login code with /setpin <pin>");
+            	}else{
+            		player.sendMessage(ChatColor.RED + "Please login with /pin <pin>");
+            	}
+            }else{
+            	this.allowLogin(player, false);
+            }
         });
     }
 
@@ -125,6 +160,7 @@ public class Lobby extends JavaPlugin implements Listener {
             if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
                 DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
             }
+            this.allowedStaff.remove(event.getPlayer().getUniqueId());
         }, 1L);
     }
 
@@ -214,6 +250,17 @@ public class Lobby extends JavaPlugin implements Listener {
         }
         return false;
     }
-
-
+    
+    public void allowLogin(Player player, boolean addToList){
+    	if(addToList)
+    		this.allowedStaff.add(player.getUniqueId());
+    	ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("AllowLogin");
+        out.writeUTF(player.getUniqueId().toString());
+        getClient().sendTCP(out.toByteArray());
+    }
+    
+    public boolean isLoggedIn(Player player){
+    	return this.allowedStaff.contains(player.getUniqueId());
+    }
 }

@@ -42,6 +42,7 @@ public enum EnumData {
 
     ACHIEVEMENTS("collectibles.achievements"),
 
+    LOGIN_PIN("rank.loginCode"),
     RANK("rank.rank"),
     RANK_SUB_EXPIRATION("rank.expiration_date"),
     PURCHASE_HISTORY("rank.purchaseHistory"),
