@@ -13,6 +13,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.mounts.Horse;
@@ -1171,6 +1172,11 @@ public class DamageAPI {
         if (speed > 1) unitVector.setY(0.2);
         if (p.getVelocity().getY() > 0) unitVector.setY(0);
         // Set speed and push entity:
+
+        if(ent instanceof Player){
+            EntityMechanics.setVelocity((Player)ent, unitVector.multiply(speed));
+            return;
+        }
         ent.setVelocity(unitVector.multiply(speed));
     }
 
@@ -1184,6 +1190,10 @@ public class DamageAPI {
         if (speed > 1) unitVector.setY(0.2);
         if (p.getVelocity().getY() > 0) unitVector.setY(0);
         // Set speed and push entity:
+        if(ent instanceof Player){
+            EntityMechanics.setVelocity((Player)ent, unitVector.multiply(speed));
+            return;
+        }
         ent.setVelocity(unitVector.multiply(speed));
     }
 

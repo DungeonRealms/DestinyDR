@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entity.powermove.type;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityCreature;
@@ -65,8 +66,7 @@ public class WhirlWind extends PowerMove {
                         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
                         if ((p_y - 1) <= e_y || m == Material.AIR) {
 
-                            p.setVelocity(unitVector);
-
+                            EntityMechanics.setVelocity(p, unitVector);
                         }
                         // * 4 for whirlwind
                         double multiplier = entity.hasMetadata("boss") ? 1.3 : 4;

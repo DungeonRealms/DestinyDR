@@ -6,19 +6,19 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedZombie;
-import net.dungeonrealms.game.world.entity.type.monster.type.melee.*;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
-import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
 import net.dungeonrealms.game.world.entity.type.monster.base.*;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.Burick;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.InfernalAbyss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.Mayel;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
+import net.dungeonrealms.game.world.entity.type.monster.type.melee.*;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedSkeleton;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWitherSkeleton;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedZombie;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
 import net.dungeonrealms.game.world.entity.type.mounts.*;
 import net.dungeonrealms.game.world.entity.type.pet.*;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -28,7 +28,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -67,7 +69,7 @@ public class EntityMechanics implements GenericMechanic {
         //MELEE MONSTERS
         nmsUtils.registerEntity("MeleeGolem", 99, EntityGolem.class, MeleeGolem.class);
         nmsUtils.registerEntity("LargeSpider", 52, EntitySpider.class, LargeSpider.class);
-        nmsUtils.registerEntity("SmallSpider",59, EntityCaveSpider.class, SmallSpider.class);
+        nmsUtils.registerEntity("SmallSpider", 59, EntityCaveSpider.class, SmallSpider.class);
         nmsUtils.registerEntity("MeleeZombie", 54, EntityZombie.class, MeleeZombie.class);
         nmsUtils.registerEntity("MeleeWitherSkeleton", 51, EntitySkeleton.class, MeleeWitherSkeleton.class);
         nmsUtils.registerEntity("MeleeSkeleton", 51, EntitySkeleton.class, MeleeSkeleton.class);
@@ -133,6 +135,18 @@ public class EntityMechanics implements GenericMechanic {
     @Override
     public void stopInvocation() {
 
+    }
+
+    public static void setVelocity(Player player, Vector velocity) {
+
+        if(Double.isNaN(velocity.getX()) || Double.isNaN(velocity.getY()) || Double.isNaN(velocity.getZ())){
+            Bukkit.getLogger().info("Prevented Crash due to velocity: " + velocity + " bound for " + player.getName());
+            //Get the source of the problem.
+            try{Thread.dumpStack();}catch(Exception e){e.printStackTrace();}
+            return;
+        }
+
+        player.setVelocity(velocity);
     }
 
     private void checkForLeashedMobs() {
@@ -265,7 +279,7 @@ public class EntityMechanics implements GenericMechanic {
         }
 
 
-        if(PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId())){
+        if (PowerMove.chargingMonsters.contains(ent.getUniqueId()) || PowerMove.chargedMonsters.contains(ent.getUniqueId())) {
             cc = ChatColor.LIGHT_PURPLE;
         }
 

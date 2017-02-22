@@ -688,7 +688,7 @@ public class DamageListener implements Listener {
         p.teleport(respawnLocation);
         p.setFireTicks(0);
         p.setFallDistance(0);
-        p.setVelocity(p.getVelocity().zero());
+        EntityMechanics.setVelocity(p, p.getVelocity().zero());
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             event.getDrops().clear();
