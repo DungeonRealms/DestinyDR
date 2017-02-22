@@ -51,6 +51,7 @@ public abstract class MobSpawner {
     @Getter
     protected boolean firstSpawn = true;
     @Getter
+    @Setter
     protected boolean hasCustomName = false;
     @Getter
     protected int respawnDelay;
@@ -122,6 +123,9 @@ public abstract class MobSpawner {
     }
 
     public void createEditInformation() {
+        if(this.editHologram != null && !this.editHologram.isDeleted()){
+            this.editHologram.delete();
+        }
         Hologram holo = HologramsAPI.createHologram(DungeonRealms.getInstance(), this.getLoc().clone().add(.5, 3.5, .5));
 
         if (this instanceof EliteMobSpawner) {
@@ -221,13 +225,7 @@ public abstract class MobSpawner {
         armorstand.getBukkitEntity().remove();
 
         for (String spawner : Lists.newArrayList(SpawningMechanics.SPAWNER_CONFIG)) {
-            String[] coords = spawner.split("=")[0].split(",");
-
-            double x = Double.parseDouble(coords[0]);
-            double y = Double.parseDouble(coords[1]);
-            double z = Double.parseDouble(coords[2]);
-
-            if (getLoc().getX() == x && getLoc().getY() == y && getLoc().getZ() == z) {
+            if(doesLineMatchLocation(getLoc(), spawner)){
                 //Remove that whole line..
                 SpawningMechanics.SPAWNER_CONFIG.remove(spawner);
                 DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
@@ -236,7 +234,19 @@ public abstract class MobSpawner {
                 break;
             }
         }
+    }
 
+    public static boolean doesLineMatchLocation(Location location, String line){
+        if(!line.contains("="))return false;
+        String[] coords = line.split("=")[0].split(",");
 
+        double x = Double.parseDouble(coords[0]);
+        double y = Double.parseDouble(coords[1]);
+        double z = Double.parseDouble(coords[2]);
+        if (location.getX() == x && location.getY() == y && location.getZ() == z) {
+            return true;
+        }
+
+        return false;
     }
 }

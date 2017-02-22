@@ -254,10 +254,7 @@ public class BaseMobSpawner extends MobSpawner {
 
                         if (newEntity.getBukkitEntity() instanceof LivingEntity && forceWeap != null) {
                             LivingEntity ent = (LivingEntity) newEntity.getBukkitEntity();
-
-
                             ent.getEquipment().setItemInMainHand(forceWeap);
-                            System.out.println("Weapon: " + ent);
                         }
 
                     }

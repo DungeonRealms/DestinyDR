@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.command.CommandSpawn;
 import net.dungeonrealms.game.command.CommandSpawner;
@@ -55,6 +56,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -119,6 +122,22 @@ public class BlockListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerRightClick(PlayerInteractEvent event) {
+        if (event.hasBlock() && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Block block = event.getClickedBlock();
+            if (block.getType() == Material.MOB_SPAWNER) {
+                if (CommandSpawner.shownMobSpawners.containsKey(block.getLocation()) && Rank.isGM(event.getPlayer())) {
+                    //Exists
+                    //EDIT
+                    event.setCancelled(true);
+                    promptSpawnerEdit(event.getPlayer(), block, false, true);
+                    event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onBlockPlaceSpawner(BlockPlaceEvent event) {
         if (event.getBlockPlaced().getType() == Material.MOB_SPAWNER) {
             Player player = (Player) event.getPlayer();
@@ -127,154 +146,240 @@ public class BlockListener implements Listener {
                 //Create a spawner..
 
                 Block block = event.getBlock();
-
-                player.sendMessage("");
-                player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "SPAWNER SETUP STEP 1 / 2");
-                player.sendMessage(ChatColor.GRAY + "Please enter the enum monster type and the monster elite enum name (if applicable), the TIER of the mob, the level range (high / low), spawn delay in seconds, amount to spawn, range to spawn around");
-                player.sendMessage(ChatColor.GREEN + "EX: daemon false 4 high 120 1 1-4");
-                player.sendMessage("");
-
-                Chat.listenForMessage(player, (chat) -> {
-                    chat.setCancelled(true);
-
-                    String[] args = chat.getMessage().split(" ");
-
-
-                    if (args.length == 7) {
-
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            MobSpawner mobSpawner;
-                            EnumMonster monsterType = EnumMonster.getMonsterByString(args[0]);
-
-                            if (monsterType == null) {
-                                player.sendMessage(ChatColor.RED + "Invalid monster type given.");
-                                return;
-                            }
-                            boolean elite = Boolean.parseBoolean(args[1]);
-                            int tier = Integer.parseInt(args[2]);
-                            String levelRange = args[3];
-                            int spawnDelay = StringUtils.isNumeric(args[4]) ? Integer.parseInt(args[4]) : -1;
-                            int spawnAmount = StringUtils.isNumeric(args[5]) ? Integer.parseInt(args[5]) : -1;
-                            if (spawnDelay == -1 || spawnAmount == -1) {
-                                if (spawnDelay == -1)
-                                    player.sendMessage(ChatColor.RED + "Invalid spawn delay given");
-                                else
-                                    player.sendMessage(ChatColor.RED + "Invalid spawn amount given");
-
-                                block.setType(Material.AIR);
-                                return;
-                            }
-
-                            String range = args[6];
-
-                            int min = Integer.parseInt(range.split("-")[0]);
-                            int max = Integer.parseInt(range.split("-")[1]);
-                            if (elite)
-                                mobSpawner = new EliteMobSpawner(block.getLocation(), monsterType.getIdName(), tier, SpawningMechanics.getELITESPAWNERS().size(), levelRange, spawnDelay, min, max);
-                            else
-                                mobSpawner = new BaseMobSpawner(block.getLocation(), monsterType.getIdName(), tier, spawnAmount, SpawningMechanics.getALLSPAWNERS().size(), levelRange, spawnDelay, min, max);
-
-                            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Spawner Setup STEP 2 / 2");
-                            player.sendMessage(ChatColor.GREEN + "Please enter the custom mob name if applicable or 'none' for no name, (Explicit Weapon type or none), If you want to specify element damage: fire/ice/poison/pure <chance for elemental damage>");
-                            player.sendMessage(ChatColor.GRAY + "EX: none none fire 80 or none none 0 or &aThe_Devestator sword");
-                            Chat.listenForMessage(player, (nameChat) -> {
-
-                                String[] data = nameChat.getMessage().contains(" ") ? nameChat.getMessage().split(" ") : null;
-
-                                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                    boolean noName = false;
-                                    String name = data == null ? nameChat.getMessage() : data[0];
-                                    if (name.equalsIgnoreCase("none")) {
-                                        player.sendMessage(ChatColor.RED + "No name set.");
-                                        noName = true;
-                                    } else {
-                                        player.sendMessage(ChatColor.GREEN + "Name set to " + name);
-                                    }
-
-                                    if (elite) {
-                                        EnumNamedElite eliteEnum = EnumNamedElite.getFromName(name.toLowerCase().replace("_", " "));
-                                        if (eliteEnum != null && eliteEnum != EnumNamedElite.NONE)
-                                            player.sendMessage(ChatColor.GREEN + "Found Elite named " + eliteEnum.getConfigName());
-
-                                    }
-
-                                    if (!noName)
-                                        mobSpawner.setCustomName(name.replace("_", " "));
-
-                                    if (data != null && data.length >= 2) {
-                                        String weapon = data[1];
-                                        if (!weapon.equalsIgnoreCase("none")) {
-
-                                            net.dungeonrealms.game.world.item.Item.ItemType type = net.dungeonrealms.game.world.item.Item.ItemType.getByName(weapon);
-                                            if (type != null)
-                                                mobSpawner.setWeaponType(weapon);
-                                            else
-                                                player.sendMessage(ChatColor.RED + "Weapon not found for " + weapon);
-                                        }
-                                    }
-
-                                    if (data != null && data.length > 2) {
-                                        String elemental = data[2].toLowerCase();
-                                        double chance = data.length > 3 ? Double.parseDouble(data[3]) : 100;
-
-                                        ElementalDamage damage = ElementalDamage.getFromName(elemental);
-                                        if (damage != null) {
-                                            mobSpawner.setElementalDamage(damage.getName().toLowerCase());
-                                            mobSpawner.setElementChance(chance);
-                                        } else {
-                                            player.sendMessage(ChatColor.RED + "Invalid element type given.");
-                                        }
-
-                                    }
-
-                                    if (elite)
-                                        SpawningMechanics.getELITESPAWNERS().add((EliteMobSpawner) mobSpawner);
-                                    else
-                                        SpawningMechanics.getALLSPAWNERS().add((BaseMobSpawner) mobSpawner);
-
-
-                                    //Get serialized string?
-                                    String serialized = mobSpawner.getSerializedString();
-                                    SpawningMechanics.SPAWNER_CONFIG.add(serialized);
-                                    DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-                                    DungeonRealms.getInstance().saveConfig();
-
-                                    //Init mobspawner.
-                                    mobSpawner.init();
-                                    mobSpawner.createEditInformation();
-                                    CommandSpawner.shownMobSpawners.put(mobSpawner.getLoc(), mobSpawner);
-                                    player.sendMessage(ChatColor.RED + "Spawner created!");
-                                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1F);
-
-                                });
-                            }, (cancelled) -> {
-                                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                    player.sendMessage(ChatColor.RED + "Spawner creation failed");
-                                    block.setType(Material.AIR);
-                                });
-                            });
-                        });
-                    } else {
-
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            player.sendMessage(ChatColor.GRAY + "Please enter the enum monster type and the monster elite enum name (if applicable), the TIER of the mob, the level range (high / low), spawn delay in seconds, amount to spawn, range to spawn around");
-                            block.setType(Material.AIR);
-                        });
-                        return;
-                    }
-
-                    //coords=type*(name):tier;amount<high/low (lvl range)>@SpawnTime#rangeMin-rangMax$
-                    //x,y,z=type*(Name):4;1-@400#1-1$
-
-                }, (cancel) -> {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-
-                        player.sendMessage(ChatColor.RED + "Spawner creation failed");
-                        block.setType(Material.AIR);
-                    });
-                });
+                promptSpawnerEdit(player, block, true, false);
             }
         }
+    }
+
+    public static void promptSpawnerEdit(Player player, Block block, boolean deleteBlock, boolean checkIfExists) {
+        player.sendMessage("");
+        player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "SPAWNER SETUP STEP 1 / 2");
+        player.sendMessage(ChatColor.GRAY + "Please enter the enum monster type and the monster elite enum name (if applicable), the TIER of the mob, the level range (high / low), spawn delay in seconds, amount to spawn, range to spawn around");
+        player.sendMessage(ChatColor.GREEN + "EX: daemon false 4 high 120 1 1-4");
+        if (checkIfExists)
+            player.sendMessage(ChatColor.GREEN + "If you want to skip this step and go to step 2 instead type '2'");
+        player.sendMessage("");
+
+        Chat.listenForMessage(player, (chat) -> {
+            chat.setCancelled(true);
+            String[] args = chat.getMessage().split(" ");
+            if ((chat.getMessage().equals("2") && checkIfExists) || args.length == 7) {
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    EnumMonster monsterType = EnumMonster.getMonsterByString(args[0]);
+
+                    boolean forceStage2 = chat.getMessage().equals("2") && checkIfExists;
+
+                    AtomicBoolean elite = new AtomicBoolean(false);
+                    AtomicInteger tier = new AtomicInteger(0), min = new AtomicInteger(0), max = new AtomicInteger(0),
+                            delay = new AtomicInteger(0), spawnAmount = new AtomicInteger(0);
+                    String levelRange;
+                    MobSpawner foundSpawner = null;
+                    if (!forceStage2) {
+                        if (monsterType == null) {
+                            player.sendMessage(ChatColor.RED + "Invalid monster type given.");
+                            return;
+                        }
+                        elite.set(Boolean.parseBoolean(args[1]));
+                        tier.set(Integer.parseInt(args[2]));
+                        levelRange = args[3];
+                        delay.set(StringUtils.isNumeric(args[4]) ? Integer.parseInt(args[4]) : -1);
+                        spawnAmount.set(StringUtils.isNumeric(args[5]) ? Integer.parseInt(args[5]) : -1);
+                        if (delay.get() == -1 || spawnAmount.get() == -1) {
+                            if (delay.get() == -1)
+                                player.sendMessage(ChatColor.RED + "Invalid spawn delay given");
+                            else
+                                player.sendMessage(ChatColor.RED + "Invalid spawn amount given");
+
+                            if (deleteBlock)
+                                block.setType(Material.AIR);
+                            return;
+                        }
+
+                        String range = args[6];
+
+                        min.set(Integer.parseInt(range.split("-")[0]));
+                        max.set(Integer.parseInt(range.split("-")[1]));
+                    } else {
+                        for (MobSpawner spawner : SpawningMechanics.getAllSpawners()) {
+                            if (spawner.getLoc().getBlockX() == block.getLocation().getBlockX() &&
+                                    spawner.getLoc().getBlockY() == block.getLocation().getBlockY() &&
+                                    spawner.getLoc().getBlockZ() == block.getLocation().getBlockZ()) {
+                                //Found
+                                foundSpawner = spawner;
+                                break;
+                            }
+                        }
+
+                        if (foundSpawner == null) return;
+                        elite.set(foundSpawner instanceof EliteMobSpawner);
+                        tier.set(foundSpawner.getTier());
+                        levelRange = foundSpawner.getLvlRange();
+                        min.set(foundSpawner.getMininmumXZ());
+                        max.set(foundSpawner.getMaximumXZ());
+                        spawnAmount.set(foundSpawner.getSpawnAmount());
+                        delay.set(foundSpawner.getRespawnDelay());
+                    }
+                    player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Spawner Setup STEP 2 / 2");
+                    player.sendMessage(ChatColor.GREEN + "Please enter the custom mob name if applicable or 'none' for no name, (Explicit Weapon type or none), If you want to specify element damage: fire/ice/poison/pure <chance for elemental damage>");
+                    player.sendMessage(ChatColor.GRAY + "EX: none none fire 80 or none none 0 or &aThe_Devestator sword");
+                    MobSpawner temp = foundSpawner;
+                    Chat.listenForMessage(player, (nameChat) -> {
+
+                        String[] data = nameChat.getMessage().contains(" ") ? nameChat.getMessage().split(" ") : null;
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            MobSpawner mobSpawner = temp;
+                            if (checkIfExists && mobSpawner == null) {
+                                for (MobSpawner spawner : SpawningMechanics.getAllSpawners()) {
+                                    if (spawner.getLoc().getBlockX() == block.getLocation().getBlockX() &&
+                                            spawner.getLoc().getBlockY() == block.getLocation().getBlockY() &&
+                                            spawner.getLoc().getBlockZ() == block.getLocation().getBlockZ()) {
+                                        //Found
+                                        mobSpawner = spawner;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (mobSpawner == null) {
+                                if (elite.get())
+                                    mobSpawner = new EliteMobSpawner(block.getLocation(), monsterType.getIdName(), tier.get(), SpawningMechanics.getELITESPAWNERS().size(), levelRange, delay.get(), min.get(), max.get());
+                                else
+                                    mobSpawner = new BaseMobSpawner(block.getLocation(), monsterType.getIdName(), tier.get(), spawnAmount.get(), SpawningMechanics.getALLSPAWNERS().size(), levelRange, delay.get(), min.get(), max.get());
+                            }
+
+                            boolean noName = false;
+                            String name = data == null ? nameChat.getMessage() : data[0];
+                            if (name.equalsIgnoreCase("none")) {
+                                player.sendMessage(ChatColor.RED + "No name set.");
+                                noName = true;
+                            } else {
+                                player.sendMessage(ChatColor.GREEN + "Name set to " + name);
+                            }
+
+                            if (elite.get()) {
+                                EnumNamedElite eliteEnum = EnumNamedElite.getFromName(name.toLowerCase().replace("_", " "));
+                                if (eliteEnum != null && eliteEnum != EnumNamedElite.NONE)
+                                    player.sendMessage(ChatColor.GREEN + "Found Elite named " + eliteEnum.getConfigName());
+
+                            }
+
+                            if (!noName) {
+                                mobSpawner.setCustomName(name.replace("_", " "));
+                                mobSpawner.setHasCustomName(true);
+                            } else if (checkIfExists) {
+                                mobSpawner.setCustomName(null);
+                                mobSpawner.setHasCustomName(false);
+                            }
+
+                            if (data != null && data.length >= 2) {
+                                String weapon = data[1];
+                                if (!weapon.equalsIgnoreCase("none")) {
+
+                                    net.dungeonrealms.game.world.item.Item.ItemType type = net.dungeonrealms.game.world.item.Item.ItemType.getByName(weapon);
+                                    if (type != null)
+                                        mobSpawner.setWeaponType(weapon);
+                                    else
+                                        player.sendMessage(ChatColor.RED + "Weapon not found for " + weapon);
+                                } else if (mobSpawner.getWeaponType() != null && checkIfExists) {
+                                    //Clear this
+                                    mobSpawner.setWeaponType(null);
+                                }
+                            }
+
+                            if (data != null && data.length > 2) {
+                                String elemental = data[2].toLowerCase();
+
+                                if (elemental.equals("none")) {
+                                    if (mobSpawner.getElementalDamage() != null && checkIfExists) {
+                                        //Set current to null.
+                                        mobSpawner.setElementalDamage(null);
+                                    }
+                                } else {
+                                    double chance = data.length > 3 ? Double.parseDouble(data[3]) : 100;
+
+                                    ElementalDamage damage = ElementalDamage.getFromName(elemental);
+                                    if (damage != null) {
+                                        mobSpawner.setElementalDamage(damage.getName().toLowerCase());
+                                        mobSpawner.setElementChance(chance);
+                                    } else {
+                                        player.sendMessage(ChatColor.RED + "Invalid element type given.");
+                                    }
+                                }
+
+                            }
+
+                            if (!checkIfExists) {
+                                if (elite.get())
+                                    SpawningMechanics.getELITESPAWNERS().add((EliteMobSpawner) mobSpawner);
+                                else
+                                    SpawningMechanics.getALLSPAWNERS().add((BaseMobSpawner) mobSpawner);
+                            }
+
+                            //Get serialized string?
+                            String serialized = mobSpawner.getSerializedString();
+
+                            if (checkIfExists) {
+                                for (int i = 0; i < SpawningMechanics.SPAWNER_CONFIG.size(); i++) {
+                                    String line = SpawningMechanics.SPAWNER_CONFIG.get(i);
+                                    if (MobSpawner.doesLineMatchLocation(mobSpawner.getLoc(), line)) {
+                                        //Remove that whole line..
+                                        String newString = mobSpawner.getSerializedString();
+                                        SpawningMechanics.SPAWNER_CONFIG.set(i, newString);
+                                        DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
+                                        DungeonRealms.getInstance().saveConfig();
+                                        Bukkit.getLogger().info("Updating spawner line from '" + line + "' to '" + newString + "'");
+                                        break;
+                                    }
+                                }
+                            } else {
+                                SpawningMechanics.SPAWNER_CONFIG.add(serialized);
+                                DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
+                                DungeonRealms.getInstance().saveConfig();
+                            }
+
+                            mobSpawner.kill();
+                            //Init mobspawner.
+                            mobSpawner.init();
+                            mobSpawner.createEditInformation();
+                            CommandSpawner.shownMobSpawners.put(mobSpawner.getLoc(), mobSpawner);
+                            if (checkIfExists)
+                                player.sendMessage(ChatColor.RED + "Spawner created!");
+                            else
+                                player.sendMessage(ChatColor.RED + "Spawner Editted.");
+                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1F);
+
+                        });
+                    }, (cancelled) -> {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            player.sendMessage(ChatColor.RED + "Spawner creation failed");
+                            if (deleteBlock)
+                                block.setType(Material.AIR);
+                        });
+                    });
+                });
+            } else {
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    player.sendMessage(ChatColor.GRAY + "Please enter the enum monster type and the monster elite enum name (if applicable), the TIER of the mob, the level range (high / low), spawn delay in seconds, amount to spawn, range to spawn around");
+                    if (deleteBlock)
+                        block.setType(Material.AIR);
+                });
+                return;
+            }
+
+            //coords=type*(name):tier;amount<high/low (lvl range)>@SpawnTime#rangeMin-rangMax$
+            //x,y,z=type*(Name):4;1-@400#1-1$
+
+        }, (cancel) -> {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+
+                player.sendMessage(ChatColor.RED + "Spawner creation failed");
+                if (deleteBlock)
+                    block.setType(Material.AIR);
+            });
+        });
     }
 
     /**
