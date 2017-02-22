@@ -2,7 +2,6 @@ package net.dungeonrealms.game.listener.inventory;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -19,11 +18,13 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
@@ -33,7 +34,6 @@ import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
@@ -53,9 +53,12 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -69,10 +72,10 @@ public class ItemListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemDrop(PlayerDropItemEvent event) {
-    	if(event.isCancelled()) return;
+        if (event.isCancelled()) return;
         Player p = event.getPlayer();
         ItemStack item = event.getItemDrop().getItemStack();
-        
+
         if (GameAPI.isItemSoulbound(item)) {
             //event.setCancelled(true);
             event.getItemDrop().remove();
@@ -204,12 +207,12 @@ public class ItemListener implements Listener {
             Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
             if (p.isSneaking()) {
-            	
-            	if(DungeonRealms.getInstance().getRebootTime() - System.currentTimeMillis() < 5 * 60 * 1000){
-            		p.sendMessage(ChatColor.RED + "This shard is rebooting in less than 5 minutes, so you cannot upgrade this realm on this shard.");
-            		return;
-            	}
-            	
+
+                if (DungeonRealms.getInstance().getRebootTime() - System.currentTimeMillis() < 5 * 60 * 1000) {
+                    p.sendMessage(ChatColor.RED + "This shard is rebooting in less than 5 minutes, so you cannot upgrade this realm on this shard.");
+                    return;
+                }
+
                 if (!GameAPI.isInWorld(p, Realms.getInstance().getRealmWorld(p.getUniqueId()))) {
                     p.sendMessage(ChatColor.RED + "You must be inside your realm to modify its size.");
                     return;
@@ -275,7 +278,7 @@ public class ItemListener implements Listener {
                 } // Player is clicking air
             }
 
-            
+
             if (event.getClickedBlock() != null) {
                 if (Realms.getInstance().canPlacePortal(p, event.getClickedBlock().getLocation()))
                     Realms.getInstance().loadRealm(p, () -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
@@ -360,14 +363,14 @@ public class ItemListener implements Listener {
     public void useEcashItem(PlayerInteractEvent event) {
         if (event.getItem() != null) {
             Player player = event.getPlayer();
-            
+
             net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
             if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
-            	if (event.getItem().getAmount() > 1){
-                	player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
-                	return;
+                if (event.getItem().getAmount() > 1) {
+                    player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
+                    return;
                 }
-            	if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
+                if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
                     event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm.");
                     ItemStack resetBook = event.getItem().clone();
                     event.getPlayer().getInventory().remove(resetBook);
@@ -375,28 +378,28 @@ public class ItemListener implements Listener {
                         if (chat.getMessage().equalsIgnoreCase("Yes") || chat.getMessage().equalsIgnoreCase("y")) {
                             GameAPI.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
                             event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
-                        }else{
-                        	event.getPlayer().getInventory().addItem(resetBook);
-                        	event.getPlayer().sendMessage(ChatColor.RED + "Cancelled");
+                        } else {
+                            event.getPlayer().getInventory().addItem(resetBook);
+                            event.getPlayer().sendMessage(ChatColor.RED + "Cancelled");
                         }
                     }, p -> {
-                    	event.getPlayer().getInventory().addItem(resetBook);
-                    	p.sendMessage(ChatColor.RED + "Action cancelled.");
+                        event.getPlayer().getInventory().addItem(resetBook);
+                        p.sendMessage(ChatColor.RED + "Action cancelled.");
                     });
                 }
             }
             if (event.getItem().getType() == Material.FIREWORK) {
                 if (nms.hasTag() && nms.getTag().hasKey("globalMessenger")) {
-                	if (event.getItem().getAmount() > 1){
-                    	player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
-                    	return;
+                    if (event.getItem().getAmount() > 1) {
+                        player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
+                        return;
                     }
-                	
-                	if (PunishAPI.isMuted(event.getPlayer().getUniqueId())) {
+
+                    if (PunishAPI.isMuted(event.getPlayer().getUniqueId())) {
                         event.getPlayer().sendMessage(PunishAPI.getMutedMessage(event.getPlayer().getUniqueId()));
                         return;
                     }
-                	
+
                     event.getPlayer().sendMessage("");
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "Please enter the message you'd like to send to " + ChatColor.UNDERLINE + "all servers" + ChatColor.YELLOW
                             + " -- think before you speak!");
@@ -406,7 +409,7 @@ public class ItemListener implements Listener {
                     event.getPlayer().getInventory().remove(messengerItem);
                     Chat.listenForMessage(event.getPlayer(), chat -> {
                         if (chat.getMessage().equalsIgnoreCase("cancel")) {
-                        	event.getPlayer().getInventory().addItem(messengerItem);
+                            event.getPlayer().getInventory().addItem(messengerItem);
                             event.getPlayer().sendMessage(ChatColor.RED + "Global Messenger - " + ChatColor.BOLD + "CANCELLED");
                             return;
                         }
@@ -414,7 +417,7 @@ public class ItemListener implements Listener {
                         String msg = chat.getMessage();
                         if (msg.contains(".com") || msg.contains(".net") || msg.contains(".org") || msg.contains("http://") || msg.contains("www.")) {
                             if (!Rank.isDev(event.getPlayer())) {
-                            	event.getPlayer().getInventory().addItem(messengerItem);
+                                event.getPlayer().getInventory().addItem(messengerItem);
                                 event.getPlayer().sendMessage(ChatColor.RED + "No " + ChatColor.UNDERLINE + "URL's" + ChatColor.RED + " in your global messages please!");
                                 return;
                             }
@@ -428,8 +431,8 @@ public class ItemListener implements Listener {
 
                         event.getPlayer().sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
                     }, p -> {
-                    	event.getPlayer().getInventory().addItem(messengerItem);
-                    	p.sendMessage(ChatColor.RED + "Action cancelled.");
+                        event.getPlayer().getInventory().addItem(messengerItem);
+                        p.sendMessage(ChatColor.RED + "Action cancelled.");
                     });
                 }
             } else if (event.getItem().getType() == Material.ENDER_CHEST) {
@@ -458,13 +461,13 @@ public class ItemListener implements Listener {
                     }
                 }
             } else if (nms.hasTag() && nms.getTag().hasKey("buff")) {
-                
-            	if (event.getItem().getAmount() > 1){
-                	player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
-                	return;
+
+                if (event.getItem().getAmount() > 1) {
+                    player.sendMessage(ChatColor.RED + "Please only use one item at a time.");
+                    return;
                 }
-            	
-            	String itemName = ChatColor.stripColor(event.getItem().getItemMeta().getDisplayName());
+
+                String itemName = ChatColor.stripColor(event.getItem().getItemMeta().getDisplayName());
                 int duration = nms.getTag().getInt("duration");
                 int bonusAmount = nms.getTag().getInt("bonusAmount");
                 String formattedTime = DurationFormatUtils.formatDurationWords(duration * 1000, true, true);
@@ -505,13 +508,89 @@ public class ItemListener implements Listener {
                                 , String.valueOf(nms.getTag().getInt("bonusAmount")), GameChat.getFormattedName
                                         (player), DungeonRealms.getInstance().bungeeName);
                     } else {
-                    	event.getPlayer().getInventory().addItem(buffItem);
+                        event.getPlayer().getInventory().addItem(buffItem);
                         player.sendMessage(ChatColor.RED + itemName + " - CANCELLED");
                     }
                 }, p -> {
-                	event.getPlayer().getInventory().addItem(buffItem);
-                	p.sendMessage(ChatColor.RED + itemName + " - CANCELLED");
+                    event.getPlayer().getInventory().addItem(buffItem);
+                    p.sendMessage(ChatColor.RED + itemName + " - CANCELLED");
                 });
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerUseMountItem(PlayerInteractEvent event) {
+        ItemStack item = event.getItem();
+        if (item != null && item.getType() != Material.AIR) {
+            NBTWrapper wrapper = new NBTWrapper(item);
+            if (wrapper.hasTag("mount")) {
+                String mount = wrapper.getString("mount");
+
+                EnumMounts eMount = EnumMounts.getByName(mount);
+                if (eMount == null) return;
+
+                event.setCancelled(true);
+                event.setUseItemInHand(Event.Result.DENY);
+                event.setUseInteractedBlock(Event.Result.DENY);
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
+                    Player player = event.getPlayer();
+                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                        player.sendMessage(ChatColor.RED + "You already have a mount currently spawned.");
+                        return;
+                    }
+
+                    if (event.getPlayer().hasMetadata("summoningMount")) {
+                        player.sendMessage(ChatColor.RED + "You are already summoning a mount!");
+                        return;
+                    }
+
+                    Location startingLocation = player.getLocation();
+
+                    AtomicInteger counter = new AtomicInteger(5);
+                    player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "SUMMONING" + ChatColor.WHITE + " ... " + counter.get() + ChatColor.BOLD + "s");
+
+                    player.setMetadata("summoningMount", new FixedMetadataValue(DungeonRealms.getInstance(), ""));
+                    new BukkitRunnable() {
+                        public void run() {
+                            if (!player.isOnline()) {
+                                player.removeMetadata("summoningMount", DungeonRealms.getInstance());
+                                cancel();
+                                return;
+                            }
+
+                            if (player.getLocation().distance(startingLocation) <= 4) {
+                                if (!EntityAPI.hasMountOut(player.getUniqueId())) {
+                                    if (!CombatLog.isInCombat(player) && !CombatLog.inPVP(player)) {
+                                        if (counter.decrementAndGet() > 0) {
+                                            player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "SUMMONING" + ChatColor.WHITE + " ... " + counter.get() + ChatColor.BOLD + "s");
+                                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, player.getLocation().add(0, 0.15, 0),
+                                                    ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), ThreadLocalRandom.current().nextFloat(), 0.5F, 80);
+//                                            ParticleAPI.ParticleEffect.sendToLocation(ParticleAPI.ParticleEffect.SPELL, pl.getLocation().add(0, 0.15, 0), new Random().nextFloat(),
+//                                                    new Random().nextFloat(), new Random().nextFloat(), 0.5F, 80);
+                                        } else {
+                                            MountUtils.spawnMount(player.getUniqueId(), eMount.getRawName(), null);
+                                            cancel();
+                                            player.removeMetadata("summoningMount", DungeonRealms.getInstance());
+                                        }
+                                    } else {
+                                        player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
+                                        player.removeMetadata("summoningMount", DungeonRealms.getInstance());
+                                        cancel();
+                                    }
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "Mount already detected out.");
+                                    player.removeMetadata("summoningMount", DungeonRealms.getInstance());
+                                    cancel();
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
+                                player.removeMetadata("summoningMount", DungeonRealms.getInstance());
+                                cancel();
+                            }
+                        }
+                    }.runTaskTimer(DungeonRealms.getInstance(), 20, 20);
+                }
             }
         }
     }

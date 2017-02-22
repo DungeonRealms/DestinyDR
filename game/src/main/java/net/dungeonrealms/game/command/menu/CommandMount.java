@@ -21,6 +21,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class CommandMount extends BaseCommand {
             return false;
         }
         Player player = (Player) sender;
-        if (args.length == 0 || (args.length == 1 && (args[0].equalsIgnoreCase("spider") || args[0].equalsIgnoreCase("enderdragon")) && Rank.isHeadGM(player))) {
+        if (args.length == 0 || (args.length == 1 && Rank.isHeadGM(player))) {
             if (EntityAPI.hasMountOut(player.getUniqueId())) {
                 Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
                 if (entity.isAlive()) {
@@ -67,7 +68,7 @@ public class CommandMount extends BaseCommand {
                 return true;
             }
 
-            if(args.length == 1){
+            if (args.length == 1) {
                 //Spawn spider..
                 MountUtils.spawnMount(player.getUniqueId(), args[0], null);
                 return true;

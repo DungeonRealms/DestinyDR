@@ -206,6 +206,8 @@ public class Affair implements GenericMechanic {
                         DungeonManager.getInstance().removeInstance(dungeonObject);
                     }
                 }
+
+                PARTY_CHAT.remove(player.getUniqueId());
             }
             player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
             player.sendMessage(ChatColor.RED + "Your party has been disbanded.");

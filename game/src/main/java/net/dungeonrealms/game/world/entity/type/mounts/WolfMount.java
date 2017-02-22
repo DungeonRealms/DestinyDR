@@ -8,28 +8,33 @@ import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.UUID;
 
-public class SpiderMount extends EntitySpider {
+public class WolfMount extends EntityWolf {
 
-    public UUID owner;
+    private EnumMounts mounts;
 
-    public EnumMounts mount;
+    private UUID owner;
 
-    public SpiderMount(World world, UUID owner, EnumMounts mount) {
+    public WolfMount(World world, UUID owner, EnumMounts mount) {
         super(world);
 
         this.owner = owner;
-        this.mount = mount;
+        this.mounts = mount;
         clearGoalSelectors();
 
         this.goalSelector.a(0, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 20F));
 
-        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(mount.getMountData().getSpeed());
+        getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(mounts.getMountData().getSpeed());
+    }
+
+    @Override
+    public String getName() {
+        return "Wolf";
     }
 
     //Ambient sound.
     @Override
     protected SoundEffect G() {
-        return SoundEffects.bK;
+        return SoundEffects.gN;
     }
 
     @Override
@@ -80,7 +85,7 @@ public class SpiderMount extends EntitySpider {
             jump.setAccessible(true);
             try {
                 if (jump.getBoolean(entityliving)) {
-                    double jumpHeight = 0.5D;//Here you can set the jumpHeight
+                    double jumpHeight = 0.5D;
                     this.motY = jumpHeight;    // Used all the time in NMS for entity jumping
                 }
             } catch (IllegalAccessException e) {
@@ -106,7 +111,6 @@ public class SpiderMount extends EntitySpider {
 
         this.aG += (f4 - this.aG) * 0.4F;
         this.aH += this.aG;
-
     }
 
     private void clearGoalSelectors() {
@@ -124,4 +128,5 @@ public class SpiderMount extends EntitySpider {
             e.printStackTrace();
         }
     }
+
 }

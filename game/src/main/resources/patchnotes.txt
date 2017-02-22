@@ -8,6 +8,7 @@ Build <build>
 - Re-enabled Reflection on gear
 
 &8Bugfixes&0
+- Pickaxes / Fishing rods now return when they break at Level 100
 - Infernal Guards will now target farther away.
 - Fix Horses taking damage in SafeZone
 - Updated horse logic to lessen rubber banding.

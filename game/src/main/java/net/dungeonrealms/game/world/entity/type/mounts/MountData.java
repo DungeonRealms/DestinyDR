@@ -1,0 +1,57 @@
+package net.dungeonrealms.game.world.entity.type.mounts;
+
+import com.google.common.collect.Lists;
+import lombok.Getter;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
+import net.dungeonrealms.game.world.entity.util.MountUtils;
+import net.minecraft.server.v1_9_R2.NBTTagInt;
+import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+
+public class MountData {
+
+    @Getter
+    String name;
+
+    @Getter
+    ChatColor nameColor;
+
+    @Getter
+    float speed;
+
+    @Getter
+    List<String> lore = Lists.newArrayList(ChatColor.GRAY + ChatColor.ITALIC.toString() + "A Mystical being, ready to ride into battle.");
+
+
+    public MountData(String name, ChatColor nameColor, float speed, List<String> lore) {
+        this.name = name;
+        this.nameColor = nameColor;
+        this.speed = speed;
+
+        if (lore != null)
+            this.lore = lore;
+
+    }
+
+    public ItemStack createMountItem(EnumMounts mount) {
+
+        List<String> lore = Lists.newArrayList();
+
+        lore.add(ChatColor.RED + "Speed: " + ChatColor.BOLD + MountUtils.getPercentSpeed(getSpeed()));
+
+        lore.add("");
+        lore.addAll(getLore());
+
+        lore.add(ChatColor.DARK_RED + "Soulbound");
+        return new NBTWrapper(new ItemBuilder().setItem(mount.getSelectionItem().clone())
+                .setName(getNameColor() + ChatColor.BOLD.toString() + getName() + " Mount").setLore(lore).build())
+                .setString("mount", mount.name())
+                .setString("speed", "" + getSpeed())
+                .set("soulbound", new NBTTagInt(1))
+                .set("untradeable", new NBTTagInt(1))
+                .set("puntradeable", new NBTTagInt(1)).build();
+    }
+}

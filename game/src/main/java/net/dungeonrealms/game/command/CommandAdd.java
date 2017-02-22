@@ -25,10 +25,6 @@ import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.item.itemgenerator.engine.ItemModifier;
-import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierCondition;
-import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierRange;
-import net.dungeonrealms.game.world.item.itemgenerator.engine.ModifierType;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
@@ -43,7 +39,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.NumberFormat;
 import java.util.*;

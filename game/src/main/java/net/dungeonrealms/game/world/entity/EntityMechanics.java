@@ -19,9 +19,7 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.type.InfernalAbyss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.Mayel;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalLordsGuard;
-import net.dungeonrealms.game.world.entity.type.mounts.EnderDragon;
-import net.dungeonrealms.game.world.entity.type.mounts.Horse;
-import net.dungeonrealms.game.world.entity.type.mounts.SpiderMount;
+import net.dungeonrealms.game.world.entity.type.mounts.*;
 import net.dungeonrealms.game.world.entity.type.pet.*;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.*;
@@ -126,6 +124,9 @@ public class EntityMechanics implements GenericMechanic {
         nmsUtils.registerEntity("PetMagmaCube", 62, EntityMagmaCube.class, MagmaCube.class);
         nmsUtils.registerEntity("PetCreeper", 50, EntityCreeper.class, Creeper.class);
         nmsUtils.registerEntity("MountSpider", 52, EntitySpider.class, SpiderMount.class);
+        nmsUtils.registerEntity("MountSlime", 55, EntitySlime.class, SlimeMount.class);
+        nmsUtils.registerEntity("MountWolf", 95, EntityWolf.class, WolfMount.class);
+
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0, 20L);
     }
 

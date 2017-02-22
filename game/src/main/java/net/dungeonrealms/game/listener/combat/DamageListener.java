@@ -26,6 +26,7 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.powermove.type.PowerStrike;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DREnderman;
@@ -33,6 +34,7 @@ import net.dungeonrealms.game.world.entity.type.monster.base.DRWitch;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
@@ -41,7 +43,6 @@ import net.dungeonrealms.game.world.item.Attribute;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
-import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.*;
@@ -355,6 +356,26 @@ public class DamageListener implements Listener {
     }
 
 
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerDamageOnMount(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            if (event.getEntity().getVehicle() != null && event.getEntity().getVehicle().isValid()) {
+                Entity vehicle = event.getEntity().getVehicle();
+
+                if (vehicle.hasMetadata("mount")) {
+                    EnumMounts mount = EnumMounts.getByName(vehicle.getMetadata("mount").get(0).asString());
+                    if (mount == null || mount.getMountData() == null) return;
+
+                    if (vehicle.hasMetadata("type") && vehicle.hasMetadata("owner") && EntityMechanics.PLAYER_MOUNTS.containsValue(vehicle)) {
+                        //Will eject the mount and handle through
+                        event.getEntity().sendMessage(ChatColor.RED + "Your mount has been dismissed due to taking damage.");
+                        vehicle.eject();
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Listen for Pets Damage.
      * <p>
@@ -365,7 +386,7 @@ public class DamageListener implements Listener {
      */
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void petDamageListener(EntityDamageByEntityEvent event) {
+    public void mountDamageListener(EntityDamageByEntityEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
         String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
         switch (metaValue) {
@@ -399,8 +420,20 @@ public class DamageListener implements Listener {
                             }
                         }
                     }
+                } else {
+                    if (!GameAPI.isNonPvPRegion(event.getEntity().getLocation())) {
+                        Entity passenger = event.getEntity().getPassenger();
+                        if (passenger != null && passenger instanceof Player) {
+                            passenger.sendMessage(ChatColor.RED + "You have been dismounted due to your mount taking damage.");
+                        }
+                        event.getEntity().eject();
+                    } else {
+                        event.setCancelled(true);
+                        if (event.getDamager() instanceof Player)
+                            event.getDamager().sendMessage(org.bukkit.ChatColor.RED + "You cannot damage a mount in a " + org.bukkit.ChatColor.UNDERLINE + "safezone");
+                    }
+                    break;
                 }
-                break;
             default:
                 break;
         }
@@ -454,11 +487,11 @@ public class DamageListener implements Listener {
         }
 
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
-        	event.setCancelled(true);
-        	//Running this one tick later avoids a screen lock. (Player cannot move and is frozen in place under the map)
+            event.setCancelled(true);
+            //Running this one tick later avoids a screen lock. (Player cannot move and is frozen in place under the map)
             Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
-            	event.getEntity().teleport(Teleportation.Cyrennica);
-            	event.getEntity().setFallDistance(0);
+                event.getEntity().teleport(Teleportation.Cyrennica);
+                event.getEntity().setFallDistance(0);
             });
         }
 
@@ -697,7 +730,8 @@ public class DamageListener implements Listener {
 
         LivingEntity leShooter = (LivingEntity) event.getEntity().getShooter();
         if (!(leShooter.hasMetadata("type"))) return;
-        if (!(GameAPI.isWeapon(leShooter.getEquipment().getItemInMainHand())) && entityType != EntityType.WITCH) return;
+        if (!(GameAPI.isWeapon(leShooter.getEquipment().getItemInMainHand())) && entityType != EntityType.WITCH)
+            return;
 
         if (entityType != EntityType.WITCH)
             MetadataUtils.registerProjectileMetadata(((DRMonster) ((CraftLivingEntity) leShooter).getHandle()).getAttributes
