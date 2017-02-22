@@ -162,6 +162,10 @@ public class BlockListener implements Listener {
 
         Chat.listenForMessage(player, (chat) -> {
             chat.setCancelled(true);
+            if(chat.getMessage().equals("cancel")){
+                player.sendMessage(ChatColor.RED + "Cancelled");
+                return;
+            }
             String[] args = chat.getMessage().split(" ");
             if ((chat.getMessage().equals("2") && checkIfExists) || args.length == 7) {
 
@@ -226,6 +230,10 @@ public class BlockListener implements Listener {
                     MobSpawner temp = foundSpawner;
                     Chat.listenForMessage(player, (nameChat) -> {
 
+                        if(chat.getMessage().equals("cancel")){
+                            player.sendMessage(ChatColor.RED + "Cancelled");
+                            return;
+                        }
                         String[] data = nameChat.getMessage().contains(" ") ? nameChat.getMessage().split(" ") : null;
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

@@ -1,11 +1,8 @@
 package net.dungeonrealms.game.command;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.world.spawning.EliteMobSpawner;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +30,7 @@ public class CommandSpawner extends BaseCommand {
         if (!(sender instanceof Player)) return true;
 
         Player player = (Player) sender;
-        if (!Rank.isHeadGM(player)) {
+        if (!Rank.isGM(player)) {
             return true;
         }
 
