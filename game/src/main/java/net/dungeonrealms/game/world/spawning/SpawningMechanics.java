@@ -96,6 +96,7 @@ public class SpawningMechanics implements GenericMechanic {
             String monster = line.split("=")[1].split(":")[0];
             String spawnRange = String.valueOf(line.charAt(line.indexOf("@") - 1));
             int spawnDelay = Integer.parseInt(line.substring(line.indexOf("@") + 1, line.indexOf("#")));
+            int initialDelay = spawnDelay;
             if (spawnDelay < 25) {
                 if (!isElite) {
                     switch (tier) {
@@ -164,6 +165,8 @@ public class SpawningMechanics implements GenericMechanic {
                 ELITESPAWNERS.add((EliteMobSpawner) spawner);
             }
 
+            //Delay to save instead of the randomized delay.
+            spawner.setInitialRespawnDelay(initialDelay);
             //Theres some more data at the end.
             String extraData = !line.endsWith("$") ? line.substring(line.indexOf("$") + 1) : "";
 
@@ -186,7 +189,6 @@ public class SpawningMechanics implements GenericMechanic {
 
                 if (extraData.contains("@ELEM@")) {
                     String elemental = extraData.substring(extraData.indexOf("@ELEM@") + 6, extraData.lastIndexOf("@ELEM@"));
-                    Bukkit.getLogger().info("Elemental data: " + elemental);
 
 
                     double chance = 100;

@@ -29,6 +29,7 @@ public abstract class MobSpawner {
     @Getter
     protected Location loc;
     @Getter
+    @Setter
     protected String spawnType;
     @Getter
     protected EntityArmorStand armorstand;
@@ -53,8 +54,13 @@ public abstract class MobSpawner {
     @Getter
     @Setter
     protected boolean hasCustomName = false;
+
+    @Setter
+    @Getter
+    protected int initialRespawnDelay;
     @Getter
     protected int respawnDelay;
+
     @Getter
     protected int counter;
 
@@ -93,6 +99,8 @@ public abstract class MobSpawner {
             spawnAmount = 8;
 
         this.lvlRange = lvlRange;
+        this.initialRespawnDelay = respawnDelay;
+
         this.spawnAmount = spawnAmount;
         this.loc = location;
         this.id = configid;
@@ -182,7 +190,7 @@ public abstract class MobSpawner {
         builder.append(":");
         //tier
         builder.append(tier).append(";").append(spawnAmount).append(lvlRange.equals("high") ? "+" : "-").append("@");
-        builder.append(respawnDelay).append("#").append(mininmumXZ).append("-").append(maximumXZ).append("$");
+        builder.append(this.initialRespawnDelay).append("#").append(mininmumXZ).append("-").append(maximumXZ).append("$");
 
         if (this.weaponType != null) {
             builder.append("@WEP@").append(weaponType.toUpperCase()).append("@WEP@");

@@ -162,7 +162,7 @@ public class BlockListener implements Listener {
 
         Chat.listenForMessage(player, (chat) -> {
             chat.setCancelled(true);
-            if(chat.getMessage().equals("cancel")){
+            if (chat.getMessage().equals("cancel")) {
                 player.sendMessage(ChatColor.RED + "Cancelled");
                 return;
             }
@@ -230,7 +230,7 @@ public class BlockListener implements Listener {
                     MobSpawner temp = foundSpawner;
                     Chat.listenForMessage(player, (nameChat) -> {
 
-                        if(chat.getMessage().equals("cancel")){
+                        if (nameChat.getMessage().equals("cancel")) {
                             player.sendMessage(ChatColor.RED + "Cancelled");
                             return;
                         }
@@ -329,6 +329,8 @@ public class BlockListener implements Listener {
                             String serialized = mobSpawner.getSerializedString();
 
                             if (checkIfExists) {
+                                if (monsterType != null)
+                                    mobSpawner.setSpawnType(monsterType.getIdName());
                                 for (int i = 0; i < SpawningMechanics.SPAWNER_CONFIG.size(); i++) {
                                     String line = SpawningMechanics.SPAWNER_CONFIG.get(i);
                                     if (MobSpawner.doesLineMatchLocation(mobSpawner.getLoc(), line)) {
