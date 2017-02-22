@@ -6,6 +6,7 @@ Build <build>
 - Release Scrap Tab
 - Elemental Resistance now applies to world damage (EX: Fire / Poison)
 - Re-enabled Reflection on gear
+- Added more elemental damage to mobs in higher tier areas
 
 &8Bugfixes&0
 - Pickaxes / Fishing rods now return when they break at Level 100
