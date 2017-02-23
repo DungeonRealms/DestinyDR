@@ -55,6 +55,7 @@ public class DungeonManager implements GenericMechanic {
         return instance;
     }
 
+    @Getter
     private CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
     public static volatile ConcurrentHashMap<String, HashMap<Location, String>> instance_mob_spawns = new ConcurrentHashMap<>();
 
