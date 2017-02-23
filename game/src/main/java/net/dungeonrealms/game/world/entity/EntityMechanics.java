@@ -140,7 +140,7 @@ public class EntityMechanics implements GenericMechanic {
     public static void setVelocity(Player player, Vector velocity) {
 
         if(Double.isNaN(velocity.getX()) || Double.isNaN(velocity.getY()) || Double.isNaN(velocity.getZ())){
-            Bukkit.getLogger().info("Prevented Crash due to velocity: " + velocity + " bound for " + player.getName());
+            Bukkit.getLogger().info("Prevented Crash due to velocity: " + velocity + " bound for " + player.getName() + " at " + player.getLocation().toString());
             //Get the source of the problem.
             try{Thread.dumpStack();}catch(Exception e){e.printStackTrace();}
             return;
