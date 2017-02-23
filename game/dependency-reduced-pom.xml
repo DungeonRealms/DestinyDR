@@ -99,22 +99,6 @@
           <artifactId>craftbukkit</artifactId>
           <groupId>org.bukkit</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>json</artifactId>
-          <groupId>org.json</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>reflectionhelper</artifactId>
-          <groupId>org.inventivetalent</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>api</artifactId>
-          <groupId>org.inventivetalent.packetlistener</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>api</artifactId>
-          <groupId>org.inventivetalent.nicknamer</groupId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -187,6 +171,13 @@
       <version>1.6.3</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/ArmorEquipEvent-1.6.3 .jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.inventivetalent</groupId>
+      <artifactId>GlowAPI</artifactId>
+      <version>1.4.4</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/GlowAPI_v1.4.4.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com</groupId>

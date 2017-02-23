@@ -245,7 +245,7 @@ public class KarmaHandler implements GenericMechanic {
                             ""
                     });
                 }
-                alignmentTime += login ? NEUTRAL_COOLDOWN : CHAOTIC_COOLDOWN;
+                alignmentTime += login ? 10 : CHAOTIC_COOLDOWN;
                 break;
             default:
                 Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");

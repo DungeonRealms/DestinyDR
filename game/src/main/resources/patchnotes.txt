@@ -1,6 +1,7 @@
 Build <build>
 
 &8Changes&0
+- Uncommon+ items glow on drop.
 - Updated player knockback mechanic
 - Re-add fall damage
 - Release Scrap Tab

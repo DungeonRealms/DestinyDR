@@ -115,6 +115,14 @@
             <systemPath>${project.basedir}/lib/ArmorEquipEvent-1.6.3 .jar</systemPath>
             <scope>system</scope>
         </dependency>
+		
+		<dependency>
+            <groupId>org.inventivetalent</groupId>
+            <artifactId>GlowAPI</artifactId>
+            <version>1.4.4</version>
+            <systemPath>${project.basedir}/lib/GlowAPI_v1.4.4.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.inventivetalent</groupId>

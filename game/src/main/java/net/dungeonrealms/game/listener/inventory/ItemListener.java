@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listener.inventory;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -29,15 +30,18 @@ import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
 import net.dungeonrealms.game.world.entity.util.PetUtils;
+import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -45,6 +49,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -54,6 +59,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.inventivetalent.glow.GlowAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +70,27 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Kieran on 9/18/2015.
  */
 public class ItemListener implements Listener {
+	/**
+	 * Makes Uncommon+ Items glow
+	 */
+	@EventHandler
+	public void onItemSpawn(ItemSpawnEvent event){
+		this.applyRarityGlow(event.getEntity());
+	}
+	
+	private void applyRarityGlow(Item entity){
+		ItemStack item = entity.getItemStack();
+		if(item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore())
+			return;
+		List<String> lore = item.getItemMeta().getLore();
+		for(int i = 1; i < ItemRarity.values().length; i++){
+			ItemRarity rarity = ItemRarity.getById(i);
+			for(String s : lore)
+				if(s.contains(rarity.getName()))
+					GlowAPI.setGlowing(entity, GlowAPI.Color.valueOf(rarity.getColor().name()), GameAPI.getNearbyPlayers(entity.getLocation(), 100, true));
+		}
+	}
+	
     /**
      * Used to handle dropping a soulbound, untradeable, or
      * permanently untradeable item.

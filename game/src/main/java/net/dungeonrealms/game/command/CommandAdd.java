@@ -123,7 +123,7 @@ public class CommandAdd extends BaseCommand {
                         } else if (args.length == 4) {
                             tier = Integer.parseInt(args[1]);
                             type = Item.ItemType.getByName(args[2]);
-                            rarity = Item.ItemRarity.getByName(args[3]);
+                            rarity = Item.ItemRarity.valueOf(args[3]);
                             player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
                                     .setType(type).setRarity(rarity).generateItem().getItem());
                         } else {
@@ -148,14 +148,14 @@ public class CommandAdd extends BaseCommand {
                         } else if (args.length == 4) {
                             tier = Integer.parseInt(args[1]);
                             type = Item.ItemType.getByName(args[2]);
-                            rarity = Item.ItemRarity.getByName(args[3]);
+                            rarity = Item.ItemRarity.valueOf(args[3]);
                             player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
                                     .setType(type).setRarity(rarity).generateItem().getItem());
                             //ad armor [tier] [type] [rarity] [stat] [value]
                         } else if (args.length == 6) {
                             tier = Integer.parseInt(args[1]);
                             type = Item.ItemType.getByName(args[2]);
-                            rarity = Item.ItemRarity.getByName(args[3]);
+                            rarity = Item.ItemRarity.valueOf(args[3]);
 
                             if (tier != 0 && type != null && rarity != null) {
                                 ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
