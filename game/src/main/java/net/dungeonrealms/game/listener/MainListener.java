@@ -958,7 +958,7 @@ public class MainListener implements Listener {
                                             net.dungeonrealms.game.world.item.Item.ItemType.getRandomWeapon())
                                     .setRarity(rarity).generateItem().getItem();
                         } else if (treasure_type == 2) {
-                            treasure = ItemManager.createOrbofFlight();
+                            treasure = ItemManager.createOrbofFlight(true);
                         }
 
                         if (treasure != null) {

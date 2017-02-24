@@ -95,7 +95,7 @@ public class ItemManager {
         return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
-    public static ItemStack createOrbofFlight() {
+    public static ItemStack createOrbofFlight(boolean applyAntiDupe) {
         ItemStack orbOfFlight = createItem(Material.FIREWORK_CHARGE, ChatColor.AQUA.toString() + "Orb of Flight",
                 Arrays.asList((ChatColor.GRAY.toString() + "Enables " + ChatColor.UNDERLINE + "FLYING" + ChatColor.GRAY + " in realm for the owner "),
                         (ChatColor.GRAY.toString() + "and all builders for 30 minute(s)."),
@@ -103,15 +103,15 @@ public class ItemManager {
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(orbOfFlight);
         nms.getTag().setString("orb", "flight");
-        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+        return applyAntiDupe ? AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms)) : CraftItemStack.asBukkitCopy(nms);
     }
 
-    public static ItemStack createOrbofPeace() {
+    public static ItemStack createOrbofPeace(boolean applyAntiDupe) {
         ItemStack orbOfPeace = createItem(Material.ENDER_PEARL, ChatColor.LIGHT_PURPLE.toString() + "Orb of Peace",
                 new String[]{(ChatColor.GRAY.toString() + "Set realm to " + ChatColor.UNDERLINE + "SAFE ZONE" + ChatColor.GRAY + " for 1 hour(s).")});
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(orbOfPeace);
         nms.getTag().setString("orb", "peace");
-        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+        return applyAntiDupe ? AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms)) : CraftItemStack.asBukkitCopy(nms);
     }
 
     public static ItemStack createWeaponEnchant(int tier) {
