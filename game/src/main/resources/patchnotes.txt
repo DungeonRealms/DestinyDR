@@ -1,7 +1,7 @@
 Build <build>
 
 &8Changes&0
-- Uncommon+ items glow on drop.
+- Uncommon+ items glow on drop
 - Updated player knockback mechanic
 - Re-add fall damage
 - Release Scrap Tab
@@ -10,10 +10,11 @@ Build <build>
 - Added more elemental damage to mobs in higher tier areas
 
 &8Bugfixes&0
+- Trade chat toggle now works as intended
 - Pickaxes / Fishing rods now return when they break at Level 100
-- Infernal Guards will now target farther away.
+- Infernal Guards will now target farther away
 - Fix Horses taking damage in SafeZone
-- Updated horse logic to lessen rubber banding.
-- Adjusted Infernal Enderman code, should hopefully resolve despawning issues.
+- Updated horse logic to lessen rubber banding
+- Adjusted Infernal Enderman code, should hopefully resolve despawning issues
 - Fix losing weapon when combat logging as Lawful
-- Patchnotes notification only shows when they change.
+- Patchnotes notification only shows when they change
