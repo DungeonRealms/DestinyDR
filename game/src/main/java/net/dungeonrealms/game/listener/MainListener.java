@@ -1096,6 +1096,7 @@ public class MainListener implements Listener {
         Player player = (Player) event.getPlayer();
         GamePlayer gp = GameAPI.getGamePlayer(player);
         if (player.hasMetadata("sharding") || !gp.isAbleToOpenInventory() || gp.isSharding()) {
+            Bukkit.getLogger().info("Cancelling " + player.getName() + " from opening inventory");
             event.setCancelled(true);
             return;
         }

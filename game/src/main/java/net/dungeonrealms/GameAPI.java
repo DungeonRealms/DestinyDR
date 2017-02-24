@@ -538,6 +538,10 @@ public class GameAPI {
         getClient().sendNetworkMessage(task, message, contents);
     }
 
+    public static void sendDevMessage(String message, String... contents){
+        getClient().sendNetworkMessage("DEVMessage", message.replace("{SERVER}", DungeonRealms.getInstance().bungeeName), contents);
+    }
+
     /**
      * Gets players UUID from Name. ASYNC.
      *

@@ -886,15 +886,17 @@ public class DamageAPI {
                     }
                 }
             } else if (GameAPI.isMobElemental(attacker)) {
+
+                int MAX_RESISTANCE = 75;
                 if (GameAPI.getMobElement(attacker).equals("fire")) {
                     totalArmor *= 0.2;
-                    totalArmor += defenderAttributes.get("fireResistance")[1];
+                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("fireResistance")[1]);
                 } else if (GameAPI.getMobElement(attacker).equals("ice")) {
                     totalArmor *= 0.2;
-                    totalArmor += defenderAttributes.get("iceResistance")[1];
+                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("iceResistance")[1]);
                 } else if (GameAPI.getMobElement(attacker).equals("poison")) {
                     totalArmor *= 0.2;
-                    totalArmor += defenderAttributes.get("poisonResistance")[1];
+                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("poisonResistance")[1]);
                 } else if (GameAPI.getMobElement(attacker).equals("pure")) {
                     totalArmor *= 0;
                 }
