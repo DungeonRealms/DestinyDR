@@ -263,7 +263,9 @@ public class PvEListener implements Listener {
         for(int i = 0; i < 3; i++)
         	DamageAPI.createDamageHologram(killer, monster.getLocation(), ChatColor.RED + "☠");
         HealthHandler.getInstance().getMonsterTrackers().remove(monster.getUniqueId());
-        ((DRMonster) ((CraftLivingEntity) monster).getHandle()).onMonsterDeath(highestDamage);
+        DRMonster drMonster = ((DRMonster) ((CraftLivingEntity) monster).getHandle());
+        drMonster.onMonsterDeath(highestDamage);
+        System.out.println("I CAN VERIFY I AM A " + drMonster.getEnum().name());
         int exp = GameAPI.getMonsterExp(highestDamage, monster);
         GamePlayer gamePlayer = GameAPI.getGamePlayer(highestDamage);
         if (gamePlayer == null) {
