@@ -113,7 +113,7 @@ public class Shop {
             Bukkit.getPlayer(ownerUUID).closeInventory();
         }
         // Do other stuff
-        saveCollectionBin();
+        saveCollectionBin(shutDown);
         viewCount = 0;
         uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
         uniqueViewers.clear();
@@ -134,7 +134,7 @@ public class Shop {
     /**
      * save to collection
      */
-    private void saveCollectionBin() {
+    private void saveCollectionBin(boolean shutDown) {
         Inventory inv = Bukkit.createInventory(null, inventory.getSize(), "Collection Bin");
         int count = 0;
         for (ItemStack stack : inventory) {
@@ -170,8 +170,9 @@ public class Shop {
                 BankMechanics.getInstance().getStorage(ownerUUID).collection_bin = inv;
             }
             String invToString = ItemSerialization.toString(inv);
-            //Don't do this. VV It saves this on logout, doing this allows a /closeshop dupe.
-            //DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
+            //Only save on shutdown, otherwise they can take items out from the inventory, then /closeshop to load it back from Mongo.
+            if(shutDown)
+                DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
         } else {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
         }
