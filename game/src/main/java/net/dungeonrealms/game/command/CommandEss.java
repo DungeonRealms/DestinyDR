@@ -14,6 +14,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -72,7 +73,7 @@ public class CommandEss extends BaseCommand {
                     Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         String uuid = DatabaseAPI.getInstance().getUUIDFromName(args[1]);
                         if (uuid == null || uuid.equals("")) {
-                            commandSender.sendMessage(ChatColor.RED + "No uuid found for that name");
+                            commandSender.sendMessage(ChatColor.RED + "Failed to find a user with the name " + ChatColor.UNDERLINE + args[1] + ChatColor.RED + ".");
                             return;
                         }
 
@@ -191,13 +192,24 @@ public class CommandEss extends BaseCommand {
                     if (args.length == 3) {
                         try {
                             String playerName = args[1];
-                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            Player found = Bukkit.getPlayer(playerName);
+                            UUID uuid = found != null && found.getDisplayName().equalsIgnoreCase(playerName) ? found.getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
                             String mountType = args[2];
                             String mountFriendly = mountType.toUpperCase().replace("_", " ");
                             if (!GameAPI.isStringMount(mountType)) {
                                 commandSender.sendMessage(ChatColor.RED + "The mount " + ChatColor.BOLD + ChatColor.UNDERLINE + mountFriendly + ChatColor.RED + " does not exist.");
                                 return false;
                             }
+                            EnumMounts mount = EnumMounts.getByName(mountType);
+                            if (mount != null && mount.getMountData() != null) {
+                                //Give the player the item?
+                                if(found != null){
+                                    found.getInventory().addItem(mount.getMountData().createMountItem(mount));
+                                    commandSender.sendMessage(ChatColor.RED + "Mount given to " + found.getName());
+                                    return true;
+                                }
+                            }
+
                             List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
                             if (!playerMounts.isEmpty()) {
                                 if (playerMounts.contains(mountType.toUpperCase())) {

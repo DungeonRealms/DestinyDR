@@ -43,6 +43,7 @@ public enum EnumData {
 
     ACHIEVEMENTS("collectibles.achievements"),
 
+    LOGIN_PIN("rank.loginCode"),
     RANK("rank.rank"),
     RANK_SUB_EXPIRATION("rank.expiration_date"),
     PURCHASE_HISTORY("rank.purchaseHistory"),
@@ -68,6 +69,7 @@ public enum EnumData {
     FRIEND_REQUESTS("notices.friendRequest"),
     MAILBOX("notices.mailbox"),
     LAST_BUILD("notices.lastBuild"),
+    LAST_NOTES_SIZE("notices.lastBuildNotesSize"),
     LAST_VOTE("notices.lastVote"),
 
     BANNED_TIME("punishments.banned"),

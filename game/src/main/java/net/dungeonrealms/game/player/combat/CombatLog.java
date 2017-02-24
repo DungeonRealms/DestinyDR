@@ -81,8 +81,10 @@ public class CombatLog implements GenericMechanic {
                 case LAWFUL:
                     ItemStack storedItem = null;
                     // Keep the item a player has in his offhand & damage it
-                    if (player.getInventory().getItemInOffHand() != null && player.getInventory().getItemInOffHand().getType() != Material.AIR) {
-                        storedItem = player.getInventory().getItem(0);
+
+                    ItemStack firstItem = player.getInventory().getItem(0);
+                    if (firstItem != null && firstItem.getType() != Material.AIR) {
+                        storedItem = firstItem;
                         this.damageAndReturn(player, storedItem, null);
                     }
                     // Drop all items except for storedItem
@@ -93,7 +95,7 @@ public class CombatLog implements GenericMechanic {
                                 // We don't want to drop a pickaxe/fishing rod
                                 if (!Mining.isDRPickaxe(itemStack) && !Fishing.isDRFishingPole(itemStack) && !GameAPI.isItemSoulbound(itemStack)) {
                                     // We don't want to drop the storedItem
-                                    if (itemStack != storedItem) {
+                                    if (!itemStack.equals(storedItem)) {
                                         player.getWorld().dropItem(player.getLocation(), itemStack);
                                         player.getInventory().remove(itemStack);
                                     }
@@ -108,7 +110,7 @@ public class CombatLog implements GenericMechanic {
                     for (ItemStack itemStack : player.getInventory().getContents()) {
                         if (itemStack != null) {
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
-                                if(!GameAPI.isItemSoulbound(itemStack)){
+                                if (!GameAPI.isItemSoulbound(itemStack)) {
                                     player.getWorld().dropItem(player.getLocation(), itemStack);
                                 }
                                 player.getInventory().remove(itemStack);
@@ -128,15 +130,13 @@ public class CombatLog implements GenericMechanic {
     }
 
     public void damageAndReturn(Player player, ItemStack itemStack, List<ItemStack> list) {
-        if (GameAPI.isArmor(itemStack)) {
-            if (GameAPI.isArmor(itemStack) || GameAPI.isWeapon(itemStack)) {
-                // Damage by 30% of current durability
-                double durability = RepairAPI.getCustomDurability(itemStack);
-                double toSubstract = (durability / 100) * 30; // 30% of current durability
-                RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
-                if (list != null) {
-                    list.add(itemStack);
-                }
+        if (GameAPI.isArmor(itemStack) || GameAPI.isWeapon(itemStack)) {
+            // Damage by 30% of current durability
+            double durability = RepairAPI.getCustomDurability(itemStack);
+            double toSubstract = (durability / 100) * 30; // 30% of current durability
+            RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
+            if (list != null) {
+                list.add(itemStack);
             }
         }
     }

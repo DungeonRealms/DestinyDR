@@ -56,6 +56,7 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
@@ -389,7 +390,7 @@ public class GameAPI {
      * Stops DungeonRealms server
      */
     public static void stopGame() {
-    	DungeonRealms.getInstance().setAlmostRestarting(true);
+        DungeonRealms.getInstance().setAlmostRestarting(true);
         DungeonRealms.getInstance().getLogger().info("stopGame() called.");
 
         final long restartTime = (Bukkit.getOnlinePlayers().size() * 25) + 100; // second per player plus 5 seconds
@@ -586,26 +587,37 @@ public class GameAPI {
         return world != null && player.getLocation().getWorld().equals(world);
     }
 
+
     public static void setMobElement(net.minecraft.server.v1_9_R2.Entity ent, String element) {
         ent.getBukkitEntity().setMetadata("element", new FixedMetadataValue(DungeonRealms.getInstance(), element));
         String name = ent.getCustomName();
         String[] splitName = name.split(" ", 2);
-        switch (element) {
-            case "pure":
-                name = ChatColor.GOLD + "Holy " + name;
-                break;
-            case "fire":
-                name = ChatColor.RED + (splitName.length == 1 ? "Fire " + splitName[0] : splitName[0] + " Fire " + splitName[1]);
-                break;
-            case "ice":
-                name = ChatColor.BLUE + (splitName.length == 1 ? "Ice " + splitName[0] : splitName[0] + " Ice " + splitName[1]);
-                break;
-            case "poison":
-                name = ChatColor.DARK_GREEN + (splitName.length == 1 ? "Poison " + splitName[0] : splitName[0] + " Poison " + splitName[1]);
-                break;
-            default:
-                break;
+
+
+        ElementalDamage damage = ElementalDamage.getFromName(element);
+        if (damage != null) {
+            if (damage == ElementalDamage.PURE)
+                name = damage.getPrefixColor() + damage.getElementalDamagePrefix() + " " + name;
+            else
+                name = damage.getPrefixColor() + (splitName.length == 1 ? damage.getName() + " " + splitName[0] : splitName[0] + " " + damage.getName() + " " + splitName[1]);
         }
+//        switch (element) {
+//            case "pure":
+//                name = ChatColor.GOLD + "Holy " + name;
+//                break;
+//            case "fire":
+//                name = ChatColor.RED + (splitName.length == 1 ? "Fire " + splitName[0] : splitName[0] + " Fire " + splitName[1]);
+//                break;
+//            case "ice":
+//                name = ChatColor.BLUE + (splitName.length == 1 ? "Ice " + splitName[0] : splitName[0] + " Ice " + splitName[1]);
+//                break;
+//            case "poison":
+//                name = ChatColor.DARK_GREEN + (splitName.length == 1 ? "Poison " + splitName[0] : splitName[0] + " Poison " + splitName[1]);
+//                break;
+//            default:
+//                break;
+//        }
+
         ent.setCustomName(name.trim());
         ent.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), name.trim()));
         if (GameAPI.isWeapon(((LivingEntity) ent.getBukkitEntity()).getEquipment().getItemInMainHand())) {
@@ -679,16 +691,17 @@ public class GameAPI {
         return getWorldGuard().getRegionManager(Bukkit.getPlayer(uuid).getWorld())
                 .getApplicableRegions(Bukkit.getPlayer(uuid).getLocation()).getRegions().contains(region);
     }
-    
+
     public static List<Player> getNearbyPlayers(Location location, int radius) {
-    	return getNearbyPlayers(location, radius, false);
+        return getNearbyPlayers(location, radius, false);
     }
+
     /**
      * Gets the a list of nearby players from a location within a given radius
      *
      * @param location
      * @param radius
-     * @param 
+     * @param
      * @since 1.0
      */
     public static List<Player> getNearbyPlayers(Location location, int radius, boolean ignoreVanish) {
@@ -728,9 +741,9 @@ public class GameAPI {
     public static boolean savePlayerData(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
         Player player = Bukkit.getPlayer(uuid);
 
-        if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())){	
+        if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) {
             return false;
-    	}
+        }
         List<UpdateOneModel<Document>> operations = new ArrayList<>();
         Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
 
@@ -806,7 +819,7 @@ public class GameAPI {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
         if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return;
-        
+
         Utils.log.info("Handling logout for " + uuid.toString());
         DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
@@ -848,7 +861,7 @@ public class GameAPI {
                 GameAPI._hiddenPlayers.remove(player);
             }
             if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-            	Utils.log.info(player.getUniqueId() + " has already been saved.");
+                Utils.log.info(player.getUniqueId() + " has already been saved.");
                 return;
             }
             if (CombatLog.isInCombat(player)) {
@@ -928,7 +941,7 @@ public class GameAPI {
             }
 
             // Handle pvp log first
-            if(CombatLog.inPVP(player)) CombatLog.removeFromPVP(player);
+            if (CombatLog.inPVP(player)) CombatLog.removeFromPVP(player);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 
@@ -940,7 +953,7 @@ public class GameAPI {
                 player.setCanPickupItems(false);
 
                 GamePlayer gp = GameAPI.getGamePlayer(player);
-                if(gp != null) {
+                if (gp != null) {
                     gp.setAbleToSuicide(false);
                     gp.setAbleToDrop(false);
                 }
@@ -957,7 +970,7 @@ public class GameAPI {
                     if (CombatLog.isInCombat(player)) CombatLog.removeFromCombat(player);
                     String name = player.getName();
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
-                    if(ShopMechanics.ALLSHOPS != null && !ShopMechanics.ALLSHOPS.isEmpty()) {
+                    if (ShopMechanics.ALLSHOPS != null && !ShopMechanics.ALLSHOPS.isEmpty()) {
                         // Second shop deletion handler
                         ShopMechanics.getShop(name).deleteShop(true);
                     }
@@ -999,7 +1012,7 @@ public class GameAPI {
         } else {
             return;
         }
-        
+
         createNewData(player);
 
         try {
@@ -1022,11 +1035,12 @@ public class GameAPI {
 
         gp.setAbleToDrop(false);
         gp.setAbleToSuicide(false);
-        gp.setAbleToOpenInventory(false);
+        if(!Rank.isTrialGM(player))
+        	gp.setAbleToOpenInventory(false);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-        	gp.setAbleToDrop(true);
-        	gp.setAbleToOpenInventory(true);
+            gp.setAbleToDrop(true);
+            gp.setAbleToOpenInventory(true);
         }, 20L * 10L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> gp.setAbleToSuicide(true), 20L * 60L);
 
@@ -1078,7 +1092,10 @@ public class GameAPI {
         }
 
         CurrencyTab currencyTab = new CurrencyTab(player.getUniqueId());
-        currencyTab.loadCurrencyTab(tab -> Bukkit.getLogger().info("Loaded currency tab for " + player.getName()));
+        currencyTab.loadCurrencyTab(tab -> {
+            if (tab.hasAccess)
+                Bukkit.getLogger().info("Loaded currency tab for " + player.getName());
+        });
         BankMechanics.getInstance().getCurrencyTab().put(player.getUniqueId(), currencyTab);
 
         String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, player.getUniqueId());
@@ -1133,7 +1150,7 @@ public class GameAPI {
         player.setMaximumNoDamageTicks(0);
         player.setNoDamageTicks(0);
 
-        Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(Constants.BUILD_VERSION) + " Build " + String.valueOf(Constants.BUILD_NUMBER));
+        Utils.sendCenteredMessage(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Build " + String.valueOf(Constants.BUILD_NUMBER));
         Utils.sendCenteredMessage(player, ChatColor.GRAY + "http://www.dungeonrealms.net/");
         Utils.sendCenteredMessage(player, ChatColor.YELLOW + "You are on the " + ChatColor.BOLD + DungeonRealms.getInstance().shardid + ChatColor.YELLOW + " shard.");
 
@@ -1212,11 +1229,11 @@ public class GameAPI {
                 }
             }
         }
-        
+
         // Quests
         if(Quests.isEnabled())
-        	Quests.getInstance().handleLogin(player);
-        
+       		Quests.getInstance().handleLogin(player);
+
         // Fatigue
         EnergyHandler.getInstance().handleLoginEvents(player);
 
@@ -1377,22 +1394,22 @@ public class GameAPI {
             DonationEffects.getInstance().doLogin(player);
         }, 100L);
     }
-    
+
     /**
      * Creates data that was not present on the original release of DR.
      * (Prevents NPEs)
      */
-    private static void createNewData(Player player){
-    	UUID uuid = player.getUniqueId();
-    	createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
-    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
+    private static void createNewData(Player player) {
+        UUID uuid = player.getUniqueId();
+        createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
+//    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
     }
-    
-    private static void createIfMissing(UUID uuid, EnumData data, Object setTo){
-    	if(DatabaseAPI.getInstance().getData(data, uuid) == null)
-    		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, data, setTo, true);
+
+    private static void createIfMissing(UUID uuid, EnumData data, Object setTo) {
+        if (DatabaseAPI.getInstance().getData(data, uuid) == null)
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, data, setTo, true);
     }
-    
+
     /**
      * type used to switch shard
      *
@@ -1641,8 +1658,8 @@ public class GameAPI {
     }
 
     public static Integer[] changeAttributeVal(Item.AttributeType type, Integer[] difference, Player p) {
-        if(GameAPI.getGamePlayer(p) != null) {
-            if(type != null) {
+        if (GameAPI.getGamePlayer(p) != null) {
+            if (type != null) {
                 return GameAPI.getGamePlayer(p).changeAttributeVal(type, difference);
             }
         }
@@ -1662,8 +1679,8 @@ public class GameAPI {
      * @return if a ranged attribute, throws an error message and returns -1.
      */
     public static Integer[] getRangedAttributeVal(Item.AttributeType type, Player p) {
-        if(GameAPI.getGamePlayer(p) != null) {
-            if(type != null) {
+        if (GameAPI.getGamePlayer(p) != null) {
+            if (type != null) {
                 return GameAPI.getGamePlayer(p).getRangedAttributeVal(type);
             }
         }
@@ -2109,14 +2126,14 @@ public class GameAPI {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(is);
         return !(nms == null || nms.getTag() == null) && is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
-    
+
     public static String getCustomID(ItemStack i) {
-    	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
         if (nms == null || nms.getTag() == null) return null;
         NBTTagCompound tag = nms.getTag();
         return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
-	}
-    
+    }
+
     /*
      This stuff is disabled because Soulbound achieves the same thing, and we should avoid giving items that we take back later.
      (Because there are way too many ways to lose those items such as breaking, dropping, etc. etc.)
@@ -2240,34 +2257,35 @@ public class GameAPI {
         final Object isVanished = DatabaseAPI.getInstance().getData(EnumData.TOGGLE_VANISH, document);
         return isVanished != null && (Boolean) isVanished;
     }
-    
-    public static boolean isShop(InventoryView inventoryView){
-    	return inventoryView.getTitle().contains("@");
+
+    public static boolean isShop(InventoryView inventoryView) {
+        return inventoryView.getTitle().contains("@");
     }
-    
-    public static boolean isShop(Inventory inventory){
-    	return inventory.getTitle().contains("@");
+
+    public static boolean isShop(Inventory inventory) {
+        return inventory.getTitle().contains("@");
     }
-    
-    public static void runAsSpectators(Entity spectated, Consumer<Player> callback){
-    	List<Entity> nearby = spectated.getNearbyEntities(1, 1, 1);
-        for(Entity ent : nearby){
-        	if(ent instanceof Player){
-        		Player p = (Player)ent;
-        		if(Rank.isTrialGM(p) && p.getGameMode() == GameMode.SPECTATOR && p.getSpectatorTarget() != null && p.getSpectatorTarget() == spectated){
-        			callback.accept(p);
-        		}
-        	}
+
+    public static void runAsSpectators(Entity spectated, Consumer<Player> callback) {
+        List<Entity> nearby = spectated.getNearbyEntities(1, 1, 1);
+        for (Entity ent : nearby) {
+            if (ent instanceof Player) {
+                Player p = (Player) ent;
+                if (p.getGameMode() == GameMode.SPECTATOR && Rank.isTrialGM(p) && p.getSpectatorTarget() != null && p.getSpectatorTarget() == spectated) {
+                    callback.accept(p);
+                }
+            }
         }
     }
+
     /**
      * Teleports a player to another shard (Unconditionally)
-     * 
+     *
      * @param Player
      * @param ShardInfo
      */
-    public static void sendToShard(Player player, ShardInfo shard){
-    	player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+    public static void sendToShard(Player player, ShardInfo shard) {
+        player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
         GameAPI.getGamePlayer(player).setSharding(true);
         GameAPI.IGNORE_QUIT_EVENT.add(player.getUniqueId());
         handleLogout(player.getUniqueId(), true, consumer -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -2277,52 +2295,53 @@ public class GameAPI {
                     () -> BungeeUtils.sendToServer(player.getName(), shard.getPseudoName()), 10);
         }));
     }
-    
+
     /**
      * Formats milliseconds into a viewable string.
-     * 
+     * <p>
      * Example Input: 90000
      * Example Output: "1min 30s"
+     *
      * @param ms
      */
-    public static String formatTime(long time){
-    	time /= 1000;
-    	String formatted = "";
-    	for(int i = 0; i < TimeInterval.values().length; i++){
-    		TimeInterval iv = TimeInterval.values()[TimeInterval.values().length - i - 1];
-    		if(time >= iv.getInterval()){
-    			int temp = (int) (time - (time % iv.getInterval()));
-    			int add = temp / iv.getInterval();
-    			formatted += " " + add + iv.getSuffix() + (add > 1 && iv != TimeInterval.SECOND ? "s" : "");
-    			time -= temp;
-    		}
-    	}
-    	return formatted.equals("") ? "" : formatted.substring(1);
+    public static String formatTime(long time) {
+        time /= 1000;
+        String formatted = "";
+        for (int i = 0; i < TimeInterval.values().length; i++) {
+            TimeInterval iv = TimeInterval.values()[TimeInterval.values().length - i - 1];
+            if (time >= iv.getInterval()) {
+                int temp = (int) (time - (time % iv.getInterval()));
+                int add = temp / iv.getInterval();
+                formatted += " " + add + iv.getSuffix() + (add > 1 && iv != TimeInterval.SECOND ? "s" : "");
+                time -= temp;
+            }
+        }
+        return formatted.equals("") ? "" : formatted.substring(1);
     }
-    
+
     private enum TimeInterval {
-    	SECOND("s", 1),
-    	MINUTE("min", 60 * SECOND.getInterval()),
-    	HOUR("hr", 60 * MINUTE.getInterval()),
-    	DAY("day", 24 * HOUR.getInterval()),
-    	MONTH("month", 30 * DAY.getInterval()),
-    	YEAR("yr", 365 * DAY.getInterval());
-    	
-    	private String suffix;
-    	private int interval;
-    	
-    	TimeInterval(String s, int i){
-    		this.suffix = s;
-    		this.interval = i;
-    	}
-    	
-    	public int getInterval(){
-    		return this.interval;
-    	}
-    	
-    	public String getSuffix(){
-    		return this.suffix;
-    	}
+        SECOND("s", 1),
+        MINUTE("min", 60 * SECOND.getInterval()),
+        HOUR("hr", 60 * MINUTE.getInterval()),
+        DAY("day", 24 * HOUR.getInterval()),
+        MONTH("month", 30 * DAY.getInterval()),
+        YEAR("yr", 365 * DAY.getInterval());
+
+        private String suffix;
+        private int interval;
+
+        TimeInterval(String s, int i) {
+            this.suffix = s;
+            this.interval = i;
+        }
+
+        public int getInterval() {
+            return this.interval;
+        }
+
+        public String getSuffix() {
+            return this.suffix;
+        }
     }
     
     /**

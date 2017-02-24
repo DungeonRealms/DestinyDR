@@ -696,6 +696,7 @@ public class Fishing implements GenericMechanic {
                 for (FishingRodEnchant rodEnchant : FishingRodEnchant.values()) {
                     objectMap.put(rodEnchant, getEnchantBuff(itemStack, rodEnchant));
                 }
+                return objectMap;
             }
         }
         return null;

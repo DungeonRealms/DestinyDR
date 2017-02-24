@@ -491,16 +491,18 @@ public class HealthHandler implements GenericMechanic {
                 == null || gp.isInvulnerable())
             return;
 
-        if(armourReducedDamage > 0){
+
+        boolean isReflectedDamage = armourReducedDamage == -5;
+        if (armourReducedDamage > 0) {
 //            Bukkit.getLogger().info("Subtracting " + armourReducedDamage + " damage from " + damage + " due to " + totalArmor + " armor from " + player.getName());
-            if(damage <= armourReducedDamage){
+            if (damage <= armourReducedDamage) {
                 damage = 1;
-            }else {
+            } else {
                 damage -= armourReducedDamage;
             }
         }
 
-        if(damage < 0){
+        if (damage < 0) {
             Bukkit.getLogger().info("Negative damage dealt to " + player.getName() + " Damager: " + damager.getName() + " Damage: " + damage);
             damage = 1;
         }
@@ -567,7 +569,7 @@ public class HealthHandler implements GenericMechanic {
                 return;
             }
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
-                if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK && !isReflectedDamage) {
                     KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
                 }
                 if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
@@ -583,9 +585,11 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
 
-            //Track this player damage for when we die.
-            player.setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
-            player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), leAttacker.getName()));
+            if (!isReflectedDamage) {
+                //Track this player damage for when we die.
+                player.setMetadata("lastPlayerToDamageExpire", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis() + 3000));
+                player.setMetadata("lastPlayerToDamage", new FixedMetadataValue(DungeonRealms.getInstance(), leAttacker.getName()));
+            }
 
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
                 leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]");

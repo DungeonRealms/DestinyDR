@@ -2,9 +2,11 @@ package net.dungeonrealms.proxy.listener;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+
 import net.dungeonrealms.network.GameClient;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.proxy.DungeonRealmsProxy;
+import net.dungeonrealms.proxy.StaffSecurity;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.io.ByteArrayInputStream;
@@ -57,6 +59,8 @@ public class NetworkClientListener extends Listener {
                         DungeonRealmsProxy.getInstance().hidePlayer(toHide);
                     else
                         DungeonRealmsProxy.getInstance().unhidePlayer(toHide);
+                } else if (task.equals("AllowLogin")){
+                	StaffSecurity.getInstance().addAllowedPlayer(UUID.fromString(in.readUTF()));
                 }
             } catch (IOException e) {
                 e.printStackTrace();

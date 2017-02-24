@@ -35,12 +35,20 @@ public class Storage {
     public Storage(UUID uuid, Inventory inventory) {
         ownerUUID = uuid;
         this.inv = getNewStorage();
-        for (org.bukkit.inventory.ItemStack stack : inventory.getContents()) {
-            if (stack != null && stack.getType() != org.bukkit.Material.AIR)
-                if (inv.firstEmpty() >= 0)
-                    inv.addItem(stack);
+
+        for (int i = 0; i < this.inv.getSize(); i++) {
+            ItemStack item = inventory.getItem(i);
+            if (item != null && item.getType() != Material.AIR)
+                inv.setItem(i, item);
         }
+//        for (org.bukkit.inventory.ItemStack stack : inventory.getContents()) {
+//            if (stack != null && stack.getType() != org.bukkit.Material.AIR)
+//                if (inv.firstEmpty() >= 0)
+//                    inv.addItem(stack);
+//        }
         String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
+        //Without this VV Players can /closeshop and dupe their items.
+        DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true);
         if (stringInv.length() > 1) {
             Inventory inv = ItemSerialization.fromString(stringInv);
             for (ItemStack item : inv.getContents()) {

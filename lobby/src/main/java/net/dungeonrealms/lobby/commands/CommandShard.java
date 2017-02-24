@@ -26,7 +26,12 @@ public class CommandShard extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
-
+        
+        if(Rank.isPMOD(player) && !Lobby.getInstance().isLoggedIn(player)){
+        	player.sendMessage(ChatColor.RED + "You must login before using this.");
+        	return false;
+        }
+        
         if (args.length == 0 || !Rank.isTrialGM(player)) {
             new ShardSelector(player).open(player);
             return true;

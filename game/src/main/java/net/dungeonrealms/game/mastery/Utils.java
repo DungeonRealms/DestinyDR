@@ -170,7 +170,7 @@ public class Utils {
         boolean isBold = false;
 
         for (char c : message.toCharArray()) {
-            if (c == '&') {
+            if (c == '&' || c == '\u00A7') {
                 previousCode = true;
             } else if (previousCode) {
                 previousCode = false;

@@ -8,37 +8,26 @@ import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.UUID;
 
-public class SpiderMount extends EntitySpider {
+public class SlimeMount extends EntitySlime {
 
-    public UUID owner;
+    private EnumMounts mount;
 
-    public EnumMounts mount;
+    private UUID owner;
 
-    public SpiderMount(World world, UUID owner, EnumMounts mount) {
+    public SlimeMount(World world, UUID owner, EnumMounts mount) {
         super(world);
 
         this.owner = owner;
         this.mount = mount;
+
         clearGoalSelectors();
 
         this.goalSelector.a(0, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 20F));
 
         getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(mount.getMountData().getSpeed());
+
     }
 
-    //Ambient sound.
-    @Override
-    protected SoundEffect G() {
-        return SoundEffects.bK;
-    }
-
-    @Override
-    public void n() {
-        for (int i = 0; i < 2; ++i) {
-            this.world.addParticle(EnumParticle.PORTAL, this.locX + (this.random.nextDouble() - 0.5D) * (double) this.width, this.locY + this.random.nextDouble() * (double) this.length - 0.25D, this.locZ + (this.random.nextDouble() - 0.5D) * (double) this.width, (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D, new int[0]);
-        }
-        super.n();
-    }
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
@@ -51,7 +40,6 @@ public class SpiderMount extends EntitySpider {
 
         Entity entity = this.passengers.get(0);
         if (entity == null || !(entity instanceof EntityHuman)) {
-//            die();
             Bukkit.getLogger().info("Entity dead no passengers of human..");
             return;
         }
@@ -109,6 +97,7 @@ public class SpiderMount extends EntitySpider {
 
     }
 
+
     private void clearGoalSelectors() {
         try {
             Field a = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -124,4 +113,5 @@ public class SpiderMount extends EntitySpider {
             e.printStackTrace();
         }
     }
+
 }

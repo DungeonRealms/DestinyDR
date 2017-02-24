@@ -13,6 +13,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.mounts.Horse;
@@ -41,6 +42,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Kieran on 9/21/2015.
@@ -815,11 +817,11 @@ public class DamageAPI {
                 return new double[]{Math.round(totalArmorReduction), totalArmor};
             }
             // REFLECT
-//            int reflectChance = defenderAttributes.get("reflection")[1];
-//            if (new Random().nextInt(100) < reflectChance) {
-//                totalArmorReduction = -3;
-//                return new double[]{Math.round(totalArmorReduction), totalArmor};
-//            }
+            int reflectChance = defenderAttributes.get("reflection")[1];
+            if (ThreadLocalRandom.current().nextInt(100) < Math.min(75, reflectChance)) {
+                totalArmorReduction = -3;
+                return new double[]{Math.round(totalArmorReduction), totalArmor};
+            }
             // BASE ARMOR
             totalArmor = Utils.randInt(defenderAttributes.get("armor")[0], defenderAttributes.get("armor")[1]);
 
@@ -1170,6 +1172,28 @@ public class DamageAPI {
         if (speed > 1) unitVector.setY(0.2);
         if (p.getVelocity().getY() > 0) unitVector.setY(0);
         // Set speed and push entity:
+
+        if(ent instanceof Player){
+            EntityMechanics.setVelocity((Player)ent, unitVector.multiply(speed));
+            return;
+        }
+        ent.setVelocity(unitVector.multiply(speed));
+    }
+
+    public static void newKnockbackEntity(Player p, Entity ent, double speed) {
+        if (ent instanceof Horse) {
+            return;
+        }
+        // Get velocity unit vector:
+        org.bukkit.util.Vector unitVector = ent.getLocation().toVector().subtract(p.getLocation().toVector()).normalize();
+        unitVector.setY(p.isOnGround() ? 0.35 : 0.2);
+        if (speed > 1) unitVector.setY(0.2);
+        if (p.getVelocity().getY() > 0) unitVector.setY(0);
+        // Set speed and push entity:
+        if(ent instanceof Player){
+            EntityMechanics.setVelocity((Player)ent, unitVector.multiply(speed));
+            return;
+        }
         ent.setVelocity(unitVector.multiply(speed));
     }
 
@@ -1245,9 +1269,6 @@ public class DamageAPI {
     /**
      * Create a hologram that floats up and deletes itself.
      * 
-     * @param Player that attacked an entity.
-     * @param Location to create around
-     * @param What should the hologram display?
      */
     public static void createDamageHologram(Player createFor, Location createAround, String display){
     	if(createFor != null && !Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DAMAGE_INDICATORS, createFor.getUniqueId()).toString()))

@@ -170,7 +170,8 @@ public class Shop {
                 BankMechanics.getInstance().getStorage(ownerUUID).collection_bin = inv;
             }
             String invToString = ItemSerialization.toString(inv);
-            DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
+            //Don't do this. VV It saves this on logout, doing this allows a /closeshop dupe.
+            //DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
         } else {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
         }

@@ -3,13 +3,11 @@ package net.dungeonrealms.game.world.entity.powermove.type;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EntityCreature;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -57,12 +55,18 @@ public class WhirlWind extends PowerMove {
                 step++;
                 if (step == 5) {
                     GameAPI.getNearbyPlayers(entity.getLocation(), 8).forEach(p -> {
-                        Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
+                        Vector unitVector = p.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize().multiply(3);
+
+                        if (Double.isNaN(unitVector.getX()) || Double.isNaN(unitVector.getY()) || Double.isNaN(unitVector.getZ())) {
+                            Bukkit.getLogger().info("SERVER CRASH PREVENTED: " + p.getName() + " ENTITY CAUSING: " + entity.toString() + " To set: " + unitVector.toString() + " AT " + p.getLocation());
+                            return;
+                        }
                         double e_y = entity.getLocation().getY();
                         double p_y = p.getLocation().getY();
                         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
                         if ((p_y - 1) <= e_y || m == Material.AIR) {
-                            p.setVelocity(unitVector.multiply(3));
+
+                            EntityMechanics.setVelocity(p, unitVector);
                         }
                         // * 4 for whirlwind
                         double multiplier = entity.hasMetadata("boss") ? 1.3 : 4;
@@ -104,7 +108,7 @@ public class WhirlWind extends PowerMove {
                 loc.setYaw(yaw);
 //                EntityLiving el = (EntityLiving) ((CraftEntity) entity).getHandle();
 //                el.yaw = yaw;
-                if(!(((CraftEntity) entity).getHandle() instanceof EntityCreature)){
+                if (!(((CraftEntity) entity).getHandle() instanceof EntityCreature)) {
                     chargedMonsters.remove(entity.getUniqueId());
                     return;
                 }

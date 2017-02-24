@@ -208,7 +208,7 @@ public class InventoryListener implements Listener {
                     String name = getInventoryName(event.getClickedInventory().getName());
 
                     msg.append(ChatColor.YELLOW + player.getName() + " clicked slot " + ChatColor.GOLD + event.getRawSlot() + ChatColor.YELLOW + " in " + ChatColor.GOLD + name + ChatColor.YELLOW
-                             + " with action " + ChatColor.GOLD + event.getAction().name());
+                            + " with action " + ChatColor.GOLD + event.getAction().name());
                     if (name.equals("their inventory")) {
                         msg.append(ChatColor.YELLOW + " top inventory: " + getInventoryName(event.getInventory().getName()));
                     }

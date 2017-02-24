@@ -222,7 +222,6 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
             groupSize++;
         }
         int perPlayerDrop = Math.round(gemDrop / Math.max(1, groupSize));
-        ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Mayel The Cruel");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "The boss has dropped " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + gemDrop + ChatColor.DARK_PURPLE + " gems.");
@@ -231,6 +230,7 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
         }, 5L);
         String partyMembers = "";
         for (Player player : livingEntity.getWorld().getPlayers()) {
+            ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Mayel The Cruel");
             if (player.getGameMode() != GameMode.SURVIVAL) {
                 continue;
             }

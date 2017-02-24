@@ -27,7 +27,7 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
         this.goalSelector.a(0, new PathfinderGoalRandomStroll(this, .6F));
         this.goalSelector.a(1, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(2, new PathfinderGoalRandomLookaround(this));
-        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
+        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 10, 60, 15.0F));
     }
 
     public StaffSkeleton(World world) {
@@ -36,7 +36,7 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
         this.goalSelector.a(0, new PathfinderGoalRandomStroll(this, .6F));
         this.goalSelector.a(1, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(2, new PathfinderGoalRandomLookaround(this));
-        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
+        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 10, 60, 15.0F));
     }
 
     @Override

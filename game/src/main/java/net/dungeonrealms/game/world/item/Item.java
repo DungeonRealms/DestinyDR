@@ -218,25 +218,31 @@ public class Item {
     }
 
     public enum ItemRarity {
-        COMMON(0, ChatColor.GRAY.toString() + ChatColor.ITALIC + "Common" + ChatColor.RESET),
-        UNCOMMON(1, ChatColor.GREEN.toString() + ChatColor.ITALIC + "Uncommon" + ChatColor.RESET),
-        RARE(2, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Rare" + ChatColor.RESET),
-        UNIQUE(3, ChatColor.YELLOW.toString() + ChatColor.ITALIC + "Unique" + ChatColor.RESET);
+        COMMON(0, "Common", ChatColor.GRAY),
+        UNCOMMON(1, "Uncommon", ChatColor.GREEN),
+        RARE(2, "Rare", ChatColor.AQUA),
+        UNIQUE(3, "Unique", ChatColor.YELLOW);
 
         private int id;
+        private ChatColor color;
         private String name;
 
-        ItemRarity(int id, String name) {
+        ItemRarity(int id, String name, ChatColor color) {
             this.id = id;
             this.name = name;
+            this.color = color;
         }
 
         public int getId() {
             return id;
         }
 
+        public ChatColor getColor(){
+        	return this.color;
+        }
+        
         public String getName() {
-            return name;
+            return this.getColor() + "" + ChatColor.ITALIC + this.name + ChatColor.RESET;
         }
 
         public static ItemRarity getById(int id) {
@@ -244,28 +250,6 @@ public class Item {
                 if (im.getId() == id) {
                     return im;
                 }
-            }
-            return null;
-        }
-
-        public String getChatColorOfModifier(ItemRarity itemModifier) {
-            switch (itemModifier) {
-                case COMMON:
-                    return ChatColor.GRAY.toString() + ChatColor.ITALIC.toString();
-                case UNCOMMON:
-                    return ChatColor.GREEN.toString() + ChatColor.ITALIC.toString();
-                case RARE:
-                    return ChatColor.AQUA.toString() + ChatColor.ITALIC.toString();
-                case UNIQUE:
-                    return ChatColor.YELLOW + ChatColor.ITALIC.toString();
-                default:
-                    return ChatColor.GRAY.toString() + ChatColor.ITALIC.toString();
-            }
-        }
-
-        public static ItemRarity getByName(String name) {
-            for (ItemRarity i : values()) {
-                if (i.toString().equalsIgnoreCase(name)) return i;
             }
             return null;
         }

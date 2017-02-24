@@ -35,6 +35,20 @@ public class PatchTools implements GenericMechanic {
         }
         return instance;
     }
+    
+    public int getSize(){
+    	try{
+    		InputStream fileIn = DungeonRealms.getInstance().getResource("patchnotes.txt");
+            BufferedReader in = new BufferedReader(new InputStreamReader(fileIn));
+            int len = 0;
+            while(in.read() != -1)
+            	len++;
+            return len;
+    	}catch(Exception e){
+    		
+    	}
+    	return 0;
+    }
 
     @Override
     public void startInitialization() {
@@ -78,7 +92,7 @@ public class PatchTools implements GenericMechanic {
         }
 
         ItemStack patchBook = ItemManager.createItem(Material.WRITTEN_BOOK,
-                ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for " + Constants.BUILD_VERSION + " Build " + Constants.BUILD_NUMBER, new String[]{});
+                ChatColor.GOLD.toString() + ChatColor.BOLD + "Patch Notes for Build " + Constants.BUILD_NUMBER, new String[]{});
         BookMeta bm = (BookMeta) patchBook.getItemMeta();
 
         bm.setAuthor("DungeonRealms Development Team");

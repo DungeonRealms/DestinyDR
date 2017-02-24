@@ -3,11 +3,13 @@ package net.dungeonrealms.game.world.entity.type.monster.type.melee;
 import lombok.Setter;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.base.DREnderman;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -16,9 +18,6 @@ import org.bukkit.inventory.ItemStack;
  * Created by Kieran Quigley (Proxying) on 21-Jun-16.
  */
 public class MeleeEnderman extends DREnderman {
-
-    @Setter
-    private boolean teleport = true;
 
     public MeleeEnderman(World world, int tier) {
         super(world, EnumMonster.Enderman, tier);
@@ -44,39 +43,6 @@ public class MeleeEnderman extends DREnderman {
         ItemStack item = new ItemGenerator().setType(Item.ItemType.SWORD).setRarity(GameAPI.getItemRarity(false)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiDuplication.getInstance().applyAntiDupe(item);
         return item;
-    }
-
-
-
-    @Override
-    protected boolean a(Entity entity) {
-        Vec3D vec3d = new Vec3D(this.locX - entity.locX, this.getBoundingBox().b + (double)(this.length / 2.0F) - entity.locY + (double)entity.getHeadHeight(), this.locZ - entity.locZ);
-        vec3d = vec3d.a();
-        double d0 = 2.0D;
-        double d1 = this.locX + (this.random.nextDouble() - 0.5D) * 8.0D - vec3d.x * d0;
-        double d2 = this.locY + (double)(this.random.nextInt(16) - 8) - vec3d.y * d0;
-        double d3 = this.locZ + (this.random.nextDouble() - 0.5D) * 8.0D - vec3d.z * d0;
-        return this.l(d1, d2, d3);
-    }
-
-    @Override
-    protected boolean db() {
-        return false;
-    }
-
-    @Override
-    public boolean k(double d0, double d1, double d2) {
-        return false;
-    }
-
-    private boolean l(double d0, double d1, double d2) {
-        boolean flag = this.k(d0, d1, d2);
-        if (flag) {
-            this.world.a(null, this.lastX, this.lastY, this.lastZ, SoundEffects.ba, this.bA(), 1.0F, 1.0F);
-            this.a(SoundEffects.ba, 1.0F, 1.0F);
-        }
-
-        return flag;
     }
 
 

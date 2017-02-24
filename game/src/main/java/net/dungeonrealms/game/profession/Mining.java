@@ -196,6 +196,7 @@ public class Mining implements GenericMechanic {
                 for (EnumMiningEnchant miningEnchant : EnumMiningEnchant.values()) {
                     objectMap.put(miningEnchant, getEnchantBuff(itemStack, miningEnchant));
                 }
+                return objectMap;
             }
         }
         return null;

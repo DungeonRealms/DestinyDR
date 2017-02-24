@@ -73,6 +73,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
         this.getProxy().getPluginManager().registerListener(this, this);
+        this.getProxy().getPluginManager().registerListener(this, StaffSecurity.getInstance());
 
         this.getProxy().getPluginManager().registerCommand(this, new CommandMaintenance());
         this.getProxy().getPluginManager().registerCommand(this, new CommandAlert());

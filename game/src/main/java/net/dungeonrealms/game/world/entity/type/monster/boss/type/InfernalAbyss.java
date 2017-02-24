@@ -12,6 +12,7 @@ import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss.InfernalGhast;
@@ -173,7 +174,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         Material m = p.getLocation().subtract(0, 1, 0).getBlock().getType();
 
         if ((p_y - 1) <= e_y || m == Material.AIR) {
-            p.setVelocity(unitVector.multiply((speed)));
+            EntityMechanics.setVelocity(p, unitVector.multiply(speed));
         }
     }
 
@@ -380,7 +381,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             groupSize++;
         }
         int perPlayerDrop = groupSize == 0 ? 1 : Math.round(gemDrop / groupSize);
-        ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Infernal Abyss");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "The boss has dropped " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + gemDrop + ChatColor.DARK_PURPLE + " gems.");
@@ -395,6 +395,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             partyMembers += player.getName() + ", ";
 
             if (groupSize > 0) {
+                ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Infernal Abyss");
                 if (player.getInventory().firstEmpty() == -1) {
                     player.getWorld().dropItem(player.getLocation(), banknote);
                     player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");

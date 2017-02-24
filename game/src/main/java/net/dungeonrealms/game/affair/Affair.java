@@ -156,10 +156,18 @@ public class Affair implements GenericMechanic {
             normal.addText(before + "");
             normal.addHoverText(hoveredChat, org.bukkit.ChatColor.BOLD + org.bukkit.ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
-            everyone.forEach(normal::sendToPlayer);
+            everyone.forEach((pl) -> {
+                normal.sendToPlayer(pl);
+                GameAPI.runAsSpectators(pl, (spec) -> normal.sendToPlayer(spec));
+            });
             return;
         }
-        everyone.forEach(player1 -> player1.sendMessage(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + "<" + net.md_5.bungee.api.ChatColor.BOLD + "P" + net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + "> " + net.md_5.bungee.api.ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + net.md_5.bungee.api.ChatColor.GRAY + ": " + message.toString()));
+
+        everyone.forEach(player1 -> {
+            String msg = ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + ChatColor.GRAY + ": " + message.toString();
+            player1.sendMessage(msg);
+            GameAPI.runAsSpectators(player1, (spec) -> spec.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "(AS " + player1.getName() + ") " + msg));
+        });
 
     }
 
@@ -198,6 +206,8 @@ public class Affair implements GenericMechanic {
                         DungeonManager.getInstance().removeInstance(dungeonObject);
                     }
                 }
+
+                PARTY_CHAT.remove(player.getUniqueId());
             }
             player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
             player.sendMessage(ChatColor.RED + "Your party has been disbanded.");

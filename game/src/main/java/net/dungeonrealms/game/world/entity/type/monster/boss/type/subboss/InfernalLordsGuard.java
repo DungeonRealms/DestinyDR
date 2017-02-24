@@ -16,9 +16,7 @@ import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.ItemType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.DamageSource;
-import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -53,6 +51,8 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
 //		for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
 //			p.sendMessage(ChatColor.RED.toString() + "The Infernal Lords Guard" + ChatColor.RESET.toString() + ": " + "I shall protect you my lord.");
 //		}
+
+        getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(65);
         this.setSize(0.7F, 2.4F);
         this.setSkeletonType(1);
         setArmor(4);
@@ -94,10 +94,21 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton {
         return new ItemGenerator().setTier(ItemTier.getByTier(4)).setRarity(ItemRarity.COMMON).getArmorSet();
     }
 
-//	@Override
-//	public EnumDungeonBoss getEnumBoss() {
-//		return EnumDungeonBoss.LordsGuard;
-//	}
+
+    @Override
+    protected void r() {
+//        super.r();
+        this.goalSelector.a(1, new PathfinderGoalFloat(this));
+//        this.goalSelector.a(2, new PathfinderGoalRestrictSun(this));
+//        this.goalSelector.a(3, new PathfinderGoalFleeSun(this, 1.0D));
+//        this.goalSelector.a(3, new PathfinderGoalAvoidTarget(this, EntityWolf.class, 6.0F, 1.0D, 1.2D));
+        this.goalSelector.a(5, new PathfinderGoalRandomStroll(this, 1.2D, 20));
+        this.goalSelector.a(6, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+        this.goalSelector.a(6, new PathfinderGoalRandomLookaround(this));
+        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false, new Class[0]));
+        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+//        this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget(this, EntityIronGolem.class, true));
+    }
 
     @Override
     public void onMonsterDeath(Player killer) {

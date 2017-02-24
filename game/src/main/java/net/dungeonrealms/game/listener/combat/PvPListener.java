@@ -13,11 +13,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.EntityEffect;
-import org.bukkit.GameMode;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -56,7 +52,13 @@ public class PvPListener implements Listener {
         }
         EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(damager.getEquipment().getItemInMainHand()), isDuel);
         receiver.playEffect(EntityEffect.HURT);
-        DamageAPI.knockbackEntity(damager, receiver, 0.3);
+
+        //KNOCKBACK
+//        org.bukkit.util.Vector unitVector = receiver.getLocation().toVector()
+//                .subtract(damager.getLocation().toVector()).normalize();
+//        receiver.setVelocity(unitVector.multiply(0.5F));
+
+        DamageAPI.newKnockbackEntity(damager, receiver, 0.275);
         receiver.setSprinting(false);
 
         GamePlayer damagerGP = GameAPI.getGamePlayer(damager);
@@ -107,15 +109,25 @@ public class PvPListener implements Listener {
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*DODGE*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             finalDamage = 0;
+            return;
         } else if (armorReducedDamage == -2) {
             damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + receiver.getName() + ChatColor.RED + ")");
             receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *BLOCK* (" + ChatColor.RED + damager.getName() + ChatColor.DARK_GREEN + ")");
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*BLOCK*");
             receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             finalDamage = 0;
+            return;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
+            damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + receiver.getName() + ChatColor.RED + ")");
+            receiver.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "                        *REFLECT* (" + ChatColor.RED + damager.getName() + ChatColor.GOLD + ")");
+            DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+            HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, finalDamage, -5, 0);
+            finalDamage = 0;
+            return;
         }
+
         if (finalDamage > 0)
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
         HealthHandler.getInstance().handlePlayerBeingDamaged(receiver, damager, finalDamage, armorCalculation[0], armorCalculation[1], !isDuel);
@@ -147,6 +159,11 @@ public class PvPListener implements Listener {
         return false;
     }
 
+    /**
+     * Used to handle staff damage.
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void playerRangedPlayer(EntityDamageByEntityEvent event) {
         if (!DamageAPI.isBowProjectile(event.getDamager()) && !DamageAPI.isStaffProjectile(event.getDamager())) return;
@@ -203,6 +220,7 @@ public class PvPListener implements Listener {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2.0F);
             }, 1L);
             finalDamage = 0;
+            return;
         } else if (armorReducedDamage == -2) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + ChatColor.RED + ")");
@@ -211,8 +229,20 @@ public class PvPListener implements Listener {
                 receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
             }, 1L);
             finalDamage = 0;
+            return;
         } else if (armorReducedDamage == -3) {
             //Reflect when its fixed. @TODO
+            double damage = finalDamage;
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                damager.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "                   *OPPONENT REFLECTED* (" + receiver.getName() + ChatColor.RED + ")");
+                receiver.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "                        *REFLECT* (" + ChatColor.RED + damager.getName() + ChatColor.DARK_GREEN + ")");
+                DamageAPI.createDamageHologram(damager, receiver.getLocation(), ChatColor.RED + "*REFLECT*");
+                receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
+                //Reflect in pvp.
+                HealthHandler.getInstance().handlePlayerBeingDamaged(damager, receiver, damage, -5, 0);
+            }, 1L);
+//            finalDamage = 0;
+            return;
         } else {
             DamageAPI.createDamageHologram(damager, receiver.getLocation(), finalDamage);
         }

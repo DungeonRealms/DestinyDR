@@ -1,14 +1,19 @@
 Build <build>
 
 &8Changes&0
-- US4 has been changed to BR1.
-- Updated the Infernal Abyss Dungeon.
-- Added Damage Indicators (/togglefloatdamage)
+- Uncommon+ items glow on drop.
+- Updated player knockback mechanic
+- Re-add fall damage
+- Release Scrap Tab
+- Elemental Resistance now applies to world damage (EX: Fire / Poison)
+- Re-enabled Reflection on gear
+- Added more elemental damage to mobs in higher tier areas
 
 &8Bugfixes&0
-- Alignment timer now stacks.
-- Minor Fishing Bugs
-- Ducks Removed?
-- Fixed Armor % on gear
-- Fixed Regen in duels
-- Fix DPS not displaying correct info in TAB
+- Pickaxes / Fishing rods now return when they break at Level 100
+- Infernal Guards will now target farther away.
+- Fix Horses taking damage in SafeZone
+- Updated horse logic to lessen rubber banding.
+- Adjusted Infernal Enderman code, should hopefully resolve despawning issues.
+- Fix losing weapon when combat logging as Lawful
+- Patchnotes notification only shows when they change.

@@ -164,7 +164,7 @@ public class RealmListener implements Listener {
         int blocksPasted = 0;
         for (Map.Entry<UUID, List<Location>> entry : REALMS.getProcessingBlocks().entrySet()) {
 
-            if(blocksPasted >= Realms.SERVER_BLOCK_BUFFER)break;
+            if (blocksPasted >= Realms.SERVER_BLOCK_BUFFER )break;
             //Only Get this once..
             Player player = Bukkit.getPlayer(entry.getKey());
             if (player != null && player.isOnline()) {
@@ -177,22 +177,18 @@ public class RealmListener implements Listener {
                     int x = 0;
 
                     for (Location loc : loc_list) {
-                        if (x >= Realms.BLOCK_PROCESSOR_BUFFER_SIZE || blocksPasted >= Realms.SERVER_BLOCK_BUFFER) {
+                        if (x >= Realms.BLOCK_PROCESSOR_BUFFER_SIZE || blocksPasted >= Realms.SERVER_BLOCK_BUFFER)
                             break;
-                        }
-                        if (loc.getBlock().getY() > 127) {
-                            if (loc.getBlock().getType() == Material.AIR) {
-                                loc.getBlock().setType(Material.GRASS);
-                            }
-                        } else if (loc.getBlock().getY() <= limy + 1) {
-                            if (loc.getBlock().getType() == Material.AIR) {
-                                loc.getBlock().setType(Material.BEDROCK);
-                            }
-
-                        } else {
-                            if (loc.getBlock().getType() == Material.AIR) {
-                                loc.getBlock().setType(Material.DIRT);
-                            }
+                        
+                        boolean shouldReplace = loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.BEDROCK;
+                        if (shouldReplace){
+                        	if (loc.getBlock().getY() > 127) {
+                        		loc.getBlock().setType(Material.GRASS);
+                        	} else if (loc.getBlock().getY() <= limy + 1) {
+                        		loc.getBlock().setType(Material.BEDROCK);
+                        	} else {
+                        		loc.getBlock().setType(Material.DIRT);
+                        	}
                         }
 
                         loc_list.remove(loc);

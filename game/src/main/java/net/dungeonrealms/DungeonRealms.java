@@ -360,6 +360,7 @@ public class DungeonRealms extends JavaPlugin {
         // Commands always registered regardless of server.
         cm.registerCommand(new CommandDevDebug("devdebug", "/<command> [args]", "Toggle on and off debug."));
         cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close your shop"));
+        cm.registerCommand(new CommandListInstance());
 
         cm.registerCommand(new CommandInvsee("invsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mis")));
         cm.registerCommand(new CommandBanksee("banksee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mbs")));
@@ -372,6 +373,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));
         cm.registerCommand(new CommandEss("dr", "/<command> [args]", "Developer command with the core essentials."));
+        cm.registerCommand(new CommandFix());
         cm.registerCommand(new CommandVote("vote", "/<command> [args]", "Gives the link to vote for rewards."));
         cm.registerCommand(new CommandSend("drsend", "/<command> [args]", "Sends a player to a shard."));
         cm.registerCommand(new CommandInterface("interface", "/<command> [args]", "Development command for accessing interfaces."));
@@ -429,6 +431,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandReply("reply", "/<command>", "Messages a player", Collections.singletonList("r")));
         cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
         cm.registerCommand(new CommandSessionID("sessions", "/<command> [args]", "Session ID fixer", Arrays.asList("session", "fixsession")));
+        cm.registerCommand(new CommandSpawner());
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));
