@@ -25,6 +25,7 @@ import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -81,6 +82,7 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         DungeonManager.getInstance().getFireUnderEntity().add(this);
         ghast = new InfernalGhast(this);
         setArmor(4);
+        getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
         EntityStats.setBossRandomStats(this, bossLevel, 4);
         EntityStats.setBossRandomStats(this.ghast, 100, 4);
     }
