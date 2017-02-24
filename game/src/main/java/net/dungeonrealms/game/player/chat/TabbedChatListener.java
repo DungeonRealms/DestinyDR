@@ -1,5 +1,8 @@
 package net.dungeonrealms.game.player.chat;
 
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -16,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TabbedChatListener implements Listener {
 
@@ -31,11 +35,11 @@ public class TabbedChatListener implements Listener {
         if (!Chat.checkGlobalCooldown(player)) {
             return;
         }
-        
+
         int index = e.getChatMessage().indexOf("/");
-        if(index > 0 && index < 3 && Rank.isTrialGM(e.getPlayer())){
-        	e.getPlayer().sendMessage(ChatColor.RED + "Woah there! You sure you want to send that in global?");
-        	return;
+        if (index > 0 && index < 3 && Rank.isTrialGM(e.getPlayer())) {
+            e.getPlayer().sendMessage(ChatColor.RED + "Woah there! You sure you want to send that in global?");
+            return;
         }
 
         player.closeInventory(); // Closes the chat after it grabs it!
@@ -44,7 +48,14 @@ public class TabbedChatListener implements Listener {
 
         StringBuilder prefix = new StringBuilder();
 
-        prefix.append(GameChat.getPreMessage(player, true, GameChat.getGlobalType(finalChat)));
+        String messageType = GameChat.getGlobalType(finalChat);
+        prefix.append(GameChat.getPreMessage(player, true, messageType));
+        boolean tradeChat = messageType.equals("trade");
+        if (tradeChat && !(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "You cannot talk in trade chat while its toggled off!");
+            return;
+        }
+        List<Player> recipients = Chat.getRecipients(tradeChat);
 
         if (finalChat.contains("@i@") && player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
             String aprefix = prefix.toString();
@@ -68,11 +79,11 @@ public class TabbedChatListener implements Listener {
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
 
-            Bukkit.getOnlinePlayers().forEach(normal::sendToPlayer);
+            recipients.forEach(normal::sendToPlayer);
             return;
         }
 
-        Bukkit.getOnlinePlayers().forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
+        recipients.forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
     }
 
 }

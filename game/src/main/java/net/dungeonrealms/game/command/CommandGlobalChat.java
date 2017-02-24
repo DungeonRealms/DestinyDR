@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -65,11 +67,17 @@ public class CommandGlobalChat extends BaseCommand {
                 return true;
             }
 
-        UUID uuid = player.getUniqueId();
-
         StringBuilder prefix = new StringBuilder();
 
-        prefix.append(GameChat.getPreMessage(player, true, GameChat.getGlobalType(finalChat)));
+        String messageType = GameChat.getGlobalType(finalChat);
+        prefix.append(GameChat.getPreMessage(player, true, messageType));
+
+        boolean tradeChat = messageType.equals("trade");
+        if (tradeChat && !(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "You cannot talk in trade chat while its toggled off!");
+            return true;
+        }
+        List<Player> recipients = Chat.getRecipients(tradeChat);
 
         if (finalChat.contains("@i@") && player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
             String aprefix = prefix.toString();
@@ -93,11 +101,11 @@ public class CommandGlobalChat extends BaseCommand {
             normal.addText(before + "");
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
-            Bukkit.getOnlinePlayers().forEach(normal::sendToPlayer);
+            recipients.forEach(normal::sendToPlayer);
             return true;
         }
 
-        Bukkit.getOnlinePlayers().forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
+        recipients.forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
         return true;
     }
 }

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.chat;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -8,6 +9,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.ShardInfo;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handler.FriendHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -24,6 +26,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/26/2015.
@@ -134,7 +137,7 @@ public class Chat {
                     finalMessage));
 
             GameAPI.sendNetworkMessage("BroadcastSoundPlayer", recipientName, Sound.ENTITY_CHICKEN_EGG.toString(), "2f", "1.2f");
-        }else{
+        } else {
             Bukkit.getLogger().info("Supressing message from ignored player " + player.getName() + " to " + recipientName + " Message: " + finalMessage);
         }
     }
@@ -148,7 +151,7 @@ public class Chat {
     public void doMessageChatListener(AsyncPlayerChatEvent event) {
         Consumer<? super AsyncPlayerChatEvent> messageListener = chatListeners.remove(event.getPlayer());
         if (messageListener != null) {
-        	GameAPI.runAsSpectators(event.getPlayer(), (player) -> player.sendMessage(ChatColor.RED + event.getPlayer().getName() + " answered a chat prompt> " + event.getMessage()));
+            GameAPI.runAsSpectators(event.getPlayer(), (player) -> player.sendMessage(ChatColor.RED + event.getPlayer().getName() + " answered a chat prompt> " + event.getMessage()));
             messageListener.accept(event);
             orElseListeners.remove(event.getPlayer());
             event.setCancelled(true);
@@ -156,6 +159,11 @@ public class Chat {
         }
     }
 
+    public static List<Player> getRecipients(boolean tradeChat){
+        return Bukkit.getOnlinePlayers().stream().filter((pl) ->
+                GameAPI.isPlayer(pl) && (!tradeChat || ((Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, pl.getUniqueId()))))
+                .collect(Collectors.toList());
+    }
     /**
      * Monitor the players primary language also check for bad words.
      *
@@ -195,6 +203,15 @@ public class Chat {
                 event.setCancelled(true);
                 return;
             }
+            String messageType = GameChat.getGlobalType(fixedMessage);
+            boolean tradeChat = messageType.equals("trade");
+            if (tradeChat && !(Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, event.getPlayer().getUniqueId())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot talk in trade chat while its toggled off!");
+                event.setCancelled(true);
+                return;
+            }
+            List<Player> recipients = getRecipients(tradeChat);
+
             if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
                 final Player p = event.getPlayer();
                 String aprefix = GameChat.getPreMessage(p);
@@ -219,13 +236,13 @@ public class Chat {
                 normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
                 normal.addText(after);
 
-                Bukkit.getOnlinePlayers().forEach(normal::sendToPlayer);
+                recipients.forEach(normal::sendToPlayer);
                 event.setCancelled(true);
                 return;
             }
             event.setCancelled(true);
             final String finalFixedMessage = fixedMessage;
-            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, GameChat.getGlobalType(finalFixedMessage)) + finalFixedMessage));
+            recipients.forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, messageType) + finalFixedMessage));
         } else {
             if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
                 final Player p = event.getPlayer();
