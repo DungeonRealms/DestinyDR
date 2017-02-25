@@ -1207,8 +1207,10 @@ public class DamageListener implements Listener {
                     p.sendMessage(ChatColor.RED + "Teleporting to " + event.getPlayer().getName());
                     p.setSpectatorTarget(null);
                     p.setSpectatorTarget(event.getPlayer());
+                    p.setSpectatorTarget(null);
+                    p.setSpectatorTarget(event.getPlayer());
                 });
-            }, 1);
+            }, 3);
         }
     }
 
