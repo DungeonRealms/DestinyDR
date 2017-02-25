@@ -46,11 +46,11 @@ public class MountUtils {
     public static String getPercentSpeed(float value) {
         if (value == .20F)
             return "120%";
-        else if (value == .21F)
+        else if (value == .218F)
             return "140%";
-        else if (value == .22F)
-            return "170%";
         else if (value == .23F)
+            return "170%";
+        else if (value == .245F)
             return "200%";
         return null;
     }

@@ -511,20 +511,22 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
-        if (logCombat) {
-            if (!(damager instanceof Player)) {
-                // Player is damaged by a creature
-                if (CombatLog.isInCombat(player)) {
-                    CombatLog.updateCombat(player);
+        if(cause == null || cause != EntityDamageEvent.DamageCause.FALL) {
+            if (logCombat) {
+                if (!(damager instanceof Player)) {
+                    // Player is damaged by a creature
+                    if (CombatLog.isInCombat(player)) {
+                        CombatLog.updateCombat(player);
+                    } else {
+                        CombatLog.addToCombat(player);
+                    }
                 } else {
-                    CombatLog.addToCombat(player);
-                }
-            } else {
-                // Player is pvping
-                if (CombatLog.inPVP(player)) {
-                    CombatLog.updatePVP(player);
-                } else {
-                    CombatLog.addToPVP(player);
+                    // Player is pvping
+                    if (CombatLog.inPVP(player)) {
+                        CombatLog.updatePVP(player);
+                    } else {
+                        CombatLog.addToPVP(player);
+                    }
                 }
             }
         }

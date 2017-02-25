@@ -78,6 +78,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -538,7 +539,7 @@ public class GameAPI {
         getClient().sendNetworkMessage(task, message, contents);
     }
 
-    public static void sendDevMessage(String message, String... contents){
+    public static void sendDevMessage(String message, String... contents) {
         getClient().sendNetworkMessage("DEVMessage", message.replace("{SERVER}", DungeonRealms.getInstance().bungeeName), contents);
     }
 
@@ -689,6 +690,30 @@ public class GameAPI {
 
     public static List<Player> getNearbyPlayers(Location location, int radius) {
         return getNearbyPlayers(location, radius, false);
+    }
+
+    public static List<Player> getNearbyPlayers(CraftEntity entity, int radius) {
+        return getNearbyPlayers(entity, radius, false);
+    }
+
+    /**
+     * Gets the a list of nearby players from a location within a given radius
+     *
+     * @param location
+     * @param radius
+     * @param
+     * @since 1.0
+     */
+    public static List<Player> getNearbyPlayers(CraftEntity entity, int radius, boolean ignoreVanish) {
+        List<Player> playersNearby = new ArrayList<>();
+        entity.getNearbyEntities(radius, radius, radius).stream().filter((ent) -> ent instanceof Player).forEach((pl) -> {
+            Player player = (Player) pl;
+            if ((!GameAPI.isPlayer(player) || GameAPI._hiddenPlayers.contains(player)) && !ignoreVanish) {
+                return;
+            }
+            playersNearby.add(player);
+        });
+        return playersNearby;
     }
 
     /**
@@ -1031,8 +1056,8 @@ public class GameAPI {
 
         gp.setAbleToDrop(false);
         gp.setAbleToSuicide(false);
-        if(!Rank.isTrialGM(player))
-        	gp.setAbleToOpenInventory(false);
+        if (!Rank.isTrialGM(player))
+            gp.setAbleToOpenInventory(false);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             gp.setAbleToDrop(true);

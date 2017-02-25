@@ -993,9 +993,9 @@ public class DamageListener implements Listener {
         switch (event.getCause()) {
             case FALL:
                 if (GameAPI.isPlayer(event.getEntity())) {
-                    float blocks = event.getEntity().getFallDistance();
+                    float blocks = event.getEntity().isInsideVehicle() ? event.getEntity().getVehicle().getFallDistance() : event.getEntity().getFallDistance();
 
-                    if (blocks >= 2) {
+                    if (blocks >= (event.getEntity().isInsideVehicle() ? 6 : 2)) {
                         //Same OB algorithm
                         dmg = maxHP * 0.02D * dmg;
                     }

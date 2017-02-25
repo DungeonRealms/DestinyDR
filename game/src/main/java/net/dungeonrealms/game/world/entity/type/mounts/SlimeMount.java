@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entity.type.mounts;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
@@ -28,6 +29,8 @@ public class SlimeMount extends EntitySlime {
 
     }
 
+
+    private int mountJumpTicks = 0;
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
@@ -64,16 +67,28 @@ public class SlimeMount extends EntitySlime {
             e1.printStackTrace();
         }
 
+        boolean jumped = false;
         if (jump != null && this.onGround) {    // Wouldn't want it jumping while on the ground would we?
             jump.setAccessible(true);
             try {
                 if (jump.getBoolean(entityliving)) {
                     double jumpHeight = 0.5D;//Here you can set the jumpHeight
                     this.motY = jumpHeight;    // Used all the time in NMS for entity jumping
+                    jumped = true;
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+        }
+
+
+        if (!jumped && mountJumpTicks >= 24 && this.onGround) {
+            this.motY = .6D;
+            mountJumpTicks = 0;
+            if (random.nextBoolean())
+                this.world.getWorld().playSound(getBukkitEntity().getLocation(), Sound.BLOCK_SLIME_PLACE, 0.1F, 1);
+        } else {
+            mountJumpTicks++;
         }
 
 
