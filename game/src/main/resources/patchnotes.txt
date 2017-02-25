@@ -8,6 +8,8 @@ Build <build>
 - Elemental Resistance now applies to world damage (EX: Fire / Poison)
 - Re-enabled Reflection on gear
 - Added more elemental damage to mobs in higher tier areas
+- Falling no longer enters you into Combat
+- Falling no longer dismounts you
 
 &8Bugfixes&0
 - Trade chat toggle now works as intended
