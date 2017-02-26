@@ -20,15 +20,31 @@ import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.BasicE
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
 import net.dungeonrealms.game.world.entity.type.mounts.*;
+import net.dungeonrealms.game.world.entity.type.mounts.EnderDragon;
+import net.dungeonrealms.game.world.entity.type.mounts.Horse;
 import net.dungeonrealms.game.world.entity.type.pet.*;
+import net.dungeonrealms.game.world.entity.type.pet.Bat;
+import net.dungeonrealms.game.world.entity.type.pet.CaveSpider;
+import net.dungeonrealms.game.world.entity.type.pet.Chicken;
+import net.dungeonrealms.game.world.entity.type.pet.Creeper;
+import net.dungeonrealms.game.world.entity.type.pet.Endermite;
+import net.dungeonrealms.game.world.entity.type.pet.MagmaCube;
+import net.dungeonrealms.game.world.entity.type.pet.Ocelot;
+import net.dungeonrealms.game.world.entity.type.pet.Rabbit;
+import net.dungeonrealms.game.world.entity.type.pet.Silverfish;
+import net.dungeonrealms.game.world.entity.type.pet.Slime;
+import net.dungeonrealms.game.world.entity.type.pet.Snowman;
+import net.dungeonrealms.game.world.entity.type.pet.Wolf;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.event.CraftEventFactory;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.util.Vector;
 
@@ -129,6 +145,7 @@ public class EntityMechanics implements GenericMechanic {
         nmsUtils.registerEntity("MountSlime", 55, EntitySlime.class, SlimeMount.class);
         nmsUtils.registerEntity("MountWolf", 95, EntityWolf.class, WolfMount.class);
 
+//        nmsUtils.registerEntity("AccurateLargeFireball", 12, EntityLargeFireball.class, CustomEntityFireball.class);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0, 20L);
     }
 
@@ -137,12 +154,115 @@ public class EntityMechanics implements GenericMechanic {
 
     }
 
+    public static Projectile spawnFireballProjectile(World world, CraftLivingEntity shooter, Vector velocity, Class<? extends Fireball> projectile, double accuracy) {
+        Location location = shooter.getEyeLocation();
+        Vector direction = location.getDirection().multiply(10);
+
+        Entity launch = null;
+        double accurate = .4D - (.4D * (accuracy / 100));
+        if (Fireball.class.isAssignableFrom(projectile)) {
+            if (SmallFireball.class.isAssignableFrom(projectile)) {
+                launch = new EntitySmallFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
+                    @Override
+                    public void setDirection(double d0, double d1, double d2) {
+                        d0 += this.random.nextGaussian() * accurate;
+                        d1 += this.random.nextGaussian() * accurate;
+                        d2 += this.random.nextGaussian() * accurate;
+                        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+                        this.dirX = d0 / d3 * 0.1D;
+                        this.dirY = d1 / d3 * 0.1D;
+                        this.dirZ = d2 / d3 * 0.1D;
+                    }
+
+                    @Override
+                    public boolean damageEntity(DamageSource damagesource, float f) {
+                        if (this.isInvulnerable(damagesource)) {
+                            return false;
+                        } else {
+                            this.ao();
+                            if (damagesource.getEntity() != null) {
+                                if (CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagesource, (double) f)) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                };
+            } else if (WitherSkull.class.isAssignableFrom(projectile)) {
+                //Pending
+                launch = new EntityWitherSkull(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
+                    @Override
+                    public void setDirection(double d0, double d1, double d2) {
+                        d0 += this.random.nextGaussian() * accurate;
+                        d1 += this.random.nextGaussian() * accurate;
+                        d2 += this.random.nextGaussian() * accurate;
+                        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+                        this.dirX = d0 / d3 * 0.1D;
+                        this.dirY = d1 / d3 * 0.1D;
+                        this.dirZ = d2 / d3 * 0.1D;
+                    }
+                };
+            } else if (DragonFireball.class.isAssignableFrom(projectile)) {
+                launch = new EntityDragonFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ());
+            } else {
+                launch = new EntityLargeFireball(world, shooter.getHandle(), direction.getX(), direction.getY(), direction.getZ()) {
+                    @Override
+                    public void setDirection(double d0, double d1, double d2) {
+                        d0 += this.random.nextGaussian() * accurate;
+                        d1 += this.random.nextGaussian() * accurate;
+                        d2 += this.random.nextGaussian() * accurate;
+                        //Dont add any randomness too it since its meant to be accurateish
+                        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+                        this.dirX = d0 / d3 * 0.1D;
+                        this.dirY = d1 / d3 * 0.1D;
+                        this.dirZ = d2 / d3 * 0.1D;
+                    }
+
+                    @Override
+                    public boolean damageEntity(DamageSource damagesource, float f) {
+                        if (this.isInvulnerable(damagesource)) {
+                            return false;
+                        } else {
+                            this.ao();
+                            if (damagesource.getEntity() != null) {
+                                if (CraftEventFactory.handleNonLivingEntityDamageEvent(this, damagesource, (double) f)) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                };
+            }
+            ((EntityFireball) launch).projectileSource = shooter;
+        }
+
+        if (launch == null) return null;
+        launch.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+
+        if (velocity != null) {
+            launch.getBukkitEntity().setVelocity(velocity);
+        }
+
+        world.addEntity(launch);
+        return (Projectile) launch.getBukkitEntity();
+    }
+
     public static void setVelocity(Player player, Vector velocity) {
 
-        if(Double.isNaN(velocity.getX()) || Double.isNaN(velocity.getY()) || Double.isNaN(velocity.getZ())){
+        if (Double.isNaN(velocity.getX()) || Double.isNaN(velocity.getY()) || Double.isNaN(velocity.getZ())) {
             Bukkit.getLogger().info("Prevented Crash due to velocity: " + velocity + " bound for " + player.getName() + " at " + player.getLocation().toString());
             //Get the source of the problem.
-            try{Thread.dumpStack();}catch(Exception e){e.printStackTrace();}
+            try {
+                Thread.dumpStack();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return;
         }
 

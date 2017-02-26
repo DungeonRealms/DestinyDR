@@ -44,16 +44,17 @@ public class DungeonJoin extends BaseCommand {
                 if (!partyInDungeon) {
                     for (Player player1 : party.getMembers()) {
                         if (player1.getWorld().getName().contains("DUNGEON")) {
-                            partyInDungeon = true;
-                            dungeonObject = DungeonManager.getInstance().getDungeon(party.getOwner().getWorld());
+                            dungeonObject = DungeonManager.getInstance().getDungeon(player1.getWorld());
                             break;
                         }
                     }
                 }
-                if (dungeonObject == null || !partyInDungeon) {
-                    player.sendMessage(ChatColor.RED + "Your party are not in a Dungeon.");
+
+                if (dungeonObject == null) {
+                    player.sendMessage(ChatColor.RED + "Your party is not in a Dungeon.");
                     return true;
                 }
+
                 if (dungeonObject.getPlayerList().containsKey(player) || dungeonObject.getTime() < 600) {
                     dungeonObject.getPlayerList().put(player, true);
                     DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 100);

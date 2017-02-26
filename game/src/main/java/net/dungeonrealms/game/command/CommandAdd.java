@@ -126,6 +126,52 @@ public class CommandAdd extends BaseCommand {
                             rarity = Item.ItemRarity.valueOf(args[3]);
                             player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
                                     .setType(type).setRarity(rarity).generateItem().getItem());
+                        } else if (args.length == 6) {
+                            tier = Integer.parseInt(args[1]);
+                            type = Item.ItemType.getByName(args[2]);
+                            rarity = Item.ItemRarity.valueOf(args[3].toUpperCase());
+
+                            if (tier != 0 && type != null && rarity != null) {
+                                ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
+                                        .setType(type).setRarity(rarity).generateItem().getItem();
+
+                                int value = Integer.parseInt(args[5]);
+                                NBTTagList modifiersList = new NBTTagList();
+                                LinkedHashMap<String, Integer> NBTModifiers = new LinkedHashMap<>();
+                                NBTModifiers.put(args[4], value);
+                                NBTWrapper wrapper = new NBTWrapper(item);
+
+                                if (wrapper.hasTag("modifiers")) {
+                                    modifiersList = (NBTTagList) wrapper.get("modifiers");
+                                }
+                                for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
+                                    wrapper.set(entry.getKey(), new NBTTagInt(entry.getValue()));
+
+                                    if (!entry.getKey().contains("Max")) {
+                                        if (entry.getKey().contains("Min")) {
+                                            modifiersList.add(new NBTTagString(entry.getKey().replace("Min", "")));
+                                            continue;
+                                        }
+
+                                        boolean contains = false;
+                                        for (int list = 0; list < modifiersList.size(); list++) {
+                                            String key = modifiersList.getString(list);
+                                            if (key != null && key.equalsIgnoreCase(entry.getKey())) {
+                                                contains = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!contains)
+                                            modifiersList.add(new NBTTagString(entry.getKey()));
+                                    }
+                                }
+
+                                wrapper.set("modifiers", modifiersList);
+                                item = wrapper.build();
+                                player.getInventory().addItem(item);
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Invalid item arguments.");
+                            }
                         } else {
                             player.getInventory().addItem(
                                     new ItemGenerator().setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
@@ -155,7 +201,7 @@ public class CommandAdd extends BaseCommand {
                         } else if (args.length == 6) {
                             tier = Integer.parseInt(args[1]);
                             type = Item.ItemType.getByName(args[2]);
-                            rarity = Item.ItemRarity.valueOf(args[3]);
+                            rarity = Item.ItemRarity.valueOf(args[3].toLowerCase());
 
                             if (tier != 0 && type != null && rarity != null) {
                                 ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))

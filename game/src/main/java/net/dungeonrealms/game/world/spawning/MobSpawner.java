@@ -59,6 +59,7 @@ public abstract class MobSpawner {
     @Getter
     protected int initialRespawnDelay;
     @Getter
+    @Setter
     protected int respawnDelay;
 
     @Getter

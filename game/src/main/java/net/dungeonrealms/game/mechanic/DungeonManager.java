@@ -859,35 +859,25 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     public enum DungeonType {
-        BANDIT_TROVE("Mayel the Cruel", "/dungeons/banditTrove.zip", "banditTrove"),
-        VARENGLADE("Burick The Fanatic", "/dungeons/varenglade.zip", "varenglade"),
-        THE_INFERNAL_ABYSS("The Infernal Abyss", "/dungeons/theInfernalAbyss.zip", "infernalAbyss");
+        BANDIT_TROVE("Mayel the Cruel", "/dungeons/banditTrove.zip", "banditTrove", ChatColor.WHITE + ChatColor.BOLD.toString() + "Bandit Trove"),
+        VARENGLADE("Burick The Fanatic", "/dungeons/varenglade.zip", "varenglade", ChatColor.AQUA.toString() + ChatColor.BOLD + "Varenglade"),
+        THE_INFERNAL_ABYSS("The Infernal Abyss", "/dungeons/theInfernalAbyss.zip", "infernalAbyss", ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Infernal Abyss");
 
         /**
          * WIP Dungeons, including The Depths of Aceron and The Crimson
          * Monastery.
          */
 
-        private String bossName;
-        private String location;
-        private String worldGuardName;
+        @Getter private String bossName;
+        @Getter private String location;
+        @Getter private String worldGuardName;
+        @Getter private String dungeonName;
 
-        DungeonType(String bossName, String location, String worldGuardName) {
+        DungeonType(String bossName, String location, String worldGuardName, String dungeonName) {
             this.bossName = bossName;
+            this.dungeonName = dungeonName;
             this.location = location;
             this.worldGuardName = worldGuardName;
-        }
-
-        public String getBossName() {
-            return bossName;
-        }
-
-        public String getLocation() {
-            return location;
-        }
-
-        public String getWorldGuardName() {
-            return worldGuardName;
         }
     }
 

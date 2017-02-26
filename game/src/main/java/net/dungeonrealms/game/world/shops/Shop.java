@@ -108,23 +108,26 @@ public class Shop {
         	block2.setType(Material.AIR);
         	block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         }
+
+        Player owner = Bukkit.getPlayer(ownerUUID);
         // Close his inventory, check if online first
-        if (Bukkit.getPlayer(ownerUUID) != null && Bukkit.getPlayer(ownerUUID).isOnline()) {
-            Bukkit.getPlayer(ownerUUID).closeInventory();
+        if (owner != null && owner.isOnline()) {
+            owner.closeInventory();
         }
         // Do other stuff
         saveCollectionBin(shutDown);
         viewCount = 0;
+
         uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
         uniqueViewers.clear();
         if (shutDown) {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");
         } else {
-            if (Bukkit.getPlayer(ownerUUID) != null) {
-                if (BankMechanics.shopPricing.containsKey(Bukkit.getPlayer(ownerUUID).getName())) {
-                    Bukkit.getPlayer(ownerUUID).getInventory().addItem(BankMechanics.shopPricing.get(Bukkit.getPlayer(ownerUUID).getName()));
-                    BankMechanics.shopPricing.remove(Bukkit.getPlayer(ownerUUID).getName());
+            if (owner != null) {
+                if (BankMechanics.shopPricing.containsKey(owner.getName())) {
+                    owner.getInventory().addItem(BankMechanics.shopPricing.get(owner.getName()));
+                    BankMechanics.shopPricing.remove(owner.getName());
                 }
             }
             DungeonRealms.getInstance().getServer().getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true));

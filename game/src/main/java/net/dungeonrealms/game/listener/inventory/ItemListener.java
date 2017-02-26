@@ -564,6 +564,7 @@ public class ItemListener implements Listener {
                     Player player = event.getPlayer();
                     if (EntityAPI.hasMountOut(player.getUniqueId())) {
                         player.sendMessage(ChatColor.RED + "You already have a mount currently spawned.");
+                        player.sendMessage(ChatColor.GRAY + "Use '/mount' to remove your spawned mount.");
                         return;
                     }
 

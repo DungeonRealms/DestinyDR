@@ -18,6 +18,7 @@ import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedWither
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedZombie;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
+import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
 import net.dungeonrealms.game.world.item.*;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
@@ -518,6 +519,9 @@ public class SpawningMechanics implements GenericMechanic {
                 break;
             case Daemon:
                 entity = new DRPigman(world, EnumMonster.Daemon, tier);
+                break;
+            case StaffZombie:
+                entity = new StaffZombie(world, EnumMonster.StaffZombie, tier);
                 break;
             case Daemon2:
                 entity = new StaffSkeleton(world, EnumMonster.Daemon2, tier);

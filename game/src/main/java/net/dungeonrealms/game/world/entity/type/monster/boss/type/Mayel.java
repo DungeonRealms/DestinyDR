@@ -7,6 +7,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -212,6 +213,8 @@ public class Mayel extends RangedWitherSkeleton implements DungeonBoss {
         final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The boss has dropped: ", ChatColor.DARK_PURPLE);
         normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
         livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
+
+        dropMount(getBukkitEntity(), DungeonManager.DungeonType.BANDIT_TROVE);
 
         int gemDrop = random.nextInt(250 - 100) + 100;
         int groupSize = 0;

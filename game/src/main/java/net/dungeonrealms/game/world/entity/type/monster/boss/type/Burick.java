@@ -7,6 +7,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -336,6 +337,9 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
         }
+
+        dropMount(getBukkitEntity(), DungeonManager.DungeonType.VARENGLADE);
+
         int gemDrop = random.nextInt(2500 - 1000) + 1000;
         int groupSize = 0;
         for (Player player : livingEntity.getWorld().getPlayers()) {

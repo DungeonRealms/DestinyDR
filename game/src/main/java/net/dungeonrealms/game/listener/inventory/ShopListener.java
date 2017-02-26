@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
@@ -60,7 +61,7 @@ public class ShopListener implements Listener {
             return;
         }
 
-        if(p.hasMetadata("sharding")){
+        if (p.hasMetadata("sharding")) {
             p.sendMessage(ChatColor.RED + "You cannot open a shop whiling changing shards.");
             return;
         }
@@ -149,18 +150,18 @@ public class ShopListener implements Listener {
         if (ownerName == null) return;
         Shop shop = ShopMechanics.getShop(ownerName);
         if (shop == null) return;
-        
+
         // Prevents Stealing from shops. //
-        if (event.getAction() == InventoryAction.NOTHING){
-        	if(event.getWhoClicked().getInventory().firstEmpty() == -1)
-        		GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getWhoClicked().getName() + " has attempted to steal items on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
-        	event.setCancelled(true);
-        	return;
+        if (event.getAction() == InventoryAction.NOTHING) {
+            if (event.getWhoClicked().getInventory().firstEmpty() == -1)
+                GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getWhoClicked().getName() + " has attempted to steal items on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+            event.setCancelled(true);
+            return;
         }
-        
+
         Player clicker = (Player) event.getWhoClicked();
         if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-            event.setCancelled(true); 
+            event.setCancelled(true);
             return;
         }
         if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
@@ -228,14 +229,14 @@ public class ShopListener implements Listener {
                             BankMechanics.shopPricing.remove(clicker.getName());
                             return;
                         }
-                        
-                        if(number >= Integer.MAX_VALUE / 64){
-                        	clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
-                        	clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+
+                        if (number >= Integer.MAX_VALUE / 64) {
+                            clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
+                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                             BankMechanics.shopPricing.remove(clicker.getName());
-                        	return;
+                            return;
                         }
-                        
+
                         if (number <= 0) {
                             clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
                             clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
@@ -355,14 +356,14 @@ public class ShopListener implements Listener {
                                 BankMechanics.shopPricing.remove(clicker.getName());
                                 return;
                             }
-                            
-                            if(number >= Integer.MAX_VALUE / 64){
-                            	clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
-                            	clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+
+                            if (number >= Integer.MAX_VALUE / 64) {
+                                clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
+                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                                 BankMechanics.shopPricing.remove(clicker.getName());
-                            	return;
+                                return;
                             }
-                            
+
                             if (number <= 0) {
                                 clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
                                 clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
@@ -459,8 +460,8 @@ public class ShopListener implements Listener {
                             clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
                             return;
                         }
-                        
-                        
+
+
                         int number = 0;
                         try {
                             number = Integer.parseInt(chat.getMessage());
@@ -468,14 +469,14 @@ public class ShopListener implements Listener {
                             chat.getPlayer().sendMessage(ChatColor.RED + "Please enter a valid number");
                             return;
                         }
-                        
-                        if(number >= Integer.MAX_VALUE / 64){
-                        	clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
-                        	clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+
+                        if (number >= Integer.MAX_VALUE / 64) {
+                            clicker.sendMessage(ChatColor.RED + "You cannot charge this much for an item!");
+                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
                             BankMechanics.shopPricing.remove(clicker.getName());
-                        	return;
+                            return;
                         }
-                        
+
                         if (number < 0) {
                             clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
                         } else {
@@ -556,7 +557,7 @@ public class ShopListener implements Listener {
                             clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], purchase of item CANCELLED.");
                             return;
                         }
-                        
+
                         if (shop.getInventory().getItem(event.getRawSlot()) == null || !shop.getInventory().getItem(event.getRawSlot()).equals(itemClicked)) {
                             clicker.sendMessage(ChatColor.RED + "That item is no longer available.");
                             return;
@@ -568,12 +569,12 @@ public class ShopListener implements Listener {
                                 clicker.sendMessage(ChatColor.RED + "You cannot purchase a NON-POSITIVE number.");
                                 return;
                             }
-                            
-                            if(quantity > 64){
-                            	clicker.sendMessage(ChatColor.RED + "You cannot buy more than 64 items.");
-                            	return;
+
+                            if (quantity > 64) {
+                                clicker.sendMessage(ChatColor.RED + "You cannot buy more than 64 items.");
+                                return;
                             }
-                            
+
                             if (quantity > itemClicked.getAmount()) {
                                 clicker.sendMessage(ChatColor.RED + "There are only [" + ChatColor.BOLD + itemClicked.getAmount() + ChatColor.RED + "] available.");
                                 return;
@@ -585,7 +586,7 @@ public class ShopListener implements Listener {
                                 return;
                             }
 
-                            if(clicker.hasMetadata("sharding")){
+                            if (clicker.hasMetadata("sharding")) {
                                 clicker.sendMessage(ChatColor.RED + "You cannot purchase an item while sharding.");
                                 return;
                             }
@@ -649,7 +650,13 @@ public class ShopListener implements Listener {
                                 }
                             }
                             if (itemsLeft == 0) {
-                                Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), shop::updateStatus, 10L);
+                                Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+                                    if (shop.isopen) {
+                                        shop.deleteShop(false);
+                                        BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "Your shop on " +
+                                                DungeonRealms.getInstance().bungeeName + " has " + ChatColor.RED + ChatColor.BOLD + "SOLD OUT" + ChatColor.GREEN + " and has been removed to free space.");
+                                    }
+                                }, 3L);
                             }
                         } catch (NumberFormatException e) {
                             clicker.removeMetadata("pricing", DungeonRealms.getInstance());
@@ -712,7 +719,13 @@ public class ShopListener implements Listener {
                             }
                         }
                         if (itemsLeft == 0) {
-                            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), shop::updateStatus, 10L);
+                            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+                                if (shop.isopen) {
+                                    shop.deleteShop(false);
+                                    BungeeUtils.sendPlayerMessage(ownerName, ChatColor.GREEN + "Your shop on " +
+                                            DungeonRealms.getInstance().bungeeName + " has " + ChatColor.RED + ChatColor.BOLD + "SOLD OUT" + ChatColor.RED + " and has been removed to free space.");
+                                }
+                            }, 3L);
                         }
                     } else {
                         clicker.closeInventory();

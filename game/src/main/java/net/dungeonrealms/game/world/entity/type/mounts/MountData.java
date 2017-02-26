@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entity.type.mounts;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
@@ -49,12 +50,12 @@ public class MountData {
         lore.addAll(getLore());
 
         lore.add(ChatColor.DARK_RED + "Soulbound");
-        return new NBTWrapper(new ItemBuilder().setItem(mount.getSelectionItem().clone())
+        return AntiDuplication.getInstance().applyAntiDupe(new NBTWrapper(new ItemBuilder().setItem(mount.getSelectionItem().clone())
                 .setName(getNameColor() + ChatColor.BOLD.toString() + getName() + " Mount").setLore(lore).build())
                 .setString("mount", mount.name())
                 .setString("speed", "" + getSpeed())
                 .set("soulbound", new NBTTagInt(1))
                 .set("untradeable", new NBTTagInt(1))
-                .set("puntradeable", new NBTTagInt(1)).build();
+                .set("puntradeable", new NBTTagInt(1)).build());
     }
 }

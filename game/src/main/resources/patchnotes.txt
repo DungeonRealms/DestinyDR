@@ -1,22 +1,12 @@
 Build <build>
 
 &8Changes&0
-- Uncommon+ items glow on drop
-- Updated player knockback mechanic
-- Re-add fall damage
-- Release Scrap Tab
-- Elemental Resistance now applies to world damage (EX: Fire / Poison)
-- Re-enabled Reflection on gear
-- Added more elemental damage to mobs in higher tier areas
+- Added Mounts as rare Dungeon drops
+- Added Precision attribute to increase accuracy on T2/T4/T5 staffs.
+- Shops are removed when all items are purchased to free up space.
+- Added Staff Zombies
 - Falling no longer enters you into Combat
 - Falling no longer dismounts you
 
 &8Bugfixes&0
-- Trade chat toggle now works as intended
-- Pickaxes / Fishing rods now return when they break at Level 100
-- Infernal Guards will now target farther away
-- Fix Horses taking damage in SafeZone
-- Updated horse logic to lessen rubber banding
-- Adjusted Infernal Enderman code, should hopefully resolve despawning issues
-- Fix losing weapon when combat logging as Lawful
-- Patchnotes notification only shows when they change
+- Fixed Dungeon Leaders not being able to re-enter the dungeon after leaving.
