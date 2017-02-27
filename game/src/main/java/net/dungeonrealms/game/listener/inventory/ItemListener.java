@@ -12,6 +12,8 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.game.affair.party.Party;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
@@ -51,10 +53,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -63,6 +62,7 @@ import org.inventivetalent.glow.GlowAPI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -70,6 +70,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Kieran on 9/18/2015.
  */
 public class ItemListener implements Listener {
+
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onItemPickup(PlayerPickupItemEvent event){
+        //Party handler here.
+        Optional<Party> party = Affair.getInstance().getParty(event.getPlayer());
+        if(party != null && party.isPresent()){
+            Party part = party.get();
+            Affair.getInstance().handlePartyPickup(event, part);
+        }
+    }
 	/**
 	 * Makes Uncommon+ Items glow
 	 */
