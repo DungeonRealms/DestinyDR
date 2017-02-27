@@ -112,6 +112,7 @@ public class EntityStats {
                     weaponType = Item.ItemType.AXE;
                     break;
                 case FireImp:
+                case StaffZombie:
                 case Daemon2:
                     weaponType = Item.ItemType.STAFF;
                     break;

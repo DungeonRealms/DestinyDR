@@ -325,10 +325,12 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             }
             pl.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
                     + "You...have... defeated me...ARGHHHH!!!!!");
-            pushAwayPlayer(livingEntity, pl, 6.0F);
+            pushAwayPlayer(livingEntity, pl, 3.5F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 2F, 2F);
         }
+
+
         if (random.nextInt(100) < 80) { // 80% chance!
             List<ItemStack> possible_drops = new ArrayList<>();
             for (ItemStack is : livingEntity.getEquipment().getArmorContents()) {
@@ -382,6 +384,11 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             }
             groupSize++;
         }
+
+
+        //Drop if it can.
+        dropMount(getBukkitEntity(), DungeonManager.DungeonType.THE_INFERNAL_ABYSS);
+
         int perPlayerDrop = groupSize == 0 ? 1 : Math.round(gemDrop / groupSize);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             for (Player player : livingEntity.getWorld().getPlayers()) {

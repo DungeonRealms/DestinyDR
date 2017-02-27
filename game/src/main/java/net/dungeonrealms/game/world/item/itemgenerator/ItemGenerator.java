@@ -210,7 +210,7 @@ public class ItemGenerator {
 
         String modName = "";
         String name = tier.getTierColor().toString();
-        String[] bonuses = new String[24];
+        String[] bonuses = new String[25];
         Arrays.fill(bonuses, "");
         LinkedHashMap<String, Integer> NBTModifiers = new LinkedHashMap<>();
 
@@ -248,6 +248,8 @@ public class ItemGenerator {
 
             // apply the prefixes/suffixes to priority array
             // prefixes need to go before suffixes
+
+
             switch (modName) {
                 // ARMOR PREFIXES
                 case "DODGE":
@@ -263,67 +265,70 @@ public class ItemGenerator {
                     bonuses[3] = "BLOCK";
                     break;
                 // WEAPON PREFIXES
+                case "PRECISION":
+                    bonuses[4] = "PRECISION";
+                    break;
                 case "PURE DMG":
-                    bonuses[4] = "PURE DMG";
+                    bonuses[5] = "PURE DMG";
                     break;
                 case "ACCURACY":
-                    bonuses[5] = "ACCURACY";
+                    bonuses[6] = "ACCURACY";
                     break;
                 case "KNOCKBACK":
-                    bonuses[6] = "KNOCKBACK";
+                    bonuses[7] = "KNOCKBACK";
                     break;
                 case "SLOW":
-                    bonuses[7] = "SLOW";
+                    bonuses[8] = "SLOW";
                     break;
                 case "LIFE STEAL":
-                    bonuses[8] = "LIFE STEAL";
+                    bonuses[9] = "LIFE STEAL";
                     break;
                 case "CRITICAL HIT":
-                    bonuses[9] = "CRITICAL HIT";
+                    bonuses[10] = "CRITICAL HIT";
                     break;
                 case "ARMOR PENETRATION":
-                    bonuses[10] = "ARMOR PENETRATION";
+                    bonuses[11] = "ARMOR PENETRATION";
                     break;
                 // ARMOR SUFFIXES
                 case "ENERGY REGEN":
-                    bonuses[11] = "ENERGY REGEN";
+                    bonuses[12] = "ENERGY REGEN";
                     break;
                 case "FIRE RESISTANCE":
-                    bonuses[12] = "FIRE RESISTANCE";
+                    bonuses[13] = "FIRE RESISTANCE";
                     break;
                 case "ICE RESISTANCE":
-                    bonuses[13] = "ICE RESISTANCE";
+                    bonuses[14] = "ICE RESISTANCE";
                     break;
                 case "POISON RESISTANCE":
-                    bonuses[14] = "POISON RESISTANCE";
+                    bonuses[15] = "POISON RESISTANCE";
                     break;
                 case "GEM FIND":
-                    bonuses[15] = "GEM FIND";
+                    bonuses[16] = "GEM FIND";
                     break;
                 case "ITEM FIND":
-                    bonuses[16] = "ITEM FIND";
+                    bonuses[17] = "ITEM FIND";
                     break;
                 case "THORNS":
-                    bonuses[17] = "THORNS";
+                    bonuses[18] = "THORNS";
                     break;
                 // WEAPON SUFFIXES
                 case "BLIND":
-                    bonuses[18] = "BLIND";
+                    bonuses[19] = "BLIND";
                     break;
                 case "vs. MONSTERS":
-                    bonuses[19] = "vs. MONSTERS";
+                    bonuses[20] = "vs. MONSTERS";
                     break;
                 case "vs. PLAYERS":
-                    bonuses[20] = "vs. PLAYERS";
+                    bonuses[21] = "vs. PLAYERS";
                     break;
                 case "FIRE DMG":
-                    bonuses[21] = "FIRE DMG";
+                    bonuses[22] = "FIRE DMG";
                     break;
                 case "ICE DMG":
-                    bonuses[22] = "ICE DMG";
+                    bonuses[23] = "ICE DMG";
                     break;
                 case "POISON DMG":
-                    bonuses[23] = "POISON DMG";
+                    bonuses[24] = "POISON DMG";
                     break;
                 default:
                     break;
@@ -350,6 +355,9 @@ public class ItemGenerator {
                 // WEAPON PREFIXES
                 case "PURE DMG":
                     name += "Pure ";
+                    break;
+                case "PRECISION":
+                    name += "Precise ";
                     break;
                 case "ACCURACY":
                     name += "Accurate ";
@@ -805,6 +813,7 @@ public class ItemGenerator {
         wm.new ArmorPenetration();
         wm.new Blind();
         wm.new Critical();
+        wm.new Precision();
         wm.new SwordDamage();
         wm.new AxeDamage();
         wm.new StaffDamage();

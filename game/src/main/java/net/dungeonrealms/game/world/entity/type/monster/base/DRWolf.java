@@ -32,16 +32,17 @@ public class DRWolf extends EntityWolf implements DRMonster {
         super(world);
         this.enumMonster = type;
         a(0.6F, 0.8F);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(20d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(30d);
         this.getAttributeInstance(GenericAttributes.c).setValue(1.00d);
         this.getAttributeInstance(GenericAttributes.maxHealth).setValue(20);
+        setHealth(getMaxHealth());
         setArmor(tier);
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
         this.setCustomName(customName);
         this.setAngry(true);
         this.setTamed(false);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
-        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        this.targetSelector.a(0, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
     }

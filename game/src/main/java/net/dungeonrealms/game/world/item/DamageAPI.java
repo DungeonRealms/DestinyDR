@@ -19,11 +19,15 @@ import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.mounts.Horse;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.EntityArrow;
+import net.minecraft.server.v1_9_R2.EntityLargeFireball;
+import net.minecraft.server.v1_9_R2.MathHelper;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -36,6 +40,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -445,7 +450,7 @@ public class DamageAPI {
                         if (damage - armorCalculation[0] <= 0) continue;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage, armorCalculation[0], armorCalculation[1]);
                     } else if (!GameAPI.isNonPvPRegion(entity.getLocation())) {
-                        if(GameAPI._hiddenPlayers.contains((Player)entity))continue;
+                        if (GameAPI._hiddenPlayers.contains((Player) entity)) continue;
                         if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
                             if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, damager.getUniqueId()).toString())) {
                                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
@@ -826,7 +831,7 @@ public class DamageAPI {
             // BASE ARMOR
             totalArmor = Utils.randInt(defenderAttributes.get("armor")[0], defenderAttributes.get("armor")[1]);
 
-            if(totalArmor > 75)totalArmor = 75;
+            if (totalArmor > 75) totalArmor = 75;
             // ARMOR PENETRATION
             if (projectile == null && attackerAttributes.get("armorPenetration")[1] != 0) {
                 totalArmor -= attackerAttributes.get("armorPenetration")[1];
@@ -997,6 +1002,15 @@ public class DamageAPI {
         if (subtractDurability)
             RepairAPI.subtractCustomDurability(player, itemStack, 1);
         int weaponTier = tag.getInt("itemTier");
+        GamePlayer gp = GameAPI.getGamePlayer(player);
+
+        Map<String, Integer[]> attackerAttributes = gp.getAttributes();
+
+        double accuracy = 0;
+        if(attackerAttributes != null){
+            accuracy = attackerAttributes.get("precision")[1];
+        }
+
         Projectile projectile = null;
         switch (weaponTier) {
             case 1:
@@ -1004,7 +1018,8 @@ public class DamageAPI {
                 projectile.setVelocity(projectile.getVelocity().multiply(1.15));
                 break;
             case 2:
-                projectile = player.launchProjectile(SmallFireball.class);
+//                projectile = player.launchProjectile(SmallFireball.class);
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) player.getWorld()).getHandle(), (CraftPlayer) player, null, SmallFireball.class, accuracy);
                 projectile.setVelocity(projectile.getVelocity().multiply(1.5));
                 ((SmallFireball) projectile).setYield(0);
                 ((SmallFireball) projectile).setIsIncendiary(false);
@@ -1014,11 +1029,13 @@ public class DamageAPI {
                 projectile.setVelocity(projectile.getVelocity().multiply(1.75));
                 break;
             case 4:
-                projectile = player.launchProjectile(WitherSkull.class);
+//                projectile = player.launchProjectile(WitherSkull.class);
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) player.getWorld()).getHandle(), (CraftPlayer) player, null, WitherSkull.class, accuracy);
                 projectile.setVelocity(projectile.getVelocity().multiply(2.25));
                 break;
             case 5:
-                projectile = player.launchProjectile(LargeFireball.class);
+//                projectile = player.launchProjectile(LargeFireball.class);
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) player.getWorld()).getHandle(), (CraftPlayer) player, null, LargeFireball.class, accuracy);
                 projectile.setVelocity(projectile.getVelocity().multiply(2.5));
                 ((LargeFireball) projectile).setYield(0);
                 ((LargeFireball) projectile).setIsIncendiary(false);
@@ -1029,7 +1046,6 @@ public class DamageAPI {
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
         projectile.setShooter(player);
         // a player switches weapons, so we need to recalculate weapon attributes
-        GamePlayer gp = GameAPI.getGamePlayer(player);
         if (!gp.getCurrentWeapon().equals(GameAPI.getItemUID(itemStack))) {
             GameAPI.calculateAllAttributes(player);
             gp.setCurrentWeapon(GameAPI.getItemUID(itemStack));
@@ -1074,8 +1090,8 @@ public class DamageAPI {
         MetadataUtils.registerProjectileMetadata(gp.getAttributes(), tag, projectile);
     }
 
-    public static void fireStaffProjectileMob(CraftLivingEntity livingEntity, NBTTagCompound tag, LivingEntity target) {
-        if (!(target instanceof Player)) return;
+    public static Projectile fireStaffProjectileMob(CraftLivingEntity livingEntity, NBTTagCompound tag, LivingEntity target) {
+        if (!(target instanceof Player)) return null;
         org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = null;
@@ -1095,21 +1111,23 @@ public class DamageAPI {
                 vector.multiply(1.75);
                 break;
             case 4:
-                projectile = livingEntity.launchProjectile(WitherSkull.class);
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) livingEntity.getWorld()).getHandle(), livingEntity, null, WitherSkull.class, 100);
                 vector.multiply(2.25);
                 break;
             case 5:
-                projectile = livingEntity.launchProjectile(LargeFireball.class);
+//                projectile = livingEntity.launchProjectile(LargeFireball.class);
                 vector.multiply(2.5);
+                projectile = EntityMechanics.spawnFireballProjectile(((CraftWorld) livingEntity.getWorld()).getHandle(), livingEntity, null, LargeFireball.class, 100);
                 ((LargeFireball) projectile).setYield(0);
                 ((LargeFireball) projectile).setIsIncendiary(false);
                 break;
         }
-        if (projectile == null) return;
+        if (projectile == null) return null;
         projectile.setBounce(false);
         projectile.setVelocity(vector);
         projectile.setShooter(livingEntity);
         MetadataUtils.registerProjectileMetadata(((DRMonster) livingEntity.getHandle()).getAttributes(), tag, projectile);
+        return projectile;
     }
 
     public static void fireArrowFromMob(CraftLivingEntity livingEntity, NBTTagCompound tag, LivingEntity target) {
@@ -1176,8 +1194,8 @@ public class DamageAPI {
         if (p.getVelocity().getY() > 0) unitVector.setY(0);
         // Set speed and push entity:
 
-        if(ent instanceof Player){
-            EntityMechanics.setVelocity((Player)ent, unitVector.multiply(speed));
+        if (ent instanceof Player) {
+            EntityMechanics.setVelocity((Player) ent, unitVector.multiply(speed));
             return;
         }
         ent.setVelocity(unitVector.multiply(speed));
@@ -1193,8 +1211,8 @@ public class DamageAPI {
         if (speed > 1) unitVector.setY(0.2);
         if (p.getVelocity().getY() > 0) unitVector.setY(0);
         // Set speed and push entity:
-        if(ent instanceof Player){
-            EntityMechanics.setVelocity((Player)ent, unitVector.multiply(speed));
+        if (ent instanceof Player) {
+            EntityMechanics.setVelocity((Player) ent, unitVector.multiply(speed));
             return;
         }
         ent.setVelocity(unitVector.multiply(speed));
@@ -1264,45 +1282,44 @@ public class DamageAPI {
     public static void removeInvulnerable(Entity ent) {
         if (ent.hasMetadata("invulnerable")) ent.removeMetadata("invulnerable", DungeonRealms.getInstance());
     }
-    
-    public static void createDamageHologram(Player createFor, Location createAround, double hp){
-    	createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int)hp + " ❤");
+
+    public static void createDamageHologram(Player createFor, Location createAround, double hp) {
+        createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤");
     }
-    
+
     /**
      * Create a hologram that floats up and deletes itself.
-     * 
      */
-    public static void createDamageHologram(Player createFor, Location createAround, String display){
-    	if(createFor != null && !Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DAMAGE_INDICATORS, createFor.getUniqueId()).toString()))
-    		return;
-    	double xDif = (Utils.randInt(0, 20) - 10) / 10D;
-    	double yDif = Utils.randInt(0, 15) / 10D;
-    	double zDif = (Utils.randInt(0, 20) - 10) / 10D;
-    	Hologram hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), createAround.add(xDif, yDif, zDif));
-    	hologram.appendTextLine(display);
-    	hologram.getVisibilityManager().setVisibleByDefault(true);
-    	
-    	int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-    		hologram.teleport(hologram.getLocation().add(0.0, 0.1D, 0.0));
-    	}, 0, 1l);
-    	if(!DAMAGE_HOLOGRAMS.containsKey(createFor))
-    		DAMAGE_HOLOGRAMS.put(createFor, new HashMap<Hologram, Integer>());
-    	
-    	HashMap<Hologram, Integer> holograms = DAMAGE_HOLOGRAMS.get(createFor);
-    	holograms.put(hologram, taskId);
-    	if(holograms.keySet().size() > 4)
-    		removeDamageHologram(createFor, holograms.keySet().toArray(new Hologram[1])[0]);
-    	
-    	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), 
-    			() -> removeDamageHologram(createFor, hologram), 20l);
+    public static void createDamageHologram(Player createFor, Location createAround, String display) {
+        if (createFor != null && !Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DAMAGE_INDICATORS, createFor.getUniqueId()).toString()))
+            return;
+        double xDif = (Utils.randInt(0, 20) - 10) / 10D;
+        double yDif = Utils.randInt(0, 15) / 10D;
+        double zDif = (Utils.randInt(0, 20) - 10) / 10D;
+        Hologram hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), createAround.add(xDif, yDif, zDif));
+        hologram.appendTextLine(display);
+        hologram.getVisibilityManager().setVisibleByDefault(true);
+
+        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            hologram.teleport(hologram.getLocation().add(0.0, 0.1D, 0.0));
+        }, 0, 1l);
+        if (!DAMAGE_HOLOGRAMS.containsKey(createFor))
+            DAMAGE_HOLOGRAMS.put(createFor, new HashMap<Hologram, Integer>());
+
+        HashMap<Hologram, Integer> holograms = DAMAGE_HOLOGRAMS.get(createFor);
+        holograms.put(hologram, taskId);
+        if (holograms.keySet().size() > 4)
+            removeDamageHologram(createFor, holograms.keySet().toArray(new Hologram[1])[0]);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                () -> removeDamageHologram(createFor, hologram), 20l);
     }
-    
-    private static void removeDamageHologram(Player player, Hologram hologram){
-    	if(hologram.isDeleted())
-    		return;
-    	Bukkit.getScheduler().cancelTask(DAMAGE_HOLOGRAMS.get(player).get(hologram));
-		DAMAGE_HOLOGRAMS.get(player).remove(hologram);
-		hologram.delete();
+
+    private static void removeDamageHologram(Player player, Hologram hologram) {
+        if (hologram.isDeleted())
+            return;
+        Bukkit.getScheduler().cancelTask(DAMAGE_HOLOGRAMS.get(player).get(hologram));
+        DAMAGE_HOLOGRAMS.get(player).remove(hologram);
+        hologram.delete();
     }
 }

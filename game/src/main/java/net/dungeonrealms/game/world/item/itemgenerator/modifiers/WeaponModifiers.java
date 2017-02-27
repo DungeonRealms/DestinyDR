@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.item.itemgenerator.modifiers;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
@@ -237,7 +238,15 @@ public class WeaponModifiers {
         }
 	}*/
 
-	
+	public class Precision extends ItemModifier {
+		public Precision(){
+			super(Lists.newArrayList(Item.ItemType.STAFF), -1, "precision", r + "PRECISION: ", "%");
+			setOrderPriority(2);
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 5, 70), 30));
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_4, null, new ModifierRange(ModifierType.STATIC, 5, 80), 30));
+			addCondition(new ModifierCondition(Item.ItemTier.TIER_5, null, new ModifierRange(ModifierType.STATIC, 10, 95), 30));
+		}
+	}
 	public class Critical extends ItemModifier {
 
 		public Critical() {

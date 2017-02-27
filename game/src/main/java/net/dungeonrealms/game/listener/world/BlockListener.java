@@ -281,6 +281,10 @@ public class BlockListener implements Listener {
                                 mobSpawner.setHasCustomName(false);
                             }
 
+                            if(mobSpawner.getInitialRespawnDelay() != delay.get()){
+                                mobSpawner.setInitialRespawnDelay(delay.get());
+                                mobSpawner.setRespawnDelay(delay.get());
+                            }
                             if (data != null && data.length >= 2) {
                                 String weapon = data[1];
                                 if (!weapon.equalsIgnoreCase("none")) {

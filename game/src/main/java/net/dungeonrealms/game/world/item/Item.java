@@ -253,7 +253,8 @@ public class Item {
         INTELLECT(14, "INT", "intellect"),
         KNOCKBACK(15, "KNOCKBACK", "knockback", true), //Percentage
         BLIND(16, "BLIND", "blind", true), //Percentage
-        SLOW(17, "SLOW", "slow", true); //Percentage
+        SLOW(17, "SLOW", "slow", true), //Percentage
+        PRECISION(18, "PRECISION", "precision", true);
 
         private int id;
         private String name;

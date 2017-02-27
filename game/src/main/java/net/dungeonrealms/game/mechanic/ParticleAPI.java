@@ -105,18 +105,10 @@ public class ParticleAPI {
     }
 
 
+    public static void sendParticleToEntityLocation(final ParticleEffect particleEffect, Entity entity, final float xOffset, final float yOffset, final float zOffset, final float particleSpeed, final int particleCount) {
+        sendParticleToEntityLocation(particleEffect, ((CraftEntity) entity), xOffset, yOffset, zOffset, particleSpeed, particleCount);
+    }
 
-    /**
-     * a More efficient method that only scans the chunks around instead of everyone in that world.
-     *
-     * @param particleEffect
-     * @param xOffset
-     * @param yOffset
-     * @param zOffset
-     * @param particleSpeed
-     * @param particleCount
-     * @since 1.0
-     */
     public static void sendParticleToEntityLocation(final ParticleEffect particleEffect, CraftEntity entity, final float xOffset, final float yOffset, final float zOffset, final float particleSpeed, final int particleCount) {
         Object packet = null;
         try {

@@ -33,9 +33,13 @@ public enum EnumMonster {
     Blaze("blaze", "Blaze", "Blaze", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 15),
     Mage("mage", "Mage", "Mage", new String[]{""}, new String[]{""}),
     LordsGuard("lordsguard", "Lords Guard", "Wither", new String[]{"Infernal"}, new String[]{""}, Collections.singletonList("fire"), 80),
+
+    StaffZombie("staffzombie", "Zombie", "Steve", new String[]{"Deadly", "Piercing"}, new String[]{"Ranger"}, Collections.singletonList("pure"), 5),
     Skeleton("skeleton", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
     Skeleton1("skeleton1", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
     Skeleton2("skeleton2", "Chaos Skeleton", "",  new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 5),
+    Zombie("zombie", "Greater Zombie", "Steve", new String[]{""}, new String[] {""}, Collections.singletonList("fire"), 10),
+
     MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}, Collections.singletonList("fire"), 40),
     Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 5),
     Daemon("daemon", "Daemon", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 10),
@@ -44,7 +48,7 @@ public enum EnumMonster {
 	GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[] {""}),
 	Monk("monk", "Crimson Crusader", "Yhmen", new String[] {""}, new String[] {""}, Collections.singletonList("poison"), 15),
 	Lizardman("lizardman", "Lizardman", "Steve", new String[] {"Giant", "Tough"}, new String[] {""}, Collections.singletonList("fire"), 10),
-	Zombie("zombie", "Greater Zombie", "Steve", new String[]{""}, new String[] {""}, Collections.singletonList("fire"), 10),
+
     Wolf("wolf", "Fierce Wolf", "", new String[]{""}, new String[]{""}, Collections.singletonList("ice"), 10),
     Undead("undead", "Undead", "", new String[]{""}, new String[]{""}),
     FrozenSkeleton("frozenskeleton", "Mountain Walker", "", new String[]{""}, new String[]{""}, Collections.singletonList("ice"), 15),
@@ -173,6 +177,7 @@ public enum EnumMonster {
             case Lizardman:
                 return SkullTextures.LIZARD.getSkull();
             case Zombie:
+            case StaffZombie:
                 return SkullTextures.ZOMBIE.getSkull();
             case Acolyte:
                 return SkullTextures.MONK.getSkull();

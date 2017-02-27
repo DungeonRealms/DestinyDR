@@ -113,16 +113,72 @@ public class CommandAdd extends BaseCommand {
                     break;
                 case "weapon":
                     try {
-                    	ItemGenerator ig = new ItemGenerator();
-                    	ig.setType( args.length > 1 ? Item.ItemType.getByName(args[1]) : Item.ItemType.getRandomWeapon());
-                    	
-                    	if(args.length > 2)
-                    		ig.setTier(Item.ItemTier.getByTier(Integer.parseInt(args[2])));
-                    	if(args.length > 3)
-                    		ig.setRarity(Item.ItemRarity.valueOf(args[3].toUpperCase()));
-                    	
-                    	player.getInventory().addItem(ig.generateItem().getItem());
-                    
+                        //This way allows for custom nbt edits through the command.
+                        if (args.length == 2) {
+                            tier = Integer.parseInt(args[1]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
+                                    .setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
+                        } else if (args.length == 3) {
+                            tier = Integer.parseInt(args[1]);
+                            type = Item.ItemType.getByName(args[2]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
+                                    .setType(type).generateItem().getItem());
+                        } else if (args.length == 4) {
+                            tier = Integer.parseInt(args[1]);
+                            type = Item.ItemType.getByName(args[2]);
+                            rarity = Item.ItemRarity.valueOf(args[3]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
+                                    .setType(type).setRarity(rarity).generateItem().getItem());
+                        } else if (args.length == 6) {
+                            tier = Integer.parseInt(args[1]);
+                            type = Item.ItemType.getByName(args[2]);
+                            rarity = Item.ItemRarity.valueOf(args[3].toUpperCase());
+
+                            if (tier != 0 && type != null && rarity != null) {
+                                ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
+                                        .setType(type).setRarity(rarity).generateItem().getItem();
+
+                                int value = Integer.parseInt(args[5]);
+                                NBTTagList modifiersList = new NBTTagList();
+                                LinkedHashMap<String, Integer> NBTModifiers = new LinkedHashMap<>();
+                                NBTModifiers.put(args[4], value);
+                                NBTWrapper wrapper = new NBTWrapper(item);
+
+                                if (wrapper.hasTag("modifiers")) {
+                                    modifiersList = (NBTTagList) wrapper.get("modifiers");
+                                }
+                                for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
+                                    wrapper.set(entry.getKey(), new NBTTagInt(entry.getValue()));
+
+                                    if (!entry.getKey().contains("Max")) {
+                                        if (entry.getKey().contains("Min")) {
+                                            modifiersList.add(new NBTTagString(entry.getKey().replace("Min", "")));
+                                            continue;
+                                        }
+
+                                        boolean contains = false;
+                                        for (int list = 0; list < modifiersList.size(); list++) {
+                                            String key = modifiersList.getString(list);
+                                            if (key != null && key.equalsIgnoreCase(entry.getKey())) {
+                                                contains = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!contains)
+                                            modifiersList.add(new NBTTagString(entry.getKey()));
+                                    }
+                                }
+
+                                wrapper.set("modifiers", modifiersList);
+                                item = wrapper.build();
+                                player.getInventory().addItem(item);
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Invalid item arguments.");
+                            }
+                        } else {
+                            player.getInventory().addItem(
+                                    new ItemGenerator().setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
+                        }
                     } catch (NullPointerException ex) {
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
@@ -148,7 +204,7 @@ public class CommandAdd extends BaseCommand {
                         } else if (args.length == 6) {
                             tier = Integer.parseInt(args[1]);
                             type = Item.ItemType.getByName(args[2]);
-                            rarity = Item.ItemRarity.valueOf(args[3]);
+                            rarity = Item.ItemRarity.valueOf(args[3].toLowerCase());
 
                             if (tier != 0 && type != null && rarity != null) {
                                 ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
