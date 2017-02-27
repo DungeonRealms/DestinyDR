@@ -6,6 +6,7 @@ import java.util.List;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.md_5.bungee.api.ChatColor;
 
@@ -31,6 +32,7 @@ public class Quest implements ISaveable {
 	private String questName;
 	private List<QuestStage> stageList = new ArrayList<QuestStage>();
 	private int levelRequirement = 1;
+	private int gemReward = 0;
 	private int xpReward = 0;
 	private QuestInterval interval;
 	
@@ -96,6 +98,14 @@ public class Quest implements ISaveable {
 	
 	public int getXPReward(){
 		return this.xpReward;
+	}
+	
+	public void setGemReward(int gem){
+		this.gemReward = gem;
+	}
+	
+	public int getGemReward(){
+		return this.gemReward;
 	}
 	
 	public boolean canStartQuest(Player player){
@@ -199,6 +209,12 @@ public class Quest implements ISaveable {
 	private void completeQuest(Player player, QuestPlayerData data){
 		if(!data.isDoingQuest(this))
 			return;
+		
+		if(this.gemReward > 0 && player.getInventory().firstEmpty() == -1){
+			player.sendMessage(ChatColor.RED + "Please free up some inventory space first.");
+			return;
+		}
+		
 		player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "Quest Complete> " + ChatColor.AQUA + this.getQuestName());
 		data.completeQuest(this);
 		GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
@@ -208,6 +224,12 @@ public class Quest implements ISaveable {
 		effect.withColor(Color.NAVY);
 		effect.with(Type.BALL);
 		spawnFirework(player.getLocation(), effect.build());
+		
+		if(this.gemReward > 0){
+			player.sendMessage(ChatColor.GREEN + "You acquired " + this.gemReward + " gems!");
+			player.getInventory().addItem(BankMechanics.createBankNote(this.gemReward, this.getQuestName()));
+		}
+		
 		//This delay is purely for "cosmetic" purposes.
 		Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(),
 				() -> gamePlayer.addExperience(this.getXPReward(), false, true), 40);
@@ -233,10 +255,14 @@ public class Quest implements ISaveable {
 	public void fromFile(JsonObject obj) {
 		this.interval = QuestInterval.valueOf(obj.get("interval").getAsString());
 		this.questName = obj.get("questName").getAsString();
+		
 		if(obj.has("levelRequirement"))
 			this.levelRequirement = obj.get("levelRequirement").getAsInt();
 		if(obj.has("xpReward"))
 			this.xpReward = obj.get("xpReward").getAsInt();
+		if(obj.has("gemReward"))
+			this.gemReward = obj.get("gemReward").getAsInt();
+		
 		for(JsonElement o : obj.get("stages").getAsJsonArray()){
 			QuestStage qs = new QuestStage(o.getAsJsonObject());
 			qs.setQuest(this);
@@ -251,6 +277,7 @@ public class Quest implements ISaveable {
 		obj.addProperty("questName", this.getQuestName());
 		obj.addProperty("levelRequirement", this.levelRequirement);
 		obj.addProperty("xpReward", this.xpReward);
+		obj.addProperty("gemReward", this.gemReward);
 		JsonArray stages = new JsonArray();
 		for(QuestStage stage : this.stageList)
 			stages.add(stage.toJSON());

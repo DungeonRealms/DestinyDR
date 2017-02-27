@@ -44,11 +44,6 @@ public class Quests implements GenericMechanic {
 		
 		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> spawnQuestParticles(), 0, 10);
 		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> checkQuestZones(), 0, 40);
-		//Monster Kill tier check test.
-		//Fix sometimes not returning EnumMonster
-		//Monster Kill use Staffs and Arrows
-		//TEST TEST TEST
-		
 	}
 	
 
@@ -117,9 +112,14 @@ public class Quests implements GenericMechanic {
 		return INSTANCE;
 	}
 	
-	public void handleLogoutEvents(Player player){
+	public void savePlayerToMongo(Player player){
 		if(this.playerDataMap.containsKey(player))
-			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.QUEST_DATA, this.playerDataMap.get(player).toJSON().toString(), true, (res) -> this.playerDataMap.remove(player));
+			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.QUEST_DATA,
+					this.playerDataMap.get(player).toJSON().toString(), true);
+	}
+	
+	public void handleLogoutEvents(Player player){
+		this.playerDataMap.remove(player);
 	}
 	
 	public void handleLogin(Player player){

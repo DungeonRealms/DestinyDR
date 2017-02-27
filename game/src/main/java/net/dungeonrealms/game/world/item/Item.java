@@ -146,26 +146,22 @@ public class Item {
     }
 
     public enum ItemTier {
-        TIER_1(0, 1, new Integer[]{1, 5}, 2),
-        TIER_2(1, 2, new Integer[]{5, 10}, 3),
-        TIER_3(2, 3, new Integer[]{10, 20}, 4),
-        TIER_4(3, 4, new Integer[]{20, 25}, 5),
-        TIER_5(4, 5, new Integer[]{25, 100}, 6),;
+        TIER_1(1, new Integer[]{1, 5}, 2, ChatColor.WHITE),
+        TIER_2(2, new Integer[]{5, 10}, 3, ChatColor.GREEN),
+        TIER_3(3, new Integer[]{10, 20}, 4, ChatColor.AQUA),
+        TIER_4(4, new Integer[]{20, 25}, 5, ChatColor.LIGHT_PURPLE),
+        TIER_5(5, new Integer[]{25, 100}, 6, ChatColor.YELLOW);
 
-        private int id;
         private int tierId;
         private Integer[] rangeValues;
         private int attributeRange;
+        private ChatColor tierColor;
 
-        ItemTier(int id, int tierId, Integer[] rangeValues, int attributeRange) {
-            this.id = id;
+        ItemTier(int tierId, Integer[] rangeValues, int attributeRange, ChatColor color) {
             this.tierId = tierId;
             this.rangeValues = rangeValues;
             this.attributeRange = attributeRange;
-        }
-
-        public int getId() {
-            return id;
+            this.tierColor = color;
         }
 
         public int getTierId() {
@@ -181,37 +177,13 @@ public class Item {
         }
 
         public ChatColor getTierColor(){
-            switch(this){
-                case TIER_1:
-                    return ChatColor.WHITE;
-                case TIER_2:
-                    return ChatColor.GREEN;
-                case TIER_3:
-                    return ChatColor.AQUA;
-                case TIER_4:
-                    return ChatColor.LIGHT_PURPLE;
-                case TIER_5:
-                    return ChatColor.YELLOW;
-            }
-
-            return null;
-        }
-
-        public static ItemTier getById(int id) {
-            for (ItemTier it : values()) {
-                if (it.getId() == id) {
-                    return it;
-                }
-            }
-            return null;
+        	return this.tierColor;
         }
 
         public static ItemTier getByTier(int tier) {
-            for (ItemTier it : values()) {
-                if (it.getTierId() == tier) {
-                    return it;
-                }
-            }
+            for (ItemTier it : values())
+                if (it.getTierId() == tier)
+                    return it;   
             return null;
         }
 

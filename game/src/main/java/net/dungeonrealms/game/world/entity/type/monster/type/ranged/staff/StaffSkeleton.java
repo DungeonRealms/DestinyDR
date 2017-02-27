@@ -57,11 +57,6 @@ public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
     protected void setStats() {
     }
 
-    @Override
-    public EnumMonster getEnum() {
-        return null;
-    }
-
     private void clearGoalSelectors() {
         try {
             Field a = PathfinderGoalSelector.class.getDeclaredField("b");

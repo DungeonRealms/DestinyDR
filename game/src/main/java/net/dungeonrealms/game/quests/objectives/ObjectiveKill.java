@@ -2,7 +2,6 @@ package net.dungeonrealms.game.quests.objectives;
 
 import java.util.ArrayList;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.QuestNPC;
 import net.dungeonrealms.game.quests.QuestPlayerData;
@@ -17,13 +16,13 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_9_R2.Entity;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import com.google.gson.JsonObject;
 
@@ -32,17 +31,15 @@ public class ObjectiveKill implements QuestObjective {
 	private int amount = 1;
 	private int tier = 1;
 	private EnumMonster monsterType = EnumMonster.Bandit;
-	private String metaName = monsterType.idName + "Killed";
 	private QuestStage questStage;
 	
 	private ArrayList<Player> selectors = new ArrayList<Player>();
 	
 	@Override
 	public boolean isCompleted(Player player, QuestStage stage, QuestNPC currentNPC) {
-		if(player.hasMetadata(metaName) && player.getMetadata(metaName).get(0).asInt() >= this.amount){
-			player.removeMetadata(metaName, DungeonRealms.getInstance());
-			return true;
-		}
+		QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
+		if(data != null)
+			return data.getQuestProgress(stage.getQuest()).getObjectiveCounter() >= this.amount;
 		return false;
 	}
 
@@ -53,8 +50,13 @@ public class ObjectiveKill implements QuestObjective {
 
 	@Override
 	public String getTaskDescription(Player player, QuestStage stage) {
-		if(player != null){
-			int killed = getKilled(player);
+		QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
+		if(data != null && player != null){
+			int killed = data.getQuestProgress(stage.getQuest()).getObjectiveCounter();
+			//Have they killed enough yet?
+			if(killed >= this.amount)
+				return "Talk to " + stage.getNPC().getName();
+			//Have they killed any?
 			if(killed > 0)
 				return "Kill " + (this.amount - killed) + " more " + this.monsterType.name + ((this.amount - killed) > 1 ? "s" : "") + "!";
 		}
@@ -63,7 +65,6 @@ public class ObjectiveKill implements QuestObjective {
 	
 	public void setEntityType(EnumMonster monster, int tier){
 		this.monsterType = monster;
-		this.metaName = monster.idName + "Killed";
 		this.tier = tier;
 	}
 
@@ -71,6 +72,7 @@ public class ObjectiveKill implements QuestObjective {
 	public JsonObject saveJSON() {
 		JsonObject o = new JsonObject();
 		o.addProperty("amt", this.amount);
+		o.addProperty("tier", this.tier);
 		o.addProperty("entityType", this.monsterType.name());
 		return o;
 	}
@@ -84,62 +86,29 @@ public class ObjectiveKill implements QuestObjective {
 			this.tier = o.get("tier").getAsInt();
 	}
 	
-	public void handleKill(EntityDeathEvent evt){
-		if(evt.getEntity() != null && evt.getEntity().getKiller() != null && evt.getEntity().getKiller() instanceof Player){
-			Entity nmsEnt = ((CraftEntity) evt.getEntity()).getHandle();
-			if(!(nmsEnt instanceof DRMonster))
-				return;
-			
-			DRMonster monster = (DRMonster)nmsEnt;
-			Player killer = (Player)evt.getEntity().getKiller();
-			
-			System.out.println("Hello from DYING " + evt.getEntity().getEntityId() + " I am " + monster.getEnum());
-			
-			if(monster.getEnum() == null || this.monsterType != monster.getEnum()){
-				System.out.println("Wrong Type");
-				return;
-			}
-			
-			QuestPlayerData data = Quests.getInstance().playerDataMap.get(killer);
-			QuestProgress progress = data.getQuestProgress(this.questStage.getQuest());
-			
-			if(progress == null){
-				System.out.println("No Progress");
-				return;
-			}
-			
-			System.out.println("Player is on: " + (progress.getStageIndex() - 1) );
-			System.out.println("I am on " + this.questStage.getQuest().getStageList().indexOf(this.questStage));
-			System.out.println("OBJ MATCH 1 = " + (progress.getCurrentStage() == this.questStage));
-			System.out.println("OBJ MATCH 2 = " + (progress.getCurrentStage().equals(this.questStage)));
-			System.out.println(progress.getCurrentStage());
-			System.out.println(this.questStage);
-			
-			if((progress.getStageIndex() - 1) != this.questStage.getQuest().getStageList().indexOf(this.questStage)){
-				System.out.println("Not doing correct part");
-				return;
-			}
-			
-			if(monster.getTier(evt.getEntity()) < this.tier){
-				System.out.println("Wrong Tier.");
-				return;
-			}
-			
-			System.out.println("Adding");
-			//Sound
-			
-			if(killer.hasMetadata(metaName)){
-				killer.setMetadata(metaName, new FixedMetadataValue(DungeonRealms.getInstance(), getKilled(killer) + 1));
-			}else{
-				killer.setMetadata(metaName, new FixedMetadataValue(DungeonRealms.getInstance(), 1));
-			}
-			
-			int count = getKilled(killer);
-			if(count == this.amount){
-				killer.sendMessage(ChatColor.YELLOW + "You have killed enough " + this.monsterType.name + "s.");
-			}else if(count < this.amount){
-				killer.sendMessage(ChatColor.YELLOW + "Killed " + count + "/" + this.amount + " " + this.monsterType.name + ( count > 1 ? "s" : "") + ".");
-			}
+	public void handleKill(Player killer, LivingEntity entity, DRMonster monster){
+		if(killer == null || monster.getEnum() == null || this.monsterType != monster.getEnum())
+			return;
+		
+		QuestPlayerData data = Quests.getInstance().playerDataMap.get(killer);
+		if(data == null)
+			return;
+		QuestProgress progress = data.getQuestProgress(this.questStage.getQuest());
+		
+		//If the player is killing too low of a tier monster, or they are not on this quest stage, don't bring up their counter.
+		if(progress == null || (progress.getStageIndex() - 1) != this.questStage.getQuest().getStageList().indexOf(this.questStage)
+				|| monster.getTier(entity) < this.tier)
+			return;
+		//Sound
+		
+		int count = progress.getObjectiveCounter() + 1;
+		progress.setObjectiveCounter(count);
+		if(count == this.amount){
+			killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 2, 2);
+			killer.sendMessage(ChatColor.YELLOW + "You have killed enough " + this.monsterType.name + "s.");
+		}else if(count < this.amount){
+			killer.playSound(killer.getLocation(), Sound.BLOCK_NOTE_PLING, 2, 2);
+			killer.sendMessage(ChatColor.YELLOW + "Killed " + count + "/" + this.amount + " " + this.monsterType.name + ( count > 1 ? "s" : "") + ".");
 		}
 	}
 	
@@ -163,10 +132,6 @@ public class ObjectiveKill implements QuestObjective {
 			this.selectors.remove(evt.getPlayer());
 			evt.getPlayer().sendMessage(ChatColor.GREEN + "Entity Type updated to Tier " + this.tier + " " + this.monsterType.name);
 		}
-	}
-	
-	public int getKilled(Player player){
-		return player.hasMetadata(metaName) ? player.getMetadata(metaName).get(0).asInt() : 0;
 	}
 
 	@Override
@@ -210,6 +175,7 @@ public class ObjectiveKill implements QuestObjective {
 			});
 			
 			this.setSlot(1, Material.STICK, ChatColor.AQUA + "Entity Tier", new String[] {"Set the tier of this monster: " + ChatColor.LIGHT_PURPLE + this.objective.tier}, (evt) -> {
+				player.sendMessage(ChatColor.YELLOW + "Please enter the tier of the target monsters.");
 				Chat.listenForNumber(player, 1, 5, (tier) -> {
 					this.objective.tier = tier;
 					player.sendMessage(ChatColor.GREEN + "Tier updated to " + tier + ".");
@@ -218,7 +184,7 @@ public class ObjectiveKill implements QuestObjective {
 			});
 			
 			this.setSlot(2, Material.IRON_SWORD, ChatColor.RED + "Amount", new String[] {"Set the minimum amount of killed monsters", "Current: " + ChatColor.RED + this.objective.amount}, (evt) -> {
-				player.sendMessage(ChatColor.YELLOW + "What should the kill requirement be?");
+				player.sendMessage(ChatColor.YELLOW + "How many kills should be required?");
 				Chat.listenForNumber(player, 1, 1000, (num) -> {
 					this.objective.amount = num;
 					player.sendMessage(ChatColor.GREEN + "Kill Requirement set to " + this.objective.amount);

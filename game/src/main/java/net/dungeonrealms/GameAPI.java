@@ -802,7 +802,10 @@ public class GameAPI {
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getInstance().getPlayerHPLive(player)))));
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.ALIGNMENT.getKey(), KarmaHandler.getInstance().getPlayerRawAlignment(player).name()))));
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.ALIGNMENT_TIME.getKey(), KarmaHandler.getInstance().getAlignmentTime(player)))));
-
+        
+        //  QUEST DATA  //
+        Quests.getInstance().savePlayerToMongo(player);
+        
         DatabaseAPI.getInstance().bulkUpdate(operations, async, doAfter);
         return true;
     }
@@ -827,9 +830,6 @@ public class GameAPI {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
 
         GuildMechanics.getInstance().doLogout(player);
-        
-        if(Quests.isEnabled())
-        	Quests.getInstance().handleLogoutEvents(player);
 
         // HANDLE REALM LOGOUT SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
@@ -876,6 +876,7 @@ public class GameAPI {
             EnergyHandler.getInstance().handleLogoutEvents(player);
             HealthHandler.getInstance().handleLogoutEvents(player);
             KarmaHandler.getInstance().handleLogoutEvents(player);
+            Quests.getInstance().handleLogoutEvents(player);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 ScoreboardHandler.getInstance().removePlayerScoreboard(player);
             });
@@ -1035,8 +1036,7 @@ public class GameAPI {
 
         gp.setAbleToDrop(false);
         gp.setAbleToSuicide(false);
-        if(!Rank.isTrialGM(player))
-        	gp.setAbleToOpenInventory(false);
+        gp.setAbleToOpenInventory(Rank.isTrialGM(player));
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             gp.setAbleToDrop(true);
@@ -1402,7 +1402,7 @@ public class GameAPI {
     private static void createNewData(Player player) {
         UUID uuid = player.getUniqueId();
         createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
-//    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
+    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
     }
 
     private static void createIfMissing(UUID uuid, EnumData data, Object setTo) {

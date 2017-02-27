@@ -6,18 +6,9 @@ import net.dungeonrealms.game.quests.objectives.ObjectiveKill;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
 public class KillObjectiveListener implements Listener {
-	
-	@EventHandler
-	public void onEntityDeath(EntityDeathEvent evt){
-		for(Quest quest : Quests.getInstance().questStore.getList())
-			quest.getStageList().stream().filter(stage -> stage.getObjective() instanceof ObjectiveKill)
-				.forEach(stage -> ((ObjectiveKill)stage.getObjective()).handleKill(evt));
-	}
-	
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractAtEntityEvent evt){
 		for(Quest quest : Quests.getInstance().questStore.getList())

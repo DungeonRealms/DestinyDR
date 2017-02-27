@@ -111,6 +111,8 @@ public class QuestPlayerData {
 		private boolean doingQuest;
 		private int currentStage;
 		private int currentLine;
+		//Reset every stage. Contains a counter used by quest objectives, for instance the kill counter in the kill objective.
+		private int currentProgress;
 		private long lastCompleted;
 		private Quest quest;
 		
@@ -136,6 +138,7 @@ public class QuestPlayerData {
 			this.currentLine = obj.get("line").getAsInt();
 			this.lastCompleted = obj.get("completed").getAsLong();
 			this.doingQuest = obj.get("doingQuest").getAsBoolean();
+			this.currentProgress = obj.get("objectiveProgress").getAsInt();
 		}
 		
 		public JsonObject toJSON(){
@@ -145,6 +148,7 @@ public class QuestPlayerData {
 			obj.addProperty("line", this.currentLine);
 			obj.addProperty("completed", this.lastCompleted);
 			obj.addProperty("doingQuest", this.doingQuest);
+			obj.addProperty("objectiveProgress", this.currentProgress);
 			return obj;
 		}
 		
@@ -155,6 +159,15 @@ public class QuestPlayerData {
 		public void setCurrentStage(int stage){
 			this.currentStage = stage;
 			this.currentLine = 0;
+			this.currentProgress = 0;
+		}
+		
+		public int getObjectiveCounter(){
+			return this.currentProgress;
+		}
+		
+		public void setObjectiveCounter(int i){
+			this.currentProgress = i;
 		}
 		
 		public QuestStage getCurrentStage(){
@@ -177,6 +190,7 @@ public class QuestPlayerData {
 			this.doingQuest = true;
 			this.currentLine = 0;
 			this.currentStage = 0;
+			this.currentProgress = 0;
 		}
 		
 		public void completeQuest(){
@@ -184,6 +198,7 @@ public class QuestPlayerData {
 			this.doingQuest = false;
 			this.currentLine = 0;
 			this.currentStage = 0;
+			this.currentProgress = 0;
 		}
 		
 		public boolean isDoingQuest(){

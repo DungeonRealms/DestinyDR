@@ -24,6 +24,7 @@ public class MeleeSkeleton extends DRSkeleton {
     public MeleeSkeleton(World world, EnumMonster monsterType , EnumEntityType entityType, int tier) {
         super(world, monsterType, tier, entityType);
         this.entityType = entityType;
+        this.monsterType = monsterType;
         setWeapon(tier);
     }
 

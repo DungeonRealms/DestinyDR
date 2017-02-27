@@ -19,8 +19,6 @@ import java.util.Random;
  * Created by Kieran Quigley (Proxying) on 14-Jun-16.
  */
 public class MeleeZombie extends DRZombie {
-
-	public EnumMonster monsterType;
 	
     public MeleeZombie(World world, EnumMonster type, int tier) {
         super(world, type, tier, EnumEntityType.HOSTILE_MOB);
@@ -59,11 +57,6 @@ public class MeleeZombie extends DRZombie {
         AntiDuplication.getInstance().applyAntiDupe(item);
         return item;
     }
-
-	@Override
-	public EnumMonster getEnum() {
-		return this.monsterType;
-	}
 
     @Override
     protected void setStats() {

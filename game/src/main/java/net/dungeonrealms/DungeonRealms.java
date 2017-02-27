@@ -34,6 +34,7 @@ import net.dungeonrealms.game.command.punish.*;
 import net.dungeonrealms.game.command.support.CommandSupport;
 import net.dungeonrealms.game.command.test.*;
 import net.dungeonrealms.game.command.toggle.*;
+import net.dungeonrealms.game.commands.quests.CommandQuestEditor;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.*;
 import net.dungeonrealms.game.listener.MainListener;
@@ -63,6 +64,7 @@ import net.dungeonrealms.game.player.menu.CraftingMenu;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.tab.TabMechanics;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
@@ -277,6 +279,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(Affair.getInstance());
             mm.registerMechanic(PatchTools.getInstance());
             mm.registerMechanic(TutorialIsland.getInstance());
+            mm.registerMechanic(Quests.getInstance());
         } else {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
@@ -517,6 +520,7 @@ public class DungeonRealms extends JavaPlugin {
         // Commands exclusive to support agents on their special server.
         if (isMasterShard || isSupportShard) {
             cm.registerCommand(new CommandSupport("support", "/<command> [args]", "The main command for accessing all support features and tools."));
+            cm.registerCommand(new CommandQuestEditor("quests", "/<command>", "Edit quests"));
         }
 
         try {

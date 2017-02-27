@@ -57,9 +57,4 @@ public class RangedSkeleton extends DRSkeleton implements IRangedEntity {
     public void setStats() {
 
     }
-
-    @Override
-    public EnumMonster getEnum() {
-        return this.monsterType;
-    }
 }

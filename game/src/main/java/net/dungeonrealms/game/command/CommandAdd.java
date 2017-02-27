@@ -111,25 +111,16 @@ public class CommandAdd extends BaseCommand {
                     break;
                 case "weapon":
                     try {
-                        if (args.length == 2) {
-                            tier = Integer.parseInt(args[1]);
-                            player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
-                                    .setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
-                        } else if (args.length == 3) {
-                            tier = Integer.parseInt(args[1]);
-                            type = Item.ItemType.getByName(args[2]);
-                            player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
-                                    .setType(type).generateItem().getItem());
-                        } else if (args.length == 4) {
-                            tier = Integer.parseInt(args[1]);
-                            type = Item.ItemType.getByName(args[2]);
-                            rarity = Item.ItemRarity.valueOf(args[3]);
-                            player.getInventory().addItem(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
-                                    .setType(type).setRarity(rarity).generateItem().getItem());
-                        } else {
-                            player.getInventory().addItem(
-                                    new ItemGenerator().setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
-                        }
+                    	ItemGenerator ig = new ItemGenerator();
+                    	ig.setType( args.length > 1 ? Item.ItemType.getByName(args[1]) : Item.ItemType.getRandomWeapon());
+                    	
+                    	if(args.length > 2)
+                    		ig.setTier(Item.ItemTier.getByTier(Integer.parseInt(args[2])));
+                    	if(args.length > 3)
+                    		ig.setRarity(Item.ItemRarity.valueOf(args[3].toUpperCase()));
+                    	
+                    	player.getInventory().addItem(ig.generateItem().getItem());
+                    
                     } catch (NullPointerException ex) {
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
@@ -234,10 +225,7 @@ public class CommandAdd extends BaseCommand {
                     DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.add(player);
                     break;
                 case "pick":
-                    tier = 1;
-                    if (args.length == 2)
-                        tier = Integer.parseInt(args[1]);
-                    player.getInventory().addItem(ItemManager.createPickaxe(tier));
+                    player.getInventory().addItem(ItemManager.createPickaxe(tier = args.length >= 2 ? Integer.parseInt(args[1]) : 1));
                     break;
                 case "rod":
                     int rodTier = 1;
@@ -272,21 +260,9 @@ public class CommandAdd extends BaseCommand {
                     break;
                 case "food":
                     player.setFoodLevel(1);
-                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemRarity.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemRarity.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemRarity.UNIQUE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemRarity.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemRarity.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemRarity.UNIQUE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemRarity.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemRarity.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemRarity.UNIQUE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemRarity.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemRarity.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemRarity.UNIQUE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.UNIQUE));
+                    for(int i = 1; i <= 5; i++)
+                    	for(Item.ItemRarity ir : Item.ItemRarity.values())
+                    		player.getInventory().addItem(ItemManager.createHealingFood(i, ir));
                     break;
                 case "test":
                     Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getEquipment().getItemInMainHand())));

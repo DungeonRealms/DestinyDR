@@ -69,12 +69,6 @@ public class MeleeWitherSkeleton extends DRWitherSkeleton {
     }
 
     @Override
-    public EnumMonster getEnum() {
-        return null;
-    }
-
-
-    @Override
     public void setStats() {
 
     }

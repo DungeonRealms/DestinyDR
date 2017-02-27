@@ -57,11 +57,6 @@ public class RangedZombie extends DRZombie implements IRangedEntity {
 
     }
 
-    @Override
-    public EnumMonster getEnum() {
-        return null;
-    }
-
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setType(Item.ItemType.BOW).setRarity(GameAPI.getItemRarity(false)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiDuplication.getInstance().applyAntiDupe(item);

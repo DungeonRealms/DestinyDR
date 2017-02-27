@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener.combat;
 
 import com.sun.org.apache.regexp.internal.RE;
+
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
@@ -9,6 +10,9 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.objectives.ObjectiveKill;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.powermove.PowerMove;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
@@ -16,6 +20,7 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.item.Attribute;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.dungeonrealms.game.world.item.Item;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
@@ -284,7 +289,14 @@ public class PvEListener implements Listener {
         HealthHandler.getInstance().getMonsterTrackers().remove(monster.getUniqueId());
         DRMonster drMonster = ((DRMonster) ((CraftLivingEntity) monster).getHandle());
         drMonster.onMonsterDeath(highestDamage);
-        System.out.println("I CAN VERIFY I AM A " + drMonster.getEnum().name());
+        
+        //Handle Quest Kill Objective
+        //This has to be declared a second time as final to be used in .forEach
+        final Player questReward = highestDamage;
+        for(Quest quest : Quests.getInstance().questStore.getList())
+			quest.getStageList().stream().filter(stage -> stage.getObjective() instanceof ObjectiveKill)
+				.forEach(stage -> ((ObjectiveKill)stage.getObjective()).handleKill(questReward, event.getEntity(), drMonster));
+        
         int exp = GameAPI.getMonsterExp(highestDamage, monster);
         GamePlayer gamePlayer = GameAPI.getGamePlayer(highestDamage);
         if (gamePlayer == null) {

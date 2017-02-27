@@ -19,8 +19,8 @@ public class GuiQuestEditor extends GuiBase {
 	
 	@Override
 	public void createGUI(){
-		this.setSlot(1, Material.NAME_TAG, ChatColor.GOLD + "Change Quest Name", new String[] {"Click here to change the name of the quest."}, (evt) -> {
-			player.sendMessage(ChatColor.YELLOW + "What should thsi quest be renamed to?");
+		this.setSlot(0, Material.NAME_TAG, ChatColor.GOLD + "Change Quest Name", new String[] {"Click here to change the name of the quest."}, (evt) -> {
+			player.sendMessage(ChatColor.YELLOW + "What should this quest be renamed to?");
 			Chat.listenForMessage(player, (event) -> {
 				Quests.getInstance().questStore.delete(quest);
 				quest.setQuestName(event.getMessage());
@@ -28,7 +28,7 @@ public class GuiQuestEditor extends GuiBase {
 			}, p -> new GuiQuestEditor(player, quest));
 		});
 		
-		this.setSlot(2, Material.LEVER, ChatColor.GOLD + "Minimum Level", new String[] {"Click here to set the level requirement", "Current Level Min: " + ChatColor.YELLOW + this.quest.getLevelRequirement()}, (evt) -> {
+		this.setSlot(1, Material.LEVER, ChatColor.GOLD + "Minimum Level", new String[] {"Click here to set the level requirement", "Current Level Min: " + ChatColor.YELLOW + this.quest.getLevelRequirement()}, (evt) -> {
 			player.sendMessage(ChatColor.YELLOW + "What should the level requirement be?");
 			Chat.listenForNumber(player, 0, 100, (newLvl) -> {
 				this.quest.setLevelRequirement(newLvl);
@@ -37,11 +37,20 @@ public class GuiQuestEditor extends GuiBase {
 			}, p -> new GuiQuestEditor(player, quest));
 		});
 		
+		this.setSlot(2, Material.EMERALD, ChatColor.GREEN + "Gem Reward", new String[] {"Click here to set the amount of gems gained by", "completing this quest.", "Current: " + ChatColor.GREEN + this.quest.getGemReward() + ChatColor.WHITE + "g"}, e -> {
+			player.sendMessage(ChatColor.YELLOW + "How many Gems should be given?");
+			Chat.listenForNumber(player, 0, Integer.MAX_VALUE, (num) -> {
+				this.quest.setGemReward(num);
+				player.sendMessage(ChatColor.GREEN + "Gem Reward Updated!");
+				new GuiQuestEditor(player, quest);
+			}, f -> new GuiQuestEditor(player, quest));
+		});
+		
 		this.setSlot(3, Material.EXP_BOTTLE, ChatColor.YELLOW + "XP Reward", new String[] {"Click here to set the amount of XP gained by", "completing this quest.", "Current: " + ChatColor.YELLOW + this.quest.getXPReward() + " XP"}, e -> {
 			player.sendMessage(ChatColor.YELLOW + "How much XP should be rewarded?");
 			Chat.listenForNumber(player, 0, Integer.MAX_VALUE, (num) -> {
 				this.quest.setXPReward(num);
-				player.sendMessage(ChatColor.GREEN + "XP Reward Updated");
+				player.sendMessage(ChatColor.GREEN + "XP Reward Updated!");
 				new GuiQuestEditor(player, quest);
 			}, f -> new GuiQuestEditor(player, quest));
 		});
