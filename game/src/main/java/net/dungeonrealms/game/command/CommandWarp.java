@@ -30,15 +30,14 @@ public class CommandWarp extends BaseCommand {
         	return false;
         }
         
-        TeleportLocation location = TeleportLocation.valueOf(args[0].toUpperCase());
-        
-        if(location == null){
+        try{
+        	TeleportLocation location = TeleportLocation.valueOf(args[0].toUpperCase());
+        	Teleportation.getInstance().teleportPlayer(((Player)sender).getUniqueId(), EnumTeleportType.TELEPORT_BOOK, location);
+        }catch(Exception e){
         	sender.sendMessage(ChatColor.RED + "Location not found.");
         	return false;
         }
         
-        Teleportation.getInstance().teleportPlayer(((Player)sender).getUniqueId(), EnumTeleportType.TELEPORT_BOOK, location);
-
         return true;
     }
 
