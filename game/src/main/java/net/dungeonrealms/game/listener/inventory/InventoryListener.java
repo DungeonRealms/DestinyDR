@@ -1575,6 +1575,12 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerClickWithImportantItem(InventoryClickEvent event) {
         if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if(event.getInventory().getName().equals("Party Loot Selection")){
+            event.setCancelled(true);
+            event.setResult(Event.Result.DENY);
+            return;
+        }
+
         Inventory clicked = event.getInventory();
         if (clicked != event.getWhoClicked().getInventory()) {
             ItemStack onCursor = event.getCursor();

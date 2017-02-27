@@ -18,9 +18,14 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -37,6 +42,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 11/9/2015.
@@ -80,12 +87,15 @@ public class Affair implements GenericMechanic {
                     board = party.getPartyScoreboard();
                 }
 
+                String displayName = ChatColor.RED.toString() + ChatColor.BOLD + "/ploot Mode: " + party.getLootMode().getColor() + ChatColor.BOLD + party.getLootMode().getName();
                 Objective objective = board.getObjective("party");
                 if (objective == null) {
                     objective = board.registerNewObjective("party", "dummy");
                     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-                    objective.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "Party");
                 }
+
+                if (!objective.getDisplayName().equals(displayName))
+                    objective.setDisplayName(displayName);
 
                 List<Player> allPlayers = new ArrayList<>();
                 allPlayers.add(party.getOwner());
@@ -294,10 +304,81 @@ public class Affair implements GenericMechanic {
         Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PARTY_MAKER);
     }
 
-    public boolean handlePartyPickup(PlayerPickupItemEvent event, Party party) {
+    public void handlePartyPickup(PlayerPickupItemEvent event, Party party) {
+        ItemStack item = event.getItem().getItemStack();
+        //If its gone or something dont pls.
+        if (!event.getItem().isValid()) return;
 
+        if (!GameAPI.isArmor(item) && !GameAPI.isWeapon(item)) return;
 
-        return false;
+        int blocks = 40;
+
+        int radius = blocks * blocks;
+        Player player = event.getPlayer();
+        switch (party.getLootMode()) {
+            case KEEP:
+                return;
+            case LEADER:
+                if (party.getOwner() != null && party.getOwner().isOnline() && !party.getOwner().getName().equals(player.getName())) {
+
+                    if (party.getOwner().getWorld() != player.getWorld() || party.getOwner().getLocation().distanceSquared(player.getLocation()) > radius)
+                        return;
+
+                    //Send item to leader..
+
+                    if (party.getOwner().getInventory().firstEmpty() == -1) {
+                        //FULL INVENTORY!!!!! Let them keep it...
+                        return;
+                    }
+
+                    event.setCancelled(true);
+                    event.getItem().remove();
+                    //PLay a noise to indicate what happened.
+                    player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 1, 1.3F);
+                    party.getOwner().getWorld().playSound(party.getOwner().getLocation(), Sound.ENTITY_ITEM_PICKUP, 3, 1.1F);
+                    party.getOwner().getInventory().addItem(item);
+                }
+                break;
+            case RANDOM:
+                if (party.getMembers().size() > 0 && party.getOwner() != null) {
+                    List<Player> allMembers = party.getAllMembers().stream().filter((mem) -> mem.getWorld().equals(player.getWorld()) && mem.getLocation().distanceSquared(player.getLocation()) <= radius).collect(Collectors.toList());
+
+                    //Only us in the list, dont overwrite?
+                    if (allMembers.size() == 0 || (allMembers.size() == 1 && allMembers.get(0).getName().equals(player.getName())))
+                        return;
+
+                    Player random = allMembers.get(ThreadLocalRandom.current().nextInt(allMembers.size()));
+
+                    if (random.isOnline()) {
+                        //We won the roll, dont mess with the item
+                        if (random.getName().equals(player.getName())) return;
+
+                        if (random.getInventory().firstEmpty() == -1) {
+                            //You do not have the inventory space
+                            JSONMessage message = new JSONMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "<P> " + ChatColor.GRAY + "Your inventory too full to ", ChatColor.GRAY);
+
+                            List<String> hoveredChat = new ArrayList<>();
+                            ItemMeta meta = item.getItemMeta();
+                            hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : item.getType().name()));
+                            if (meta.hasLore())
+                                hoveredChat.addAll(meta.getLore());
+
+                            message.addHoverText(hoveredChat, ChatColor.GRAY + "received " + ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW");
+                            message.addText(ChatColor.GRAY + " picked up by " + ChatColor.LIGHT_PURPLE + player.getName(), ChatColor.GRAY);
+                            message.sendToPlayer(random);
+                            return;
+                        }
+
+                        event.setCancelled(true);
+                        event.getItem().remove();
+                        random.getInventory().addItem(item);
+                        player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 1, 1.3F);
+                        random.getWorld().playSound(random.getLocation(), Sound.ENTITY_ITEM_PICKUP, 3, 1.1F);
+                    }
+
+                }
+                break;
+        }
     }
 
     public Optional<Party> getParty(Player player) {

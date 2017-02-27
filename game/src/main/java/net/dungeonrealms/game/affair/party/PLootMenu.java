@@ -30,13 +30,18 @@ public class PLootMenu extends AbstractMenu implements VolatileGUI {
 
 
     public void updateInventory() {
-        int slot = 2;
+        int slot = 3;
 
         for (LootMode mode : LootMode.values()) {
 
             List<String> lore = Lists.newArrayList();
             for (String line : mode.getLore()) {
                 lore.add(line.replace("{LEADER}", party.getOwner().getName()));
+            }
+
+            if (mode == party.getLootMode()) {
+                lore.add("");
+                lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "SELECTED");
             }
 
             ItemStack item = new ItemBuilder().setItem(new ItemStack(mode.getMaterial(), 1))
@@ -51,13 +56,13 @@ public class PLootMenu extends AbstractMenu implements VolatileGUI {
                 public void action(GUIButtonClickEvent event) throws Exception {
                     Player pl = event.getWhoClicked();
                     event.setCancelled(true);
-                    if (party != null && party.getMembers().size() > 0 && party.getOwner() != null && party.getOwner().equals(pl)) {
+                    if (party != null && party.getOwner() != null && party.getOwner().getName().equals(pl.getName())) {
                         party.setLootMode(mode);
-                        updateInventory();
-                        pl.updateInventory();
+//                        updateInventory();
+                        pl.closeInventory();
                         pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                     } else {
-                        pl.sendMessage(ChatColor.RED + "You cannot edit this parties loot mode.");
+                        pl.sendMessage(ChatColor.RED + "Only " + party.getOwner().getName() + " can edit the loot mode.");
                         pl.closeInventory();
                     }
                 }

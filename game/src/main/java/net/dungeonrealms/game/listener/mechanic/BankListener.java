@@ -109,6 +109,7 @@ public class BankListener implements Listener {
     }
 
 
+    //GEM PICKUP CODE.
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
 

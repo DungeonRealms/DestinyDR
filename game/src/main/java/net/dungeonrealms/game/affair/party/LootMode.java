@@ -10,19 +10,19 @@ import java.util.List;
 
 @AllArgsConstructor
 public enum LootMode {
-    KEEP("Keep", ChatColor.GREEN, Material.CHEST, Lists.newArrayList(
-            ChatColor.GRAY + "All items picked up are kept.")),
+    KEEP("Keep", ChatColor.GREEN, Material.STORAGE_MINECART, Lists.newArrayList(
+            ChatColor.GRAY + "All gear items picked up are kept.")),
     LEADER("Leader",
             ChatColor.RED,
             Material.DIAMOND,
             Lists.newArrayList(
-                    ChatColor.GRAY + "All items picked up are",
+                    ChatColor.GRAY + "All gear items picked up are",
                     ChatColor.GRAY + "sent to the Party Leader ({LEADER})")),
     RANDOM("Random",
             ChatColor.AQUA,
             Material.COMPASS,
             Lists.newArrayList(
-                    ChatColor.GRAY + "All items picked up are",
+                    ChatColor.GRAY + "All gear items picked up are",
                     ChatColor.GRAY + "sent to a random party member."));
 
     @Getter

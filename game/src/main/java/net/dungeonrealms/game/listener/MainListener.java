@@ -1278,7 +1278,7 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onItemPickup(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getAmount() <= 0) {
             event.setCancelled(true);

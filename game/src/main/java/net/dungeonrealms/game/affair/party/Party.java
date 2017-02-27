@@ -27,7 +27,7 @@ public class Party {
 
     private Scoreboard partyScoreboard;
 
-    private LootMode lootMode;
+    private LootMode lootMode = LootMode.KEEP;
 
     public Party(Player owner, List<Player> members) {
         this.owner = owner;
@@ -45,12 +45,17 @@ public class Party {
     }
 
     public void setLootMode(LootMode lootMode) {
+        if (this.lootMode == lootMode) return;
         this.lootMode = lootMode;
 
+        List<String> lore = Lists.newArrayList(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "Party Loot Mode", "");
+        for (String l : lootMode.getLore())
+            lore.add(l.replace("{LEADER}", getOwner().getName()));
+
         JSONMessage message = new JSONMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "<P> " +
-                ChatColor.LIGHT_PURPLE + "Party Loot Mode has been changed to ");
-        message.addHoverText(Lists.newArrayList(lootMode.getLore()), lootMode.getColor() + lootMode.getName());
-        message.addText(ChatColor.LIGHT_PURPLE + " by " + getOwner().getName());
+                ChatColor.LIGHT_PURPLE + "Party Loot Mode ");
+        message.addHoverText(lore, ChatColor.LIGHT_PURPLE + "changed to " + lootMode.getColor() + ChatColor.BOLD + lootMode.getName());
+        message.addText(ChatColor.LIGHT_PURPLE + " by " + ChatColor.WHITE + ChatColor.BOLD + getOwner().getName());
         getAllMembers().forEach((pl) -> {
             message.sendToPlayer(pl);
             pl.sendMessage(ChatColor.GRAY + "Hover over the loot mode to view more info.");
