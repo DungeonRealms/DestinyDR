@@ -485,6 +485,7 @@ public class ClickHandler {
                 }
                 if (slot == 0) {
                     player.sendMessage(ChatColor.GREEN + "Please enter the name of the player you would like to add...");
+                    player.closeInventory();
                     Chat.listenForMessage(player, chat -> {
                         Player target = Bukkit.getPlayer(chat.getMessage());
                         if (target != null) {
@@ -582,6 +583,7 @@ public class ClickHandler {
                         }
                         player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
                         String finalPetName = petName;
+                        player.closeInventory();
                         Chat.listenForMessage(player, newPetName -> {
                             if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
                                 player.sendMessage(ChatColor.RED + "Pet naming - " + ChatColor.BOLD + "CANCELLED" + ChatColor.RED + ".");
@@ -813,6 +815,7 @@ public class ClickHandler {
                 if (gp.getLevel() >= 10) {
                     if (gp.getStats().resetAmounts > 0) {
                         player.sendMessage(ChatColor.GREEN + "One free stat reset available. Type 'yes' or 'y' to continue.");
+                        player.closeInventory();
                         Chat.listenForMessage(player, e -> {
                             if (e.getMessage().equalsIgnoreCase("Yes") || e.getMessage().equalsIgnoreCase("y")) {
                                 gp.getStats().freeResets -= 1;
@@ -1182,6 +1185,7 @@ public class ClickHandler {
 
                     final String customSubscriptionRank = subscriptionRank;
                     final String customSubscriptionType = subscriptionType;
+                    player.closeInventory();
                     Chat.listenForMessage(player, customAmount -> {
                         if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
                             try {
@@ -1244,6 +1248,7 @@ public class ClickHandler {
                 player.sendMessage(ChatColor.YELLOW + "Please enter the amount you would to " + levelType + ":");
                 final String customLevelType = levelType;
                 final String finalVariableName = variableName;
+                player.closeInventory();
                 Chat.listenForMessage(player, customAmount -> {
                     if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
                         try {
@@ -1309,6 +1314,7 @@ public class ClickHandler {
                 if (customInput) {
                     player.sendMessage(ChatColor.YELLOW + "Please enter the amount you would to " + ecashType + ":");
                     final String customEcashType = ecashType;
+                    player.closeInventory();
                     Chat.listenForMessage(player, customAmount -> {
                         if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
                             try {
@@ -1353,6 +1359,7 @@ public class ClickHandler {
 
                 player.sendMessage(ChatColor.YELLOW + "Please enter the amount you would to " + bankType + ":");
                 final String customBankType = bankType;
+                player.closeInventory();
                 Chat.listenForMessage(player, customAmount -> {
                     if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
                         try {

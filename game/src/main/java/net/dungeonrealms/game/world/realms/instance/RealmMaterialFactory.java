@@ -351,7 +351,8 @@ class RealmMaterialFactory {
 
 
     private void handleTransaction(Player player, ItemStack item, boolean isEcash, double pricePerItem) {
-        if (isEcash) {
+    	player.closeInventory();
+    	if (isEcash) {
             player.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "QUANTITY" + ChatColor.GREEN + " (1-64) you'd like to purchase.");
             player.sendMessage(ChatColor.GRAY + "This material costs " + ChatColor.GOLD + pricePerItem + "EC/each.");
 

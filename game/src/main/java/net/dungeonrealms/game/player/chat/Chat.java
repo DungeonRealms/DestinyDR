@@ -64,8 +64,11 @@ public class Chat {
      * @param orElse   the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
      */
     public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
-        if(player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting"))
+    	
+    	//VV Can cause soulbound dupe if you drop it by shutting an inventory a certain way. TODO: Why is that?
+    	/*if(player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting")){
         	player.closeInventory();
+    	}*/
         
     	if (chatListeners.remove(player) != null) {
             Consumer<? super Player> old = orElseListeners.remove(player);
@@ -85,7 +88,7 @@ public class Chat {
     		String message = event.getMessage();
     		if(message.equalsIgnoreCase("yes") || message.equalsIgnoreCase("y")){
     			response.accept(true);
-    		}else if(message.equalsIgnoreCase("no") || message.equalsIgnoreCase("n")){
+    		}else if(message.equalsIgnoreCase("no") || message.equalsIgnoreCase("n") || message.equalsIgnoreCase("c") || message.equalsIgnoreCase("cancel")){
     			response.accept(false);
     		}else{
     			player.sendMessage(ChatColor.RED + "Unknown response, defaulting to \"No\".");
@@ -142,7 +145,7 @@ public class Chat {
             "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "@ss", "mystic " +
                     "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "jigga",
             "jiggaboo", "hitler", "jews", "titanrift", "fucked",
-            "MysticRunes.net", "play.wynncraft.com", "mineca.de", "niger"));
+            "MysticRunes.net", "play.wynncraft.com", "mineca.de", "niger", "kys"));
 
     /**
      * Send a private message over the network.

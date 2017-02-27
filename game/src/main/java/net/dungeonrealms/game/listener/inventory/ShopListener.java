@@ -332,6 +332,7 @@ public class ShopListener implements Listener {
                         }
                         BankMechanics.shopPricing.put(clicker.getName(), itemHeld);
                         clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
+                        clicker.closeInventory();
                         Chat.listenForMessage(clicker, chat -> {
                             if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
                                 clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
@@ -442,6 +443,7 @@ public class ShopListener implements Listener {
                     event.setCancelled(true);
                     
                     clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
+                    clicker.closeInventory();
                     Chat.listenForMessage(clicker, chat -> {
                         if (shop.inventory.getItem(event.getRawSlot()) == null || shop.inventory.getItem(event.getRawSlot()).getType() == Material.AIR) {
                             // The item has been removed from the shop, anti-dupe.
