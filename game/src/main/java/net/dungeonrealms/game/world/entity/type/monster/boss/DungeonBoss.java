@@ -40,8 +40,8 @@ public interface DungeonBoss extends Boss {
         }
     }
 
-    public boolean enabled = true;
-    boolean debug = true;
+    public boolean enabled = false;
+    boolean debug = false;
 
     default void dropMount(Entity entity, DungeonManager.DungeonType dungeonType) {
         if (!enabled) return;

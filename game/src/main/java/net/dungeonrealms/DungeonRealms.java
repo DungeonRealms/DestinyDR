@@ -101,7 +101,7 @@ public class DungeonRealms extends JavaPlugin {
 
     private static long SERVER_START_TIME;
 
-	private static long rebootTime;
+    private static long rebootTime;
 
     @Getter
     private static ShardInfo shard;
@@ -210,10 +210,10 @@ public class DungeonRealms extends JavaPlugin {
             isBrazilianShard = ini.get("Settings", "brazilian_shard", Boolean.class);
             isRoleplayShard = ini.get("Settings", "roleplay_shard", Boolean.class);
             isBetaShard = ini.get("Settings", "beta_shard", Boolean.class);
-            if(ini.get("Settings").containsKey("event_shard"))
-            	isEventShard = ini.get("Settings", "event_shard", Boolean.class);
+            if (ini.get("Settings").containsKey("event_shard"))
+                isEventShard = ini.get("Settings", "event_shard", Boolean.class);
             else
-            	ini.add("Settings", "event_shard", false); 
+                ini.add("Settings", "event_shard", false);
         } catch (InvalidFileFormatException e1) {
             Utils.log.info("InvalidFileFormat in shard config!");
         } catch (FileNotFoundException e1) {
@@ -390,7 +390,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSudoChat("sudochat", "/<command> [args]", "Sudo Chat command."));
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
-        cm.registerCommand(new CommandPLoot());
+//        cm.registerCommand(new CommandPLoot());
         cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party.", Collections.singletonList("pkick")));
         cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party.", Collections.singletonList("pquit")));
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat.", Collections.singletonList("p")));
@@ -479,7 +479,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandResetRealm("resetrealm", "/<command>", "Realm reset command"));
             cm.registerCommand(new CommandRealmFix("realmfix", "/<command> [args]", "Realm fix command"));
             cm.registerCommand(new CommandRealmWipe("realmwipe", "/<command> [args]", "Realm wipe command"));
-            
+
             cm.registerCommand(new CommandBan("ban", "/ban <player> <duration | eg. 15m / 5d> [reason ...]", "Ban command", "drban"));
             cm.registerCommand(new CommandUnban("unban", "/<command> [args]", "Unban command", "drunban", "drpardon"));
             cm.registerCommand(new CommandMute("mute", "/mute <player> <duration | eg. 15m / 5d> [reason ...]", "Mute command", "drmute"));
@@ -525,7 +525,7 @@ public class DungeonRealms extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         getServer().dispatchCommand(getServer().getConsoleSender(), "save-off");
 
         Bukkit.getServer().setWhitelist(false);
@@ -563,7 +563,7 @@ public class DungeonRealms extends JavaPlugin {
             }
         }, 0L, 1000);
 
-        if(!isSupportShard) {
+        if (!isSupportShard) {
             // SEND SERVER INFO TO MASTER SERVER REPEATEDLY //
             new Timer().scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -589,12 +589,12 @@ public class DungeonRealms extends JavaPlugin {
         // run backup every ten minutes
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, GameAPI::backupDatabase, 0L, 12000L);
     }
-    
+
     public void setRebootTime(long nextReboot) {
-    	rebootTime = nextReboot;
-    	if(rebooterID != 0)
-    		Bukkit.getScheduler().cancelTask(rebooterID);
-    	rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
+        rebootTime = nextReboot;
+        if (rebooterID != 0)
+            Bukkit.getScheduler().cancelTask(rebooterID);
+        rebooterID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
             if (System.currentTimeMillis() >= (rebootTime - 300000L)) {
                 scheduleRestartTask();
                 Bukkit.getScheduler().cancelTask(rebooterID);
@@ -608,9 +608,9 @@ public class DungeonRealms extends JavaPlugin {
 
     private void scheduleRestartTask() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getOnlinePlayers().forEach(player -> TitleAPI.sendTitle(player, 1, 60, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES")));
-        
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Realms.getInstance().removeAllRealms(true));
-        
+
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

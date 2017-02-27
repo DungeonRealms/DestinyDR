@@ -1,7 +1,6 @@
 Build <build>
 
 &8Changes&0
-- Added Mounts as rare Dungeon drops
 - Added Precision attribute to increase accuracy on T2/T4/T5 staffs.
 - Shops are removed when all items are purchased to free up space.
 - Added Staff Zombies
