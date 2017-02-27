@@ -19,6 +19,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -709,7 +710,7 @@ public class DamageListener implements Listener {
                 p.getInventory().addItem(stack);
             }
 
-//            ItemManager.giveStarter(p);
+            ItemManager.giveStarter(p);
         }, 20L);
     }
 

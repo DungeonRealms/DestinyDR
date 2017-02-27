@@ -1158,7 +1158,7 @@ public class GameAPI {
             //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
             sendNetworkMessage("Broadcast", ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
-            ItemManager.giveStarter(player);
+            ItemManager.giveStarter(player, true);
 
             // Fix missing journal & portal rune
             player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));

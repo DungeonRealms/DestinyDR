@@ -618,20 +618,29 @@ public class ItemManager {
         }
         return null;
     }
-
+    /**
+     * Adds a starter kit to the player.
+     * 
+     * @param Player
+     * @param isNew
+     */
+    public static void giveStarter(Player player){
+    	giveStarter(player, false);
+    }
     /**
      * Adds a starter kit to the player.
      *
      * @param player
      */
-    public static void giveStarter(Player player) {
+    public static void giveStarter(Player player, boolean isNew) {
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
-        player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
+        if(isNew)
+        	player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
                 ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
 
         if (Utils.randInt(0, 1) == 1) {
