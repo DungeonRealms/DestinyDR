@@ -74,35 +74,36 @@ public class ItemListener implements Listener {
 
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onItemPickup(PlayerPickupItemEvent event){
+    public void onItemPickup(PlayerPickupItemEvent event) {
         //Party handler here.
         Optional<Party> party = Affair.getInstance().getParty(event.getPlayer());
-        if(party != null && party.isPresent()){
+        if (party != null && party.isPresent()) {
             Party part = party.get();
             Affair.getInstance().handlePartyPickup(event, part);
         }
     }
-	/**
-	 * Makes Uncommon+ Items glow
-	 */
-	@EventHandler
-	public void onItemSpawn(ItemSpawnEvent event){
-		this.applyRarityGlow(event.getEntity());
-	}
-	
-	private void applyRarityGlow(Item entity){
-		ItemStack item = entity.getItemStack();
-		if(item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore())
-			return;
-		List<String> lore = item.getItemMeta().getLore();
-		for(int i = 1; i < ItemRarity.values().length; i++){
-			ItemRarity rarity = ItemRarity.getById(i);
-			for(String s : lore)
-				if(s.contains(rarity.getName()))
-					GlowAPI.setGlowing(entity, GlowAPI.Color.valueOf(rarity.getColor().name()), GameAPI.getNearbyPlayers(entity.getLocation(), 100, true));
-		}
-	}
-	
+
+    /**
+     * Makes Uncommon+ Items glow
+     */
+    @EventHandler
+    public void onItemSpawn(ItemSpawnEvent event) {
+        this.applyRarityGlow(event.getEntity());
+    }
+
+    private void applyRarityGlow(Item entity) {
+        ItemStack item = entity.getItemStack();
+        if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore())
+            return;
+        List<String> lore = item.getItemMeta().getLore();
+        for (int i = 1; i < ItemRarity.values().length; i++) {
+            ItemRarity rarity = ItemRarity.getById(i);
+            for (String s : lore)
+                if (s.contains(rarity.getName()))
+                    GlowAPI.setGlowing(entity, GlowAPI.Color.valueOf(rarity.getColor().name()), GameAPI.getNearbyPlayers(entity.getLocation(), 100, true));
+        }
+    }
+
     /**
      * Used to handle dropping a soulbound, untradeable, or
      * permanently untradeable item.
@@ -776,22 +777,48 @@ public class ItemListener implements Listener {
 
     private void healPlayerTask(Player player, int amount) {
         player.setMetadata("FoodRegen", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-        int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            if (!player.isSprinting() && HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player) && !CombatLog.isInCombat(player)) {
-                HealthHandler.getInstance().healPlayerByAmount(player, amount);
-            } else {
-                if (player.hasMetadata("FoodRegen")) {
-                    player.removeMetadata("FoodRegen", DungeonRealms.getInstance());
-                    player.sendMessage(ChatColor.RED + "Healing Cancelled!");
+
+
+        int secondsToHeal = 15;
+        new BukkitRunnable() {
+            int time = 0;
+
+            public void run() {
+
+                if (time >= secondsToHeal) {
+                    cancel();
+                    return;
+                }
+
+                time++;
+                if (!player.isSprinting() && HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player) && !CombatLog.isInCombat(player)) {
+                    HealthHandler.getInstance().healPlayerByAmount(player, amount);
+                } else {
+                    if (player.hasMetadata("FoodRegen")) {
+                        player.removeMetadata("FoodRegen", DungeonRealms.getInstance());
+                        player.sendMessage(ChatColor.RED + "Healing Cancelled!");
+                        cancel();
+                    }
                 }
             }
-        }, 0L, 20L);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            Bukkit.getScheduler().cancelTask(taskID);
-            if (player.hasMetadata("FoodRegen")) {
-                player.removeMetadata("FoodRegen", DungeonRealms.getInstance());
-            }
-        }, 310L);
+        }.runTaskTimer(DungeonRealms.getInstance(), 0, 20L);
+//
+//        int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+//            if (!player.isSprinting() && HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player) && !CombatLog.isInCombat(player)) {
+//                HealthHandler.getInstance().healPlayerByAmount(player, amount);
+//            } else {
+//                if (player.hasMetadata("FoodRegen")) {
+//                    player.removeMetadata("FoodRegen", DungeonRealms.getInstance());
+//                    player.sendMessage(ChatColor.RED + "Healing Cancelled!");
+//                }
+//            }
+//        }, 0L, 20L);
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//            Bukkit.getScheduler().cancelTask(taskID);
+//            if (player.hasMetadata("FoodRegen")) {
+//                player.removeMetadata("FoodRegen", DungeonRealms.getInstance());
+//            }
+//        }, 310L);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

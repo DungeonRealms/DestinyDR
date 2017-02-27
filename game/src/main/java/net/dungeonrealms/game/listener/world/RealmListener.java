@@ -140,20 +140,20 @@ public class RealmListener implements Listener {
         if (realm != null && !realm.isSettingSpawn() && event.getBlock().getType().equals(Material.PORTAL))
             event.setCancelled(true);
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void playerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (event.hasBlock()){
-            	if (player.getGameMode() == GameMode.CREATIVE || event.getClickedBlock().getWorld() == Bukkit.getWorlds().get(0))
+            if (event.hasBlock()) {
+                if (player.getGameMode() == GameMode.CREATIVE || event.getClickedBlock().getWorld() == Bukkit.getWorlds().get(0))
                     return;
-                
-            	if(event.getItem() != null && GameAPI.isWeapon(event.getItem()) && event.getClickedBlock().getType() == Material.GRASS) {
-            		event.setCancelled(true);
-            		event.setUseInteractedBlock(Event.Result.DENY);
-            	}
-        	}
+
+                if (event.getItem() != null && GameAPI.isWeapon(event.getItem()) && event.getClickedBlock().getType() == Material.GRASS) {
+                    event.setCancelled(true);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                }
+            }
         }
     }
 
@@ -164,7 +164,7 @@ public class RealmListener implements Listener {
         int blocksPasted = 0;
         for (Map.Entry<UUID, List<Location>> entry : REALMS.getProcessingBlocks().entrySet()) {
 
-            if (blocksPasted >= Realms.SERVER_BLOCK_BUFFER )break;
+            if (blocksPasted >= Realms.SERVER_BLOCK_BUFFER) break;
             //Only Get this once..
             Player player = Bukkit.getPlayer(entry.getKey());
             if (player != null && player.isOnline()) {
@@ -179,16 +179,16 @@ public class RealmListener implements Listener {
                     for (Location loc : loc_list) {
                         if (x >= Realms.BLOCK_PROCESSOR_BUFFER_SIZE || blocksPasted >= Realms.SERVER_BLOCK_BUFFER)
                             break;
-                        
+
                         boolean shouldReplace = loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.BEDROCK;
-                        if (shouldReplace){
-                        	if (loc.getBlock().getY() > 127) {
-                        		loc.getBlock().setType(Material.GRASS);
-                        	} else if (loc.getBlock().getY() <= limy + 1) {
-                        		loc.getBlock().setType(Material.BEDROCK);
-                        	} else {
-                        		loc.getBlock().setType(Material.DIRT);
-                        	}
+                        if (shouldReplace) {
+                            if (loc.getBlock().getY() > 127) {
+                                loc.getBlock().setType(Material.GRASS);
+                            } else if (loc.getBlock().getY() <= limy + 1) {
+                                loc.getBlock().setType(Material.BEDROCK);
+                            } else {
+                                loc.getBlock().setType(Material.DIRT);
+                            }
                         }
 
                         loc_list.remove(loc);
@@ -461,8 +461,8 @@ public class RealmListener implements Listener {
 
         Location to = event.getTo().clone();
         if (event.getTo().getY() <= 0) {
-        	
-        	Location normalWorld = realm.getPortalLocation().clone().add(0, 1, 0);
+
+            Location normalWorld = realm.getPortalLocation().clone().add(0, 1, 0);
             p.teleport(normalWorld);
             //Teleporting twice prevents teleporting far up
             p.teleport(normalWorld);
@@ -672,10 +672,11 @@ public class RealmListener implements Listener {
         Material m = b.getType();
         if (m == Material.AIR || m == Material.PORTAL) return;
 
-        ItemStack loot = (new ItemStack(b.getType(), 1, b.getState().getRawData()));
+        ItemStack loot = (new ItemStack(b.getType(), 1, b.getState().getData().getData()));
 
-        if (b instanceof Skull)
-            loot.setDurability((short) ((Skull) b).getSkullType().ordinal());
+        if (b.getState() instanceof Skull) {
+            loot.setDurability((short) ((Skull) b.getState()).getSkullType().ordinal());
+        }
 
         if (b.getType() == Material.WATER || b.getType() == Material.STATIONARY_WATER || b.getType() == Material.LAVA
                 || b.getType() == Material.STATIONARY_LAVA) {
@@ -937,13 +938,13 @@ public class RealmListener implements Listener {
         }
         ItemStack cursor = event.getCursor();
         if (event.isShiftClick() || event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
-        	cursor = event.getCurrentItem();
-        if((event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.HOTBAR_SWAP) && event.getRawSlot() < event.getInventory().getSize())
-        	cursor = event.getView().getBottomInventory().getItem(event.getHotbarButton());
-        
+            cursor = event.getCurrentItem();
+        if ((event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.HOTBAR_SWAP) && event.getRawSlot() < event.getInventory().getSize())
+            cursor = event.getView().getBottomInventory().getItem(event.getHotbarButton());
+
         if (event.getRawSlot() < event.getInventory().getSize() && (event.getAction() != InventoryAction.MOVE_TO_OTHER_INVENTORY && event.getAction() != InventoryAction.HOTBAR_SWAP && event.getAction() != InventoryAction.HOTBAR_MOVE_AND_READD && event.getAction() != InventoryAction.PLACE_ONE && event.getAction() != InventoryAction.PLACE_SOME && event.getAction() != InventoryAction.PLACE_ALL) && event.getRawSlot() != -999)
             return;
-        
+
         if (cursor != null) {
             if (Item.ItemType.isArmor(cursor) || Item.ItemType.isWeapon(cursor) || cursor.getType() == Material.EMERALD
                     || cursor.getType() == Material.PAPER || BankMechanics.getInstance().isGemPouch(cursor) ||
@@ -973,7 +974,7 @@ public class RealmListener implements Listener {
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }
 
-            if(DuelingMechanics.isDueling(event.getPlayer().getUniqueId())){
+            if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in a duel!");
                 return;
             }
