@@ -80,8 +80,7 @@ public class CraftingMenu implements Listener {
                 return;
             }
             if (TeleportAPI.canUseHearthstone(player)) {
-                net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(ItemManager.getPlayerHearthstone(player));
-                Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
+                Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, null);
             }
         } else {
             player.sendMessage(ChatColor.RED + "You are in combat! Please wait " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");

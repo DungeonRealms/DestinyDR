@@ -26,10 +26,12 @@ import net.dungeonrealms.game.world.entity.util.BuffUtils;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
 import net.minecraft.server.v1_9_R2.NBTTagList;
 import net.minecraft.server.v1_9_R2.NBTTagString;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -379,25 +381,22 @@ public class CommandAdd extends BaseCommand {
                     break;
                 case "teleport":
                 case "teleports":
-                    String[] teleports = new String[]{"Cyrennica", "Harrison_Field", "Dark_Oak", "Trollsbane", "Tripoli", "Gloomy_Hollows", "Crestguard", "Deadpeaks"};
                     if (args.length == 1) {
-                        for (String tp : teleports) {
-                            player.getInventory().addItem(ItemManager.createTeleportBook(tp));
-                        }
+                        for (TeleportLocation tl : TeleportLocation.values())
+                            player.getInventory().addItem(ItemManager.createTeleportBook(tl));
                         player.sendMessage(ChatColor.GREEN + "Spawned all teleport books.");
                     } else if (args.length >= 2) {
                         if (args[1].equalsIgnoreCase("random")) {
                             player.getInventory().addItem(ItemManager.createRandomTeleportBook());
                             player.sendMessage(ChatColor.GREEN + "Spawned random teleport book.");
                         } else {
-                            for (String tp : teleports) {
-                                if (tp.equalsIgnoreCase(args[1])) {
-                                    player.getInventory().addItem(ItemManager.createTeleportBook(tp));
-                                    player.sendMessage(ChatColor.GREEN + "Spawned " + tp + " teleport book.");
-                                    return true;
-                                }
-                            }
-                            player.sendMessage(ChatColor.RED + "The requested location (" + args[1] + ") is not a valid teleport location.");
+                        	TeleportLocation tl = TeleportLocation.valueOf(args[1].toUpperCase());
+                        	if(tl == null){
+                        		player.sendMessage(ChatColor.RED + "Location not found.");
+                        		return true;
+                        	}
+                            player.getInventory().addItem(ItemManager.createTeleportBook(tl));
+                            player.sendMessage(ChatColor.GREEN + "Spawned " + tl.getDisplayName() + " teleport book.");
                         }
                     }
                     break;

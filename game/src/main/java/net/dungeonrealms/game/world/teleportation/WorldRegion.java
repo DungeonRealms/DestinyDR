@@ -38,6 +38,7 @@ public enum WorldRegion {
 	MURE("Mure", "mure", EnumAchievements.MURE),
 	SEBRATA("Sebrata", "sebrata", EnumAchievements.SEBRATA),
 	PORTAL_EASTER_EGG("Oak's Portal", "achievement_easteregg_portal_cakelie", CAKE_IS_A_LIE),
+	TROLLSBANE("Trollsbane Tavern", "jrtavern", null),
 	
 	INFERNAL_ABYSS("The Infernal Abyss", "fireydungeon", EnumAchievements.FIERY_DUNGEON);
 	
@@ -69,5 +70,9 @@ public enum WorldRegion {
 			if(region.getRegionName().equals(regionName.toLowerCase()))
 				return region;
 		return null;
+	}
+
+	public EnumAchievements getAchievement() {
+		return this.achievement;
 	}
 }

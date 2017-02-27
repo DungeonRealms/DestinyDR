@@ -3,6 +3,8 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
+
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -19,14 +21,10 @@ public class CommandSpawn extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player) || !Rank.isTrialGM((Player) sender)) {
+        if (!(sender instanceof Player) || !Rank.isTrialGM((Player) sender))
             return false;
-        }
 
-        Player player = (Player) sender;
-
-        Location respawnLocation = TeleportAPI.getLocationFromString("cyrennica");
-        player.teleport(respawnLocation);
+        ((Player)sender).teleport(TeleportLocation.CYRENNICA.getLocation());
 
         return true;
     }

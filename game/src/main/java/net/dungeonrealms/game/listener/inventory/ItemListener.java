@@ -33,6 +33,7 @@ import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -178,10 +179,9 @@ public class ItemListener implements Listener {
                 }
 
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-                if (TeleportAPI.canTeleportToLocation(player, nmsItem.getTag())) {
-
-
-                    Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
+                TeleportLocation teleportTo = TeleportLocation.getTeleportLocation(nmsItem.getTag());
+                if (teleportTo != null && teleportTo.canTeleportTo(player)) {
+                    Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, teleportTo);
                     if (player.getEquipment().getItemInMainHand().getAmount() == 1) {
                         player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                     } else {

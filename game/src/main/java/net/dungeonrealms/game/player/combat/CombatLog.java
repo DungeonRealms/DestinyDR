@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.combat;
 
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -21,9 +22,11 @@ import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeZombie;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
 import net.minecraft.server.v1_9_R2.DataWatcherRegistry;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
@@ -126,7 +129,7 @@ public class CombatLog implements GenericMechanic {
                     break;
             }
         }
-        player.teleport(Teleportation.Cyrennica);
+        player.teleport(TeleportLocation.CYRENNICA.getLocation());
     }
 
     public void damageAndReturn(Player player, ItemStack itemStack, List<ItemStack> list) {

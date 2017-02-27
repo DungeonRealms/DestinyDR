@@ -37,15 +37,6 @@ public class Teleportation implements GenericMechanic {
     public static HashMap<UUID, Integer> PLAYER_TELEPORT_COOLDOWNS = new HashMap<>();
     public static HashMap<UUID, Location> PLAYERS_TELEPORTING = new HashMap<>();
 
-    public static Location Harrison_Field;
-    public static Location Dark_Oak_Tavern;
-    public static Location Deadpeaks_Mountain_Camp;
-    public static Location Trollsbane_tavern;
-    public static Location Tripoli;
-    public static Location Gloomy_Hollows;
-    public static Location Crestguard_Keep;
-    public static Location Cyrennica;
-    public static Location Tutorial;
     public static Location Underworld;
     public static Location Overworld;
     //teleport_overworld
@@ -71,15 +62,6 @@ public class Teleportation implements GenericMechanic {
 
     @Override
 	public void startInitialization() {
-        Cyrennica = new Location(Bukkit.getWorlds().get(0), -378, 85, 357);
-        Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 59, 687, 92.0F, 1F);
-        Dark_Oak_Tavern = new Location(Bukkit.getWorlds().get(0), 280, 59, 1132, 2.0F, 1F);
-        Deadpeaks_Mountain_Camp = new Location(Bukkit.getWorlds().get(0), -1173, 106, 1030, -88.0F, 1F);
-        Trollsbane_tavern = new Location(Bukkit.getWorlds().get(0), 962, 95, 1069, -153.0F, 1F);
-        Tripoli = new Location(Bukkit.getWorlds().get(0), -1320, 91, 370, 153F, 1F);
-        Gloomy_Hollows = new Location(Bukkit.getWorlds().get(0), -590, 44, 0, 144F, 1F);
-        Crestguard_Keep = new Location(Bukkit.getWorlds().get(0), -1428, 116, -489, 95F, 1F);
-        Tutorial = new Location(Bukkit.getWorlds().get(0), -726.533, 78, 350.849, -18.9F, -4.2F);
         Underworld = new Location(Bukkit.getWorlds().get(0), -362, 172, -3440, -90F, 1F);
         Overworld = new Location(Bukkit.getWorlds().get(0), -1158, 96, -515, 91F, 1F);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -110,7 +92,7 @@ public class Teleportation implements GenericMechanic {
      * @param nbt
      * @since 1.0
      */
-    public void teleportPlayer(UUID uuid, EnumTeleportType teleportType, NBTTagCompound nbt) {
+    public void teleportPlayer(UUID uuid, EnumTeleportType teleportType, TeleportLocation location) {
         Player player = Bukkit.getPlayer(uuid);
         if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
             if (teleportType == EnumTeleportType.HEARTHSTONE) {
@@ -119,41 +101,13 @@ public class Teleportation implements GenericMechanic {
             return;
         }
         TeleportAPI.addPlayerCurrentlyTeleporting(uuid, player.getLocation());
-        String locationName;
-        if (teleportType == EnumTeleportType.HEARTHSTONE) {
-            locationName = TeleportAPI.getLocationFromDatabase(uuid);
-        } else {
-            if (nbt != null) {
-                locationName = nbt.getString("usage").toLowerCase();
-            } else {
-                locationName = "cyrennica";
-            }
-        }
-        Location location = TeleportAPI.getLocationFromString(locationName);
+        
+        if (teleportType == EnumTeleportType.HEARTHSTONE)
+        	location = TeleportLocation.valueOf(TeleportAPI.getLocationFromDatabase(uuid).toUpperCase());
 
         assert location != null;
 
-        String message = ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING" +  " - " + ChatColor.AQUA + "";
-
-        if (location.equals(Cyrennica)) {
-            message += "Cyrennica";
-        } else if (location.equals(Harrison_Field)) {
-            message += "Harrison Field";
-        } else if (location.equals(Dark_Oak_Tavern)) {
-            message += "Dark Oak Tavern";
-        } else if (location.equals(Deadpeaks_Mountain_Camp)) {
-            message += "DeadPeaks Camp";
-        } else if (location.equals(Trollsbane_tavern)) {
-            message += "Trollsbane Tavern";
-        } else if (location.equals(Tripoli)) {
-            message += "Tripoli";
-        } else if (location.equals(Gloomy_Hollows)) {
-            message += "Gloomy Hollows";
-        } else if (location.equals(Crestguard_Keep)) {
-            message += "Crestguard Keep";
-        } else if (location.equals(Tutorial)) {
-            message += "Tutorial";
-        }
+        String message = ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING" +  " - " + ChatColor.AQUA + location.getDisplayName();
 
         player.sendMessage(message);
 
@@ -177,6 +131,7 @@ public class Teleportation implements GenericMechanic {
 
         Location startingLocation = player.getLocation();
         final boolean[] hasCancelled = {false};
+        final TeleportLocation teleportTo = location;
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId()) && !hasCancelled[0]) {
                 if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
@@ -195,10 +150,9 @@ public class Teleportation implements GenericMechanic {
                                     TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
                                 }
                             } else {
-                                player.teleport(location);
-                                if (teleportType == EnumTeleportType.HEARTHSTONE) {
+                                player.teleport(teleportTo.getLocation());
+                                if (teleportType == EnumTeleportType.HEARTHSTONE)
                                     TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
-                                }
                             }
                             TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
                         }

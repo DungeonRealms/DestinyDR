@@ -20,8 +20,10 @@ import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.spawning.dungeons.DungeonMobCreator;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.*;
@@ -357,7 +359,7 @@ public class DungeonManager implements GenericMechanic {
                     if (GameAPI.getGamePlayer(player) != null) if (GameAPI.getGamePlayer(player).isInDungeon()) {
                         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
                         player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
-                        player.teleport(Teleportation.Cyrennica);
+                        player.teleport(TeleportLocation.CYRENNICA.getLocation());
                         for (ItemStack stack : player.getInventory().getContents())
                             if (stack != null && stack.getType() != Material.AIR) if (isDungeonItem(stack))
                                 player.getInventory().remove(stack);
@@ -600,7 +602,7 @@ public class DungeonManager implements GenericMechanic {
                         }
                         //No dungeons for next 30mins
                         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 1800);
-                        player.teleport(Teleportation.Cyrennica);
+                        player.teleport(TeleportLocation.CYRENNICA.getLocation());
                         triedTeleportingOut = true;
                         for (ItemStack stack : player.getInventory().getContents()) {
                             if (stack != null && stack.getType() != Material.AIR) {

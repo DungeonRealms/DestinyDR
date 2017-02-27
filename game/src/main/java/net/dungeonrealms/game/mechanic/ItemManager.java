@@ -28,6 +28,7 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.*;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
@@ -230,19 +231,7 @@ public class ItemManager {
      * @since 1.0
      */
     public static ItemStack createRandomTeleportBook() {
-        ItemStack rawStack = new ItemStack(Material.BOOK);
-        ItemMeta meta = rawStack.getItemMeta();
-        String teleportLocation = TeleportAPI.getRandomTeleportString();
-        String displayName = TeleportAPI.getDisplayNameOfLocation(teleportLocation);
-        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + teleportLocation.replace("_", " "));
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
-        rawStack.setItemMeta(meta);
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
-        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        tag.set("type", new NBTTagString("teleport"));
-        tag.set("usage", new NBTTagString(teleportLocation));
-        nmsStack.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsStack);
+    	return createTeleportBook(TeleportLocation.values()[Utils.randInt(1, TeleportLocation.values().length - 1)]);
     }
 
     /**
@@ -251,17 +240,16 @@ public class ItemManager {
      * @return ItemStack
      * @since 1.0
      */
-    public static ItemStack createTeleportBook(String location) {
-        ItemStack rawStack = new ItemStack(Material.BOOK);
+    public static ItemStack createTeleportBook(TeleportLocation teleportLocation) {
+    	ItemStack rawStack = new ItemStack(Material.BOOK);
         ItemMeta meta = rawStack.getItemMeta();
-        String displayName = TeleportAPI.getDisplayNameOfLocation(location);
-        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + location.replace("_", " "));
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
+        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + teleportLocation.getDisplayName());
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + teleportLocation.getDisplayName()));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("teleport"));
-        tag.set("usage", new NBTTagString(location));
+        tag.set("usage", new NBTTagString(teleportLocation.name()));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }

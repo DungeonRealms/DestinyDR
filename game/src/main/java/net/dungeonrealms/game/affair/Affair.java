@@ -15,7 +15,9 @@ import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -248,7 +250,7 @@ public class Affair implements GenericMechanic {
         if (player.isOnline() && GameAPI.getGamePlayer(player) != null) {
             if (GameAPI.getGamePlayer(player).isInDungeon()) {
                 DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 300);
-                player.teleport(Teleportation.Cyrennica);
+                player.teleport(TeleportLocation.CYRENNICA.getLocation());
             }
         }
 

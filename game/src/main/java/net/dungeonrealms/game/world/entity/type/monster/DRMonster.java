@@ -14,7 +14,9 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.World;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -208,72 +210,17 @@ public interface DRMonster {
                 break;
         }
         if (scrollDropChance >= scrollDrop) {
-            ItemStack teleport = null;
-            switch (tier) {
-                case 1:
-                    if (random.nextInt(2) == 0) {
-                        teleport = ItemManager.createTeleportBook("Cyrennica");
-                    } else {
-                        teleport = ItemManager.createTeleportBook("Harrison_Field");
-                    }
-                    break;
-                case 2:
-                    int type = random.nextInt(5);
-                    switch (type) {
-                        case 0:
-                            teleport = ItemManager.createTeleportBook("Cyrennica");
-                            break;
-                        case 1:
-                            teleport = ItemManager.createTeleportBook("Harrison_Field");
-                            break;
-                        case 2:
-                            teleport = ItemManager.createTeleportBook("Dark_Oak");
-                            break;
-                        case 3:
-                            teleport = ItemManager.createTeleportBook("Trollsbane");
-                            break;
-                        case 4:
-                            teleport = ItemManager.createTeleportBook("Tripoli");
-                            break;
-                    }
-                    break;
-                case 3:
-                    type = random.nextInt(5);
-                    switch (type) {
-                        case 0:
-                            teleport = ItemManager.createTeleportBook("Cyrennica");
-                            break;
-                        case 1:
-                            teleport = ItemManager.createTeleportBook("Dark_Oak");
-                            break;
-                        case 2:
-                            teleport = ItemManager.createTeleportBook("Trollsbane");
-                            break;
-                        case 3:
-                            teleport = ItemManager.createTeleportBook("Gloomy_Hollows");
-                            break;
-                        case 4:
-                            teleport = ItemManager.createTeleportBook("Crestguard");
-                            break;
-                    }
-                    break;
-                case 4:
-                    if (random.nextInt(2) == 0) {
-                        teleport = ItemManager.createTeleportBook("Deadpeaks");
-                    } else {
-                        teleport = ItemManager.createTeleportBook("Gloomy_Hollows");
-                    }
-                    break;
-                case 5:
-                    if (random.nextInt(2) == 0) {
-                        teleport = ItemManager.createTeleportBook("Deadpeaks");
-                    } else {
-                        teleport = ItemManager.createTeleportBook("Gloomy_Hollows");
-                    }
-                    break;
-                default:
-                    break;
-            }
+            TeleportLocation[][] locations = new TeleportLocation[][] {
+            		{TeleportLocation.CYRENNICA},
+            		{TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD},
+            		{TeleportLocation.CYRENNICA, TeleportLocation.HARRISON_FIELD, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.TRIPOLI},
+            		{TeleportLocation.CYRENNICA, TeleportLocation.DARK_OAK, TeleportLocation.TROLLSBANE, TeleportLocation.GLOOMY_HOLLOWS, TeleportLocation.CRESTGUARD},
+            		{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS},
+            		{TeleportLocation.DEADPEAKS, TeleportLocation.GLOOMY_HOLLOWS}
+            };
+            
+            ItemStack teleport = ItemManager.createTeleportBook(locations[tier][random.nextInt(locations[tier].length)]);
+            
             if (teleport != null) {
                 ItemManager.whitelistItemDrop(killer, ent.getWorld().dropItem(ent.getLocation().add(0, 1, 0), teleport));
             }

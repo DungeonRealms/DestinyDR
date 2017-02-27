@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.command;
 
 import com.mongodb.client.model.Filters;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
@@ -16,6 +17,8 @@ import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
+
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -130,7 +133,7 @@ public class CommandEss extends BaseCommand {
                             UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
                             String locationName = args[2];
                             String locationFriendly = locationName.toUpperCase().replace("_", " ");
-                            if (TeleportAPI.getLocationFromString(locationName) == null) {
+                            if (TeleportLocation.valueOf(locationName.toUpperCase()) == null) {
                                 commandSender.sendMessage(ChatColor.RED + "The hearthstone location " + ChatColor.BOLD + ChatColor.UNDERLINE + locationFriendly + ChatColor.RED + " does not exist.");
                                 return false;
                             }

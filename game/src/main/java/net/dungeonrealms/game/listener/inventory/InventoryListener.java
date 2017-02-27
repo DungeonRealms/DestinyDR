@@ -1436,226 +1436,52 @@ public class InventoryListener implements Listener {
         if (event.getInventory().getTitle().contains("Stat Points")) {
             //Stat Points Inv
             event.setCancelled(true);
-            if (event.getCurrentItem() != null) {
-                ItemStack clicked = event.getCurrentItem();
+            int slot = event.getRawSlot();
+            
+            if (event.getCurrentItem() != null && slot >= 2 && slot < 6) {
                 Player p = (Player) event.getWhoClicked();
                 PlayerStats stats = StatsManager.getPlayerStats(p);
-                int slot = event.getRawSlot();
                 final Inventory inv = event.getInventory();
-                int amount = 1;
-                if (event.isShiftClick())
-                    amount = 3;
+                int amount = event.isShiftClick() ? 3 : 1;
+                String[] statNames = new String[] {"", "", "str", "dex", "int", "vit"};
+                String stat = statNames[slot];
+                
                 if (event.getClick() == ClickType.MIDDLE) {
+                	
                     p.sendMessage(ChatColor.GREEN + "Type a custom allocated amount.");
                     stats.reset = false;
-                    p.closeInventory();
+                    
+                    int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
+                    
+                    Chat.listenForNumber(p, 0, currentFreePoints, num -> {
+                    	for (int i = 0; i < num; i++)
+                            stats.allocatePoint(stat, p, inv);
+                        p.openInventory(inv);
+                    }, err -> {
+                    	p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
+                    	stats.resetTemp();
+                    });
+                    
+                }else{
+                    for (int i = 0; i < amount; i++) {
+                        if (event.isRightClick())
+                            stats.removePoint(stat, p, inv);
+                        if (event.isLeftClick())
+                            stats.allocatePoint(stat, p, inv);
+                    }
                 }
-                switch (slot) {
-                    case 2:
-                        //Strength
-
-                        if (event.getClick() == ClickType.MIDDLE) {
-
-                            Chat.listenForMessage(p, e -> {
-                                if (e.getMessage().equalsIgnoreCase("cancel") || e.getMessage().equalsIgnoreCase("c")) {
-                                    p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
-                                    return;
-                                }
-                                int number = 0;
-                                int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
-                                try {
-                                    number = Integer.parseInt(e.getMessage());
-                                } catch (Exception exc) {
-                                    p.sendMessage(ChatColor.RED + "Please enter a valid number");
-                                    stats.resetTemp();
-                                    return;
-                                }
-                                if (number <= 0) {
-                                    p.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
-                                    stats.resetTemp();
-
-                                } else if (number > currentFreePoints) {
-                                    p.sendMessage(ChatColor.GRAY + "You cannot allocate more points than you have stored.");
-                                    stats.resetTemp();
-
-                                } else {
-                                    for (int i = 0; i < number; i++)
-                                        stats.allocatePoint("str", p, inv);
-                                    p.openInventory(inv);
-
-                                }
-                            }, thing -> {
-                                thing.sendMessage(ChatColor.RED + "CUSTOM STAT - CANCELLED");
-                                stats.resetTemp();
-                            });
-
-
-                            break;
-                        }
-                        for (int i = 0; i < amount; i++) {
-                            if (event.isRightClick())
-                                stats.removePoint("str", p, inv);
-                            if (event.isLeftClick())
-                                stats.allocatePoint("str", p, inv);
-                        }
-                        break;
-                    case 3:
-                        if (event.getClick() == ClickType.MIDDLE) {
-
-                            Chat.listenForMessage(p, e -> {
-                                if (e.getMessage().equalsIgnoreCase("cancel") || e.getMessage().equalsIgnoreCase("c")) {
-                                    p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
-                                    return;
-                                }
-                                int number = 0;
-                                int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
-                                try {
-                                    number = Integer.parseInt(e.getMessage());
-                                } catch (Exception exc) {
-                                    p.sendMessage(ChatColor.RED + "Please enter a valid number");
-                                    stats.resetTemp();
-                                    return;
-                                }
-                                if (number <= 0) {
-                                    p.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
-                                    stats.resetTemp();
-
-                                } else if (number > currentFreePoints) {
-                                    p.sendMessage(ChatColor.GRAY + "You cannot allocate more points than you have stored.");
-                                    stats.resetTemp();
-
-                                } else {
-                                    for (int i = 0; i < number; i++)
-                                        stats.allocatePoint("dex", p, inv);
-                                    p.openInventory(inv);
-
-                                }
-                            }, thing -> {
-                                thing.sendMessage(ChatColor.RED + "CUSTOM STAT - CANCELLED");
-                                stats.resetTemp();
-                            });
-
-                            break;
-                        }
-
-                        //Dexterity
-                        for (int i = 0; i < amount; i++) {
-                            if (event.isRightClick())
-                                stats.removePoint("dex", p, inv);
-                            if (event.isLeftClick())
-                                stats.allocatePoint("dex", p, inv);
-                        }
-                        break;
-                    case 4:
-
-                        if (event.getClick() == ClickType.MIDDLE) {
-
-                            Chat.listenForMessage(p, e -> {
-                                if (e.getMessage().equalsIgnoreCase("cancel") || e.getMessage().equalsIgnoreCase("c")) {
-                                    p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
-                                    return;
-                                }
-                                int number = 0;
-                                int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
-                                try {
-                                    number = Integer.parseInt(e.getMessage());
-                                } catch (Exception exc) {
-                                    p.sendMessage(ChatColor.RED + "Please enter a valid number");
-                                    stats.resetTemp();
-                                    return;
-                                }
-                                if (number <= 0) {
-                                    p.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
-                                    stats.resetTemp();
-
-                                } else if (number > currentFreePoints) {
-                                    p.sendMessage(ChatColor.GRAY + "You cannot allocate more points than you have stored.");
-                                    stats.resetTemp();
-
-                                } else {
-                                    for (int i = 0; i < number; i++)
-                                        stats.allocatePoint("int", p, inv);
-                                    p.openInventory(inv);
-
-                                }
-                            }, thing -> {
-                                thing.sendMessage(ChatColor.RED + "CUSTOM STAT - CANCELLED");
-                                stats.resetTemp();
-                            });
-
-                            break;
-                        }
-
-                        //Intellect
-
-                        for (int i = 0; i < amount; i++) {
-                            if (event.isRightClick())
-                                stats.removePoint("int", p, inv);
-                            if (event.isLeftClick())
-                                stats.allocatePoint("int", p, inv);
-                        }
-                        break;
-                    case 5:
-
-
-                        if (event.getClick() == ClickType.MIDDLE) {
-
-                            Chat.listenForMessage(p, e -> {
-                                if (e.getMessage().equalsIgnoreCase("cancel") || e.getMessage().equalsIgnoreCase("c")) {
-                                    p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
-                                    return;
-                                }
-                                int number = 0;
-                                int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
-                                try {
-                                    number = Integer.parseInt(e.getMessage());
-                                } catch (Exception exc) {
-                                    p.sendMessage(ChatColor.RED + "Please enter a valid number");
-                                    stats.resetTemp();
-                                    return;
-                                }
-                                if (number <= 0) {
-                                    p.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
-                                    stats.resetTemp();
-
-                                } else if (number > currentFreePoints) {
-                                    p.sendMessage(ChatColor.GRAY + "You cannot allocate more points than you have stored.");
-                                    stats.resetTemp();
-
-                                } else {
-                                    for (int i = 0; i < number; i++)
-                                        stats.allocatePoint("vit", p, inv);
-                                    p.openInventory(inv);
-
-                                }
-                            }, thing -> {
-                                thing.sendMessage(ChatColor.RED + "CUSTOM STAT - CANCELLED");
-                                stats.resetTemp();
-                            });
-
-                            break;
-                        }
-
-                        //Vitality
-                        for (int i = 0; i < amount; i++) {
-                            if (event.isRightClick())
-                                stats.removePoint("vit", p, inv);
-                            if (event.isLeftClick())
-                                stats.allocatePoint("vit", p, inv);
-                        }
-                        break;
-                    case 6:
-                        stats.dexPoints += stats.tempdexPoints;
-                        stats.vitPoints += stats.tempvitPoints;
-                        stats.strPoints += stats.tempstrPoints;
-                        stats.intPoints += stats.tempintPoints;
-                        stats.dexPoints += stats.tempdexPoints;
-                        stats.freePoints = stats.tempFreePoints;
-                        stats.reset = false;
-                        stats.resetTemp();
-                        stats.updateDatabase(false);
-                        p.closeInventory();
-                        //Confirm
+                
+                if(slot == 6){
+                	stats.dexPoints += stats.tempdexPoints;
+                    stats.vitPoints += stats.tempvitPoints;
+                    stats.strPoints += stats.tempstrPoints;
+                    stats.intPoints += stats.tempintPoints;
+                    stats.dexPoints += stats.tempdexPoints;
+                    stats.freePoints = stats.tempFreePoints;
+                    stats.reset = false;
+                    stats.resetTemp();
+                    stats.updateDatabase(false);
+                    p.closeInventory();
                 }
             }
         }

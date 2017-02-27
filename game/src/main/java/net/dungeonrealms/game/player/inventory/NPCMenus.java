@@ -12,6 +12,8 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -168,31 +170,16 @@ public class NPCMenus {
 
     public static void openHearthstoneRelocateMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 9, "Hearthstone Re-Location");
-
-        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Cyrennica", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "1000g",
-                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "CYRENNICA").setNBTInt("gemCost", 1000).build());
-        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Harrison Fields", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "1500g",
-                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "HARRISON_FIELD").setNBTInt("gemCost", 1500).build());
-        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Dark Oak Tavern", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3500g",
-                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "DARK_OAK").setNBTInt("gemCost", 3500).build());
-        inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Gloomy Hollows", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3500g",
-                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "GLOOMY_HOLLOWS").setNBTInt("gemCost", 3500).build());
-        inv.setItem(4, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Tripoli", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7500g",
-                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "TRIPOLI").setNBTInt("gemCost", 7500).build());
-        inv.setItem(5, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Trollsbane Tavern", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7500g",
-                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "TROLLSBANE").setNBTInt("gemCost", 7500).build());
-        inv.setItem(6, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Crestguard Keep", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g",
-                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "CRESTGUARD").setNBTInt("gemCost", 15000).build());
-        inv.setItem(7, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Deadpeaks Mountain", new String[]{
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "25000g",
-                ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", "DEADPEAKS").setNBTInt("gemCost", 25000).build());
+        
+        int slot = 0;
+        for(TeleportLocation tl : TeleportLocation.values()){
+        	if(tl.getPrice() > 0){
+        		inv.setItem(slot, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + tl.getDisplayName(), new String[] {
+        			ChatColor.GREEN + "Price: " + ChatColor.WHITE + tl.getPrice() + "g",
+        			ChatColor.GRAY + "Display Item"}).setNBTString("hearthstoneLocation", tl.name()).setNBTInt("gemCost", tl.getPrice()).build());
+        		slot++;
+        	}
+        }
 
         player.openInventory(inv);
     }

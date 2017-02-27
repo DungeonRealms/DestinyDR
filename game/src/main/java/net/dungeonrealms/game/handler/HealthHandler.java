@@ -690,7 +690,6 @@ public class HealthHandler implements GenericMechanic {
         if (newHP <= 0) {
             //Dead, call this so we get our items back to drop properlly.
             Chat.listenForMessage(player, null, null);
-            player.closeInventory();
             if (handlePlayerDeath(player, leAttacker)) return;
         }
 

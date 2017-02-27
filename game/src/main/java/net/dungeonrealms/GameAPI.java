@@ -71,6 +71,7 @@ import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
@@ -1163,8 +1164,7 @@ public class GameAPI {
             player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
             player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
 
-            player.teleport(Teleportation.Tutorial);
-            //player.teleport(new Location(Bukkit.getWorlds().get(0), -600 + .5, 60 + 1.5, 473 + .5, -1F, 2.5F));
+            player.teleport(TeleportLocation.STARTER.getLocation());
         }
 
         // Essentials

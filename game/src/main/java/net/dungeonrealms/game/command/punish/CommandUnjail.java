@@ -4,7 +4,9 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -58,7 +60,7 @@ public class CommandUnjail extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "You have unjailed " + args[0] + ".");
         player.sendMessage(ChatColor.RED + "You have been unjailed.");
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
-        player.teleport(Teleportation.Cyrennica);
+        player.teleport(TeleportLocation.CYRENNICA.getLocation());
 
         gamePlayer.setJailed(false);
         return false;
