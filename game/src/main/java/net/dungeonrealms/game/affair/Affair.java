@@ -355,7 +355,7 @@ public class Affair implements GenericMechanic {
 
                         if (random.getInventory().firstEmpty() == -1) {
                             //You do not have the inventory space
-                            JSONMessage message = new JSONMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "<P> " + ChatColor.GRAY + "Your inventory too full to ", ChatColor.GRAY);
+                            JSONMessage message = new JSONMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "<P> " + ChatColor.GRAY + "Your inventory is too full to ", ChatColor.GRAY);
 
                             List<String> hoveredChat = new ArrayList<>();
                             ItemMeta meta = item.getItemMeta();

@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.affair.party.PLootMenu;
 import net.dungeonrealms.game.affair.party.Party;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,6 +42,8 @@ public class CommandPLoot extends BaseCommand {
                 }
 //                player.sendMessage(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "Party Loot Mode: " + ChatColor.WHITE + "");
             }
+        } else {
+            sender.sendMessage(ChatColor.RED + "You must be in a party to use this command!");
         }
         return false;
     }
