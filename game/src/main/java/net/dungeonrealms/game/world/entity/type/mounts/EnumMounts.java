@@ -18,15 +18,15 @@ public enum EnumMounts {
     MULE(4, "MULE", new ItemStack(Material.CHEST, 1), 0, "Mule"),
 
     WOLF(6, "WOLF", new ItemStack(Material.BONE, 1), 0, "Wolf Mount",
-            new MountData("Wolf", ChatColor.WHITE, 0.21F,
+            new MountData("Wolf", ChatColor.WHITE, 0.22F, "140%",
                     Lists.newArrayList(
                             ChatColor.GRAY + ChatColor.ITALIC.toString() + "A ferocious beast, said to have",
                             ChatColor.GRAY + ChatColor.ITALIC.toString() + "slept at the side of Mayel The Cruel."))),
-    SLIME(7, "SLIME", new ItemStack(Material.SLIME_BALL, 1), 0, "Slime Mount", new MountData("Slime", ChatColor.GREEN, 0.22F,
+    SLIME(7, "SLIME", new ItemStack(Material.SLIME_BALL, 1), 0, "Slime Mount", new MountData("Slime", ChatColor.GREEN, 0.35F, "170%",
             Lists.newArrayList(
                     ChatColor.GRAY + ChatColor.ITALIC.toString() + "A quick slime found",
                     ChatColor.GRAY + ChatColor.ITALIC.toString() + "deep in Varrenglade Ruins"))),
-    SPIDER(5, "SPIDER", new ItemStack(Material.STRING, 1), 0, "Spider Mount", new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.23F, null));
+    SPIDER(5, "SPIDER", new ItemStack(Material.STRING, 1), 0, "Spider Mount", new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.3F, "190%", null));
 
     private int id;
     private String name;

@@ -270,6 +270,7 @@ public class PetUtils implements GenericMechanic{
                 petWolf.setTamed(true);
                 petWolf.ageLocked = true;
                 petWolf.setAge(0);
+                petWolf.setHealth(petWolf.getMaxHealth());
                 player.playSound(player.getLocation(), Sound.ENTITY_WOLF_AMBIENT, 1F, 1F);
                 makePet(petWolf, player.getUniqueId(), 1.1D, EnumPets.WOLF);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petWolf);

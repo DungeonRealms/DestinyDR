@@ -261,8 +261,8 @@ public class NPCMenus {
     public static void openItemVendorMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 18, "Item Vendor");
 
-        ItemStack orbOfPeace = ShopMechanics.addPrice(ItemManager.createOrbofPeace(), 100);
-        ItemStack orbOfFlight = ShopMechanics.addPrice(ItemManager.createOrbofFlight(), 500);
+        ItemStack orbOfPeace = ShopMechanics.addPrice(ItemManager.createOrbofPeace(false), 100);
+        ItemStack orbOfFlight = ShopMechanics.addPrice(ItemManager.createOrbofFlight(false), 500);
 
         if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
             String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());

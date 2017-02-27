@@ -445,6 +445,7 @@ public class DamageAPI {
                         if (damage - armorCalculation[0] <= 0) continue;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage, armorCalculation[0], armorCalculation[1]);
                     } else if (!GameAPI.isNonPvPRegion(entity.getLocation())) {
+                        if(GameAPI._hiddenPlayers.contains((Player)entity))continue;
                         if (!DuelingMechanics.isDuelPartner(damager.getUniqueId(), entity.getUniqueId())) {
                             if (!Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, damager.getUniqueId()).toString())) {
                                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
@@ -886,15 +887,17 @@ public class DamageAPI {
                     }
                 }
             } else if (GameAPI.isMobElemental(attacker)) {
+
+                int MAX_RESISTANCE = 75;
                 if (GameAPI.getMobElement(attacker).equals("fire")) {
                     totalArmor *= 0.2;
-                    totalArmor += defenderAttributes.get("fireResistance")[1];
+                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("fireResistance")[1]);
                 } else if (GameAPI.getMobElement(attacker).equals("ice")) {
                     totalArmor *= 0.2;
-                    totalArmor += defenderAttributes.get("iceResistance")[1];
+                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("iceResistance")[1]);
                 } else if (GameAPI.getMobElement(attacker).equals("poison")) {
                     totalArmor *= 0.2;
-                    totalArmor += defenderAttributes.get("poisonResistance")[1];
+                    totalArmor += Math.min(MAX_RESISTANCE, defenderAttributes.get("poisonResistance")[1]);
                 } else if (GameAPI.getMobElement(attacker).equals("pure")) {
                     totalArmor *= 0;
                 }

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.mounts;
 
+import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
@@ -26,6 +27,12 @@ public class SpiderMount extends EntitySpider {
         getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(mount.getMountData().getSpeed());
     }
 
+    //Disable wall climbing hopefully?
+    @Override
+    public boolean n_() {
+        return false;
+    }
+
     //Ambient sound.
     @Override
     protected SoundEffect G() {
@@ -39,6 +46,10 @@ public class SpiderMount extends EntitySpider {
         }
         super.n();
     }
+
+    private int floatTicks = 0;
+
+    private long floatCooldown = -1;
 
     @Override
     public void g(float sideMotion, float forwardMotion) {
@@ -76,18 +87,35 @@ public class SpiderMount extends EntitySpider {
             e1.printStackTrace();
         }
 
-        if (jump != null && this.onGround) {    // Wouldn't want it jumping while on the ground would we?
-            jump.setAccessible(true);
-            try {
-                if (jump.getBoolean(entityliving)) {
-                    double jumpHeight = 0.5D;//Here you can set the jumpHeight
-                    this.motY = jumpHeight;    // Used all the time in NMS for entity jumping
+        if (jump != null) {
+            if ((this.onGround || floatTicks < 18)) {
+                jump.setAccessible(true);
+                try {
+                    if (jump.getBoolean(entityliving)) {
+                        double jumpHeight = 0.5D;//Here you can set the jumpHeight
+
+                        if (!this.onGround || floatTicks < 18) {
+                            floatTicks++;
+                            this.motY = .185D;
+                            this.floatCooldown = System.currentTimeMillis() + 2000;
+                            ParticleAPI.sendParticleToEntityLocation(ParticleAPI.ParticleEffect.SMALL_SMOKE, getBukkitEntity(), 0.0F, 0.0F, 0.0F, 0.01F, 3);
+//                            this.world.addParticle(EnumParticle.SMOKE_NORMAL, this.locX, this.getBoundingBox().b, this.locY, 0.0D, 0.0D, 0.0D, new int[0]);
+                        } else {
+                            this.motY = jumpHeight;    // Used all the time in NMS for entity jumping
+                        }
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
                 }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
             }
         }
 
+        if (this.floatCooldown != -1) {
+            if (this.floatCooldown < System.currentTimeMillis()) {
+                floatCooldown = -1;
+                this.floatTicks = 0;
+            }
+        }
 
         this.P = 1;
         this.aR = this.cl() * 0.1F;
@@ -109,6 +137,7 @@ public class SpiderMount extends EntitySpider {
 
     }
 
+    //    m
     private void clearGoalSelectors() {
         try {
             Field a = PathfinderGoalSelector.class.getDeclaredField("b");

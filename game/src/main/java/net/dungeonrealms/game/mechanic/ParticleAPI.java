@@ -5,11 +5,12 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.EnumParticle;
 import net.minecraft.server.v1_9_R2.Packet;
 import net.minecraft.server.v1_9_R2.PacketPlayOutWorldParticles;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -49,7 +50,7 @@ public class ParticleAPI {
         private org.bukkit.inventory.ItemStack selectionItem;
         private String displayName;
 
-        ParticleEffect(int id, String rawName, EnumParticle particle,  org.bukkit.inventory.ItemStack selectionItem, String displayName) {
+        ParticleEffect(int id, String rawName, EnumParticle particle, org.bukkit.inventory.ItemStack selectionItem, String displayName) {
             this.id = id;
             this.rawName = rawName;
             this.particle = particle;
@@ -103,6 +104,37 @@ public class ParticleAPI {
         }
     }
 
+
+
+    /**
+     * a More efficient method that only scans the chunks around instead of everyone in that world.
+     *
+     * @param particleEffect
+     * @param xOffset
+     * @param yOffset
+     * @param zOffset
+     * @param particleSpeed
+     * @param particleCount
+     * @since 1.0
+     */
+    public static void sendParticleToEntityLocation(final ParticleEffect particleEffect, CraftEntity entity, final float xOffset, final float yOffset, final float zOffset, final float particleSpeed, final int particleCount) {
+        Object packet = null;
+        try {
+            packet = newPacket(particleEffect, entity.getLocation(), xOffset, yOffset, zOffset, particleSpeed, particleCount);
+        } catch (Exception e) {
+            Utils.log.info("Something went wrong creating a packet");
+        }
+
+        for (Player player : GameAPI.getNearbyPlayers(entity, 25)) {
+            try {
+                sendPacketToPlayer(player, packet);
+            } catch (Exception e) {
+                Utils.log.info("Unable to send particle packet to player " + player.getName());
+            }
+        }
+    }
+
+
     /**
      * Sends a particle to a location so that every player within 25 blocks can see it
      *
@@ -125,9 +157,7 @@ public class ParticleAPI {
 
         for (Player player : GameAPI.getNearbyPlayers(location, 25)) {
             try {
-                if (GameAPI.isPlayer(player)) {
-                    sendPacketToPlayer(player.getUniqueId(), packet);
-                }
+                sendPacketToPlayer(player, packet);
             } catch (Exception e) {
                 Utils.log.info("Unable to send particle packet to player " + player.getName());
             }
@@ -177,11 +207,11 @@ public class ParticleAPI {
     /**
      * Sends the packet to a player
      *
-     * @param uuid
+     * @param player
      * @param packet
      * @since 1.0
      */
-    private static void sendPacketToPlayer(UUID uuid, Object packet) {
-        ((CraftPlayer) Bukkit.getPlayer(uuid)).getHandle().playerConnection.sendPacket((Packet) packet);
+    private static void sendPacketToPlayer(Player player, Object packet) {
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket((Packet) packet);
     }
 }

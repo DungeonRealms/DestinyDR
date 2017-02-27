@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.dungeon;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
@@ -38,7 +39,7 @@ public class BossTeleport extends BaseCommand {
         if (!bcs.getBlock().getWorld().getName().contains("DUNGEON")) return true;
         DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(bcs.getBlock().getWorld());
         if (!dungeonObject.canSpawnBoss) {
-            if(!DungeonManager.getInstance().isAllOppedPlayers(bcs.getBlock().getWorld())) {
+            if (!DungeonManager.getInstance().isAllOppedPlayers(bcs.getBlock().getWorld())) {
                 int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
                 int killed = dungeonObject.killed;
                 for (Player p : bcs.getBlock().getWorld().getPlayers()) {
@@ -95,6 +96,11 @@ public class BossTeleport extends BaseCommand {
                 abyss.getWorld().playSound(abyss, Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F);
                 break;
         }
+
+        //Not sure we want to see the other ones.
+        if (dungeonObject.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS)
+            GameAPI.sendDevMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "<DEV> " + ChatColor.GREEN + "Spawned " + dungeonObject.getType() + " boss on {SERVER} in world " + ChatColor.BOLD + bcs.getBlock().getWorld().getName());
+
         return false;
     }
 }

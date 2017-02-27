@@ -22,15 +22,18 @@ public class MountData {
     @Getter
     float speed;
 
+    private String speedPercent;
+
     @Getter
     List<String> lore = Lists.newArrayList(ChatColor.GRAY + ChatColor.ITALIC.toString() + "A Mystical being, ready to ride into battle.");
 
 
-    public MountData(String name, ChatColor nameColor, float speed, List<String> lore) {
+    public MountData(String name, ChatColor nameColor, float speed, String speedPercent, List<String> lore) {
         this.name = name;
         this.nameColor = nameColor;
         this.speed = speed;
 
+        this.speedPercent = speedPercent;
         if (lore != null)
             this.lore = lore;
 
@@ -40,7 +43,7 @@ public class MountData {
 
         List<String> lore = Lists.newArrayList();
 
-        lore.add(ChatColor.RED + "Speed: " + ChatColor.BOLD + MountUtils.getPercentSpeed(getSpeed()));
+        lore.add(ChatColor.RED + "Speed: " + ChatColor.BOLD + speedPercent);
 
         lore.add("");
         lore.addAll(getLore());

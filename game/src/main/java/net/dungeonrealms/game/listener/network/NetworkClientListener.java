@@ -122,6 +122,18 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                         });
                         break;
                     }
+                    case "DEVMessage": {
+                        String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
+                        Bukkit.getOnlinePlayers().forEach(p -> {
+                            if (Rank.isDev(p)) {
+                                GamePlayer gp = GameAPI.getGamePlayer(p);
+                                if (gp != null && !gp.isStreamMode()) {
+                                    p.sendMessage(msg);
+                                }
+                            }
+                        });
+                        break;
+                    }
                     case "StaffMessage": {
                         String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                         Bukkit.getOnlinePlayers().forEach(p -> {

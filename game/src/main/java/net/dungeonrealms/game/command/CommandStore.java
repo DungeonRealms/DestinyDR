@@ -148,10 +148,10 @@ public class CommandStore extends BaseCommand {
                 items.add(ItemManager.createOrbofAlteration());
                 break;
             case "orb_of_peace":
-                items.add(ItemManager.createOrbofPeace());
+                items.add(ItemManager.createOrbofPeace(true));
                 break;
             case "orb_of_flight":
-                items.add(ItemManager.createOrbofFlight());
+                items.add(ItemManager.createOrbofFlight(true));
                 break;
             case "global_messenger":
                 items.add(ItemManager.createGlobalMessenger());

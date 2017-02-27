@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.dungeon;
 
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -67,8 +68,11 @@ public class BossSpawn extends BaseCommand {
                 break;
             default:
                 player.sendMessage(ChatColor.RED + "Syntax: /bspawn mayel|burick|infernal");
-                break;
+                return true;
         }
+
+        GameAPI.sendDevMessage(ChatColor.GREEN.toString() + ChatColor.BOLD  +"<DEV> " + ChatColor.GREEN + "Spawned " + args[0] + " boss on {SERVER} in world " + ChatColor.BOLD + player.getWorld().getName());
+
         return true;
     }
 }

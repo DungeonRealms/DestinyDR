@@ -39,7 +39,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -81,9 +80,9 @@ public class DungeonManager implements GenericMechanic {
         return EnumPriority.ARCHBISHOPS;
     }
 
-    public static void sendStaffAlert(World world, String msg){
-        for(Player player : world.getPlayers()){
-            if(Rank.isTrialGM(player)){
+    public static void sendStaffAlert(World world, String msg) {
+        for (Player player : world.getPlayers()) {
+            if (Rank.isTrialGM(player)) {
                 player.sendMessage(msg);
             }
         }
@@ -169,11 +168,11 @@ public class DungeonManager implements GenericMechanic {
             if (dungeonObject.getTime() > 10) {
                 if (dungeonObject.getType() == DungeonType.THE_INFERNAL_ABYSS) {
                     World world = Bukkit.getWorld(dungeonObject.worldName);
-                    if(world == null)return;
+                    if (world == null) return;
                     world.getPlayers().stream().filter(player -> player.hasPotionEffect(PotionEffectType.WITHER)).forEach(player -> {
                         player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType().getName().equals(PotionEffectType.WITHER.getName())).filter(potionEffect ->
                                 !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> {
-                                    dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1);
+                            dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1);
                         });
                     });
                 }
@@ -375,7 +374,7 @@ public class DungeonManager implements GenericMechanic {
                     }
                 }
 
-                for(Chunk loaded : dungeon.getLoadedChunks()){
+                for (Chunk loaded : dungeon.getLoadedChunks()) {
                     loaded.unload(true);
                 }
 
@@ -426,6 +425,18 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     public DungeonObject createNewInstance(DungeonType type, Map<Player, Boolean> playerList, String instanceName) {
+
+        if(type == DungeonType.THE_INFERNAL_ABYSS) {
+            String leaderName = "Someone";
+            if (playerList.size() > 0) {
+                Optional<Player> pl = playerList.keySet().stream().findFirst();
+                if (pl != null && pl.isPresent()) {
+                    leaderName = pl.get().getName();
+                }
+            }
+            GameAPI.sendDevMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "<DEV> " + ChatColor.GREEN + leaderName + " has started a " + type.name() + " Dungeon on {SERVER}");
+        }
+
         if (!DungeonRealms.getInstance().isAlmostRestarting()) {
             if (!instance_mob_spawns.containsKey(instanceName)) {
                 loadDungeonMobSpawns(instanceName);

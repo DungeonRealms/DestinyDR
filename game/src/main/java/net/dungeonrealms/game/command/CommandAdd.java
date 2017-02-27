@@ -272,10 +272,10 @@ public class CommandAdd extends BaseCommand {
                     player.getInventory().addItem(ItemManager.createOrbofAlteration());
                     break;
                 case "orb_of_peace":
-                    player.getInventory().addItem(ItemManager.createOrbofPeace());
+                    player.getInventory().addItem(ItemManager.createOrbofPeace(true));
                     break;
                 case "orb_of_flight":
-                    player.getInventory().addItem(ItemManager.createOrbofFlight());
+                    player.getInventory().addItem(ItemManager.createOrbofFlight(true));
                     break;
                 case "global_messenger":
                     player.getInventory().addItem(ItemManager.createGlobalMessenger());
