@@ -59,8 +59,8 @@ public interface DungeonBoss extends Boss {
                 mountDrop = EnumMounts.SLIME;
         } else if (getEnumBoss() == EnumDungeonBoss.InfernalAbyss) {
 
-            //.4% seems fair.
-            if (random.nextInt(1000) < 10 || debug)
+            //.05% seems fair.
+            if (random.nextInt(1000) < 5)
                 mountDrop = EnumMounts.SPIDER;
         }
 
