@@ -132,7 +132,6 @@ public class CurrencyTabListener implements Listener {
                         player.sendMessage("");
                         player.sendMessage(ChatColor.RED.toString() + "Please enter the amount of " + scrap.getName() + " Scrap " + ChatColor.RED + "you would like to withdraw.");
                         player.sendMessage("");
-                        player.closeInventory();
                         Location start = player.getLocation().clone();
                         Chat.listenForMessage(player, chat -> {
                             String msg = ChatColor.stripColor(chat.getMessage());

@@ -65,10 +65,9 @@ public class Chat {
      */
     public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
     	
-    	//VV Can cause soulbound dupe if you drop it by shutting an inventory a certain way. TODO: Why is that?
-    	/*if(player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting")){
+    	if(player.getOpenInventory() != null && !player.getOpenInventory().equals(player.getInventory()) && !player.getOpenInventory().getTitle().equals("container.crafting")){
         	player.closeInventory();
-    	}*/
+    	}
         
     	if (chatListeners.remove(player) != null) {
             Consumer<? super Player> old = orElseListeners.remove(player);

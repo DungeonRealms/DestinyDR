@@ -6,10 +6,17 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.QuestPlayerData;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
+import net.dungeonrealms.game.quests.objectives.QuestObjective;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -144,6 +151,11 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YOU'VE CREATED A SHOP!");
                     player.sendMessage(ChatColor.YELLOW + "To stock your shop, simply drag items into your shop's inventory.");
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SHOP_CREATOR);
+                    
+                    QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
+                    if(data != null)
+                    	data.triggerObjectives(ObjectiveCreateShop.class);
+                    
                 }, 1L);
             } else {
                 player.sendMessage("You can't place a shop there");

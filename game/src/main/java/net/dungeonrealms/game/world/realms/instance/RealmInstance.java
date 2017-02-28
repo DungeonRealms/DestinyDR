@@ -8,6 +8,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
@@ -16,12 +17,19 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.CachedClientProvider;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
+import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.listener.world.RealmListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.QuestPlayerData;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
+import net.dungeonrealms.game.quests.objectives.QuestObjective;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmProperty;
@@ -31,6 +39,7 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -376,6 +385,10 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             player.sendMessage(ChatColor.GRAY + "Type /realm <TITLE> to set the description of your realm, it will be displayed to all visitors.");
         else
             player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Description: " + ChatColor.GRAY + title);
+        
+        QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
+        if(data != null)
+        	data.triggerObjectives(ObjectiveOpenRealm.class);
     }
 
     private Color getRandomColor() {

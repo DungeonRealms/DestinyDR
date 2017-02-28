@@ -164,13 +164,17 @@ public class Quest implements ISaveable {
 			player.sendMessage(ChatColor.AQUA + npc.getName() + ": "+ ChatColor.YELLOW + npc.getIdleMessage());
 	}
 	
+	public void advanceQuest(Player player){
+		this.advanceQuest(player, false);
+	}
+	
 	/**
 	 * This should be activated to start or advance the dialogue with an NPC
 	 * 
 	 * @param Player    The player interacting with an NPC
 	 * @author Kneesnap
 	 */
-	public void advanceQuest(Player player){
+	public void advanceQuest(Player player, boolean force){
 		QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
 		
 		QuestProgress qp = data.getQuestProgress(this);
@@ -179,7 +183,7 @@ public class Quest implements ISaveable {
 			return;
 		QuestStage previous = stage.getPrevious();
 		//Check if the quest should actually be advanced (Only check if it's the first dialogue line as some Objectives will take actions when isComplete is run, such as take items, resulting in the next stage not being able to run.)
-		if(stage.getObjective() != null && qp.getCurrentLine() == 0 && (previous != null && previous.getObjective() != null && !previous.getObjective().isCompleted(player, stage, stage.getNPC()))){
+		if(stage.getObjective() != null && qp.getCurrentLine() == 0 && (!force && (previous != null && previous.getObjective() != null && !previous.getObjective().isCompleted(player, stage, stage.getNPC())))){
 			player.sendMessage(ChatColor.AQUA + stage.getNPC().getName() + ": " + ChatColor.YELLOW + "Please " + previous.getObjective().getTaskDescription(player, stage) + ".");
 			return;
 		}

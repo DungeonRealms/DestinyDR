@@ -18,6 +18,9 @@ public class QuestObjectiveList {
 		objectiveList.add(ObjectiveGoTo.class);
 		objectiveList.add(ObjectiveNextNPC.class);
 		objectiveList.add(ObjectiveKill.class);
+		objectiveList.add(ObjectiveCreateShop.class);
+		objectiveList.add(ObjectiveOpenRealm.class);
+		objectiveList.add(ObjectiveUseAnvil.class);
 		objectiveList.add(ObjectiveNone.class);
 	}
 	

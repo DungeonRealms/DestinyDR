@@ -32,9 +32,9 @@ public class GuiStageSelector extends GuiBase {
 			new GuiStageEditor(player, qs);
 		});
 		
-		ItemStack moveLeftItem = this.setSlot(this.getSize() - 6, Material.NETHER_BRICK_ITEM, ChatColor.RED + "Left Move Tool", new String[] {"Drag this onto an NPC to move it left."}, UNCANCEL);
+		ItemStack moveLeftItem = this.setSlot(this.getSize() - 6, Material.NETHER_BRICK_ITEM, ChatColor.RED + "Left Move Tool", new String[] {"Drag this onto a stage to move it left."}, UNCANCEL);
 		
-		ItemStack moveRightItem = this.setSlot(this.getSize() - 4, Material.CLAY_BRICK, ChatColor.GREEN + "Right Move Tool", new String[] {"Drag this onto an NPC to move it right."}, UNCANCEL);
+		ItemStack moveRightItem = this.setSlot(this.getSize() - 4, Material.CLAY_BRICK, ChatColor.GREEN + "Right Move Tool", new String[] {"Drag this onto a stage to move it right."}, UNCANCEL);
 		
 		this.setSlot(this.getSize() - 2, GO_BACK, (evt) -> new GuiQuestEditor(player, quest));
 		

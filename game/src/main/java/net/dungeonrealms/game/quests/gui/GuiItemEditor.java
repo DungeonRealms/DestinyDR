@@ -112,7 +112,7 @@ public class GuiItemEditor extends GuiBase {
 			});
 		}
 		
-		this.setSlot(2, Material.WOOL, 1, this.questItem.isSoulbound() ? (short)DyeColor.GREEN.getWoolData() : (short)DyeColor.RED.getWoolData(), ChatColor.GOLD + "", new String[] {"Click to toggle Soulbound Status", "Current Status: "  + (this.questItem.isSoulbound() ? ChatColor.GREEN + "" : ChatColor.RED + "Not ") + "Soulbound"}, (evt) -> {
+		this.setSlot(2, Material.WOOL, 1, this.questItem.isSoulbound() ? (short)DyeColor.GREEN.getWoolData() : (short)DyeColor.RED.getWoolData(), ChatColor.GOLD + "Toggle Soulbound", new String[] {"Click to toggle Soulbound Status", "Current Status: "  + (this.questItem.isSoulbound() ? ChatColor.GREEN + "" : ChatColor.RED + "Not ") + "Soulbound"}, (evt) -> {
 			this.questItem.setSoulbound(!this.questItem.isSoulbound());
 			new GuiItemEditor(player, stage, allItems, questItem);
 		});

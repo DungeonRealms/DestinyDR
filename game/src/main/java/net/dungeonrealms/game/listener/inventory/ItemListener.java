@@ -123,6 +123,8 @@ public class ItemListener implements Listener {
             p.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.GRAY + " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N" + ChatColor.GRAY + " to confirm.");
             p.playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1.2F);
             //p.getInventory().remove(item);
+            if(p.getItemOnCursor().equals(item))
+            	p.setItemOnCursor(null);
             Chat.listenForMessage(p, (message) -> {
                 if (message.getMessage().equalsIgnoreCase("yes") || message.getMessage().equalsIgnoreCase("y")) {
                     p.sendMessage(ChatColor.RED + "Item " + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() + " " : "") + ChatColor.RED + "has been " + ChatColor.UNDERLINE + "destroyed.");
@@ -326,6 +328,9 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 
+        	if(event.hasBlock() && event.getClickedBlock().getType() == Material.PORTAL)
+        		return;
+        	
             if (event.getPlayer().isSneaking())
                 return;
 
@@ -931,7 +936,6 @@ public class ItemListener implements Listener {
         if (!EntityAPI.hasPetOut(player.getUniqueId())) return;
         if (EntityAPI.getPlayerPet(player.getUniqueId()).equals(((CraftEntity) event.getRightClicked()).getHandle())) {
             player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE + "cancel" + ChatColor.GRAY + " to end the process.");
-            player.closeInventory();
             Chat.listenForMessage(player, newPetName -> {
                 if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
                     player.sendMessage(ChatColor.GRAY + "Pet naming " + ChatColor.RED + ChatColor.UNDERLINE + "CANCELLED.");

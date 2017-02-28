@@ -32,7 +32,7 @@ public class TabbedChatListener implements Listener {
             return;
         }
 
-        if (!Chat.checkGlobalCooldown(player)) {
+        if (!Chat.checkGlobalCooldown(player) || e.getChatMessage().length() > 128) {
             return;
         }
 

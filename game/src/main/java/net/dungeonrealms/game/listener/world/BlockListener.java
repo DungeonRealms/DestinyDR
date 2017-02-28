@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener.world;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -16,6 +17,13 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.QuestPlayerData;
+import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
+import net.dungeonrealms.game.quests.objectives.QuestObjective;
+import net.dungeonrealms.game.quests.objectives.ObjectiveUseAnvil;
 import net.dungeonrealms.game.world.entity.ElementalDamage;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
@@ -31,6 +39,7 @@ import net.dungeonrealms.game.world.spawning.EliteMobSpawner;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.md_5.bungee.api.ChatColor;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -803,6 +812,10 @@ public class BlockListener implements Listener {
                     }
                     player.updateInventory();
                     repairMap.remove(block.getLocation());
+                    
+                    QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
+                    if(data != null)
+                    	data.triggerObjectives(ObjectiveUseAnvil.class);
                 } else {
                     //Cancel
                     itemEntity.remove();

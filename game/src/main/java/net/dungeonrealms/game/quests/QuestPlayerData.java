@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import net.dungeonrealms.game.quests.objectives.QuestObjective;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -42,6 +44,20 @@ public class QuestPlayerData {
 	private void fromJson(JsonArray arr){
 		for(JsonElement je : arr)
 			this.qip.add(new QuestProgress(je.getAsJsonObject()));
+	}
+	
+	public void triggerObjectives(Class<? extends QuestObjective> cls){
+		for(Quest quest : this.getCurrentQuests()){
+        	if(!this.isDoingQuest(quest))
+        		continue;
+			QuestProgress qp = this.getQuestProgress(quest);
+			QuestStage stage = qp.getCurrentStage().getPrevious();
+			if(stage == null)
+				continue;
+			QuestObjective qo = stage.getObjective();
+        	if(qo != null && cls.isInstance(qo) && qp.getCurrentLine() == 0)
+        		quest.advanceQuest(player, true);
+        }
 	}
 	
 	/**
