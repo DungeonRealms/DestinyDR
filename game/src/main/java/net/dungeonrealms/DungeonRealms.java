@@ -519,9 +519,10 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandIgnore());
         }
 
+        //Good command to have to set peoples gems all together?
+        cm.registerCommand(new CommandSupport("support", "/<command> [args]", "The main command for accessing all support features and tools."));
         // Commands exclusive to support agents on their special server.
-        if (isMasterShard || isSupportShard) {
-            cm.registerCommand(new CommandSupport("support", "/<command> [args]", "The main command for accessing all support features and tools."));
+        if (isMasterShard || isSupportShard ) {
             cm.registerCommand(new CommandQuestEditor("quests", "/<command>", "Edit quests"));
         }
 
