@@ -101,10 +101,22 @@ public class RestrictionListener implements Listener {
         return tier == 1 || tier == 2 && level >= 5 || tier == 3 && level >= 10 || tier == 4 && level >= 20 || tier == 5 && level >= 25;
     }
 
+    //Illegal item check.
     private void checkForIllegalItems(Player p) {
         for (ItemStack is : p.getInventory().getContents()) {
-            if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM)
+            if (is == null || is.getType() == Material.AIR)
                 continue;
+
+            if (is.getType() == Material.SKULL_ITEM) {
+                //Dragon skull.
+                if (is.getDurability() == (short) 5 && !is.hasItemMeta()) {
+                    p.getInventory().remove(is);
+                    Bukkit.getLogger().info("Removed illegal Dragon head from " + p.getName());
+                }
+
+                continue;
+            }
+
             if (!p.isOnline()) return;
             if (!is.hasItemMeta()) continue;
             if (!is.getItemMeta().hasLore()) continue;
@@ -172,25 +184,40 @@ public class RestrictionListener implements Listener {
             case "g": // Guild Chat
             case "gl": // Global Chat
             case "l": // Local Chat
-            case "p": case "pchat": // Party Chat
-            case "w": case "message": case "m": case "whisper": case "msg": case "tell": case "t": // Private Message
-            case "r": case "reply": // Reply (to Private Message)
+            case "p":
+            case "pchat": // Party Chat
+            case "w":
+            case "message":
+            case "m":
+            case "whisper":
+            case "msg":
+            case "tell":
+            case "t": // Private Message
+            case "r":
+            case "reply": // Reply (to Private Message)
             case "pinvite": // Party Invite
-            case "premove": case "pkick": // Party Kick
-            case "pleave": case "pquit": // Party Leave
+            case "premove":
+            case "pkick": // Party Kick
+            case "pleave":
+            case "pquit": // Party Leave
             case "ginvite": // Guild Invite
             case "gkick": // Guild Kick
-            case "toggles": case "toggle": // Toggle Menu
-            case "toggledebug": case "debug": // Toggle Debug
+            case "toggles":
+            case "toggle": // Toggle Menu
+            case "toggledebug":
+            case "debug": // Toggle Debug
             case "togglechaos": // Toggle Chaos
             case "toggleglobalchat": // Toggle Global Chat
             case "togglepvp": // Toggle PvP
-            case "toggletells": case "dnd": // Toggle (Non-Bud) PMs
+            case "toggletells":
+            case "dnd": // Toggle (Non-Bud) PMs
             case "toggletrade": // Toggle Trading
             case "toggletradechat": // Toggle Trade Chat
             case "toggleduel": // Toggle Duel
             case "toggletips": // Toggle Tips
-            case "staffchat": case "sc": case "s": // Staff Chat
+            case "staffchat":
+            case "sc":
+            case "s": // Staff Chat
             case "answer": // Answer
                 return;
         }
@@ -227,15 +254,15 @@ public class RestrictionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onEntityHangingBreak(HangingBreakByEntityEvent event){
-        if(!(event.getRemover() instanceof Player)){
+    public void onEntityHangingBreak(HangingBreakByEntityEvent event) {
+        if (!(event.getRemover() instanceof Player)) {
             event.setCancelled(true);
             return;
         }
 
-        if(event.getEntity().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName())){
+        if (event.getEntity().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName())) {
             //Dont let them
-            if(!Rank.isTrialGM(((Player)event.getRemover()))){
+            if (!Rank.isTrialGM(((Player) event.getRemover()))) {
                 event.setCancelled(true);
             }
         }
@@ -316,13 +343,13 @@ public class RestrictionListener implements Listener {
 
 
     @EventHandler
-    public void onCropGrowth(BlockGrowEvent event){
-        if(event.getBlock().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName()))return;
+    public void onCropGrowth(BlockGrowEvent event) {
+        if (event.getBlock().getWorld().getName().equals(Bukkit.getWorlds().get(0).getName())) return;
 
         //Disable in realms and everywhere else.
         event.setCancelled(true);
     }
-    
+
     @EventHandler
     public void playerWeaponSwitch(PlayerItemHeldEvent event) {
         Player p = event.getPlayer();
@@ -347,9 +374,9 @@ public class RestrictionListener implements Listener {
         checkPlayersArmorIsValid((Player) event.getPlayer());
         checkForIllegalItems((Player) event.getPlayer());
 
-        if(event.getInventory() instanceof MerchantInventory){
-        	event.setCancelled(true);
-        	return;
+        if (event.getInventory() instanceof MerchantInventory) {
+            event.setCancelled(true);
+            return;
         }
     }
 
@@ -401,15 +428,15 @@ public class RestrictionListener implements Listener {
                 return;
             }
         }
-        
+
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (event.hasBlock()){
-            	if (event.getClickedBlock().getType() == Material.CAKE_BLOCK) {
-            		event.setCancelled(true);
-            		event.setUseInteractedBlock(Event.Result.DENY);
-            	}
-        	}
+            if (event.hasBlock()) {
+                if (event.getClickedBlock().getType() == Material.CAKE_BLOCK) {
+                    event.setCancelled(true);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                }
+            }
         }
     }
 
@@ -459,6 +486,7 @@ public class RestrictionListener implements Listener {
     }
 
     private List<UUID> loggedOutCombat = Lists.newArrayList();
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void loggingOutDropItem(PlayerDropItemEvent event) {
         if (CrashDetector.crashDetected)
@@ -517,7 +545,7 @@ public class RestrictionListener implements Listener {
         if (event.getPlayer().hasMetadata("sharding")) {
             event.setCancelled(true);
             try {
-                if(event.getPlayer() != null && event.getPlayer().isOnline()) {
+                if (event.getPlayer() != null && event.getPlayer().isOnline()) {
                     event.getPlayer().closeInventory();
                 }
             } catch (Exception ignored) {
@@ -534,7 +562,7 @@ public class RestrictionListener implements Listener {
     }
 
     /*
-    	@EventHandler
+        @EventHandler
     	public void onPlayerMove(PlayerMoveEvent event) {
         	Player pl = event.getPlayer();
         	Location from = event.getFrom();
@@ -580,7 +608,8 @@ public class RestrictionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAttackHorse(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Horse)) return;
-        if(GameAPI.isInSafeRegion(event.getEntity().getLocation()) && (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile))return;
+        if (GameAPI.isInSafeRegion(event.getEntity().getLocation()) && (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile))
+            return;
         Horse horse = (Horse) event.getEntity();
         LivingEntity passenger = (LivingEntity) horse.getPassenger();
         horse.eject();
@@ -690,15 +719,15 @@ public class RestrictionListener implements Listener {
                             event.setCancelled(true);
                             pDamager.updateInventory();
                             pReceiver.updateInventory();
-                        }else{
+                        } else {
                             DuelOffer offer = DuelingMechanics.getOffer(pDamager.getUniqueId());
-                            if(offer != null && !offer.canFight){
+                            if (offer != null && !offer.canFight) {
                                 event.setCancelled(true);
                                 event.setDamage(0D);
                                 return;
                             }
                         }
-                    }else {
+                    } else {
                         event.setCancelled(true);
                         event.setDamage(0);
                     }
