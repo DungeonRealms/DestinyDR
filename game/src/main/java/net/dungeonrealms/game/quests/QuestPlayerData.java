@@ -37,7 +37,8 @@ public class QuestPlayerData {
 	public JsonArray toJSON(){
 		JsonArray newArray = new JsonArray();
 		for(QuestProgress qp : this.qip)
-			newArray.add(qp.toJSON());
+			if(qp.getQuest() != null)
+				newArray.add(qp.toJSON());
 		return newArray;
 	}
 	
