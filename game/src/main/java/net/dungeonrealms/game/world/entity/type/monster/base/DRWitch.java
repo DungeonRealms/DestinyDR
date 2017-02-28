@@ -54,9 +54,10 @@ public class DRWitch extends EntityWitch implements DRMonster {
         this.goalSelector.a(2, new PathfinderGoalArrowAttack(this, 1.0D, 5, 30, 10.0F));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSkullItem(monster)));
-        livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
+        //Why even do this since witches dont render skulls?
+//        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+//        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSkullItem(monster)));
+//        livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
     }

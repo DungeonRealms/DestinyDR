@@ -615,7 +615,7 @@ public class ShopListener implements Listener {
                             } else {
                                 event.getInventory().clear(event.getRawSlot());
                             }
-                            DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, false);
+                            DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, totalPrice, true);
                             if (shop.getOwner() != null) {
                                 if (shop.hasCustomName(itemClicked)) {
                                     shop.getOwner().sendMessage(ChatColor.GREEN + "SOLD " + quantity + "x '" + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + "' for " + ChatColor.BOLD + totalPrice + "g" + ChatColor.GREEN + " to " + ChatColor.WHITE + "" + ChatColor.BOLD + clicker.getName());

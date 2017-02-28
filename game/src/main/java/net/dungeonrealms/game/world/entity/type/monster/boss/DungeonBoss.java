@@ -40,7 +40,7 @@ public interface DungeonBoss extends Boss {
         }
     }
 
-    public boolean enabled = false;
+    boolean enabled = true;
     boolean debug = false;
 
     default void dropMount(Entity entity, DungeonManager.DungeonType dungeonType) {
@@ -50,17 +50,17 @@ public interface DungeonBoss extends Boss {
         if (getEnumBoss() == EnumDungeonBoss.Mayel) {
             //Drop WOLF Pet, 1%
 
-            if (random.nextInt(100) == 0 || debug)
+            if (random.nextInt(1000) < 50 || debug)
                 mountDrop = EnumMounts.WOLF;
 
         } else if (getEnumBoss() == EnumDungeonBoss.Burick) {
             //.5%
-            if (random.nextInt(1000) < 50 || debug)
+            if (random.nextInt(1000) < 30 || debug)
                 mountDrop = EnumMounts.SLIME;
         } else if (getEnumBoss() == EnumDungeonBoss.InfernalAbyss) {
 
             //.4% seems fair.
-            if (random.nextInt(1000) < 40 || debug)
+            if (random.nextInt(1000) < 10 || debug)
                 mountDrop = EnumMounts.SPIDER;
         }
 
