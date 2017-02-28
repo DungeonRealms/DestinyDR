@@ -1205,16 +1205,19 @@ public class DamageListener implements Listener {
         if (event.getTo().getWorld() != event.getFrom().getWorld() || event.getTo().distance(event.getFrom()) > 100) {
 
             List<Player> spectators = GameAPI.getNearbyPlayers(event.getPlayer().getLocation(), 1).stream().filter((pl) -> pl.getGameMode() == GameMode.SPECTATOR && Rank.isTrialGM(pl) && pl.getSpectatorTarget() != null && pl.getSpectatorTarget().equals(event.getPlayer())).collect(Collectors.toList());
+            spectators.forEach((pl) -> {
+                pl.setSpectatorTarget(null);
+                pl.teleport(event.getTo());
+            });
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 spectators.forEach((p) -> {
+                    //Why so buggy..
                     p.teleport(event.getPlayer());
+                    p.setSpectatorTarget(null);
                     p.sendMessage(ChatColor.RED + "Teleporting to " + event.getPlayer().getName());
-                    p.setSpectatorTarget(null);
-                    p.setSpectatorTarget(event.getPlayer());
-                    p.setSpectatorTarget(null);
                     p.setSpectatorTarget(event.getPlayer());
                 });
-            }, 3);
+            }, 20);
         }
     }
 

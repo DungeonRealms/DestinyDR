@@ -170,11 +170,18 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     private void setPlayerOverheadHP(Player player, int hp) {
-        GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
+        boolean spectating = player.getGameMode() == GameMode.SPECTATOR && player.getSpectatorTarget() instanceof Player;
+        Player spect = spectating ? (Player) player.getSpectatorTarget() : null;
+
+        GamePlayer gamePlayer = GameAPI.getGamePlayer(spect != null ? spect : player);
         if (gamePlayer == null || !gamePlayer.isAttributesLoaded()) {
             return;
         }
-        double maxHP = getPlayerMaxHPLive(player);
+
+        if(spect != null)
+            hp = getPlayerHPLive(player);
+
+        double maxHP = spectating ? getPlayerMaxHPLive(spect) : getPlayerMaxHPLive(player);
         double healthPercentage = ((double) hp / maxHP);
         if (healthPercentage * 100.0F > 100.0F) {
             healthPercentage = 1.0;
@@ -204,7 +211,9 @@ public class HealthHandler implements GenericMechanic {
         BossBarAPI.removeAllBars(player);
         BossBarAPI.addBar(player, new TextComponent("    " + playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), color, getStyle(maxHP), healthToDisplay);
         // Do this sync
-        DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ScoreboardHandler.getInstance().updatePlayerHP(player, hp));
+
+        int finalHp = hp;
+        DungeonRealms.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ScoreboardHandler.getInstance().updatePlayerHP(player, finalHp));
     }
 
     private BossBarAPI.Style getStyle(double maxHealth) {
@@ -511,7 +520,7 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
-        if(cause == null || cause != EntityDamageEvent.DamageCause.FALL) {
+        if (cause == null || cause != EntityDamageEvent.DamageCause.FALL) {
             if (logCombat) {
                 if (!(damager instanceof Player)) {
                     // Player is damaged by a creature
@@ -594,7 +603,9 @@ public class HealthHandler implements GenericMechanic {
             }
 
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
-                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]");
+                String msg = ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.RED + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + "]";
+                leAttacker.sendMessage(msg);
+                GameAPI.runAsSpectators(leAttacker, (pl) -> pl.sendMessage(msg));
             }
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
         }
@@ -624,10 +635,12 @@ public class HealthHandler implements GenericMechanic {
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
             if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
+                String msg = ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
                         + (int) totalArmor + "%A -> -" + (int) armourReducedDamage + ChatColor.BOLD + "DMG" +
                         ChatColor.GRAY
-                        + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+                        + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]";
+                player.sendMessage(msg);
+                GameAPI.runAsSpectators(player, (pl) -> pl.sendMessage(msg));
             } else { // foreign damage
 
 
@@ -683,7 +696,10 @@ public class HealthHandler implements GenericMechanic {
                         damageCauseName = "(CUSTOM)";
                         break;
                 }
-                player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + causeColor + ChatColor.BOLD.toString() + damageCauseName + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+
+                String msg = ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP " + causeColor + ChatColor.BOLD.toString() + damageCauseName + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]";
+                GameAPI.runAsSpectators(player, (pl) -> pl.sendMessage(msg));
+                player.sendMessage(msg);
             }
         }
 
