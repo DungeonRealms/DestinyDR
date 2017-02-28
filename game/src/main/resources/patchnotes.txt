@@ -1,6 +1,7 @@
 Build <build>
 
 &8Changes&0
+- Added Quest Framework
 - Added /ploot to manage gear pickups in parties
 - Added Precision attribute to increase accuracy on T2/T4/T5 staffs
 - Shops are removed when all items are purchased to free up space
