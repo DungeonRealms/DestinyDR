@@ -89,7 +89,7 @@ public class CharacterTabColumn extends Column {
 
                             if (pretty_align.contains("CHAOTIC") || pretty_align.contains("NEUTRAL")) {
                                 String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(player));
-                                pretty_align = pretty_align + playerAlignment.getAlignmentColor().toString() + ChatColor.BOLD + time + "s..";
+                                pretty_align = pretty_align + playerAlignment.getAlignmentColor().toString() + " " + ChatColor.BOLD + time + "s..";
                             }
                             return pretty_align;
                         }

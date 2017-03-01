@@ -308,7 +308,10 @@ public class ItemListener implements Listener {
                 if (event.getClickedBlock() != null && event.getClickedBlock().getLocation() != null) {
                     Location newLocation = event.getClickedBlock().getLocation().clone().add(0, 2, 0);
 
-                    if (GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER) || GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)) {
+                    if (GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER)
+                    		|| GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)
+                    		|| newLocation.getBlock().getType() != Material.AIR
+                    		|| newLocation.subtract(0, 1, 0).getBlock().getType() != Material.AIR) {
                         event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
                         return;
                     }

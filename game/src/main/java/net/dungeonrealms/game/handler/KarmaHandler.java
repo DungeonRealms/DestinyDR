@@ -155,11 +155,14 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLogoutEvents(Player player) {
-        int alignmentTime = 0;
-        if (PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
-            alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
+        if (PLAYER_ALIGNMENT_TIMES.containsKey(player))
             PLAYER_ALIGNMENT_TIMES.remove(player);
-        }
+    }
+    
+    public void saveToMongo(Player player){
+    	int alignmentTime = 0;
+        if (PLAYER_ALIGNMENT_TIMES.containsKey(player))
+            alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
         if (alignmentTime > 0) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, alignmentTime, true);
         } else {
@@ -202,9 +205,9 @@ public class KarmaHandler implements GenericMechanic {
         int alignmentTime = 0;
         if(PLAYER_ALIGNMENT_TIMES.containsKey(player))
         	alignmentTime = PLAYER_ALIGNMENT_TIMES.get(player);
-        if (login) {
+        if (login)
             alignmentTime = (int) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT_TIME, player.getUniqueId());
-        }
+            
         if (alignmentTo == null || alignmentTo == EnumPlayerAlignments.NONE) {
             alignmentTo = EnumPlayerAlignments.LAWFUL;
         }
@@ -219,11 +222,8 @@ public class KarmaHandler implements GenericMechanic {
                             ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
                             ""
                     });
+                    alignmentTime = 0;
                 }
-                /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                    Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
-                }*/
-                alignmentTime = 0;
                 break;
             case NEUTRAL:
                 if ((alignmentPlayer != EnumPlayerAlignments.NEUTRAL) && !login) {

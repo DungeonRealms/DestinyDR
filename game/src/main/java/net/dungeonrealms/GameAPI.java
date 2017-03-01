@@ -832,8 +832,8 @@ public class GameAPI {
         // MISC
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.CURRENT_FOOD.getKey(), player.getFoodLevel()))));
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getInstance().getPlayerHPLive(player)))));
-        operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.ALIGNMENT.getKey(), KarmaHandler.getInstance().getPlayerRawAlignment(player).name()))));
-        operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.ALIGNMENT_TIME.getKey(), KarmaHandler.getInstance().getAlignmentTime(player)))));
+        
+        KarmaHandler.getInstance().saveToMongo(player);
         
         //  QUEST DATA  //
         Quests.getInstance().savePlayerToMongo(player);
@@ -866,12 +866,12 @@ public class GameAPI {
         // HANDLE REALM LOGOUT SYNC //
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
 
+        Chat.listenForMessage(player, null, null);
+        
         // save player data
         savePlayerData(uuid, async, doAfterSave -> {
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
-
-            Chat.listenForMessage(player, null, null);
 
             for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
                 tracker.removeDamager(player);
