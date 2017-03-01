@@ -1437,10 +1437,10 @@ public class InventoryListener implements Listener {
             //Stat Points Inv
             event.setCancelled(true);
             int slot = event.getRawSlot();
+            Player p = (Player) event.getWhoClicked();
+            PlayerStats stats = StatsManager.getPlayerStats(p);
             
             if (event.getCurrentItem() != null && slot >= 2 && slot < 6) {
-                Player p = (Player) event.getWhoClicked();
-                PlayerStats stats = StatsManager.getPlayerStats(p);
                 final Inventory inv = event.getInventory();
                 int amount = event.isShiftClick() ? 3 : 1;
                 String[] statNames = new String[] {"", "", "str", "dex", "int", "vit"};
@@ -1470,19 +1470,19 @@ public class InventoryListener implements Listener {
                             stats.allocatePoint(stat, p, inv);
                     }
                 }
-                
-                if(slot == 6){
-                	stats.dexPoints += stats.tempdexPoints;
-                    stats.vitPoints += stats.tempvitPoints;
-                    stats.strPoints += stats.tempstrPoints;
-                    stats.intPoints += stats.tempintPoints;
-                    stats.dexPoints += stats.tempdexPoints;
-                    stats.freePoints = stats.tempFreePoints;
-                    stats.reset = false;
-                    stats.resetTemp();
-                    stats.updateDatabase(false);
-                    p.closeInventory();
-                }
+            }
+            
+            if(slot == 6){
+            	stats.dexPoints += stats.tempdexPoints;
+                stats.vitPoints += stats.tempvitPoints;
+                stats.strPoints += stats.tempstrPoints;
+                stats.intPoints += stats.tempintPoints;
+                stats.dexPoints += stats.tempdexPoints;
+                stats.freePoints = stats.tempFreePoints;
+                stats.reset = false;
+                stats.resetTemp();
+                stats.updateDatabase(false);
+                p.closeInventory();
             }
         }
     }

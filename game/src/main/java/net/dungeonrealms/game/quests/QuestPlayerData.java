@@ -148,8 +148,8 @@ public class QuestPlayerData {
 		
 		private void fromJson(JsonObject obj){
 			String questName = obj.get("quest").getAsString();
-			for(Quest q : Quests.getInstance().questStore.getList())
-				if(q.getQuestName().equals(questName))
+			for (Quest q : Quests.getInstance().questStore.getList())
+				if (q.getQuestName().equals(questName))
 					this.quest = q;
 			this.currentStage = obj.get("stage").getAsInt();
 			this.currentLine = obj.get("line").getAsInt();
@@ -160,12 +160,14 @@ public class QuestPlayerData {
 		
 		public JsonObject toJSON(){
 			JsonObject obj = new JsonObject();
-			obj.addProperty("quest", this.quest.getQuestName());
-			obj.addProperty("stage", this.currentStage);
-			obj.addProperty("line", this.currentLine);
-			obj.addProperty("completed", this.lastCompleted);
-			obj.addProperty("doingQuest", this.doingQuest);
-			obj.addProperty("objectiveProgress", this.currentProgress);
+			if (this.quest != null) {
+				obj.addProperty("quest", this.quest.getQuestName());
+				obj.addProperty("stage", this.currentStage);
+				obj.addProperty("line", this.currentLine);
+				obj.addProperty("completed", this.lastCompleted);
+				obj.addProperty("doingQuest", this.doingQuest);
+				obj.addProperty("objectiveProgress", this.currentProgress);
+			}
 			return obj;
 		}
 		
