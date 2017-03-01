@@ -48,19 +48,19 @@ public interface DungeonBoss extends Boss {
         EnumMounts mountDrop = null;
         Random random = ThreadLocalRandom.current();
         if (getEnumBoss() == EnumDungeonBoss.Mayel) {
-            //Drop WOLF Pet, 1%
+            //Drop WOLF Pet, .5%
 
-            if (random.nextInt(1000) < 50 || debug)
+            if (random.nextInt(1000) < 5 || debug)
                 mountDrop = EnumMounts.WOLF;
 
         } else if (getEnumBoss() == EnumDungeonBoss.Burick) {
-            //.5%
-            if (random.nextInt(1000) < 30 || debug)
+            //.3%
+            if (random.nextInt(1000) < 3 || debug)
                 mountDrop = EnumMounts.SLIME;
         } else if (getEnumBoss() == EnumDungeonBoss.InfernalAbyss) {
 
             //.05% seems fair.
-            if (random.nextInt(1000) < 5)
+            if (random.nextInt(10000) < 50)
                 mountDrop = EnumMounts.SPIDER;
         }
 
