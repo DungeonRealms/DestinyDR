@@ -76,10 +76,9 @@ public class TradeManager {
         	return false;
         }
         
-        if(p.getOpenInventory() != null && p.getOpenInventory().getTitle().equals("container.crafting")){
+        if(p.getOpenInventory() != null && !p.getOpenInventory().getTitle().equals("container.crafting")){
         	return false;
         }
-        
         return true;
     }
 
