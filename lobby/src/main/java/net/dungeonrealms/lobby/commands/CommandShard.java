@@ -27,7 +27,7 @@ public class CommandShard extends BaseCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
         
-        if(Rank.isPMOD(player) && !Lobby.getInstance().isLoggedIn(player)){
+        if(!Lobby.getInstance().isLoggedIn(player)){
         	player.sendMessage(ChatColor.RED + "You must login before using this.");
         	return false;
         }

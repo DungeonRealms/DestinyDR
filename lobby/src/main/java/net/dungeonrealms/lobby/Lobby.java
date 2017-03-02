@@ -215,7 +215,7 @@ public class Lobby extends JavaPlugin implements Listener {
             
             e.setCancelled(true);
             
-            if(Rank.isPMOD(p) && !Lobby.getInstance().isLoggedIn(p)){
+            if(!Lobby.getInstance().isLoggedIn(p)){
             	p.sendMessage(ChatColor.RED + "You must login before using this.");
             	return;
             }
@@ -268,6 +268,6 @@ public class Lobby extends JavaPlugin implements Listener {
     }
     
     public boolean isLoggedIn(Player player){
-    	return this.allowedStaff.contains(player.getUniqueId());
+    	return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
     }
 }
