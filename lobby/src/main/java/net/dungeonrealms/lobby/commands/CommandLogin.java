@@ -26,19 +26,19 @@ public class CommandLogin extends BaseCommand {
 		if(player == null || !Rank.isPMOD(player)) return false;
 		
 		if(args.length == 0){
-			player.sendMessage(ChatColor.RED + "Usage: /" + label + " <pin>");
+			sendMessage(player, "Usage: /" + label + " <pin>", ChatColor.RED);
 			return false;
 		}
 		
 		if(Lobby.getInstance().isLoggedIn(player)){
-			player.sendMessage(ChatColor.RED + "You are already logged in.");
+			sendMessage(player, "You are already logged in.", ChatColor.RED);
 			return false;
 		}
 		
 		Object code = DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId());
 		
 		if(code == null){
-			player.sendMessage(ChatColor.RED + "You do not have a PIN set. Use /setpin <pin>");
+			sendMessage(player, "You do not have a PIN set. Use /setpin <pin>", ChatColor.RED);
 			return false;
 		}
 		
@@ -46,12 +46,16 @@ public class CommandLogin extends BaseCommand {
 		
 		if(loginCode.equals(args[0])){
 			Lobby.getInstance().allowLogin(player, true);
-			player.sendMessage(ChatColor.GREEN + "Logged in.");
+			sendMessage(player, "You have successfully logged in.", ChatColor.GREEN);
 		}else{
-			player.kickPlayer(ChatColor.RED + "Invalid PIN.");
+			sendMessage(player, "The PIN you have entered is incorrect, please try again.", ChatColor.RED);
 			Lobby.getInstance().getClient().sendNetworkMessage("GMMessage", ChatColor.RED + player.getName() + " entered an invalid login code!");
 		}
 		return true;
+	}
+
+	private void sendMessage(Player player, String message, ChatColor color) {
+		player.sendMessage(color + ChatColor.BOLD.toString() + " >> " + color + message);
 	}
 
 }

@@ -26,10 +26,10 @@ public class CommandShard extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
-        
+
         if(!Lobby.getInstance().isLoggedIn(player)){
-        	player.sendMessage(ChatColor.RED + "You must login before using this.");
-        	return false;
+            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED + "You must login before you can do this.");
+            return false;
         }
         
         if (args.length == 0 || !Rank.isTrialGM(player)) {

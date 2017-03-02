@@ -30,13 +30,13 @@ public class CommandSetPin extends BaseCommand {
 		if(currentCode == null){
 			//If there is no current pin.
 			if(args.length == 0){
-				player.sendMessage(ChatColor.RED + "Usage: /" + label + " <pin>");
+				sendMessage(player, "Usage: /" + label + " <pin>", ChatColor.RED);
 				return false;
 			}
 		}else{
 			//If there is a current pin.
 			if(args.length <= 1){
-				player.sendMessage(ChatColor.RED + "Usage: /" + label + " <oldpin> <pin>");
+				sendMessage(player, "Usage: /" + label + " <oldpin> <pin>", ChatColor.RED);
 				return false;
 			}
 		}
@@ -45,22 +45,28 @@ public class CommandSetPin extends BaseCommand {
 		//If they already have a PIN set.
 		if(currentCode != null){
 			if(!Lobby.getInstance().isLoggedIn(player)){
-				player.sendMessage(ChatColor.RED + "You are not logged in yet.");
+				sendMessage(player, "You must login to update your PIN!", ChatColor.RED);
 				return false;
 			}
 			
 			String code = (String)currentCode;
 			if(!code.equals(args[0])){
-				player.sendMessage(ChatColor.RED + "Wrong password.");
+				sendMessage(player, "The old PIN you have entered is incorrect!", ChatColor.RED);
 				return false;
 			}
 			
 			newCode = args[1];
+			sendMessage(player, "Your PIN has been updated!", ChatColor.GREEN);
+		} else {
+			sendMessage(player, "Your PIN has been set!", ChatColor.GREEN);
 		}
-		
-		player.sendMessage(ChatColor.GREEN + "Pin Updated.");
+
 		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGIN_PIN, newCode, true);
 		return true;
+	}
+
+	private void sendMessage(Player player, String message, ChatColor color) {
+		player.sendMessage(color + ChatColor.BOLD.toString() + " >> " + color + message);
 	}
 
 }

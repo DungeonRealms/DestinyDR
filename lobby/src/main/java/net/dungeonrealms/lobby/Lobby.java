@@ -142,10 +142,11 @@ public class Lobby extends JavaPlugin implements Listener {
             ghostFactory.setGhost(player, !Rank.isPMOD(player) && !Rank.isSubscriber(player));
             
             if(Rank.isPMOD(player)){
+                String messagePrefix = ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED;
             	if(DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null){
-            		player.sendMessage(ChatColor.RED + "Please set a login code with /setpin <pin>");
+                    player.sendMessage(messagePrefix + "Please set a login code with /setpin <pin>");
             	}else{
-            		player.sendMessage(ChatColor.RED + "Please login with /pin <pin>");
+            		player.sendMessage(messagePrefix + "Please login with /pin <pin>");
             	}
             }else{
             	this.allowLogin(player, false);
@@ -216,7 +217,7 @@ public class Lobby extends JavaPlugin implements Listener {
             e.setCancelled(true);
             
             if(!Lobby.getInstance().isLoggedIn(p)){
-            	p.sendMessage(ChatColor.RED + "You must login before using this.");
+            	p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED + "You must login before you can use this.");
             	return;
             }
 
