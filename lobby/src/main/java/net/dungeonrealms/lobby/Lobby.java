@@ -212,9 +212,16 @@ public class Lobby extends JavaPlugin implements Listener {
 
             if (!e.hasItem()) return;
             if (e.getItem().getType() != Material.COMPASS) return;
+            
+            e.setCancelled(true);
+            
+            if(Rank.isPMOD(p) && !Lobby.getInstance().isLoggedIn(p)){
+            	p.sendMessage(ChatColor.RED + "You must login before using this.");
+            	return;
+            }
 
             new ShardSelector(p).open(p);
-            e.setCancelled(true);
+            
         }
     }
 
