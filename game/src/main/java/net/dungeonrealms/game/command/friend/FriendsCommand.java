@@ -65,7 +65,7 @@ public class FriendsCommand extends BaseCommand {
 
         int count = 0;
         String nextLine = "\n";
-        String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Friends List  " + new_line);
+        String friendsPage_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "    Friends List    " + new_line);
         ArrayList<String> friendsList = FriendHandler.getInstance().getFriendsList(player.getUniqueId());
         for (String uuidString : friendsList) {
             UUID uuid = UUID.fromString(uuidString);
@@ -75,21 +75,7 @@ public class FriendsCommand extends BaseCommand {
             long currentTime = System.currentTimeMillis();
             long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid)));
             long millis = currentTime - endTime;
-            long second = (millis / 1000) % 60;
-            long minute = (millis / (1000 * 60)) % 60;
-            long hour = (millis / (1000 * 60 * 60)) % 24;
-            String time = "";
-
-            if (hour > 0) {
-                time += hour + "h " + minute + "m " + second + "s ";
-            } else if (minute > 0) {
-                time += minute + "m " + second + "s ";
-
-            } else {
-                time += second + "s ";
-            }
-            if (hour > 99)
-                time = "Many moons.";
+            String time = GameAPI.formatTime(millis);
             time += nextLine;
 
             if (playerName.length() >= 15)

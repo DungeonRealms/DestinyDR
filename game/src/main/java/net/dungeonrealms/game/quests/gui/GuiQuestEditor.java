@@ -37,7 +37,7 @@ public class GuiQuestEditor extends GuiBase {
 			}, p -> new GuiQuestEditor(player, quest));
 		});
 		
-		this.setSlot(2, Material.EMERALD, ChatColor.GREEN + "Gem Reward", new String[] {"Click here to set the amount of gems gained by", "completing this quest.", "Current: " + ChatColor.GREEN + this.quest.getGemReward() + ChatColor.WHITE + "g"}, e -> {
+		this.setSlot(2, Material.EMERALD, ChatColor.GREEN + "Gem Reward", new String[] {"Click here to set the amount of gems gained by", "completing this quest.", "Current: " + ChatColor.GREEN + this.quest.getGemReward() + "g"}, e -> {
 			player.sendMessage(ChatColor.YELLOW + "How many Gems should be given?");
 			Chat.listenForNumber(player, 0, Integer.MAX_VALUE, (num) -> {
 				this.quest.setGemReward(num);

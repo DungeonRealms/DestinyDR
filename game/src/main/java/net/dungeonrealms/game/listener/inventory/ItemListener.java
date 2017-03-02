@@ -27,6 +27,8 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.objectives.ObjectiveOpenJournal;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.type.pet.EnumPets;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -311,7 +313,7 @@ public class ItemListener implements Listener {
                     if (GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 3, Material.LADDER)
                     		|| GameAPI.isMaterialNearby(newLocation.clone().getBlock(), 5, Material.ENDER_CHEST)
                     		|| newLocation.getBlock().getType() != Material.AIR
-                    		|| newLocation.subtract(0, 1, 0).getBlock().getType() != Material.AIR) {
+                    		|| newLocation.clone().subtract(0, 1, 0).getBlock().getType() != Material.AIR) {
                         event.getPlayer().sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
                         return;
                     }
@@ -365,6 +367,7 @@ public class ItemListener implements Listener {
         if (!tag.hasKey("journal")) return;
         if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
         p.getInventory().setItem(p.getInventory().getHeldItemSlot(), ItemManager.createCharacterJournal(p));
+        Quests.getInstance().triggerObjective(p, ObjectiveOpenJournal.class);
     }
 
 

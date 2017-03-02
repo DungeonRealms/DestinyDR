@@ -35,7 +35,7 @@ public class GuiStageEditor extends GuiBase {
 			new GuiDialogueSelector(player, stage);
 		});
 			
-		this.setSlot(2, Material.EYE_OF_ENDER, ChatColor.LIGHT_PURPLE + "Select Objective", new String[] {"Click here to edit the required objective.", "Objective: " + ChatColor.LIGHT_PURPLE + (stage.getObjective() != null ? stage.getObjective().getTaskDescription(null, stage.getNext()) : "None")}, (evt) -> {
+		this.setSlot(2, stage.getObjective() != null ? stage.getObjective().getIcon() : Material.EYE_OF_ENDER, ChatColor.LIGHT_PURPLE + "Select Objective", new String[] {"Click here to edit the required objective.", "Objective: " + ChatColor.LIGHT_PURPLE + (stage.getObjective() != null ? stage.getObjective().getTaskDescription(null, stage.getNext()) : "None")}, (evt) -> {
 			new GuiObjectiveSelector(player, stage);
 		});
 		

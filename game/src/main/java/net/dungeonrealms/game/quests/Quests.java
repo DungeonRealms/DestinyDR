@@ -12,9 +12,12 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.listeners.KillObjectiveListener;
 import net.dungeonrealms.game.quests.listeners.NPCListener;
 import net.dungeonrealms.game.quests.objectives.ObjectiveGoTo;
+import net.dungeonrealms.game.quests.objectives.QuestObjective;
+import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.teleportation.WorldRegion;
 import net.md_5.bungee.api.ChatColor;
 
@@ -44,6 +47,7 @@ public class Quests implements GenericMechanic {
 		
 		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> spawnQuestParticles(), 0, 10);
 		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> checkQuestZones(), 0, 40);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> sendActionBar(), 0, 30);
 	}
 	
 
@@ -59,6 +63,27 @@ public class Quests implements GenericMechanic {
 	private void spawnQuestParticles(){
 		for(QuestNPC npc : this.npcStore.getList())
 			npc.getLocation().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, npc.getLocation(), 6, 0.5, 1, 0.5);
+	}
+	
+	private void sendActionBar(){
+		Bukkit.getOnlinePlayers().forEach(this::updateActionBar);
+	}
+	
+	public void updateActionBar(Player player){
+		QuestPlayerData data = this.playerDataMap.get(player);
+		if(data == null)
+			return;
+		List<Quest> quests = data.getCurrentQuests();
+		if(quests.isEmpty())
+			return;
+		Quest current = quests.get(quests.size() - 1);
+		QuestProgress qp = data.getQuestProgress(current);
+		QuestStage stage = qp.getCurrentStage();
+		if(stage == null || stage.getPrevious() == null)
+			return;
+		String description = stage.getPrevious().getObjective().getTaskDescription(player, stage);
+		if(qp.shouldReceiveActionBar() && description != null)
+			TitleAPI.sendActionBar(player, ChatColor.DARK_BLUE + description);
 	}
 	
 	private void checkQuestZones(){
@@ -139,5 +164,11 @@ public class Quests implements GenericMechanic {
 	
 	public static boolean isEnabled(){
 		return DungeonRealms.getInstance().isMasterShard;
+	}
+	
+	public void triggerObjective(Player player, Class<? extends QuestObjective> cls){
+		QuestPlayerData pqd = this.playerDataMap.get(player);
+		if(pqd != null)
+			pqd.triggerObjectives(cls);
 	}
 }

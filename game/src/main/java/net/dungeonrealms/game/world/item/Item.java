@@ -146,22 +146,24 @@ public class Item {
     }
 
     public enum ItemTier {
-        TIER_1(1, new Integer[]{1, 5}, 2, ChatColor.WHITE),
-        TIER_2(2, new Integer[]{5, 10}, 3, ChatColor.GREEN),
-        TIER_3(3, new Integer[]{10, 20}, 4, ChatColor.AQUA),
-        TIER_4(4, new Integer[]{20, 25}, 5, ChatColor.LIGHT_PURPLE),
-        TIER_5(5, new Integer[]{25, 100}, 6, ChatColor.YELLOW);
+        TIER_1(1, new Integer[]{1, 5}, 2, ChatColor.WHITE, Material.LEATHER),
+        TIER_2(2, new Integer[]{5, 10}, 3, ChatColor.GREEN, Material.IRON_FENCE),
+        TIER_3(3, new Integer[]{10, 20}, 4, ChatColor.AQUA, Material.IRON_INGOT),
+        TIER_4(4, new Integer[]{20, 25}, 5, ChatColor.LIGHT_PURPLE, Material.DIAMOND),
+        TIER_5(5, new Integer[]{25, 100}, 6, ChatColor.YELLOW, Material.GOLD_INGOT);
 
         private int tierId;
         private Integer[] rangeValues;
         private int attributeRange;
         private ChatColor tierColor;
+        private Material material;
 
-        ItemTier(int tierId, Integer[] rangeValues, int attributeRange, ChatColor color) {
+        ItemTier(int tierId, Integer[] rangeValues, int attributeRange, ChatColor color, Material m) {
             this.tierId = tierId;
             this.rangeValues = rangeValues;
             this.attributeRange = attributeRange;
             this.tierColor = color;
+            this.material = m;
         }
 
         public int getTierId() {
@@ -187,22 +189,28 @@ public class Item {
             return null;
         }
 
+		public Material getMaterial() {
+			return material;
+		}
+
     }
 
     public enum ItemRarity {
-        COMMON(0, "Common", ChatColor.GRAY),
-        UNCOMMON(1, "Uncommon", ChatColor.GREEN),
-        RARE(2, "Rare", ChatColor.AQUA),
-        UNIQUE(3, "Unique", ChatColor.YELLOW);
+        COMMON(0, "Common", ChatColor.GRAY, Material.DIRT),
+        UNCOMMON(1, "Uncommon", ChatColor.GREEN, Material.IRON_BLOCK),
+        RARE(2, "Rare", ChatColor.AQUA, Material.DIAMOND_BLOCK),
+        UNIQUE(3, "Unique", ChatColor.YELLOW, Material.GOLD_BLOCK);
 
         private int id;
         private ChatColor color;
         private String name;
+        private Material mat;
 
-        ItemRarity(int id, String name, ChatColor color) {
+        ItemRarity(int id, String name, ChatColor color, Material mat) {
             this.id = id;
             this.name = name;
             this.color = color;
+            this.mat = mat;
         }
 
         public int getId() {
@@ -224,6 +232,10 @@ public class Item {
                 }
             }
             return null;
+        }
+        
+        public Material getMaterial(){
+        	return this.mat;
         }
     }
 

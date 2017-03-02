@@ -12,7 +12,7 @@ public class GuiObjectiveSelector extends GuiBase {
 	private QuestStage stage;
 	
 	public GuiObjectiveSelector(Player player, QuestStage stage){
-		super(player, "Objective Selector", 1);
+		super(player, "Objective Selector", QuestObjectiveList.getObjectives(), 0);
 		this.stage = stage;
 	}
 	
@@ -25,7 +25,7 @@ public class GuiObjectiveSelector extends GuiBase {
 					if(this.stage.getObjective() != null && qo.getClass() == this.stage.getObjective().getClass()){
 						this.stage.getObjective().createEditorGUI(this.player, this.stage);
 					}else{
-						this.player.sendMessage(ChatColor.GREEN + "Objective Reset!");
+						this.player.sendMessage(ChatColor.GREEN + "Objective Created!");
 						this.stage.setNextObjective(qo);
 						qo.createEditorGUI(this.player, this.stage);
 					}
@@ -35,6 +35,6 @@ public class GuiObjectiveSelector extends GuiBase {
 			}
 		}
 		
-		this.setSlot(8, GO_BACK, (evt) -> new GuiStageEditor(player, stage));
+		this.setSlot(this.getSize() - 1, GO_BACK, (evt) -> new GuiStageEditor(player, stage));
 	}
 }

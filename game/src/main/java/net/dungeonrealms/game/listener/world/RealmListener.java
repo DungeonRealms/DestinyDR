@@ -72,6 +72,7 @@ public class RealmListener implements Listener {
     @EventHandler
     public void onWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
+        player.closeInventory();
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
             net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(player.getUniqueId());
             pet.dead = true;

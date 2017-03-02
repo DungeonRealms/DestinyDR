@@ -244,7 +244,9 @@ public class ItemManager {
     	ItemStack rawStack = new ItemStack(Material.BOOK);
         ItemMeta meta = rawStack.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + teleportLocation.getDisplayName());
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + teleportLocation.getDisplayName()));
+        //TODO: Make this check chaotic, not just if it's deadpeaks?
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + teleportLocation.getDisplayName()
+        		+ ( teleportLocation == TeleportLocation.DEADPEAKS ? ChatColor.RED + " WARNING: CHAOTIC ZONE" : "") ));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();

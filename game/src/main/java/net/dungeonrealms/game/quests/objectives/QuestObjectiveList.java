@@ -21,6 +21,9 @@ public class QuestObjectiveList {
 		objectiveList.add(ObjectiveCreateShop.class);
 		objectiveList.add(ObjectiveOpenRealm.class);
 		objectiveList.add(ObjectiveUseAnvil.class);
+		objectiveList.add(ObjectiveUseHearthStone.class);
+		objectiveList.add(ObjectiveOpenJournal.class);
+		objectiveList.add(ObjectiveOpenProfile.class);
 		objectiveList.add(ObjectiveNone.class);
 	}
 	

@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
+import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -152,9 +153,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     player.sendMessage(ChatColor.YELLOW + "To stock your shop, simply drag items into your shop's inventory.");
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SHOP_CREATOR);
                     
-                    QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
-                    if(data != null)
-                    	data.triggerObjectives(ObjectiveCreateShop.class);
+                    Quests.getInstance().triggerObjective(player, ObjectiveCreateShop.class);
                     
                 }, 1L);
             } else {

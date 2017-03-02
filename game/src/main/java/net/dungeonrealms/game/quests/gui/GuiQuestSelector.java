@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class GuiQuestSelector extends GuiBase {
 	
 	public GuiQuestSelector(Player player) {
-		super(player, "Quest Selector", Quests.getInstance().questStore.getList());
+		super(player, "Quest Selector", Quests.getInstance().questStore.getList(), 1);
 	}
 	
 	@SuppressWarnings("deprecation")

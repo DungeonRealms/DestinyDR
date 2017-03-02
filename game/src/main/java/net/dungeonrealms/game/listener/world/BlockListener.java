@@ -22,6 +22,7 @@ import net.dungeonrealms.game.quests.QuestPlayerData;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.objectives.ObjectiveCreateShop;
+import net.dungeonrealms.game.quests.objectives.ObjectiveOpenJournal;
 import net.dungeonrealms.game.quests.objectives.QuestObjective;
 import net.dungeonrealms.game.quests.objectives.ObjectiveUseAnvil;
 import net.dungeonrealms.game.world.entity.ElementalDamage;
@@ -813,9 +814,7 @@ public class BlockListener implements Listener {
                     player.updateInventory();
                     repairMap.remove(block.getLocation());
                     
-                    QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
-                    if(data != null)
-                    	data.triggerObjectives(ObjectiveUseAnvil.class);
+                    Quests.getInstance().triggerObjective(player, ObjectiveUseAnvil.class);
                 } else {
                     //Cancel
                     itemEntity.remove();

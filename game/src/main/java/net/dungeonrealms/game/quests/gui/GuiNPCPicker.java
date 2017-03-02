@@ -16,7 +16,7 @@ public class GuiNPCPicker extends GuiBase {
 	private Consumer<QuestNPC> onPick;
 	
 	public GuiNPCPicker(Player player, Quest quest, Consumer<QuestNPC> onPick) {
-		super(player, "Pick the NPC you'd like to add.", Quests.getInstance().npcStore.getList());
+		super(player, "Pick the NPC you'd like to add.", Quests.getInstance().npcStore.getList(), 1);
 		this.quest = quest;
 		this.onPick = onPick;
 	}

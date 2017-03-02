@@ -132,6 +132,8 @@ public class QuestPlayerData {
 		private int currentProgress;
 		private long lastCompleted;
 		private Quest quest;
+		//This makes it so when you log out you won't receive these messages anymore.
+		private boolean receiveActionBar;
 		
 		public QuestProgress(Quest quest){
 			this.quest = quest;
@@ -176,6 +178,7 @@ public class QuestPlayerData {
 		}
 		
 		public void setCurrentStage(int stage){
+			this.receiveActionBar = true;
 			this.currentStage = stage;
 			this.currentLine = 0;
 			this.currentProgress = 0;
@@ -206,6 +209,7 @@ public class QuestPlayerData {
 		}
 		
 		public void startQuest(){
+			this.receiveActionBar = true;
 			this.doingQuest = true;
 			this.currentLine = 0;
 			this.currentStage = 0;
@@ -214,6 +218,7 @@ public class QuestPlayerData {
 		
 		public void completeQuest(){
 			this.lastCompleted = new Date().getTime();
+			this.receiveActionBar = false;
 			this.doingQuest = false;
 			this.currentLine = 0;
 			this.currentStage = 0;
@@ -235,6 +240,10 @@ public class QuestPlayerData {
 
 		public int getStageIndex() {
 			return this.currentStage;
+		}
+		
+		public boolean shouldReceiveActionBar(){
+			return this.receiveActionBar && this.getCurrentLine() == 0;
 		}
 	}
 }

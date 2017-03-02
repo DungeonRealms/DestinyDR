@@ -6,6 +6,7 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.QuestItem;
 import net.dungeonrealms.game.quests.QuestStage;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.DyeColor;
@@ -20,7 +21,7 @@ public class GuiItemEditor extends GuiBase {
 	private QuestStage stage;
 
 	public GuiItemEditor(Player player, QuestStage stage, List<QuestItem> items, QuestItem qi) {
-		super(player, "Item Editor", 1);
+		super(player, "Item Editor", 2);
 		this.questItem = qi;
 		this.allItems = items;
 		this.stage = stage;
@@ -30,10 +31,28 @@ public class GuiItemEditor extends GuiBase {
 	@Override
 	public void createGUI(){
 		ItemStack item = this.questItem.createItem(player);
-			
+		
 		this.setSlot(0, item, (evt) -> evt.getWhoClicked().setItemOnCursor(evt.getCurrentItem().clone()));
-			
-		if(!this.questItem.isDRItem()){
+		
+		this.setSlot(2, Material.WOOL, 1, this.questItem.isSoulbound() ? (short)DyeColor.GREEN.getWoolData() : (short)DyeColor.RED.getWoolData(), ChatColor.GOLD + "Toggle Soulbound", new String[] {"Click to toggle Soulbound Status", "Current Status: "  + (this.questItem.isSoulbound() ? ChatColor.GREEN + "" : ChatColor.RED + "Not ") + "Soulbound"}, (evt) -> {
+			this.questItem.setSoulbound(!this.questItem.isSoulbound());
+			new GuiItemEditor(player, stage, allItems, questItem);
+		});
+		
+		this.setSlot(12, Material.ANVIL, ChatColor.GOLD + "Set Durability", new String[] {"Click here to set item durability.", "Current Durability: " + ChatColor.YELLOW + questItem.getDurability() + "%"}, (evt) -> {
+			player.sendMessage(ChatColor.YELLOW + "Please enter the durability percentage of this item.");
+			Chat.listenForNumber(player, 1, 100, (num) -> {
+				questItem.setDurability(num);
+				player.sendMessage(ChatColor.GREEN + "Durability updated.");
+				new GuiItemEditor(player, stage, allItems, questItem);
+			}, (e) -> new GuiItemEditor(player, stage, allItems, questItem));
+		});
+		
+		this.setSlot(14, Material.COMMAND, ChatColor.RED + "Item Generator", new String[] {"Click here to set this to randomly generate items."}, (evt) -> {
+			new GuiQuestItemGenerator(player, stage, allItems, questItem);
+		});
+		
+		if(!this.questItem.isDRItem() && !this.questItem.isGeneratedItem()){
 			this.setSlot(3, Material.NAME_TAG, ChatColor.GOLD + "Set Display Name", new String[] {"Click here to set the display name."}, (evt) -> {
 				player.sendMessage(ChatColor.YELLOW + "Please enter the display name of this item.");
 				Chat.listenForMessage(player, (event) -> {
@@ -105,17 +124,12 @@ public class GuiItemEditor extends GuiBase {
 			});
 		}else{
 			this.setSlot(4, Material.BARRIER, ChatColor.RED + "Reset Item", new String[] {"Click here to reset this item back to default."}, (evt) -> {
-				this.questItem.setDRItemName(null);
+				this.questItem.resetItem();
 				player.sendMessage(ChatColor.GREEN + "Item Reset.");
 				new GuiItemEditor(player, stage, allItems, questItem);
 				return;
 			});
 		}
-		
-		this.setSlot(2, Material.WOOL, 1, this.questItem.isSoulbound() ? (short)DyeColor.GREEN.getWoolData() : (short)DyeColor.RED.getWoolData(), ChatColor.GOLD + "Toggle Soulbound", new String[] {"Click to toggle Soulbound Status", "Current Status: "  + (this.questItem.isSoulbound() ? ChatColor.GREEN + "" : ChatColor.RED + "Not ") + "Soulbound"}, (evt) -> {
-			this.questItem.setSoulbound(!this.questItem.isSoulbound());
-			new GuiItemEditor(player, stage, allItems, questItem);
-		});
 		
 		this.setSlot(8, GO_BACK, (evt) -> new GuiItemSelector(player, stage, allItems));
 	}

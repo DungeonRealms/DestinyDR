@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 public class GuiNPCBank extends GuiBase {
 	
 	public GuiNPCBank(Player player) {
-		super(player, "NPC Bank", Quests.getInstance().npcStore.getList());
+		super(player, "NPC Bank", Quests.getInstance().npcStore.getList(), 1);
 	}
 	
 	@SuppressWarnings("deprecation")

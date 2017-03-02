@@ -6,7 +6,11 @@ import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
+import net.dungeonrealms.game.quests.objectives.ObjectiveUseHearthStone;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -174,6 +178,7 @@ public class Teleportation implements GenericMechanic {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Bukkit.getScheduler().cancelTask(taskID);
             TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
+            Quests.getInstance().triggerObjective(player, ObjectiveUseHearthStone.class);
         }, (taskTimer[0] * 20L) + 10L);
     }
 }

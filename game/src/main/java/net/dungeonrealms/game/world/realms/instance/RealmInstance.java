@@ -386,9 +386,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         else
             player.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Description: " + ChatColor.GRAY + title);
         
-        QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
-        if(data != null)
-        	data.triggerObjectives(ObjectiveOpenRealm.class);
+        Quests.getInstance().triggerObjective(player, ObjectiveOpenRealm.class);
     }
 
     private Color getRandomColor() {

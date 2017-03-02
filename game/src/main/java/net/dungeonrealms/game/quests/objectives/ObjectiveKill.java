@@ -99,7 +99,6 @@ public class ObjectiveKill implements QuestObjective {
 		if(progress == null || (progress.getStageIndex() - 1) != this.questStage.getQuest().getStageList().indexOf(this.questStage)
 				|| monster.getTier(entity) < this.tier)
 			return;
-		//Sound
 		
 		int count = progress.getObjectiveCounter() + 1;
 		progress.setObjectiveCounter(count);
@@ -110,6 +109,8 @@ public class ObjectiveKill implements QuestObjective {
 			killer.playSound(killer.getLocation(), Sound.BLOCK_NOTE_PLING, 2, 2);
 			killer.sendMessage(ChatColor.YELLOW + "Killed " + count + "/" + this.amount + " " + this.monsterType.name + ( count > 1 ? "s" : "") + ".");
 		}
+		
+		Quests.getInstance().updateActionBar(killer);
 	}
 	
 	public void handleEntityInteract(PlayerInteractAtEntityEvent evt){

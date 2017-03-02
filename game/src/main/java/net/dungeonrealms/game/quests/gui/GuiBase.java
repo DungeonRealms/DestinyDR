@@ -40,11 +40,11 @@ public class GuiBase implements Listener {
 	
 	protected static ItemStack GO_BACK = createItem(Material.WATCH, 1, (short)0, ChatColor.YELLOW + "Go Back", new String[] {"Click here to return to the previous screen."});
 	
-	public GuiBase(Player player, String inventoryName, List<?> list){
+	public GuiBase(Player player, String inventoryName, List<?> list, int extra){
 		this(player, inventoryName, 
 				( list.size() - 
 				( list.size() % 9))
-				/ 9 + (list.size() % 9 > 0 ? 2 : 1) );
+				/ 9 + (list.size() % 9 > 0 ? 1 : 0) + extra );
 	}
 	
 	public GuiBase(Player player, String inventoryName, InventoryType type){

@@ -549,7 +549,7 @@ public class MainListener implements Listener {
             return;
         }
 
-        if (DuelingMechanics.isDueling(player.getUniqueId())) return;
+        //if (DuelingMechanics.isDueling(player.getUniqueId())) return;
 
         if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
             return;

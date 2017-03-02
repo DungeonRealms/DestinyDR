@@ -198,6 +198,7 @@ public class Quest implements ISaveable {
 					player.playSound(player.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.75F, 1.75F);
 				}
 				qp.setCurrentStage(qp.getStageIndex() + 1);
+				Quests.getInstance().updateActionBar(player);
 			}
 		}else{
 			stage.getDialogue().get(qp.getCurrentLine()).doDialogue(player, qp, stage);

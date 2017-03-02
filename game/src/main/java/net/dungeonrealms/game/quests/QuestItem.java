@@ -2,7 +2,11 @@ package net.dungeonrealms.game.quests;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.world.item.Item.ItemRarity;
+import net.dungeonrealms.game.world.item.Item.ItemTier;
+import net.dungeonrealms.game.world.item.Item.ItemType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,9 +21,14 @@ public class QuestItem implements ISaveable {
 	
 	private Material itemMaterial;
 	private int itemAmount;
-	private short itemMeta;
 	private String displayName;
 	private boolean isSoulBound;
+	private int durability = 100;
+	
+	private boolean isGeneratedItem;
+	private ItemTier tier = ItemTier.TIER_1;
+	private ItemRarity rarity = ItemRarity.COMMON;
+	private ItemOption generationType = ItemOption.WEAPON;
 	
 	public QuestItem(ItemStack i){
 		this.loadItem(i);
@@ -29,23 +38,80 @@ public class QuestItem implements ISaveable {
 		this.fromFile(obj);
 	}
 	
+	public void resetItem(){
+		this.itemMaterial = Material.BARRIER;
+		this.drItemName = null;
+		this.itemAmount = 1;
+		this.displayName = null;
+		this.isSoulBound = false;
+		this.durability = 100;
+		this.isGeneratedItem = false;
+		this.tier = ItemTier.TIER_1;
+		this.rarity = ItemRarity.COMMON;
+		this.generationType = ItemOption.WEAPON;
+		this.isGeneratedItem = false;
+	}
+	
 	/**
 	 * Converts this Quest Item into an actual itemStack.
 	 */
 	public ItemStack createItem(Player player){
-		ItemStack created;
-		if(!this.isDRItem()){
-			created = new ItemStack(this.itemMaterial, this.itemAmount);
-			ItemMeta meta = created.getItemMeta();
-			if(this.displayName != null)
-				meta.setDisplayName(this.displayName);
-			created.setItemMeta(meta);
-			created.setDurability(this.itemMeta);
+		ItemStack created = new ItemStack(Material.DIRT);
+		if(this.isGeneratedItem()){
+			ItemGenerator generator = new ItemGenerator();
+			generator.setTier(this.tier);
+			generator.setRarity(this.rarity);
+			
+			switch(this.generationType){
+				case ARMOR:
+					generator.setType(ItemType.getRandomArmor());
+					created = generator.generateItem().getItem();
+					break;
+				case WEAPON:
+					generator.setType(ItemType.getRandomWeapon());
+					created = generator.generateItem().getItem();
+					break;
+				case ORB:
+					created = ItemManager.createOrbofAlteration();
+					break;
+				case PICKAXE:
+					created = ItemManager.createPickaxe(this.tier.getTierId());
+					break;
+				case FISHING_ROD:
+					created = ItemManager.createFishingPole(this.tier.getTierId());
+					break;
+				case WEAPON_ENCH_SCROLL:
+					created = ItemManager.createWeaponEnchant(this.tier.getTierId());
+					break;
+				case ARMOR_ENCH_SCROLL:
+					created = ItemManager.createArmorEnchant(this.tier.getTierId());
+					break;
+				case PROT_SCROLL:
+					created = ItemManager.createProtectScroll(this.tier.getTierId());
+					break;
+				default:
+					System.out.println("Can't generate quest item " + this.generationType.name());
+			}
 		}else{
-			created = ItemGenerator.getNamedItem(this.drItemName);
+			if(this.isDRItem()){
+				created = ItemGenerator.getNamedItem(this.drItemName);
+			}else{
+				if(this.itemMaterial == null || this.itemMaterial == Material.AIR)
+					this.itemMaterial = Material.STONE;
+				created = new ItemStack(this.itemMaterial, this.itemAmount);
+				ItemMeta meta = created.getItemMeta();
+				if(this.displayName != null)
+					meta.setDisplayName(this.displayName);
+				created.setItemMeta(meta);
+			}
 		}
+		
 		if(this.isSoulBound)
 			created = ItemManager.makeSoulBound(created);
+		
+		if(this.durability != 100)
+			RepairAPI.setCustomItemDurability(created, durability * (1500 / 100) );
+		
 		return created;
 	}
 	
@@ -74,6 +140,16 @@ public class QuestItem implements ISaveable {
 		if(obj.has("soulbound"))
 			this.isSoulBound = obj.get("soulbound").getAsBoolean();
 		
+		if(obj.has("durability"))
+			this.durability = obj.get("durability").getAsInt();
+		
+		if(obj.has("generatedItem") && obj.get("generatedItem").getAsBoolean()){
+			this.setItemRarity(ItemRarity.valueOf(obj.get("itemRarity").getAsString()));
+			this.setItemTier(ItemTier.valueOf(obj.get("itemTier").getAsString()));
+			this.setGenerationType(ItemOption.valueOf(obj.get("generationType").getAsString()));
+			return;
+		}
+		
 		if(obj.has("drItemName")){
 			this.drItemName = obj.get("drItemName").getAsString();
 			return;
@@ -85,14 +161,22 @@ public class QuestItem implements ISaveable {
 			this.itemAmount = obj.get("amount").getAsInt();
 		if(obj.has("type"))
 			this.itemMaterial = Material.valueOf(obj.get("type").getAsString());
-		if(obj.has("meta"))
-			this.itemMeta = obj.get("meta").getAsShort();
 	}
 
 	@Override
 	public JsonObject toJSON() {
 		JsonObject obj = new JsonObject();
 		obj.addProperty("soulbound", this.isSoulBound);
+		obj.addProperty("durability", this.durability);
+		
+		if(this.isGeneratedItem()){
+			obj.addProperty("generatedItem", true);
+			obj.addProperty("itemTier", this.tier.name());
+			obj.addProperty("itemRarity", this.rarity.name());
+			obj.addProperty("generationType", this.generationType.name());
+			return obj;
+		}
+		
 		if(this.isDRItem()){
 			obj.addProperty("drItemName", this.drItemName);
 			return obj;
@@ -100,7 +184,6 @@ public class QuestItem implements ISaveable {
 		obj.addProperty("displayName", this.displayName);
 		obj.addProperty("amount", this.itemAmount);
 		obj.addProperty("type", this.itemMaterial.name());
-		obj.addProperty("meta", this.itemMeta);
 		return obj;
 	}
 
@@ -115,6 +198,14 @@ public class QuestItem implements ISaveable {
 	
 	public void setAmount(int a){
 		this.itemAmount = a;
+	}
+	
+	public void setDurability(int d){
+		this.durability = d;
+	}
+	
+	public int getDurability(){
+		return this.durability;
 	}
 	
 	public Material getType(){
@@ -145,7 +236,7 @@ public class QuestItem implements ISaveable {
 		}
 		this.itemMaterial = i.getType();
 		this.itemAmount = i.getAmount();
-		this.itemMeta = i.getDurability();
+		this.durability = i.getDurability();
 		this.displayName = i.getItemMeta().getDisplayName();
 		if(this.displayName == null)
 			this.displayName = this.itemMaterial.name();
@@ -170,5 +261,52 @@ public class QuestItem implements ISaveable {
 	
 	public void setDRItemName(String dr){
 		this.drItemName = dr;
+	}
+	
+	/**
+	 * Returns the ItemTier (Only if it's a custom generated item.)
+	 * @return
+	 */
+	public ItemTier getTier(){
+		return this.tier;
+	}
+	
+	/**
+	 * Returns the ItemRarity (Only if it's a custom generated item.)
+	 */
+	public ItemRarity getRarity(){
+		return this.rarity;
+	}
+	
+	public boolean isGeneratedItem(){
+		return this.isGeneratedItem;
+	}
+	
+	public void setItemRarity(ItemRarity r){
+		this.rarity = r;
+	}
+	
+	public void setItemTier(ItemTier t){
+		this.tier = t;
+	}
+	
+	public void setCustomGenerated(){
+		this.isGeneratedItem = true;
+	}
+	
+	public void setGenerationType(ItemOption type){
+		this.generationType = type;
+		this.setCustomGenerated();
+	}
+	
+	public enum ItemOption {
+		ARMOR,
+		WEAPON,
+		ORB,
+		PICKAXE,
+		FISHING_ROD,
+		PROT_SCROLL,
+		WEAPON_ENCH_SCROLL,
+		ARMOR_ENCH_SCROLL;
 	}
 }

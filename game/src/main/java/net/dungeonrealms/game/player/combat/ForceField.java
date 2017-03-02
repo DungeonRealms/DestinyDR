@@ -99,12 +99,16 @@ public class ForceField implements Listener, GenericMechanic {
             }
 
             for (Location location : changedBlocks) {
+            	if(location.getWorld() != player.getWorld())
+            		return;
                 player.sendBlockChange(location, forceFieldMaterial, forceFieldMaterialDamage);
                 removeBlocks.remove(location);
             }
 
             // Remove no longer used spoofed blocks
             for (Location location : removeBlocks) {
+            	if(location.getWorld() != player.getWorld())
+            		return;
                 Block block = location.getBlock();
                 player.sendBlockChange(location, block.getType(), block.getData());
             }

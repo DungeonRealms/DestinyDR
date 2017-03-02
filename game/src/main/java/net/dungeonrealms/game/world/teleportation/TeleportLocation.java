@@ -21,7 +21,7 @@ public enum TeleportLocation {
 	TRIPOLI("Tripoli", WorldRegion.TRIPOLI, 7500, -1320, 91, 370, 153F, 1F),
 	CRESTGUARD("Crestguard Keep", WorldRegion.CRESTGUARD, 15000, -1428, 116, -489, 95F, 1F),
 	//+ ChatColor.RED + " WARNING: CHAOTIC ZONE"
-	DEADPEAKS("DeadPeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F);
+	DEADPEAKS("Deadpeaks Mountain Camp", WorldRegion.DEADPEAKS, 35000, -1173, 106, 1030, -88.0F, 1F);
 	
 	private String displayName;
 	private WorldRegion region;
