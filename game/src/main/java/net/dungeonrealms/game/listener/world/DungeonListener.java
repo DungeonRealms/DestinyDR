@@ -396,9 +396,6 @@ public class DungeonListener implements Listener {
                                 if (!hasTeleported) {
                                     player.teleport(player1.getLocation());
                                     player.setFallDistance(0F);
-                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                        DungeonManager.getInstance().sendWorldEnvironment(player, World.Environment.NETHER);
-                                    }, 5L);
                                     hasTeleported = true;
                                 }
                             }

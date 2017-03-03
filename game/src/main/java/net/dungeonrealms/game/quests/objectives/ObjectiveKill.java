@@ -54,8 +54,11 @@ public class ObjectiveKill implements QuestObjective {
 		if(data != null && player != null){
 			int killed = data.getQuestProgress(stage.getQuest()).getObjectiveCounter();
 			//Have they killed enough yet?
-			if(killed >= this.amount)
+			if(killed >= this.amount){
+				if(stage.getNPC() == null)
+					return "Continue.";
 				return "Talk to " + stage.getNPC().getName();
+			}
 			//Have they killed any?
 			if(killed > 0)
 				return "Kill " + (this.amount - killed) + " more " + this.monsterType.name + ((this.amount - killed) > 1 ? "s" : "") + "!";

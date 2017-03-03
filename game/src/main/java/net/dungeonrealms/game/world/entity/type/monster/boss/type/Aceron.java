@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
@@ -7,6 +8,7 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.World;
+
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -49,4 +51,25 @@ public class Aceron extends DRWitherSkeleton implements DungeonBoss {
     protected void setStats() {
 
     }
+
+	@Override
+	public int getGemDrop() {
+		return 0;
+	}
+
+	@Override
+	public int getXPDrop() {
+		return 0;
+	}
+
+	@Override
+	public String[] getItems() {
+		return null;
+	}
+
+	@Override
+	public void addKillStat(GamePlayer gp) {
+		// TODO Auto-generated method stub
+		
+	}
 }

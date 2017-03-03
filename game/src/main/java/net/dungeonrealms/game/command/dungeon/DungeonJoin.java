@@ -72,11 +72,6 @@ public class DungeonJoin extends BaseCommand {
                                 if (!hasTeleported) {
                                     player.teleport(player1.getLocation());
                                     player.setFallDistance(0F);
-                                    if (dungeonObject.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS) {
-                                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                            DungeonManager.getInstance().sendWorldEnvironment(player, World.Environment.NETHER);
-                                        }, 5L);
-                                    }
                                     hasTeleported = true;
                                 }
                             }

@@ -1,17 +1,32 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss;
 
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.affair.Affair;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.entity.EnumEntityType;
+import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
+import net.dungeonrealms.game.world.entity.type.monster.base.DRSkeleton;
+import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entity.util.EntityStats;
+import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -25,47 +40,94 @@ import java.util.stream.Collectors;
 public interface DungeonBoss extends Boss {
 
     EnumDungeonBoss getEnumBoss();
-
-    default void say(Entity ent, String msg) {
-        for (Player p : GameAPI.getNearbyPlayers(ent.getLocation(), 50)) {
-            p.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + getEnumBoss().name() + ChatColor.WHITE + "] "
-                    + ChatColor.GREEN + msg);
-        }
+    
+    public int getGemDrop();
+    
+    public int getXPDrop();
+    
+    public Entity getBukkitEntity();
+    
+    public String[] getItems();
+    
+    public void addKillStat(GamePlayer gp);
+    
+    default ItemStack getWeapon(){
+    	return ItemGenerator.getNamedItem(getItems()[0]);
+    }
+    
+    default int getTier(){
+    	return getEnumBoss().getDungeonType().getTier();
+    }
+    
+    default void setArmor(){
+    	ItemStack weapon = getWeapon();
+    	ItemStack head = ItemGenerator.getNamedItem(getItems()[1]);
+    	ItemStack chest = ItemGenerator.getNamedItem(getItems()[2]);
+    	ItemStack legs = ItemGenerator.getNamedItem(getItems()[3]);
+        ItemStack boots = ItemGenerator.getNamedItem(getItems()[4]);
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        livingEntity.getEquipment().setItemInMainHand(weapon);
+        livingEntity.getEquipment().setBoots(boots);
+        livingEntity.getEquipment().setLeggings(legs);
+        livingEntity.getEquipment().setChestplate(chest);
+        livingEntity.getEquipment().setHelmet(head);
     }
 
-    default void say(Entity ent, Location location, String msg) {
-        for (Player p : GameAPI.getNearbyPlayers(location, 50)) {
-            p.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + getEnumBoss().name() + ChatColor.WHITE + "] "
-                    + ChatColor.GREEN + msg);
-        }
+    default void say(String msg) {
+        for (Player p : getBukkitEntity().getWorld().getPlayers())
+            p.sendMessage(ChatColor.RED + this.getEnumBoss().getName() + ": " + ChatColor.WHITE + msg);
+    }
+    
+    default void createEntity(int level){
+    	if(getItems() != null)
+    		setArmor();
+    	if(this instanceof DRWitherSkeleton){
+    		DRWitherSkeleton monster = (DRWitherSkeleton)this;
+    		monster.setSkeletonType(1);
+    		monster.setSize(0.7F, 2.4F);
+    	}
+    	getBukkitEntity().setCustomNameVisible(true);
+    	MetadataUtils.registerEntityMetadata((net.minecraft.server.v1_9_R2.Entity)this, EnumEntityType.HOSTILE_MOB, getTier(), level);
+        this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().getNameID()));
+        EntityStats.setBossRandomStats((net.minecraft.server.v1_9_R2.Entity)this, level, getTier());
+        this.getBukkitEntity().setCustomName(ChatColor.RED + getEnumBoss().getName());
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED + getEnumBoss().getName()));
+        say(getEnumBoss().getGreeting());
     }
 
     boolean enabled = true;
     boolean debug = false;
+    
+    default List<Block> getNearbyBlocks(Location loc, int maxradius) {
+        List<Block> return_list = new ArrayList<>();
+        BlockFace[] faces = {BlockFace.UP, BlockFace.NORTH, BlockFace.EAST};
+        BlockFace[][] orth = {{BlockFace.NORTH, BlockFace.EAST}, {BlockFace.UP, BlockFace.EAST}, {BlockFace.NORTH, BlockFace.UP}};
+        for (int r = 0; r <= maxradius; r++) {
+            for (int s = 0; s < 6; s++) {
+                BlockFace f = faces[s % 3];
+                BlockFace[] o = orth[s % 3];
+                if (s >= 3)
+                    f = f.getOppositeFace();
+                if (!(loc.getBlock().getRelative(f, r) == null)) {
+                    Block c = loc.getBlock().getRelative(f, r);
+
+                    for (int x = -r; x <= r; x++) {
+                        for (int y = -r; y <= r; y++) {
+                            Block a = c.getRelative(o[0], x).getRelative(o[1], y);
+                            return_list.add(a);
+                        }
+                    }
+                }
+            }
+        }
+        return return_list;
+    }
 
     default void dropMount(Entity entity, DungeonManager.DungeonType dungeonType) {
         if (!enabled) return;
-        EnumMounts mountDrop = null;
         Random random = ThreadLocalRandom.current();
-        if (getEnumBoss() == EnumDungeonBoss.Mayel) {
-            //Drop WOLF Pet, .5%
-
-            if (random.nextInt(1000) < 5 || debug)
-                mountDrop = EnumMounts.WOLF;
-
-        } else if (getEnumBoss() == EnumDungeonBoss.Burick) {
-            //.3%
-            if (random.nextInt(1000) < 3 || debug)
-                mountDrop = EnumMounts.SLIME;
-        } else if (getEnumBoss() == EnumDungeonBoss.InfernalAbyss) {
-
-            //.05% seems fair.
-            if (random.nextInt(10000) < 50)
-                mountDrop = EnumMounts.SPIDER;
-        }
-
-        if (mountDrop != null) {
-            ItemStack mountItem = mountDrop.getMountData().createMountItem(mountDrop);
+        if(random.nextInt(1000) < dungeonType.getMount().getChance() || debug){
+            ItemStack mountItem = dungeonType.getMount().getMountData().createMountItem(dungeonType.getMount());
             if (mountItem != null) {
                 //GIVE IT TO SOMEONE!!!
 
@@ -105,6 +167,5 @@ public interface DungeonBoss extends Boss {
                 }
             }
         }
-
     }
 }

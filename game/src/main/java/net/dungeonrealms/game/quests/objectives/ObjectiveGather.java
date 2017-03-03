@@ -72,8 +72,11 @@ public class ObjectiveGather implements QuestObjective {
 				ret += " and " + item.getAmount() + " " + ChatColor.stripColor(item.getItemMeta().getDisplayName());
 			}
 		}
-		if(player == null || this.itemsToGather.isEmpty() || ret.equals(""))
+		if(player == null || this.itemsToGather.isEmpty() || ret.equals("")){
+			if(stage.getNPC() == null)
+				return "Deliver items";
 			return "Deliver items to " + stage.getNPC().getName();
+		}
 		return "Deliver " +  ret.substring(" and ".length()) + " to " + stage.getNPC().getName();//TODO: Don't show the name of the NPC in question if talking to that NPC, since this is supposed to be in first person.
 	}
 

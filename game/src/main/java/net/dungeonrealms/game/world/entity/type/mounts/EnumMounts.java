@@ -21,19 +21,21 @@ public enum EnumMounts {
             new MountData("Wolf", ChatColor.WHITE, 0.245F, "140%",
                     Lists.newArrayList(
                             ChatColor.GRAY + ChatColor.ITALIC.toString() + "A ferocious beast, said to have",
-                            ChatColor.GRAY + ChatColor.ITALIC.toString() + "slept at the side of Mayel The Cruel."))),
+                            ChatColor.GRAY + ChatColor.ITALIC.toString() + "slept at the side of Mayel The Cruel.")), 5),
+                            
     SLIME(7, "SLIME", new ItemStack(Material.SLIME_BALL, 1), 0, "Slime Mount", new MountData("Slime", ChatColor.GREEN, 0.35F, "170%",
             Lists.newArrayList(
                     ChatColor.GRAY + ChatColor.ITALIC.toString() + "A quick slime found deep",
-                    ChatColor.GRAY + ChatColor.ITALIC.toString() + "in the Varenglade Ruins"))),
-    SPIDER(5, "SPIDER", new ItemStack(Material.STRING, 1), 0, "Spider Mount", new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.31F, "190%", null));
+                    ChatColor.GRAY + ChatColor.ITALIC.toString() + "in the Varenglade Ruins")), 3),
+                    
+    SPIDER(5, "SPIDER", new ItemStack(Material.STRING, 1), 0, "Spider Mount", new MountData("Spider", ChatColor.LIGHT_PURPLE, 0.31F, "190%", null), 5);
 
     private int id;
     private String name;
     private ItemStack selectionItem;
     private int shortID;
     private String displayName;
-
+    @Getter private int chance;
     @Getter
     private MountData mountData;
 
@@ -56,18 +58,19 @@ public enum EnumMounts {
     public String getDisplayName() {
         return displayName;
     }
-
+    
     EnumMounts(int id, String name, ItemStack selectionItem, int shortID, String displayName) {
-        this.id = id;
+    	this.id = id;
         this.name = name;
         this.selectionItem = selectionItem;
         this.shortID = shortID;
         this.displayName = displayName;
     }
 
-    EnumMounts(int id, String name, ItemStack selectionItem, int shortID, String displayName, MountData data) {
-        this(id, name, selectionItem, shortID, displayName);
+    EnumMounts(int id, String name, ItemStack selectionItem, int shortID, String displayName, MountData data, int chance) {
+	    this(id, name, selectionItem, shortID, displayName);
         this.mountData = data;
+        this.chance = chance;
     }
 
     public static EnumMounts getById(int id) {

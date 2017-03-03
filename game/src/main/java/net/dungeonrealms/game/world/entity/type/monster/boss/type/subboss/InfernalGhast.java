@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.entity.type.monster.boss.type.subboss;
 import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRGhast;
@@ -12,6 +13,7 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.DamageAPI;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
+
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -37,13 +39,7 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
     public InfernalGhast(InfernalAbyss infernalAbyss) {
         super(infernalAbyss.getWorld());
         this.boss = infernalAbyss;
-        this.getBukkitEntity().setCustomNameVisible(true);
-        int level = 100;
-        MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
-        this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
-        this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
-        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
-        //TODO: Enable double armor (takes half damage from attacks) [same as above].
+        this.createEntity(100);
     }
 
     public void init(int hp) {
@@ -98,4 +94,24 @@ public class InfernalGhast extends DRGhast implements DungeonBoss {
             this.die();
         }
     }
+
+	@Override
+	public int getGemDrop() {
+		return 0;
+	}
+
+	@Override
+	public int getXPDrop() {
+		return 0;
+	}
+
+	@Override
+	public String[] getItems() {
+		return null;
+	}
+
+	@Override
+	public void addKillStat(GamePlayer gp) {
+		
+	}
 }

@@ -31,7 +31,7 @@ public class CommandSend extends BaseCommand {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(!Rank.isDev(sender)) return true;
+		if(!Rank.isTrialGM((Player)sender)) return true;
 
 		if(args.length <= 1){
 			sender.sendMessage(ChatColor.RED + "Usage: /drsend <player> <shard> [force]");

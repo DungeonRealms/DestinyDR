@@ -3,7 +3,6 @@ package net.dungeonrealms.game.donation;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.player.CachedClientProvider;
 import net.dungeonrealms.game.donation.eggs.WBInstance;
-import net.dungeonrealms.game.listener.world.BossEggListener;
 import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
@@ -33,7 +32,6 @@ public class BossEggs extends CachedClientProvider<WBInstance> implements Generi
 
     @Override
     public void startInitialization() {
-        Bukkit.getPluginManager().registerEvents(new BossEggListener(), DungeonRealms.getInstance());
 
         // REGISTER BOSSES //
         NMSUtils nmsUtils = new NMSUtils();

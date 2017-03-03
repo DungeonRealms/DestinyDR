@@ -2,16 +2,12 @@ package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
@@ -26,13 +22,10 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.World;
+
 import org.bukkit.*;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,15 +33,10 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -61,59 +49,22 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         super(world);
     }
 
-    /**
-     * @param world
-     */
     public InfernalAbyss(World world, Location loc) {
         super(world);
-        this.setSkeletonType(1);
+        this.createEntity(50);
         this.fireProof = true;
-        this.getBukkitEntity().setCustomNameVisible(true);
-        int bossLevel = 50;
-        MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, bossLevel);
-        this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
-        this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
-        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
-        for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
-            p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "I have nothing to say to you foolish mortals, except for this: Burn.");
-        }
-        this.setSize(0.7F, 2.4F);
-        this.fireProof = true;
-        this.setSkeletonType(1);
         this.persistent = true;
         DungeonManager.getInstance().getFireUnderEntity().add(this);
         ghast = new InfernalGhast(this);
-        setArmor(4);
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40);
-        EntityStats.setBossRandomStats(this, bossLevel, 4);
         EntityStats.setBossRandomStats(this.ghast, 100, 4);
-    }
-
-    public void setArmor(int tier) {
-        ItemStack weapon = getWeapon();
-        ItemStack boots = ItemGenerator.getNamedItem("infernalboot");
-        ItemStack legs = ItemGenerator.getNamedItem("infernallegging");
-        ItemStack chest = ItemGenerator.getNamedItem("infernalchest");
-        ItemStack head = ItemGenerator.getNamedItem("infernalhelmet");
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
-        this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(boots));
-        this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(legs));
-        this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(chest));
-        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(head));
-        livingEntity.getEquipment().setItemInMainHand(weapon);
-        livingEntity.getEquipment().setBoots(boots);
-        livingEntity.getEquipment().setLeggings(legs);
-        livingEntity.getEquipment().setChestplate(chest);
-        livingEntity.getEquipment().setHelmet(head);
-        ghast.setArmor(new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setRarity(Item.ItemRarity.UNIQUE).getArmorSet(),
-                new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setRarity(Item.ItemRarity.UNIQUE)
+        ghast.setArmor(new ItemGenerator().setTier(Item.ItemTier.getByTier(4)).setRarity(Item.ItemRarity.UNIQUE).getArmorSet(),
+                new ItemGenerator().setTier(Item.ItemTier.getByTier(4)).setRarity(Item.ItemRarity.UNIQUE)
                         .setType(Item.ItemType.getRandomWeapon()).generateItem().getItem());
     }
 
-    private ItemStack getWeapon() {
-        //TODO: Probably make him a melee boss. As he was always glitching due to being a staff mob previously.
-        return ItemGenerator.getNamedItem("infernalstaff");
+    public String[] getItems() {
+        return new String[] {"infernalstaff", "infernalhelmet", "infernalchest", "infernallegging", "infernalboot"};
     }
 
     @Override
@@ -133,9 +84,8 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
         livingEntity.removePotionEffect(PotionEffectType.INVISIBILITY);
         finalForm = true;
         DamageAPI.setDamageBonus(livingEntity, 50);
+        say("You... cannot... kill me IN MY OWN DOMAIN, FOOLISH MORTALS!");
         for (Player pl : livingEntity.getWorld().getPlayers()) {
-            pl.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
-                    + "You... cannot... kill me IN MY OWN DOMAIN, FOOLISH MORTALS!");
             pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has become enraged! " + ChatColor.UNDERLINE + "+50% DMG!");
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_DEATH, 2F, 0.85F);
@@ -161,13 +111,11 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
     @Override
     public void onBossDeath() {
-        getNearbyBlocks(this.getBukkitEntity().getLocation(), 10).stream().filter(b -> b.getType() == Material.FIRE).forEach(b -> b.setType(Material.AIR));
-        try {
-            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FIREWORKS_SPARK, this.getBukkitEntity().getLocation().add(0, 2, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.2F, 200);
-        } catch (Exception err) {
-            err.printStackTrace();
+    	for (Player pl : getBukkitEntity().getWorld().getPlayers()) {
+            pushAwayPlayer(getBukkitEntity(), pl, 3.5F);
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 2F, 2F);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::doBossDrops, 5L);
     }
 
     @Override
@@ -217,15 +165,13 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
         double halfHP = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.5;
         if (HealthHandler.getInstance().getMonsterHPLive(en) <= halfHP && !hasFiredGhast) {
-            for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
-                p.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "Behold, the powers of the inferno.");
-            }
+            say("Behold, the powers of the inferno.");
             ghast.setLocation(this.locX, this.locY + 7, this.locZ, 1, 1);
             ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
             this.getWorld().addEntity(ghast, SpawnReason.CUSTOM);
             ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
+            say("The inferno will devour you!");
             for (Player pl : this.getBukkitEntity().getWorld().getPlayers()) {
-                pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE + "The inferno will devour you!");
                 pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has armored up! " + ChatColor.UNDERLINE + "+50% ARMOR!");
                 pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_WARN, 2F, 0.35F);
                 pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
@@ -325,138 +271,18 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             }
         }
     }
+    
+    public int getGemDrop(){
+    	return random.nextInt(2000) + 10000;
+    } 
 
-    private void doBossDrops() {
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        for (Player pl : livingEntity.getWorld().getPlayers()) {
-            if (pl.getGameMode() != GameMode.SURVIVAL) {
-                continue;
-            }
-            GamePlayer gp = GameAPI.getGamePlayer(pl);
-            if (gp != null) {
-                gp.getPlayerStatistics().setInfernalAbyssKills(gp.getPlayerStatistics().getInfernalAbyssKills() + 1);
-            }
-            pl.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
-                    + "You...have... defeated me...ARGHHHH!!!!!");
-            pushAwayPlayer(livingEntity, pl, 3.5F);
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
-            pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 2F, 2F);
-        }
+	@Override
+	public int getXPDrop() {
+		return 50000;
+	}
 
-
-        if (random.nextInt(100) < 80) { // 80% chance!
-            List<ItemStack> possible_drops = new ArrayList<>();
-            for (ItemStack is : livingEntity.getEquipment().getArmorContents()) {
-                if (is == null || is.getType() == Material.AIR || is.getTypeId() == 144 || is.getTypeId() == 397) {
-                    continue;
-                }
-                ItemMeta im = is.getItemMeta();
-                if (im.hasEnchants()) {
-                    for (Map.Entry<Enchantment, Integer> data : im.getEnchants().entrySet()) {
-                        is.removeEnchantment(data.getKey());
-                    }
-                }
-                is.removeEnchantment(Enchantment.LOOT_BONUS_MOBS);
-                is.removeEnchantment(Enchantment.KNOCKBACK);
-                is.removeEnchantment(EnchantmentAPI.getGlowEnchant());
-                is.setItemMeta(im);
-                possible_drops.add(is);
-            }
-            ItemStack weapon = livingEntity.getEquipment().getItemInMainHand();
-            ItemMeta im = weapon.getItemMeta();
-            if (im.hasEnchants()) {
-                for (Map.Entry<Enchantment, Integer> data : im.getEnchants().entrySet()) {
-                    im.removeEnchant(data.getKey());
-                }
-            }
-            weapon.removeEnchantment(Enchantment.LOOT_BONUS_MOBS);
-            weapon.removeEnchantment(Enchantment.KNOCKBACK);
-            weapon.removeEnchantment(EnchantmentAPI.getGlowEnchant());
-            weapon.setItemMeta(im);
-            possible_drops.add(weapon);
-
-            ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(random.nextInt(possible_drops.size())));
-            reward = ItemManager.addPartyMemberSoulboundBypass(reward, 60 * 5, livingEntity.getWorld().getPlayers());
-            livingEntity.getWorld().dropItem(livingEntity.getLocation(), reward);
-
-            List<String> hoveredChat = new ArrayList<>();
-            ItemMeta meta = reward.getItemMeta();
-            hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : reward.getType().name()));
-            if (meta.hasLore()) {
-                hoveredChat.addAll(meta.getLore());
-            }
-            final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The boss has dropped: ", ChatColor.DARK_PURPLE);
-            normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
-            livingEntity.getWorld().getPlayers().forEach(normal::sendToPlayer);
-        }
-        int gemDrop = random.nextInt(2000) + 10000;
-        int groupSize = 0;
-        for (Player player : livingEntity.getWorld().getPlayers()) {
-            if (player.getGameMode() != GameMode.SURVIVAL) {
-                continue;
-            }
-            groupSize++;
-        }
-
-
-        //Drop if it can.
-        dropMount(getBukkitEntity(), DungeonManager.DungeonType.THE_INFERNAL_ABYSS);
-
-        int perPlayerDrop = groupSize == 0 ? 1 : Math.round(gemDrop / groupSize);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            for (Player player : livingEntity.getWorld().getPlayers()) {
-                player.sendMessage(ChatColor.DARK_PURPLE + "The boss has dropped " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + gemDrop + ChatColor.DARK_PURPLE + " gems.");
-                player.sendMessage(ChatColor.DARK_PURPLE + "Each player receives " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + perPlayerDrop + ChatColor.DARK_PURPLE + " gems!");
-            }
-        }, 5L);
-        String partyMembers = "";
-        for (Player player : livingEntity.getWorld().getPlayers()) {
-            if (player.getGameMode() != GameMode.SURVIVAL) {
-                continue;
-            }
-            partyMembers += player.getName() + ", ";
-
-            if (groupSize > 0) {
-                ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, "Infernal Abyss");
-                if (player.getInventory().firstEmpty() == -1) {
-                    player.getWorld().dropItem(player.getLocation(), banknote);
-                    player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");
-                } else {
-                    player.getInventory().addItem(banknote);
-                }
-                GameAPI.getGamePlayer(player).addExperience(50000, false, true);
-            }
-        }
-        final String adventurers = partyMembers.substring(0, partyMembers.length() - 2);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + ChatColor.GOLD + "The evil fire demon known as " + ChatColor.UNDERLINE + "The Infernal Abyss" + ChatColor.RESET + ChatColor.GOLD + " has been slain by a group of adventurers!");
-            Bukkit.broadcastMessage(ChatColor.GRAY + "Group: " + adventurers);
-        }, 60L);
-
-    }
-
-    private List<Block> getNearbyBlocks(Location loc, int maxradius) {
-        List<Block> return_list = new ArrayList<>();
-        BlockFace[] faces = {BlockFace.UP, BlockFace.NORTH, BlockFace.EAST};
-        BlockFace[][] orth = {{BlockFace.NORTH, BlockFace.EAST}, {BlockFace.UP, BlockFace.EAST}, {BlockFace.NORTH, BlockFace.UP}};
-        for (int r = 0; r <= maxradius; r++) {
-            for (int s = 0; s < 6; s++) {
-                BlockFace f = faces[s % 3];
-                BlockFace[] o = orth[s % 3];
-                if (s >= 3)
-                    f = f.getOppositeFace();
-                if (!(loc.getBlock().getRelative(f, r) == null)) {
-                    Block c = loc.getBlock().getRelative(f, r);
-
-                    for (int x = -r; x <= r; x++) {
-                        for (int y = -r; y <= r; y++) {
-                            Block a = c.getRelative(o[0], x).getRelative(o[1], y);
-                            return_list.add(a);
-                        }
-                    }
-                }
-            }
-        }
-        return return_list;
-    }
+	@Override
+	public void addKillStat(GamePlayer gp) {
+		gp.getPlayerStatistics().setInfernalAbyssKills(gp.getPlayerStatistics().getInfernalAbyssKills() + 1);
+	}
 }
