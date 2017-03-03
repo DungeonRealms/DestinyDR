@@ -1157,7 +1157,7 @@ public class GameAPI {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.FIRST_LOGIN, System.currentTimeMillis(), true);
             //TutorialMechanics.getInstance().doLogin(player);
              /*PLAYER IS NEW*/
-            sendNetworkMessage("Broadcast", ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
+            //sendNetworkMessage("Broadcast", ChatColor.translateAlternateColorCodes('&', "&e" + player.getName() + " &6has joined &6&lDungeon Realms &6for the first time!"));
             ItemManager.giveStarter(player, true);
 
             // Fix missing journal & portal rune
