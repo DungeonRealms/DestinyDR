@@ -503,7 +503,6 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandPatchNotes("patchnotes", "/<command>", "Shows patch for current build", Collections.singletonList("patch")));
 
             cm.registerCommand(new CommandTestRank("testrank", "/<command> [args]", "This is a test command."));
-            cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a test command.", Collections.singletonList("testinghall")));
 
             cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Provides a player with the starter kit."));
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server."));
