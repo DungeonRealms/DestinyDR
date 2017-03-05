@@ -1359,15 +1359,6 @@ public class GameAPI {
 
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
-
-            // GM Exclusive Permissions
-            if (Rank.isGM(player)) {
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
-
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
-                player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
-            }
         }
 
         // calculate attributes and check inventory
