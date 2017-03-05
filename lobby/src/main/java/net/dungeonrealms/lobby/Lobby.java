@@ -69,7 +69,7 @@ public class Lobby extends JavaPlugin implements Listener {
         Constants.build();
         BungeeUtils.setPlugin(this);
         BungeeServerTracker.startTask(3L);
-        DatabaseInstance.getInstance().startInitialization(true, Database.NORMAL);
+        DatabaseInstance.getInstance().startInitialization(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         ghostFactory = new GhostFactory(this);

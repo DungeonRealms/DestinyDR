@@ -37,15 +37,6 @@ public class Constants {
     // BUILD NUMBER //
     public static String BUILD_NUMBER = "#0";
 
-    // FTP INFO //
-    public static String FTP_HOST_NAME = "";
-
-    public static String FTP_USER_NAME = "";
-
-    public static String FTP_PASSWORD = "";
-
-    public static int FTP_PORT = 21;
-
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
         debug = false;
@@ -60,10 +51,6 @@ public class Constants {
         NET_READ_BUFFER_SIZE = 16384;
         NET_WRITE_BUFFER_SIZE = 32768;
         BUILD_NUMBER = "#0";
-        FTP_HOST_NAME = "167.114.65.102";
-        FTP_USER_NAME = "dungeonrealms.53";
-        FTP_PASSWORD = "BSmZWafwEk3QX7JTnF";
-        FTP_PORT = 21;
     }
 
 }

@@ -1,19 +1,24 @@
 package net.dungeonrealms.common;
 
-public enum Database {
-	DEV("dungeonrealms_event", "mongodb://dungeonrealms:sBFt%2BSk2r%5Ejw7%2BXZ%2B3%3Dm@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms_event?replicaSet=rs-ds157228"),
-	NORMAL("dungeonrealms", "mongodb://druser:H%3A82F9xW3X425NrHra.UW7-gXV@ds157228-a0.mlab.com:57228,ds157228-a1.mlab.com:57228/dungeonrealms?replicaSet=rs-ds157228");
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+public class Database {
 	
-	private final String uri;
+	private final String username;
+	private final String password;
+	private final String host;
 	private final String dbName;
 	
-	Database(String db, String uri){
-		this.uri = uri;
+	public Database(String host, String username, String password, String db) {
+		this.host = host;
+		this.username = username;
+		this.password = password;
 		this.dbName = db;
 	}
 	
-	public String getURI(){
-		return this.uri;
+	public String getURI() throws UnsupportedEncodingException {
+		return "mongodb://" + this.username + ":" + URLEncoder.encode(this.password, "UTF-8") + "@" + host + "/" + this.dbName + "?replicaSet=rs-ds157228";
 	}
 	
 	public String getDatabaseName(){

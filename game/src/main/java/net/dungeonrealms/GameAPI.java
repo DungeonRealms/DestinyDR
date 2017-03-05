@@ -54,6 +54,8 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
+import net.dungeonrealms.game.quests.Quest;
+import net.dungeonrealms.game.quests.QuestStage;
 import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.ElementalDamage;
@@ -104,6 +106,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.inventivetalent.glow.GlowAPI;
 
 import java.io.File;
 import java.io.IOException;
@@ -776,6 +779,10 @@ public class GameAPI {
         if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) {
             return false;
         }
+        String name = (String)DatabaseAPI.getInstance().getData(EnumData.USERNAME, player.getUniqueId());
+        if(name == null || name.length() < 1)
+        	return false;
+        
         List<UpdateOneModel<Document>> operations = new ArrayList<>();
         Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
 
@@ -2275,7 +2282,6 @@ public class GameAPI {
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
         world.addEntity(entity, SpawnReason.CUSTOM);
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-
     }
 
     public static boolean isPlayerHidden(UUID uuid) {

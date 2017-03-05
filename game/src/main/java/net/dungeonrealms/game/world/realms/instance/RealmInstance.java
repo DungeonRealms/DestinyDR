@@ -590,20 +590,12 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
     @Override
     public boolean downloadRealm(UUID uuid) throws IOException, ZipException {
-        FTPClient ftpClient = new FTPClient();
+    	FTPClient ftpClient = DungeonRealms.getInstance().getFTPClient();
         FileOutputStream fos = null;
         String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
         File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
 
         try {
-            ftpClient.connect(Constants.FTP_HOST_NAME, Constants.FTP_PORT);
-            boolean login = ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
-
-            if (login) Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-            else throw new ConnectException("Failed to download realm for " + uuid.toString());
-
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
 
             fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
@@ -658,12 +650,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
     private void uploadZippedRealm(UUID uuid) {
         InputStream inputStream = null;
         try {
-            FTPClient ftpClient = new FTPClient();
-
-            ftpClient.connect(Constants.FTP_HOST_NAME);
-            ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            FTPClient ftpClient = DungeonRealms.getInstance().getFTPClient();
 
             String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
 
@@ -722,18 +709,10 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
 
     @Override
     public void wipeRealm(UUID uuid) throws IOException {
-        FTPClient ftpClient = new FTPClient();
+        FTPClient ftpClient = DungeonRealms.getInstance().getFTPClient();;
         String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
 
         try {
-            ftpClient.connect(Constants.FTP_HOST_NAME, Constants.FTP_PORT);
-            boolean login = ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
-
-            if (login) Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-            else throw new ConnectException("Failed to wipe realm for " + uuid.toString());
-
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             Utils.log.info("[REALM] [ASYNC] Wiping " + uuid.toString() + "'s Realm ... STARTING");
             if (ftpClient.deleteFile(REMOTE_FILE)) Utils.log.info("[REALM] [ASYNC] Realm wiped for " + uuid.toString());
         } finally {

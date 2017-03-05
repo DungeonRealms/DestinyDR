@@ -13,7 +13,13 @@ import net.dungeonrealms.common.game.database.concurrent.MongoAccessThread;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 
 import org.bson.Document;
+import org.bukkit.Bukkit;
+import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -41,22 +47,28 @@ public class DatabaseInstance {
     public static MongoCollection<Document> playerData, shardData, bans, guilds, quests;
     protected boolean cacheData = true;
 
-    public void startInitialization(boolean cacheData, Database db) {
+    public void startInitialization(boolean cacheData) {
         this.cacheData = cacheData;
-        mongoClientURI = new MongoClientURI(db.getURI(), new MongoClientOptions.Builder().maxConnectionIdleTime(0));
+        try{
+        	Database db = loadFromConfig();
+        	mongoClientURI = new MongoClientURI(db.getURI(), new MongoClientOptions.Builder().maxConnectionIdleTime(0));
+        	
+        	Constants.log.info("DungeonRealms Database connection pool is being created...");
+        	mongoClient = new MongoClient(mongoClientURI);
+        	database = mongoClient.getDatabase(db.getDatabaseName());
+        	playerData = database.getCollection("player_data");
+        	shardData = database.getCollection("shard_data");
+        	bans = database.getCollection("bans");
+        	guilds = database.getCollection("guilds");
+        	quests = database.getCollection("quests");
 
-        Constants.log.info("DungeonRealms Database connection pool is being created...");
-        mongoClient = new MongoClient(mongoClientURI);
-        database = mongoClient.getDatabase(db.getDatabaseName());
-        playerData = database.getCollection("player_data");
-        shardData = database.getCollection("shard_data");
-        bans = database.getCollection("bans");
-        guilds = database.getCollection("guilds");
-        quests = database.getCollection("quests");
-
-        Constants.log.info("DungeonRealms Database has connected successfully!");
-
-        createMongoAccessThreads();
+        	Constants.log.info("DungeonRealms Database has connected successfully!");
+        
+        	createMongoAccessThreads();
+        } catch (Exception e) {
+        	//Wrong credentials, no credentials in config, config not found, etc.
+        	e.printStackTrace();
+        }
     }
 
 
@@ -76,5 +88,25 @@ public class DatabaseInstance {
 
     protected boolean isCacheData() {
         return cacheData;
+    }
+    
+    private static Database loadFromConfig(){
+        Ini ini = new Ini();
+        try {
+            ini.load(new FileReader("credentials.ini"));
+            // Main
+            String database = ini.get("DB", "database", String.class);
+            String username = ini.get("DB", "username", String.class);
+            String password = ini.get("DB", "password", String.class);
+            String hostname = ini.get("DB", "host", String.class);
+            return new Database(hostname, username, password, database);
+        } catch (InvalidFileFormatException e1) {
+        	Bukkit.getLogger().info("InvalidFileFormat in credentials.ini!");
+        } catch (FileNotFoundException e1) {
+            Bukkit.getLogger().info("credentials.ini not found");
+        } catch (IOException e1) {
+        	Bukkit.getLogger().info("IOException in credentials.ini!");
+        }
+        return null;
     }
 }

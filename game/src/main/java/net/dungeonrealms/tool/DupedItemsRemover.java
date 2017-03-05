@@ -39,7 +39,7 @@ public class DupedItemsRemover implements GenericMechanic {
         final int[] totalQueries = {0};
         final int[] totalQueriesWithDupes = {0};
         long currTotalTime = System.currentTimeMillis();
-        DatabaseInstance.getInstance().startInitialization(true, Database.NORMAL);
+        DatabaseInstance.getInstance().startInitialization(true);
 
         DatabaseInstance.playerData.find().forEach(new Block<Document>() {
             @Override

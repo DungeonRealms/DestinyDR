@@ -12,10 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.common.Constants;
 import net.dungeonrealms.game.mastery.Utils;
 
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -130,15 +128,9 @@ public class PacketLogger implements Listener {
 	}
 	
 	private void uploadPacketLog(File file) {
+		FTPClient ftpClient = DungeonRealms.getInstance().getFTPClient();
         InputStream inputStream = null;
         try {
-            FTPClient ftpClient = new FTPClient();
-
-            ftpClient.connect(Constants.FTP_HOST_NAME);
-            ftpClient.login(Constants.FTP_USER_NAME, Constants.FTP_PASSWORD);
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
             String REMOTE_FILE = "/packetlogs/" + file.getName();
 
             inputStream = new FileInputStream(file);
@@ -148,12 +140,17 @@ public class PacketLogger implements Listener {
             Utils.log.info("[REALM] [ASYNC] Successfully uploaded PacketLog");
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        try {
-            if (inputStream != null)
-                inputStream.close();
-        } catch (Exception e) {
-
+        } finally {
+        	try{
+        		if (inputStream != null)
+                	inputStream.close();
+        		if (ftpClient.isConnected()) {
+                	ftpClient.logout();
+                	ftpClient.disconnect();
+        		}
+        	}catch(Exception e){
+        		
+        	}
         }
     }
 	

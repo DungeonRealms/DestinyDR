@@ -83,6 +83,8 @@ import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.dungeonrealms.tool.PatchTools;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -229,7 +231,7 @@ public class DungeonRealms extends JavaPlugin {
         BungeeUtils.setPlugin(this);
         BungeeUtils.fetchServers();
 
-        DatabaseInstance.getInstance().startInitialization(true, (isMasterShard || isEventShard ? Database.DEV : Database.NORMAL));
+        DatabaseInstance.getInstance().startInitialization(true);
         DatabaseAPI.getInstance().startInitialization(bungeeName);
         AntiDuplication.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
@@ -643,6 +645,23 @@ public class DungeonRealms extends JavaPlugin {
         DatabaseAPI.getInstance().stopInvocation();
 
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+    }
+    
+    public FTPClient getFTPClient() {
+    	FTPClient ftpClient = new FTPClient();
+    	
+    	try{
+    		Ini ini = new Ini();
+    		ini.load(new FileReader("credentials.ini"));
+    		ftpClient.connect(ini.get("FTP", "ftp_host", String.class));
+    		ftpClient.login(ini.get("FTP", "ftp_username", String.class), ini.get("FTP", "ftp_password", String.class));
+    		ftpClient.enterLocalPassiveMode();
+    		ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+    	}catch(Exception e){
+    		Bukkit.getLogger().info("Failed to load FTP credentials from credentials.ini");
+    		e.printStackTrace();
+    	}
+        return ftpClient;
     }
 
 }
