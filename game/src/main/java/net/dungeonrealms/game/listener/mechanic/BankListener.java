@@ -344,7 +344,7 @@ public class BankListener implements Listener {
                             }
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
-                                    if (!GameAPI.isItemTradeable(e.getCursor()) || !GameAPI.isItemDroppable(e.getCursor())) {
+                                    if (!GameAPI.isItemTradeable(e.getCursor()) || !GameAPI.isItemDroppable(e.getCursor()) || BankMechanics.getInstance().isBankNote(e.getCursor()) || BankMechanics.getInstance().isGem(e.getCursor())) {
                                         player.sendMessage(ChatColor.RED + "You can't store this item!");
                                         e.setCancelled(true);
                                         return;
@@ -465,7 +465,7 @@ public class BankListener implements Listener {
                                 return;
                             }
                             if (storage.hasSpace()) {
-                                if (!GameAPI.isItemTradeable(e.getCurrentItem()) || !GameAPI.isItemDroppable(e.getCurrentItem())) {
+                                if (!GameAPI.isItemTradeable(e.getCurrentItem()) || !GameAPI.isItemDroppable(e.getCurrentItem()) || BankMechanics.getInstance().isBankNote(e.getCurrentItem()) || BankMechanics.getInstance().isGem(e.getCurrentItem())) {
                                     player.sendMessage(ChatColor.RED + "You can't store this item!");
                                     e.setCancelled(true);
                                     return;
@@ -602,7 +602,7 @@ public class BankListener implements Listener {
             if ((e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP) && e.getRawSlot() < e.getInventory().getSize())
                 item = e.getView().getBottomInventory().getItem(e.getHotbarButton());
 
-            if (!GameAPI.isItemTradeable(item) || !GameAPI.isItemDroppable(item)) {
+            if (!GameAPI.isItemTradeable(item) || !GameAPI.isItemDroppable(item) || BankMechanics.getInstance().isBankNote(item) || BankMechanics.getInstance().isGem(item)) {
                 p.sendMessage(ChatColor.RED + "You can't store this item!");
                 e.setCancelled(true);
             }
