@@ -1,14 +1,17 @@
 package net.dungeonrealms.game.anticheat;
 
 import java.util.Arrays;
+import java.util.List;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -22,6 +25,7 @@ import com.comphenix.protocol.events.PacketListener;
 public class PacketModifier implements GenericMechanic {
 	
 	private PacketListener listener;
+	private List<String> ALLOWED_TAGS = Arrays.asList("display", "pages", "generation", "SkullOwner", "AttributeModifiers", "ench", "Unbreakable", "HideFlags", "CanDestroy", "PickupDelay", "CanPlaceOn");
 	
 	@Override
 	public void startInitialization() {
@@ -30,10 +34,11 @@ public class PacketModifier implements GenericMechanic {
 	    	@Override
 	    	public void onPacketSending(PacketEvent event) {
 	    		PacketContainer packet = event.getPacket();
-	    		ItemStack item = packet.getItemModifier().read(0);
-	    		if(item == null || item.getType() == Material.AIR)
+	    		ItemStack original = packet.getItemModifier().read(0);
+	    		if(original == null || original.getType() == Material.AIR)
 	    			return;
-	    		item = item.clone();
+	    		//Remove all data the client doesn't need to see.
+	    		ItemStack item = stripNBT(original);
 	    		ItemMeta meta = item.getItemMeta();
 	    		if(meta.hasLore())
 	    			meta.setLore(Arrays.asList(ItemRarity.UNIQUE.getName()));
@@ -55,5 +60,17 @@ public class PacketModifier implements GenericMechanic {
 	@Override
 	public EnumPriority startPriority() {
 		return EnumPriority.CARDINALS;
+	}
+	
+	public ItemStack stripNBT(ItemStack item){
+		net.minecraft.server.v1_9_R2.ItemStack stripped = CraftItemStack.asNMSCopy(item.clone());
+		if(stripped.hasTag()){
+			NBTTagCompound tag = new NBTTagCompound();
+			for(String key : stripped.getTag().c())
+				if(ALLOWED_TAGS.contains(key))
+					tag.set(key, stripped.getTag().get(key));
+			stripped.setTag(tag);
+		}
+		return CraftItemStack.asBukkitCopy(stripped);
 	}
 }
