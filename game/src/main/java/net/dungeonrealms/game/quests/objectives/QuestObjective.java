@@ -65,4 +65,18 @@ public interface QuestObjective {
 	 * to tell them how close they are to killing their goal.
 	 */
 	public void setQuestStage(QuestStage qs);
+	
+	/**
+	 * Calls when the objective is active.
+	 */
+	default void onStart(Player player){
+		
+	}
+	
+	/**
+	 * Calls when the objective is completed.
+	 */
+	default void onEnd(Player player){
+		
+	}
 }
