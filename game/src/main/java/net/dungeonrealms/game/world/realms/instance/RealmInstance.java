@@ -175,10 +175,6 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
             player.sendMessage(ChatColor.RED + "Your realm is still being upgraded from another shard.");
             return;
         }
-        if (!DungeonRealms.getInstance().isMasterShard){
-        	player.sendMessage(ChatColor.RED + "Realms are temporarily disabled for maintenance.");
-        	return;
-        }
         
         if(DungeonRealms.getInstance().isMasterShard || DungeonRealms.getInstance().isEventShard){
         	player.sendMessage(ChatColor.RED + "Realms are disabled on US-0.");
