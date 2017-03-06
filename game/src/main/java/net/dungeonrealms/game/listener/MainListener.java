@@ -271,8 +271,12 @@ public class MainListener implements Listener {
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 
         CombatLog.checkCombatLog(player.getUniqueId());
-        GameAPI.handleLogin(player.getUniqueId());
-
+        try{
+        	GameAPI.handleLogin(player.getUniqueId());
+        }catch(Exception e){
+        	player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
+        	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data! Please alert a DEV.");
+        }
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
                 if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, player.getUniqueId()).toString()))) {

@@ -20,6 +20,7 @@ import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.anticheat.PacketLogger;
+import net.dungeonrealms.game.anticheat.PacketModifier;
 import net.dungeonrealms.game.command.*;
 import net.dungeonrealms.game.command.dungeon.*;
 import net.dungeonrealms.game.command.friend.AcceptCommand;
@@ -282,6 +283,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(PatchTools.getInstance());
             mm.registerMechanic(TutorialIsland.getInstance());
             mm.registerMechanic(Quests.getInstance());
+            mm.registerMechanic(new PacketModifier());
         } else {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(CombatLog.getInstance());

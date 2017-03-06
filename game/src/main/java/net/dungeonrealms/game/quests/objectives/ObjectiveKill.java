@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.quests.objectives;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.QuestNPC;
@@ -13,16 +14,18 @@ import net.dungeonrealms.game.quests.gui.GuiStageEditor;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_9_R2.Entity;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.inventivetalent.glow.GlowAPI;
+import org.inventivetalent.glow.GlowAPI.Color;
 
 import com.google.gson.JsonObject;
 
@@ -90,7 +93,7 @@ public class ObjectiveKill implements QuestObjective {
 	}
 	
 	public void handleKill(Player killer, LivingEntity entity, DRMonster monster){
-		if(killer == null || monster.getEnum() == null || this.monsterType != monster.getEnum())
+		if(killer == null || monster.getEnum() == null || !this.isApplicable(entity))
 			return;
 		
 		QuestPlayerData data = Quests.getInstance().playerDataMap.get(killer);
@@ -99,8 +102,7 @@ public class ObjectiveKill implements QuestObjective {
 		QuestProgress progress = data.getQuestProgress(this.questStage.getQuest());
 		
 		//If the player is killing too low of a tier monster, or they are not on this quest stage, don't bring up their counter.
-		if(progress == null || (progress.getStageIndex() - 1) != this.questStage.getQuest().getStageList().indexOf(this.questStage)
-				|| monster.getTier(entity) < this.tier)
+		if(progress == null || (progress.getStageIndex() - 1) != this.questStage.getQuest().getStageList().indexOf(this.questStage))
 			return;
 		
 		int count = progress.getObjectiveCounter() + 1;
@@ -119,7 +121,7 @@ public class ObjectiveKill implements QuestObjective {
 	public void handleEntityInteract(PlayerInteractAtEntityEvent evt){
 		if(evt.getHand() == EquipmentSlot.OFF_HAND) return;
 		if(this.selectors.contains(evt.getPlayer())){
-			Entity nmsEnt = ((CraftEntity) evt.getRightClicked()).getHandle();
+			net.minecraft.server.v1_9_R2.Entity nmsEnt = ((CraftEntity) evt.getRightClicked()).getHandle();
 			if(nmsEnt == null || !(nmsEnt instanceof DRMonster)){
 				evt.getPlayer().sendMessage(ChatColor.RED + "This is not a registered monster type.");
 				evt.setCancelled(true);
@@ -156,6 +158,33 @@ public class ObjectiveKill implements QuestObjective {
 	@Override
 	public void setQuestStage(QuestStage qs) {
 		this.questStage = qs;
+	}
+	
+	@Override
+	public void onStart(Player player){
+		updateGlow(player);
+	}
+	
+	public void updateGlow(Player player){
+		performNearby(player, (ent) -> GlowAPI.setGlowing(ent, Color.RED, player));
+	}
+	
+	public void onEnd(Player player){
+		performNearby(player, (ent) -> GlowAPI.setGlowing(ent, false, player));
+	}
+	
+	private void performNearby(Player player, Consumer<Entity> action){
+		player.getNearbyEntities(100, 100, 100).stream().filter(e -> isApplicable(e)).forEach(action::accept);
+	}
+	
+	public boolean isApplicable(Entity ent){
+		net.minecraft.server.v1_9_R2.Entity nmsEnt = ((CraftEntity)ent).getHandle();
+		if(nmsEnt instanceof DRMonster){
+			System.out.println("Yes, applicable");
+			DRMonster monster = (DRMonster)nmsEnt;
+			return monster.getEnum() == monsterType && monster.getTier(ent) >= tier;
+		}
+		return false;
 	}
 	
 	public class GuiKillEditor extends GuiBase {
