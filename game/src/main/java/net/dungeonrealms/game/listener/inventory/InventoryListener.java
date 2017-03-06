@@ -439,6 +439,11 @@ public class InventoryListener implements Listener {
         Player p = (Player) event.getPlayer();
         if (event.getInventory().getTitle().contains("Storage Chest") && !CommandBanksee.offline_bank_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
+            //Not loaded yet?
+            if (storage == null) {
+                Bukkit.getLogger().info("Closing " + p.getName() + " with no storage in memory.");
+                return;
+            }
             storage.inv.setContents(event.getInventory().getContents());
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
 //        } else if (event.getInventory().getTitle().startsWith(p.getName()) || event.getInventory().getTitle().endsWith(p.getName())) {
@@ -455,6 +460,9 @@ public class InventoryListener implements Listener {
             stat.reset = true;
         } else if (event.getInventory().getTitle().contains("Collection Bin") && !CommandBinsee.offline_bin_watchers.containsKey(event.getPlayer().getUniqueId())) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
+            if (storage == null) {
+                return; //Not possible.
+            }
             Inventory bin = storage.collection_bin;
             if (bin == null)
                 return;
@@ -1439,30 +1447,30 @@ public class InventoryListener implements Listener {
             int slot = event.getRawSlot();
             Player p = (Player) event.getWhoClicked();
             PlayerStats stats = StatsManager.getPlayerStats(p);
-            
+
             if (event.getCurrentItem() != null && slot >= 2 && slot < 6) {
                 final Inventory inv = event.getInventory();
                 int amount = event.isShiftClick() ? 3 : 1;
-                String[] statNames = new String[] {"", "", "str", "dex", "int", "vit"};
+                String[] statNames = new String[]{"", "", "str", "dex", "int", "vit"};
                 String stat = statNames[slot];
-                
+
                 if (event.getClick() == ClickType.MIDDLE) {
-                	
+
                     p.sendMessage(ChatColor.GREEN + "Type a custom allocated amount.");
                     stats.reset = false;
-                    
+
                     int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
-                    
+
                     Chat.listenForNumber(p, 0, currentFreePoints, num -> {
-                    	for (int i = 0; i < num; i++)
+                        for (int i = 0; i < num; i++)
                             stats.allocatePoint(stat, p, inv);
                         p.openInventory(inv);
                     }, err -> {
-                    	p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
-                    	stats.resetTemp();
+                        p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
+                        stats.resetTemp();
                     });
-                    
-                }else{
+
+                } else {
                     for (int i = 0; i < amount; i++) {
                         if (event.isRightClick())
                             stats.removePoint(stat, p, inv);
@@ -1471,9 +1479,9 @@ public class InventoryListener implements Listener {
                     }
                 }
             }
-            
-            if(slot == 6){
-            	stats.dexPoints += stats.tempdexPoints;
+
+            if (slot == 6) {
+                stats.dexPoints += stats.tempdexPoints;
                 stats.vitPoints += stats.tempvitPoints;
                 stats.strPoints += stats.tempstrPoints;
                 stats.intPoints += stats.tempintPoints;
@@ -1575,7 +1583,7 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerClickWithImportantItem(InventoryClickEvent event) {
         if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        if(event.getInventory().getName().equals("Party Loot Selection")){
+        if (event.getInventory().getName().equals("Party Loot Selection")) {
             event.setCancelled(true);
             event.setResult(Event.Result.DENY);
             return;

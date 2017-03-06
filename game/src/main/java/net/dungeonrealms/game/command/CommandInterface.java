@@ -35,6 +35,10 @@ public class CommandInterface extends BaseCommand {
             switch (args[0].toLowerCase()) {
                 case "bank":
                     Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
+                    if(storage == null){
+                        player.sendMessage(ChatColor.RED + "Please wait while your storage is loaded.");
+                        return true;
+                    }
                     player.openInventory(storage.inv);
                     break;
 

@@ -276,6 +276,7 @@ public class MainListener implements Listener {
         }catch(Exception e){
         	player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
         	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data! Please alert a DEV.");
+            e.printStackTrace();
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (player.isOnline()) {
@@ -644,6 +645,10 @@ public class MainListener implements Listener {
                 || npcNameStripped.equalsIgnoreCase("Shakhtan") || npcNameStripped.equalsIgnoreCase("Lakhtar")
                 || npcNameStripped.equalsIgnoreCase("Aeylah")) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
+            if(storage == null){
+                event.getPlayer().sendMessage(ChatColor.RED + "Please wait while your Bank is being loaded...");
+                return;
+            }
             event.getPlayer().openInventory(storage.inv);
         }
         /* if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {

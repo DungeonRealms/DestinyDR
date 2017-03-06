@@ -82,12 +82,12 @@ public class BankListener implements Listener {
                 if (event.getMessage().equalsIgnoreCase("confirm")) {
                     boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
                     if (tookGems) {
-                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), false);
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), true);
                         p.sendMessage("");
                         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
                         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
                         p.closeInventory();
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(p.getUniqueId()).update(), 20L);
+                        BankMechanics.getInstance().getStorage(p.getUniqueId()).update();
                     } else {
                         p.closeInventory();
                         p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
@@ -337,6 +337,11 @@ public class BankListener implements Listener {
                             }
                         } else {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
+                            if(storage == null){
+                                e.setCancelled(true);
+                                player.sendMessage(ChatColor.RED + "Please wait while your storage is being loaded..");
+                                return;
+                            }
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
                                     if (!GameAPI.isItemTradeable(e.getCursor()) || !GameAPI.isItemDroppable(e.getCursor())) {
@@ -377,12 +382,17 @@ public class BankListener implements Listener {
                     } else if (e.getRawSlot() == 0) {
                         e.setCancelled(true);
                         Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
+                        if (storage == null) {
+                            player.sendMessage(ChatColor.RED + "Please wait while your bank is being loaded...");
+                            return;
+                        }
+
                         if (e.isLeftClick()) {
                             // Open Storage
                             player.openInventory(storage.inv);
                         } else if (e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.RIGHT) {
                             Player p = (Player) e.getWhoClicked();
-                            if (BankMechanics.storage.get(player.getUniqueId()).collection_bin != null) {
+                            if (storage.collection_bin != null) {
                                 player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
                                 player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
                                 return;
@@ -433,6 +443,11 @@ public class BankListener implements Listener {
                         //Collection Bin
                         e.setCancelled(true);
                         Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
+                        if(storage == null){
+                            e.setCancelled(true);
+                            player.sendMessage(ChatColor.RED + "Please wait while your storage is being loaded..");
+                            return;
+                        }
                         if (storage.collection_bin != null) {
                             player.openInventory(storage.collection_bin);
                             e.setCancelled(true);
@@ -444,6 +459,11 @@ public class BankListener implements Listener {
                     if (e.isShiftClick()) {
                         if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGemPouch(e.getCurrentItem())) {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
+                            if(storage == null){
+                                e.setCancelled(true);
+                                player.sendMessage(ChatColor.RED + "Please wait while your storage is being loaded..");
+                                return;
+                            }
                             if (storage.hasSpace()) {
                                 if (!GameAPI.isItemTradeable(e.getCurrentItem()) || !GameAPI.isItemDroppable(e.getCurrentItem())) {
                                     player.sendMessage(ChatColor.RED + "You can't store this item!");
@@ -709,7 +729,7 @@ public class BankListener implements Listener {
         inv.setItem(0, CraftItemStack.asBukkitCopy(storagenms));
 
 
-        if(CurrencyTab.isEnabled()) {
+        if (CurrencyTab.isEnabled()) {
             List<String> currencyLore = Lists.newArrayList();
 
             CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(uuid);
@@ -761,10 +781,12 @@ public class BankListener implements Listener {
         storage.setItemMeta(collectionMeta);
         net.minecraft.server.v1_9_R2.ItemStack collectionBin = CraftItemStack.asNMSCopy(storage);
         collectionBin.getTag().setString("type", "collection");
-        if (BankMechanics.getInstance().getStorage(uuid).collection_bin != null) {
+        Storage stor = BankMechanics.getInstance().getStorage(uuid);
+        if (stor != null && stor.collection_bin != null) {
             inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
         } else if (DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, uuid).toString().length() > 1) {
-            BankMechanics.getInstance().getStorage(uuid).update();
+            if (stor != null)
+                stor.update();
             inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
         }
         return inv;

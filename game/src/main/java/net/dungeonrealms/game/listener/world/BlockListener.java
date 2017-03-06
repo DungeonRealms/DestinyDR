@@ -14,6 +14,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
@@ -952,7 +953,13 @@ public class BlockListener implements Listener {
                 if (!TutorialIsland.onTutorialIsland(player.getLocation())) {
                     if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST) && !GameAPI.isMaterialNearby(b1, 3, Material.PORTAL)) {
                         if (gp != null && !gp.hasShopOpen()) {
-                            if (BankMechanics.getInstance().getStorage(player.getUniqueId()).collection_bin != null) {
+                            Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
+                            if(storage == null){
+                                player.sendMessage(ChatColor.RED + "Please wait for your storage bin to load...");
+                                e.setCancelled(true);
+                                return;
+                            }
+                            if (storage.collection_bin != null) {
                                 player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
                                 player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
                                 e.setCancelled(true);
