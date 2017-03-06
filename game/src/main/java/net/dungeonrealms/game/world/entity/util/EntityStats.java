@@ -235,14 +235,17 @@ public class EntityStats {
         bukkitEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) bukkitEntity)));
         bukkitEntity.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
         bukkitEntity.setMetadata("level", new FixedMetadataValue(DungeonRealms.getInstance(), level));
-        for (ItemStack i : ((LivingEntity) bukkitEntity).getEquipment().getArmorContents()) {
-            if (i != null && bukkitEntity != null) {
+        LivingEntity ent = (LivingEntity) bukkitEntity;
+        for (ItemStack i : ent.getEquipment().getArmorContents()) {
+            if (i != null && i.getType() != Material.AIR && bukkitEntity != null) {
                 EnchantmentAPI.addGlow(i);
             }
         }
-        EnchantmentAPI.addGlow(((LivingEntity) bukkitEntity).getEquipment().getItemInMainHand());
+        if (ent.getEquipment().getItemInMainHand() != null && ent.getEquipment().getItemInMainHand().getType() != Material.AIR)
+            EnchantmentAPI.addGlow(ent.getEquipment().getItemInMainHand());
+
         ((LivingEntity) bukkitEntity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, true));
-        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) bukkitEntity, HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) bukkitEntity));
+        HealthHandler.getInstance().setMonsterHPLive(ent, HealthHandler.getInstance().getMonsterMaxHPLive(ent));
     }
 
 }
