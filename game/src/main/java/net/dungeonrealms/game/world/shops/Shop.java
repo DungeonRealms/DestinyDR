@@ -115,11 +115,13 @@ public class Shop {
             owner.closeInventory();
         }
         // Do other stuff
-        saveCollectionBin(shutDown);
+        
         viewCount = 0;
-
-        uniqueViewers.stream().filter(name -> Bukkit.getPlayer(name) != null).forEach(name -> Bukkit.getPlayer(name).closeInventory());
+        inventory.getViewers().forEach(HumanEntity::closeInventory);
         uniqueViewers.clear();
+        
+        saveCollectionBin(shutDown);
+        
         if (shutDown) {
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
             DungeonRealms.getInstance().getLogger().info(ownerName + " shop deleted correctly.");

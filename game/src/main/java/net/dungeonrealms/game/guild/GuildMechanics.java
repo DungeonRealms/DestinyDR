@@ -458,8 +458,6 @@ public class GuildMechanics {
     public void createGuild(Player player, GuildCreateToken info) {
         GUILD_CREATE_TOKENS.remove(player.getUniqueId());
 
-        player.closeInventory();
-
         // Confirmation stage
         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, thank you. Let me show you a quick summary of your guild.");
         player.sendMessage("");

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
@@ -44,7 +45,8 @@ public class PacketModifier implements GenericMechanic {
 	    			meta.setLore(Arrays.asList(ItemRarity.UNIQUE.getName()));
 	    		if(meta.hasDisplayName())
 	    			meta.setDisplayName(ChatColor.GOLD + "Legendary Snapper..?");
-	    		item.setDurability((short)0);
+	    		if(GameAPI.isArmor(item) || GameAPI.isWeapon(item))
+	    			item.setDurability((short)0);
 	    		item.setItemMeta(meta);
 	    		packet.getItemModifier().write(0, item);
 	    	}

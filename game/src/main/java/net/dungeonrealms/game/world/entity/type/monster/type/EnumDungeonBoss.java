@@ -7,7 +7,7 @@ import net.dungeonrealms.game.mechanic.DungeonManager.DungeonType;
  */
 public enum EnumDungeonBoss {
 
-	Mayel("mayel", "Mayel The Cruel", "",
+	Mayel("mayel", "Mayel The Cruel", "cunning bandit lord",
 			"How dare you challenge ME, the leader of the Cyrene Bandits! To me, my brethren, let us crush these incolents",
 			"No... how could it be?", true, DungeonType.BANDIT_TROVE),
 			
