@@ -239,8 +239,10 @@ public class EnergyHandler implements GenericMechanic {
         if (player.getGameMode() == GameMode.CREATIVE) return;
         if (GameAPI.isInSafeRegion(player.getLocation()) && !duel) return;
         if (player.hasMetadata("last_energy_remove")) {
-            if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 80) {
-                return;
+            if(!(GameAPI.isWeapon(player.getInventory().getItemInMainHand()) && player.getInventory().getItemInMainHand().getType().name().endsWith("_HOE"))) {
+                if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 80) {
+                    return;
+                }
             }
         }
         player.setMetadata("last_energy_remove", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));

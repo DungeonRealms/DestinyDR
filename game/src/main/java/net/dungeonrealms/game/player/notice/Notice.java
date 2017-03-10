@@ -61,9 +61,11 @@ public class Notice {
         
         int lastSeenBuild = -1;
         int serverBuild = Integer.parseInt(Constants.BUILD_NUMBER.substring(1));
-        if(lastViewedBuild != null && lastViewedBuild.length() > 1)
-        	lastSeenBuild = Integer.parseInt(lastViewedBuild.substring(1));
-        
+        if(lastViewedBuild != null && lastViewedBuild.length() > 1) {
+            String build = lastViewedBuild.substring(1);
+            double last = Double.parseDouble(build);
+            lastSeenBuild = (int) last;
+        }
         Object noteSize = DatabaseAPI.getInstance().getData(EnumData.LAST_NOTES_SIZE, player.getUniqueId());
         
         if (lastViewedBuild == null || (serverBuild > lastSeenBuild && (noteSize == null || PatchTools.getInstance().getSize() != (Integer)noteSize)))

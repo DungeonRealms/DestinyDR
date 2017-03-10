@@ -65,17 +65,17 @@ public class Storage {
      * @return
      */
     private Inventory getNewStorage() {
-        Player p = Bukkit.getPlayer(ownerUUID);
-        int size = getStorageSize(p);
-        return Bukkit.createInventory(p, size, "Storage Chest");
+//        Player p = Bukkit.getPlayer(ownerUUID);
+        int size = getStorageSize();
+        return Bukkit.createInventory(null, size, "Storage Chest");
     }
 
     /**
      * @param p
      * @return
      */
-    private int getStorageSize(Player p) {
-        int lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
+    private int getStorageSize() {
+        int lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, ownerUUID);
         return 9 * lvl;
     }
 

@@ -9,6 +9,7 @@ import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -171,8 +172,10 @@ public class Shop {
             if (Bukkit.getPlayer(ownerUUID) != null) {
                 Bukkit.getPlayer(ownerUUID).sendMessage(ChatColor.GREEN + "Your shop was saved and can now be found in your Collection Bin.");
             }
-            if (BankMechanics.getInstance().getStorage(ownerUUID) != null) {
-                BankMechanics.getInstance().getStorage(ownerUUID).collection_bin = inv;
+
+            Storage storage = BankMechanics.getInstance().getStorage(ownerUUID);
+            if (storage != null) {
+                storage.collection_bin = inv;
             }
             String invToString = ItemSerialization.toString(inv);
             //Only save on shutdown, otherwise they can take items out from the inventory, then /closeshop to load it back from Mongo.

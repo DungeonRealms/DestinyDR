@@ -551,7 +551,7 @@ public class GameAPI {
     public static void sendNetworkMessage(String task, String message, String... contents) {
         getClient().sendNetworkMessage(task, message, contents);
     }
-    
+
     public static void sendDevMessage(String message, String... contents) {
         getClient().sendNetworkMessage("DEVMessage", message.replace("{SERVER}", DungeonRealms.getInstance().bungeeName), contents);
     }
@@ -709,12 +709,11 @@ public class GameAPI {
         return getNearbyPlayers(entity, radius, false);
     }
 
-    
-    
+
     /**
      * Gets the a list of nearby players from a location within a given radius
      *
-     * @param location
+     * @param entity
      * @param radius
      * @param
      * @since 1.0
@@ -779,10 +778,10 @@ public class GameAPI {
         if (player == null || DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) {
             return false;
         }
-        String name = (String)DatabaseAPI.getInstance().getData(EnumData.USERNAME, player.getUniqueId());
-        if(name == null || name.length() < 1)
-        	return false;
-        
+        String name = (String) DatabaseAPI.getInstance().getData(EnumData.USERNAME, player.getUniqueId());
+        if (name == null || name.length() < 1)
+            return false;
+
         List<UpdateOneModel<Document>> operations = new ArrayList<>();
         Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
 
@@ -839,12 +838,12 @@ public class GameAPI {
         // MISC
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.CURRENT_FOOD.getKey(), player.getFoodLevel()))));
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.HEALTH.getKey(), HealthHandler.getInstance().getPlayerHPLive(player)))));
-        
+
         KarmaHandler.getInstance().saveToMongo(player);
-        
+
         //  QUEST DATA  //
         Quests.getInstance().savePlayerToMongo(player);
-        
+
         DatabaseAPI.getInstance().bulkUpdate(operations, async, doAfter);
         return true;
     }
@@ -874,7 +873,7 @@ public class GameAPI {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
 
         Chat.listenForMessage(player, null, null);
-        
+
         // save player data
         savePlayerData(uuid, async, doAfterSave -> {
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
@@ -1120,15 +1119,26 @@ public class GameAPI {
 
             player.updateInventory();
         }
-        String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
-        if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
-            Inventory inv = ItemSerialization.fromString(source);
-            Storage storageTemp = new Storage(uuid, inv);
-            BankMechanics.storage.put(uuid, storageTemp);
-        } else {
-            Storage storageTemp = new Storage(uuid);
-            BankMechanics.storage.put(uuid, storageTemp);
-        }
+
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
+            if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
+                int size = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, uuid);
+                //Auto set the inventory size based off level? min 9, max 54
+                Inventory inv = ItemSerialization.fromString(source, Math.max(9, Math.min(54, size * 9)));
+                Storage storageTemp = new Storage(uuid, inv);
+                BankMechanics.storage.put(uuid, storageTemp);
+            } else {
+                Storage storageTemp = new Storage(uuid);
+                BankMechanics.storage.put(uuid, storageTemp);
+            }
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                // Anticheat
+                AntiDuplication.getInstance().handleLogin(player);
+            });
+
+        });
 
         CurrencyTab currencyTab = new CurrencyTab(player.getUniqueId());
         currencyTab.loadCurrencyTab(tab -> {
@@ -1269,8 +1279,8 @@ public class GameAPI {
         }
 
         // Quests
-        if(Quests.isEnabled())
-       		Quests.getInstance().handleLogin(player);
+        if (Quests.isEnabled())
+            Quests.getInstance().handleLogin(player);
 
         // Fatigue
         EnergyHandler.getInstance().handleLoginEvents(player);
@@ -1286,9 +1296,6 @@ public class GameAPI {
 
         // Notices
         Notice.getInstance().doLogin(player);
-
-        // Anticheat
-        AntiDuplication.getInstance().handleLogin(player);
 
         createNewData(player);
 
@@ -1431,7 +1438,7 @@ public class GameAPI {
     private static void createNewData(Player player) {
         UUID uuid = player.getUniqueId();
         createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
-    	createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
+        createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
     }
 
     private static void createIfMissing(UUID uuid, EnumData data, Object setTo) {
@@ -2309,8 +2316,8 @@ public class GameAPI {
     /**
      * Teleports a player to another shard (Unconditionally)
      *
-     * @param Player
-     * @param ShardInfo
+     * @param player
+     * @param shard
      */
     public static void sendToShard(Player player, ShardInfo shard) {
         player.setMetadata("sharding", new FixedMetadataValue(DungeonRealms.getInstance(), true));
@@ -2330,7 +2337,7 @@ public class GameAPI {
      * Example Input: 90000
      * Example Output: "1min 30s"
      *
-     * @param ms
+     * @param
      */
     public static String formatTime(long time) {
         time /= 1000;
@@ -2371,20 +2378,20 @@ public class GameAPI {
             return this.suffix;
         }
     }
-    
+
     /**
      * Returns the item the player is interacting with from an InventoryClickEvent.
      * The item will be the item you're trying to place as this is mainly used to block placing items.
      */
-    public static ItemStack getItemToCheck(InventoryClickEvent event){
-    	ItemStack item = event.getCursor();
-    	if (event.getAction().name().contains("PICKUP") || event.isShiftClick()){
-    		item = event.getCurrentItem();
-    		System.out.println("Pickup / Shift");
-    	}
-        if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD){
-        	item = event.getRawSlot() < event.getInventory().getSize() ? event.getView().getBottomInventory().getItem(event.getHotbarButton()) : event.getCurrentItem();
-        	System.out.println("Hotbar");
+    public static ItemStack getItemToCheck(InventoryClickEvent event) {
+        ItemStack item = event.getCursor();
+        if (event.getAction().name().contains("PICKUP") || event.isShiftClick()) {
+            item = event.getCurrentItem();
+            System.out.println("Pickup / Shift");
+        }
+        if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
+            item = event.getRawSlot() < event.getInventory().getSize() ? event.getView().getBottomInventory().getItem(event.getHotbarButton()) : event.getCurrentItem();
+            System.out.println("Hotbar");
         }
         System.out.println("Returning " + item.getType() + " from action = " + event.getAction().name());
         return item;
