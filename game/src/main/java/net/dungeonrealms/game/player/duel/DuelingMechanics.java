@@ -32,7 +32,8 @@ public class DuelingMechanics {
      * @param requested
      */
     public static void sendDuelRequest(Player sender, Player requested) {
-        return;
+        if (true)
+            return;
         
 //    	if(DungeonRealms.getShard() == ShardInfo.US1){
 //    		sender.sendMessage(ChatColor.RED + "Dueling is temporarily disabled on this server.");
