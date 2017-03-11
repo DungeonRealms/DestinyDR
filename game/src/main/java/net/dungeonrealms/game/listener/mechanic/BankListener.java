@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener.mechanic;
 
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -13,6 +14,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -24,6 +26,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
@@ -659,19 +662,35 @@ public class BankListener implements Listener {
                     item = e.getCursor();
                 }
             }
-            if ((e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP) && e.getRawSlot() < e.getInventory().getSize())
+            boolean banned = !GameAPI.isItemTradeable(item) || !GameAPI.isItemDroppable(item);
+            if ((e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP) && e.getRawSlot() < e.getInventory().getSize()){
                 item = e.getView().getBottomInventory().getItem(e.getHotbarButton());
+                //handleMoneyDeposit doesn't support hotbar swapping, so it allows notes to be placed.
+                //This is a quick and dirty solution to that.
+                banned = banned || isMoney(item);
+            }
 
-            if (!GameAPI.isItemTradeable(item) || !GameAPI.isItemDroppable(item)) {
+            if (banned) {
                 p.sendMessage(ChatColor.RED + "You can't store this item!");
                 e.setCancelled(true);
             }
 
-            if (item != null && (BankMechanics.getInstance().isBankNote(item) || BankMechanics.getInstance().isGemPouch(item) || BankMechanics.getInstance().isGem(item))) {
+            if (item != null && isMoney(item)) {
                 handleMoneyDeposit(e, player, item.equals(e.getCursor()));
             }
         }
 
+    }
+    
+    @EventHandler
+    public void onItemDrag(InventoryDragEvent event) {
+    	if(event.getInventory().getTitle().equalsIgnoreCase("Storage Chest"))
+    		if(isMoney(event.getOldCursor()) || !GameAPI.isItemTradeable(event.getOldCursor()) || !GameAPI.isItemDroppable(event.getOldCursor()))
+    			event.setCancelled(true);
+    }
+    
+    private boolean isMoney(ItemStack item) { 
+    	return BankMechanics.getInstance().isBankNote(item) || BankMechanics.getInstance().isGemPouch(item) || BankMechanics.getInstance().isGem(item);
     }
 
 

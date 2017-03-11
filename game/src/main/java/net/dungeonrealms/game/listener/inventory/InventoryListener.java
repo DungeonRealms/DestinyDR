@@ -190,7 +190,7 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDragItemInDuelWager(InventoryDragEvent event) {
         if (event.getInventory().getTitle().contains("VS.") || event.getInventory().getTitle().contains("Bank")
-                || event.getInventory().getTitle().contains("@") || event.getInventory().getTitle().contains("Trade") || event.getInventory().getTitle().contains("Storage"))
+                || GameAPI.isShop(event.getInventory()) || event.getInventory().getTitle().contains("Trade"))
             event.setCancelled(true);
     }
 

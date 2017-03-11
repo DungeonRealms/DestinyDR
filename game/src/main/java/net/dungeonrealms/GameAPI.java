@@ -2385,9 +2385,13 @@ public class GameAPI {
      */
     public static ItemStack getItemToCheck(InventoryClickEvent event) {
         ItemStack item = event.getCursor();
-        if (event.getAction().name().contains("PICKUP") || event.isShiftClick()) {
+        if (event.getAction().name().contains("PICKUP") || event.isShiftClick() 
+        		|| event.getAction() == InventoryAction.CLONE_STACK
+        		|| event.getAction() == InventoryAction.DROP_ALL_SLOT
+        		|| event.getAction() == InventoryAction.DROP_ONE_SLOT
+        		) {
             item = event.getCurrentItem();
-            System.out.println("Pickup / Shift");
+            System.out.println("Picked from container");
         }
         if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
             item = event.getRawSlot() < event.getInventory().getSize() ? event.getView().getBottomInventory().getItem(event.getHotbarButton()) : event.getCurrentItem();

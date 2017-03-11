@@ -62,7 +62,7 @@ public class DungeonJoin extends BaseCommand {
                         boolean hasTeleported = false;
                         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 100);
                         for (Player player1 : dungeonObject.getPlayerList().keySet()) {
-                            if (player.getName().equals(player1.getName())) {
+                            if (player.getName().equals(player1.getName()) || player1.isDead()) {
                                 continue;
                             }
                             if (player1.getWorld().getName().contains("DUNGEON")) {
