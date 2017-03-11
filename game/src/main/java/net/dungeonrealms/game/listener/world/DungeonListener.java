@@ -12,6 +12,7 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.DungeonManager.DungeonType;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.type.EnderCrystal;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -324,14 +325,11 @@ public class DungeonListener implements Listener {
 //                player.sendMessage(ChatColor.RED + "You need to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level 5 to enter a dungeon.");
 //                return;
 //            }
-
-            if (dungeonName.equalsIgnoreCase("dodungeon")) {
-                dungeonName = "DODungeon";
-            }
-            if (dungeonName.equalsIgnoreCase("t1dungeon")) {
-                dungeonName = "T1Dungeon";
-            }
-
+            
+            DungeonManager.DungeonType dungeonType = null;
+            for(DungeonType type : DungeonType.values())
+            	if(type.getDataFileName().equals(dungeonName))
+            		dungeonType = type;
 
             boolean isPartyInInstance = false;
 
@@ -350,31 +348,11 @@ public class DungeonListener implements Listener {
                 }
                 if (isPartyInInstance) {
                     if (partyDungeon != null) {
-                        switch (partyDungeon.getType()) {
-                            case BANDIT_TROVE:
-                                if (!dungeonName.equalsIgnoreCase("T1Dungeon")) {
-                                    player.sendMessage(ChatColor.RED + "Your party is already inside a " + ChatColor.UNDERLINE + "different" + ChatColor.RED + " instanced dungeon.");
-                                    player.sendMessage(ChatColor.GRAY + "You'll need to either leave your current party or wait for them to finish their run.");
-                                    return;
-                                }
-                                break;
-                            case VARENGLADE:
-                                if (!dungeonName.equalsIgnoreCase("DODungeon")) {
-                                    player.sendMessage(ChatColor.RED + "Your party is already inside a " + ChatColor.UNDERLINE + "different" + ChatColor.RED + " instanced dungeon.");
-                                    player.sendMessage(ChatColor.GRAY + "You'll need to either leave your current party or wait for them to finish their run.");
-                                    return;
-                                }
-                                break;
-                            case THE_INFERNAL_ABYSS:
-                                if (!dungeonName.equalsIgnoreCase("fireydungeon")) {
-                                    player.sendMessage(ChatColor.RED + "Your party is already inside a " + ChatColor.UNDERLINE + "different" + ChatColor.RED + " instanced dungeon.");
-                                    player.sendMessage(ChatColor.GRAY + "You'll need to either leave your current party or wait for them to finish their run.");
-                                    return;
-                                }
-                                break;
-                            default:
-                                return;
-                        }
+                    	if(partyDungeon.getType() != dungeonType) {
+                    		player.sendMessage(ChatColor.RED + "Your party is already inside a " + ChatColor.UNDERLINE + "different" + ChatColor.RED + " instanced dungeon.");
+                            player.sendMessage(ChatColor.GRAY + "You'll need to either leave your current party or wait for them to finish their run.");
+                            return;
+                    	}
                         if (!partyDungeon.getPlayerList().containsKey(player)) {
                             if (partyDungeon.getTime() > 600) {
                                 player.sendMessage(ChatColor.RED + "This Dungeon was created before you joined the party, you cannot join this session.");
@@ -430,19 +408,10 @@ public class DungeonListener implements Listener {
                 }
             }
             partyList.put(player, true);
-            DungeonManager.DungeonType dungeonType;
-            if (dungeonName.equalsIgnoreCase("T1Dungeon")) {
-                dungeonType = DungeonManager.DungeonType.BANDIT_TROVE;
-            } else if (dungeonName.equalsIgnoreCase("DODungeon")) {
-                dungeonType = DungeonManager.DungeonType.VARENGLADE;
-            } else if (dungeonName.equalsIgnoreCase("fireydungeon")) {
-                dungeonType = DungeonManager.DungeonType.THE_INFERNAL_ABYSS;
-            } else {
-                dungeonType = null;
-            }
+            
             if (dungeonType == null) return;
             DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 100);
-            DungeonManager.getInstance().createNewInstance(dungeonType, partyList, dungeonName);
+            DungeonManager.getInstance().createNewInstance(dungeonType, partyList);
             player.sendMessage(ChatColor.GRAY + "Loading Instance: '" + ChatColor.UNDERLINE + dungeonType.name().replaceAll("_", " ") + ChatColor.GRAY
                     + "' -- Please wait...");
         }

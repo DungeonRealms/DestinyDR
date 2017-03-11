@@ -1,28 +1,30 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.DungeonManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
-import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
-import net.dungeonrealms.game.world.entity.type.monster.base.DRSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.base.DRWitherSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
-import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.minecraft.server.v1_9_R2.EntityInsentient;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -50,6 +52,34 @@ public interface DungeonBoss extends Boss {
     public String[] getItems();
     
     public void addKillStat(GamePlayer gp);
+    
+    default net.minecraft.server.v1_9_R2.Entity spawnMinion(EnumMonster monsterType, String mobName, int tier) {
+    	return spawnMinion(monsterType, mobName, tier, true);
+    }
+    
+    default net.minecraft.server.v1_9_R2.Entity spawnMinion(EnumMonster monsterType, String mobName, int tier, boolean highPower) {
+    	Random random = new Random();
+    	
+    	net.minecraft.server.v1_9_R2.World world = ((CraftWorld)getBukkitEntity().getWorld()).getHandle();
+    	net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, tier, monsterType);
+        int level = Utils.getRandomFromTier(tier, highPower ? "high" : "low");
+        String newLevelName = ChatColor.AQUA + "[Lvl. " + level + "] ";
+        EntityStats.createDungeonMob(entity, level, tier);
+        SpawningMechanics.rollElement(entity, monsterType);
+        if (entity == null)
+            return null;
+        entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+        String displayName = newLevelName + GameAPI.getTierColor(tier).toString() + ChatColor.BOLD + mobName;
+        entity.setCustomName(displayName);
+        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), displayName));
+        Location location = new Location(world.getWorld(), getBukkitEntity().getLocation().getX() + random.nextInt(3), getBukkitEntity().getLocation().getY(), getBukkitEntity().getLocation().getZ() + random.nextInt(3));
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+        ((EntityInsentient) entity).persistent = true;
+        ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
+        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+        return entity;
+    }
     
     default ItemStack getWeapon(){
     	return ItemGenerator.getNamedItem(getItems()[0]);

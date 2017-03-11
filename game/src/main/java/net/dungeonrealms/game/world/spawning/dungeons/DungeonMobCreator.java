@@ -34,10 +34,7 @@ public class DungeonMobCreator {
         net.minecraft.server.v1_9_R2.World craftWorld = ((CraftWorld) world).getHandle();
 
         DungeonManager.DungeonObject object = DungeonManager.getInstance().getDungeon(world);
-//        if(object != null && object.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS){
-//            //Get Lords Guard?
-//
-//        }
+        
         for (Map.Entry<Location, String> entry : spawnData.entrySet()) {
             int tier;
             boolean hasCustomName = false;

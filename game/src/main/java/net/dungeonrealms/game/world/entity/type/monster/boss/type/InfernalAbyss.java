@@ -47,10 +47,6 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
 
     public InfernalAbyss(World world) {
         super(world);
-    }
-
-    public InfernalAbyss(World world, Location loc) {
-        super(world);
         this.createEntity(50);
         this.fireProof = true;
         this.persistent = true;
@@ -90,23 +86,9 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_DEATH, 2F, 0.85F);
         }
-        Location hit_loc = livingEntity.getLocation();
-        for (int i = 0; i < 4; i++) {
-            net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.MagmaCube);
-            int level = Utils.getRandomFromTier(3, "low");
-            String newLevelName = ChatColor.AQUA + "[Lvl. " + level + "] ";
-            EntityStats.createDungeonMob(entity, level, 3);
-            SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
-            if (entity == null) {
-                return; //WTF?? UH OH BOYS WE GOT ISSUES
-            }
-            entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + "Demonic Spawn of Inferno");
-            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + "Demonic Spawn of Inferno"));
-            Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
-            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-            world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-        }
+        
+        for (int i = 0; i < 4; i++)
+        	this.spawnMinion(EnumMonster.MagmaCube, "Demonic Spawn of Inferno", 3, false);
     }
 
     @Override
@@ -183,92 +165,21 @@ public class InfernalAbyss extends StaffWitherSkeleton implements DungeonBoss {
             DamageAPI.setArmorBonus(en, 50);
         }
 
-        if (hasFiredGhast) {
-            if (this.ghast.isAlive()) {
+        if (hasFiredGhast)
+            if (this.ghast.isAlive())
                 return;
-            }
-        }
+        
         if (random.nextInt(15) == 1) {
             Location hit_loc = this.getBukkitEntity().getLocation();
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, hit_loc.add(0, 0.5, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
+            
+            //  SPAWN MINIONS  //
             int minionType = random.nextInt(2);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.LARGE_SMOKE, hit_loc.add(0, 0.5, 0), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
-            } catch (Exception err) {
-                err.printStackTrace();
-            }
-            if (minionType == 0) {
-                if (finalForm) {
-                    for (int i = 0; i < 3; i++) {
-                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.Silverfish);
-                        int level = Utils.getRandomFromTier(3, "low");
-                        String newLevelName = ChatColor.AQUA + "[Lvl. " + level + "] ";
-                        EntityStats.createDungeonMob(entity, level, 3);
-                        SpawningMechanics.rollElement(entity, EnumMonster.Silverfish);
-                        if (entity == null) {
-                            return; //WTF?? UH OH BOYS WE GOT ISSUES
-                        }
-                        entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + "Abyssal Demon");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + "Abyssal Demon"));
-                        Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    }
-                } else {
-                    for (int i = 0; i < 3; i++) {
-                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.MagmaCube);
-                        int level = Utils.getRandomFromTier(3, "low");
-                        String newLevelName = ChatColor.AQUA + "[Lvl. " + level + "] ";
-                        EntityStats.createDungeonMob(entity, level, 3);
-                        SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
-                        if (entity == null) {
-                            return; //WTF?? UH OH BOYS WE GOT ISSUES
-                        }
-                        entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + "Spawn of Inferno");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + "Spawn of Inferno"));
-                        Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    }
-                }
-            } else if (minionType == 1) {
-                if (finalForm) {
-                    for (int i = 0; i < 2; i++) {
-                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 4, EnumMonster.Silverfish);
-                        int level = Utils.getRandomFromTier(4, "low");
-                        String newLevelName = ChatColor.AQUA + "[Lvl. " + level + "] ";
-                        EntityStats.createDungeonMob(entity, level, 4);
-                        SpawningMechanics.rollElement(entity, EnumMonster.Silverfish);
-                        if (entity == null) {
-                            return; //WTF?? UH OH BOYS WE GOT ISSUES
-                        }
-                        entity.setCustomName(newLevelName + GameAPI.getTierColor(4).toString() + "Greater Abyssal Demon");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(4).toString() + "Greater Abyssal Demon"));
-                        Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    }
-                } else {
-                    for (int i = 0; i < 2; i++) {
-                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 4, EnumMonster.MagmaCube);
-                        int level = Utils.getRandomFromTier(4, "low");
-                        String newLevelName = ChatColor.AQUA + "[Lvl. " + level + "] ";
-                        EntityStats.createDungeonMob(entity, level, 4);
-                        SpawningMechanics.rollElement(entity, EnumMonster.MagmaCube);
-                        if (entity == null) {
-                            return; //WTF?? UH OH BOYS WE GOT ISSUES
-                        }
-                        entity.setCustomName(newLevelName + GameAPI.getTierColor(4).toString() + "Demonic Spawn of Inferno");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(4).toString() + "Demonic Spawn of Inferno"));
-                        Location location = new Location(world.getWorld(), hit_loc.getX() + random.nextInt(3), hit_loc.getY(), hit_loc.getZ() + random.nextInt(3));
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    }
-                }
-            }
+            EnumMonster monsterType = finalForm ? EnumMonster.Silverfish : EnumMonster.MagmaCube;
+            String name = finalForm ? "Abyssal Demon" : "Demonic Spawn of Inferno";
+            if(minionType == 1)
+            	name = (finalForm ? "Greater" : "Demonic") + " " + name;
+            spawnMinion(monsterType, name, 3 + minionType, false);
         }
     }
     

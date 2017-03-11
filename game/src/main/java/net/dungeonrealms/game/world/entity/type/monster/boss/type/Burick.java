@@ -1,47 +1,22 @@
 package net.dungeonrealms.game.world.entity.type.monster.boss.type;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanic.DungeonManager;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeWitherSkeleton;
-import net.dungeonrealms.game.world.entity.util.EntityStats;
 import net.dungeonrealms.game.world.item.DamageAPI;
-import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -49,15 +24,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
 
-    public Location loc;
-
+	private boolean firstHeal = false;
+    private boolean isEnraged = false;
+    private CopyOnWriteArrayList<Entity> spawnedMobs = new CopyOnWriteArrayList<>();
+    private boolean canAddsRespawn = true;
+    private boolean hasMessaged = false;
+	
     public Burick(World world) {
         super(world);
-    }
-
-    public Burick(World world, Location loc) {
-        super(world);
-        this.loc = loc;
         createEntity(100);
         this.fireProof = true;
         collides = true;
@@ -71,12 +45,6 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
     public void onBossDeath() {
         
     }
-
-    private boolean firstHeal = false;
-    private boolean isEnraged = false;
-    private CopyOnWriteArrayList<Entity> spawnedMobs = new CopyOnWriteArrayList<>();
-    private boolean canAddsRespawn = true;
-    private boolean hasMessaged = false;
 
     public void startEnragedMode(LivingEntity en) {
         isEnraged = true;
@@ -100,18 +68,19 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
             for (Entity entity : spawnedMobs)
                 if (!entity.isAlive())
                     spawnedMobs.remove(entity);
+        
         LivingEntity en = (LivingEntity) event.getEntity();
         if (spawnedMobs.isEmpty()) {
             if (!canAddsRespawn && !hasMessaged) {
             	this.say("Face me, pathetic creatures!");
                 hasMessaged = true;
             }
-            if (en.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+            if (en.hasPotionEffect(PotionEffectType.INVISIBILITY))
                 en.removePotionEffect(PotionEffectType.INVISIBILITY);
-            }
-            if (DamageAPI.isInvulnerable(en)) {
+            
+            if (DamageAPI.isInvulnerable(en))
                 DamageAPI.removeInvulnerable(en);
-            }
+            
         }
         int health = HealthHandler.getInstance().getMonsterMaxHPLive(en);
         int hp = HealthHandler.getInstance().getMonsterHPLive(en);
@@ -119,11 +88,7 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         if (hp <= (float) (health * 0.5)) {
             if (canAddsRespawn) {
                 spawnWave();
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, loc, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
-                } catch (Exception err) {
-                    err.printStackTrace();
-                }
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, getBukkitEntity().getLocation(), random.nextFloat(), random.nextFloat(), random.nextFloat(), 1F, 100);
                 en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
                 DamageAPI.setInvulnerable(en);
                 say("To me, my undead brethren! Rip these Andalucians to pieces!");
@@ -157,74 +122,20 @@ public class Burick extends MeleeWitherSkeleton implements DungeonBoss {
         return EnumDungeonBoss.Burick;
     }
 
-    private Location toSpawn = new Location(this.getBukkitEntity().getWorld(), -364, 61, -1);
-
     private void spawnWave() {
         int waveType = random.nextInt(3);
-        Location location = new Location(world.getWorld(), toSpawn.getX() + random.nextInt(3), toSpawn.getY(), toSpawn.getZ() + random.nextInt(3));
         switch (waveType) {
             case 0:
-                for (int i = 0; i < 4; i++) {
-                    Entity entity = SpawningMechanics.getMob(world, 1, EnumMonster.Monk);
-                    int level = Utils.getRandomFromTier(3, "high");
-                    String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
-                    EntityStats.createDungeonMob(entity, level, 3);
-                    SpawningMechanics.rollElement(entity, EnumMonster.Monk);
-                    if (entity == null) {
-                        return; //WTF?? UH OH BOYS WE GOT ISSUES
-                    }
-                    entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Protector");
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Protector"));
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    ((EntityInsentient) entity).persistent = true;
-                    ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
-                    world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    spawnedMobs.add(entity);
-                }
+                for (int i = 0; i < 4; i++)
+                    spawnedMobs.add(spawnMinion(EnumMonster.Monk, "Burick's Protector", 2));
                 break;
             case 1:
-                for (int i = 0; i <= 4; i++) {
-                    Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.Acolyte);
-                    int level = Utils.getRandomFromTier(3, "high");
-                    String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
-                    EntityStats.createDungeonMob(entity, level, 3);
-                    SpawningMechanics.rollElement(entity, EnumMonster.Acolyte);
-                    if (entity == null) {
-                        return; //WTF?? UH OH BOYS WE GOT ISSUES
-                    }
-                    entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    entity.setCustomName(newLevelName + GameAPI.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Acolyte");
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(3).toString() + ChatColor.BOLD + "Burick's Acolyte"));
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    ((EntityInsentient) entity).persistent = true;
-                    ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
-                    world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    spawnedMobs.add(entity);
-                }
+                for (int i = 0; i <= 4; i++)
+                	spawnedMobs.add(spawnMinion(EnumMonster.Acolyte, "Burick's Acolyte", 3));
                 break;
             case 2:
-                for (int i = 0; i <= 6; i++) {
-                    Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.Skeleton);
-                    int level = Utils.getRandomFromTier(2, "high");
-                    String newLevelName = ChatColor.AQUA.toString() + "[Lvl. " + level + "] ";
-                    EntityStats.createDungeonMob(entity, level, 2);
-                    SpawningMechanics.rollElement(entity, EnumMonster.Skeleton);
-                    if (entity == null) {
-                        return; //WTF?? UH OH BOYS WE GOT ISSUES
-                    }
-                    entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    entity.setCustomName(newLevelName + GameAPI.getTierColor(2).toString() + ChatColor.BOLD + "Burick's Sacrifice");
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + GameAPI.getTierColor(2).toString() + ChatColor.BOLD + "Burick's Sacrifice"));
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    ((EntityInsentient) entity).persistent = true;
-                    ((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
-                    world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    spawnedMobs.add(entity);
-                }
+                for (int i = 0; i <= 6; i++)
+                	spawnedMobs.add(spawnMinion(EnumMonster.Skeleton, "Burick's Sacrifice", 2));
                 break;
         }
     }

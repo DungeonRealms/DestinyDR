@@ -931,6 +931,8 @@ public class RealmListener implements Listener {
         if (!event.getInventory().getName().equalsIgnoreCase("container.hopper") && event.getAction() == InventoryAction.PICKUP_ALL) {
             // Trying to grab all items from a chest in a realm.
             String realm_name = p.getWorld().getName();
+            if(realm_name.contains("DUNGEON"))
+            	return;
             if (!(realm_name.equalsIgnoreCase(p.getUniqueId().toString()) || (REALMS.getToken(p.getLocation()).getBuilders().contains(p.getUniqueId())))) {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);

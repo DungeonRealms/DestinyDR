@@ -126,7 +126,7 @@ public class BossListener implements Listener {
             
             String partyMembers = "";
             for (Player player : livingEntity.getWorld().getPlayers()) {
-                if (player.getGameMode() != GameMode.SURVIVAL)
+                if (player.getGameMode() != GameMode.SURVIVAL && !DungeonManager.getInstance().isAllOppedPlayers(livingEntity.getWorld()))
                     continue;
                 
                 partyMembers += player.getName() + ", ";

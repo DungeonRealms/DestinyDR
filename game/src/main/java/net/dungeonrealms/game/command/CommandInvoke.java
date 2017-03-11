@@ -4,6 +4,8 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.DungeonManager.DungeonType;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -31,97 +33,15 @@ public class CommandInvoke extends BaseCommand {
         if (!Rank.isTrialGM(player)) {
             return false;
         }
+        
         if (args.length > 0) {
             if (DungeonManager.getInstance().canCreateInstance()) {
 
-                DungeonManager.DungeonObject object = null;
-                switch (args[0].toLowerCase()) {
-                    case "bandittrove":
-                    case "t1dungeon":
-                        if (Affair.getInstance().isInParty(player)) {
-                            Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
-                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
-                                    partyList.put(player1, true);
-                                } else {
-                                    partyList.put(player1, false);
-                                }
-                            }
-                            partyList.put(player, true);
-                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
-                        } else {
-                            Affair.getInstance().createParty(player);
-                            Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
-                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
-                                    partyList.put(player1, true);
-                                } else {
-                                    partyList.put(player1, false);
-                                }
-                            }
-                            partyList.put(player, true);
-                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
-                        }
-                        break;
-                    case "varenglade":
-                    case "dodungeon":
-                        if (Affair.getInstance().isInParty(player)) {
-                            Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
-                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
-                                    partyList.put(player1, true);
-                                } else {
-                                    partyList.put(player1, false);
-                                }
-                            }
-                            partyList.put(player, true);
-                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
-                        } else {
-                            Affair.getInstance().createParty(player);
-                            Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
-                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
-                                    partyList.put(player1, true);
-                                } else {
-                                    partyList.put(player1, false);
-                                }
-                            }
-                            partyList.put(player, true);
-                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
-                        }
-                        break;
-                    case "infernal_abyss":
-                    case "infernalabyss":
-                    case "fireydungeon":
-                        if (Affair.getInstance().isInParty(player)) {
-                            Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
-                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 400) {
-                                    partyList.put(player1, true);
-                                } else {
-                                    partyList.put(player1, false);
-                                }
-                            }
-                            partyList.put(player, true);
-                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
-                        } else {
-                            Affair.getInstance().createParty(player);
-                            Map<Player, Boolean> partyList = new HashMap<>();
-                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
-                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 400) {
-                                    partyList.put(player1, true);
-                                } else {
-                                    partyList.put(player1, false);
-                                }
-                            }
-                            partyList.put(player, true);
-                            object = DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
-                        }
-                        break;
-                    default:
-                        player.sendMessage(ChatColor.RED + "Unknown instance " + args[0] + "!");
-                        break;
-                }
+            	DungeonManager.DungeonObject object = null;
+            	for(DungeonType type : DungeonManager.DungeonType.values())
+                	if(type.name().contains(args[0].toUpperCase()))
+                		object = invokeDungeon(player, type);
+                
                 if(object != null){
                     if(args.length == 2 && args[1].equalsIgnoreCase("edit") && Rank.isHeadGM(player)){
                         object.setEditMode(true);
@@ -129,12 +49,25 @@ public class CommandInvoke extends BaseCommand {
                         player.sendMessage(ChatColor.RED + "All changes upon leaving of this instance will be saved to disk.");
                         player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1, 1);
                     }
+                }else{
+                	player.sendMessage(ChatColor.RED + "Dungeon not found.");
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "There are no dungeons available at this time.");
             }
+        }else{
+        	player.sendMessage(ChatColor.RED + "Syntax: /invoke <dungeon>");
         }
-
         return false;
+    }
+    
+    private DungeonManager.DungeonObject invokeDungeon(Player player, DungeonManager.DungeonType type) {
+    	if (!Affair.getInstance().isInParty(player))
+    		Affair.getInstance().createParty(player);
+    	Map<Player, Boolean> partyList = new HashMap<>();
+    	for (Player player1 : Affair.getInstance().getParty(player).get().getMembers())
+    		partyList.put(player1, player1.getLocation().distanceSquared(player.getLocation()) <= 200);
+    	partyList.put(player, true);
+    	return DungeonManager.getInstance().createNewInstance(type, partyList);
     }
 }
