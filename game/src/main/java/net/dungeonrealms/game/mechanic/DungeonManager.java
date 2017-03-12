@@ -411,17 +411,6 @@ public class DungeonManager implements GenericMechanic {
      */
     public DungeonObject createNewInstance(DungeonType type, Map<Player, Boolean> playerList) {
 
-        if(type == DungeonType.THE_INFERNAL_ABYSS) {
-            String leaderName = "Someone";
-            if (playerList.size() > 0) {
-                Optional<Player> pl = playerList.keySet().stream().findFirst();
-                if (pl != null && pl.isPresent()) {
-                    leaderName = pl.get().getName();
-                }
-            }
-            GameAPI.sendDevMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "<DEV> " + ChatColor.GREEN + leaderName + " has started a " + type.name() + " Dungeon on {SERVER}");
-        }
-
         if (!DungeonRealms.getInstance().isAlmostRestarting()) {
             if (!instance_mob_spawns.containsKey(type.getDataFileName()))
                 loadDungeonMobSpawns(type.getDataFileName());

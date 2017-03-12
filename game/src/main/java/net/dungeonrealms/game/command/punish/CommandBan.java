@@ -126,7 +126,13 @@ public class CommandBan extends BaseCommand {
                 sender.sendMessage(ChatColor.RED.toString() + "You have permanently banned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
                 GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has permanently banned " + ChatColor.BOLD + p_name + friendlyMessage + ".");
             }
-            GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /ban " + p_name + " " + duration);
+            
+            //  BROADCASTS TO DISCORD  //
+            String message = "/" + label;
+            for(String a : args)
+            	message += " " + a;
+            GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + message);
+            
             Player online = Bukkit.getPlayer(p_uuid);
             if(online != null){
                 CombatLog.removeFromCombat(online);

@@ -41,6 +41,25 @@ public class MasterServerListener extends Listener {
             		case "BanMessage":
             			DiscordAPI.sendMessage(DiscordChannel.STAFF_REPORTS, in.readUTF());
             			break;
+            		case "buff":
+            			String type = in.readUTF();
+                        int duration = Integer.parseInt(in.readUTF());
+                        int bonusAmount = Integer.parseInt(in.readUTF());
+                        String playerName = in.readUTF();
+                        String friendlyName = "";
+                        //TODO: This can be done better.
+                        switch(type) {
+                        	case "loot":
+                        		friendlyName = "Loot";
+                        		break;
+                        	case "profession":
+                        		friendlyName = "Profession";
+                        		break;
+                        	case "level":
+                        		friendlyName = "XP";
+                        		break;
+                        }
+                        DiscordAPI.sendMessage(DiscordChannel.DR_DISCUSSION, playerName + " has activated a " + bonusAmount + "% " + friendlyName + " Buff for " + duration + " minutes.");
             	}
             } catch(Exception e) {
             	e.printStackTrace();

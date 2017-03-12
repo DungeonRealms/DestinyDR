@@ -62,11 +62,7 @@ public class BossTeleport extends BaseCommand {
         }
 
         dungeonObject.getType().spawnBoss(bcs.getBlock().getLocation());
-
-        //Not sure we want to see the other ones.
-        if (dungeonObject.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS)
-            GameAPI.sendDevMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "<DEV> " + ChatColor.GREEN + "Spawned " + dungeonObject.getType() + " boss on {SERVER} in world " + ChatColor.BOLD + bcs.getBlock().getWorld().getName());
-
+        
         return false;
     }
 }

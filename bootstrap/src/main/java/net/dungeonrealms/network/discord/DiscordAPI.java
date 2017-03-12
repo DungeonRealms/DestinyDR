@@ -5,6 +5,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -23,8 +24,13 @@ public class DiscordAPI {
 	 */
 	public static void sendMessage(DiscordChannel channel, String message) {
 		JsonObject postData = channel.getPostData();
-		postData.addProperty("content", message);
+		postData.addProperty("content", stripColor(message));
 		sendRequest(channel.getURL(), postData.toString());
+	}
+	
+	private static String stripColor(String message) {
+		Pattern stripColor = Pattern.compile("(?i)" + String.valueOf('\247') + "[0-9A-FK-OR]");
+		return stripColor.matcher(message).replaceAll("");
 	}
 	
 	private static void sendRequest(String url, String postData) {
