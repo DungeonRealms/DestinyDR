@@ -43,7 +43,7 @@ public class MasterServerListener extends Listener {
             			break;
             		case "buff":
             			String type = in.readUTF();
-                        int duration = Integer.parseInt(in.readUTF());
+                        int duration = Integer.parseInt(in.readUTF()) / 60;
                         int bonusAmount = Integer.parseInt(in.readUTF());
                         String playerName = in.readUTF();
                         String friendlyName = "";
