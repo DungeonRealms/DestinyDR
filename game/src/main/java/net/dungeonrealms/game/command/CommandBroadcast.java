@@ -4,6 +4,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,12 +23,15 @@ public class CommandBroadcast extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender instanceof Player && !Rank.isGM((Player) sender)) return true;
+        if ((sender instanceof Player && !Rank.isDev((Player) sender)) || sender instanceof BlockCommandSender)
+            return true;
+
         String message = "";
         for (int i = 0; i < args.length; i++) {
             message += args[i] + " ";
         }
         message.trim();
+
         GameAPI.sendNetworkMessage("Broadcast", message);
         return false;
     }

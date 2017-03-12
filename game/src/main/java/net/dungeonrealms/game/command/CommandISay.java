@@ -22,7 +22,6 @@ public class CommandISay extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
-
         String message = ChatColor.translateAlternateColorCodes('&', String.join(" ", Arrays.asList(args)));
 
         message = message.replaceAll("&u", ChatColor.UNDERLINE.toString());
@@ -31,7 +30,7 @@ public class CommandISay extends BaseCommand {
         message = message.replaceAll("&m", ChatColor.MAGIC.toString());
 
         if (commandSender instanceof Player) {
-            if (!Rank.isGM((Player) commandSender))
+            if (!Rank.isDev((Player) commandSender))
                 return false;
             Bukkit.broadcastMessage(message);
         } else if (commandSender instanceof BlockCommandSender) {
