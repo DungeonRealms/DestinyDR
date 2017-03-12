@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.listener.world;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -18,12 +17,10 @@ import net.dungeonrealms.game.world.entity.type.EnderCrystal;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -35,7 +32,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -307,7 +303,7 @@ public class DungeonListener implements Listener {
 
             if (DungeonManager.getInstance().getPlayers_Entering_Dungeon().containsKey(player.getName())) {
                 player.sendMessage(ChatColor.GRAY + "You currently have a Dungeon cooldown timer, please wait " + ChatColor.RED + ChatColor.UNDERLINE
-                        + DungeonManager.getInstance().getPlayers_Entering_Dungeon().get(player.getName()) + "s" + ChatColor.RESET + ChatColor.RED + " before entering.");
+                        + DungeonManager.getInstance().getPlayers_Entering_Dungeon().get(player.getName()) + "s" + ChatColor.GRAY + " before entering.");
                 return;
             }
 
@@ -328,7 +324,7 @@ public class DungeonListener implements Listener {
             
             DungeonManager.DungeonType dungeonType = null;
             for(DungeonType type : DungeonType.values())
-            	if(type.getDataFileName().equals(dungeonName))
+            	if(type.getDataFileName().equalsIgnoreCase(dungeonName))
             		dungeonType = type;
 
             boolean isPartyInInstance = false;

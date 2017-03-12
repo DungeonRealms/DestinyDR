@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -20,8 +21,8 @@ import java.util.*;
  * Created by Brad on 25/12/2016.
  */
 public class CommandInvsee extends BaseCommand {
-    public CommandInvsee(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandInvsee() {
+        super("invsee", "/<command> <player>", "View a player's inventory.", Collections.singletonList("mis"));
     }
 
     public static Map<UUID, UUID> offline_inv_watchers = new HashMap<>();

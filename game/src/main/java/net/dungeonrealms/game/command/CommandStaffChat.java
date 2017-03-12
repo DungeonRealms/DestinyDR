@@ -5,10 +5,12 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.chat.GameChat;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,8 +19,8 @@ import java.util.List;
 
 public class CommandStaffChat extends BaseCommand {
 
-    public CommandStaffChat(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandStaffChat() {
+        super("staffchat", "/<command> [message]", "Send a message to the staff chat.", Arrays.asList("sc", "s"));
     }
 
     @Override

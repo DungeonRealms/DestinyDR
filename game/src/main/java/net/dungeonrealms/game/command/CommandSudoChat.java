@@ -21,8 +21,8 @@ import java.util.List;
  * Class written by APOLLOSOFTWARE.IO on 7/23/2016
  */
 public class CommandSudoChat extends BaseCommand {
-    public CommandSudoChat(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandSudoChat() {
+        super("sudochat", "/<command> <name> <type> <message>", "Sudo Chat command.");
     }
 
     @Override

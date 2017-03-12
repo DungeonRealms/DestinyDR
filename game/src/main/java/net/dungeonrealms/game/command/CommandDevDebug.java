@@ -11,15 +11,15 @@ import org.bukkit.command.ConsoleCommandSender;
  */
 public class CommandDevDebug extends BaseCommand {
 
-    public CommandDevDebug(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandDevDebug() {
+        super("devdebug", "/<command>", "Toggle on and off debug.");
     }
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (!(s instanceof ConsoleCommandSender)) return false;
 
-        Constants.debug ^= true;
+        Constants.debug = !Constants.debug;
 
         return true;
     }

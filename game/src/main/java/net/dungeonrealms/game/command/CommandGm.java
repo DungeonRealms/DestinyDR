@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
  */
 
 public class CommandGm extends BaseCommand {
-    public CommandGm(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandGm() {
+        super("gm", "/<command> [args]", "Displays the Game Master toggles.");
     }
 
     @Override

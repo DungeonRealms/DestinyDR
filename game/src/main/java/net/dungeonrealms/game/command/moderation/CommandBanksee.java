@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -21,8 +22,8 @@ import java.util.*;
  * Created by Brad on 25/12/2016.
  */
 public class CommandBanksee extends BaseCommand {
-    public CommandBanksee(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandBanksee() {
+        super("banksee", "/<command> [args]", "View a player's bank.", Collections.singletonList("mbs"));
     }
 
     public static Map<UUID, UUID> offline_armor_watchers = new HashMap<>();

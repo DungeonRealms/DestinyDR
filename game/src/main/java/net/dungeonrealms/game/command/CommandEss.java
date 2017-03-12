@@ -36,8 +36,8 @@ import java.util.UUID;
  */
 public class CommandEss extends BaseCommand {
 
-    public CommandEss(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandEss() {
+        super("dr", "/<command> [args]", "Developer command with the core essentials.");
     }
 
     @Override

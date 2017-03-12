@@ -24,8 +24,8 @@ import java.util.UUID;
  */
 public class CommandCloseShop extends BaseCommand {
 
-    public CommandCloseShop(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandCloseShop() {
+        super("closeshop", "/<command>", "Close your shop");
     }
 
     @Override
@@ -88,13 +88,11 @@ public class CommandCloseShop extends BaseCommand {
                     return false;
                 } else {
                     GameAPI.sendNetworkMessage("Shop", "close:" + " ," + player.getName());
-                    String uuidString = DatabaseAPI.getInstance().getUUIDFromName(player.getName());
-                    UUID uuid = UUID.fromString(uuidString);
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.HASSHOP, false, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
                     player.sendMessage(ChatColor.GRAY + "Checking shards for open shop..");
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        GameAPI.updatePlayerData(uuid);
-                        BankMechanics.getInstance().getStorage(uuid).update();
+                        GameAPI.updatePlayerData(player.getUniqueId());
+                        BankMechanics.getInstance().getStorage(player.getUniqueId()).update();
                     }, 20);
                     player.sendMessage(ChatColor.GREEN + "Process finished, your shop has been closed safely");
                 }

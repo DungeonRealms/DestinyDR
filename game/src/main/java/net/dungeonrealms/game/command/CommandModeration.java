@@ -2,6 +2,7 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -15,8 +16,8 @@ import java.util.*;
  * Created by Chase on Nov 11, 2015
  */
 public class CommandModeration extends BaseCommand {
-    public CommandModeration(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandModeration() {
+        super("moderation", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mod"));
     }
 
     public static Map<UUID, UUID> offline_bin_watchers = new HashMap<>();

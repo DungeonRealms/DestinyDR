@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
  */
 
 public class CommandHeadGm extends BaseCommand {
-    public CommandHeadGm(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandHeadGm() {
+        super("headgm", "/<command> [password]", "Displays the Head Game Master toggles.");
     }
 
     @Override

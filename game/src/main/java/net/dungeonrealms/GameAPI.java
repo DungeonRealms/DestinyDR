@@ -2400,4 +2400,19 @@ public class GameAPI {
         System.out.println("Returning " + item.getType() + " from action = " + event.getAction().name());
         return item;
     }
+    
+    /**
+     * Give the specified user the vote message.
+     */
+    public static void sendVoteMessage(Player player) {
+    	int ecashAmount = 15;
+        if (Rank.isSubscriberPlus(player)) {
+            ecashAmount = 25;
+        } else if (Rank.isSubscriber(player)) {
+            ecashAmount = 20;
+        }
+        final JSONMessage message = new JSONMessage("To vote for " + ecashAmount + " ECASH & 5% EXP, click ", ChatColor.AQUA);
+        message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
+        message.sendToPlayer(player);
+    }
 }

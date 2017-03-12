@@ -10,9 +10,10 @@ import org.bukkit.command.CommandSender;
  * Created by Nick on 12/5/2015.
  */
 public class CommandTell extends BaseCommand {
-    public CommandTell(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandTell() {
+        super("tell", "/<command> [args]", "Send a private message to a player.");
     }
+    
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
@@ -30,7 +31,7 @@ public class CommandTell extends BaseCommand {
             });
 
         } else {
-            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "ERROR" + ChatColor.GRAY + ":" + " " + ChatColor.GRAY + "Try: /tell <playerName> <message>");
+            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "SYNTAX" + ChatColor.GRAY + ":" + " " + ChatColor.GRAY + "Try: /tell <playerName> <message>");
         }
         return true;
     }

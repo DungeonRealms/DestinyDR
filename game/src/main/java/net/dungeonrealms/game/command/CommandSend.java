@@ -18,15 +18,15 @@ import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * Allows DEVs to send players to any shard (Useful for sending alts to US-0)
+ * Allows GM+ to send players to any shard (Useful for sending alts to US-0)
  * 
  * Created February 5th, 2017.
  * @author Kneesnap
  */
 public class CommandSend extends BaseCommand {
 
-	public CommandSend(String command, String usage, String description) {
-		super(command, usage, description);
+	public CommandSend() {
+		super("drsend", "/<command> <player> <shard> [force]", "Sends a player to a shard.");
 	}
 	
 	@Override

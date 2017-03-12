@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,8 +22,8 @@ import java.util.*;
  * Created by Brad on 25/12/2016.
  */
 public class CommandArmorsee extends BaseCommand {
-    public CommandArmorsee(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandArmorsee() {
+        super("armorsee", "/<command> <player>", "View a player's armor inventory.", Collections.singletonList("mas"));
     }
 
     public static Map<UUID, UUID> offline_armor_watchers = new HashMap<>();

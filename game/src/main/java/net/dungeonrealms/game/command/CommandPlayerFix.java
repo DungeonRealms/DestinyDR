@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.command;
 
 import com.mongodb.client.model.Filters;
+
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -9,12 +10,14 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.network.ShardInfo;
+
 import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -24,8 +27,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class CommandPlayerFix extends BaseCommand {
 
-	public CommandPlayerFix(String command, String usage, String description, List<String> aliases) {
-		super(command, usage, description, aliases);
+	public CommandPlayerFix() {
+		super("playerfix", "/<command> <username>", "Sets a player's state to offline so he can login.", Collections.singletonList("pfix"));
 	}
 
 	@Override

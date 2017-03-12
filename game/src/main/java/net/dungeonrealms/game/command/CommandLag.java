@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class CommandLag extends BaseCommand {
 
-    public CommandLag(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandLag() {
+        super("lag", "/<command>", "Checks for lag.");
     }
 
     @Override

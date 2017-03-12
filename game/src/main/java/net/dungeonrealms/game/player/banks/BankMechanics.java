@@ -367,7 +367,7 @@ public class BankMechanics implements GenericMechanic {
      * @param stack
      * @return integer
      */
-    public int getNoteValue(ItemStack stack) {
+    public static int getNoteValue(ItemStack stack) {
         return CraftItemStack.asNMSCopy(stack).getTag().getInt("worth");
     }
 
@@ -428,9 +428,23 @@ public class BankMechanics implements GenericMechanic {
      * @param stack
      * @return
      */
-    public boolean isBankNote(ItemStack stack) {
+    public static boolean isBankNote(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return stack.getType() == Material.PAPER && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money");
+    }
+    
+    public static int getGemWorth(ItemStack stack) {
+    	if(isBankNote(stack))
+    		return BankMechanics.getNoteValue(stack);
+    	if(isGem(stack))
+    		return stack.getAmount();
+    	if(isGemPouch(stack))
+    		return BankMechanics.getPouchAmount(stack);
+    	return 0;
+    }
+    
+    public static boolean isMoney(ItemStack item) {
+    	return isBankNote(item) || isGem(item) || isGemPouch(item);
     }
 
     public void checkBankAchievements(UUID uuid, int bankGemAmount) {
@@ -460,14 +474,14 @@ public class BankMechanics implements GenericMechanic {
         }
     }
 
-    public boolean isGem(ItemStack cursor) {
+    public static boolean isGem(ItemStack cursor) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(cursor);
         return cursor.getType() == Material.EMERALD &&
                 nms.getTag() != null && nms.getTag().hasKey("type") &&
                 nms.getTag().getString("type").equalsIgnoreCase("money");
     }
 
-    public boolean isGemPouch(ItemStack cursor) {
+    public static boolean isGemPouch(ItemStack cursor) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(cursor);
         return cursor.getType() == Material.INK_SACK &&
                 nms.getTag() != null && nms.getTag().hasKey("type") &&
@@ -475,7 +489,7 @@ public class BankMechanics implements GenericMechanic {
 
     }
 
-    public int getPouchAmount(ItemStack currentItem) {
+    public static int getPouchAmount(ItemStack currentItem) {
         return CraftItemStack.asNMSCopy(currentItem).getTag().getInt("worth");
 
     }

@@ -17,8 +17,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class CommandPlayerRetention extends BaseCommand {
 
-    public CommandPlayerRetention(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandPlayerRetention() {
+        super("pretention", "/<command> [args]", "Player retention command.");
     }
 
     @Override

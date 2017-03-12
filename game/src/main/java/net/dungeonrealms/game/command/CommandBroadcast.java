@@ -3,10 +3,12 @@ package net.dungeonrealms.game.command;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,8 +16,8 @@ import java.util.List;
  */
 public class CommandBroadcast extends BaseCommand {
 
-    public CommandBroadcast(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandBroadcast() {
+        super("broadcast", "/<command> [args]", "Send a formatted broadcast to all shards..", Collections.singletonList("sayall"));
     }
 
     @Override

@@ -517,7 +517,7 @@ public class MainListener implements Listener {
 
         if (!event.getFrom().getChunk().equals(event.getTo().getChunk())) {
             Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
-                for (Player player : Bukkit.getOnlinePlayers()) {
+                for (Player player : GameAPI.getNearbyPlayers(p.getLocation(), 100, true)) {
                     PacketPlayOutMount packetPlayOutMount = new PacketPlayOutMount(((CraftEntity) p).getHandle());
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutMount);
                 }

@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
  * Class written by APOLLOSOFTWARE.IO on 7/23/2016
  */
 public class CommandSudo extends BaseCommand {
-    public CommandSudo(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandSudo() {
+        super("sudo", "/<command> <name> <command>", "Sudo command.");
     }
 
     @Override

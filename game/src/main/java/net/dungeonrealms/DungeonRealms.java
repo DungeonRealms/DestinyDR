@@ -365,36 +365,39 @@ public class DungeonRealms extends JavaPlugin {
         CommandManager cm = new CommandManager();
 
         // Commands always registered regardless of server.
-        cm.registerCommand(new CommandDevDebug("devdebug", "/<command> [args]", "Toggle on and off debug."));
-        cm.registerCommand(new CommandCloseShop("closeshop", "/<command> [args]", "Close your shop"));
+        cm.registerCommand(new CommandDevDebug());
+        cm.registerCommand(new CommandCloseShop());
         cm.registerCommand(new CommandListInstance());
 
-        cm.registerCommand(new CommandInvsee("invsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mis")));
-        cm.registerCommand(new CommandBanksee("banksee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mbs")));
-        cm.registerCommand(new CommandArmorsee("armorsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mas")));
-        cm.registerCommand(new CommandGemsee("gemsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mgs")));
-        cm.registerCommand(new CommandBinsee("binsee", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mbns")));
+        cm.registerCommand(new CommandInvsee());
+        cm.registerCommand(new CommandBanksee());
+        cm.registerCommand(new CommandArmorsee());
+        cm.registerCommand(new CommandGemsee());
+        cm.registerCommand(new CommandBinsee());
         cm.registerCommand(new CommandMuleSee());
         cm.registerCommand(new CommandScrapTabSee());
 
-        cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
-        cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));
-        cm.registerCommand(new CommandEss("dr", "/<command> [args]", "Developer command with the core essentials."));
+        cm.registerCommand(new CommandLag());
+        cm.registerCommand(new CommandSet());
+        cm.registerCommand(new CommandEss());
         cm.registerCommand(new CommandFix());
-        cm.registerCommand(new CommandVote("vote", "/<command> [args]", "Gives the link to vote for rewards."));
-        cm.registerCommand(new CommandSend("drsend", "/<command> [args]", "Sends a player to a shard."));
-        cm.registerCommand(new CommandInterface("interface", "/<command> [args]", "Development command for accessing interfaces."));
-        cm.registerCommand(new CommandTell("tell", "/<command> [args]", "Send a private message to a player."));
-        cm.registerCommand(new CommandISay("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
-        cm.registerCommand(new CommandModeration("moderation", "/<command> [args]", "Moderation command for Dungeon Realms staff.", Collections.singletonList("mod")));
-        cm.registerCommand(new CommandStaffChat("staffchat", "/<command> [args]", "Send a message to the staff chat.", Arrays.asList("sc", "s")));
-        cm.registerCommand(new CommandBroadcast("broadcast", "/<command> [args]", "Send a formatted broadcast to all shards..", Collections.singletonList("sayall")));
-        cm.registerCommand(new CommandGm("gm", "/<command> [args]", "Displays the Game Master toggles."));
-        cm.registerCommand(new CommandHeadGm("headgm", "/<command> [args]", "Displays the Head Game Master toggles."));
-        cm.registerCommand(new CommandPlayerFix("playerfix", "/<command> [args]", "Sets a player's state to offline so he can login.", Collections.singletonList("pfix")));
-        cm.registerCommand(new CommandPlayerRetention("pretention", "/<command> [args]", "Player retention command."));
-        cm.registerCommand(new CommandSudo("sudo", "/<command> [args]", "Sudo command."));
-        cm.registerCommand(new CommandSudoChat("sudochat", "/<command> [args]", "Sudo Chat command."));
+        cm.registerCommand(new CommandCountdown());
+        cm.registerCommand(new CommandCountdownStop());
+        cm.registerCommand(new CommandVote());
+        cm.registerCommand(new CommandSend());
+        cm.registerCommand(new CommandInterface());
+        cm.registerCommand(new CommandTell());
+        cm.registerCommand(new CommandISay());
+        cm.registerCommand(new CommandModeration());
+        cm.registerCommand(new CommandStaffChat());
+        cm.registerCommand(new CommandBroadcast());
+        cm.registerCommand(new CommandGm());
+        cm.registerCommand(new CommandHeadGm());
+        cm.registerCommand(new CommandPlayerFix());
+        cm.registerCommand(new CommandPlayerRetention());
+        cm.registerCommand(new CommandSudo());
+        cm.registerCommand(new CommandSudoChat());
+        cm.registerCommand(new CommandLookup());
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPLoot());

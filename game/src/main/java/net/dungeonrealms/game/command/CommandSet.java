@@ -41,8 +41,8 @@ import java.util.Arrays;
  */
 public class CommandSet extends BaseCommand {
 
-    public CommandSet(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandSet() {
+        super("set", "/<command> [args]", "Development command for modifying account variables.");
     }
 
     @Override

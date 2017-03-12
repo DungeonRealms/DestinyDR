@@ -5,6 +5,7 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,8 +19,8 @@ import java.util.*;
  * Created by Brad on 25/12/2016.
  */
 public class CommandGemsee extends BaseCommand {
-    public CommandGemsee(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandGemsee() {
+        super("gemsee", "/<command> <player>", "View a player's gems.", Collections.singletonList("mgs"));
     }
 
     @Override

@@ -10,21 +10,17 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-
 /**
  * Created by Brad on 12/06/2016.
  */
 
 public class CommandInterface extends BaseCommand {
-    public CommandInterface(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandInterface() {
+        super("interface", "/<command> <menu>", "Development command for accessing interfaces.");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-
-        String message = ChatColor.translateAlternateColorCodes('&', String.join(" ", Arrays.asList(args)));
 
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;

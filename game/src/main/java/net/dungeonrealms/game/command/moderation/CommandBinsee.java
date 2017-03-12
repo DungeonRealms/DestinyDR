@@ -7,6 +7,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,8 +24,8 @@ import java.util.*;
  * Created by Brad on 25/12/2016.
  */
 public class CommandBinsee extends BaseCommand {
-    public CommandBinsee(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description, aliases);
+    public CommandBinsee() {
+        super("binsee", "/<command> <player>", "View a player's collection bin.", Collections.singletonList("mbns"));
     }
 
     public static Map<UUID, UUID> offline_bin_watchers = new HashMap<>();
