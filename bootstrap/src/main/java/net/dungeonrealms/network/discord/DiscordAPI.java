@@ -28,6 +28,8 @@ public class DiscordAPI {
 	}
 	
 	private static void sendRequest(String url, String postData) {
+		System.out.println(url);
+		System.out.println(postData);
 		new Thread(() -> {
 			try {
         		HttpsURLConnection con = (HttpsURLConnection) new URL(url).openConnection();
