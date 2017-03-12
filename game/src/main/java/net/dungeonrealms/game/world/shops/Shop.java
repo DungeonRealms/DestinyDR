@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.shops;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.google.common.collect.Lists;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -118,7 +119,8 @@ public class Shop {
         // Do other stuff
         
         viewCount = 0;
-        inventory.getViewers().forEach(HumanEntity::closeInventory);
+        //Rip concurrency.
+        Lists.newArrayList(inventory.getViewers()).forEach(HumanEntity::closeInventory);
         uniqueViewers.clear();
         
         saveCollectionBin(shutDown);
