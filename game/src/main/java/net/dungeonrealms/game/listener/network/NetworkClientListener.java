@@ -110,6 +110,8 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             }));
                         }
                         return;
+                    case "IGN_GMMessage":
+                    	//This GMMessage will only show in-game and skip being show in discord.
                     case "GMMessage": {
                         String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
                         Bukkit.getOnlinePlayers().forEach(p -> {

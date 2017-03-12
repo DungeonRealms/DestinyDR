@@ -58,6 +58,7 @@ public class CommandUnban extends BaseCommand {
 
         sender.sendMessage(ChatColor.RED.toString() + "You have unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
         GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + " has unbanned " + ChatColor.BOLD + p_name + ChatColor.RED + ".");
+        GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": /unban " + p_name);
         return false;
     }
 }

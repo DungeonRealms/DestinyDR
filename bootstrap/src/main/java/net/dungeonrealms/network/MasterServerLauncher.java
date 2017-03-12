@@ -40,6 +40,8 @@ public class MasterServerLauncher {
             MasterServer server = new MasterServer();
             Log.info("Listening on " + Constants.MASTER_SERVER_IP + ":" + Constants.MASTER_SERVER_PORT);
             kryo = server.getKryo();
+            
+            server.registerListener(new MasterServerListener());
 
             Log.set(Log.LEVEL_INFO);
             registerClasses();
