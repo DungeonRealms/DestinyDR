@@ -140,36 +140,38 @@ public class DuelOffer {
             this.bannerHologram.delete();
         }
 
-        GamePlayer wGP = GameAPI.getGamePlayer(winner);
-        GamePlayer lGP = GameAPI.getGamePlayer(loser);
-        if (wGP != null) {
-            wGP.setPvpTaggedUntil(0);
-            wGP.getPlayerStatistics().setDuelsWon(wGP.getPlayerStatistics().getDuelsWon() + 1);
-            if (GameAPI.isNonPvPRegion(winner.getLocation()) && Bukkit.getWorlds().get(0).getName().equals(winner.getWorld().getName())) {
-                KarmaHandler.getInstance().setPlayerAlignment(winner, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
+        if(winner != null && loser != null) {
+            GamePlayer wGP = GameAPI.getGamePlayer(winner);
+            GamePlayer lGP = GameAPI.getGamePlayer(loser);
+            if (wGP != null) {
+                wGP.setPvpTaggedUntil(0);
+                wGP.getPlayerStatistics().setDuelsWon(wGP.getPlayerStatistics().getDuelsWon() + 1);
+                if (GameAPI.isNonPvPRegion(winner.getLocation()) && Bukkit.getWorlds().get(0).getName().equals(winner.getWorld().getName())) {
+                    KarmaHandler.getInstance().setPlayerAlignment(winner, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
+                }
             }
-        }
-        if (lGP != null) {
-            lGP.setPvpTaggedUntil(0);
-            lGP.getPlayerStatistics().setDuelsLost(lGP.getPlayerStatistics().getDuelsLost() + 1);
-            if (GameAPI.isNonPvPRegion(loser.getLocation()) && Bukkit.getWorlds().get(0).getName().equals(loser.getWorld().getName())) {
-                KarmaHandler.getInstance().setPlayerAlignment(loser, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
+            if (lGP != null) {
+                lGP.setPvpTaggedUntil(0);
+                lGP.getPlayerStatistics().setDuelsLost(lGP.getPlayerStatistics().getDuelsLost() + 1);
+                if (GameAPI.isNonPvPRegion(loser.getLocation()) && Bukkit.getWorlds().get(0).getName().equals(loser.getWorld().getName())) {
+                    KarmaHandler.getInstance().setPlayerAlignment(loser, KarmaHandler.EnumPlayerAlignments.LAWFUL, null, false);
+                }
             }
-        }
 
-        String winnerName = GameChat.getPreMessage(winner).replaceAll(":", "").trim().intern();
-        if (ChatColor.stripColor(winnerName).startsWith("<G>")) {
-            winnerName = winnerName.split(">")[1];
-        }
-        String loserName = GameChat.getPreMessage(loser).replaceAll(":", "").trim();
-        if (ChatColor.stripColor(loserName).startsWith("<G>")) {
-            loserName = loserName.split(">")[1];
-        }
-        final String finalWinnerName = winnerName;
-        final String finalLoserName = loserName;
+            String winnerName = GameChat.getPreMessage(winner).replaceAll(":", "").trim().intern();
+            if (ChatColor.stripColor(winnerName).startsWith("<G>")) {
+                winnerName = winnerName.split(">")[1];
+            }
+            String loserName = GameChat.getPreMessage(loser).replaceAll(":", "").trim();
+            if (ChatColor.stripColor(loserName).startsWith("<G>")) {
+                loserName = loserName.split(">")[1];
+            }
+            final String finalWinnerName = winnerName;
+            final String finalLoserName = loserName;
 
 
-        GameAPI.getNearbyPlayers(winner.getLocation(), 100).forEach(player1 -> player1.sendMessage(finalWinnerName + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + finalLoserName + ChatColor.GREEN + " in a duel!"));
+            GameAPI.getNearbyPlayers(winner.getLocation(), 100).forEach(player1 -> player1.sendMessage(finalWinnerName + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + finalLoserName + ChatColor.GREEN + " in a duel!"));
+        }
         DuelingMechanics.removeOffer(this);
     }
 
