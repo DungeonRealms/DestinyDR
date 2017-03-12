@@ -68,7 +68,8 @@ public class PlayerManager {
         DUEL(6, EnumData.TOGGLE_DUEL, "toggleduel", "Toggles dueling requests.", "Dueling Requests"),
         CHAOTIC_PREVENTION(7, EnumData.TOGGLE_CHAOTIC_PREVENTION, "togglechaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic"),
         DAMAGE_INDICATORS(8, EnumData.TOGGLE_DAMAGE_INDICATORS, "togglefloatdamage", "Toggles floating damage values.", "Damage Indicators"),
-        TIPS(9, EnumData.TOGGLE_TIPS, "toggletips", "Toggles the receiving of informative tips", "Tip display");
+        ITEM_GLOW(9, EnumData.TOGGLE_GLOW, "toggleglow", "Toggles rare items glowing.", "Item Glow"),
+        TIPS(10, EnumData.TOGGLE_TIPS, "toggletips", "Toggles the receiving of informative tips", "Tip display");
 
         private int id;
         private EnumData dbField;

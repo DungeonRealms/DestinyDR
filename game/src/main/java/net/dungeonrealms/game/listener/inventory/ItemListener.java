@@ -68,6 +68,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -100,9 +101,19 @@ public class ItemListener implements Listener {
         List<String> lore = item.getItemMeta().getLore();
         for (int i = 1; i < ItemRarity.values().length; i++) {
             ItemRarity rarity = ItemRarity.getById(i);
-            for (String s : lore)
-                if (s.contains(rarity.getName()))
-                    GlowAPI.setGlowing(entity, GlowAPI.Color.valueOf(rarity.getColor().name()), GameAPI.getNearbyPlayers(entity.getLocation(), 100, true));
+            for (String s : lore) {
+                if (s.contains(rarity.getName())) {
+                	Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
+                		//Filter out players who have toggle glow off.
+                		List<Player> sendTo = GameAPI.getNearbyPlayers(entity.getLocation(), 100, true).stream().filter(p -> {
+                			return (boolean)DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOW, p.getUniqueId());
+                		}).collect(Collectors.toList());
+                		//Set the item as glowing.
+                		GlowAPI.setGlowing(entity, GlowAPI.Color.valueOf(rarity.getColor().name()), sendTo);
+                	});
+                	return;
+                }
+            }
         }
     }
 

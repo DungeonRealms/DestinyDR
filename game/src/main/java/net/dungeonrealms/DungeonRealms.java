@@ -424,6 +424,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandToggleTradeChat("toggletradechat", "/<command> [args]", "Toggles receiving <T>rade chat."));
         cm.registerCommand(new CommandToggleDuel("toggleduel", "/<command> [args]", "Toggles dueling requests."));
         cm.registerCommand(new CommandToggleTips("toggletips", "/<command> [args]", "Toggles tip messages."));
+        cm.registerCommand(new CommandToggleGlow());
 
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Checks the identity of a Dungeon Realms signed item."));
         cm.registerCommand(new CommandStats("stat", "/<command> [args]", "Allows you to view and manage your stat points.", Collections.singletonList("stats")));

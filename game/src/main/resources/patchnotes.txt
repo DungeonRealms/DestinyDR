@@ -1,15 +1,7 @@
 Build <build>
 
 &8Changes&0
-- Added Rare mounts as Dungeon Boss drops
-- Added Quest Framework
-- Added /ploot to manage gear pickups in parties
-- Added Precision attribute to increase accuracy on T2/T4/T5 staffs
-- Shops are removed when all items are purchased to free up space
-- Added Staff Zombies
-- Falling no longer enters you into Combat
-- Falling no longer dismounts you
+- Added /toggleglow
 
 &8Bugfixes&0
-- Fixed Dungeon Leaders not being able to re-enter the dungeon after leaving.
-- Skulls no longer give item based on direction.
+- Fixed Dueling and Dungeons

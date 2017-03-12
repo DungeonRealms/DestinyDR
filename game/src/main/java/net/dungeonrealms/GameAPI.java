@@ -1439,6 +1439,7 @@ public class GameAPI {
         UUID uuid = player.getUniqueId();
         createIfMissing(uuid, EnumData.TOGGLE_DAMAGE_INDICATORS, true);
         createIfMissing(uuid, EnumData.QUEST_DATA, new JsonArray().toString());
+        createIfMissing(uuid, EnumData.TOGGLE_GLOW, true);
     }
 
     private static void createIfMissing(UUID uuid, EnumData data, Object setTo) {

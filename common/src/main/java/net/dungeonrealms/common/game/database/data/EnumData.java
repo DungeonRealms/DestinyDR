@@ -99,6 +99,7 @@ public enum EnumData {
     TOGGLE_CHAOTIC_PREVENTION("toggles.chaoticPrevention"),
     TOGGLE_SOUNDTRACK("toggles.soundtrack"),
     TOGGLE_TIPS("toggles.tips"),
+    TOGGLE_GLOW("toggles.glow"),
     TOGGLE_DAMAGE_INDICATORS("toggles.damageIndicators"),
     TOGGLE_VANISH("toggles.vanish"), // for GMs only
 
