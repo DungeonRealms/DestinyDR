@@ -39,7 +39,7 @@ public class MasterServerListener extends Listener {
             			DiscordAPI.sendMessage(DiscordChannel.DEVELOPMENT, in.readUTF());
             			break;
             		case "BanMessage":
-            			//DiscordAPI.sendMessage(DiscordChannel.STAFF_REPORTS, in.readUTF());
+            			DiscordAPI.sendMessage(DiscordChannel.STAFF_REPORTS, in.readUTF());
             			break;
             	}
             } catch(Exception e) {

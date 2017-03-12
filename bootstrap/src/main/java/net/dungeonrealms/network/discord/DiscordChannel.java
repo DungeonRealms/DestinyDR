@@ -10,8 +10,9 @@ import com.google.gson.JsonObject;
  */
 public enum DiscordChannel {
 	DEVELOPMENT("Dungeon Realms", "http://files.enjin.com/631183/portal/drlogo.png", "Wh3y8iKeY33M-2kWHdQx00I6HPaCqOB7VC3Pt5qy8wODIFTswIOZrTWnkbauQP57mWwT", "287277718482059264"),
-	NOTIFICATIONS("Officer Johnson", "http://i.imgur.com/8MW7apB.png", "pdOLstfvB43aimMizGQfFjTXgmEkqNdy-IeaF2jmAWIlgwxT0M1a_h8ShIizM3GHeqjP", "287302942392844288");
-	
+	NOTIFICATIONS("Officer Johnson", "http://i.imgur.com/8MW7apB.png", "pdOLstfvB43aimMizGQfFjTXgmEkqNdy-IeaF2jmAWIlgwxT0M1a_h8ShIizM3GHeqjP", "287302942392844288"),
+	STAFF_REPORTS("Ban Management", "http://files.enjin.com/631183/portal/drlogo.png", "L3_C9yNHuyOWWSNT1d_qokXt53ymftforgMwabLwK75dmiu8S0bYwZjnfQsYEuWJvfly", "290444027344584704");
+
 	private final String username;
 	private final String avatarURL;
 	private final String tokenId;
