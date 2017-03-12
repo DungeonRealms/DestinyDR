@@ -40,8 +40,8 @@ public class CommandAnswer extends BaseCommand {
 
 
         GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, "&a<ANSWERED> &6" + GameChat.getPreMessage(p) + "&e" + message);
-        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, "&cType &e/msg " + sender.getName().toLowerCase() + " [message] &cto reply back.");
-
+        GameAPI.sendNetworkMessage("PrivateMessage", p.getName(), other, "&cType &e" + (DungeonRealms.getInstance().isMasterShard ? "/ask" : "/msg " + sender.getName().toLowerCase()) + " [message] &cto reply back.");
+        	
         GameAPI.sendNetworkMessage("BroadcastSoundPlayer", other, Sound.BLOCK_NOTE_PLING.toString(), "1.0f", "1.0f");
 
         GameAPI.sendNetworkMessage("StaffMessage", "&a<ANSWERED: " + other + "> &6(" + DungeonRealms.getInstance().shardid + ") " + GameChat.getPreMessage(p) + "&e" + message);

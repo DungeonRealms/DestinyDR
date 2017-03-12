@@ -5,3 +5,4 @@ Build <build>
 
 &8Bugfixes&0
 - Fixed Dueling and Dungeons
+- Fixed itemframes popping off walls

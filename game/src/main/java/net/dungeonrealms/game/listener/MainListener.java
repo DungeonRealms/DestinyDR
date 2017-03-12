@@ -68,6 +68,8 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -1066,6 +1068,20 @@ public class MainListener implements Listener {
                 }
             }
         }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onMapBreak(HangingBreakEvent evt) {
+    	if(evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
+    		evt.getEntity().getNearbyEntities(0, 0, 0).forEach(ent -> {
+    			if(ent instanceof ItemFrame) {
+    				ItemFrame itemFrame = (ItemFrame)ent;
+    				if(itemFrame.getItem() == null || itemFrame.getItem().getType() == Material.AIR)
+    					itemFrame.remove();
+    			}
+    		});
+    		evt.setCancelled(true);
+    	}
     }
 
     /**
