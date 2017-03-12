@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.listener;
 
-import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 import net.dungeonrealms.DungeonRealms;
@@ -14,7 +13,6 @@ import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.Cooldown;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
-import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.event.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.event.PlayerMessagePlayerEvent;
@@ -24,7 +22,6 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.PlayerManager;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -40,7 +37,6 @@ import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
 import net.dungeonrealms.game.world.entity.util.MountUtils;
-import net.dungeonrealms.game.world.item.*;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -57,7 +53,6 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
-import org.bukkit.entity.Item;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -86,7 +81,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -364,17 +358,8 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
         event.setLeaveMessage(null);
-
-        if (event.getPlayer().hasMetadata("sharding"))
-            event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
-
-        if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
-            GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
-            return;
-        }
-
         this.kickedIgnore.add(event.getPlayer().getUniqueId());
-        GameAPI.handleLogout(event.getPlayer().getUniqueId(), true, null);
+        onDisconnect(event.getPlayer(), !event.getReason().contains("Appeal at: www.dungeonrealms.net"));
     }
 
     @EventHandler
@@ -386,38 +371,39 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
+        onDisconnect(event.getPlayer(), true);
+    }
+    
+    private void onDisconnect(Player player, boolean performChecks) {
+    	
+    	if (player.hasMetadata("sharding"))
+    		player.removeMetadata("sharding", DungeonRealms.getInstance());
 
-        if (event.getPlayer().hasMetadata("sharding"))
-            event.getPlayer().removeMetadata("sharding", DungeonRealms.getInstance());
-
-
-        boolean ignoreCombat = this.kickedIgnore.remove(event.getPlayer().getUniqueId());
-        if (GameAPI.IGNORE_QUIT_EVENT.contains(event.getPlayer().getUniqueId())) {
-            Utils.log.info("Ignored quit event for player " + event.getPlayer().getName());
-            GameAPI.IGNORE_QUIT_EVENT.remove(event.getPlayer().getUniqueId());
+        if (GameAPI.IGNORE_QUIT_EVENT.contains(player.getUniqueId())) {
+        	Utils.log.info("Ignored quit event for player " + player.getName());
+            GameAPI.IGNORE_QUIT_EVENT.remove(player.getUniqueId());
             return;
         }
-        Player player = event.getPlayer();
+    	
+    	if(performChecks) {
+    		boolean ignoreCombat = this.kickedIgnore.remove(player.getUniqueId());
+    		// Handle combat log before data save so we overwrite the logger's inventory data
+        	if (CombatLog.inPVP(player) && !ignoreCombat) {
+        		// Woo oh, he logged out in PVP
+        		player.getWorld().strikeLightningEffect(player.getLocation());
+        		player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
+        		
+        		CombatLog.getInstance().handleCombatLog(player);
 
-        // Handle combat log before data save so we overwrite the logger's inventory data
-        if (CombatLog.inPVP(player) && !ignoreCombat) {
-            // Woo oh, he logged out in PVP
-            player.getWorld().strikeLightningEffect(player.getLocation());
-            player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
+        		// Remove from pvplog
+        		CombatLog.removeFromPVP(player);
+        	}
 
-            CombatLog.getInstance().handleCombatLog(player);
-
-            // Remove from pvplog
-            CombatLog.removeFromPVP(player);
-        }
-
-        // Player leaves while in duel
-        DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
-        if (offer != null) {
-            offer.handleLogOut(player);
-//                DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
-        }
-        // Update bukkit inventory
+        	// Player leaves while in duel
+        	DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
+        	if (offer != null)
+        		offer.handleLogOut(player);
+    	}
         player.updateInventory();
         // Good to go lads
         GameAPI.handleLogout(player.getUniqueId(), true, null);
