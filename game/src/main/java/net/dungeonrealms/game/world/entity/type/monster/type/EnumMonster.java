@@ -153,6 +153,7 @@ public enum EnumMonster {
             case Skeleton:
             case Skeleton1:
             case Skeleton2:
+            case PassiveSkeleton1:
                 return SkullTextures.SKELETON.getSkull();
             case FireImp:
                 return SkullTextures.IMP.getSkull();
