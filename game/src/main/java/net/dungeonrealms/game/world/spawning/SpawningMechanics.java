@@ -19,15 +19,14 @@ import net.dungeonrealms.game.world.entity.type.monster.type.ranged.RangedZombie
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.BasicEntityBlaze;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffSkeleton;
 import net.dungeonrealms.game.world.entity.type.monster.type.ranged.staff.StaffZombie;
-import net.dungeonrealms.game.world.item.*;
 import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.itemgenerator.modifiers.WeaponModifiers;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -360,6 +359,7 @@ public class SpawningMechanics implements GenericMechanic {
                 break;
             case Bandit:
             case Bandit1:
+            case PassiveBandit:
                 switch (new Random().nextInt(4)) {
                     case 0:
                         entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
@@ -381,6 +381,12 @@ public class SpawningMechanics implements GenericMechanic {
                         break;
                 }
                 break;
+//            case PassiveBandit:
+//                entity = new MeleeZombie(world, monsEnum, tier);
+////                if (entity instanceof PassiveMonster) {
+////                    ((PassiveMonster) entity).registerPathfinders((EntityMonster) entity);
+////                }
+//                break;
             case RangedPirate:
                 entity = new RangedSkeleton(world, monsEnum, type, tier);
                 break;
@@ -493,6 +499,7 @@ public class SpawningMechanics implements GenericMechanic {
                 break;
             case Skeleton1:
             case Skeleton:
+            case PassiveSkeleton1:
                 switch (new Random().nextInt(3)) {
                     case 0:
                         entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
@@ -572,6 +579,10 @@ public class SpawningMechanics implements GenericMechanic {
                 Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
                 return null;
         }
+
+        if (monsEnum.name().startsWith("Passive"))
+            entity.getBukkitEntity().setMetadata("passive", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+
         return entity;
     }
 

@@ -20,6 +20,7 @@ public enum EnumMonster {
     Goblin("goblin", "Goblin", "Shrek", new String[]{"Short", "Ugly", "Smelly"}, new String[]{""}, Collections.singletonList("fire"), 20),
     Bandit("bandit", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, Collections.singletonList("poison"), 15),
     Bandit1("bandit1", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, Collections.singletonList("poison"), 15),
+    PassiveBandit("passivebandit", "Bandit", "", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}, Collections.singletonList("poison"), 15),
     Pirate("pirate", "Pirate", "samsamsam1234", new String[]{""}, new String[]{""}),
     RangedPirate("rangedpirate", "Ranged Pirate", "samsamsam1234", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}),
     MayelPirate("mayelpirate", "Pirate", "samsamsam1234", new String[]{"Mayel"}, new String[]{""}),
@@ -36,6 +37,7 @@ public enum EnumMonster {
 
     StaffZombie("staffzombie", "Zombie", "Steve", new String[]{"Deadly", "Piercing"}, new String[]{"Ranger"}, Collections.singletonList("pure"), 5),
     Skeleton("skeleton", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
+    PassiveSkeleton1("passiveskeleton1", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
     Skeleton1("skeleton1", "Skeleton", "Steve", new String[]{"Infernal", "Demonic", "Wicked", "Fiendish", "Spooky"}, new String[]{""}, Collections.singletonList("pure"), 5),
     Skeleton2("skeleton2", "Chaos Skeleton", "",  new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 5),
     Zombie("zombie", "Greater Zombie", "Steve", new String[]{""}, new String[] {""}, Collections.singletonList("fire"), 10),
@@ -138,6 +140,7 @@ public enum EnumMonster {
                 return SkullTextures.PIRATE.getSkull();
             case Bandit:
             case Bandit1:
+            case PassiveBandit:
                 if (new Random().nextBoolean()) {
                     return SkullTextures.BANDIT.getSkull();
                 } else {

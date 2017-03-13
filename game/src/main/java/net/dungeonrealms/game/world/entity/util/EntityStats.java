@@ -109,6 +109,7 @@ public class EntityStats {
                     break;
                 case Bandit:
                 case Bandit1:
+                case PassiveBandit:
                     weaponType = Item.ItemType.AXE;
                     break;
                 case FireImp:
@@ -122,6 +123,7 @@ public class EntityStats {
                 case Skeleton:
                 case Skeleton1:
                 case Skeleton2:
+                case PassiveSkeleton1:
                     weaponType = Item.ItemType.BOW;
                     break;
                 case Silverfish:

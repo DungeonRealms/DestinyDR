@@ -138,7 +138,7 @@ public class BaseMobSpawner extends MobSpawner {
                 if (hasCustomName) {
                     if (monsterCustomName.toLowerCase().contains("undead")) {
                         String spawnTypeLower = spawnType.toLowerCase();
-                        if (!spawnTypeLower.equals("skeleton") && !spawnTypeLower.equals("skeleton1") && !spawnTypeLower.equals("skeleton2")) {
+                        if (!spawnTypeLower.equals("skeleton") && !spawnTypeLower.endsWith("skeleton1") && !spawnTypeLower.equals("skeleton2")) {
                             mob = "undead";
                         }
                     } else if (monsterCustomName.toLowerCase().contains("mountain")) {

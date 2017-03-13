@@ -329,6 +329,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(TutorialIsland.getInstance(), this);
             //TODO: Fix.
             pm.registerEvents(new ShopListener(), this);
+            pm.registerEvents(new PassiveEntityListener(), this);
             pm.registerEvents(new AchievementManager(), this);
             cm = new CraftingMenu();
             tcc = new TabCompleteCommands();
