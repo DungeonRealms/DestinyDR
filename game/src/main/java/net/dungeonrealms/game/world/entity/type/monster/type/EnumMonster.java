@@ -58,6 +58,7 @@ public enum EnumMonster {
     Daemon2("daemon2", "Daemon", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 10),
     Acolyte("acolyte", "Acolyte", "", new String[]{""}, new String[]{""}, Collections.singletonList("fire"), 20),
     Enderman("enderman", "Apparition", "", new String[]{""}, new String[]{""}, Collections.singletonList("pure"), 15),
+    PassiveChicken("passivechicken", "Quillen", "", new String[]{"Fierce"}, new String[]{""}),
     Pig("pig", "Pig", "", new String[]{""}, new String[]{""}),
     Bat("bat", "Bat", "", new String[]{""}, new String[]{""}),
     Cow("cow", "Cow", "", new String[]{""}, new String[]{""}),

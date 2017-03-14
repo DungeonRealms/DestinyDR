@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.listener.inventory;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.world.entity.type.monster.type.melee.PassiveDRChicken;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,6 +16,7 @@ import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PassiveEntityListener implements Listener {
 
@@ -46,6 +49,14 @@ public class PassiveEntityListener implements Listener {
         if (event.getEntity().hasMetadata("passive") && event.getDamager() instanceof Player) {
             //Anger?
             angerLevels.put(event.getEntity(), 40);
+
+            CraftLivingEntity ent = (CraftLivingEntity) event.getEntity();
+            if (ent.getHandle() instanceof PassiveDRChicken) {
+                PassiveDRChicken chicken = (PassiveDRChicken) ent.getHandle();
+                //Target them.
+                if (chicken.getGoalTarget() == null || ThreadLocalRandom.current().nextInt(2) == 0)
+                    chicken.setGoalTarget(((CraftLivingEntity) event.getDamager()).getHandle(), EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, true);
+            }
         }
     }
 

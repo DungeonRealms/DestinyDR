@@ -292,6 +292,8 @@ public class BlockListener implements Listener {
                                 mobSpawner.setHasCustomName(false);
                             }
 
+                            mobSpawner.setSpawnAmount(spawnAmount.get());
+                            mobSpawner.setTier(tier.get());
                             if(mobSpawner.getInitialRespawnDelay() != delay.get()){
                                 mobSpawner.setInitialRespawnDelay(delay.get());
                                 mobSpawner.setRespawnDelay(delay.get());

@@ -124,6 +124,7 @@ public class EntityMechanics implements GenericMechanic {
         nmsUtils.registerEntity("DRGhast", 56, EntityGhast.class, InfernalGhast.class);
         nmsUtils.registerEntity("LordsGuard", 51, EntitySkeleton.class, InfernalLordsGuard.class);
 
+        nmsUtils.registerEntity("PassiveChicken", EntityType.CHICKEN.getTypeId(), EntityChicken.class, PassiveDRChicken.class);
         // Pets
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);

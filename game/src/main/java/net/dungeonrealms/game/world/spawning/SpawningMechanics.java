@@ -351,6 +351,9 @@ public class SpawningMechanics implements GenericMechanic {
         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
         Entity entity;
         switch (monsEnum) {
+            case PassiveChicken:
+                entity = new PassiveDRChicken(world, tier);
+                break;
             case InfernalEndermen:
                 entity = new InfernalEndermen(world, tier, false);
                 break;

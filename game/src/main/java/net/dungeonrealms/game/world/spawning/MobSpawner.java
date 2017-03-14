@@ -34,10 +34,12 @@ public abstract class MobSpawner {
     @Getter
     protected EntityArmorStand armorstand;
     @Getter
+    @Setter
     protected int tier;
     @Getter
     protected List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
     @Getter
+    @Setter
     protected int spawnAmount;
     @Getter
     protected int id;
