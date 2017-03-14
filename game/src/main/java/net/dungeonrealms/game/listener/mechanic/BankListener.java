@@ -669,6 +669,11 @@ public class BankListener implements Listener {
                 //This is a quick and dirty solution to that.
                 banned = banned || isMoney(item);
             }
+            
+            if(e.isShiftClick() && isMoney(item)) {
+                e.setCancelled(true);
+                return;
+            }
 
             if (banned) {
                 p.sendMessage(ChatColor.RED + "You can't store this item!");
