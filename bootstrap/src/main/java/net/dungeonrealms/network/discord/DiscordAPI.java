@@ -1,7 +1,6 @@
 package net.dungeonrealms.network.discord;
 
 import java.io.OutputStream;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;

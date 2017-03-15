@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -54,6 +55,10 @@ public class CommandLookup extends BaseCommand {
             sender.sendMessage(ChatColor.GREEN + "Rank: " + ChatColor.AQUA + DatabaseAPI.getInstance().getData(EnumData.RANK, uuid));
             sender.sendMessage(ChatColor.GREEN + "Level: " + ChatColor.YELLOW + DatabaseAPI.getInstance().getData(EnumData.LEVEL, uuid));
             sender.sendMessage(ChatColor.GREEN + "Time Played: " + ChatColor.YELLOW + GameAPI.formatTime(1000 * 60 * (int) DatabaseAPI.getInstance().getData(EnumData.TIME_PLAYED, uuid)));
+            if(!isPlaying) {
+            	long lastSeen = (long)DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, uuid);
+            	sender.sendMessage(ChatColor.GREEN + "Last Seen: " + ChatColor.YELLOW + GameAPI.formatTime(new Date().getTime() - lastSeen));
+            }
             sender.sendMessage(ChatColor.GREEN + "Gems: " + ChatColor.YELLOW + DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid));
             sender.sendMessage(ChatColor.GREEN + "E-Cash: " + ChatColor.YELLOW + DatabaseAPI.getInstance().getData(EnumData.ECASH, uuid));
             sender.sendMessage(ChatColor.GREEN + "Bank: " + loadInventory(uuid, EnumData.INVENTORY_STORAGE));

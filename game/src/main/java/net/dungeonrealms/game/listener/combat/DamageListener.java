@@ -693,9 +693,20 @@ public class DamageListener implements Listener {
         p.setFireTicks(0);
         p.setFallDistance(0);
         EntityMechanics.setVelocity(p, p.getVelocity().zero());
+        
+        p.updateInventory();
+        
+        //This needs a slight delay otherwise it gets wiped. Don't delay it too much, or people who logout will get wiped.	
+        Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+        	PlayerManager.checkInventory(p.getUniqueId());
 
+            for (ItemStack stack : gearToSave)
+                p.getInventory().addItem(stack);
+
+            ItemManager.giveStarter(p);
+        });
+        
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            event.getDrops().clear();
             p.setCanPickupItems(true);
             p.setGameMode(GameMode.SURVIVAL);
             GamePlayer gamePlayer = GameAPI.getGamePlayer(p);
@@ -703,14 +714,6 @@ public class DamageListener implements Listener {
                 gamePlayer.getAttributeBonusesFromStats().entrySet().forEach(entry -> entry.setValue(0f));
                 gamePlayer.getAttributes().entrySet().forEach(entry -> entry.setValue(new Integer[]{0, 0}));
             }
-
-            PlayerManager.checkInventory(p.getUniqueId());
-
-            for (ItemStack stack : gearToSave) {
-                p.getInventory().addItem(stack);
-            }
-
-            ItemManager.giveStarter(p);
         }, 20L);
     }
 

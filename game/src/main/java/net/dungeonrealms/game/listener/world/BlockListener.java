@@ -690,6 +690,7 @@ public class BlockListener implements Listener {
         Block block = event.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.ANVIL) return;
+        if (!GameAPI.isMainWorld(block.getLocation())) return;
         event.setCancelled(true);
 
         Player player = event.getPlayer();

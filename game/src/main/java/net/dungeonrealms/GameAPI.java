@@ -2416,4 +2416,8 @@ public class GameAPI {
         message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         message.sendToPlayer(player);
     }
+
+	public static boolean isMainWorld(Location location) {
+		return location.getWorld().equals(Bukkit.getWorlds().get(0));
+	}
 }

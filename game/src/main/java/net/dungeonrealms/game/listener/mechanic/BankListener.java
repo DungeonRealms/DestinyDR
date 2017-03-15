@@ -51,7 +51,7 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEnderChestRightClick(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()) {
-            if (e.getClickedBlock().getType() != Material.ENDER_CHEST)
+            if (e.getClickedBlock().getType() != Material.ENDER_CHEST || !GameAPI.isMainWorld(e.getClickedBlock().getLocation()))
                 return;
 
             e.setCancelled(true);
@@ -103,8 +103,10 @@ public class BankListener implements Listener {
         } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
                 e.setCancelled(true);
-                e.getPlayer().openInventory(getBank(e.getPlayer().getUniqueId()));
-                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1, 1);
+                if(GameAPI.isMainWorld(e.getClickedBlock().getLocation())) {
+                	e.getPlayer().openInventory(getBank(e.getPlayer().getUniqueId()));
+                	e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1, 1);
+                }
             }
         }
     }
