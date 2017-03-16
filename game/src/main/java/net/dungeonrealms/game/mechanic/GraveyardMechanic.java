@@ -71,12 +71,14 @@ public class GraveyardMechanic implements GenericMechanic {
     }
 
     public void removeGraveyard(Graveyard yard) {
+        this.graveyards.remove(yard);
         this.config.set("graveyards." + yard.getName(), null);
         this.saveGraveyardFile();
     }
 
     public void addGraveyard(Graveyard yard) {
-        this.config.set("graveyards." + yard.getName() + ".location", Utils.getStringFromLocation(yard.getLocation()));
+        this.graveyards.add(yard);
+        this.config.set("graveyards." + yard.getName() + ".location", Utils.getStringFromLocation(yard.getLocation(), false));
         this.saveGraveyardFile();
     }
 

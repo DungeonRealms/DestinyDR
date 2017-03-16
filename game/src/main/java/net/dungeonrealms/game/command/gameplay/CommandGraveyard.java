@@ -33,7 +33,7 @@ public class CommandGraveyard extends BaseCommand {
 
                     Graveyard yard = grave.getGraveyard(name);
                     if (yard != null) {
-                        sender.sendMessage(ChatColor.RED + "Graveyard already exists for " + name + " at " + Utils.getStringFromLocation(yard.getLocation()));
+                        sender.sendMessage(ChatColor.RED + "Graveyard already exists for " + name + " at " + Utils.getStringFromLocation(yard.getLocation(), true));
                         return true;
                     }
 
@@ -51,20 +51,33 @@ public class CommandGraveyard extends BaseCommand {
 
                     grave.removeGraveyard(yard);
                     sender.sendMessage(ChatColor.RED + "Graveyard removed..");
+                    return true;
                 }
             } else if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("list")) {
-                    sender.sendMessage(ChatColor.RED + "Listing " + grave.getGraveyards().size() + " Graveyards: ");
-                    for (Graveyard yard : grave.getGraveyards()) {
-                        JSONMessage message = new JSONMessage("", ChatColor.GREEN);
-                        message.addRunCommand(ChatColor.GREEN + yard.getName() + " - " + Utils.getStringFromLocation(yard.getLocation()), ChatColor.GREEN, "/tp " + yard.getLocation().getBlockX() + " " + yard.getLocation().getBlockY() + " " + yard.getLocation().getBlockZ());
-                        message.sendToPlayer(player);
+                    sender.sendMessage("");
+                    Graveyard closest = grave.getClosestGraveyard(player.getLocation());
+                    if (closest != null) {
+                        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Closest Graveyard: " + ChatColor.RED + closest.getName() + " (" + closest.getLocation().distanceSquared(player.getLocation()) + ")");
                     }
 
-                    sender.sendMessage(ChatColor.RED + "Click a Graveyard location to teleport to it.");
+                    if (!grave.getGraveyards().isEmpty()) {
+                        sender.sendMessage(ChatColor.RED + "Listing " + grave.getGraveyards().size() + " Graveyards: ");
+                        for (Graveyard yard : grave.getGraveyards()) {
+                            JSONMessage message = new JSONMessage("", ChatColor.GREEN);
+                            message.addRunCommand(ChatColor.GREEN + yard.getName() + " - " + Utils.getStringFromLocation(yard.getLocation(), true), ChatColor.GREEN, "/tp " + yard.getLocation().getBlockX() + " " + yard.getLocation().getBlockY() + " " + yard.getLocation().getBlockZ());
+                            message.sendToPlayer(player);
+                        }
+
+                        sender.sendMessage(ChatColor.RED + "Click a Graveyard location to teleport to it.");
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "No graveyards found.");
+                    }
                 }
+                return true;
             }
 
+            sender.sendMessage(ChatColor.RED + "/graveyard remove <name> - Remove a given graveyard..");
             sender.sendMessage(ChatColor.RED + "/graveyard add <name> - Create new graveyard with the given name.");
             sender.sendMessage(ChatColor.RED + "/graveyard list - List all graveyards..");
 

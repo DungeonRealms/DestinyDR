@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -44,9 +45,12 @@ public class Utils {
         return retr;
     }
 
-    public static String getStringFromLocation(Location location) {
+    private static DecimalFormat format = new DecimalFormat("#.##");
+
+    public static String getStringFromLocation(Location location, boolean round) {
         StringBuilder retr = new StringBuilder();
-        retr.append(location.getWorld().getName()).append(",").append(location.getX()).append(",").append(location.getY()).append(",").append(location.getZ());
+        retr.append(location.getWorld().getName()).append(",").append(round ? format.format(location.getX()) : location.getX()).append(",")
+                .append(round ? format.format(location.getY()) : location.getY()).append(",").append(round ? format.format(location.getZ()) : location.getZ());
 
         if (location.getYaw() != 0 || location.getPitch() != 0) {
             retr.append(",").append(location.getYaw()).append(",").append(location.getPitch());
