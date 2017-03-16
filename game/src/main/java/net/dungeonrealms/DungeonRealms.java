@@ -27,6 +27,7 @@ import net.dungeonrealms.game.command.friend.AcceptCommand;
 import net.dungeonrealms.game.command.friend.AddCommand;
 import net.dungeonrealms.game.command.friend.FriendsCommand;
 import net.dungeonrealms.game.command.friend.RemoveCommand;
+import net.dungeonrealms.game.command.gameplay.CommandGraveyard;
 import net.dungeonrealms.game.command.guild.*;
 import net.dungeonrealms.game.command.menu.*;
 import net.dungeonrealms.game.command.moderation.*;
@@ -55,6 +56,7 @@ import net.dungeonrealms.game.listener.world.DungeonListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.DungeonManager;
+import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.mechanic.TutorialIsland;
 import net.dungeonrealms.game.mechanic.generic.MechanicManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -284,6 +286,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(TutorialIsland.getInstance());
             mm.registerMechanic(Quests.getInstance());
             mm.registerMechanic(new PacketModifier());
+            mm.registerMechanic(new GraveyardMechanic());
         } else {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
@@ -365,6 +368,7 @@ public class DungeonRealms extends JavaPlugin {
 
         CommandManager cm = new CommandManager();
 
+        cm.registerCommand(new CommandGraveyard());
         // Commands always registered regardless of server.
         cm.registerCommand(new CommandDevDebug());
         cm.registerCommand(new CommandCloseShop());
@@ -430,7 +434,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Checks the identity of a Dungeon Realms signed item."));
         cm.registerCommand(new CommandStats("stat", "/<command> [args]", "Allows you to view and manage your stat points.", Collections.singletonList("stats")));
         cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "This will stop Dungeon Realms safely following safe shutdown procedures.", Collections.singletonList("drstop")));
-        
+
         cm.registerCommand(new CommandWarp());
         cm.registerCommand(new DungeonSpawn("dspawn", "/<command> [args]", "Spawn dungeon monsters."));
         cm.registerCommand(new CommandMonSpawn("monspawn", "/<command> [args]", "Spawn monsters"));
@@ -652,21 +656,21 @@ public class DungeonRealms extends JavaPlugin {
 
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
     }
-    
+
     public FTPClient getFTPClient() {
-    	FTPClient ftpClient = new FTPClient();
-    	
-    	try{
-    		Ini ini = new Ini();
-    		ini.load(new FileReader("credentials.ini"));
-    		ftpClient.connect(ini.get("FTP", "ftp_host", String.class));
-    		ftpClient.login(ini.get("FTP", "ftp_username", String.class), ini.get("FTP", "ftp_password", String.class));
-    		ftpClient.enterLocalPassiveMode();
-    		ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-    	}catch(Exception e){
-    		Bukkit.getLogger().info("Failed to load FTP credentials from credentials.ini");
-    		e.printStackTrace();
-    	}
+        FTPClient ftpClient = new FTPClient();
+
+        try{
+            Ini ini = new Ini();
+            ini.load(new FileReader("credentials.ini"));
+            ftpClient.connect(ini.get("FTP", "ftp_host", String.class));
+            ftpClient.login(ini.get("FTP", "ftp_username", String.class), ini.get("FTP", "ftp_password", String.class));
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+        }catch(Exception e){
+            Bukkit.getLogger().info("Failed to load FTP credentials from credentials.ini");
+            e.printStackTrace();
+        }
         return ftpClient;
     }
 
