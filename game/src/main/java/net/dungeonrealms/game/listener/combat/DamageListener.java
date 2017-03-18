@@ -679,6 +679,8 @@ public class DamageListener implements Listener {
         Location respawnLocation;
         if (alignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size()));
+        } else if (DungeonRealms.getInstance().isEventShard) {
+            respawnLocation = TeleportLocation.EVENT_AREA.getLocation();
         } else {
             Graveyard closest = GraveyardMechanic.get().getClosestGraveyard(p.getLocation());
             respawnLocation = closest != null ? closest.getLocation() : TeleportLocation.CYRENNICA.getLocation();

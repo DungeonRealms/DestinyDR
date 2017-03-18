@@ -622,19 +622,25 @@ public class ItemManager {
     }
     /**
      * Adds a starter kit to the player.
-     * 
-     * @param Player
-     * @param isNew
+     *
+     * @param player
      */
     public static void giveStarter(Player player){
     	giveStarter(player, false);
     }
+
     /**
      * Adds a starter kit to the player.
      *
      * @param player
+     * @param isNew
      */
     public static void giveStarter(Player player, boolean isNew) {
+        if (DungeonRealms.getInstance().isEventShard) {
+            giveEventStarter(player);
+            return;
+        }
+
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
@@ -664,6 +670,20 @@ public class ItemManager {
 
         ItemStack fixedBoots = ItemGenerator.getNamedItem("trainingboots");
         player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
+    }
+
+    /**
+     * Give the event starter kit to a player.
+     *
+     * @param player
+     */
+    public static void giveEventStarter(Player player) {
+        // Sanity check to prevent accidentally issuing an event starter on a non-event shard.
+        if (!DungeonRealms.getInstance().isEventShard)
+            return;
+
+        // Give the player gear.
+        // TODO: Create event kit to give on-starter/death.
     }
 
 

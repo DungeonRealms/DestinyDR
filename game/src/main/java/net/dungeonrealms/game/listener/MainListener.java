@@ -589,6 +589,15 @@ public class MainListener implements Listener {
         // AVOID DOUBLE CLICK //
         Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000L);
 
+        // Event NPCs and Restrictions
+        if (DungeonRealms.getInstance().isEventShard) {
+            if (npcNameStripped.equalsIgnoreCase("E-Cash Vendor") || npcNameStripped.equalsIgnoreCase("Skill Trainer")
+                    || npcNameStripped.equalsIgnoreCase("Item Vendor")) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot talk to this NPC on this shard.");
+                return;
+            }
+        }
+
         if (npcNameStripped.equalsIgnoreCase("Animal Tamer")) {
             NPCMenus.openMountPurchaseMenu(event.getPlayer());
             return;

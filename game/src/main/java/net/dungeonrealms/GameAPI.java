@@ -1181,7 +1181,14 @@ public class GameAPI {
             player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
             player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
 
-            player.teleport(TeleportLocation.STARTER.getLocation());
+            if (DungeonRealms.getInstance().isEventShard) {
+                int level = 50;
+                GameAPI.getGamePlayer(player).updateLevel(level, false, true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, level, true);
+                player.teleport(TeleportLocation.EVENT_AREA.getLocation());
+            } else {
+                player.teleport(TeleportLocation.STARTER.getLocation());
+            }
         }
 
         // Essentials
@@ -1240,6 +1247,14 @@ public class GameAPI {
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BETA" + ChatColor.DARK_AQUA + " shard.",
                     ChatColor.GRAY + "You will be testing " + ChatColor.UNDERLINE + "new" + ChatColor.GRAY + " and " + ChatColor.UNDERLINE + "unfinished" + ChatColor.GRAY + " versions of Dungeon Realms.",
                     ChatColor.GRAY + "Report all bugs at: " + ChatColor.BOLD + ChatColor.UNDERLINE + "http://bug.dungeonrealms.net/"
+            });
+        }
+        if (DungeonRealms.getInstance().isEventShard) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is an " + ChatColor.UNDERLINE + "EVENT" + ChatColor.DARK_AQUA + " shard.",
+                    ChatColor.GRAY.toString() + ChatColor.ITALIC + "Please be aware that data is not synchronized with the live shard.",
+                    ChatColor.GRAY.toString() + ChatColor.ITALIC + "This shard is only accessible for a limited time.",
             });
         }
 

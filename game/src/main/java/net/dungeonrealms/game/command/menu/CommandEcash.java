@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.command.menu;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,6 +23,11 @@ public class CommandEcash extends BaseCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) return false;
+
+        if (DungeonRealms.getInstance().isEventShard) {
+            sender.sendMessage(ChatColor.RED + "You cannot access the E-Cash Vendor on this shard.");
+            return false;
+        }
 
         Player player = (Player) sender;
         NPCMenus.openECashPurchaseMenu(player);

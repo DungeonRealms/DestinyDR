@@ -34,9 +34,14 @@ public class DuelingMechanics {
     public static void sendDuelRequest(Player sender, Player requested) {
         
     	/*if(!DungeonRealms.getInstance().isMasterShard){
-    		sender.sendMessage(ChatColor.RED + "Dueling is temporarily disabled..");
+    		sender.sendMessage(ChatColor.RED + "Dueling is temporarily disabled.");
     		return;
     	}*/
+
+        if (DungeonRealms.getInstance().isEventShard) {
+            sender.sendMessage(ChatColor.RED + "Dueling is disabled on this shard.");
+            return;
+        }
 
         if (isOnCooldown(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You're currently on cooldown for sending duel requests!");

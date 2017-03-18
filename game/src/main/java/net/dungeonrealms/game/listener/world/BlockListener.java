@@ -946,12 +946,18 @@ public class BlockListener implements Listener {
             Player player = e.getPlayer();
             if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && GameAPI.isInSafeRegion(e.getClickedBlock().getLocation()) && player.getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) {
 
+                if (DungeonRealms.getInstance().isEventShard) {
+                    player.sendMessage(ChatColor.RED + "You cannot open a shop as it is disabled on this shard.");
+                    return;
+                }
+
                 if (ShopMechanics.ALLSHOPS.containsKey(player.getName())) {
                     Shop shop = ShopMechanics.getShop(player.getName());
                     player.sendMessage(ChatColor.YELLOW + "You already have an open shop on " + ChatColor.UNDERLINE + "this" + ChatColor.YELLOW + " server.");
                     player.sendMessage(ChatColor.GRAY + "Shop Location: " + (int) shop.block1.getLocation().getX() + ", " + (int) shop.block1.getLocation().getY() + ", " + (int) shop.block1.getLocation().getZ());
                     return;
                 }
+
                 GamePlayer gp = GameAPI.getGamePlayer(player);
                 if (!TutorialIsland.onTutorialIsland(player.getLocation())) {
                     if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST) && !GameAPI.isMaterialNearby(b1, 3, Material.PORTAL)) {
