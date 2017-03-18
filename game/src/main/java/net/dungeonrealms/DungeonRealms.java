@@ -140,7 +140,7 @@ public class DungeonRealms extends JavaPlugin {
     public boolean isBrazilianShard = false; // Brazilian shard - eventually create DR localization, etc.
     public boolean isRoleplayShard = false; // Role playing shard - prompt user its a RP shard.
     public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
-    public boolean isEventShard = false; //Event shard - Unknown use. Has sepereate database
+    public boolean isEventShard = false; // Event shard - Used for any events.
     public boolean isGMExtendedPermissions = false; // Does the GM have extended permissions (events / spawning / etc).
     // End of Shard Config
 
@@ -403,6 +403,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSudo());
         cm.registerCommand(new CommandSudoChat());
         cm.registerCommand(new CommandLookup());
+        cm.registerCommand(new CommandAnnounce());
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPLoot());
