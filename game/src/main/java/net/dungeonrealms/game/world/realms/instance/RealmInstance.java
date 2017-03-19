@@ -177,7 +177,7 @@ public class RealmInstance extends CachedClientProvider<RealmToken> implements R
         }
         
         if(DungeonRealms.getInstance().isMasterShard || DungeonRealms.getInstance().isEventShard){
-        	player.sendMessage(ChatColor.RED + "Realms are disabled on US-0.");
+        	player.sendMessage(ChatColor.RED + "Realms are disabled on this shard.");
         	return;
         }
 

@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 public enum TeleportLocation {
 
 	STARTER("Tutorial", null, -1, -726.533, 78, 350.849, -18.9F, -4.2F),
+	EVENT_AREA("Event Area", null, -1, -378, 85, 341),
 	CYRENNICA("Cyrennica", WorldRegion.CYRENNICA, 1000, -378, 85, 357),
 	HARRISON_FIELD("Harrison Field", WorldRegion.HARRISON, 1500, -594, 59, 687, 92.0F, 1F),
 	DARK_OAK("Dark Oak Tavern", WorldRegion.DARK_OAK, 3500, 280, 59, 1132, 2.0F, 1F),

@@ -533,6 +533,10 @@ public class GuildMechanics {
      * @param player Player in dialogue interaction
      */
     public void startGuildCreationDialogue(Player player) {
+        if (DungeonRealms.getInstance().isEventShard) {
+            player.sendMessage(ChatColor.RED + "You cannot create a guild on this shard.");
+            return;
+        }
 
         // They must be level 10
         if (((Integer) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId()) < 10)) {

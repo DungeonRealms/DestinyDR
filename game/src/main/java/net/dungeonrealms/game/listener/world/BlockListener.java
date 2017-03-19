@@ -689,10 +689,10 @@ public class BlockListener implements Listener {
     public void playerRightClickAnvil(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if (block == null) return;
-        if (!GameAPI.isMainWorld(block.getLocation())) return;
-        event.setCancelled(true);
-        
         if (block.getType() != Material.ANVIL) return;
+        event.setCancelled(true);
+        if (!GameAPI.isMainWorld(block.getLocation())) return;
+        
 
         Player player = event.getPlayer();
         if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) {
@@ -946,6 +946,11 @@ public class BlockListener implements Listener {
             Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1, 1, 0));
             Player player = e.getPlayer();
             if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && GameAPI.isInSafeRegion(e.getClickedBlock().getLocation()) && player.getLocation().getWorld().equals(Bukkit.getWorlds().get(0))) {
+
+                if (DungeonRealms.getInstance().isEventShard) {
+                    player.sendMessage(ChatColor.RED + "You cannot open a shop as it is disabled on this shard.");
+                    return;
+                }
 
                 if (ShopMechanics.ALLSHOPS.containsKey(player.getName())) {
                     Shop shop = ShopMechanics.getShop(player.getName());

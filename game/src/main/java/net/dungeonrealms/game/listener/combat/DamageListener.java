@@ -2,7 +2,6 @@ package net.dungeonrealms.game.listener.combat;
 
 import com.google.common.collect.Lists;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -19,9 +18,11 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.GraveyardMechanic;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.miscellaneous.Graveyard;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
@@ -47,10 +48,8 @@ import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.*;
 import net.minecraft.server.v1_9_R2.World;
-
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
@@ -677,9 +676,22 @@ public class DamageListener implements Listener {
         }
         toDrop.clear();
 
-        Location respawnLocation = TeleportLocation.CYRENNICA.getLocation();
+        Location respawnLocation;
         if (alignment == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size()));
+        } else if (DungeonRealms.getInstance().isEventShard) {
+            respawnLocation = TeleportLocation.EVENT_AREA.getLocation();
+        } else {
+            Graveyard closest = GraveyardMechanic.get().getClosestGraveyard(p.getLocation());
+            respawnLocation = closest != null ? closest.getLocation() : TeleportLocation.CYRENNICA.getLocation();
+
+            if (closest != null) {
+                if (!closest.getName().equalsIgnoreCase("cyrennica")) {
+                    p.sendMessage("");
+                    p.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "Respawning you at the nearest Graveyard...");
+                    p.sendMessage("");
+                }
+            }
         }
         for (PotionEffect potionEffect : p.getActivePotionEffects()) {
             p.removePotionEffect(potionEffect.getType());

@@ -157,7 +157,7 @@ public abstract class MobSpawner {
             holo.appendTextLine(ChatColor.GREEN + "Custom Name: " + ChatColor.RESET + this.getMonsterCustomName());
 
         holo.appendTextLine(ChatColor.GREEN + "Level Range: " + this.getLvlRange());
-        holo.appendTextLine(ChatColor.GREEN + "Respawn Delay: " + this.getRespawnDelay());
+        holo.appendTextLine(ChatColor.GREEN + "Respawn Delay: " + this.getInitialRespawnDelay());
         holo.appendTextLine(ChatColor.GREEN + "Spawn Amount: " + this.getSpawnAmount());
         holo.appendTextLine(ChatColor.GREEN + "Spawn Range: " + this.getMininmumXZ() + " - " + this.getMaximumXZ());
 

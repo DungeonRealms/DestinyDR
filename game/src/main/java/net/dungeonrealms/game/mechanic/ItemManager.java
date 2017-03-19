@@ -101,6 +101,20 @@ public class ItemManager {
         return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
 
+    public static ItemStack createEventOrbofAlteration() {
+        if (!DungeonRealms.getInstance().isEventShard)
+            return new ItemStack(Material.AIR);
+
+        ItemStack rawStack = createItem(Material.MAGMA_CREAM, ChatColor.LIGHT_PURPLE.toString() + "Orb of Alteration", new String[]{
+                ChatColor.GRAY.toString() + "Randomizes bonus stats of selected equipment",
+                ChatColor.GRAY.toString() + "Event Item"
+        });
+
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        nms.getTag().setString("type", "orb");
+        return CraftItemStack.asBukkitCopy(nms);
+    }
+
     public static ItemStack createOrbofFlight(boolean applyAntiDupe) {
         ItemStack orbOfFlight = createItem(Material.FIREWORK_CHARGE, ChatColor.AQUA.toString() + "Orb of Flight",
                 Arrays.asList((ChatColor.GRAY.toString() + "Enables " + ChatColor.UNDERLINE + "FLYING" + ChatColor.GRAY + " in realm for the owner "),
@@ -622,19 +636,25 @@ public class ItemManager {
     }
     /**
      * Adds a starter kit to the player.
-     * 
-     * @param Player
-     * @param isNew
+     *
+     * @param player
      */
     public static void giveStarter(Player player){
     	giveStarter(player, false);
     }
+
     /**
      * Adds a starter kit to the player.
      *
      * @param player
+     * @param isNew
      */
     public static void giveStarter(Player player, boolean isNew) {
+        if (DungeonRealms.getInstance().isEventShard) {
+            giveEventStarter(player);
+            return;
+        }
+
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
@@ -664,6 +684,25 @@ public class ItemManager {
 
         ItemStack fixedBoots = ItemGenerator.getNamedItem("trainingboots");
         player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
+    }
+
+    /**
+     * Give the event starter kit to a player.
+     *
+     * @param player
+     */
+    public static void giveEventStarter(Player player) {
+        // Sanity check to prevent accidentally issuing an event starter on a non-event shard.
+        if (!DungeonRealms.getInstance().isEventShard)
+            return;
+
+        // Give the player gear.
+        // TODO: Create event kit to give on-starter/death.
+
+        // Add 128 event orbs.
+        ItemStack orb = ItemManager.createEventOrbofAlteration();
+        orb.setAmount(64);
+        player.getInventory().addItem(orb, orb);
     }
 
 

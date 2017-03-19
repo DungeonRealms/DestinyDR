@@ -2,6 +2,7 @@ package net.dungeonrealms.game.mastery;
 
 import net.dungeonrealms.common.Constants;
 import net.minecraft.server.v1_9_R2.Item;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -29,6 +31,32 @@ import java.util.stream.Collectors;
 public class Utils {
 
     public static Logger log = Constants.log;
+
+    public static Location getLocation(String loc) {
+        if (loc == null || !loc.contains(",")) return null;
+        String[] args = loc.split(",");
+
+        Location retr = new Location(Bukkit.getWorld(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]));
+
+        if (args.length >= 6) {
+            retr.setYaw(Float.parseFloat(args[4]));
+            retr.setPitch(Float.parseFloat(args[5]));
+        }
+        return retr;
+    }
+
+    private static DecimalFormat format = new DecimalFormat("#.##");
+
+    public static String getStringFromLocation(Location location, boolean round) {
+        StringBuilder retr = new StringBuilder();
+        retr.append(location.getWorld().getName()).append(",").append(round ? format.format(location.getX()) : location.getX()).append(",")
+                .append(round ? format.format(location.getY()) : location.getY()).append(",").append(round ? format.format(location.getZ()) : location.getZ());
+
+        if (location.getYaw() != 0 || location.getPitch() != 0) {
+            retr.append(",").append(location.getYaw()).append(",").append(location.getPitch());
+        }
+        return retr.toString();
+    }
 
     /**
      * Get a players head.
