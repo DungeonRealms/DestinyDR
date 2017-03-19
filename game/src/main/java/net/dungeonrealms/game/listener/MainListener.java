@@ -592,7 +592,8 @@ public class MainListener implements Listener {
         // Event NPCs and Restrictions
         if (DungeonRealms.getInstance().isEventShard) {
             if (npcNameStripped.equalsIgnoreCase("E-Cash Vendor") || npcNameStripped.equalsIgnoreCase("Skill Trainer")
-                    || npcNameStripped.equalsIgnoreCase("Item Vendor")) {
+                    || npcNameStripped.equalsIgnoreCase("Item Vendor") || npcNameStripped.equalsIgnoreCase("Merchant")
+                    || npcNameStripped.equalsIgnoreCase("Animal Tamer") || npcNameStripped.equalsIgnoreCase("Innkeeper")) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot talk to this NPC on this shard.");
                 return;
             }

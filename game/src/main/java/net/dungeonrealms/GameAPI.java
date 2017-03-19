@@ -1182,9 +1182,26 @@ public class GameAPI {
             player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
 
             if (DungeonRealms.getInstance().isEventShard) {
+                PlayerManager.PlayerToggles toggle;
                 int level = 50;
+
+                // Set Levels
                 GameAPI.getGamePlayer(player).updateLevel(level, false, true);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, level, true);
+
+                // Enable PVP
+                toggle = PlayerManager.PlayerToggles.PVP;
+                toggle.setToggleState(player, true);
+
+                // Disable Chaos Prevention
+                toggle = PlayerManager.PlayerToggles.CHAOTIC_PREVENTION;
+                toggle.setToggleState(player, false);
+
+                // Disable Tips
+                toggle = PlayerManager.PlayerToggles.TIPS;
+                toggle.setToggleState(player, false);
+
+                // Teleport to Event Area
                 player.teleport(TeleportLocation.EVENT_AREA.getLocation());
             } else {
                 player.teleport(TeleportLocation.STARTER.getLocation());
