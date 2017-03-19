@@ -689,9 +689,10 @@ public class BlockListener implements Listener {
     public void playerRightClickAnvil(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if (block == null) return;
-        if (block.getType() != Material.ANVIL) return;
         if (!GameAPI.isMainWorld(block.getLocation())) return;
         event.setCancelled(true);
+        
+        if (block.getType() != Material.ANVIL) return;
 
         Player player = event.getPlayer();
         if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) {

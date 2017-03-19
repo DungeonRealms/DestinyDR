@@ -76,9 +76,12 @@ import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
+import net.minecraft.server.v1_9_R2.EnumHand;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagList;
+import net.minecraft.server.v1_9_R2.PacketDataSerializer;
+import net.minecraft.server.v1_9_R2.PacketPlayOutCustomPayload;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -89,6 +92,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -108,6 +112,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.inventivetalent.glow.GlowAPI;
 
+import io.netty.buffer.Unpooled;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -118,6 +124,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
@@ -2419,5 +2426,15 @@ public class GameAPI {
 
 	public static boolean isMainWorld(Location location) {
 		return location.getWorld().equals(Bukkit.getWorlds().get(0));
+	}
+	
+	public static void openBook(Player player, ItemStack book) {
+		final ItemStack savedItem = player.getInventory().getItemInMainHand();
+		player.getInventory().setItemInMainHand(book);
+		
+		PacketDataSerializer packetdataserializer = new PacketDataSerializer(Unpooled.buffer());
+		packetdataserializer.a(EnumHand.MAIN_HAND);
+		((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
+		player.getInventory().setItemInMainHand(savedItem);
 	}
 }

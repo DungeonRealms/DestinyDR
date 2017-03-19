@@ -159,7 +159,7 @@ public class Chat {
         if (recipient != null && DatabaseAPI.getInstance().PLAYERS.containsKey(recipient.getUniqueId())) {
             sendPrivateMessage(player, recipientName, DatabaseAPI.getInstance().PLAYERS.get(recipient.getUniqueId()), finalMessage);
         } else
-            DatabaseAPI.getInstance().retrieveDocumentFromUsername(recipientName, document -> sendPrivateMessage(player, recipientName, document, finalMessage));
+            Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> DatabaseAPI.getInstance().retrieveDocumentFromUsername(recipientName, document -> sendPrivateMessage(player, recipientName, document, finalMessage)));
     }
 
     private static void sendPrivateMessage(Player player, String recipientName, Document document, String finalMessage) {

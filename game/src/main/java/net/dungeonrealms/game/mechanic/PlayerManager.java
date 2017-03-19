@@ -30,7 +30,7 @@ public class PlayerManager {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null || !player.isOnline()) return;
 
-        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 8)) {
+        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 7)) {
             player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
         }
 

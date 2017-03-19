@@ -6,6 +6,7 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.punishment.TimeFormat;
 import net.dungeonrealms.game.mastery.Utils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -102,7 +103,13 @@ public class CommandMute extends BaseCommand {
         sender.sendMessage(ChatColor.RED.toString() + "You have muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + ".");
         p.sendMessage(ChatColor.RED.toString() + "You have been muted by " + ChatColor.BOLD + sender.getName() + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");
         GameAPI.sendNetworkMessage("StaffMessage", ChatColor.RED + ChatColor.BOLD.toString() + sender.getName() + ChatColor.RED + " has muted " + ChatColor.BOLD + p_name + ChatColor.RED + " for " + punishmentLength + friendlyReason + ".");
-
+        
+        //  BROADCASTS TO DISCORD  //
+        String message = "/" + label;
+        for(String a : args)
+        	message += " " + a;
+        GameAPI.sendNetworkMessage("BanMessage", sender.getName() + ": " + message);
+        
         return false;
     }
 }

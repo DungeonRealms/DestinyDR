@@ -41,14 +41,7 @@ public class FriendsCommand extends BaseCommand {
 
         GameAPI.submitAsyncCallback(() -> getFriendsBook(player), book -> {
             try {
-                final ItemStack savedItem = player.getInventory().getItemInMainHand();
-                player.getInventory().setItemInMainHand(book.get());
-
-                PacketDataSerializer packetdataserializer = new PacketDataSerializer(Unpooled.buffer());
-                packetdataserializer.a(EnumHand.MAIN_HAND);
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
-                player.getInventory().setItemInMainHand(savedItem);
-
+                GameAPI.openBook(player, book.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
