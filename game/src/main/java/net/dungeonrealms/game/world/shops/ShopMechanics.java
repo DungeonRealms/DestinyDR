@@ -109,9 +109,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
     }
 
     public static boolean isItemSellable(ItemStack i) {
-        if (!GameAPI.isItemTradeable(i)) return false;
         if (!GameAPI.isItemDroppable(i)) return false;
-        if(GameAPI.isItemSoulbound(i))return false;
         if(i.getType() == Material.EMERALD || i.getType() == Material.PAPER) return false;
         return true;
     }

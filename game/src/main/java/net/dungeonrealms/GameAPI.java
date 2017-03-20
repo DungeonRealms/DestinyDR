@@ -2220,78 +2220,31 @@ public class GameAPI {
         return tag.hasKey("drItemId") ? tag.getString("drItemId") : null;
     }
 
-    /*
-     This stuff is disabled because Soulbound achieves the same thing, and we should avoid giving items that we take back later.
-     (Because there are way too many ways to lose those items such as breaking, dropping, etc. etc.)
-     
-     public static ItemStack setQuestBound(ItemStack item, String owner, UUID uuid){
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-        lore.add(ChatColor.DARK_RED + "Quest Item");
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setInteger("questBound", 1);
-        nbtItem.setString("owner", owner);
-        nbtItem.setString("ownerUUID", uuid.toString());
-        return nbtItem.getItem();
-    }
-    
-    public static boolean isQuestBound(ItemStack item) {
-        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        if (nms == null || nms.getTag() == null) {
-            return false;
-        }
-        NBTTagCompound tag = nms.getTag();
-        return tag.hasKey("questBound") && tag.getInt("questBound") == 1;
-    }
-    
-    /**
-     * Is this player the original owner of the quest item?
-     * This will return true if the item is not questbound.
-     * 
-     *
-    public static boolean isRightfulOwnerOfQuestItem(Player player, ItemStack item){
-    	if(!isQuestBound(item))
-    		return true;
-    	net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        if (nms == null || nms.getTag() == null) return false;
-        NBTTagCompound tag = nms.getTag();
-        boolean isOwner = tag.hasKey("ownerUUID") && tag.getString("ownerUUID").equals(player.getUniqueId().toString());
-        if(!isOwner)
-        	player.sendMessage(ChatColor.RED + "This quest item does not belong to you.");
-    	return isOwner;
-    }*/
-
     public static boolean isItemTradeable(ItemStack itemStack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         if (nms != null && nms.getTag() != null) {
-            if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
+            if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important"))
                 return false;
-            }
-            if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
+            
+            if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter"))
                 return false;
-            }
-            if (nms.getTag().hasKey("untradeable") && nms.getTag().getInt("untradeable") == 1) {
+            
+            if (nms.getTag().hasKey("untradeable") && nms.getTag().getInt("untradeable") == 1)
                 return false;
-            }
+            
+            return !(isItemPermanentlyUntradeable(itemStack) || isItemSoulbound(itemStack));
+            
         }
-//        if(isItemSoulbound(itemStack))return false;
+        
         return true;
     }
 
     public static boolean isItemDroppable(ItemStack itemStack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-        if (nms != null && nms.getTag() != null) {
-            if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("nondrop")) {
+        if (nms != null && nms.getTag() != null)
+            if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("nondrop"))
                 return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isItemUntradeable(ItemStack item) {
-        return !isItemTradeable(item);
+        return isItemTradeable(itemStack);
     }
 
     public static boolean isItemSoulbound(ItemStack item) {
@@ -2300,12 +2253,25 @@ public class GameAPI {
         NBTTagCompound tag = nms.getTag();
         return (tag.hasKey("soulbound") && tag.getInt("soulbound") == 1);
     }
+    
+    public static ItemStack makePermanentlyUntradeable(ItemStack item) {
+        if (item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Permanent Untradeable");
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+        NBTItem nbtItem = new NBTItem(item);
+        nbtItem.setInteger("puntradeable", 1);
+        return nbtItem.getItem();
+    }
 
     public static boolean isItemPermanentlyUntradeable(ItemStack item) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         if (nms == null || nms.getTag() == null) return false;
         NBTTagCompound tag = nms.getTag();
-        return (tag.hasKey("untradeable") && tag.getInt("untradeable") == 1) || (tag.hasKey("puntradeable") && tag.getInt("puntradeable") == 1);
+        return tag.hasKey("puntradeable") && tag.getInt("puntradeable") == 1;
     }
 
     /**

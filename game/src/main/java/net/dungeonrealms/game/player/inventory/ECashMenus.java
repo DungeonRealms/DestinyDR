@@ -104,7 +104,6 @@ public class ECashMenus {
 
         inventory.addItem(new ItemBuilder().setItem(new ItemStack(Material.FIREWORK), ChatColor.GOLD + "Global Messenger", new String[]{
                 ChatColor.GOLD + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY + "Sends a message to all players on " + ChatColor.UNDERLINE + "ALL SHARDS.",
-                ChatColor.GRAY + "Permanent Untradeable",
                 ChatColor.WHITE + "200" + ChatColor.GREEN + " E-Cash",
                 ChatColor.GRAY + "Display Item"}).setNBTString("globalMessenger", "true").setNBTInt("eCash", 200).build());
 

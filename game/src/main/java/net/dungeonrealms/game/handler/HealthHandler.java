@@ -23,6 +23,7 @@ import net.dungeonrealms.game.world.item.Item;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -306,7 +307,15 @@ public class HealthHandler implements GenericMechanic {
             return 100;
         }
     }
-
+    
+    /**
+     * Reloads the player HP from armor.
+     * Called after a death or whenever a related inventory click occurs.
+     */
+    public void updatePlayerHP(Player player) {
+    	setPlayerMaxHPLive(player, calculateMaxHPFromItems(player));
+    }
+    
     /**
      * Sets the players MaximumHP metadata
      * to the given value.

@@ -406,7 +406,7 @@ public class BankListener implements Listener {
                             }
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
-                                    if (!GameAPI.isItemTradeable(e.getCursor()) || !GameAPI.isItemDroppable(e.getCursor()) || BankMechanics.isMoney(e.getCursor())) {
+                                    if (!GameAPI.isItemTradeable(e.getCursor()) || BankMechanics.isMoney(e.getCursor())) {
                                         player.sendMessage(ChatColor.RED + "You can't store this item!");
                                         e.setCancelled(true);
                                         return;
@@ -529,7 +529,7 @@ public class BankListener implements Listener {
                                 return;
                             }
                             if (storage.hasSpace()) {
-                                if (!GameAPI.isItemTradeable(e.getCurrentItem()) || !GameAPI.isItemDroppable(e.getCurrentItem()) || BankMechanics.isMoney(e.getCurrentItem())) {
+                                if (!GameAPI.isItemTradeable(e.getCurrentItem()) || BankMechanics.isMoney(e.getCurrentItem())) {
                                     player.sendMessage(ChatColor.RED + "You can't store this item!");
                                     e.setCancelled(true);
                                     return;
@@ -663,15 +663,15 @@ public class BankListener implements Listener {
                     item = e.getCursor();
                 }
             }
-            boolean banned = !GameAPI.isItemTradeable(item) || !GameAPI.isItemDroppable(item);
+            boolean banned = !GameAPI.isItemTradeable(item);
             if ((e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP) && e.getRawSlot() < e.getInventory().getSize()){
                 item = e.getView().getBottomInventory().getItem(e.getHotbarButton());
                 //handleMoneyDeposit doesn't support hotbar swapping, so it allows notes to be placed.
                 //This is a quick and dirty solution to that.
-                banned = banned || isMoney(item);
+                banned = banned || BankMechanics.isMoney(item);
             }
             
-            if(e.isShiftClick() && isMoney(item)) {
+            if(e.isShiftClick() && BankMechanics.isMoney(item)) {
                 e.setCancelled(true);
                 return;
             }
@@ -681,7 +681,7 @@ public class BankListener implements Listener {
                 e.setCancelled(true);
             }
 
-            if (item != null && isMoney(item)) {
+            if (item != null && BankMechanics.isMoney(item)) {
                 handleMoneyDeposit(e, player, item.equals(e.getCursor()));
             }
         }
@@ -691,21 +691,16 @@ public class BankListener implements Listener {
     @EventHandler
     public void onItemDrag(InventoryDragEvent event) {
     	if(event.getInventory().getTitle().equalsIgnoreCase("Storage Chest"))
-    		if(isMoney(event.getOldCursor()) || !GameAPI.isItemTradeable(event.getOldCursor()) || !GameAPI.isItemDroppable(event.getOldCursor()))
+    		if(BankMechanics.isMoney(event.getOldCursor()) || !GameAPI.isItemTradeable(event.getOldCursor()))
     			event.setCancelled(true);
     }
-    
-    private boolean isMoney(ItemStack item) { 
-    	return BankMechanics.getInstance().isBankNote(item) || BankMechanics.getInstance().isGemPouch(item) || BankMechanics.getInstance().isGem(item);
-    }
-
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void splitBankNote(PlayerInteractEvent interactEvent) {
         Player player = interactEvent.getPlayer();
         if (interactEvent.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (interactEvent.getPlayer().getInventory().getItemInMainHand() != null && BankMechanics.getInstance().isBankNote(interactEvent.getPlayer().getInventory().getItemInMainHand())) {
-                int noteWorth = BankMechanics.getInstance().getNoteValue(player.getInventory().getItemInMainHand());
+            if (interactEvent.getPlayer().getInventory().getItemInMainHand() != null && BankMechanics.isBankNote(interactEvent.getPlayer().getInventory().getItemInMainHand())) {
+                int noteWorth = BankMechanics.getNoteValue(player.getInventory().getItemInMainHand());
                 player.sendMessage(ChatColor.GRAY + "This bank note is worth " + ChatColor.GREEN + noteWorth + " Gems." + ChatColor.GRAY + " Please enter the amount");
                 player.sendMessage(ChatColor.GRAY + "you'd like to sign an additional bank note for. Alternatively,");
                 player.sendMessage(ChatColor.GRAY + "type" + ChatColor.RED + " 'cancel' " + ChatColor.GRAY + "to stop this operation.");

@@ -452,7 +452,7 @@ public class DuelOffer {
                         }
                 }
 
-            HealthHandler.getInstance().setPlayerMaxHPLive(pl, HealthHandler.getInstance().calculateMaxHPFromItems(pl));
+            HealthHandler.getInstance().updatePlayerHP(pl);
             HealthHandler.getInstance().setPlayerHPRegenLive(pl, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType
                     .HEALTH_REGEN, pl) + 5);
             if (HealthHandler.getInstance().getPlayerHPLive(pl) > HealthHandler.getInstance().getPlayerMaxHPLive(pl)) {
