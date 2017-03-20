@@ -347,7 +347,7 @@ public class BankListener implements Listener {
                         if (nms == null)
                             return;
                         e.setCancelled(true);
-                        if (BankMechanics.getInstance().isBankNote(e.getCursor()) || BankMechanics.getInstance().isGemPouch(e.getCursor()) || BankMechanics.getInstance().isGem(e.getCursor())) {
+                        if (BankMechanics.isMoney(e.getCursor())) {
                             if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                                 int size = 0;
                                 if (e.isLeftClick()) {
@@ -355,16 +355,13 @@ public class BankListener implements Listener {
                                         int type = nms.getTag().getInt("tier");
                                         size = nms.getTag().getInt("worth");
                                         e.setCursor(null);
-                                        e.setCurrentItem(null);
                                         e.getWhoClicked().getInventory().addItem(BankMechanics.getInstance().createGemPouch(type, 0));
                                     } else if (e.getCursor().getType() == Material.EMERALD) {
                                         size = e.getCursor().getAmount();
                                         e.setCursor(null);
-                                        e.setCurrentItem(null);
                                     } else if (e.getCursor().getType() == Material.PAPER) {
                                         size = e.getCursor().getAmount() * nms.getTag().getInt("worth");
                                         e.setCursor(null);
-                                        e.setCurrentItem(null);
                                     }
                                 } else if (e.isRightClick()) {
 
@@ -409,7 +406,7 @@ public class BankListener implements Listener {
                             }
                             if (e.isLeftClick()) {
                                 if (storage.hasSpace()) {
-                                    if (!GameAPI.isItemTradeable(e.getCursor()) || !GameAPI.isItemDroppable(e.getCursor()) || BankMechanics.getInstance().isBankNote(e.getCursor()) || BankMechanics.getInstance().isGem(e.getCursor())) {
+                                    if (!GameAPI.isItemTradeable(e.getCursor()) || !GameAPI.isItemDroppable(e.getCursor()) || BankMechanics.isMoney(e.getCursor())) {
                                         player.sendMessage(ChatColor.RED + "You can't store this item!");
                                         e.setCancelled(true);
                                         return;
@@ -424,9 +421,11 @@ public class BankListener implements Listener {
                                 }
                             } else if (e.getClick() == ClickType.RIGHT) {
                                 if (storage.hasSpace()) {
-                                    ItemStack stack = e.getCurrentItem();
+                                    ItemStack stack = e.getCursor();
+                                    if(stack == null)
+                                    	return;
                                     if (stack.getAmount() > 1) {
-                                        ItemStack stackToAdd = e.getCursor().clone();
+                                        ItemStack stackToAdd = stack.clone();
                                         stackToAdd.setAmount(1);
                                         storage.inv.addItem(stackToAdd);
                                         ItemStack newStack = stack.clone();
@@ -435,7 +434,6 @@ public class BankListener implements Listener {
                                     } else {
                                         storage.inv.addItem(stack);
                                         e.setCursor(null);
-                                        e.setCurrentItem(null);
                                     }
                                     player.sendMessage(ChatColor.GREEN + "Item added to storage!");
 
@@ -451,17 +449,18 @@ public class BankListener implements Listener {
                             player.sendMessage(ChatColor.RED + "Please wait while your bank is being loaded...");
                             return;
                         }
+                        
+                        if (storage.collection_bin != null) {
+                            player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
+                            player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
+                            return;
+                        }
 
                         if (e.isLeftClick()) {
                             // Open Storage
                             player.openInventory(storage.inv);
                         } else if (e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.RIGHT) {
-                            Player p = (Player) e.getWhoClicked();
-                            if (storage.collection_bin != null) {
-                                player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
-                                player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
-                                return;
-                            }
+                            Player p = (Player) e.getWhoClicked(); 
 
                             int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
                             if (storage_lvl >= 6) {
@@ -522,7 +521,7 @@ public class BankListener implements Listener {
                     }
                 } else {
                     if (e.isShiftClick()) {
-                        if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGemPouch(e.getCurrentItem())) {
+                        if (!BankMechanics.isMoney(e.getCurrentItem())) {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (storage == null) {
                                 e.setCancelled(true);
@@ -530,7 +529,7 @@ public class BankListener implements Listener {
                                 return;
                             }
                             if (storage.hasSpace()) {
-                                if (!GameAPI.isItemTradeable(e.getCurrentItem()) || !GameAPI.isItemDroppable(e.getCurrentItem()) || BankMechanics.getInstance().isBankNote(e.getCurrentItem()) || BankMechanics.getInstance().isGem(e.getCurrentItem())) {
+                                if (!GameAPI.isItemTradeable(e.getCurrentItem()) || !GameAPI.isItemDroppable(e.getCurrentItem()) || BankMechanics.isMoney(e.getCurrentItem())) {
                                     player.sendMessage(ChatColor.RED + "You can't store this item!");
                                     e.setCancelled(true);
                                     return;
@@ -572,7 +571,7 @@ public class BankListener implements Listener {
 
                             ItemStack bankItem = new ItemStack(Material.EMERALD);
                             ItemMeta meta = bankItem.getItemMeta();
-                            meta.setDisplayName(ChatColor.GREEN + String.valueOf(newBalance + size) + ChatColor.BOLD.toString()
+                            meta.setDisplayName(ChatColor.GREEN.toString() + newBalance + ChatColor.BOLD.toString()
                                     + ChatColor.GREEN + " GEM(s)");
                             ArrayList<String> lore = new ArrayList<>();
                             lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");

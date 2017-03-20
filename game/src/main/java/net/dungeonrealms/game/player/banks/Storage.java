@@ -89,11 +89,10 @@ public class Storage {
         String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
         if (stringInv.length() > 1) {
             Inventory inv = ItemSerialization.fromString(stringInv);
-            for (ItemStack item : inv.getContents()) {
-                if (item != null && item.getType() == Material.AIR) {
+            for (ItemStack item : inv.getContents())
+                if (item != null && item.getType() == Material.AIR)
                     inv.addItem(item);
-                }
-            }
+            
             Player p = Bukkit.getPlayer(ownerUUID);
             if (p != null)
                 p.sendMessage(ChatColor.RED + "You have items in your collection bin!");
@@ -103,10 +102,9 @@ public class Storage {
     }
 
     public boolean hasSpace() {
-        for (ItemStack stack : inv.getContents()) {
+        for (ItemStack stack : inv.getContents())
             if (stack == null || stack.getType() == Material.AIR)
                 return true;
-        }
         return false;
     }
 

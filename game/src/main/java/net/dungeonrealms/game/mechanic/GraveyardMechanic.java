@@ -48,9 +48,9 @@ public class GraveyardMechanic implements GenericMechanic {
     }
 
     public Graveyard getGraveyard(String name) {
-        for (Graveyard yard : this.graveyards) {
-            if (yard.getName().equals(name)) return yard;
-        }
+        for (Graveyard yard : this.graveyards)
+            if (yard.getName().equalsIgnoreCase(name))
+            	return yard;
         return null;
     }
 
@@ -100,6 +100,4 @@ public class GraveyardMechanic implements GenericMechanic {
     public static GraveyardMechanic get() {
         return instance;
     }
-
-
 }

@@ -688,7 +688,7 @@ public class DamageListener implements Listener {
             if (closest != null) {
                 if (!closest.getName().equalsIgnoreCase("cyrennica")) {
                     p.sendMessage("");
-                    p.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "Respawning you at the nearest Graveyard...");
+                    p.sendMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "You regain consciousness in the graveyard of " + closest.getName() + "...");
                     p.sendMessage("");
                 }
             }
