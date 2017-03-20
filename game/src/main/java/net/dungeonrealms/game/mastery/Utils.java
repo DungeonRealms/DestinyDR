@@ -2,6 +2,7 @@ package net.dungeonrealms.game.mastery;
 
 import net.dungeonrealms.common.Constants;
 import net.minecraft.server.v1_9_R2.Item;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -32,6 +33,15 @@ public class Utils {
 
     public static Logger log = Constants.log;
 
+    
+    public static void printTrace() {
+        StackTraceElement trace = new Exception().getStackTrace()[2];
+
+        Constants.log.info("[Database] Class: " + trace.getClassName());
+        Constants.log.info("[Database] Method: " + trace.getMethodName());
+        Constants.log.info("[Database] Line: " + trace.getLineNumber());
+    }
+    
     public static Location getLocation(String loc) {
         if (loc == null || !loc.contains(",")) return null;
         String[] args = loc.split(",");

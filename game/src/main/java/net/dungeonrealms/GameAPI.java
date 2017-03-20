@@ -437,6 +437,11 @@ public class GameAPI {
         DungeonRealms.getInstance().saveConfig();
 
         Constants.log.info("called handleCrash()...");
+        
+        //Sometimes the crash detector has to kill bukkit on a normal shutdown, we don't need to announce it if DR's normal shutdown has already run.
+        if(!DungeonRealms.getInstance().isAlmostRestarting())
+    		sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Shard " + ChatColor.GOLD + "{SERVER}" + ChatColor.WHITE + " has crashed.");
+    	
 
         final long terminateTime = (ScoreboardHandler.getInstance().PLAYER_SCOREBOARDS.size() * 1000) + 10000;
 
@@ -556,11 +561,16 @@ public class GameAPI {
      * @since 1.0
      */
     public static void sendNetworkMessage(String task, String message, String... contents) {
-        getClient().sendNetworkMessage(task, message, contents);
+    	//Not Catching this could result in a crash handle failure.
+    	if(getClient() == null) {
+    		Utils.log.info("Not sending " + task + ", we haven't connected.");
+    		return;
+    	}
+        getClient().sendNetworkMessage(task, message.replace("{SERVER}", DungeonRealms.getShard().getShardID()), contents);
     }
 
     public static void sendDevMessage(String message, String... contents) {
-        getClient().sendNetworkMessage("DEVMessage", message.replace("{SERVER}", DungeonRealms.getInstance().bungeeName), contents);
+    	sendNetworkMessage("DEVMessage", message, contents);
     }
 
     /**

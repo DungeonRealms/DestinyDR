@@ -72,7 +72,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
 
     @Override
     public EnumPriority startPriority() {
-        return EnumPriority.BISHOPS;
+        return EnumPriority.POPE;
     }
 
 

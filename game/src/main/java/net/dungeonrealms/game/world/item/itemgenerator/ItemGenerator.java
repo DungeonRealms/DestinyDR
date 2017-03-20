@@ -151,28 +151,23 @@ public class ItemGenerator {
 
         Collections.shuffle(modifierObjects);
 
+        //Loop through all possible modifiers.
         for (ItemModifier modifier : modifierObjects) {
+        	
+        	//Check if this modifier is applicable to this type/tier of item.
             if (modifier.canApply(type)) {
                 if (isReroll && !modifier.isIncludeOnReroll()) continue;
-                ModifierCondition mc = modifier.tryModifier(meta, tier, rarity, type, mobTier);
+                
+                ModifierCondition mc = modifier.tryModifier(meta, tier, rarity);
                 if (mc != null) {
+                	
+                	//Add this to the list of possible modifiers.
                     conditions.put(mc, modifier);
                     ModifierCondition bonus = mc.getBonus();
+
+                    //Add bonuses
                     while (bonus != null) {
-                        String prefix = modifier.getPrefix(meta);
-                        String suffix = modifier.getSuffix(meta);
-
-                        if (bonus.getReplacement() != null && bonus.getReplacement().size() > 0) {
-                            ItemModifier replacement = ItemGenerator.modifiers.get(bonus.getReplacement().get(rand.nextInt(bonus.getReplacement().size())));
-                            prefix = replacement.getPrefix(meta);
-                            suffix = replacement.getSuffix(meta);
-                        }
-
-                        bonus.setChosenPrefix(prefix);
-                        bonus.setChosenSuffix(suffix);
-
                         conditions.put(bonus, modifier);
-
                         bonus = bonus.getBonus();
                     }
                 }
@@ -180,31 +175,27 @@ public class ItemGenerator {
         }
 
         List<ModifierCondition> order = new ArrayList<>();
-
+        
         for (Object ob : Arrays.asList(conditions.keySet().toArray())) {
             ModifierCondition mc = (ModifierCondition) ob;
-            if (!mc.canApply(conditions.keySet())) {
-                conditions.remove(mc);
+
+            ItemModifier im = conditions.get(mc);
+
+            int belowChance = (mc.getChance() < 0) ? im.getChance() : mc.getChance();
+                
+            //Randomly choose which modifiers to keep and which ones not to keep.
+            if (rand.nextInt(100) < belowChance) {
+            	order.add(mc);
             } else {
-                ItemModifier im = conditions.get(mc);
-
-                int belowChance = (mc.getChance() < 0) ? im.getChance() : mc.getChance();
-
-                if (rand.nextInt(100) < belowChance) {
-                    order.add(mc);
-                } else {
-                    conditions.remove(mc);
-                }
+            	conditions.remove(mc);
             }
         }
 
-        for (ItemModifier modifier : conditions.values()) {
-            for (ModifierCondition mc : (List<ModifierCondition>) ((ArrayList<ModifierCondition>) order).clone()) {
-                if (!(mc.checkCantContain(modifier.getClass()))) {
+        //Remove incompatable modifiers. Ie HP Regen can't be on the same chestplate as Energy Regen
+        for (ItemModifier modifier : conditions.values())
+            for (ModifierCondition mc : (List<ModifierCondition>) ((ArrayList<ModifierCondition>) order).clone())
+                if (!(mc.checkCantContain(modifier.getClass())))
                     order.remove(mc);
-                }
-            }
-        }
 
         Collections.sort(order, (mc1, mc2) -> conditions.get(mc1).getOrderPriority() - conditions.get(mc2).getOrderPriority());
 
@@ -230,10 +221,20 @@ public class ItemGenerator {
             }
 
         }
-
+        
+        //Contains all the conditions we've already applied.
+        List<ModifierCondition> applied = new ArrayList<>();
+        
         // NBT tag write and name the item
         for (ModifierCondition mc : order) {
-            ItemModifier im = conditions.get(mc);
+        	
+        	// Generate Stat, don't add this if it's already on the item.
+        	ItemModifier im = conditions.get(mc);
+        	im.generateModifier(mc, meta);
+            if(!mc.canApply(applied))
+            	continue;
+            applied.add(mc);
+            
             meta = im.applyModifier(mc, meta);
 
             // write NBT tags
@@ -244,12 +245,12 @@ public class ItemGenerator {
                 NBTModifiers.put(im.getNBTName(), mc.getRange().getValLow());
             }
 
-            modName = ChatColor.stripColor(mc.getChosenPrefix().substring(0, mc.getChosenPrefix().indexOf(":")));
-
+            modName = ChatColor.stripColor(mc.getChosenPrefix().split(":")[0]);
+            
             // apply the prefixes/suffixes to priority array
             // prefixes need to go before suffixes
 
-
+            //TODO: Fix this mess.
             switch (modName) {
                 // ARMOR PREFIXES
                 case "DODGE":
@@ -334,7 +335,8 @@ public class ItemGenerator {
                     break;
             }
         }
-
+        
+        
         for (String bonus : bonuses) {
             if (bonus == null) continue;
             // apply the prefixes/suffixes to item name
@@ -428,13 +430,10 @@ public class ItemGenerator {
 
         List<String> lore = meta.getLore();
         // add soulbound lore
-        if (isReroll && isSoulbound && origItem.hasItemMeta() && origItem.getItemMeta().hasLore()) {
-            for (String line : origItem.getItemMeta().getLore()) {
-                if (line.contains(ChatColor.GRAY.toString())) {
+        if (isReroll && isSoulbound && origItem.hasItemMeta() && origItem.getItemMeta().hasLore())
+            for (String line : origItem.getItemMeta().getLore())
+                if (line.contains(ChatColor.GRAY.toString()))
                     lore.add(line);
-                }
-            }
-        }
 
         // add the rarity tag
         lore.add(rarity.getName());

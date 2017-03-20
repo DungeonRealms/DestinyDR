@@ -15,7 +15,6 @@ public class ModifierCondition {
 	private int chance = -1;
 	private List<Class<? extends ItemModifier>> cantContain;
 	private ModifierCondition bonus;
-	private List<Class<? extends ItemModifier>> replacement;
 	private String chosenPrefix;
 	private String chosenSuffix;
 
@@ -55,17 +54,6 @@ public class ModifierCondition {
 		return this;
 	}
 	
-	public ModifierCondition setReplacement(Class<? extends ItemModifier> replacement){
-		this.replacement = new ArrayList<>();
-		this.replacement.add(replacement);
-		return this;
-	}
-	
-	public ModifierCondition setReplacement(List<Class<? extends ItemModifier>> replacement){
-		this.replacement = replacement;
-		return this;
-	}
-	
 	public ModifierCondition setCantContain(Class<? extends ItemModifier> cantContain){
 		this.cantContain.add(cantContain);
 		return this;
@@ -92,23 +80,18 @@ public class ModifierCondition {
 		return bonus;
 	}
 	
-	public List<Class<? extends ItemModifier>> getReplacement(){
-		return replacement;
-	}
-	
 	public List<Class<? extends ItemModifier>> getCantContain() {
 	    return cantContain;
 	}
 
-	public boolean canApply(Set<ModifierCondition> conditions) {
+	public boolean canApply(List<ModifierCondition> conditions) {
 		for(ModifierCondition mc : conditions){
 			if(mc.equals(this)) continue;
 			
-			if(mc.getChosenPrefix() != null){
-				if(mc.getChosenPrefix().equals(getChosenPrefix())){
+			//If this is the same stat as what we are trying to apply, we can't do that.
+			if(mc.getChosenPrefix() != null)
+				if(mc.getChosenPrefix().equals(getChosenPrefix()))
 					return false;
-				}
-			}
 		}
 		return true;
 	}

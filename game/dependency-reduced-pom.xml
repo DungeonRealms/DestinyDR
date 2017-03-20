@@ -99,22 +99,6 @@
           <artifactId>craftbukkit</artifactId>
           <groupId>org.bukkit</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>json</artifactId>
-          <groupId>org.json</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>reflectionhelper</artifactId>
-          <groupId>org.inventivetalent</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>api</artifactId>
-          <groupId>org.inventivetalent.packetlistener</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>api</artifactId>
-          <groupId>org.inventivetalent.nicknamer</groupId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>

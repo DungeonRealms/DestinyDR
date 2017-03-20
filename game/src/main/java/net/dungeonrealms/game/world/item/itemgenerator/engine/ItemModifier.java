@@ -23,13 +23,7 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
 	protected String chosenStat; // for multiple possible stats
 	
 	public ItemModifier(List<ItemType> possibleApplicants, int chance, String NBTName, String prefix, String suffix){
-		this.possibleApplicants = possibleApplicants;
-		this.chance = chance;
-		this.NBTName = NBTName;
-		this.prefix = prefix;
-		this.suffix = suffix;
-		ItemGenerator.modifiers.put(this.getClass(), this);
-		ItemGenerator.modifierObjects.add(this);
+		this(possibleApplicants, chance, NBTName, prefix, suffix, true);
 	}
 	
 	public ItemModifier(List<ItemType> possibleApplicants, int chance, String NBTName, String prefix, String suffix, boolean includeOnReroll){
@@ -68,24 +62,22 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
 		conditions.add(condition);
 	}
 	
-	public ModifierCondition tryModifier(ItemMeta meta, ItemTier tier, ItemRarity rarity, ItemType type, int mobTier, boolean override){
-		for(ModifierCondition condition : conditions){
-			if(condition.doesConclude(tier, rarity, meta)){
-				String prefix = getPrefix(meta);
-				String suffix = getSuffix(meta);
-				
-				if(condition.getReplacement() != null && condition.getReplacement().size() > 0){
-					ItemModifier replacement = ItemGenerator.modifiers.get(condition.getReplacement().get(new Random().nextInt(condition.getReplacement().size())));
-					prefix = replacement.getPrefix(meta);
-					suffix = replacement.getSuffix(meta);
-				}
-				
-				condition.setChosenPrefix(prefix);
-				condition.setChosenSuffix(suffix);
+	public ModifierCondition tryModifier(ItemMeta meta, ItemTier tier, ItemRarity rarity) {
+		for(ModifierCondition condition : conditions)
+			if(condition.doesConclude(tier, rarity, meta))
 				return condition;
-			}
-		}
 		return null;
+	}
+	
+	//TODO: Move all this into the ModifierCondition class.
+	//TODO: Fix this mess.
+	public ModifierCondition generateModifier(ModifierCondition condition, ItemMeta meta) {
+		String prefix = getPrefix(meta);
+		String suffix = getSuffix(meta);
+		
+		condition.setChosenPrefix(prefix);
+		condition.setChosenSuffix(suffix);
+		return condition;
 	}
 	
 	public ItemMeta applyModifier(ModifierCondition condition, ItemMeta meta){
@@ -97,14 +89,6 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
 		meta.setLore(lore);
 		
 		return meta;
-	}
-	
-	public ModifierCondition tryModifier(ItemMeta meta, ItemTier tier, ItemRarity rarity, ItemType type, int mobTier){
-		return tryModifier(meta, tier, rarity, type, mobTier, false);
-	}
-	
-	public ModifierCondition tryModifier(ItemMeta meta, ItemTier tier, ItemRarity rarity, ItemType type){
-		return tryModifier(meta, tier, rarity, type, -1, false);
 	}
 
 	public String getPrefix(ItemMeta meta) {

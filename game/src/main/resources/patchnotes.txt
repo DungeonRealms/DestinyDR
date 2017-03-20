@@ -1,8 +1,8 @@
 Build <build>
 
 &8Changes&0
-- Added /toggleglow
+- Added Graveyards
+- Backend Improvements
 
 &8Bugfixes&0
-- Fixed Dueling and Dungeons
-- Fixed itemframes popping off walls
+- Fixed Str/Dex/Vit/Int not displaying correctly. (Legacy items will not be fixed)
