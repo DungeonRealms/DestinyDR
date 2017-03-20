@@ -91,6 +91,10 @@ public class Notice {
     }
 
     private void executeVoteReminder(Player p) {
+        // No vote reminder on the event shard.
+        if (DungeonRealms.getInstance().isEventShard)
+            return;
+
         Long vote = (Long) DatabaseAPI.getInstance().getData(EnumData.LAST_VOTE, p.getUniqueId());
 
         if (vote == null || (System.currentTimeMillis() - vote) >= 86400000) {

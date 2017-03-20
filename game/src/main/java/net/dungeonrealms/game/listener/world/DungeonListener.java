@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.listener.world;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -295,9 +296,17 @@ public class DungeonListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerAttemptDungeonEnter(PlayerEnterRegionEvent event) {
-        if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+        if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0)))
+            return;
+
         if (event.getRegion().toLowerCase().startsWith("instance_")) {
             Player player = event.getPlayer();
+
+            // No dungeons on the event shard.
+            if (DungeonRealms.getInstance().isEventShard) {
+                player.sendMessage(ChatColor.RED + "You cannot enter a dungeon on this shard.");
+                return;
+            }
 
             String dungeonName = event.getRegion().substring(event.getRegion().indexOf("_") + 1, event.getRegion().length());
 

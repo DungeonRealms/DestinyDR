@@ -105,6 +105,10 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onVote(VotifierEvent event) {
+        // No votes on the event shard.
+        if (DungeonRealms.getInstance().isEventShard)
+            return;
+
         if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
             Player player = Bukkit.getPlayer(event.getVote().getUsername());
 
@@ -131,7 +135,6 @@ public class MainListener implements Listener {
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
                 }
             }
-
 
             // Update the database with the new E-Cash reward!
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, ecashReward, true);

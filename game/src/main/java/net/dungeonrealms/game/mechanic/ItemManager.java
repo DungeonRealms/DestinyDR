@@ -696,13 +696,30 @@ public class ItemManager {
         if (!DungeonRealms.getInstance().isEventShard)
             return;
 
-        // Give the player gear.
-        // TODO: Create event kit to give on-starter/death.
+        // Give the player their gear.
+        player.getInventory().addItem(ItemGenerator.getNamedItem("eventpvpsword"));
+        player.getInventory().setHelmet(ItemGenerator.getNamedItem("eventpvphelmet"));
+        player.getInventory().setChestplate(ItemGenerator.getNamedItem("eventpvpchestplate"));
+        player.getInventory().setLeggings(ItemGenerator.getNamedItem("eventpvpleggings"));
+        player.getInventory().setBoots(ItemGenerator.getNamedItem("eventpvpboots"));
 
         // Add 128 event orbs.
         ItemStack orb = ItemManager.createEventOrbofAlteration();
         orb.setAmount(64);
         player.getInventory().addItem(orb, orb);
+
+        // Add Food
+        player.getInventory().addItem(new ItemStack(Material.GOLDEN_CARROT, 64));
+
+        // Add T5 potions
+        for (int i = 0; i < 20; i++) {
+            player.getInventory().addItem(ItemManager.createHealthPotion(5, false, false));
+        }
+
+        // Add T5 potions(splash)
+        for (int i = 0; i < 5; i++) {
+            player.getInventory().addItem(ItemManager.createHealthPotion(5, false, true));
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.party;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.affair.Affair;
@@ -21,13 +22,14 @@ public class CommandPl extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String label, String[] args) {
-
-
         if (s instanceof ConsoleCommandSender) return false;
-
         Player player = (Player) s;
 
-        //pinvite <playerName>
+        // No parties on the event shard.
+        if (DungeonRealms.getInstance().isEventShard) {
+            player.sendMessage(ChatColor.RED + "You cannot start a party on this shard.");
+            return false;
+        }
 
         if (args.length == 1) {
             if (Bukkit.getPlayer(args[0]) != null && !Bukkit.getPlayer(args[0]).equals(player) && !GameAPI._hiddenPlayers.contains(Bukkit.getPlayer(args[0]))) {

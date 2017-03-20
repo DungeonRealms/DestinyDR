@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.friend;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -29,6 +30,12 @@ public class AddCommand extends BaseCommand {
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
+
+        // No friends on the event shard.
+        if (DungeonRealms.getInstance().isEventShard) {
+            player.sendMessage(ChatColor.RED + "You cannot add friends on this shard.");
+            return false;
+        }
 
         if (args.length != 1) {
             player.sendMessage(ChatColor.RED + "Invalid usage! You must type: /add <name>");

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.command.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -26,6 +27,12 @@ public class CommandGAccept extends BaseCommand {
         if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
+
+        // No guilds on the event shard.
+        if (DungeonRealms.getInstance().isEventShard) {
+            player.sendMessage(ChatColor.RED + "You cannot accept a guild invitation on this shard.");
+            return false;
+        }
 
         Document guildInvitation = (Document) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITATION, player.getUniqueId());
 
