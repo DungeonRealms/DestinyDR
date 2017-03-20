@@ -158,11 +158,11 @@ public class ItemManager {
                 String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + formattedTime, ChatColor.GOLD
                 .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
                 "Increases all loot drop chances for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
-                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
-                .setNBTInt("untradeable", 1).setNBTString("buff", "loot").setNBTInt("duration", duration).setNBTInt
+                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS."})
+                .setNBTString("buff", "loot").setNBTInt("duration", duration).setNBTInt
                         ("bonusAmount", bonusAmount).setNBTString("description", "loot drop chances").build();
         // apply antidupe to make unstackable
-        return AntiDuplication.getInstance().applyAntiDupe(lootBuff);
+        return AntiDuplication.getInstance().applyAntiDupe(GameAPI.makePermanentlyUntradeable(lootBuff));
     }
 
     public static ItemStack createProfessionBuff(int duration, int bonusAmount) {
@@ -171,12 +171,12 @@ public class ItemManager {
                 String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + formattedTime, ChatColor.GOLD
                 .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
                 "Increases all experience gained from professions for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
-                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
-                .setNBTInt("untradeable", 1).setNBTString("buff", "profession").setNBTInt("duration", duration)
+                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS."})
+                .setNBTString("buff", "profession").setNBTInt("duration", duration)
                 .setNBTInt("bonusAmount", bonusAmount).setNBTString("description", "experience gained from " +
                         "professions").build();
         // apply antidupe to make unstackable
-        return AntiDuplication.getInstance().applyAntiDupe(professionBuff);
+        return AntiDuplication.getInstance().applyAntiDupe(GameAPI.makePermanentlyUntradeable(professionBuff));
     }
 
     public static ItemStack createLevelBuff(int duration, int bonusAmount) {
@@ -185,11 +185,11 @@ public class ItemManager {
                 String[]{ChatColor.GOLD.toString() + "Duration: " + ChatColor.GRAY + formattedTime, ChatColor.GOLD
                 .toString() + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY.toString() + ChatColor.ITALIC +
                 "Increases all experience gained from mobs for everyone", ChatColor.GRAY.toString() + ChatColor.ITALIC + "by " +
-                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"})
-                .setNBTInt("untradeable", 1).setNBTString("buff", "level").setNBTInt("duration", duration).setNBTInt
+                bonusAmount + "% across " + ChatColor.UNDERLINE + "ALL SHARDS."})
+                .setNBTString("buff", "level").setNBTInt("duration", duration).setNBTInt
                         ("bonusAmount", bonusAmount).setNBTString("description", "character experience gained").build();
         // apply antidupe to make unstackable
-        return AntiDuplication.getInstance().applyAntiDupe(levelBuff);
+        return AntiDuplication.getInstance().applyAntiDupe(GameAPI.makePermanentlyUntradeable(levelBuff));
     }
 
     /**
@@ -245,7 +245,11 @@ public class ItemManager {
      * @since 1.0
      */
     public static ItemStack createRandomTeleportBook() {
-    	return createTeleportBook(TeleportLocation.values()[Utils.randInt(1, TeleportLocation.values().length - 1)]);
+    	List<TeleportLocation> teleportable = new ArrayList<TeleportLocation>();
+    	for(TeleportLocation tl : TeleportLocation.values())
+    		if(tl.canBeABook())
+    			teleportable.add(tl);
+    	return createTeleportBook(teleportable.get(Utils.randInt(0, teleportable.size() - 1)));
     }
 
     /**
@@ -661,6 +665,7 @@ public class ItemManager {
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false))
                 .setNBTString("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
+        
         if(isNew)
         	player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString
                 ("subtype", "starter").addLore(ChatColor.GRAY + "Untradeable").build());
@@ -684,6 +689,8 @@ public class ItemManager {
 
         ItemStack fixedBoots = ItemGenerator.getNamedItem("trainingboots");
         player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
+        
+        HealthHandler.getInstance().updatePlayerHP(player);
     }
 
     /**
@@ -712,14 +719,10 @@ public class ItemManager {
         player.getInventory().addItem(new ItemStack(Material.GOLDEN_CARROT, 64));
 
         // Add T5 potions
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 25; i++)
             player.getInventory().addItem(ItemManager.createHealthPotion(5, false, false));
-        }
-
-        // Add T5 potions(splash)
-        for (int i = 0; i < 5; i++) {
-            player.getInventory().addItem(ItemManager.createHealthPotion(5, false, true));
-        }
+        
+        HealthHandler.getInstance().updatePlayerHP(player);
     }
 
 
@@ -805,15 +808,16 @@ public class ItemManager {
         ItemStack rawStack = new ItemStack(Material.FIREWORK);
         ItemMeta meta = rawStack.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD + "Global Messenger");
-        meta.setLore(Arrays.asList(ChatColor.GOLD + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY + "Sends a message to all players on " + ChatColor.UNDERLINE + "ALL SHARDS.", ChatColor.GRAY + "Permanent Untradeable"));
+        meta.setLore(Arrays.asList(ChatColor.GOLD + "Uses: " + ChatColor.GRAY + "1", ChatColor.GRAY + "Sends a message to all players on " + ChatColor.UNDERLINE + "ALL SHARDS."));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("globalMessenger", new NBTTagString("true"));
-        tag.setInt("untradeable", 1);
         nmsStack.setTag(tag);
 
-        return AntiDuplication.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        return AntiDuplication.getInstance().applyAntiDupe(
+        		GameAPI.makePermanentlyUntradeable(
+        				CraftItemStack.asBukkitCopy(nmsStack)));
     }
 
 

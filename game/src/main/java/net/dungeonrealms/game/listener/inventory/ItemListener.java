@@ -160,17 +160,26 @@ public class ItemListener implements Listener {
 
             return;
         }
+        
+        if(GameAPI.isItemPermanentlyUntradeable(item)) {
+        	event.setCancelled(true);
+        	event.getItemDrop().remove();
+        	event.getPlayer().sendMessage(ChatColor.GRAY + "This item is " + ChatColor.UNDERLINE + "not" + ChatColor.GRAY + " droppable.");
+        	return;
+        }
 
-        if (!GameAPI.isItemDroppable(item)) { //Realm Portal, Character Journal.
-            event.setCancelled(true);
-            event.getItemDrop().remove();
-        } else if (!GameAPI.isItemTradeable(item)) {
-            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-            NBTTagCompound tag = nmsItem.getTag();
-            assert tag != null;
-            event.getItemDrop().remove();
-            p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
-            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+        if (!GameAPI.isItemDroppable(item)) { 
+        	if (GameAPI.isItemTradeable(item)) {//Realm Portal, Character Journal.
+        		event.setCancelled(true);
+            	event.getItemDrop().remove();
+        	} else {
+        		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+                NBTTagCompound tag = nmsItem.getTag();
+                assert tag != null;
+                event.getItemDrop().remove();
+                p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
+                p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+        	}
         }
     }
 
@@ -207,7 +216,19 @@ public class ItemListener implements Listener {
 
                 net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
                 TeleportLocation teleportTo = TeleportLocation.getTeleportLocation(nmsItem.getTag());
-                if (teleportTo != null && teleportTo.canTeleportTo(player)) {
+                
+                if(teleportTo == null)
+                	return;
+                
+                if(!teleportTo.canBeABook()) {
+                	player.sendMessage(ChatColor.RED + "This teleport book is invalid, it has vanished into the wind.");
+                	player.getInventory().setItemInMainHand(null);
+                	player.updateInventory();
+                	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Removed " + itemStack.getAmount() + "x " + teleportTo.getDisplayName() + " teleport books from " + player.getName() + ".");
+                	return;
+                }
+                
+                if (teleportTo.canTeleportTo(player)) {
                     Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, teleportTo);
                     if (player.getEquipment().getItemInMainHand().getAmount() == 1) {
                         player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));

@@ -1198,7 +1198,6 @@ public class MainListener implements Listener {
     public void playerAttemptTrade(PlayerDropItemEvent event) {
         if (event.isCancelled()) return;
         if (!GameAPI.isItemDroppable(event.getItemDrop().getItemStack())) return;
-        if (!GameAPI.isItemTradeable(event.getItemDrop().getItemStack())) return;
 
         Player pl = event.getPlayer();
 
