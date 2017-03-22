@@ -311,6 +311,10 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                                 break;
                             }
                             case "buff":
+                                // No buffs are allowed on this shard.
+                                if (DungeonRealms.getInstance().isEventShard)
+                                    break;
+
                                 String type = in.readUTF();
                                 int duration = Integer.parseInt(in.readUTF());
                                 int bonusAmount = Integer.parseInt(in.readUTF());
