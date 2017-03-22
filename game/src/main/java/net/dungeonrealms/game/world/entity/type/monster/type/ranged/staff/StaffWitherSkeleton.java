@@ -27,7 +27,7 @@ public class StaffWitherSkeleton extends DRSkeleton implements IRangedEntity {
         this.fireProof = true;
         this.setSkeletonType(1);
         clearGoalSelectors();
-        this.goalSelector.a(0, new PathfinderGoalArrowAttack(this, 1.0D, 5, 15, 20.0F));
+        this.goalSelector.a(0, new PathfinderGoalArrowAttack(this, 1.0D, 15, 35, 20.0F));
         this.goalSelector.a(1, new PathfinderGoalRandomStroll(this, .6F));
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(3, new PathfinderGoalRandomLookaround(this));
@@ -40,7 +40,7 @@ public class StaffWitherSkeleton extends DRSkeleton implements IRangedEntity {
         this.fireProof = true;
         this.setSkeletonType(1);
         clearGoalSelectors();
-        this.goalSelector.a(0, new PathfinderGoalArrowAttack(this, 1.0D, 10, 15, 20.0F));
+        this.goalSelector.a(0, new PathfinderGoalArrowAttack(this, 1.0D, 15, 35, 20.0F));
         this.goalSelector.a(1, new PathfinderGoalRandomStroll(this, .6F));
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(3, new PathfinderGoalRandomLookaround(this));

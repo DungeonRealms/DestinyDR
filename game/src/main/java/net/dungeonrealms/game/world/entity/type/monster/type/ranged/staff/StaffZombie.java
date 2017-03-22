@@ -29,7 +29,7 @@ public class StaffZombie extends DRZombie implements IRangedEntity {
 
         getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(25D);
         clearGoalSelectors();
-        this.goalSelector.a(0, new PathfinderGoalArrowAttack(this, 1.3D, 15, 40, 15.0F));
+        this.goalSelector.a(0, new PathfinderGoalArrowAttack(this, 1.3D, 15, 45, 15.0F));
         this.goalSelector.a(1, new PathfinderGoalRandomStroll(this, .7F));
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.goalSelector.a(3, new PathfinderGoalRandomLookaround(this));
