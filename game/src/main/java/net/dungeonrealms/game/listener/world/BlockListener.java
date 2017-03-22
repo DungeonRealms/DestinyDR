@@ -958,6 +958,7 @@ public class BlockListener implements Listener {
                     player.sendMessage(ChatColor.GRAY + "Shop Location: " + (int) shop.block1.getLocation().getX() + ", " + (int) shop.block1.getLocation().getY() + ", " + (int) shop.block1.getLocation().getZ());
                     return;
                 }
+                
                 GamePlayer gp = GameAPI.getGamePlayer(player);
                 if (!TutorialIsland.onTutorialIsland(player.getLocation())) {
                     if (GameAPI.isInSafeRegion(b1.getLocation()) && !GameAPI.isMaterialNearby(b1, 2, Material.CHEST) && !GameAPI.isMaterialNearby(b1, 10, Material.ENDER_CHEST) && !GameAPI.isMaterialNearby(b1, 3, Material.PORTAL)) {
@@ -965,12 +966,6 @@ public class BlockListener implements Listener {
                             Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
                             if(storage == null){
                                 player.sendMessage(ChatColor.RED + "Please wait for your storage bin to load...");
-                                e.setCancelled(true);
-                                return;
-                            }
-                            if (storage.collection_bin != null) {
-                                player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
-                                player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
                                 e.setCancelled(true);
                                 return;
                             }

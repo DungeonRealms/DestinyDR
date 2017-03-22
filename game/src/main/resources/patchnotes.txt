@@ -1,8 +1,9 @@
 Build <build>
 
 &8Changes&0
-- Added Graveyards
-- Backend Improvements
+- Collection bin is automatically loaded into shop.
+- Staff mobs nerfed
+- Shop code heavily condensed.
 
 &8Bugfixes&0
-- Fixed Str/Dex/Vit/Int not displaying correctly. (Legacy items will not be fixed)
+- Fixed soulbound item bugs

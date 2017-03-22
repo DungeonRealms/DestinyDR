@@ -18,9 +18,11 @@ import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handler.HealthHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
+import net.dungeonrealms.game.mechanic.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -127,6 +129,9 @@ public class ItemListener implements Listener {
     public void onItemDrop(PlayerDropItemEvent event) {
         if (event.isCancelled()) return;
         Player p = event.getPlayer();
+        GamePlayer gp = GameAPI.getGamePlayer(p);
+        if(gp != null && !gp.isAbleToDrop())
+        	return;
         ItemStack item = event.getItemDrop().getItemStack();
 
         if (GameAPI.isItemSoulbound(item)) {
@@ -169,18 +174,14 @@ public class ItemListener implements Listener {
         }
 
         if (!GameAPI.isItemDroppable(item)) { 
-        	if (GameAPI.isItemTradeable(item)) {//Realm Portal, Character Journal.
-        		event.setCancelled(true);
-            	event.getItemDrop().remove();
-        	} else {
-        		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-                NBTTagCompound tag = nmsItem.getTag();
-                assert tag != null;
-                event.getItemDrop().remove();
-                p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
-                p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
-        	}
+        	net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        	NBTTagCompound tag = nmsItem.getTag();
+        	assert tag != null;
+        	event.getItemDrop().remove();
+        	p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " + "so it has " + ChatColor.UNDERLINE + "vanished.");
+        	p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
         }
+        PlayerManager.checkInventory(event.getPlayer().getUniqueId());
     }
 
     /**

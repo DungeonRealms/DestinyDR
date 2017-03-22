@@ -92,6 +92,11 @@ public class BungeeUtils {
      * @since 1.0
      */
     public static void sendPlayerMessage(String playerName, String message) {
+    	Player online = Bukkit.getPlayer(playerName);
+    	if(online != null) {
+    		online.sendMessage(message);
+    		return;
+    	}
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Message");
         out.writeUTF(playerName);

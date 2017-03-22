@@ -110,4 +110,14 @@ public class Storage {
 
     public void upgrade() {
     }
+    
+    public void openBank(Player player) {
+    	if (collection_bin != null) {
+            player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
+            player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
+            return;
+        }
+    	
+    	player.openInventory(inv);
+    }
 }

@@ -3,15 +3,18 @@ package net.dungeonrealms.game.world.shops;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.google.common.collect.Lists;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -112,11 +115,6 @@ public class Shop {
         }
 
         Player owner = Bukkit.getPlayer(ownerUUID);
-        // Close his inventory, check if online first
-        if (owner != null && owner.isOnline()) {
-            owner.closeInventory();
-        }
-        // Do other stuff
         
         viewCount = 0;
         //Rip concurrency.
@@ -150,23 +148,7 @@ public class Shop {
             if (stack != null && stack.getType() != Material.AIR) {
                 if (stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status") || stack.getType() == Material.BARRIER && nms.hasTag() && nms.getTag().hasKey("statusClose"))
                     continue;
-                ItemMeta meta = stack.getItemMeta();
-                if (meta != null) {
-                    List<String> lore = meta.getLore();
-                    if (lore != null)
-                        for (int j = 0; j < lore.size(); j++) {
-                            String currentStr = lore.get(j);
-                            if (currentStr.contains("Price")) {
-                                lore.remove(j);
-                                break;
-                            }
-                        }
-                    if (nms.hasTag() && nms.getTag().hasKey("worth"))
-                        nms.getTag().remove("worth");
-                    meta.setLore(lore);
-                    stack.setItemMeta(meta);
-                }
-                inv.addItem(stack);
+                inv.addItem(ShopListener.removePriceLore(stack));
                 count++;
             }
         }
@@ -180,7 +162,7 @@ public class Shop {
                 storage.collection_bin = inv;
             }
             String invToString = ItemSerialization.toString(inv);
-            //Only save on shutdown, otherwise they can take items out from the inventory, then /closeshop to load it back from Mongo.
+            //Only save on shutdown / logout, otherwise they can take items out from the inventory, then /closeshop to load it back from Mongo.
             if(shutDown)
                 DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
         } else {

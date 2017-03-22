@@ -657,7 +657,7 @@ public class MainListener implements Listener {
                 event.getPlayer().sendMessage(ChatColor.RED + "Please wait while your Bank is being loaded...");
                 return;
             }
-            event.getPlayer().openInventory(storage.inv);
+            storage.openBank(event.getPlayer());
         }
         /* if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             if (GameAPI.getRegionName(event.getRightClicked().getLocation()).contains("tutorial")) {

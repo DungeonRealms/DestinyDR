@@ -10,6 +10,7 @@ import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
@@ -855,21 +856,7 @@ public class ClickHandler {
                 int price = nms.getTag().getInt("worth");
                 if (player.getInventory().firstEmpty() != -1) {
                     if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
-                        ItemStack copy = stack.clone();
-                        ArrayList<String> lore = new ArrayList<>();
-                        ItemMeta meta = copy.getItemMeta();
-                        if (meta.hasLore()) {
-                            lore = (ArrayList<String>) meta.getLore();
-                        }
-                        for (int i = 0; i < lore.size(); i++) {
-                            String current = lore.get(i);
-                            if (current.contains("Price")) {
-                                lore.remove(i);
-                                break;
-                            }
-                        }
-                        meta.setLore(lore);
-                        copy.setItemMeta(meta);
+                         ItemStack copy = ShopListener.removePriceLore(stack.clone());
                         player.getInventory().addItem(AntiDuplication.getInstance().applyAntiDupe(copy));
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");

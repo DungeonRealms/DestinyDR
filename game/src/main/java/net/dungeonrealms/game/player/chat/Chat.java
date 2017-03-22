@@ -112,7 +112,6 @@ public class Chat {
     		int num;
     		
     		if(evt.getMessage().equalsIgnoreCase("cancel") || evt.getMessage().equalsIgnoreCase("c")){
-    			player.sendMessage(ChatColor.RED + "Cancelled.");
     			failCallback.accept(player);
     			return;
     		}

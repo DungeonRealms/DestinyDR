@@ -458,7 +458,7 @@ public class BankListener implements Listener {
 
                         if (e.isLeftClick()) {
                             // Open Storage
-                            player.openInventory(storage.inv);
+                            storage.openBank(player);
                         } else if (e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.RIGHT) {
                             Player p = (Player) e.getWhoClicked(); 
 

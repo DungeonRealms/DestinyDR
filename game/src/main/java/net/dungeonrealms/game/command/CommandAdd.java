@@ -297,7 +297,7 @@ public class CommandAdd extends BaseCommand {
                     break;
                 case "scrap":
                     for (int i = 1; i <= 5; i++)
-                        player.getInventory().addItem(ItemManager.createArmorScrap(i + 1));
+                        player.getInventory().addItem(ItemManager.createArmorScrap(i));
                     break;
                 case "potion":
                     for (int i = 1; i <= 5; i++)
