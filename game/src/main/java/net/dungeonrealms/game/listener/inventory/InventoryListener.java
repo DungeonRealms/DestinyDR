@@ -551,12 +551,6 @@ public class InventoryListener implements Listener {
                 return;
             }
 
-            if (!GameAPI.isItemDroppable(event.getCurrentItem())) {
-                event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
-                event.setCancelled(true);
-                return;
-            }
-
             if (GameAPI.isItemSoulbound(event.getCurrentItem())) {
                 NBTWrapper wrapper = new NBTWrapper(event.getCurrentItem());
 
@@ -580,6 +574,12 @@ public class InventoryListener implements Listener {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
                     event.setCancelled(true);
                 }
+            }
+            
+            if (!GameAPI.isItemDroppable(event.getCurrentItem())) {
+                event.getWhoClicked().sendMessage(ChatColor.RED + "You can't trade this item.");
+                event.setCancelled(true);
+                return;
             }
 
 
@@ -676,7 +676,7 @@ public class InventoryListener implements Listener {
 
         ItemStack oldItem = CraftItemStack.asCraftCopy(slotItem);
 
-        ItemStack item = new ItemGenerator().setReroll(true).setSoulbound(GameAPI.isItemSoulbound(slotItem)).setUntradeable(!GameAPI.isItemTradeable(slotItem))
+        ItemStack item = new ItemGenerator().setReroll(true).setSoulbound(GameAPI.isItemSoulbound(slotItem)).setUntradeable(!GameAPI.isItemTradeable(slotItem) && !GameAPI.isItemSoulbound(slotItem))
                 .setPermanentlyUntradeable(GameAPI.isItemPermanentlyUntradeable(slotItem)).setOrigItem(slotItem).generateItem().getItem();
         event.setCurrentItem(item);
 

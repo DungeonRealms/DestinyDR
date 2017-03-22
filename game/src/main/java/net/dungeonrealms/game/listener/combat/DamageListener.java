@@ -516,7 +516,7 @@ public class DamageListener implements Listener {
             event.getDrops().clear();
         }
 
-        new ArrayList<>(event.getDrops()).stream().filter(itemStack -> !GameAPI.isItemDroppable(itemStack)).forEach(itemStack -> {
+        new ArrayList<>(event.getDrops()).stream().filter(itemStack -> !GameAPI.isItemDroppable(itemStack) && !GameAPI.isItemSoulbound(itemStack)).forEach(itemStack -> {
             event.getDrops().remove(itemStack);
         });
 
@@ -623,19 +623,10 @@ public class DamageListener implements Listener {
             }
 
         } else {
-//            double w_durability_to_take = (1500 * 0.45D);
             //DIED AS CHAOTIC, CHECK SOULBOUND.
-            for (ItemStack item : Lists.newArrayList(event.getDrops())) {
-                if (GameAPI.isItemSoulbound(item)) {
-//                    if ((RepairAPI.getCustomDurability(item) - w_durability_to_take) > 0.1D) {
-//                        RepairAPI.subtractCustomDurability(p, item, w_durability_to_take);
-//                        alreadySaved.add(item);
-//                        gearToSave.add(item);
-//                    } else {
+            for (ItemStack item : Lists.newArrayList(event.getDrops()))
+                if (GameAPI.isItemSoulbound(item))
                     event.getDrops().remove(item);
-//                    }
-                }
-            }
         }
 
         Inventory mountInventory = MountUtils.inventories.get(p.getUniqueId());
