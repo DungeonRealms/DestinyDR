@@ -115,11 +115,11 @@ public class MailHandler {
         if (sendMailRaw(player.getName(), toUUID, itemStack)) {
             // We were able to successfully send the mail, notify both users and return true.
             if (GameAPI.isOnline(toUUID)) {
-                sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
+                sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you mail."));
             } else {
-                BungeeUtils.sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
+                BungeeUtils.sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you mail."));
             }
-            sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " Mail.");
+            sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " mail.");
             return true;
         }
 
@@ -162,7 +162,7 @@ public class MailHandler {
     }
 
     public String getMailMessage(String message) {
-        return ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Mail" + ChatColor.WHITE + "]" + " " + message;
+        return ChatColor.GREEN + ChatColor.BOLD.toString() + "[" + "Mail" + "] " + ChatColor.WHITE + message;
     }
 
 }
