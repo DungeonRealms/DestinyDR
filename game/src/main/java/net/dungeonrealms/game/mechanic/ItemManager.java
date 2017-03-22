@@ -690,6 +690,7 @@ public class ItemManager {
         ItemStack fixedBoots = ItemGenerator.getNamedItem("trainingboots");
         player.getInventory().setBoots(new ItemBuilder().setItem(fixedBoots).setNBTString("dataType", "starterSet").build());
         
+        GameAPI.calculateAllAttributes(player);
         HealthHandler.getInstance().updatePlayerHP(player);
     }
 
@@ -722,6 +723,7 @@ public class ItemManager {
         for (int i = 0; i < 25; i++)
             player.getInventory().addItem(ItemManager.createHealthPotion(5, false, false));
         
+        GameAPI.calculateAllAttributes(player);
         HealthHandler.getInstance().updatePlayerHP(player);
     }
 

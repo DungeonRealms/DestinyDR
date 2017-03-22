@@ -23,6 +23,7 @@ import net.dungeonrealms.game.world.item.Item;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -313,6 +314,9 @@ public class HealthHandler implements GenericMechanic {
      */
     public void updatePlayerHP(Player player) {
         setPlayerMaxHPLive(player, calculateMaxHPFromItems(player));
+        setPlayerHPRegenLive(player, GameAPI.getStaticAttributeVal(Item.ArmorAttributeType.HEALTH_REGEN, player) + 5);
+        if (HealthHandler.getInstance().getPlayerHPLive(player) > HealthHandler.getInstance().getPlayerMaxHPLive(player))
+            HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
     }
 
     /**
@@ -713,11 +717,8 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
-        if (newHP <= 0) {
-            //Dead, call this so we get our items back to drop properlly.
-            Chat.listenForMessage(player, null, null);
+        if (newHP <= 0)
             if (handlePlayerDeath(player, leAttacker)) return;
-        }
 
         setPlayerHPLive(player, (int) newHP);
         double playerHPPercent = (newHP / maxHP);
@@ -738,6 +739,7 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public boolean handlePlayerDeath(Player player, LivingEntity leAttacker) {
+    	Chat.listenForMessage(player, null, null);
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
         if (player.hasMetadata("last_death_time")) {
             if (System.currentTimeMillis() - player.getMetadata("last_death_time").get(0).asLong() > 100) {
