@@ -89,9 +89,11 @@ public class PvPListener implements Listener {
 //        Item.ItemTier tier = new Attribute(damager.getInventory().getItemInMainHand()).getItemTier();
 
         //Dont change alignments based on duel contact at all.
-        if (!isDuel)
-            KarmaHandler.getInstance().handleAlignmentChanges(damager);
-
+        if (!isDuel) {
+            if (!(damager.hasMetadata("duel_cooldown") && damager.getMetadata("duel_cooldown").size() > 0 && damager.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
+                KarmaHandler.getInstance().handleAlignmentChanges(damager);
+            }
+        }
         event.setCancelled(true);
         damager.updateInventory();
 

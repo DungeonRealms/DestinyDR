@@ -23,7 +23,6 @@ import net.dungeonrealms.game.world.item.Item;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
@@ -179,7 +178,7 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
 
-        if(spect != null)
+        if (spect != null)
             hp = getPlayerHPLive(player);
 
         double maxHP = spectating ? getPlayerMaxHPLive(spect) : getPlayerMaxHPLive(player);
@@ -307,15 +306,15 @@ public class HealthHandler implements GenericMechanic {
             return 100;
         }
     }
-    
+
     /**
      * Reloads the player HP from armor.
      * Called after a death or whenever a related inventory click occurs.
      */
     public void updatePlayerHP(Player player) {
-    	setPlayerMaxHPLive(player, calculateMaxHPFromItems(player));
+        setPlayerMaxHPLive(player, calculateMaxHPFromItems(player));
     }
-    
+
     /**
      * Sets the players MaximumHP metadata
      * to the given value.
@@ -590,7 +589,9 @@ public class HealthHandler implements GenericMechanic {
             }
             if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
                 if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK && !isReflectedDamage) {
-                    KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
+                    if (!(leAttacker.hasMetadata("duel_cooldown") && leAttacker.getMetadata("duel_cooldown").size() > 0 && leAttacker.getMetadata("duel_cooldown").get(0).asLong() > System.currentTimeMillis())) {
+                        KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
+                    }
                 }
                 if (newHP <= 0 && GameAPI.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
                     if (KarmaHandler.getInstance().getPlayerRawAlignment(player) == KarmaHandler.EnumPlayerAlignments.LAWFUL) {

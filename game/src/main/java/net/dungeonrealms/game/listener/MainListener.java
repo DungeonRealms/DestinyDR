@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
@@ -46,7 +45,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -80,7 +78,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -89,7 +90,7 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandWhilstSharding(PlayerCommandPreprocessEvent event) {
-    	GameAPI.runAsSpectators(event.getPlayer(), p -> p.sendMessage(ChatColor.RED + event.getPlayer().getName() + "> " + event.getMessage()));
+        GameAPI.runAsSpectators(event.getPlayer(), p -> p.sendMessage(ChatColor.RED + event.getPlayer().getName() + "> " + event.getMessage()));
         if (event.getPlayer().hasMetadata("sharding")) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot perform commands whilst sharding!");
@@ -203,12 +204,12 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
-    	if(DungeonRealms.getInstance().getLoggingOut().contains(event.getName())){
-    		event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
-    		DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
-    		return;
-    	}
-    	
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getName())) {
+            event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
+            DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
+            return;
+        }
+
         if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, event.getUniqueId())) {
             String shard = DatabaseAPI.getInstance().getFormattedShardName(event.getUniqueId());
             if (!shard.equals("") && shard != null && !DungeonRealms.getInstance().shardid.equals(shard)) {
@@ -270,11 +271,11 @@ public class MainListener implements Listener {
         TitleAPI.sendTitle(player, 0, 0, 0, "", "");
 
         CombatLog.checkCombatLog(player.getUniqueId());
-        try{
-        	GameAPI.handleLogin(player.getUniqueId());
-        }catch(Exception e){
-        	player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
-        	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on " + DungeonRealms.getShard().getShardID() + ".");
+        try {
+            GameAPI.handleLogin(player.getUniqueId());
+        } catch (Exception e) {
+            player.kickPlayer(ChatColor.RED + "There was an error loading your character. Staff have been notified.");
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "There was an error loading " + ChatColor.GOLD + player.getName() + "'s " + ChatColor.WHITE + "data on " + DungeonRealms.getShard().getShardID() + ".");
             e.printStackTrace();
             return;
         }
@@ -353,6 +354,7 @@ public class MainListener implements Listener {
 
 
     private Set<UUID> kickedIgnore = new HashSet<>();
+
     /**
      * Handles player leaving the server
      *
@@ -377,37 +379,37 @@ public class MainListener implements Listener {
         event.setQuitMessage(null);
         onDisconnect(event.getPlayer(), true);
     }
-    
+
     private void onDisconnect(Player player, boolean performChecks) {
-    	
-    	if (player.hasMetadata("sharding"))
-    		player.removeMetadata("sharding", DungeonRealms.getInstance());
+
+        if (player.hasMetadata("sharding"))
+            player.removeMetadata("sharding", DungeonRealms.getInstance());
 
         if (GameAPI.IGNORE_QUIT_EVENT.contains(player.getUniqueId())) {
-        	Utils.log.info("Ignored quit event for player " + player.getName());
+            Utils.log.info("Ignored quit event for player " + player.getName());
             GameAPI.IGNORE_QUIT_EVENT.remove(player.getUniqueId());
             return;
         }
-    	
-    	if(performChecks) {
-    		boolean ignoreCombat = this.kickedIgnore.remove(player.getUniqueId());
-    		// Handle combat log before data save so we overwrite the logger's inventory data
-        	if (CombatLog.inPVP(player) && !ignoreCombat) {
-        		// Woo oh, he logged out in PVP
-        		player.getWorld().strikeLightningEffect(player.getLocation());
-        		player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
-        		
-        		CombatLog.getInstance().handleCombatLog(player);
 
-        		// Remove from pvplog
-        		CombatLog.removeFromPVP(player);
-        	}
+        if (performChecks) {
+            boolean ignoreCombat = this.kickedIgnore.remove(player.getUniqueId());
+            // Handle combat log before data save so we overwrite the logger's inventory data
+            if (CombatLog.inPVP(player) && !ignoreCombat) {
+                // Woo oh, he logged out in PVP
+                player.getWorld().strikeLightningEffect(player.getLocation());
+                player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 5f, 1f);
 
-        	// Player leaves while in duel
-        	DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
-        	if (offer != null)
-        		offer.handleLogOut(player);
-    	}
+                CombatLog.getInstance().handleCombatLog(player);
+
+                // Remove from pvplog
+                CombatLog.removeFromPVP(player);
+            }
+
+            // Player leaves while in duel
+            DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
+            if (offer != null)
+                offer.handleLogOut(player);
+        }
         player.updateInventory();
         // Good to go lads
         GameAPI.handleLogout(player.getUniqueId(), true, null);
@@ -431,7 +433,7 @@ public class MainListener implements Listener {
             if (offer != null) {
                 Player player = event.getPlayer();
 //                if (!offer.canFight) return;
-                if(event.getTo().getWorld() != offer.getCenterPoint().getWorld()){
+                if (event.getTo().getWorld() != offer.getCenterPoint().getWorld()) {
                     Player winner = offer.player1 == player.getUniqueId() ? offer.getPlayer2() : offer.getPlayer1();
 //                                Player loser = offer.player1 == player.getUniqueId() ?  : offer.getPlayer1();
                     offer.endDuel(winner, player);
@@ -516,12 +518,12 @@ public class MainListener implements Listener {
             });
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
-        if(event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Rank.isTrialGM(event.getPlayer())){
-        	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getPlayer().getName() + " has attempted GM3 teleport on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
-        	event.setCancelled(true);
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Rank.isTrialGM(event.getPlayer())) {
+            GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " + ChatColor.WHITE + "Player " + event.getPlayer().getName() + " has attempted GM3 teleport on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+            event.setCancelled(true);
         }
     }
 
@@ -552,6 +554,10 @@ public class MainListener implements Listener {
             return;
         }
         if (GameAPI.isInSafeRegion(event.getFrom()) || GameAPI.isNonPvPRegion(event.getFrom())) {
+            //Make sure to remove them first..
+            if (player.getVehicle() != null)
+                player.getVehicle().eject();
+
             player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
             if (gp.getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.CHAOTIC)
                 player.sendMessage(ChatColor.RED + "The guards have kicked you out of this area due to your alignment.");
@@ -647,7 +653,7 @@ public class MainListener implements Listener {
                 || npcNameStripped.equalsIgnoreCase("Shakhtan") || npcNameStripped.equalsIgnoreCase("Lakhtar")
                 || npcNameStripped.equalsIgnoreCase("Aeylah")) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
-            if(storage == null){
+            if (storage == null) {
                 event.getPlayer().sendMessage(ChatColor.RED + "Please wait while your Bank is being loaded...");
                 return;
             }
@@ -730,9 +736,9 @@ public class MainListener implements Listener {
             }
             int rodTier = Fishing.getRodTier(pl.getEquipment().getItemInMainHand());
             int areaTier = Fishing.getInstance().getFishingSpotTier(loc);
-            if(areaTier > rodTier){
-            	e.getPlayer().sendMessage(ChatColor.RED + "This area is a Tier " + areaTier + " fishing zone.");
-            	e.getPlayer().sendMessage(ChatColor.RED + "Your current pole is too weak to catch any fish here.");
+            if (areaTier > rodTier) {
+                e.getPlayer().sendMessage(ChatColor.RED + "This area is a Tier " + areaTier + " fishing zone.");
+                e.getPlayer().sendMessage(ChatColor.RED + "Your current pole is too weak to catch any fish here.");
             }
         }
 
@@ -1069,19 +1075,19 @@ public class MainListener implements Listener {
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapBreak(HangingBreakEvent evt) {
-    	if(evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
-    		evt.getEntity().getNearbyEntities(0, 0, 0).forEach(ent -> {
-    			if(ent instanceof ItemFrame) {
-    				ItemFrame itemFrame = (ItemFrame)ent;
-    				if(itemFrame.getItem() == null || itemFrame.getItem().getType() == Material.AIR)
-    					itemFrame.remove();
-    			}
-    		});
-    		evt.setCancelled(true);
-    	}
+        if (evt.getCause() == RemoveCause.OBSTRUCTION || evt.getCause() == RemoveCause.PHYSICS) {
+            evt.getEntity().getNearbyEntities(0, 0, 0).forEach(ent -> {
+                if (ent instanceof ItemFrame) {
+                    ItemFrame itemFrame = (ItemFrame) ent;
+                    if (itemFrame.getItem() == null || itemFrame.getItem().getType() == Material.AIR)
+                        itemFrame.remove();
+                }
+            });
+            evt.setCancelled(true);
+        }
     }
 
     /**
@@ -1121,25 +1127,25 @@ public class MainListener implements Listener {
         Player player = (Player) event.getPlayer();
         GamePlayer gp = GameAPI.getGamePlayer(player);
         if (player.hasMetadata("sharding") || !gp.isAbleToOpenInventory() || gp.isSharding()) {
-            if(!Rank.isTrialGM(player)) {
+            if (!Rank.isTrialGM(player)) {
                 Bukkit.getLogger().info("Cancelling " + player.getName() + " from opening inventory");
                 event.setCancelled(true);
                 return;
             }
         }
-        
+
         GameAPI.runAsSpectators(event.getPlayer(), (p) -> {
-        	p.sendMessage(ChatColor.YELLOW + player.getName() + " opened " + event.getInventory().getName() + ".");
-			p.openInventory(event.getInventory());
-    	});
+            p.sendMessage(ChatColor.YELLOW + player.getName() + " opened " + event.getInventory().getName() + ".");
+            p.openInventory(event.getInventory());
+        });
     }
-    
+
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event){
-    	GameAPI.runAsSpectators(event.getPlayer(), (player) -> {
-    		player.sendMessage(ChatColor.YELLOW + event.getPlayer().getName() + " closed " + (event.getInventory().getName().equals("container.crafting") ? "their inventory" : event.getInventory().getName()) + ".");
-			player.closeInventory();
-    	});
+    public void onInventoryClose(InventoryCloseEvent event) {
+        GameAPI.runAsSpectators(event.getPlayer(), (player) -> {
+            player.sendMessage(ChatColor.YELLOW + event.getPlayer().getName() + " closed " + (event.getInventory().getName().equals("container.crafting") ? "their inventory" : event.getInventory().getName()) + ".");
+            player.closeInventory();
+        });
     }
 
     /**
@@ -1346,7 +1352,7 @@ public class MainListener implements Listener {
             p.openInventory(inv);
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void unLeashMule(EntityUnleashEvent event) {
         if (!(event.getEntity() instanceof Horse)) return;

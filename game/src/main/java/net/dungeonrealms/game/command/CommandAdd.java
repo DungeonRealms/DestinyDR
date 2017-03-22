@@ -6,7 +6,6 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-//import net.dungeonrealms.common.game.database.player.rank.NewRank;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.donation.DonationEffects;
@@ -15,6 +14,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.profession.Fishing;
@@ -28,8 +28,9 @@ import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagInt;
+import net.minecraft.server.v1_9_R2.NBTTagList;
 import net.minecraft.server.v1_9_R2.NBTTagString;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -42,6 +43,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
 import java.util.*;
+
+//import net.dungeonrealms.common.game.database.player.rank.NewRank;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -98,7 +101,7 @@ public class CommandAdd extends BaseCommand {
                     player.sendMessage(GameAPI.getNameFromUUID(player.getUniqueId()));
                     break;
                 /*case "myrank":
-                	NewRank rank = NewRank.getRank(player);
+                    NewRank rank = NewRank.getRank(player);
                 	player.sendMessage("Your NewRank: " + rank.getChatPrefix());
                 	player.sendMessage(ChatColor.RED + "Expires = " + NewRank.getDaysUntilRankExpiry(player.getUniqueId()));
                 	break;
@@ -116,41 +119,139 @@ public class CommandAdd extends BaseCommand {
                 	break;*/
                 case "weapon":
                     try {
-                    	ItemGenerator generator = new ItemGenerator();
-                    	generator.setType(Item.ItemType.getRandomWeapon());
-                    	
-                    	if (args.length >= 2)
-                    		generator.setTier(Item.ItemTier.getByTier(Integer.parseInt(args[1])));
-                    	
-                    	if (args.length >= 3)
-                    		generator.setType(Item.ItemType.getByName(args[2]));
-                    	
-                    	if (args.length >= 4)
-                    		generator.setRarity(Item.ItemRarity.valueOf(args[3].toUpperCase()));
-                    	
-                    	player.getInventory().addItem(generator.generateItem().getItem());
-                    	
+                        ItemGenerator generator = new ItemGenerator();
+                        generator.setType(Item.ItemType.getRandomWeapon());
+                        if (args.length == 6) {
+                            tier = Integer.parseInt(args[1]);
+                            Item.ItemType type = Item.ItemType.getByName(args[2]);
+                            Item.ItemRarity rarity = Item.ItemRarity.valueOf(args[3].toUpperCase());
+
+                            if (tier != 0 && type != null && rarity != null) {
+                                ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
+                                        .setType(type).setRarity(rarity).generateItem().getItem();
+
+                                int value = Integer.parseInt(args[5]);
+                                NBTTagList modifiersList = new NBTTagList();
+                                LinkedHashMap<String, Integer> NBTModifiers = new LinkedHashMap<>();
+                                NBTModifiers.put(args[4], value);
+                                NBTWrapper wrapper = new NBTWrapper(item);
+
+                                if (wrapper.hasTag("modifiers")) {
+                                    modifiersList = (NBTTagList) wrapper.get("modifiers");
+                                }
+                                for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
+                                    wrapper.set(entry.getKey(), new NBTTagInt(entry.getValue()));
+
+                                    if (!entry.getKey().contains("Max")) {
+                                        if (entry.getKey().contains("Min")) {
+                                            modifiersList.add(new NBTTagString(entry.getKey().replace("Min", "")));
+                                            continue;
+                                        }
+
+                                        boolean contains = false;
+                                        for (int list = 0; list < modifiersList.size(); list++) {
+                                            String key = modifiersList.getString(list);
+                                            if (key != null && key.equalsIgnoreCase(entry.getKey())) {
+                                                contains = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!contains)
+                                            modifiersList.add(new NBTTagString(entry.getKey()));
+                                    }
+                                }
+
+                                wrapper.set("modifiers", modifiersList);
+                                item = wrapper.build();
+                                player.getInventory().addItem(item);
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Getting random gear..");
+                                player.getInventory().addItem(
+                                        new ItemGenerator().setType(Item.ItemType.getRandomArmor()).generateItem().getItem());
+                            }
+                            return true;
+                        }
+                        if (args.length >= 2)
+                            generator.setTier(Item.ItemTier.getByTier(Integer.parseInt(args[1])));
+
+                        if (args.length >= 3)
+                            generator.setType(Item.ItemType.getByName(args[2]));
+
+                        if (args.length >= 4)
+                            generator.setRarity(Item.ItemRarity.valueOf(args[3].toUpperCase()));
+                        player.getInventory().addItem(generator.generateItem().getItem());
+
                     } catch (Exception ex) {
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
                 case "armor":
-                	try {
-                    	ItemGenerator generator = new ItemGenerator();
-                    	generator.setType(Item.ItemType.getRandomArmor());
-                    	
-                    	if (args.length >= 2)
-                    		generator.setTier(Item.ItemTier.getByTier(Integer.parseInt(args[1])));
-                    	
-                    	if (args.length >= 3)
-                    		generator.setType(Item.ItemType.getByName(args[2]));
-                    	
-                    	if (args.length >= 4)
-                    		generator.setRarity(Item.ItemRarity.valueOf(args[3].toUpperCase()));
-                    	
-                    	player.getInventory().addItem(generator.generateItem().getItem());
-                    	
+                    try {
+                        ItemGenerator generator = new ItemGenerator();
+                        generator.setType(Item.ItemType.getRandomArmor());
+                        if (args.length == 6) {
+                            tier = Integer.parseInt(args[1]);
+                            Item.ItemType type = Item.ItemType.getByName(args[2]);
+                            Item.ItemRarity rarity = Item.ItemRarity.valueOf(args[3].toUpperCase());
+
+                            if (tier != 0 && type != null && rarity != null) {
+                                ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier))
+                                        .setType(type).setRarity(rarity).generateItem().getItem();
+
+                                int value = Integer.parseInt(args[5]);
+                                NBTTagList modifiersList = new NBTTagList();
+                                LinkedHashMap<String, Integer> NBTModifiers = new LinkedHashMap<>();
+                                NBTModifiers.put(args[4], value);
+                                NBTWrapper wrapper = new NBTWrapper(item);
+
+                                if (wrapper.hasTag("modifiers")) {
+                                    modifiersList = (NBTTagList) wrapper.get("modifiers");
+                                }
+                                for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
+                                    wrapper.set(entry.getKey(), new NBTTagInt(entry.getValue()));
+
+                                    if (!entry.getKey().contains("Max")) {
+                                        if (entry.getKey().contains("Min")) {
+                                            modifiersList.add(new NBTTagString(entry.getKey().replace("Min", "")));
+                                            continue;
+                                        }
+
+                                        boolean contains = false;
+                                        for (int list = 0; list < modifiersList.size(); list++) {
+                                            String key = modifiersList.getString(list);
+                                            if (key != null && key.equalsIgnoreCase(entry.getKey())) {
+                                                contains = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!contains)
+                                            modifiersList.add(new NBTTagString(entry.getKey()));
+                                    }
+                                }
+
+                                wrapper.set("modifiers", modifiersList);
+                                item = wrapper.build();
+                                player.getInventory().addItem(item);
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Getting random gear..");
+                                player.getInventory().addItem(
+                                        new ItemGenerator().setType(Item.ItemType.getRandomArmor()).generateItem().getItem());
+                            }
+                            return true;
+                        }
+                        if (args.length >= 2)
+                            generator.setTier(Item.ItemTier.getByTier(Integer.parseInt(args[1])));
+
+                        if (args.length >= 3)
+                            generator.setType(Item.ItemType.getByName(args[2]));
+
+                        if (args.length >= 4)
+                            generator.setRarity(Item.ItemRarity.valueOf(args[3].toUpperCase()));
+
+                        player.getInventory().addItem(generator.generateItem().getItem());
+
                     } catch (Exception ex) {
+                        ex.printStackTrace();
                         player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
                     }
                     break;
@@ -195,20 +296,20 @@ public class CommandAdd extends BaseCommand {
                     player.getInventory().addItem(ItemManager.createCharacterJournal(player));
                     break;
                 case "scrap":
-                	for(int i = 1; i <= 5; i++)
-                		player.getInventory().addItem(ItemManager.createArmorScrap(i + 1));
+                    for (int i = 1; i <= 5; i++)
+                        player.getInventory().addItem(ItemManager.createArmorScrap(i + 1));
                     break;
                 case "potion":
-                	for(int i = 1; i <= 5; i++)
-                		player.getInventory().addItem(ItemManager.createHealthPotion(i, false, false));
-                	for(int i = 1; i <= 5; i++)
-                		player.getInventory().addItem(ItemManager.createHealthPotion(i, false, true));
+                    for (int i = 1; i <= 5; i++)
+                        player.getInventory().addItem(ItemManager.createHealthPotion(i, false, false));
+                    for (int i = 1; i <= 5; i++)
+                        player.getInventory().addItem(ItemManager.createHealthPotion(i, false, true));
                     break;
                 case "food":
                     player.setFoodLevel(1);
-                    for(int i = 1; i <= 5; i++)
-                    	for(Item.ItemRarity ir : Item.ItemRarity.values())
-                    		player.getInventory().addItem(ItemManager.createHealingFood(i, ir));
+                    for (int i = 1; i <= 5; i++)
+                        for (Item.ItemRarity ir : Item.ItemRarity.values())
+                            player.getInventory().addItem(ItemManager.createHealingFood(i, ir));
                     break;
                 case "test":
                     Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getEquipment().getItemInMainHand())));
@@ -340,11 +441,11 @@ public class CommandAdd extends BaseCommand {
                             player.getInventory().addItem(ItemManager.createRandomTeleportBook());
                             player.sendMessage(ChatColor.GREEN + "Spawned random teleport book.");
                         } else {
-                        	TeleportLocation tl = TeleportLocation.valueOf(args[1].toUpperCase());
-                        	if(tl == null){
-                        		player.sendMessage(ChatColor.RED + "Location not found.");
-                        		return true;
-                        	}
+                            TeleportLocation tl = TeleportLocation.valueOf(args[1].toUpperCase());
+                            if (tl == null) {
+                                player.sendMessage(ChatColor.RED + "Location not found.");
+                                return true;
+                            }
                             player.getInventory().addItem(ItemManager.createTeleportBook(tl));
                             player.sendMessage(ChatColor.GREEN + "Spawned " + tl.getDisplayName() + " teleport book.");
                         }
