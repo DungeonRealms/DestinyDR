@@ -291,7 +291,7 @@ public class InventoryListener implements Listener {
             	if (HealthHandler.getInstance().getPlayerHPLive(player) > HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
             		HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
             	}
-                HealthHandler.getInstance().updatePlayerHP(player);
+                //HealthHandler.getInstance().updatePlayerHP(player);
             }, 10L);
         } else if (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE)) {
             player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
