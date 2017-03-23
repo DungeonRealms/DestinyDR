@@ -467,8 +467,11 @@ public class InventoryListener implements Listener {
             for (ItemStack stack : bin.getContents())
                 if (stack != null && stack.getType() != Material.AIR)
                 	i++;
-            if (i == 0)
-                storage.clearCollectionBin();
+            if (i == 0) {
+                //storage.clearCollectionBin();
+            	DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+            	storage.collection_bin = null;
+            }
         }
     }
 

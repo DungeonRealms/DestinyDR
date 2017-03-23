@@ -358,10 +358,9 @@ public class ItemListener implements Listener {
             }
 
 
-            if (event.getClickedBlock() != null) {
+            if (event.getClickedBlock() != null)
                 if (Realms.getInstance().canPlacePortal(p, event.getClickedBlock().getLocation()))
                     Realms.getInstance().loadRealm(p, () -> Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation()));
-            }
 
             event.setCancelled(true);
         } else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
