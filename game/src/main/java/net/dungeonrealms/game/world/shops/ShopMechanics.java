@@ -157,6 +157,7 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     //  LOAD ITEMS FROM COLLECTION BIN  //
                     Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
                     if (storage.collection_bin != null) {
+                    	DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true, null);
                     	for(ItemStack i : storage.collection_bin.getContents())
                     		if(i != null && i.getType() != Material.AIR && ShopListener.hasPrice(i))
                     			shop.inventory.addItem(ShopListener.setPrice(i, ShopListener.getPrice(i)));

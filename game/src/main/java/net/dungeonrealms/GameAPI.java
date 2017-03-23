@@ -566,7 +566,7 @@ public class GameAPI {
     		Utils.log.info("Not sending " + task + ", we haven't connected.");
     		return;
     	}
-        getClient().sendNetworkMessage(task, message.replace("{SERVER}", DungeonRealms.getShard().getShardID()), contents);
+        getClient().sendNetworkMessage(task, message.replace("{SERVER}", ChatColor.GOLD + DungeonRealms.getShard().getShardID() + ChatColor.RESET), contents);
     }
 
     public static void sendDevMessage(String message, String... contents) {
