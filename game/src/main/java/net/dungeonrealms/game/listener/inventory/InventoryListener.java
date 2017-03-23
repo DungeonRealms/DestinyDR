@@ -285,6 +285,7 @@ public class InventoryListener implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
             // KEEP THIS DELAY IT PREVENTS ARMOR STACKING
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            	handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
                 HealthHandler.getInstance().updatePlayerHP(player);
             }, 10L);
         } else if (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE)) {
@@ -461,16 +462,13 @@ public class InventoryListener implements Listener {
             Inventory bin = storage.collection_bin;
             if (bin == null)
                 return;
+            
             int i = 0;
-            for (ItemStack stack : bin.getContents()) {
-                if (stack == null || stack.getType() == Material.AIR)
-                    continue;
-                i++;
-            }
-            if (i == 0) {
-                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true, null);
-                storage.collection_bin = null;
-            }
+            for (ItemStack stack : bin.getContents())
+                if (stack != null && stack.getType() != Material.AIR)
+                	i++;
+            if (i == 0)
+                storage.clearCollectionBin();
         }
     }
 
