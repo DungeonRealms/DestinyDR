@@ -106,9 +106,9 @@ public class ShopMechanics implements GenericMechanic, Listener {
     }
 
     public static void deleteAllShops(boolean shutDown) {
-        for (Shop shop : ALLSHOPS.values()) {
+        for (Shop shop : ALLSHOPS.values())
             shop.deleteShop(shutDown);
-        }
+        ALLSHOPS.clear();
     }
 
     public static boolean isItemSellable(ItemStack i) {
@@ -157,13 +157,11 @@ public class ShopMechanics implements GenericMechanic, Listener {
                     //  LOAD ITEMS FROM COLLECTION BIN  //
                     Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
                     if (storage.collection_bin != null) {
-                    	DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true, null);
                     	for(ItemStack i : storage.collection_bin.getContents())
                     		if(i != null && i.getType() != Material.AIR && ShopListener.hasPrice(i))
                     			shop.inventory.addItem(ShopListener.setPrice(i, ShopListener.getPrice(i)));
                         player.sendMessage(ChatColor.GREEN + "The items from your collection bin have been loaded into your shop.");
-                        storage.collection_bin.clear();
-                        storage.collection_bin = null;
+                        storage.clearCollectionBin();
                     }
                     
                     Quests.getInstance().triggerObjective(player, ObjectiveCreateShop.class);

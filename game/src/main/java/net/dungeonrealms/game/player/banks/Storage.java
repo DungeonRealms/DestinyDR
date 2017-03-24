@@ -34,31 +34,16 @@ public class Storage {
      */
     public Storage(UUID uuid, Inventory inventory) {
         ownerUUID = uuid;
-        this.inv = getNewStorage();
-
-        for (int i = 0; i < this.inv.getSize(); i++) {
-            ItemStack item = inventory.getItem(i);
-            if (item != null && item.getType() != Material.AIR)
-                inv.setItem(i, item);
-        }
-//        for (org.bukkit.inventory.ItemStack stack : inventory.getContents()) {
-//            if (stack != null && stack.getType() != org.bukkit.Material.AIR)
-//                if (inv.firstEmpty() >= 0)
-//                    inv.addItem(stack);
-//        }
-        String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
-        //Without this VV Players can /closeshop and dupe their items.
-        DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true);
-        if (stringInv.length() > 1) {
-            Inventory inv = ItemSerialization.fromString(stringInv);
-            for (ItemStack item : inv.getContents()) {
-                if (item != null && item.getType() == Material.AIR) {
-                    inv.addItem(item);
-                }
-            }
-            this.collection_bin = inv;
-        }
-
+        update();
+    }
+    
+    public void clearCollectionBin() {
+    	if(collection_bin == null)
+    		return;
+    	DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true, true);
+    	//VV Clears the current inventory so any viewers don't get to take it.
+    	collection_bin.clear();
+    	collection_bin = null;
     }
 
     /**
