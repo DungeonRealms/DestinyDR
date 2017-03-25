@@ -204,6 +204,12 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+    	
+    	if (PunishAPI.isBanned(event.getUniqueId()) && DungeonRealms.getInstance().isEventShard) {
+    		event.disallow(Result.KICK_BANNED, ChatColor.RED + "You have been eliminated from this event!");
+    		return;
+    	}
+    	
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getName())) {
             event.disallow(Result.KICK_OTHER, ChatColor.RED + "Please wait while your data syncs.");
             DungeonRealms.getInstance().getLoggingOut().remove(event.getName());
