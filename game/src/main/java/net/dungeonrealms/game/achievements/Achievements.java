@@ -564,7 +564,11 @@ public class Achievements {
 
         SKILL_MASTER("Skill Master", new String[]{
             "Obtained both a level 100 Fishing Rod and Pickaxe."
-        }, 25000, "achievement.character_skill_master", false);
+        }, 25000, "achievement.character_skill_master", false),
+
+        EVENT_PARTICIPANT_1("Championship of Cyrennica 2017", new String[]{
+                "Participated in the Championship of Cyrennica 2017 Event."
+        }, 0, "achievement.event_participant_1", false);
 
         private String name;
         private String[] message;

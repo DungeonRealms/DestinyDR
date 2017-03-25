@@ -348,25 +348,25 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(2, editItem(new ItemStack(Material.MAP), ChatColor.GOLD + "Exploration", new String[]{
                 "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Exploration",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to exploration.",
                 "",
                 ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(3, editItem(new ItemStack(Material.GOLD_SWORD), ChatColor.GOLD + "Combat", new String[]{
                 "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Combat",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to combat.",
                 "",
                 ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(4, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GOLD + "Character", new String[]{
                 "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Character customization",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to character customization.",
                 "",
                 ChatColor.GRAY + "Display Item"
         }));
         inv.setItem(5, editItem(new ItemStack(Material.EMERALD), ChatColor.GOLD + "Currency", new String[]{
                 "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Currency",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to currency.",
                 "",
                 ChatColor.GRAY + "Display Item"
         }));
@@ -378,7 +378,13 @@ public class PlayerMenus {
         }));
         inv.setItem(7, editItem(new ItemStack(Material.NETHER_STAR), ChatColor.GOLD + "Realm", new String[]{
                 "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to your Realm",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to your realm.",
+                "",
+                ChatColor.GRAY + "Display Item"
+        }));
+        inv.setItem(8, editItem(new ItemStack(Material.GOLD_INGOT), ChatColor.GOLD + "Event", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to event participation.",
                 "",
                 ChatColor.GRAY + "Display Item"
         }));
@@ -544,6 +550,43 @@ public class PlayerMenus {
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
             if (achievement.getMongoName().contains(".realm_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    if (achievement.getHide()) continue;
+
+                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                            ChatColor.GRAY + "Display Item"
+                    }));
+                } else {
+                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                            ChatColor.GRAY + "Display Item"
+                    }));
+                }
+            }
+        }
+        player.openInventory(inv);
+    }
+
+    public static void openEventAchievementMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 27, "Event Achievements");
+        UUID uuid = player.getUniqueId();
+        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+
+        boolean noAchievements;
+        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
+            if (achievement.getMongoName().contains(".event")) {
                 if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
                     if (achievement.getHide()) continue;
 

@@ -33,8 +33,19 @@ public class CommandAnnounce extends BaseCommand {
         ChatColor color = ChatColor.GOLD;
         String message;
         switch (args[0].toLowerCase()) {
+            case "website":
+                message = "Come join our website! http://www.dungeonrealms.net/";
+                break;
             case "discord":
                 message = "Come join our Discord server! https://discord.gg/KP5wWrC";
+                break;
+            case "event":
+                color = ChatColor.YELLOW;
+                message = "There is currently an event ongoing, feel free to participate by joining EVENT-1.";
+                break;
+            case "stream":
+                color = ChatColor.DARK_PURPLE;
+                message = "We're live on Twitch, come watch! https://www.twitch.tv/dungeonrealmsnet";
                 break;
             default:
                 sender.sendMessage(ChatColor.RED + "Invalid announcement!");

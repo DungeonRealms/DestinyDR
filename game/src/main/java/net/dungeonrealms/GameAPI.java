@@ -1280,8 +1280,8 @@ public class GameAPI {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is an " + ChatColor.UNDERLINE + "EVENT" + ChatColor.DARK_AQUA + " shard.",
-                    ChatColor.GRAY.toString() + ChatColor.ITALIC + "Please be aware that data is not synchronized with the live shard.",
-                    ChatColor.GRAY.toString() + ChatColor.ITALIC + "This shard is only accessible for a limited time.",
+                    ChatColor.GRAY.toString() + ChatColor.ITALIC + "Please be aware that data is not synchronized with the live game. "+
+                    "This shard is only accessible for a limited time.",
             });
         }
 

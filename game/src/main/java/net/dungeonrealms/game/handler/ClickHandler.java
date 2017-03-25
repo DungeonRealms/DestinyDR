@@ -965,6 +965,9 @@ public class ClickHandler {
                     case 7:
                         PlayerMenus.openRealmAchievementMenu(player);
                         break;
+                    case 8:
+                        PlayerMenus.openEventAchievementMenu(player);
+                        break;
                     default:
                         break;
                 }

@@ -743,12 +743,16 @@ public class HealthHandler implements GenericMechanic {
     	Chat.listenForMessage(player, null, null);
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
         
-        if(DungeonRealms.getInstance().isEventShard) {
-        	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-        		if(player.isOnline())
-        			player.kickPlayer(ChatColor.RED + "You have been eliminated from this event.");
-        		PunishAPI.ban(player.getUniqueId(), player.getName(), "Event Controller", -1, "You have been eliminated", null);
-        	}, 5);
+        if (DungeonRealms.getInstance().isEventShard) {
+            if (Rank.isTrialGM(player)) {
+                player.sendMessage(ChatColor.GOLD + "Death has acknowledged your identity and chosen to spare your life.");
+            } else {
+                Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+                    if(player.isOnline())
+                        player.kickPlayer(ChatColor.RED + "You have been eliminated from this event.");
+                    PunishAPI.ban(player.getUniqueId(), player.getName(), "Event Controller", -1, "You have been eliminated", null);
+                }, 5);
+            }
     	}
     
         if (player.hasMetadata("last_death_time")) {
