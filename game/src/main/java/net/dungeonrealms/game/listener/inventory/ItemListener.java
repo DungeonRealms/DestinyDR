@@ -61,7 +61,11 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.inventivetalent.glow.GlowAPI;
 
@@ -557,6 +561,38 @@ public class ItemListener implements Listener {
             }
         }
     }
+    
+    /**
+     * This is a prank for the people who are supposedly using vanilla potions in pvp.
+     */
+    private void playPotionPrank(ItemStack item, PlayerInteractEvent evt) {
+    	Player player = evt.getPlayer();
+    	if(item == null || item.getType() == Material.AIR || ItemManager.isPotion(item) || (item.getType() != Material.POTION && item.getType() != Material.SPLASH_POTION))
+    		return;
+    	evt.setCancelled(true);
+    	player.getInventory().remove(item);
+    	GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED + "[ALERT] " + ChatColor.WHITE + "Removing vanilla potion from " + player.getName() + ".");
+    	
+    	player.sendMessage(ChatColor.GRAY + " *Glug* *Glug* *Glug*");
+    	player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1, 1);
+    	
+    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+    		player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 375, 2));
+    		player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 350, 2));
+    		player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 350, 2));
+    	}, 5);
+    	
+    	for(int second = 0; second < 15; second++) { 
+    		for(int i = 0; i < 4; i++) {
+    			final int in = i;
+    			Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> { if(player.isOnline()) player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_DEATH, 0.17f + 0.33f * in, 0.25f * in + 0.25f);}, (second * 20) + 1 + i * 5);
+    		}
+    	}
+    	
+    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+    		player.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "Regret shoots through you as vomit pours from your mouth.");
+    	}, 16);
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDrinkPotionMainHand(PlayerInteractEvent event) {
@@ -567,6 +603,7 @@ public class ItemListener implements Listener {
         if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType() == Material.AIR) {
             //Drinking from Offhand.
             potion = player.getInventory().getItemInOffHand();
+            playPotionPrank(potion, event);
             nmsItem = CraftItemStack.asNMSCopy(potion);
             if (nmsItem == null || nmsItem.getTag() == null) return;
             if (!nmsItem.getTag().hasKey("type")) return;
@@ -587,6 +624,7 @@ public class ItemListener implements Listener {
         } else if (player.getInventory().getItemInOffHand() == null || player.getInventory().getItemInOffHand().getType() == Material.AIR) {
             //Drinking from Mainhand.
             potion = player.getInventory().getItemInMainHand();
+            playPotionPrank(potion, event);
             nmsItem = CraftItemStack.asNMSCopy(potion);
             if (nmsItem == null || nmsItem.getTag() == null) return;
             if (!nmsItem.getTag().hasKey("type")) return;
