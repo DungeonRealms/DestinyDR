@@ -796,7 +796,9 @@ public class Realm {
         realmProperties.put(property.getName(), property);
     }
     
-    public boolean getProperty(String name) {
-        return (boolean) realmProperties.get(name).getValue() && !realmProperties.get(name).hasExpired();
+    @SuppressWarnings("unchecked")
+	public boolean getProperty(String name) {
+    	RealmProperty<Boolean> property = (RealmProperty<Boolean>) realmProperties.get(name);
+        return (boolean)property.getValue() && !property.hasExpired();
     }
 }
