@@ -715,6 +715,9 @@ public class ItemManager {
         orb.setAmount(64);
         player.getInventory().addItem(orb, orb);
 
+        // Add Scrap
+        player.getInventory().addItem(ItemManager.createArmorScrap(5));
+
         // Add Food
         player.getInventory().addItem(new ItemStack(Material.GOLDEN_CARROT, 64));
 

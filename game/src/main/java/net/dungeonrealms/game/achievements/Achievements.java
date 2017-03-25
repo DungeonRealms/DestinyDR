@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.achievements;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
@@ -59,8 +60,15 @@ public class Achievements {
      * @since 1.0
      */
     public void giveAchievement(UUID uuid, EnumAchievements achievement) {
-        if (hasAchievement(uuid, achievement)) return;
-        //Why wouldnt this be async?
+        // Achievements are disabled on the event shard.
+        if (DungeonRealms.getInstance().isEventShard)
+            return;
+
+        // You cannot earn an achievement you already have.
+        if (hasAchievement(uuid, achievement))
+            return;
+
+        // Why wouldnt this be async?
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.ACHIEVEMENTS, achievement.getMongoName(), true);
         if (Bukkit.getPlayer(uuid) == null) return;
         Player player = Bukkit.getPlayer(uuid);
