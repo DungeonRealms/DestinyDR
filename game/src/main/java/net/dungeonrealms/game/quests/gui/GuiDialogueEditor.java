@@ -58,13 +58,11 @@ public class GuiDialogueEditor extends GuiBase {
 				return;
 			}
 			player.sendMessage(ChatColor.YELLOW + "Stand where the location should be set and reply \"Yes\".");
-			Chat.promptPlayerYesNo(player, (confirm) -> {
-				if(confirm){
-					this.dialogueLine.setTeleportLocation(player.getLocation().clone());
-					player.sendMessage(ChatColor.GREEN + "Set Teleport Location!");
-				}
+			Chat.promptPlayerConfirmation(player, () -> {
+				this.dialogueLine.setTeleportLocation(player.getLocation().clone());
+				player.sendMessage(ChatColor.GREEN + "Set Teleport Location!");
 				new GuiDialogueEditor(player, stage, dialogueLine);
-			});
+			}, () -> new GuiDialogueEditor(player, stage, dialogueLine));
 		});
 		
 		this.setSlot(6, Material.STICK, ChatColor.AQUA + "Set Items", new String[] {"Click here to set items to give the player.", "Current Item Count: " + ChatColor.RED + this.dialogueLine.getItems().size()}, (evt) -> new GuiItemSelector(player, stage, dialogueLine.getItems()));

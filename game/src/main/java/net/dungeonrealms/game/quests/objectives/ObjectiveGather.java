@@ -72,8 +72,8 @@ public class ObjectiveGather implements QuestObjective {
 				ret += " and " + item.getAmount() + " " + ChatColor.stripColor(item.getItemMeta().getDisplayName());
 			}
 		}
-		if(player == null || this.itemsToGather.isEmpty() || ret.equals("")){
-			if(stage.getNPC() == null)
+		if(this.itemsToGather.isEmpty() || ret.equals("")){
+			if(stage == null || stage.getNPC() == null)
 				return "Deliver items";
 			return "Deliver items to " + stage.getNPC().getName();
 		}

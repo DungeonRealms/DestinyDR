@@ -27,6 +27,7 @@ public class GuiObjectiveSelector extends GuiBase {
 					}else{
 						this.player.sendMessage(ChatColor.GREEN + "Objective Created!");
 						this.stage.setNextObjective(qo);
+						qo.setQuestStage(this.stage);
 						qo.createEditorGUI(this.player, this.stage);
 					}
 				});

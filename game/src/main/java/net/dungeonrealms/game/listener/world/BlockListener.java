@@ -32,8 +32,8 @@ import net.dungeonrealms.game.world.entity.type.monster.type.EnumNamedElite;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
+import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
@@ -111,25 +111,19 @@ public class BlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void placeRealmChest(BlockPlaceEvent event) {
-        if (event.getItemInHand() == null) return;
-        if (event.getItemInHand().getType() != Material.CHEST)
-            return;
+        if (event.getItemInHand() == null || event.getItemInHand().getType() != Material.CHEST)
+        	return;
 
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemInHand());
         if (nms.hasTag() && nms.getTag().hasKey("type"))
             event.setCancelled(true);
 
-        RealmToken realm = Realms.getInstance().getToken(event.getPlayer().getWorld());
-        if (realm == null) {
+        Realm realm = Realms.getInstance().getRealm(event.getBlock().getWorld());
+        if (realm == null || !realm.isOpen() || !realm.canBuild(event.getPlayer())) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can't place Realm Chests here.");
             event.setCancelled(true);
             return;
         }
-        if (!realm.getBuilders().contains(event.getPlayer().getUniqueId()) && !realm.getOwner().equals(event.getPlayer().getUniqueId())) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You can't place Realm Chests here.");
-            event.setCancelled(true);
-        }
-
     }
 
     @EventHandler
@@ -671,11 +665,10 @@ public class BlockListener implements Listener {
             if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
             Material mat = block.getType();
 
-            if (mat == Material.HOPPER && mat == Material.DISPENSER
-                    && ((block.getWorld().equals(Bukkit.getWorlds().get(0)) || block.getWorld().getName().contains("DUNGEON")) && Realms.getInstance().getToken(block.getWorld()) == null))
+            if (mat == Material.DISPENSER && Realms.getInstance().getRealm(block.getWorld()) == null)
                 event.setCancelled(true);
 
-            if (mat == Material.FURNACE || mat == Material.HOPPER_MINECART || mat == Material.TRAPPED_CHEST || mat == Material.BREWING_STAND || mat == Material.ENCHANTMENT_TABLE)
+            if (mat == Material.HOPPER || mat == Material.FURNACE || mat == Material.HOPPER_MINECART || mat == Material.TRAPPED_CHEST || mat == Material.BREWING_STAND || mat == Material.ENCHANTMENT_TABLE)
                 event.setCancelled(true);
         }
     }

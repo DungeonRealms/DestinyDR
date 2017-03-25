@@ -2,6 +2,7 @@ package net.dungeonrealms.game.quests;
 
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
 import net.dungeonrealms.game.world.item.Item.ItemType;
@@ -89,6 +90,9 @@ public class QuestItem implements ISaveable {
 				case PROT_SCROLL:
 					created = ItemManager.createProtectScroll(this.tier.getTierId());
 					break;
+				case GEM_NOTE:
+					created = BankMechanics.createGems(this.itemAmount);
+					break;
 				default:
 					System.out.println("Can't generate quest item " + this.generationType.name());
 			}
@@ -143,6 +147,9 @@ public class QuestItem implements ISaveable {
 		if(obj.has("durability"))
 			this.durability = obj.get("durability").getAsInt();
 		
+		if(obj.has("amount"))
+			this.itemAmount = obj.get("amount").getAsInt();
+		
 		if(obj.has("generatedItem") && obj.get("generatedItem").getAsBoolean()){
 			this.setItemRarity(ItemRarity.valueOf(obj.get("itemRarity").getAsString()));
 			this.setItemTier(ItemTier.valueOf(obj.get("itemTier").getAsString()));
@@ -157,8 +164,6 @@ public class QuestItem implements ISaveable {
 		
 		if(obj.has("displayName"))
 			this.displayName = obj.get("displayName").getAsString();
-		if(obj.has("amount"))
-			this.itemAmount = obj.get("amount").getAsInt();
 		if(obj.has("type"))
 			this.itemMaterial = Material.valueOf(obj.get("type").getAsString());
 	}
@@ -168,6 +173,7 @@ public class QuestItem implements ISaveable {
 		JsonObject obj = new JsonObject();
 		obj.addProperty("soulbound", this.isSoulBound);
 		obj.addProperty("durability", this.durability);
+		obj.addProperty("amount", this.itemAmount);
 		
 		if(this.isGeneratedItem()){
 			obj.addProperty("generatedItem", true);
@@ -182,7 +188,6 @@ public class QuestItem implements ISaveable {
 			return obj;
 		}
 		obj.addProperty("displayName", this.displayName);
-		obj.addProperty("amount", this.itemAmount);
 		obj.addProperty("type", this.itemMaterial.name());
 		return obj;
 	}
@@ -307,6 +312,7 @@ public class QuestItem implements ISaveable {
 		FISHING_ROD,
 		PROT_SCROLL,
 		WEAPON_ENCH_SCROLL,
-		ARMOR_ENCH_SCROLL;
+		ARMOR_ENCH_SCROLL,
+		GEM_NOTE;
 	}
 }

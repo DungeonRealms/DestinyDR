@@ -1,5 +1,6 @@
-package net.dungeonrealms.game.world.realms.instance;
+package net.dungeonrealms.game.world.realms;
 
+import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -10,6 +11,7 @@ import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,7 +25,7 @@ import java.util.*;
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/26/2016
  */
-class RealmMaterialFactory {
+public class RealmMaterialFactory {
 
     // THIS IS HOW MANY PAGES WE NEED FOR NOW //
     private static final int MAX_PAGES = 3;
@@ -32,12 +34,8 @@ class RealmMaterialFactory {
     private static RealmMaterialStore[] REALM_MATERIAL_STORES = new RealmMaterialStore[MAX_PAGES];
 
     // THE INSTANCE //
-    private static RealmMaterialFactory instance = null;
-
-    protected static RealmMaterialFactory getInstance() {
-        if (instance == null) instance = new RealmMaterialFactory();
-        return instance;
-    }
+    @Getter
+    private static RealmMaterialFactory instance = new RealmMaterialFactory();
 
     private RealmMaterialFactory() {
         for (int i = 0; i < MAX_PAGES; i++)
@@ -312,8 +310,6 @@ class RealmMaterialFactory {
     }
 
     public void openMaterialStore(Player player, int pageIndex) {
-        player.closeInventory();
-
         REALM_MATERIAL_STORES[pageIndex].open(player);
     }
 

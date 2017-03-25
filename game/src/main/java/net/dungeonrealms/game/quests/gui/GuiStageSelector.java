@@ -44,13 +44,11 @@ public class GuiStageSelector extends GuiBase {
 			this.setSlot(i, Material.MAP, ChatColor.GREEN + "Stage " + (i + 1), new String[] {"Left Click to " + ChatColor.GREEN + "Edit" + ChatColor.GRAY + ".", "Right Click to " + ChatColor.RED + "Delete" + ChatColor.GRAY + ".", "Current NPC: " + (tempStage.getNPC() != null ? ChatColor.GREEN + tempStage.getNPC().getName() : ChatColor.RED + "None")}, (evt) -> {
 				if(evt.isRightClick()){
 					player.sendMessage(ChatColor.RED + "Are you sure you want to remove Stage " + (evt.getRawSlot() + 1) + "?");
-					Chat.promptPlayerYesNo(player, (confirm) -> {
-						if(confirm){
-							player.sendMessage(ChatColor.RED + "Stage " + (evt.getRawSlot() + 1) + " removed.");
-							this.quest.getStageList().remove(evt.getRawSlot());
-						}
+					Chat.promptPlayerConfirmation(player, () -> {
+						player.sendMessage(ChatColor.RED + "Stage " + (evt.getRawSlot() + 1) + " removed.");
+						this.quest.getStageList().remove(evt.getRawSlot());
 						new GuiStageSelector(player, quest);
-					});
+					}, () -> new GuiStageSelector(player, quest));
 					return;
 				}
 				if(evt.getCursor() != null && evt.getCursor().equals(moveLeftItem)){

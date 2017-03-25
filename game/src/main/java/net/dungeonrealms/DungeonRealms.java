@@ -76,7 +76,6 @@ import net.dungeonrealms.game.world.entity.util.PetUtils;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -274,7 +273,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(new EntityMechanics());
         mm.registerMechanic(PatchTools.getInstance());
         mm.registerMechanic(Mining.getInstance());
-        mm.registerMechanic(RealmInstance.getInstance());
+        mm.registerMechanic(Realms.getInstance());
         mm.registerMechanic(Affair.getInstance());
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(new LootManager());
@@ -372,6 +371,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSudoChat());
         cm.registerCommand(new CommandLookup());
         cm.registerCommand(new CommandAnnounce());
+//        cm.registerCommand(new CommandWatchList());
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPLoot());

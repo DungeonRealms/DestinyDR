@@ -710,50 +710,23 @@ public class BankListener implements Listener {
                 String whoSigned = BankMechanics.getBankSigners(heldItem);
                 if (whoSigned == null)
                     whoSigned = player.getName();
-                else {
-                    if (!whoSigned.contains(player.getName())) {
-                        //Add this player to the list of signed players...
+                else
+                    if (!whoSigned.contains(player.getName()))
                         whoSigned += "," + player.getName();
-                    }
-                }
-
+                
+                interactEvent.setCancelled(true);
                 String signed = whoSigned;
-                Chat.listenForMessage(player, event -> {
-                    if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("c")) {
-                        player.getInventory().addItem(heldItem);
-                        player.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED");
-                        return;
-                    }
-                    int number = 0;
-                    try {
-                        number = Integer.parseInt(event.getMessage());
-                    } catch (Exception exc) {
-                        player.sendMessage(ChatColor.RED + "Please enter a valid number");
-                        player.getInventory().addItem(heldItem);
-                        return;
-                    }
-                    if (number <= 0) {
-                        player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
-                        player.getInventory().addItem(heldItem);
-                    } else if (number > noteWorth) {
-                        player.sendMessage(ChatColor.GRAY + "You cannot split a note more than what it's worth.");
-                        player.getInventory().addItem(heldItem);
-                    } else {
-                        if (player.getInventory().firstEmpty() != -1) {
-                            if (number == noteWorth) {
-                                player.getInventory().addItem(heldItem);
-                                return;
-                            }
-                            int newValue = noteWorth - number;
-                            player.getInventory().addItem(BankMechanics.createBankNote(newValue, signed));
-                            player.getInventory().addItem(BankMechanics.createBankNote(number, signed));
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You do not have enough space in your inventory to perform this action.");
-                        }
-                    }
-                }, p -> {
-                    player.getInventory().addItem(heldItem);
-                    p.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED");
+                Chat.listenForNumber(player, 1, noteWorth, size -> {
+                	if(size == noteWorth) {
+                		GameAPI.giveOrDropItem(player, heldItem);
+                		return;
+                	}
+                	int newValue = noteWorth - size;
+                    GameAPI.giveOrDropItem(player, BankMechanics.createBankNote(newValue, signed));
+                    GameAPI.giveOrDropItem(player, BankMechanics.createBankNote(size, signed));
+                }, () -> {
+                	GameAPI.giveOrDropItem(player, heldItem);
+                	player.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED");
                 });
 
             }

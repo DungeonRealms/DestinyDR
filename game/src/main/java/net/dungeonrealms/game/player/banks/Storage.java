@@ -34,6 +34,14 @@ public class Storage {
      */
     public Storage(UUID uuid, Inventory inventory) {
         ownerUUID = uuid;
+        this.inv = getNewStorage();
+        
+        for (int i = 0; i < this.inv.getSize(); i++) {
+        	ItemStack item = inventory.getItem(i);
+        	if (item != null && item.getType() != Material.AIR) {
+        		inv.setItem(i, item);
+        	}
+        }
         update();
     }
     
@@ -69,7 +77,8 @@ public class Storage {
      */
     public void update() {
         Inventory inventory = getNewStorage();
-        inventory.setContents(inv.getContents());
+        if (inv != null)
+        	inventory.setContents(inv.getContents());
         this.inv = inventory;
         String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
         if (stringInv.length() > 1) {

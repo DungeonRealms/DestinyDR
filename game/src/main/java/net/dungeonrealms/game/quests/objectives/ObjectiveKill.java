@@ -107,6 +107,7 @@ public class ObjectiveKill implements QuestObjective {
 		
 		int count = progress.getObjectiveCounter() + 1;
 		progress.setObjectiveCounter(count);
+		progress.activateActionBar();
 		if(count == this.amount){
 			killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 2, 2);
 			killer.sendMessage(ChatColor.YELLOW + "You have killed enough " + this.monsterType.name + "s.");
@@ -162,25 +163,37 @@ public class ObjectiveKill implements QuestObjective {
 	
 	@Override
 	public void onStart(Player player){
+		System.out.println("Kill glow check.");
 		updateGlow(player);
 	}
 	
 	public void updateGlow(Player player){
-		performNearby(player, (ent) -> GlowAPI.setGlowing(ent, Color.RED, player));
+		QuestPlayerData data = Quests.getInstance().playerDataMap.get(player);
+		if(data == null)
+			return;
+		QuestProgress progress = data.getQuestProgress(this.questStage.getQuest());
+		if(this.amount > progress.getObjectiveCounter()){
+			performNearby(player, 75, (ent) -> GlowAPI.setGlowing(ent, Color.RED, player));
+		}else{
+			disableGlow(player);
+		}
 	}
 	
 	public void onEnd(Player player){
-		performNearby(player, (ent) -> GlowAPI.setGlowing(ent, false, player));
+		disableGlow(player);
 	}
 	
-	private void performNearby(Player player, Consumer<Entity> action){
-		player.getNearbyEntities(100, 100, 100).stream().filter(e -> isApplicable(e)).forEach(action::accept);
+	public void disableGlow(Player player){
+		performNearby(player, 100, (ent) -> GlowAPI.setGlowing(ent, false, player));
+	}
+	
+	private void performNearby(Player player, int radius, Consumer<Entity> action){
+		player.getNearbyEntities(radius, radius, radius).stream().filter(e -> isApplicable(e)).forEach(action::accept);
 	}
 	
 	public boolean isApplicable(Entity ent){
 		net.minecraft.server.v1_9_R2.Entity nmsEnt = ((CraftEntity)ent).getHandle();
-		if(nmsEnt instanceof DRMonster){
-			System.out.println("Yes, applicable");
+		if(nmsEnt instanceof DRMonster) {
 			DRMonster monster = (DRMonster)nmsEnt;
 			return monster.getEnum() == monsterType && monster.getTier(ent) >= tier;
 		}
@@ -213,7 +226,7 @@ public class ObjectiveKill implements QuestObjective {
 					this.objective.tier = tier;
 					player.sendMessage(ChatColor.GREEN + "Tier updated to " + tier + ".");
 					new GuiKillEditor(player, stage, objective);
-				}, p -> new GuiKillEditor(player, stage, objective));
+				}, () -> new GuiKillEditor(player, stage, objective));
 			});
 			
 			this.setSlot(2, Material.IRON_SWORD, ChatColor.RED + "Amount", new String[] {"Set the minimum amount of killed monsters", "Current: " + ChatColor.RED + this.objective.amount}, (evt) -> {
@@ -222,7 +235,7 @@ public class ObjectiveKill implements QuestObjective {
 					this.objective.amount = num;
 					player.sendMessage(ChatColor.GREEN + "Kill Requirement set to " + this.objective.amount);
 					new GuiKillEditor(player, stage, objective);
-				}, p -> new GuiKillEditor(player, stage, objective));
+				}, () -> new GuiKillEditor(player, stage, objective));
 			});
 			
 			this.setSlot(4, GO_BACK, (evt) -> new GuiStageEditor(player, stage));

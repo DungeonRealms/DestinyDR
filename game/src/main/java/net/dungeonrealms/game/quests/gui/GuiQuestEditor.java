@@ -34,7 +34,7 @@ public class GuiQuestEditor extends GuiBase {
 				this.quest.setLevelRequirement(newLvl);
 				player.sendMessage(ChatColor.GREEN + "Level Requirement Updated!");
 				new GuiQuestEditor(player, quest);
-			}, p -> new GuiQuestEditor(player, quest));
+			}, () -> new GuiQuestEditor(player, quest));
 		});
 		
 		this.setSlot(2, Material.EMERALD, ChatColor.GREEN + "Gem Reward", new String[] {"Click here to set the amount of gems gained by", "completing this quest.", "Current: " + ChatColor.GREEN + this.quest.getGemReward() + "g"}, e -> {
@@ -43,7 +43,7 @@ public class GuiQuestEditor extends GuiBase {
 				this.quest.setGemReward(num);
 				player.sendMessage(ChatColor.GREEN + "Gem Reward Updated!");
 				new GuiQuestEditor(player, quest);
-			}, f -> new GuiQuestEditor(player, quest));
+			}, () -> new GuiQuestEditor(player, quest));
 		});
 		
 		this.setSlot(3, Material.EXP_BOTTLE, ChatColor.YELLOW + "XP Reward", new String[] {"Click here to set the amount of XP gained by", "completing this quest.", "Current: " + ChatColor.YELLOW + this.quest.getXPReward() + " XP"}, e -> {
@@ -52,7 +52,7 @@ public class GuiQuestEditor extends GuiBase {
 				this.quest.setXPReward(num);
 				player.sendMessage(ChatColor.GREEN + "XP Reward Updated!");
 				new GuiQuestEditor(player, quest);
-			}, f -> new GuiQuestEditor(player, quest));
+			}, () -> new GuiQuestEditor(player, quest));
 		});
 		
 		this.setSlot(5, Material.PUMPKIN_SEEDS, ChatColor.YELLOW + "Edit Stages", 

@@ -1,12 +1,15 @@
 package net.dungeonrealms.game.command;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
+import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -41,20 +44,20 @@ public class CommandRealmWipe extends BaseCommand {
             return true;
         }
 
-        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
-
+        UUID uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
+        Realm realm = Realms.getInstance().getOrCreateRealm(uuid);
+        
         GameAPI.submitAsyncCallback(() -> {
-                    Realms.getInstance().wipeRealm(p_uuid);
-                    return true;
-                }, callback -> {
-                    DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
-                    DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
-                    DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true);
-
-                    sender.sendMessage(ChatColor.GRAY.toString() + "Realm wiped.");
-                    GameAPI.updatePlayerData(p_uuid);
-                }
-        );
+        	realm.wipeRealm();
+        	return true;
+        }, callback -> {
+        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_TIER, 1, true);
+        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, true);
+        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, true);
+        	
+        	sender.sendMessage(ChatColor.GRAY.toString() + "Realm wiped.");
+        	GameAPI.updatePlayerData(uuid);
+        });
 
 
         return true;

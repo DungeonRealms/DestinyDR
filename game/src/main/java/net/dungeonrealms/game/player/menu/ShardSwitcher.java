@@ -276,7 +276,7 @@ public class ShardSwitcher extends AbstractMenu implements VolatileGUI {
             return;
         }
 
-        if (Realms.getInstance().getToken(player.getWorld()) != null) {
+        if (Realms.getInstance().getRealm(player.getWorld()) != null) {
             player.sendMessage(ChatColor.RED + "You cannot shard in a realm.");
             return;
         }

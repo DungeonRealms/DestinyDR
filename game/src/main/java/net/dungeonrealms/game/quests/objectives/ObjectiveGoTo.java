@@ -128,7 +128,7 @@ public class ObjectiveGoTo implements QuestObjective {
 					this.objective.radius = num;
 					player.sendMessage(ChatColor.GREEN + "Trigger set to current location, with radius of " + this.objective.radius);
 					new GuiGotoEditor(player, stage, objective);
-				}, (p) -> new GuiGotoEditor(player, stage, objective));
+				}, () -> new GuiGotoEditor(player, stage, objective));
 			});
 			
 			this.setSlot(4, GO_BACK, (evt) -> new GuiStageEditor(player, stage));

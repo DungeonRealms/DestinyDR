@@ -30,24 +30,22 @@ public class GuiNPCBank extends GuiBase {
 			this.setSlot(i, Quests.createSkull(npc.getSkinOwner(), ChatColor.GREEN + npc.getName(), new String[] {"Left Click to " + ChatColor.GREEN + "Edit" + ChatColor.GRAY + ".", "Right Click to " + ChatColor.RED + "Delete" + ChatColor.GRAY + "."}), (evt) -> {
 				if(evt.isRightClick()){
 					player.sendMessage(ChatColor.RED + "Are you sure you want to delete " + npc.getName() + "?");
-					Chat.promptPlayerYesNo(player, (confirm) -> {
-						if(confirm){
-							for(Quest q : Quests.getInstance().questStore.getList()){
-								for(QuestStage s : q.getStageList()){
-									if(s.getNPC() != null && s.getNPC().getName().equals(npc.getName())){
-										player.sendMessage(ChatColor.RED + "Cannot Delete. This NPC is in use by " + q.getQuestName() + ".");
-										new GuiNPCBank(player);
-										return;
-									}
+					Chat.promptPlayerConfirmation(player, () -> {
+						for(Quest q : Quests.getInstance().questStore.getList()){
+							for(QuestStage s : q.getStageList()){
+								if(s.getNPC() != null && s.getNPC().getName().equals(npc.getName())){
+									player.sendMessage(ChatColor.RED + "Cannot Delete. This NPC is in use by " + q.getQuestName() + ".");
+									new GuiNPCBank(player);
+									return;
 								}
 							}
-							player.sendMessage(ChatColor.RED + "Deleted.");
-							Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), npc.getNPCEntity()::destroy);
-							npcList.remove(evt.getRawSlot());
-							Quests.getInstance().npcStore.delete(npc);
 						}
+						player.sendMessage(ChatColor.RED + "Deleted.");
+						Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), npc.getNPCEntity()::destroy);
+						npcList.remove(evt.getRawSlot());
+						Quests.getInstance().npcStore.delete(npc);
 						new GuiNPCBank(player);
-					});
+					}, () -> new GuiNPCBank(player));
 					return;
 				}
 				

@@ -45,7 +45,7 @@ public class GuiItemEditor extends GuiBase {
 				questItem.setDurability(num);
 				player.sendMessage(ChatColor.GREEN + "Durability updated.");
 				new GuiItemEditor(player, stage, allItems, questItem);
-			}, (e) -> new GuiItemEditor(player, stage, allItems, questItem));
+			}, () -> new GuiItemEditor(player, stage, allItems, questItem));
 		});
 		
 		this.setSlot(14, Material.COMMAND, ChatColor.RED + "Item Generator", new String[] {"Click here to set this to randomly generate items."}, (evt) -> {
@@ -96,7 +96,7 @@ public class GuiItemEditor extends GuiBase {
 					this.questItem.setAmount(num);
 					player.sendMessage(ChatColor.GREEN + "Item Amount set to " + this.questItem.getAmount());
 					new GuiItemEditor(player, stage, allItems, questItem);
-				}, (p) -> new GuiItemEditor(player, stage, allItems, questItem));
+				}, () -> new GuiItemEditor(player, stage, allItems, questItem));
 			});
 			
 			this.setSlot(6, Material.GOLD_BLOCK, ChatColor.YELLOW + "Load DR Item", new String[] {"Click here to load a custom DungeonRealms Item.", "An example of this would be: duranorhelm"}, (evt) -> {

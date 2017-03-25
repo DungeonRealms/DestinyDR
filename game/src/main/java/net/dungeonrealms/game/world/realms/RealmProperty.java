@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.world.realms.instance.obj;
+package net.dungeonrealms.game.world.realms;
 
 import lombok.Data;
 

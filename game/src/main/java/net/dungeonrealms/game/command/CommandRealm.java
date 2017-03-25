@@ -2,7 +2,8 @@ package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.realms.Realm;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -46,7 +47,7 @@ public class CommandRealm extends BaseCommand {
         player.sendMessage(ChatColor.GRAY + "\"" + fixedTitle + "\"");
         player.sendMessage("");
 
-        Realms.getInstance().setRealmTitle(player.getUniqueId(), fixedTitle);
+        Realm.setTitle(player.getUniqueId(), fixedTitle);
         return true;
     }
 }

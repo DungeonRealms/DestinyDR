@@ -27,7 +27,7 @@ public class CommandStop extends BaseCommand {
             if (!Rank.isDev(player)) return false;
         }
 
-        if (Realms.getInstance().realmsAreUpgrading()) {
+        if (Realms.getInstance().areRealmsUpgrading()) {
             s.sendMessage(ChatColor.RED + "Realms are still being upgraded!");
             return true;
         }

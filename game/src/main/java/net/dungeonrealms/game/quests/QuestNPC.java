@@ -1,9 +1,13 @@
 package net.dungeonrealms.game.quests;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.scoreboard.Team;
+import org.inventivetalent.glow.GlowAPI;
 
 import com.google.gson.JsonObject;
 
@@ -17,6 +21,8 @@ public class QuestNPC implements ISaveable{
 	private String npcName;
 	private Location npcLocation;
 	private String skinOwner;
+	private String skinValue;
+	private String skinSignature;
 	private NPCAnimation animation;
 	private NPC entity;
 	private String idleMessage;
@@ -108,12 +114,40 @@ public class QuestNPC implements ISaveable{
 			SkinnableEntity se = NMS.getSkinnable(this.getNPCEntity().getEntity());
 			this.lastSkin = username;
 			if(se != null){
+				this.skinValue = null;
+				this.skinSignature = null;
 				se.setSkinName(username);
 			}else{
 				Bukkit.getLogger().warning("Tried to set Skin Data for non-player NPC " + this.getName() + "!");
 			}
 		}
 		this.skinOwner = username;
+	}
+	
+	public void setGlowing(Player player, ChatColor color) {
+		if(!isLoaded())
+			return;
+		
+		String teamName = this.getNPCEntity().data().get(NPC.SCOREBOARD_FAKE_TEAM_NAME_METADATA);
+		if(teamName == null)
+			return;
+		
+		System.out.println("Team = " + teamName);
+		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
+		System.out.println(team != null ? "Team Found" : "Team Not Found");
+		if(team != null)
+			team.setPrefix(color.toString());
+		
+		GlowAPI.setGlowing(this.getNPCEntity().getEntity(), GlowAPI.Color.valueOf(color.name()), player);
+	}
+	
+	public void setSkin(String value, String signature){
+		this.skinValue = value;
+		this.skinSignature = signature;
+		if(isLoaded()){
+			this.getNPCEntity().data().set(NPC.PLAYER_SKIN_TEXTURE_PROPERTIES_METADATA, value);
+			this.getNPCEntity().data().set(NPC.PLAYER_SKIN_TEXTURE_PROPERTIES_SIGN_METADATA, signature);
+		}
 	}
 
 	@Override
@@ -130,7 +164,10 @@ public class QuestNPC implements ISaveable{
 			this.setIdleMessage(obj.get("idleMessage").getAsString());
 		
 		if(obj.has("skinOwner"))
-			this.setSkin(obj.get("skinOwner").getAsString());
+			this.skinOwner = obj.get("skinOwner").getAsString();
+		
+		if(obj.has("skinValue") && obj.has("skinSignature"))
+			this.setSkin(obj.get("skinValue").getAsString(), obj.get("skinSignature").getAsString());
 		
 		this.spawnEntity();
 	}
@@ -143,19 +180,27 @@ public class QuestNPC implements ISaveable{
 			this.entity.spawn(this.npcLocation);
 			if(Bukkit.getOnlinePlayers().size() > 0){
 				this.setAnimation(this.animation);
-				if(this.skinOwner != null)
-					this.setSkin(this.skinOwner);
+				if(this.skinSignature != null && this.skinValue != null)
+					this.setSkin(this.skinValue, this.skinSignature);
 			}
 		}
 	}
 	
 	@Override
 	public JsonObject toJSON() {
+		if(this.skinValue == null && this.isLoaded() && this.getNPCEntity().data().has(NPC.PLAYER_SKIN_TEXTURE_PROPERTIES_METADATA)){
+			this.skinValue = this.getNPCEntity().data().get(NPC.PLAYER_SKIN_TEXTURE_PROPERTIES_METADATA);
+			this.skinSignature = this.getNPCEntity().data().get(NPC.PLAYER_SKIN_TEXTURE_PROPERTIES_SIGN_METADATA);
+		}
 		JsonObject obj = new JsonObject();
 		obj.addProperty("name", this.getName());
 		obj.add("location", GeneralUtils.locToJson(this.npcLocation));
 		if(this.skinOwner != null)
 			obj.addProperty("skinOwner", this.skinOwner);
+		if(this.skinSignature != null)
+			obj.addProperty("skinSignature", this.skinSignature);
+		if(this.skinValue != null)
+			obj.addProperty("skinValue", this.skinValue);
 		obj.addProperty("animation", this.animation.name());
 		obj.addProperty("idleMessage", this.idleMessage);
 		

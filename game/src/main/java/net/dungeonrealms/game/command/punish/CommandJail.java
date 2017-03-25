@@ -6,8 +6,10 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
+import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.minecraft.server.v1_9_R2.Entity;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -74,10 +76,10 @@ public class CommandJail extends BaseCommand {
             mount.dead = true;
             EntityAPI.removePlayerMountList(player.getUniqueId());
         }
-
-        if (Realms.getInstance().isRealmPortalOpen(player.getUniqueId()))
-            Realms.getInstance().closeRealmPortal(player.getUniqueId(), true, ChatColor.RED + "The owner of this realm has LOGGED OUT.");
-
+        
+        Realm realm = Realms.getInstance().getRealm(player);
+        if(realm != null)
+        	realm.removePortal(ChatColor.RED + "The owner of this realm has LOGGED OUT.");
 
         gamePlayer.setJailed(true);
         return false;

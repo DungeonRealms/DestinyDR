@@ -50,8 +50,8 @@ public class GuiPotionEditor extends GuiBase{
 						this.dialogueLine.getPotionEffects().set(evt.getRawSlot(), new PotionEffect(pe.getType(), dur * 20, lvl));
 						player.sendMessage(ChatColor.GREEN + "Potion Level Updated.");
 						new GuiPotionEditor(player, stage, dialogueLine);
-					}, p -> new GuiPotionEditor(player, stage, dialogueLine));
-				}, p -> new GuiPotionEditor(player, stage, dialogueLine));
+					}, () -> new GuiPotionEditor(player, stage, dialogueLine));
+				}, () -> new GuiPotionEditor(player, stage, dialogueLine));
 			});
 		}
 		

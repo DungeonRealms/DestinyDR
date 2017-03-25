@@ -82,21 +82,21 @@ public class Chat {
         }
     }
     
-    public static void promptPlayerYesNo(Player player, Consumer<Boolean> response){
+    public static void promptPlayerConfirmation(Player player, Runnable confirm, Runnable cancel) {
     	listenForMessage(player, (event) -> {
     		String message = event.getMessage();
-    		if(message.equalsIgnoreCase("yes") || message.equalsIgnoreCase("y")){
-    			response.accept(true);
-    		}else if(message.equalsIgnoreCase("no") || message.equalsIgnoreCase("n") || message.equalsIgnoreCase("c") || message.equalsIgnoreCase("cancel")){
-    			response.accept(false);
-    		}else{
-    			player.sendMessage(ChatColor.RED + "Unknown response, defaulting to \"No\".");
-    			response.accept(false);
+    		if(message.equalsIgnoreCase("confirm") || message.equalsIgnoreCase("yes") || message.equalsIgnoreCase("y") || message.equalsIgnoreCase("accept")) {
+    			confirm.run();
+    		} else if (message.equalsIgnoreCase("no") || message.equalsIgnoreCase("n") || message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("deny")) {
+    			cancel.run();
+    		} else {
+    			player.sendMessage(ChatColor.RED + "Unknown response.");
+    			cancel.run();
     		}
-    	}, o -> response.accept(false));
+    	}, p -> cancel.run());
     }
     
-    public static void listenForNumber(Player player, Consumer<Integer> successCallback, Consumer<? super Player> failCallback){
+    public static void listenForNumber(Player player, Consumer<Integer> successCallback, Runnable failCallback){
     	listenForNumber(player, Integer.MIN_VALUE, Integer.MAX_VALUE, successCallback, failCallback);
     }
     
@@ -107,32 +107,32 @@ public class Chat {
      * @param consumer Success Callback
      * @param Consumer Fail Callback
      */
-    public static void listenForNumber(Player player, int min, int max, Consumer<Integer> successCallback, Consumer<? super Player> failCallback){
+    public static void listenForNumber(Player player, int min, int max, Consumer<Integer> successCallback, Runnable failCallback){
     	Chat.listenForMessage(player, (evt) -> {
     		int num;
     		
     		if(evt.getMessage().equalsIgnoreCase("cancel") || evt.getMessage().equalsIgnoreCase("c")){
-    			failCallback.accept(player);
+    			failCallback.run();
     			return;
     		}
     		
     		try{
     			num = Integer.parseInt(evt.getMessage());
     		}catch(Exception e){
-    			player.sendMessage(ChatColor.RED + "This is not a valid number!");
-    			failCallback.accept(player);
+    			player.sendMessage(ChatColor.RED + "That is not a valid number!");
+    			failCallback.run();
     			return;
     		}
     		
     		if(num > max || num < min){
     			player.sendMessage(ChatColor.RED + "Invalid Number. Range = [" + min + "," + max + "]");
-    			failCallback.accept(player);
+    			failCallback.run();
     			return;
     		}
     		successCallback.accept(num);
     	}, (p) -> {
     		if(failCallback != null)
-    			failCallback.accept(p);
+    			failCallback.run();
     	});
     }
 

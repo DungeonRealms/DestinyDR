@@ -39,13 +39,11 @@ public class GuiDialogueSelector extends GuiBase {
 			this.setSlot(i, Material.PAPER, ChatColor.GREEN + "Line " + (i + 1), new String[] {ChatColor.GRAY + "Click here to edit " + ChatColor.GREEN + "Line " + (i + 1), ChatColor.GRAY + "Click while holding a " + ChatColor.RED + "Delete Tool" + ChatColor.GRAY + " to delete.", "Current Text: " + ChatColor.GOLD + (dialogue.getText() != null ? dialogue.getText() : "None")}, (evt) -> {
 				if(evt.isRightClick()){
 					player.sendMessage(ChatColor.RED + "Are you sure you want to delete Line " + (evt.getRawSlot() + 1) + "?");
-					Chat.promptPlayerYesNo(player, (confirm) -> {
-						if(confirm){
-							player.sendMessage(ChatColor.RED + "Line " + (evt.getRawSlot() + 1) + " deleted.");
-							this.stage.getDialogue().remove(evt.getRawSlot());
-						}
+					Chat.promptPlayerConfirmation(player, () -> {
+						player.sendMessage(ChatColor.RED + "Line " + (evt.getRawSlot() + 1) + " deleted.");
+						this.stage.getDialogue().remove(evt.getRawSlot());
 						new GuiDialogueSelector(player, stage);
-					});
+					}, () -> new GuiDialogueSelector(player, stage));
 					return;
 				}
 				

@@ -33,14 +33,12 @@ public class GuiQuestSelector extends GuiBase {
 			this.setSlot(i, Material.INK_SACK, ChatColor.GREEN + quest.getQuestName(), new String[] {"Click here to edit " + ChatColor.GREEN + quest.getQuestName() + ChatColor.GRAY + ".", "Click while holding a " + ChatColor.RED + "Delete Tool" + ChatColor.GRAY + " to delete."}, (evt) -> {
 				if(evt.isRightClick()){
 					player.sendMessage(ChatColor.YELLOW + "Are you sure you want to delete " + quest.getQuestName() + "?");
-					Chat.promptPlayerYesNo(player, (confirm) -> {
-						if(confirm){
-							player.sendMessage(ChatColor.RED + quest.getQuestName() + " deleted.");
-							Quests.getInstance().questStore.getList().remove(evt.getRawSlot());
-							Quests.getInstance().questStore.delete(quest);
-						}
+					Chat.promptPlayerConfirmation(player, () -> {
+						player.sendMessage(ChatColor.RED + quest.getQuestName() + " deleted.");
+						Quests.getInstance().questStore.getList().remove(evt.getRawSlot());
+						Quests.getInstance().questStore.delete(quest);
 						new GuiQuestSelector(player);
-					});
+					}, () -> new GuiQuestSelector(player));
 					return;
 				}
 				new GuiQuestEditor(player, quest);

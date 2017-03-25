@@ -6,12 +6,17 @@ import net.dungeonrealms.game.quests.Quests;
 import net.dungeonrealms.game.quests.gui.GuiBase;
 import net.dungeonrealms.game.quests.gui.GuiStageEditor;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.inventivetalent.glow.GlowAPI;
+import org.inventivetalent.glow.GlowAPI.Color;
 
 import com.google.gson.JsonObject;
 
 public class ObjectiveNextNPC implements QuestObjective {
+	
+	private QuestStage stage;
 	
 	@Override
 	public GuiBase createEditorGUI(Player player, QuestStage stage) {
@@ -56,6 +61,18 @@ public class ObjectiveNextNPC implements QuestObjective {
 	}
 
 	@Override
-	public void setQuestStage(QuestStage qs) {}
-
+	public void setQuestStage(QuestStage qs) {
+		this.stage = qs;
+	}
+	
+	public void onStart(Player player){
+		//Does not work? Has to do with something scoreboard related.
+		if(this.stage.getNPC() != null)
+			this.stage.getNPC().setGlowing(player, ChatColor.GREEN);
+	}
+	
+	public void onEnd(Player player){
+		if(this.stage.getNPC() != null && this.stage.getNPC().isLoaded())
+			GlowAPI.setGlowing(this.stage.getNPC().getNPCEntity().getEntity(), false, player);
+	}
 }

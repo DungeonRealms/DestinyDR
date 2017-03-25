@@ -8,6 +8,7 @@ import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
+import net.dungeonrealms.game.quests.objectives.QuestObjective;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -122,7 +123,6 @@ public class Quest implements ISaveable {
 			return false;
 		}
 		
-		
 		if(data.getQuestProgress(this) != null && !this.interval.hasCooldownEnded(player, this)){
 			if(this.interval == QuestInterval.ONCE){
 				player.sendMessage(ChatColor.RED + "This quest is only completable " + ChatColor.UNDERLINE + "once" + ChatColor.RED + ".");
@@ -190,6 +190,10 @@ public class Quest implements ISaveable {
 		
 		//  Advance the Dialogue  //
 		if(qp.getCurrentLine() >= stage.getDialogue().size()){
+			
+			if(previous != null && previous.getObjective() != null)
+				previous.getObjective().onEnd(player);
+			
 			if(qp.getStageIndex() >= this.getStageList().size() - 1) {
 				completeQuest(player, data);
 			}else{
@@ -197,6 +201,8 @@ public class Quest implements ISaveable {
 					player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "Next Objective> " + ChatColor.AQUA + stage.getObjective().getTaskDescription(player, stage.getNext()) + ".");
 					player.playSound(player.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.75F, 1.75F);
 				}
+				if(stage.getObjective() != null)
+					stage.getObjective().onStart(player);
 				qp.setCurrentStage(qp.getStageIndex() + 1);
 				Quests.getInstance().updateActionBar(player);
 			}
@@ -293,5 +299,13 @@ public class Quest implements ISaveable {
 	@Override
 	public String getFileName() {
 		return this.getQuestName();
+	}
+	
+	public void updateStages() {
+		for(QuestStage stage : this.stageList) {
+			QuestObjective obj = stage.getObjective();
+			if(obj != null)
+				obj.setQuestStage(stage);
+		}
 	}
 }

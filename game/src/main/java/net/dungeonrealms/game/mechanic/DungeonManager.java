@@ -25,7 +25,6 @@ import net.dungeonrealms.game.world.entity.type.monster.boss.type.Mayel;
 import net.dungeonrealms.game.world.entity.type.monster.type.EnumMonster;
 import net.dungeonrealms.game.world.entity.type.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entity.util.EntityStats;
-import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.spawning.dungeons.DungeonMobCreator;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
@@ -370,7 +369,7 @@ public class DungeonManager implements GenericMechanic {
                 Bukkit.unloadWorld(dungeonObject.getWorldName(), true);
                 try {
                     Bukkit.getLogger().info("Saving dungeon " + dungeonObject.instanceName + " from " + dungeonObject.worldName + " Exempt: " + dungeonObject.worldName);
-                    RealmInstance.getInstance().zip(dungeonObject.worldName + "/", "plugins/DungeonRealms" + dungeonObject.getType().getLocation());
+                    GameAPI.createZipFile(dungeonObject.worldName + "/", "plugins/DungeonRealms" + dungeonObject.getType().getLocation());
                     Bukkit.getLogger().info("Dungeon saved.");
                 } catch (Exception e) {
                     Bukkit.getLogger().info("Error saving dungeon to zip file: " + dungeonObject.instanceName + " World name: " + dungeonObject.worldName);

@@ -236,7 +236,7 @@ public class ShopListener implements Listener {
                     	//  CHANGES THE ITEM PRICE  //
                     	shop.inventory.setItem(event.getRawSlot(), setPrice(shop.inventory.getItem(event.getRawSlot()), price));
                         clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
-                    }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+                    }, () -> clicker.sendMessage(ChatColor.RED + "Action cancelled."));
                 }
             }
         } else {
@@ -295,9 +295,9 @@ public class ShopListener implements Listener {
                         }
                         
                         attemptPurchaseItem(clicker, shop, event.getRawSlot(), itemClicked, quantity);
-                    }, p -> {
-                    	p.removeMetadata("pricing", DungeonRealms.getInstance());
-                    	p.sendMessage(ChatColor.RED + "Purchase of item " + ChatColor.BOLD + "CANCELLED");
+                    }, () -> {
+                    	clicker.removeMetadata("pricing", DungeonRealms.getInstance());
+                    	clicker.sendMessage(ChatColor.RED + "Purchase of item " + ChatColor.BOLD + "CANCELLED");
                     });
                 } else if (event.isShiftClick()) {
                     attemptPurchaseItem(clicker, shop, event.getRawSlot(), itemClicked, itemClicked.getAmount());
@@ -340,7 +340,7 @@ public class ShopListener implements Listener {
             	cancelPricingItem(player);
             	player.sendMessage("There is no room for this item in your Shop");
             }
-        }, (c) -> {
+        }, () -> {
         	player.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
         	cancelPricingItem(player);
         });

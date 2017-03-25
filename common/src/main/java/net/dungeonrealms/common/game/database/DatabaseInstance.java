@@ -44,7 +44,7 @@ public class DatabaseInstance {
 
     public static List<MongoAccessThread> accessThreads;
 
-    public static MongoCollection<Document> playerData, shardData, bans, guilds, quests;
+    public static MongoCollection<Document> playerData, shardData, bans, guilds, ranks, misc;
     protected boolean cacheData = true;
 
     public void startInitialization(boolean cacheData) {
@@ -60,7 +60,8 @@ public class DatabaseInstance {
         	shardData = database.getCollection("shard_data");
         	bans = database.getCollection("bans");
         	guilds = database.getCollection("guilds");
-        	quests = database.getCollection("quests");
+        	ranks = database.getCollection("ranks");
+        	misc = database.getCollection("misc");
 
         	Constants.log.info("DungeonRealms Database has connected successfully!");
         

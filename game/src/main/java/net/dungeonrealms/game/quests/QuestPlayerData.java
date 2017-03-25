@@ -245,5 +245,9 @@ public class QuestPlayerData {
 		public boolean shouldReceiveActionBar(){
 			return this.receiveActionBar && this.getCurrentLine() == 0;
 		}
+		
+		public void activateActionBar() {
+			this.receiveActionBar = true;
+		}
 	}
 }

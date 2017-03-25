@@ -16,6 +16,7 @@ import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.listeners.KillObjectiveListener;
 import net.dungeonrealms.game.quests.listeners.NPCListener;
 import net.dungeonrealms.game.quests.objectives.ObjectiveGoTo;
+import net.dungeonrealms.game.quests.objectives.ObjectiveKill;
 import net.dungeonrealms.game.quests.objectives.QuestObjective;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.teleportation.WorldRegion;
@@ -48,6 +49,7 @@ public class Quests implements GenericMechanic {
 		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), () -> spawnQuestParticles(), 0, 10);
 		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> checkQuestZones(), 0, 40);
 		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> sendActionBar(), 0, 30);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> updateAllGlow(), 0, 30);
 	}
 	
 
@@ -63,6 +65,27 @@ public class Quests implements GenericMechanic {
 	private void spawnQuestParticles(){
 		for(QuestNPC npc : this.npcStore.getList())
 			npc.getLocation().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, npc.getLocation(), 6, 0.5, 1, 0.5);
+	}
+	
+	public void updateGlow(Player player){
+		if(!this.playerDataMap.containsKey(player))
+			return;
+		QuestPlayerData data = this.playerDataMap.get(player);
+		for(Quest q : data.getCurrentQuests()){
+			QuestProgress qp = this.playerDataMap.get(player).getQuestProgress(q);
+			if(qp == null || qp.getCurrentStage() == null)
+				continue;
+			QuestStage stage = qp.getCurrentStage().getPrevious();
+			if(stage != null && stage.getObjective() != null){
+				QuestObjective qo = stage.getObjective();
+				if(qo instanceof ObjectiveKill)
+					((ObjectiveKill)qo).updateGlow(player);
+			}
+		}
+	}
+	
+	private void updateAllGlow(){
+		Bukkit.getOnlinePlayers().forEach(this::updateGlow);
 	}
 	
 	private void sendActionBar(){
@@ -83,7 +106,7 @@ public class Quests implements GenericMechanic {
 			return;
 		String description = stage.getPrevious().getObjective().getTaskDescription(player, stage);
 		if(qp.shouldReceiveActionBar() && description != null)
-			TitleAPI.sendActionBar(player, ChatColor.DARK_BLUE + description);
+			TitleAPI.sendActionBar(player, ChatColor.WHITE + description);
 	}
 	
 	private void checkQuestZones(){
@@ -107,7 +130,6 @@ public class Quests implements GenericMechanic {
 		for(QuestNPC npc : this.npcStore.getList())
 			if(npc.getName().equals(name))
 				return npc;
-		Bukkit.getLogger().warning("FAILED TO LOAD QUEST NPC \"" + name + "\"");
 		return null;
 	}
 	
@@ -152,6 +174,11 @@ public class Quests implements GenericMechanic {
 			String data = (String)DatabaseAPI.getInstance().getData(EnumData.QUEST_DATA, player.getUniqueId());
 			JsonArray object = new JsonParser().parse(data).getAsJsonArray();
 			this.playerDataMap.put(player, new QuestPlayerData(player, object));
+			for(Quest q : this.playerDataMap.get(player).getCurrentQuests()){
+				QuestProgress qp = this.playerDataMap.get(player).getQuestProgress(q);
+				if(qp != null && qp.getCurrentStage() != null && qp.getCurrentStage().getObjective() != null)
+					qp.getCurrentStage().getObjective().onStart(player);
+			}
 		});
 	}
 	

@@ -6,7 +6,9 @@ import net.dungeonrealms.game.handler.EnergyHandler;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.title.TitleAPI;
+import net.dungeonrealms.game.world.realms.Realms;
 import net.minecraft.server.v1_9_R2.EntityExperienceOrb;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -78,10 +80,10 @@ public class EnergyListener implements Listener {
         if (weapon == null || !event.hasItem()) {
             weapon = new ItemStack(Material.AIR);
         }
-        if (!(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+        if (!(event.getAction() == Action.LEFT_CLICK_AIR || (event.getAction() == Action.LEFT_CLICK_BLOCK && Realms.getInstance().getRealm(event.getPlayer().getWorld()) == null))) {
             return;
         }
-        if (player.getWorld().equals(Bukkit.getWorlds().get(0)) && event.hasBlock() && (event.getClickedBlock().getType() == Material.LONG_GRASS)) {
+        if (GameAPI.isMainWorld(event.getPlayer().getWorld()) && event.hasBlock() && (event.getClickedBlock().getType() == Material.LONG_GRASS)) {
             event.setUseItemInHand(Event.Result.DENY);
             event.setCancelled(true);
             return;

@@ -1,336 +1,346 @@
 package net.dungeonrealms.game.world.realms;
 
-import net.dungeonrealms.game.mechanic.generic.EnumPriority;
-import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
-import net.dungeonrealms.game.world.realms.instance.RealmInstance;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
-import net.lingala.zip4j.exception.ZipException;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.concurrent.ConcurrentHashMap;
+
+import lombok.Getter;
+
+import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.common.game.database.DatabaseAPI;
+import net.dungeonrealms.common.game.database.data.EnumData;
+import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.game.listener.world.RealmListener;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanic.generic.EnumPriority;
+import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.world.realms.RealmTier;
+
 
 /**
- * Class written by APOLLOSOFTWARE.IO on 6/21/2016
+ * Realm Mechanics.
+ * 
+ * Recoded March 24th, 2017.
+ * @author Kneesnap
  */
-public interface Realms extends GenericMechanic {
+public class Realms implements GenericMechanic {
 
-    static Realms getInstance() {
-        return RealmInstance.getInstance();
+	@Getter
+    private static Realms instance = new Realms();
+
+	//List of blocks that need to be set. (Upgrading Realms)
+    private Map<UUID, List<Location>> processingBlocks = new ConcurrentHashMap<>();
+    
+    //Realm map.
+    private Map<UUID, Realm> realms = new ConcurrentHashMap<>();
+    
+    //Max blocks upgraded per update.
+    public static final int SERVER_BLOCK_BUFFER = 1024;
+    
+    //The Y position of grass.
+    public static final int GRASS_POSITION = 128;
+    
+    //List of materials that the realm upgrader can override.
+    public static final List<Material> REPLACEABLE_BLOCKS = Arrays.asList(Material.AIR, Material.BEDROCK);
+    
+    @Override
+	public void startInitialization() {
+    	Utils.log.info("[REALMS] - Initializing");
+
+        // INITIALIZE WORK FOLDERS
+        File pluginFolder = DungeonRealms.getInstance().getDataFolder();
+        File rootFolder = new File(System.getProperty("user.dir"));
+        File uploadingFolder = new File(pluginFolder, "/realms/uploading");
+        try {
+            FileUtils.forceMkdir(new File(pluginFolder, "/realms/downloaded"));
+            FileUtils.forceMkdir(uploadingFolder);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utils.log.info("Failed to create realm directories!");
+        }
+
+        Utils.log.info("[REALMS] - Fixing cached realms.");
+
+        Arrays.stream(rootFolder.listFiles()).filter(file -> GameAPI.isUUID(file.getName())).forEach(f -> {
+            try {
+                FileUtils.forceDelete(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> {
+            Utils.log.info("[REALMS] - Uploading " + uploadingFolder.listFiles().length + " cached realms.");
+            
+            Arrays.stream(uploadingFolder.listFiles()).filter(file -> GameAPI.isUUID(file.getName().split(".zip")[0])).forEach(f -> {
+                UUID uuid = UUID.fromString(f.getName().split(".zip")[0]);
+                if ((boolean) DatabaseAPI.getInstance().getData(EnumData.REALM_UPLOAD, uuid)) {
+                    //Upload realm.
+                	Realm.uploadZippedRealm(f, uuid.toString());
+                    //Fix player data.
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPLOAD, false, false);
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.REALM_UPGRADE, false, false);
+                    GameAPI.updatePlayerData(uuid);
+                }
+                //Remove the zip file.
+                try {
+                    FileUtils.forceDelete(f);
+                } catch (Exception e) {
+                	e.printStackTrace();
+                }
+            });
+            
+            Utils.log.info("[REALMS] - Finished uploading cached realms.");
+        });
+
+        Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
+	}
+    
+    /**
+     * Handles a player logout.
+     */
+    public void handleLogout(Player player) {
+    	if(!hasRealm(player))
+    		return;
+    	
+    	Realm realm = getRealm(player);
+    	
+    	//Don't do anything while this is upgrading, it's not ready yet.
+    	if(realm.getState() == RealmState.UPGRADING)
+    		return;
+    	
+    	realm.removePortal(ChatColor.RED + "The owner of this realm has LOGGED OUT.");
+    	
+    	realm.setState(RealmState.REMOVING);
+    	
+    	//Must run sync.
+    	Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> realm.removeRealm(true), 5);
     }
-
-    // BUFFER SIZE OF BLOCK PROCESSOR //
-    int BLOCK_PROCESSOR_BUFFER_SIZE = 1024;
-    int SERVER_BLOCK_BUFFER = 1500;
-
+    
     /**
-     * @return EnumPriority.BISHOP
+     * Get if any realms are currently upgrading.
      */
-    EnumPriority startPriority();
-
-
+    public boolean areRealmsUpgrading() {
+    	return getRealms().stream().filter(realm -> realm.getState() == RealmState.UPGRADING).findFirst().isPresent();
+    }
+    
     /**
-     * Instantiate realm cache folders
+     * Saves all realms, does not remove them.
      */
-    void startInitialization();
-
-
+    public void saveAllRealms() {
+    	getRealms().forEach(realm ->
+    		Bukkit.getScheduler().runTaskAsynchronously(DungeonRealms.getInstance(), () -> realm.uploadRealm(false)));
+    }
+    
     /**
-     * All realms must be uploaded and removed from cache before shutdown
+     * Removes all realms and uploads them.
      */
-    void stopInvocation();
-
-
+    public void removeAllRealms(boolean runAsync) {
+       	getRealms().forEach(realm -> realm.removeRealm(runAsync));
+    }
+    
     /**
-     * Opens the player's realm portal
-     * Realm should be already cached before executing this command
-     *
-     * @param player   Owner of realm
-     * @param location Desired location for portal
+     * Get all realms mapped by UUIDs.
+     * @return
      */
-    void openRealmPortal(Player player, Location location);
-
-
+    public Map<UUID, Realm> getRealmMap() {
+    	return this.realms;
+    }
+    
     /**
-     * Opens the material store for purchasing
-     * blocks used for building in realms
-     *
-     * @param player Owner of realm
+     * Gets a realm, or if it isn't cached, construct one.
      */
-    void openRealmMaterialStore(Player player);
-
-
+    public Realm getOrCreateRealm(Player player) {
+    	return getOrCreateRealm(player.getName(), player.getUniqueId());
+    }
+    
     /**
-     * Loads the player's realm*
-     *
-     * @param player  Owner of realm
-     * @param doAfter What should be executed after?
+     * Gets a realm, or if it isn't cached, construct one.
      */
-    void loadRealm(Player player, Runnable doAfter);
-
+    public Realm getOrCreateRealm(UUID uuid) {
+    	Realm realm = getRealm(uuid);
+    	return (realm != null) ? realm : getOrCreateRealm((String)DatabaseAPI.getInstance().getData(EnumData.USERNAME, uuid), uuid);
+    }
+    
     /**
-     * Checks player can place realm portal
-     *
-     * @param player   Owner of realm
-     * @param location Desired location for portal
+     * Gets a realm, or if it isn't cached, construct one.
      */
-    boolean canPlacePortal(Player player, Location location);
-
-
+    public Realm getOrCreateRealm(String name, UUID uuid) {
+    	Realm realm = getRealm(uuid);
+    	if(realm != null)
+    		return realm;
+    	
+    	//Create a new realm object.
+    	realm = new Realm(uuid, name);
+    	getRealmMap().put(uuid, realm);
+    	return realm;
+    }
     /**
-     * Saves all realms
+     * Gets a realm for a player.
      */
-    void saveAllRealms();
-
-
+    public Realm getRealm(Player player) {
+    	return getRealm(player.getUniqueId());
+    }
+    
     /**
-     * Sets up realm world guard region
-     *
-     * @param world     Realm world
-     * @param isChaotic Is chaotic?
+     * Gets the realm for a player.
      */
-    void setRealmRegion(World world, boolean isChaotic);
-
-
+    public Realm getRealm(UUID uuid) {
+    	return getRealmMap().get(uuid);
+    }
+    
     /**
-     * Loads the realm world
-     *
-     * @param uuid Owner of realm
+     * Gets a realm within two blocks of the supplied location.
      */
-    void loadRealmWorld(UUID uuid);
-
-
+    public Realm getRealm(Location location) {
+    	if(!GameAPI.isMainWorld(location)) {
+    		GameAPI.sendDevMessage(ChatColor.DARK_RED + "[ERROR] " + ChatColor.WHITE + "Tried to find a realm in world " + location.getWorld().getName() + " on {SERVER}.");
+    		Utils.log.info("Tried to load realm from " + location.getWorld().getName() + "?");
+    		Utils.printTrace();
+    		return null;
+    	}
+    	
+    	for(Realm realm : getRealms())
+    		if(realm.isOpen() && GameAPI.isMainWorld(realm.getPortalLocation()))
+    			if(realm.getPortalLocation().distanceSquared(location) <= 2)
+    				return realm;
+    	return null;
+    			
+    }
+    
     /**
-     * Uploads all open realms to Master FTP Serve
-     *
-     * @param runAsync Should execute on async pool?
+     * Upgrades a realm, queues all the blocks to be updated.
+     * @param realm
+     * @param newTier
      */
-    void removeAllRealms(boolean runAsync);
+    public void upgradeRealmBlocks(Realm realm, RealmTier newTier) {
+        // Init
+    	List<Location> blockList = new ArrayList<>();
+        RealmTier oldTier = RealmTier.getByTier(newTier.getTier() - 1);
+        int size = newTier.getDimensions();
+        int oldSize = oldTier.getDimensions();
+        World w = realm.getWorld();
+        
+        //+16 Skips chunk 0
+        int limX = size + 16;
+        int limZ = size + 16;
 
+        int x, y, z;
+        int limY = GRASS_POSITION - size + 1;
+        int oldY = GRASS_POSITION - oldSize - 1; // Subtract an extra 1 for bedrock border area.
 
+        // BEDROCK
+        for (x = 16; x < limX; x++)
+            for (z = 16; z < limZ; z++)
+            	blockList.add(new Location(w, x, limY, z));
+
+        // DIRT
+        for (x = 16; x < limX; x++)
+            for (y = GRASS_POSITION - 1; y > limY; y--)
+                for (z = 16; z < limZ; z++) {
+                    Block b = w.getBlockAt(new Location(w, x, y, z));
+                    
+                    // If the user placed a block here, don't override it.
+                    if (!REPLACEABLE_BLOCKS.contains(b.getType()))
+                    	continue;
+                    
+                    //If this is bedrock (Removes old bedrock layer), it's under the old Y size, and it's not in the old region area, add it to the queue.
+                    if (b.getType() == Material.BEDROCK || y - 1 <= oldY || x >= oldSize || z >= oldSize)
+                    	blockList.add(new Location(w, x, y, z));
+                }
+
+        // GRASS
+        for (x = 16; x < limX; x++)
+            for (z = 16; z < limZ; z++)
+            	blockList.add(new Location(w, x, GRASS_POSITION, z));
+        
+        processingBlocks.put(realm.getOwner(), blockList);
+    }
+    
     /**
-     * Executed when player logs of DR
-     *
-     * @param player Player who is logging out
+     * Does this player have a realm stored?
      */
-    void doLogout(Player player);
-
-
+    public boolean hasRealm(Player player) {
+    	return getRealm(player) != null;
+    }
+    
     /**
-     * This function downloads the player's realm from the realm FTP database if it exists
-     *
-     * @param uuid Owner of realm
+     * Get a list of all realms.
      */
-    boolean downloadRealm(UUID uuid) throws IOException, ZipException;
-
+    public Collection<Realm> getRealms() {
+    	return this.realms.values();
+    }
+    
     /**
-     * Unzips default world for realms
-     *
-     * @param player Owner of realm
+     * Get a map of all blocks that need to be placed for realm upgrades.
      */
-    boolean loadTemplate(UUID player) throws IOException, ZipException;
-
-
-    /**
-     * This function uploads the player's realm to master ftp server for it to be downloaded
-     * by the other shards
-     *
-     * @param runAsync Should execute on async pool?
-     * @param removeCacheFolder Removed cached folder
-     * @param uuid     Owner of realm
-     */
-    void uploadRealm(UUID uuid, boolean removeCacheFolder, boolean runAsync, Consumer<Boolean> doAfter);
-
-    /**
-     * Closes the realm portal
-     *
-     * @param uuid        Owner of realm
-     * @param kickPlayers Kick all players?
-     * @param kickMessage Kick message
-     */
-    void closeRealmPortal(UUID uuid, boolean kickPlayers, String kickMessage);
-
-    /**
-     * Reset realm for player
-     *
-     * @param player Owner of realm
-     */
-    void resetRealm(Player player) throws IOException;
-
-    /**
-     * Completely wipe realm
-     *
-     * @param uuid Owner of realm
-     */
-    void wipeRealm(UUID uuid) throws IOException;
-
-
-    /**
-     * Upgrades realm dimensions
-     *
-     * @param player Owner of realm
-     */
-    void upgradeRealm(Player player);
-
-
-    /**
-     * Unloads realm world
-     *
-     * @param uuid Owner of realm
-     */
-    void unloadRealmWorld(UUID uuid);
-
-
-    /**
-     * Removes entire realm for server and uploads it to FTP
-     *
-     * @param runAsync Should execute on async pool?
-     * @param uuid     Owner of realm
-     */
-    void removeRealm(UUID uuid, boolean runAsync);
-
-    /**
-     * Removes the cached realm token.
-     *
-     * @param uuid Owner of realm
-     */
-    void removeCachedRealm(UUID uuid);
-
-    /**
-     * Set realm spawn and realm portal back to main world
-     *
-     * @param uuid        Owner of realm
-     * @param newLocation Location must be above air to place portal
-     */
-    void setRealmSpawn(UUID uuid, Location newLocation);
-
-    /**
-     * Sets the title of realm.
-     *
-     * @param uuid Owner of realm
-     */
-    void setRealmTitle(UUID uuid, String title);
-
-    /**
-     * @param uuid Owner of realm
-     * @return Title of realm
-     */
-    String getRealmTitle(UUID uuid);
-
-
-    /**
-     * @param status Status of realm
-     * @return Status message
-     */
-    String getRealmStatusMessage(RealmState status);
-
-
-    /**
-     * Updates the realm hologram to Chaotic or Peaceful
-     *
-     * @param uuid Owner of realm
-     */
-    void updateRealmHologram(UUID uuid);
-
-
-    /**
-     * @param uuid Owner of realm
-     * @return World object of realm
-     */
-    World getRealmWorld(UUID uuid);
-
-
-    /**
-     * Realm Dimensions
-     *
-     * @param tier Tier level of realm
-     * @return Realm dimensions number = NxNxN
-     */
-    int getRealmDimensions(int tier);
-
-
-    /**
-     * Realm tier
-     *
-     * @param uuid Owner of realm
-     * @return Realm size tier
-     */
-    int getRealmTier(UUID uuid);
-
-    /**
-     * Realm upgrade cost
-     *
-     * @param tier Realm tier
-     */
-    int getRealmUpgradeCost(int tier);
-
-
-    /**
-     * Checks player's realm is cached
-     *
-     * @param uuid Owner of realm
-     */
-    boolean isRealmCached(UUID uuid);
-
-    /**
-     * Checks if the player's realm is loaded.
-     *
-     * @param uuid Owner of realm
-     */
-    boolean isRealmLoaded(UUID uuid);
-
-    /**
-     * Checks if any realm is being upgraded
-     */
-    boolean realmsAreUpgrading();
-
-    /**
-     * Checks if the player's realm is loaded.
-     *
-     * @param uuid Owner of realm
-     */
-    boolean isRealmPortalOpen(UUID uuid);
-
-
-    /**
-     * @return Players realms.
-     */
-    Map<UUID, RealmToken> getCachedRealms();
-
-
-    /**
-     * @return Processing blocks
-     */
-    Map<UUID, List<Location>> getProcessingBlocks();
-
-    /**
-     * @param uuid Owner of realm
-     * @return Players realm.
-     */
-    RealmToken getToken(UUID uuid);
-
-    /**
-     * @param uuid Owner of realm
-     * @return Players realm state.
-     */
-    RealmState getRealmStatus(UUID uuid);
-
-    /**
-     * @param portalLocation Location
-     * @return Players realm.
-     */
-    RealmToken getToken(Location portalLocation);
-
-
-    /**
-     * @param world Realm world
-     * @return Players realm.
-     */
-    RealmToken getToken(World world);
+    public Map<UUID, List<Location>> getProcessingBlocks() {
+        return this.processingBlocks;
+    }
+    
+	@Override
+	public void stopInvocation() {
+		Utils.log.info("[REALM] Uploading all realms.");
+        removeAllRealms(false);
+        Utils.log.info("[REALM] All realms uploaded.");
+	}
+	
+	@Override
+	public EnumPriority startPriority() {
+		return EnumPriority.BISHOPS;
+	}
+	
+	/**
+	 * Returns the player's realm tier. May be called by something such as ItemManager#createPortalRune, which calls before a realm object is loaded.
+	 * @param uuid
+	 */
+	public static RealmTier getRealmTier(UUID uuid) {
+		return RealmTier.getByTier((Integer)DatabaseAPI.getInstance().getData(EnumData.REALM_TIER, uuid));
+	}
+	
+	/**
+	 * Get the realm this world belongs to.
+	 */
+	public Realm getRealm(World world) {
+		//The main world is not a realm.
+		if(GameAPI.isMainWorld(world))
+			return null;
+		
+		for(Realm realm : getRealms())
+			if(realm.getWorld().equals(world))
+				return realm;
+		return null;
+	}
+	
+	/**
+	 * Is a player in a realm?
+	 */
+	public boolean isInRealm(Player player) {
+		return isRealm(player.getWorld());
+	}
+	
+	public boolean isRealm(World world) {
+		return getRealm(world) != null;
+	}
+	
+	public boolean isRealm(Location loc) {
+		return isRealm(loc.getWorld());
+	}
 }

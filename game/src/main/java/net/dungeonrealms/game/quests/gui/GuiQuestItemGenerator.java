@@ -1,16 +1,15 @@
 package net.dungeonrealms.game.quests.gui;
 
 import java.util.List;
-
 import java.util.function.Consumer;
 
 import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.quests.QuestItem;
 import net.dungeonrealms.game.quests.QuestItem.ItemOption;
 import net.dungeonrealms.game.quests.QuestStage;
 import net.dungeonrealms.game.world.item.Item.ItemRarity;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-
 import net.dungeonrealms.game.world.item.Item.ItemType;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 
@@ -60,6 +59,8 @@ public class GuiQuestItemGenerator extends GuiBase {
 		
 		this.setSlot(7, Material.MAP, ChatColor.GREEN + "Protection Scroll", new String[] {"Click here to mark this item as a protection scroll."}, setType(ItemOption.PROT_SCROLL));
 		
+		this.setSlot(8, Material.EMERALD, ChatColor.GREEN + "Gem Note", new String[] {"Click here to mark this item as a gem note."}, setType(ItemOption.GEM_NOTE));
+		
 		for(ItemTier tier : ItemTier.values()){
 			this.setSlot(9 + tier.getTierId() - 1, tier.getMaterial(), tier.getTierColor() + "Tier " + tier.getTierId(), new String[] {"Click here to set the item as tier " + tier.getTierId() + "."}, evt -> {
 				player.sendMessage(ChatColor.GREEN + "Tier Updated.");
@@ -82,6 +83,14 @@ public class GuiQuestItemGenerator extends GuiBase {
 	private Consumer<InventoryClickEvent> setType(QuestItem.ItemOption opt){
 		return (evt) -> {
 			evt.getWhoClicked().sendMessage(ChatColor.GREEN + "Item type set to " + opt.name());
+			if(opt == ItemOption.GEM_NOTE){
+				evt.getWhoClicked().sendMessage(ChatColor.GREEN + "Please enter the amount of gems.");
+				Chat.listenForNumber(player, 1, 64, (num) -> {
+					item.setAmount(num);
+					evt.getWhoClicked().sendMessage(ChatColor.GREEN + "Gem amount set.");
+					new GuiQuestItemGenerator(player, stage, items, item);
+				}, () -> new GuiQuestItemGenerator(player, stage, items, item));
+			}
 			this.item.setGenerationType(opt);
 		};
 	}

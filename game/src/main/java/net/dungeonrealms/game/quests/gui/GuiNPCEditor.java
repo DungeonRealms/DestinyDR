@@ -72,13 +72,11 @@ public class GuiNPCEditor extends GuiBase {
 		
 		this.setSlot(6, Material.CARROT_STICK, ChatColor.GREEN + "Set Location", new String[] {"Click here to move this NPC."}, (evt) -> {
 			player.sendMessage(ChatColor.YELLOW + "Please go to the new location and type \"Yes\".");
-			Chat.promptPlayerYesNo(player, (confirm) -> {
-				if(confirm){
-					npc.setLocation(player.getLocation().clone());
-					player.sendMessage(ChatColor.GREEN + "Location Set.");
-				}
+			Chat.promptPlayerConfirmation(player, () -> {
+				npc.setLocation(player.getLocation().clone());
+				player.sendMessage(ChatColor.GREEN + "Location Set.");
 				new GuiNPCEditor(player, npc);
-			});
+			}, () -> new GuiNPCEditor(player, npc));
 		});
 		
 		this.setSlot(8, GO_BACK, (evt) -> new GuiQuestSelector(player));

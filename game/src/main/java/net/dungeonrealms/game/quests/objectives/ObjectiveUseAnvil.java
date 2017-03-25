@@ -55,4 +55,12 @@ public class ObjectiveUseAnvil implements QuestObjective {
 	public void setQuestStage(QuestStage qs) {
 		
 	}
+	
+	public void onStart(Player player){
+		
+	}
+	
+	public void onEnd(Player player){
+		
+	}
 }

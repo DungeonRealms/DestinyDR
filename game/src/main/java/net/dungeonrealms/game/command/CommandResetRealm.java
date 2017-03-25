@@ -6,9 +6,10 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.world.realms.Realm;
+import net.dungeonrealms.game.world.realms.RealmState;
 import net.dungeonrealms.game.world.realms.Realms;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmState;
-import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -41,42 +42,21 @@ public class CommandResetRealm extends BaseCommand {
             return true;
         }
 
-
-        if (Realms.getInstance().isRealmCached(player.getUniqueId())) {
-            RealmToken realm = Realms.getInstance().getToken(player.getUniqueId());
-
-            if (realm.getState() != RealmState.OPENED && realm.getState() != RealmState.CLOSED) {
-                player.sendMessage(Realms.getInstance().getRealmStatusMessage(realm.getState()));
-                return true;
-            }
+        Realm realm = Realms.getInstance().getOrCreateRealm(player);
+        
+        if (realm.getState() != RealmState.OPENED && realm.getState() != RealmState.CLOSED) {
+        	player.sendMessage(realm.getState().getStatusMessage());
+        	return true;
         }
 
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
         player.sendMessage(ChatColor.GRAY + "Are you sure you want to RESET your realm  - This cannot be undone. " + "(" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.GRAY + ")");
         player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "DISCLAIMER: " + ChatColor.GRAY + "You will not receive " + ChatColor.UNDERLINE + "ANY" + ChatColor.GRAY + " of your resources in your realm back. Your realm will be " + ChatColor.BOLD + "PERMANENTLY DELETED" + ChatColor.GRAY + ". Your realm upgrades will also be removed.");
 
-        Chat.listenForMessage(player, confirmation -> {
-            if (!confirmation.getMessage().equalsIgnoreCase("y") || confirmation.getMessage().equalsIgnoreCase("n") || confirmation.getMessage().equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.RED + "/resetrealm - " + ChatColor.BOLD + "CANCELLED");
-                return;
-            }
-
-            // Run sync cuz listen for chat is async -_-
-            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(),
-                    () -> Realms.getInstance().loadRealm(player, () -> {
-                                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Resetting your realm ...");
-
-                                try {
-                                    Realms.getInstance().resetRealm(player);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    player.sendMessage(ChatColor.RED + "We failed to reset your realm!");
-                                }
-
-                            }
-                    ));
-        }, null);
-
+        Chat.promptPlayerConfirmation(player, () -> {
+            player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Resetting your realm ...");
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> realm.resetRealm(player));
+        }, () -> player.sendMessage(ChatColor.RED + "/resetrealm - " + ChatColor.BOLD + "CANCELLED"));
         return true;
     }
 }

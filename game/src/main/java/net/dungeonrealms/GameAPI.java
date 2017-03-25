@@ -76,6 +76,10 @@ import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.dungeonrealms.network.GameClient;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import net.minecraft.server.v1_9_R2.EnumHand;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -885,56 +889,44 @@ public class GameAPI {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, true, true);
 
         GuildMechanics.getInstance().doLogout(player);
-
-        // HANDLE REALM LOGOUT SYNC //
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Realms.getInstance().doLogout(player));
+        HealthHandler.getInstance().handleLogoutEvents(player);
+        EnergyHandler.getInstance().handleLogoutEvents(player);
+        Realms.getInstance().handleLogout(player);
 
         Chat.listenForMessage(player, null, null);
-
+        
+        // Remove dungeonitems from inventory.
+        for (ItemStack stack : player.getInventory().getContents())
+        	if (stack != null && stack.getType() != Material.AIR)
+        		if (DungeonManager.getInstance().isDungeonItem(stack))
+        			player.getInventory().remove(stack);
+        
         // save player data
         savePlayerData(uuid, async, doAfterSave -> {
+        	//IMPORTANT: Anything put after here runs AFTER data is synced with mongo.
             List<UpdateOneModel<Document>> operations = new ArrayList<>();
             Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
 
             for (DamageTracker tracker : HealthHandler.getInstance().getMonsterTrackers().values()) {
                 tracker.removeDamager(player);
             }
-            if (player.getWorld().getName().contains("DUNGEON")) {
-                for (ItemStack stack : player.getInventory().getContents()) {
-                    if (stack != null && stack.getType() != Material.AIR) {
-                        if (DungeonManager.getInstance().isDungeonItem(stack)) {
-                            player.getInventory().remove(stack);
-                        }
-                    }
-                }
-            }
-            if (BankMechanics.shopPricing.containsKey(player.getName())) {
-                player.getInventory().addItem(BankMechanics.shopPricing.get(player.getName()));
-                BankMechanics.shopPricing.remove(player.getName());
-            }
-            if (GameAPI._hiddenPlayers.contains(player)) {
+            
+            if (GameAPI._hiddenPlayers.contains(player))
                 GameAPI._hiddenPlayers.remove(player);
-            }
+            
             if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
                 Utils.log.info(player.getUniqueId() + " has already been saved.");
                 return;
             }
-            if (CombatLog.isInCombat(player)) {
-                if (!DuelingMechanics.isDueling(uuid)) {
-                    if (!GameAPI.isNonPvPRegion(player.getLocation())) {
-                        //CombatLog.handleCombatLogger(player);
-                    }
-                }
-            }
+            
             MountUtils.inventories.remove(uuid);
             operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.LAST_LOGOUT.getKey(), System.currentTimeMillis()))));
-            EnergyHandler.getInstance().handleLogoutEvents(player);
-            HealthHandler.getInstance().handleLogoutEvents(player);
             KarmaHandler.getInstance().handleLogoutEvents(player);
             Quests.getInstance().handleLogoutEvents(player);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
                 ScoreboardHandler.getInstance().removePlayerScoreboard(player);
             });
+            
             if (EntityAPI.hasPetOut(uuid)) {
                 net.minecraft.server.v1_9_R2.Entity pet = EntityMechanics.PLAYER_PETS.get(uuid);
                 pet.dead = true;
@@ -943,6 +935,7 @@ public class GameAPI {
                 }
                 EntityAPI.removePlayerPetList(uuid);
             }
+            
             if (EntityAPI.hasMountOut(uuid)) {
                 net.minecraft.server.v1_9_R2.Entity mount = EntityMechanics.PLAYER_MOUNTS.get(uuid);
                 if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(mount)) {
@@ -2431,9 +2424,34 @@ public class GameAPI {
         message.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://dungeonrealms.net/vote");
         message.sendToPlayer(player);
     }
+    
+    public static boolean isMainWorld(World world) {
+		return world.equals(Bukkit.getWorlds().get(0));
+	}
 
 	public static boolean isMainWorld(Location location) {
-		return location.getWorld().equals(Bukkit.getWorlds().get(0));
+		return isMainWorld(location.getWorld());
+	}
+	
+	/**
+	 * Add an item into a player's inventory.
+	 * If there isn't enough space, drop it.
+	 */
+	public static void giveOrDropItem(Player player, ItemStack item) {
+		if (item == null || item.getType() == Material.AIR)
+			return;
+		
+		if (!Bukkit.isPrimaryThread()) {
+			Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> giveOrDropItem(player, item));
+			return;
+		}
+		
+		if(player.getInventory().firstEmpty() == -1) {
+			player.getWorld().dropItem(player.getLocation(), item);
+			player.sendMessage(ChatColor.RED + "There was not enough space in your inventory for this item, so it has dropped.");
+		} else {
+			player.getInventory().addItem(item);
+		}
 	}
 	
 	public static void openBook(Player player, ItemStack book) {
@@ -2444,5 +2462,23 @@ public class GameAPI {
 		packetdataserializer.a(EnumHand.MAIN_HAND);
 		((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|BOpen", packetdataserializer));
 		player.getInventory().setItemInMainHand(savedItem);
+	}
+	
+	public static void createZipFile(String inputFolder, String outputFile) throws ZipException {
+		// Init zip file.
+    	ZipParameters parameters = new ZipParameters();
+        parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+        parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+        parameters.setIncludeRootFolder(false);
+        ZipFile zipFile = new ZipFile(outputFile);
+        
+        //Add all files in the realm world to the zip.
+        File targetFile = new File(inputFolder);
+        if (targetFile.isFile())
+            zipFile.addFile(targetFile, parameters);
+        else if (targetFile.isDirectory())
+            zipFile.addFolder(targetFile, parameters);
+        else
+            System.out.println("[ZIPPER] - Don't know how to handle " + targetFile.getName());
 	}
 }

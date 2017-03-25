@@ -1466,7 +1466,7 @@ public class InventoryListener implements Listener {
                         for (int i = 0; i < num; i++)
                             stats.allocatePoint(stat, p, inv);
                         p.openInventory(inv);
-                    }, err -> {
+                    }, () -> {
                         p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
                         stats.resetTemp();
                     });

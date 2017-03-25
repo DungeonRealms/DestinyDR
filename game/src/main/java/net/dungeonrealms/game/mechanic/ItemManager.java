@@ -26,6 +26,7 @@ import net.dungeonrealms.game.world.entity.type.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.item.Item;
 import net.dungeonrealms.game.world.item.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
+import net.dungeonrealms.game.world.realms.RealmTier;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
@@ -318,12 +319,10 @@ public class ItemManager {
 
 
     public static ItemStack createRealmPortalRune(UUID uuid) {
-        int realmTier = Realms.getInstance().getRealmTier(uuid);
-        int realmDimensions = Realms.getInstance().getRealmDimensions(realmTier);
-
-
+        RealmTier realmTier = Realms.getRealmTier(uuid);
+        
         return new ItemBuilder().setItem(createItem(Material.NETHER_STAR, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Realm Portal Rune",
-                new String[]{ChatColor.GRAY + "Tier: " + realmTier + "/7" + " [" + realmDimensions + "x" + realmDimensions + "x" + realmDimensions + "]"
+                new String[]{ChatColor.GRAY + "Tier: " + realmTier.getTier() + "/" + RealmTier.values().length + " [" + realmTier.getDimensions() + "x" + realmTier.getDimensions() + "x" + realmTier.getDimensions() + "]"
                         , ChatColor.LIGHT_PURPLE + "Right Click: " + ChatColor.GRAY + "Open Portal",
                         ChatColor.LIGHT_PURPLE + "Left Click: " + ChatColor.GRAY + "Realm Shop",
                         ChatColor.LIGHT_PURPLE + "Sneak-Right Click: " + ChatColor.GRAY + "Upgrade Realm",
