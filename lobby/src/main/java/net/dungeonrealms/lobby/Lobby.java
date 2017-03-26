@@ -92,12 +92,17 @@ public class Lobby extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer().isOp()) {
+        if (event.getPlayer().isOp() && isLoggedIn(event.getPlayer()))
             event.setFormat(ChatColor.AQUA + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
-        } else event.setCancelled(true);
+        else
+        	event.setCancelled(true);
     }
-
-
+    
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+    	if (Rank.isPMOD(event.getPlayer()) && !isLoggedIn(event.getPlayer()))
+    		event.setCancelled(true);
+    }
 
     /**
      * This event is used for the DatabaseDriver.
@@ -142,12 +147,24 @@ public class Lobby extends JavaPlugin implements Listener {
             ghostFactory.setGhost(player, !Rank.isPMOD(player) && !Rank.isSubscriber(player));
             
             if(Rank.isPMOD(player)){
-                String messagePrefix = ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED;
-            	if(DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null){
-                    player.sendMessage(messagePrefix + "Please set a login code with /setpin <pin>");
-            	}else{
-            		player.sendMessage(messagePrefix + "Please login with /pin <pin>");
-            	}
+            	Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            		
+            		String lastIp = (String)DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, player.getUniqueId());
+            		
+            		if (lastIp != null && lastIp.equals(player.getAddress().getAddress().getHostAddress())) {
+            			player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + " >> " + ChatColor.GREEN + "You have been automatically logged in.");
+            			this.allowLogin(player, true);
+            			return;
+            		}
+            		
+            		String messagePrefix = ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED;
+                	if(DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null){
+                        player.sendMessage(messagePrefix + "Please set a login code with /setpin <pin>");
+                	}else{
+                		player.sendMessage(messagePrefix + "Please login with /pin <pin>");
+                	}
+            	});
+                
             }else{
             	this.allowLogin(player, false);
             }
