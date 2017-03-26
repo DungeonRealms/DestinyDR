@@ -143,7 +143,7 @@ public class Chat {
             "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "@ss", "mystic " +
                     "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "jigga",
             "jiggaboo", "hitler", "jews", "titanrift", "fucked",
-            "MysticRunes.net", "play.wynncraft.com", "mineca.de", "niger", "kys"));
+            "MysticRunes.net", "play.wynncraft.com", "mineca.de", "atherial", "autism", "mckillzone", "niger", "kys"));
 
     /**
      * Send a private message over the network.
