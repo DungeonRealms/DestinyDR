@@ -347,6 +347,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandGemsee());
         cm.registerCommand(new CommandBinsee());
         cm.registerCommand(new CommandMuleSee());
+        cm.registerCommand(new CommandRealmsee());
         cm.registerCommand(new CommandScrapTabSee());
 
         cm.registerCommand(new CommandLag());
