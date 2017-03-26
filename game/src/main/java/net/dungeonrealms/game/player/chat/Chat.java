@@ -141,9 +141,9 @@ public class Chat {
             "dick", "clit", "homo", "fag", "faggot", "queer", "nigger", "nigga", "dike", "dyke", "retard", " " +
                     "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", " faggot", "blowjob", "handjob", "bast", "minecade", "@ss", "mystic " +
-                    "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "jigga",
-            "jiggaboo", "hitler", "jews", "titanrift", "fucked",
-            "MysticRunes.net", "play.wynncraft.com", "mineca.de", "atherial", "autism", "mckillzone", "niger", "kys"));
+                    "runes", "mysticrunes", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "jigga", "atherialrunes", "atherial",
+           "autism", "autismrealms", "jiggaboo", "hitler", "jews", "titanrift", "fucked", "mckillzone",
+            "MysticRunes.net", "play.wynncraft.com", "mineca.de", "play.atherialrunes.net", "autismrealms.us", "play.mckillzone.net", "niger", "kys"));
 
     /**
      * Send a private message over the network.

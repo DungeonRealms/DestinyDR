@@ -446,7 +446,7 @@ public class BankMechanics implements GenericMechanic {
     }
     
     public static boolean isMoney(ItemStack item) {
-    	return isBankNote(item) || isGem(item) || isGemPouch(item);
+    	return (item != null && item.getType() != Material.AIR) && (isBankNote(item) || isGem(item) || isGemPouch(item));
     }
 
     public void checkBankAchievements(UUID uuid, int bankGemAmount) {

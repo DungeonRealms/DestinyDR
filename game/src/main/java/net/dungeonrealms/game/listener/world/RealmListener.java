@@ -1003,7 +1003,7 @@ public class RealmListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onWaterFlow(BlockFromToEvent event) {
         //Dont cancel in main world.
-        if (!GameAPI.isMainWorld(event.getBlock().getLocation())) return;
+        if (GameAPI.isMainWorld(event.getBlock().getLocation())) return;
         
         event.setCancelled(true);
     }
