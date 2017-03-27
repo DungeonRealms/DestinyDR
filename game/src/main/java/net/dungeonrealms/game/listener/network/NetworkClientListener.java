@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listener.network;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -21,12 +22,14 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.network.packet.type.BasicMessagePacket;
 import net.dungeonrealms.network.packet.type.ServerListPacket;
 import net.minecraft.server.v1_9_R2.IChatBaseComponent;
 import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -215,7 +218,7 @@ public class NetworkClientListener extends Listener implements GenericMechanic {
                             case "PrivateMessage": {
                                 String fromPlayer = in.readUTF();
                                 String playerName = in.readUTF();
-                                String msg = ChatColor.translateAlternateColorCodes('&', in.readUTF());
+                                String msg = Chat.getInstance().checkForBannedWords(in.readUTF());
                                 Player player = Bukkit.getPlayer(playerName);
                                 if (player != null) {
                                     GamePlayer gp = GameAPI.getGamePlayer(player);
