@@ -102,13 +102,19 @@ public class AntiDuplication implements GenericMechanic, Listener {
                     String name = "";
                     ItemStack item = e.getValue().a();
                     ItemMeta meta = item.getItemMeta();
-                    if (meta.hasDisplayName()) name += meta.getDisplayName();
+                    
+                    if (meta.hasDisplayName())
+                    	name += meta.getDisplayName();
                     else {
                         Material material = e.getValue().a().getType();
                         name += material.toString().replace("_", " ");
                     }
-                    if (itemDesc.containsKey(name)) itemDesc.put(name, itemDesc.get(name) + 1);
-                    else itemDesc.put(name, 1);
+                    
+                    if (itemDesc.containsKey(name))
+                    	itemDesc.put(name, itemDesc.get(name) + 1);
+                    else
+                    	itemDesc.put(name, 1);
+                    
                     // GIVE THEM AN ORIGINAL //
                     if (RepairAPI.isItemArmorOrWeapon(e.getValue().a())) {
                         remove(e.getKey(), e.getValue().b());
@@ -130,15 +136,14 @@ public class AntiDuplication implements GenericMechanic, Listener {
                 int amount = e.getValue() - 1;
                 String name = e.getKey();
 
-                if (i == 0)
-                    builder.append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
-                else
-                    builder.append(", ").append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
+                builder.append(i > 0 ? ", " : "").append(amount).append(" count(s) of ").append(ChatColor.AQUA).append(name).append(ChatColor.WHITE);
                 i++;
             }
             p.sendMessage(ChatColor.GOLD + "Found a dupe? Don't " + ChatColor.RED + "abuse" + ChatColor.GOLD + " it! Report it and you may be eligible for " + ChatColor.YELLOW + ChatColor.BOLD + "SUB++" + ChatColor.GOLD + "!");
             GameAPI.sendNetworkMessage("GMMessage", ChatColor.RED.toString() + "[ANTI CHEAT] " +
-                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid);
+                    ChatColor.WHITE + "Player " + p.getName() + " has attempted to duplicate items. Removed: " + builder.toString() + " on shard {SERVER}.");
+            
+            DebugUtil.debugReport(p);
         }
     }
 
