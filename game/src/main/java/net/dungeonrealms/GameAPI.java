@@ -764,7 +764,8 @@ public class GameAPI {
     public static Set<Player> getNearbyPlayersAsync(Location location, int radius) {
         Set<Player> playersNearby = new HashSet<>();
         for (Player player : asyncTracker) {
-            if (location.distanceSquared(player.getLocation()) <= radius * radius) {
+            if(!player.isOnline())continue;
+            if (player.getWorld().equals(location.getWorld()) && location.distanceSquared(player.getLocation()) <= radius * radius) {
                 playersNearby.add(player);
             }
         }
