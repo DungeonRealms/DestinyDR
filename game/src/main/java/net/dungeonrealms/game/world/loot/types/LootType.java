@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.world.loot.types;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.network.packet.Packet;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -71,6 +74,15 @@ public enum LootType {
         for (LootType type : values()) {
             type.loadItems();
         }
+    }
+
+    public List<String> getLootList(){
+        List<String> loot = Lists.newArrayList();
+        this.loot.forEach((is, chance) -> {
+            loot.add(is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : is.getType().name() + " - " + chance + "%");
+        });
+
+        return loot;
     }
 
     /**

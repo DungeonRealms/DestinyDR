@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.world.item;
 
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -19,10 +21,7 @@ import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.type.mounts.Horse;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.EntityArrow;
-import net.minecraft.server.v1_9_R2.EntityLargeFireball;
-import net.minecraft.server.v1_9_R2.MathHelper;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
@@ -38,15 +37,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import org.bukkit.util.Vector;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -220,8 +211,20 @@ public class DamageAPI {
 
             // LIFESTEAL ONLY FOR PLAYERS.
             if (isAttackerPlayer) {
+
+                double lifestealPercent = 0;
                 if (attackerAttributes.get("lifesteal")[1] != 0) {
-                    double lifeToHeal = ((((float) attackerAttributes.get("lifesteal")[1]) / 100.) * damage);
+                    lifestealPercent = attackerAttributes.get("lifesteal")[1];
+                }
+                if (attacker.hasMetadata("fishLifesteal")) {
+                    lifestealPercent += attacker.getMetadata("fishLifesteal").get(0).asInt();
+                }
+
+                if (lifestealPercent > 100) lifestealPercent = 100;
+
+
+                if (lifestealPercent > 0) {
+                    double lifeToHeal = (((float) lifestealPercent / 100.) * damage);
                     HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal + 1);
                 }
             }
@@ -1007,7 +1010,7 @@ public class DamageAPI {
         Map<String, Integer[]> attackerAttributes = gp.getAttributes();
 
         double accuracy = 0;
-        if(attackerAttributes != null){
+        if (attackerAttributes != null) {
             accuracy = attackerAttributes.get("precision")[1];
         }
 

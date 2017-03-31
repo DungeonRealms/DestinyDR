@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.profession;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -763,11 +765,34 @@ public class Mining implements GenericMechanic {
         goldOre = new ItemBuilder().setItem(Material.GOLD_ORE, (short) 0, GameAPI.getTierColor(5).toString() + "Gold Ore", new String[]{ChatColor.GRAY + "A sparking piece of gold ore"}).build();
     }
 
+    @Getter
     private HashMap<Location, Material> ORE_LOCATIONS = new HashMap<>();
+
+    private List<String> CONFIG = Lists.newArrayList();
+
+    public void removeOreLocation(Location location){
+        ORE_LOCATIONS.remove(location);
+        for(String oreSpawn : Lists.newArrayList(CONFIG)){
+            if(oreSpawn.startsWith(location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ())){
+                //Coorrrd!
+                CONFIG.remove(oreSpawn);
+                DungeonRealms.getInstance().getConfig().set("orespawns", CONFIG);
+                DungeonRealms.getInstance().saveConfig();
+                return;
+            }
+        }
+    }
+
+    public void addOreLocation(Location location, Material ore){
+        ORE_LOCATIONS.put(location, ore);
+        CONFIG.add(location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "=" + ore.name());
+        DungeonRealms.getInstance().getConfig().set("orespawns", CONFIG);
+        DungeonRealms.getInstance().saveConfig();
+    }
 
     public void loadOreLocations() {
         int count = 0;
-        ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("orespawns");
+        CONFIG = DungeonRealms.getInstance().getConfig().getStringList("orespawns");
         for (String line : CONFIG) {
             if (line.contains("=")) {
                 try {

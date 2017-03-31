@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.profession;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
@@ -7,6 +8,7 @@ import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
+import net.dungeonrealms.game.command.moderation.CommandFishing;
 import net.dungeonrealms.game.donation.DonationEffects;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.mastery.Utils;
@@ -178,8 +180,8 @@ public class Fishing implements GenericMechanic {
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 25 && buff_type <= 50) {
                     // Of Speed 15 seconds of speed I.
-                    fishItem.setDurability((short)1);
-                	fishName += " of Lesser Agility";
+                    fishItem.setDurability((short) 1);
+                    fishName += " of Lesser Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(15s)";
                 } else if (buff_type > 50 && buff_type <= 60) {
                     // Of Satiety, fill up 20% of food (2 full squares)
@@ -228,7 +230,7 @@ public class Fishing implements GenericMechanic {
                     fishName = ChatColor.GREEN.toString() + "Healing " + fishName;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
-                    fishItem.setDurability((short)1);
+                    fishItem.setDurability((short) 1);
                     fishName += " of Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(20s)";
                 } else if (buff_type > 55 && buff_type <= 65) {
@@ -278,7 +280,7 @@ public class Fishing implements GenericMechanic {
                     fishName = ChatColor.AQUA.toString() + "Large, Healing " + fishName;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
-                    fishItem.setDurability((short)1);
+                    fishItem.setDurability((short) 1);
                     fishName += " of Lasting Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (I) BUFF " + ChatColor.GRAY.toString() + "(30s)";
                 } else if (buff_type > 55 && buff_type <= 65) {
@@ -330,7 +332,7 @@ public class Fishing implements GenericMechanic {
                     fishName = ChatColor.LIGHT_PURPLE.toString() + "Healthy " + fishName;
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 55) {
-                    fishItem.setDurability((short)1);
+                    fishItem.setDurability((short) 1);
                     fishName += " of Bursting Agility";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (II) BUFF " + ChatColor.GRAY.toString() + "(15s)";
                 } else if (buff_type > 55 && buff_type <= 65) {
@@ -387,7 +389,7 @@ public class Fishing implements GenericMechanic {
                     fishName = ChatColor.YELLOW.toString() + "Legendary " + fishName + " of Medicine";
                     fish_buff_s = ChatColor.RED.toString() + "+" + buff_val + "% HP " + ChatColor.GRAY.toString() + "(instant)";
                 } else if (buff_type > 30 && buff_type <= 45) {
-                    fishItem.setDurability((short)1);
+                    fishItem.setDurability((short) 1);
                     fishName += " of Godlike Speed";
                     fish_buff_s = ChatColor.RED.toString() + "SPEED (II) BUFF " + ChatColor.GRAY.toString() + "(30s)";
                 } else if (buff_type > 45 && buff_type <= 50) {
@@ -1057,32 +1059,6 @@ public class Fishing implements GenericMechanic {
     }
 
 
-    public HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
-    public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
-
-    public void generateFishingParticleBlockList() {
-
-    }
-
-    public Location getFishingSpot(Location loc) {
-        for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
-            double dist_sqr = loc.distanceSquared(fish_loc);
-            if (dist_sqr <= 100)
-                return fish_loc;
-        }
-        return null;
-    }
-
-    public Integer getFishingSpotTier(Location loc) {
-        for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
-            double dist_sqr = loc.distanceSquared(fish_loc);
-            if (dist_sqr <= 100) {
-                return FISHING_LOCATIONS.get(fish_loc);
-            }
-        }
-        return -1;
-    }
-
     public static boolean isCustomFish(ItemStack is) {
         if (is != null && is.getType() == Material.COOKED_FISH && is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()) {
             return true;
@@ -1326,11 +1302,101 @@ public class Fishing implements GenericMechanic {
         }
     }
 
+    public HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
+    public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
+
+    public List<String> fishingSpots = Lists.newArrayList();
+
+    public void generateFishingParticleBlockList() {
+        for (Entry<Location, Integer> data : FISHING_LOCATIONS.entrySet()) {
+            Location epicenter = data.getKey();
+            generateFishingParticles(epicenter);
+        }
+    }
+
+    public void generateFishingParticles(Location fishingSpot) {
+        Location epicenter = fishingSpot;
+        List<Location> lfishingParticles = new ArrayList<>();
+
+        int radius = 10;
+
+        Location location = epicenter;
+        for (int x = -(radius); x <= radius; x++) {
+            for (int y = -(radius); y <= radius; y++) {
+                for (int z = -(radius); z <= radius; z++) {
+                    Location loc = location.getBlock().getRelative(x, y, z).getLocation();
+                    if (loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.STATIONARY_WATER) {
+                        if (loc.add(0, 1, 0).getBlock().getType() == Material.AIR) {
+                            if (!(lfishingParticles.contains(loc))) {
+                                lfishingParticles.add(loc);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Collections.reverse(lfishingParticles);
+        FISHING_PARTICLES.put(epicenter, lfishingParticles);
+    }
+
+    public void removeFishingLocation(Location location) {
+        this.FISHING_PARTICLES.remove(location);
+        this.FISHING_LOCATIONS.remove(location);
+
+        Iterator<String> iter = this.fishingSpots.iterator();
+        while (iter.hasNext()) {
+            String line = iter.next();
+            if (line != null && line.startsWith(location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ())) {
+                //Found it
+                iter.remove();
+                this.saveFishingLocations();
+                Bukkit.getLogger().info("Removing fishing spot " + line);
+                return;
+            }
+        }
+    }
+
+    public void addFishingLocation(Location location, int tier) {
+        this.FISHING_LOCATIONS.put(location, tier);
+        //- -163,45,1127=2
+        this.fishingSpots.add(location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "=" + tier);
+        this.saveFishingLocations();
+
+        this.generateFishingParticles(location);
+        CommandFishing.createHologram(location, tier);
+    }
+
+
+    public Location getFishingSpot(Location loc) {
+        for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
+            double dist_sqr = loc.distanceSquared(fish_loc);
+            if (dist_sqr <= 100)
+                return fish_loc;
+        }
+        return null;
+    }
+
+    public Integer getFishingSpotTier(Location loc) {
+        for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
+            double dist_sqr = loc.distanceSquared(fish_loc);
+            if (dist_sqr <= 100) {
+                return FISHING_LOCATIONS.get(fish_loc);
+            }
+        }
+        return -1;
+    }
+
+    public void saveFishingLocations() {
+        DungeonRealms.getInstance().getConfig().set("fishingspawns", this.fishingSpots);
+        DungeonRealms.getInstance().saveConfig();
+    }
+
     public void loadFishingLocations() {
         int count = 0;
-        ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig()
+        this.fishingSpots = DungeonRealms.getInstance().getConfig()
                 .getStringList("fishingspawns");
-        for (String line : CONFIG) {
+        for (String line : fishingSpots) {
             if (line.contains("=")) {
                 String[] cords = line.split("=")[0].split(",");
                 Location loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
@@ -1365,6 +1431,7 @@ public class Fishing implements GenericMechanic {
         loadFishingLocations();
         generateFishingParticleBlockList();
         DungeonRealms.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
+
             int chance = splashCounter * splashCounter;
             if (splashCounter == 1) {
                 splashCounter = 21;
@@ -1377,20 +1444,21 @@ public class Fishing implements GenericMechanic {
                 for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
                     Location epicenter = data.getKey();
                     try {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPLASH,
-                                epicenter, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.4F, 20), 0L);
+                        ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.SPLASH,
+                                epicenter, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.4F, 20);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
                     data.getValue().stream().filter(loc -> random.nextInt(chance) == 1).forEach(loc -> {
                         try {
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPLASH,
-                                    epicenter, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.4F, 20), 0L);
+                            ParticleAPI.sendParticleToLocationAsync(ParticleAPI.ParticleEffect.SPLASH,
+                                    epicenter, random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.4F, 20);
                         } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                     });
                 }
+
             } catch (ConcurrentModificationException cme) {
                 Utils.log.info("[Professions] [ASYNC] Something went wrong checking a fishing spot and adding particles!");
             }

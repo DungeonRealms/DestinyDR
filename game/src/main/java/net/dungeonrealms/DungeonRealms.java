@@ -53,6 +53,7 @@ import net.dungeonrealms.game.listener.network.BungeeChannelListener;
 import net.dungeonrealms.game.listener.network.NetworkClientListener;
 import net.dungeonrealms.game.listener.world.BlockListener;
 import net.dungeonrealms.game.listener.world.DungeonListener;
+import net.dungeonrealms.game.listener.world.ModerationListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.CrashDetector;
 import net.dungeonrealms.game.mechanic.DungeonManager;
@@ -305,6 +306,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new InventoryListener(), this);
         pm.registerEvents(new BlockListener(), this);
+        pm.registerEvents(new ModerationListener(), this);
         pm.registerEvents(new EnergyListener(), this);
         pm.registerEvents(new AntiCheatListener(), this);
         pm.registerEvents(new AchievementManager(), this);
@@ -420,6 +422,9 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPlayed("played", "/<command>", "Checks your playtime"));
         cm.registerCommand(new CommandSessionID("sessions", "/<command> [args]", "Session ID fixer", Arrays.asList("session", "fixsession")));
         cm.registerCommand(new CommandSpawner());
+        cm.registerCommand(new CommandFishing());
+        cm.registerCommand(new CommandOreEdit());
+        cm.registerCommand(new CommandLootChest());
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));
