@@ -25,6 +25,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -83,6 +85,43 @@ public class BankMechanics implements GenericMechanic {
     @Override
     public void stopInvocation() {
 
+    }
+
+    public static int getTotalGemsInPouches(Player player) {
+        AtomicInteger found = new AtomicInteger(0);
+        player.getInventory().all(Material.INK_SACK).forEach((slot, item) -> {
+            if (BankMechanics.isGemPouch(item))
+                found.addAndGet(BankMechanics.getPouchAmount(item));
+        });
+        return found.get();
+    }
+
+    public static boolean removeGemsFromPouches(Player player, int remove) {
+
+        AtomicBoolean done = new AtomicBoolean(false);
+        AtomicInteger toRemove = new AtomicInteger(remove);
+        player.getInventory().all(Material.INK_SACK).forEach((slot, item) -> {
+            if (done.get()) return;
+            if (BankMechanics.isGemPouch(item)) {
+                int amount = BankMechanics.getPouchAmount(item);
+                int pouchTier = BankMechanics.getPouchTier(item);
+                if (amount > toRemove.get()) {
+                    if (pouchTier > 0) {
+                        player.getInventory().setItem(slot, BankMechanics.getInstance().createGemPouch(pouchTier, amount - toRemove.get()));
+                        done.set(true);
+                        toRemove.set(0);
+                    }
+                } else {
+                    //Set this to the remainder.
+                    toRemove.set(toRemove.get() - amount);
+                    //Not enough in this pouch.. clear that shit..
+                    player.getInventory().setItem(slot, BankMechanics.getInstance().createGemPouch(pouchTier, 0));
+                }
+            }
+        });
+        player.updateInventory();
+
+        return done.get();
     }
 
     public int getTotalGemsInInventory(Player p) {
@@ -297,17 +336,17 @@ public class BankMechanics implements GenericMechanic {
      * @return
      */
     public static ItemStack createBankNote(int amount, String whoSigned) {
-        if(whoSigned != null && whoSigned.isEmpty())whoSigned = null;
-        
-        if(amount >= 50000){
-        	String lastSigner = whoSigned;
-        	if(lastSigner.contains(",")){
-        		String[] allSigners = lastSigner.split(",");
-        		lastSigner = allSigners[allSigners.length - 1];
-        	}
-        	GameAPI.sendNetworkMessage("IGN_GMMessage", ChatColor.GOLD + "[WARNING] " + ChatColor.WHITE + lastSigner + " created a Bank Note worth " + ChatColor.GREEN + amount + ChatColor.WHITE + " on " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid + ChatColor.WHITE + ".");
+        if (whoSigned != null && whoSigned.isEmpty()) whoSigned = null;
+
+        if (amount >= 50000) {
+            String lastSigner = whoSigned;
+            if (lastSigner.contains(",")) {
+                String[] allSigners = lastSigner.split(",");
+                lastSigner = allSigners[allSigners.length - 1];
+            }
+            GameAPI.sendNetworkMessage("IGN_GMMessage", ChatColor.GOLD + "[WARNING] " + ChatColor.WHITE + lastSigner + " created a Bank Note worth " + ChatColor.GREEN + amount + ChatColor.WHITE + " on " + ChatColor.GOLD + ChatColor.UNDERLINE + DungeonRealms.getInstance().shardid + ChatColor.WHITE + ".");
         }
-        
+
         ItemStack stack = BankMechanics.banknote.clone();
         ItemMeta meta = stack.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
@@ -429,24 +468,24 @@ public class BankMechanics implements GenericMechanic {
      * @return
      */
     public static boolean isBankNote(ItemStack stack) {
-        if(stack == null)return false;
+        if (stack == null) return false;
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        if(nms == null)return false;
+        if (nms == null) return false;
         return stack.getType() == Material.PAPER && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money");
     }
-    
+
     public static int getGemWorth(ItemStack stack) {
-    	if(isBankNote(stack))
-    		return BankMechanics.getNoteValue(stack);
-    	if(isGem(stack))
-    		return stack.getAmount();
-    	if(isGemPouch(stack))
-    		return BankMechanics.getPouchAmount(stack);
-    	return 0;
+        if (isBankNote(stack))
+            return BankMechanics.getNoteValue(stack);
+        if (isGem(stack))
+            return stack.getAmount();
+        if (isGemPouch(stack))
+            return BankMechanics.getPouchAmount(stack);
+        return 0;
     }
-    
+
     public static boolean isMoney(ItemStack item) {
-    	return (item != null && item.getType() != Material.AIR) && (isBankNote(item) || isGem(item) || isGemPouch(item));
+        return (item != null && item.getType() != Material.AIR) && (isBankNote(item) || isGem(item) || isGemPouch(item));
     }
 
     public void checkBankAchievements(UUID uuid, int bankGemAmount) {
@@ -493,11 +532,14 @@ public class BankMechanics implements GenericMechanic {
 
     public static int getPouchAmount(ItemStack currentItem) {
         return CraftItemStack.asNMSCopy(currentItem).getTag().getInt("worth");
+    }
 
+    public static int getPouchTier(ItemStack currentItem) {
+        return CraftItemStack.asNMSCopy(currentItem).getTag().getInt("tier");
     }
 
     public ItemStack makeNewPouch(ItemStack currentItem, int number) {
-        int tier = CraftItemStack.asNMSCopy(currentItem).getTag().getInt("tier");
+        int tier = getPouchTier(currentItem);
         return createGemPouch(tier, number);
 
     }

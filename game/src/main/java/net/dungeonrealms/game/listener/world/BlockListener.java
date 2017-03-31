@@ -414,7 +414,8 @@ public class BlockListener implements Listener {
             }
 
             int newCost = RepairAPI.getItemRepairCost(item);
-            if (BankMechanics.getInstance().getTotalGemsInInventory(player) < newCost) {
+
+            if (BankMechanics.getInstance().getTotalGemsInInventory(player) < newCost && BankMechanics.getTotalGemsInPouches(player) < newCost) {
                 player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
                 player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEM(s)");
                 return;
@@ -445,10 +446,16 @@ public class BlockListener implements Listener {
 
                 if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
                     //Not enough? cya.
+
+                    boolean usingPouches = false;
                     if (BankMechanics.getInstance().getTotalGemsInInventory(player) < newCost) {
-                        player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
-                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEMS(s)");
-                        return;
+                        usingPouches = BankMechanics.getTotalGemsInPouches(player) >= newCost;
+                        //No money..
+                        if(!usingPouches) {
+                            player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEMS(s)");
+                            return;
+                        }
                     }
                     //Reset durability.
                     RepairAPI.setCustomItemDurability(item, 1500);
@@ -459,7 +466,11 @@ public class BlockListener implements Listener {
 
                     player.sendMessage(ChatColor.RED + "-" + newCost + ChatColor.BOLD.toString() + "G");
                     player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "ITEM REPAIRED");
-                    BankMechanics.getInstance().takeGemsFromInventory(newCost, player);
+                    if(usingPouches){
+                        BankMechanics.removeGemsFromPouches(player, newCost);
+                    }else {
+                        BankMechanics.getInstance().takeGemsFromInventory(newCost, player);
+                    }
                     if (player.getEquipment().getItemInMainHand() == null) {
                         player.getEquipment().setItemInMainHand(item);
                         player.setCanPickupItems(true);
