@@ -49,6 +49,7 @@ public class CommandAnnounce extends BaseCommand {
                 break;
             case "poll":
                 message = "We have a community poll available! You may vote, here: http://www.dungeonrealms.net/polls";
+                break;
             default:
                 sender.sendMessage(ChatColor.RED + "Invalid announcement!");
                 return false;
