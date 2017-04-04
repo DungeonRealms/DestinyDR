@@ -12,6 +12,7 @@ import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.lobby.commands.CommandBuild;
 import net.dungeonrealms.lobby.commands.CommandLogin;
 import net.dungeonrealms.lobby.commands.CommandSetPin;
 import net.dungeonrealms.lobby.commands.CommandShard;
@@ -50,15 +51,15 @@ import java.util.concurrent.Executors;
  */
 public class Lobby extends JavaPlugin implements Listener {
 
-	@Getter
-	private GameClient client;
-	
+    @Getter
+    private GameClient client;
+
     @Getter
     private static Lobby instance;
 
     @Getter
     private GhostFactory ghostFactory;
-    
+
     private ArrayList<UUID> allowedStaff = new ArrayList<UUID>();
 
     @Override
@@ -75,7 +76,7 @@ public class Lobby extends JavaPlugin implements Listener {
         ghostFactory = new GhostFactory(this);
         Bukkit.getPluginManager().registerEvents(this, this);
         CommandManager cm = new CommandManager();
-        
+
         client = new GameClient();
 
         try {
@@ -88,6 +89,7 @@ public class Lobby extends JavaPlugin implements Listener {
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command.", Collections.singletonList("connect")));
         cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
         cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));
+        cm.registerCommand(new CommandBuild());
     }
 
     @EventHandler
@@ -95,13 +97,13 @@ public class Lobby extends JavaPlugin implements Listener {
         if (event.getPlayer().isOp() && isLoggedIn(event.getPlayer()))
             event.setFormat(ChatColor.AQUA + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
         else
-        	event.setCancelled(true);
+            event.setCancelled(true);
     }
-    
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-    	if (Rank.isPMOD(event.getPlayer()) && !isLoggedIn(event.getPlayer()))
-    		event.setCancelled(true);
+        if (Rank.isPMOD(event.getPlayer()) && !isLoggedIn(event.getPlayer()))
+            event.setCancelled(true);
     }
 
     /**
@@ -145,28 +147,28 @@ public class Lobby extends JavaPlugin implements Listener {
 
             ghostFactory.addPlayer(player);
             ghostFactory.setGhost(player, !Rank.isPMOD(player) && !Rank.isSubscriber(player));
-            
+
             if(Rank.isPMOD(player)){
-            	Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-            		
-            		String lastIp = (String)DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, player.getUniqueId());
-            		
-            		if (lastIp != null && lastIp.equals(player.getAddress().getAddress().getHostAddress())) {
-            			player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + " >> " + ChatColor.GREEN + "You have been automatically logged in.");
-            			this.allowLogin(player, true);
-            			return;
-            		}
-            		
-            		String messagePrefix = ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED;
-                	if(DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null){
+                Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+
+                    String lastIp = (String)DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, player.getUniqueId());
+
+                    if (lastIp != null && lastIp.equals(player.getAddress().getAddress().getHostAddress())) {
+                        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + " >> " + ChatColor.GREEN + "You have been automatically logged in.");
+                        this.allowLogin(player, true);
+                        return;
+                    }
+
+                    String messagePrefix = ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED;
+                    if(DatabaseAPI.getInstance().getData(EnumData.LOGIN_PIN, player.getUniqueId()) == null){
                         player.sendMessage(messagePrefix + "Please set a login code with /setpin <pin>");
-                	}else{
-                		player.sendMessage(messagePrefix + "Please login with /pin <pin>");
-                	}
-            	});
-                
+                    }else{
+                        player.sendMessage(messagePrefix + "Please login with /pin <pin>");
+                    }
+                });
+
             }else{
-            	this.allowLogin(player, false);
+                this.allowLogin(player, false);
             }
         });
     }
@@ -230,16 +232,16 @@ public class Lobby extends JavaPlugin implements Listener {
 
             if (!e.hasItem()) return;
             if (e.getItem().getType() != Material.COMPASS) return;
-            
+
             e.setCancelled(true);
-            
+
             if(!Lobby.getInstance().isLoggedIn(p)){
-            	p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED + "You must login before you can use this.");
-            	return;
+                p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + " >> " + ChatColor.RED + "You must login before you can use this.");
+                return;
             }
 
             new ShardSelector(p).open(p);
-            
+
         }
     }
 
@@ -275,17 +277,17 @@ public class Lobby extends JavaPlugin implements Listener {
         }
         return false;
     }
-    
+
     public void allowLogin(Player player, boolean addToList){
-    	if(addToList)
-    		this.allowedStaff.add(player.getUniqueId());
-    	ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        if(addToList)
+            this.allowedStaff.add(player.getUniqueId());
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("AllowLogin");
         out.writeUTF(player.getUniqueId().toString());
         getClient().sendTCP(out.toByteArray());
     }
-    
+
     public boolean isLoggedIn(Player player){
-    	return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
+        return this.allowedStaff.contains(player.getUniqueId()) || !Rank.isPMOD(player);
     }
 }
