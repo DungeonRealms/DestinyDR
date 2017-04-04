@@ -12,6 +12,7 @@ import net.dungeonrealms.common.game.punishment.PunishAPI;
 import net.dungeonrealms.common.game.util.AsyncUtils;
 import net.dungeonrealms.common.network.bungeecord.BungeeServerTracker;
 import net.dungeonrealms.common.network.bungeecord.BungeeUtils;
+import net.dungeonrealms.lobby.commands.CommandBuild;
 import net.dungeonrealms.lobby.commands.CommandLogin;
 import net.dungeonrealms.lobby.commands.CommandSetPin;
 import net.dungeonrealms.lobby.commands.CommandShard;
@@ -88,6 +89,7 @@ public class Lobby extends JavaPlugin implements Listener {
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "Shard command.", Collections.singletonList("connect")));
         cm.registerCommand(new CommandLogin("pin", "/<command> <pin>", "Staff auth command.", Arrays.asList("pin", "login")));
         cm.registerCommand(new CommandSetPin("setpin", "/<command> <oldpin> <pin>", "Set your pin.", Collections.singletonList("setpin")));
+        cm.registerCommand(new CommandBuild());
     }
 
     @EventHandler
