@@ -15,13 +15,13 @@ import java.util.Optional;
 public enum ShardInfo implements Serializable {
 
 	// EVENT SHARD //
-	EVENT1("EVENT-1", "event1", new ServerAddress("131.153.26.66", 40021)),
+	/*EVENT1("EVENT-1", "event1", new ServerAddress("131.153.26.66", 40021)),
 	
     // DEVELOPMENT SHARD //
-    US0("US-0", "us0", new ServerAddress("131.153.26.66", 40011)),
+    US0("US-0", "us0", new ServerAddress("131.153.26.66", 40011)),*/
 
     // US 1 SHARD //
-    US1("US-1", "us1", new ServerAddress("131.153.26.50", 42000)),
+    US1("US-1", "us1", new ServerAddress("158.69.23.118", 42000))/*,
 
     // US 2 SHARD //
     US2("US-2", "us2", new ServerAddress("131.153.29.66", 42000)),
@@ -36,7 +36,7 @@ public enum ShardInfo implements Serializable {
     SUB1("SUB-1", "sub1", new ServerAddress("149.56.28.32", 42000)),
 
     // CS 1 SHARD //
-    CS1("CS-1", "cs1", new ServerAddress("192.99.200.110", 11250));
+    CS1("CS-1", "cs1", new ServerAddress("192.99.200.110", 11250))*/;
 
 
 
