@@ -40,7 +40,7 @@ public class Constants {
     public static void build() {
         log = Logger.getLogger("DungeonRealms");
         debug = false;
-        DEVELOPERS = new String[]{"Atlas__", "Bradez1571", "Kneesnap", "iFamasssxD"};
+        DEVELOPERS = new String[]{"Bradez1571", "Kneesnap", "iFamasssxD", "Ingot"};
         MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
         MAINTENANCE_MOTD = "                   &6&lDUNGEON REALMS &r\n            &lThe #1 Minecraft MMORPG &f&l";
         MIN_GAME_TIME = 14100000L;
