@@ -279,8 +279,9 @@ public class Lobby extends JavaPlugin implements Listener {
     }
 
     public void allowLogin(Player player, boolean addToList){
-        if(addToList)
+        if(addToList && !this.allowedStaff.contains(player.getUniqueId()))
             this.allowedStaff.add(player.getUniqueId());
+
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("AllowLogin");
         out.writeUTF(player.getUniqueId().toString());
