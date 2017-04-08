@@ -131,6 +131,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityInteract(PlayerInteractEntityEvent event) {
+        if(Rank.isGM(event.getPlayer()))return;
         if (event.getRightClicked().getType() == EntityType.ITEM_FRAME) {
             event.setCancelled(true);
             ItemFrame is = (ItemFrame) event.getRightClicked();
