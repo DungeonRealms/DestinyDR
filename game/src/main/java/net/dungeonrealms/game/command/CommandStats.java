@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.command;
 
 import net.dungeonrealms.common.game.command.BaseCommand;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,6 +26,7 @@ public class CommandStats extends BaseCommand {
 
 
 		Player player = (Player) s;
+		Chat.listenForMessage(player, null, null);
 		player.openInventory(StatsManager.getInventory(player));
 		return true;
 	}
