@@ -24,14 +24,14 @@ public class StaffSecurity implements Listener {
 		//If the player is leaving the lobby or does not have a set server (Just in case)
 		if (event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().getName().equals("Lobby")) {
 			//If the player is not allowed to change shards yet.
-			if (!this.allowedPlayers.contains(event.getPlayer().getUniqueId())) {
-				event.setCancelled(true);
+			//if (!this.allowedPlayers.contains(event.getPlayer().getUniqueId())) {
+				//event.setCancelled(true);
 				//There's no way to distinguish player from staff without hooking bungee up to Mongo.
 				//To avoid this (and avoid dupes), the message will be generic.
-				TextComponent notAllowed = new TextComponent("Please wait before connecting...");
-				notAllowed.setColor(ChatColor.RED);
-				event.getPlayer().sendMessage(notAllowed);
-			}
+				//TextComponent notAllowed = new TextComponent("Please wait before connecting...");
+				//notAllowed.setColor(ChatColor.RED);
+				//event.getPlayer().sendMessage(notAllowed);
+			//}
 		}
 	}
 	
@@ -41,7 +41,7 @@ public class StaffSecurity implements Listener {
 	}
 	
 	public void addAllowedPlayer(UUID uuid){
-		if (!this.allowedPlayers.contains(uuid))
-			this.allowedPlayers.add(uuid);
+		//if (!this.allowedPlayers.contains(uuid))
+			//this.allowedPlayers.add(uuid);
 	}
 }
