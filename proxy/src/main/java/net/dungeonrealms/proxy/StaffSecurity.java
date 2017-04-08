@@ -41,6 +41,7 @@ public class StaffSecurity implements Listener {
 	}
 	
 	public void addAllowedPlayer(UUID uuid){
+		System.out.println(uuid.toString() + " is now allowed. Total = " + this.allowedPlayers.size());
 		//if (!this.allowedPlayers.contains(uuid))
 			//this.allowedPlayers.add(uuid);
 	}
