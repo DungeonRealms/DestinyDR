@@ -376,6 +376,7 @@ public class BankListener implements Listener {
                                         e.setCursor(null);
                                     }
                                 }
+                                if(size <= 0)return;
                                 int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
                                 BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                                 BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
@@ -412,17 +413,18 @@ public class BankListener implements Listener {
                                         return;
                                     }
 
-                                    storage.inv.addItem(e.getCursor());
-                                    e.setCursor(null);
-                                    player.sendMessage(ChatColor.GREEN + "Item added to storage!");
-
+                                    if(e.getCursor() != null && e.getCursor().getType() != Material.AIR) {
+                                        storage.inv.addItem(e.getCursor());
+                                        e.setCursor(null);
+                                        player.sendMessage(ChatColor.GREEN + "Item added to storage!");
+                                    }
                                 } else {
                                     player.sendMessage(ChatColor.RED + "You do not have space to add this item.");
                                 }
                             } else if (e.getClick() == ClickType.RIGHT) {
                                 if (storage.hasSpace()) {
                                     ItemStack stack = e.getCursor();
-                                    if(stack == null)
+                                    if(stack == null || stack.getType() == Material.AIR)
                                     	return;
                                     if (stack.getAmount() > 1) {
                                         ItemStack stackToAdd = stack.clone();
@@ -535,9 +537,11 @@ public class BankListener implements Listener {
                                     return;
                                 }
 
-                                storage.inv.addItem(e.getCurrentItem());
-                                e.setCurrentItem(null);
-                                player.sendMessage(ChatColor.GREEN + "Item added to storage!");
+                                if(e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR) {
+                                    storage.inv.addItem(e.getCurrentItem());
+                                    e.setCurrentItem(null);
+                                    player.sendMessage(ChatColor.GREEN + "Item added to storage!");
+                                }
 
                             } else {
                                 player.sendMessage(ChatColor.RED + "You do not have space to add this item.");
@@ -563,6 +567,7 @@ public class BankListener implements Listener {
                         }
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
+                            if(size <= 0)return;
                             int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
                             BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                             BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
