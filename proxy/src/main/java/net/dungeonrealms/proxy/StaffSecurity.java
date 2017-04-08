@@ -22,9 +22,9 @@ public class StaffSecurity implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
     public void onServerMove(ServerConnectEvent event) {
 		//If the player is leaving the lobby or does not have a set server (Just in case)
-		if(event.getPlayer().getServer() == null || event.getPlayer().getServer().getInfo().getName().equals("Lobby")){
+		if (event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().getName().equals("Lobby")) {
 			//If the player is not allowed to change shards yet.
-			if(!this.allowedPlayers.contains(event.getPlayer().getUniqueId())){
+			if (!this.allowedPlayers.contains(event.getPlayer().getUniqueId())) {
 				event.setCancelled(true);
 				//There's no way to distinguish player from staff without hooking bungee up to Mongo.
 				//To avoid this (and avoid dupes), the message will be generic.
