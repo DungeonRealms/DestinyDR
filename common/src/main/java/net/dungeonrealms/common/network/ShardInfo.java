@@ -13,12 +13,9 @@ import java.util.Optional;
 
 @NoArgsConstructor
 public enum ShardInfo implements Serializable {
-
-	// EVENT SHARD //
-	/*EVENT1("EVENT-1", "event1", new ServerAddress("131.153.26.66", 40021)),
 	
     // DEVELOPMENT SHARD //
-    US0("US-0", "us0", new ServerAddress("131.153.26.66", 40011)),*/
+    US0("US-0", "us0", new ServerAddress("158.69.121.40", 40011)),
 
     // US 1 SHARD //
     US1("US-1", "us1", new ServerAddress("158.69.23.118", 42000)),
