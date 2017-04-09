@@ -506,6 +506,8 @@ public class Fishing implements GenericMechanic {
                     .getBonusAmount() / 100f));
             exp += professionBuffBonus;
         }
+
+        exp *= 1.3;
         currentXP += exp;
 
         if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {

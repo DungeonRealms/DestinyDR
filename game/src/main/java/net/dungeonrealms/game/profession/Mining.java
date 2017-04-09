@@ -362,6 +362,8 @@ public class Mining implements GenericMechanic {
                     .getBonusAmount() / 100f));
             experienceGain += professionBuffBonus;
         }
+
+        experienceGain *= 1.3;
         currentXP += experienceGain;
 
         if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId())) {
@@ -385,7 +387,7 @@ public class Mining implements GenericMechanic {
         p.getEquipment().setItemInMainHand(stackInHand);
         ItemMeta meta = stackInHand.getItemMeta();
         List<String> lore = stackInHand.getItemMeta().getLore();
-        String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+        String expBar = "||||||||||||||||||||||||||||||||||||||||||||||||||";
         double percentDone = 100.0 * currentXP / maxXP;
         double percentDoneDisplay = (percentDone / 100) * 50.0D;
         int display = (int) percentDoneDisplay;
