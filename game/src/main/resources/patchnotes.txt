@@ -1,8 +1,11 @@
 Build <build>
 
-&8Changes&0
+&8&lChanges&0
 - &a&l2x&0 Drop Rates
 - &a&l30%&0 Increased Profession EXP Rates
 - Orbs now tradeable for 180 T3 Scrap
 - Balanced Polearm Energy Cost
 - Nerfed Food Loss a bit
+
+&8&lBug Fixes&0
+- Fixed glow not working for some people.
