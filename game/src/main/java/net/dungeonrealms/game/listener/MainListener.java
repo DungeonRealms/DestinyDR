@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.Constants;
@@ -32,6 +33,8 @@ import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.objectives.ObjectiveCatchFish;
 import net.dungeonrealms.game.title.TitleAPI;
 import net.dungeonrealms.game.world.entity.type.monster.DRMonster;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
@@ -45,6 +48,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMount;
+
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -1001,6 +1005,8 @@ public class MainListener implements Listener {
                         }
                     }
                 }
+                
+                Quests.getInstance().triggerObjective(pl, ObjectiveCatchFish.class);
             }, 10L);
         }
     }

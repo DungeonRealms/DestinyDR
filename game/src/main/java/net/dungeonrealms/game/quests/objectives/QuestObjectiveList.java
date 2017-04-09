@@ -24,6 +24,8 @@ public class QuestObjectiveList {
 		objectiveList.add(ObjectiveUseHearthStone.class);
 		objectiveList.add(ObjectiveOpenJournal.class);
 		objectiveList.add(ObjectiveOpenProfile.class);
+		objectiveList.add(ObjectiveCatchFish.class);
+		objectiveList.add(ObjectiveMineOre.class);
 		objectiveList.add(ObjectiveNone.class);
 	}
 	

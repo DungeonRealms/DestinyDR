@@ -14,6 +14,8 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.quests.Quests;
+import net.dungeonrealms.game.quests.objectives.ObjectiveMineOre;
+import net.dungeonrealms.game.quests.objectives.ObjectiveOpenRealm;
 import net.dungeonrealms.game.quests.objectives.ObjectiveUseAnvil;
 import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
@@ -22,6 +24,7 @@ import net.dungeonrealms.game.world.realms.Realm;
 import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -242,6 +245,8 @@ public class BlockListener implements Listener {
                             p.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "          FOUND " + amount + " GEM(s)" + ChatColor.YELLOW + "");
                     }
                 }
+                
+                Quests.getInstance().triggerObjective(p, ObjectiveMineOre.class);
             }
         }
 

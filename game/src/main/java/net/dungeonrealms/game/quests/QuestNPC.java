@@ -132,9 +132,9 @@ public class QuestNPC implements ISaveable{
 		if(teamName == null)
 			return;
 		
-		System.out.println("Team = " + teamName);
+		//System.out.println("Team = " + teamName);
 		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
-		System.out.println(team != null ? "Team Found" : "Team Not Found");
+		//System.out.println(team != null ? "Team Found" : "Team Not Found");
 		if(team != null)
 			team.setPrefix(color.toString());
 		
