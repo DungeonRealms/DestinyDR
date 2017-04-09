@@ -6,6 +6,7 @@ import java.util.List;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.quests.QuestPlayerData.QuestProgress;
 import net.dungeonrealms.game.quests.objectives.QuestObjective;
@@ -228,6 +229,10 @@ public class Quest implements ISaveable {
 		
 		player.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "Quest Complete> " + ChatColor.AQUA + this.getQuestName());
 		data.completeQuest(this);
+
+		if(this.getQuestName().equalsIgnoreCase("Tutorial Island")){
+			ItemManager.giveStarter(player, true);
+		}
 		GamePlayer gamePlayer = GameAPI.getGamePlayer(player);
 		
 		player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);

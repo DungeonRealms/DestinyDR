@@ -501,6 +501,12 @@ public class TradeCalculator {
             }
         }
         if (t3_scraps > 0) {
+
+            while (t3_scraps >= 180) {
+                t3_scraps -= 180;
+                merchant_offer.add(ItemManager.createOrbofAlteration());
+            }
+
             while (t3_scraps >= 110) {
                 t3_scraps -= 110;
                 ItemStack scroll = ItemManager.createWeaponEnchant(3);

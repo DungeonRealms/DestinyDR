@@ -1,9 +1,6 @@
 Build <build>
 
 &8Changes&0
-- Collection bin is automatically loaded into shop.
-- Staff mobs nerfed
-- Shop code heavily condensed.
-
-&8Bugfixes&0
-- Fixed soulbound item bugs
+- &a&l2x&0 Drop Rates
+- &a&l30%&0 Increased Profession EXP Rates
+- Orbs now tradeable for 180 T3 Scrap
