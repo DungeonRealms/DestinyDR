@@ -151,7 +151,6 @@ public class GuiBase implements Listener {
 		if(!isCorrectInventory(evt.getInventory(), evt.getWhoClicked()))
 			return;
 		if(evt.getRawSlot() >= evt.getInventory().getSize() && !evt.isShiftClick()){
-			System.out.println(evt.getRawSlot() + " is larger than " + evt.getInventory().getSize());
 			return;
 		}
 			
