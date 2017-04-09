@@ -39,7 +39,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
     public static HashMap<String, List<String>> completion_delay = new HashMap<>();
     // Player_name, List of NPC names who have a timer event to tell them they've completed running. (used for rewards)
 
-    public static final String tutorialRegion = "tutorial";
+    public static final String tutorialRegion = "tutorial_island";
     // Region name of tutorial island.
 
     List<String> got_exp = new ArrayList<>();
@@ -89,7 +89,7 @@ public class TutorialIsland implements GenericMechanic, Listener {
 
 
     public boolean onTutorialIsland(UUID uuid) {
-        return AchievementManager.REGION_TRACKER.get(uuid).equalsIgnoreCase("tutorial");
+        return AchievementManager.REGION_TRACKER.get(uuid).equalsIgnoreCase("tutorial_island");
     }
 
     public static boolean onTutorialIsland(Location loc) {
