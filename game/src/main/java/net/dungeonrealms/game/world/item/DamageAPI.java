@@ -431,6 +431,9 @@ public class DamageAPI {
         if (GameAPI.isWeapon(attackerWeapon) && new Attribute(attackerWeapon).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(damager))) {
             DamageAPI.polearmAOEProcessing.add(damager);
             boolean damagerIsMob = damager.hasMetadata("type");
+            //Loop through nearby entities.
+            int hitCounter = 0;
+
             for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                 if (!(entity instanceof LivingEntity)) continue;
                 // mobs should only be able to damage players, not other mobs
@@ -445,6 +448,8 @@ public class DamageAPI {
                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                         double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
                         if (damage - armorCalculation[0] <= 0) continue;
+
+                        hitCounter++;
                         HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, damager, damage - armorCalculation[0]);
                     }
                 } else if (GameAPI.isPlayer(entity)) {
@@ -471,10 +476,20 @@ public class DamageAPI {
                         }
                         double[] armorCalculation = calculateArmorReduction(damager, (LivingEntity) entity, damage, null);
                         if (damage - armorCalculation[0] <= 0) continue;
+                        hitCounter++;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entity, damager, damage - armorCalculation[0], armorCalculation[0], armorCalculation[1]);
                     }
                 }
             }
+            if(hitCounter > 0) {
+                if(hitCounter > 2)hitCounter--;
+
+                float energyCostPerSwing = EnergyHandler.getWeaponSwingEnergyCost(attackerWeapon);
+
+                float totalEnergyCost = (float) ((energyCostPerSwing * .15) * (hitCounter));
+                EnergyHandler.removeEnergyFromPlayerAndUpdate(damager.getUniqueId(), totalEnergyCost);
+            }
+
             DamageAPI.polearmAOEProcessing.remove(damager);
         }
     }
