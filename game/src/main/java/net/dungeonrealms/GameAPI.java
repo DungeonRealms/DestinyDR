@@ -866,6 +866,10 @@ public class GameAPI {
         DatabaseAPI.getInstance().bulkUpdate(operations, async, doAfter);
         return true;
     }
+    
+    public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
+    	handleLogout(uuid, async, doAfter, true, true);
+    }
 
     /**
      * Safely logs out the player, updates their database inventories etc.
@@ -875,7 +879,7 @@ public class GameAPI {
      *              different method.
      * @since 1.0
      */
-    public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter) {
+    public static void handleLogout(UUID uuid, boolean async, Consumer<BulkWriteResult> doAfter, boolean save, boolean remove) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
         if (DungeonRealms.getInstance().getLoggingIn().contains(player.getUniqueId())) return;
@@ -953,11 +957,13 @@ public class GameAPI {
             }
 
             operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.IS_PLAYING.getKey(), false))));
-
+            
             DatabaseAPI.getInstance().bulkUpdate(operations, async, doAfterAfterUpdate -> {
                 DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
-                DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
-                GAMEPLAYERS.remove(player.getName());
+                if (remove) {
+                	DatabaseAPI.getInstance().PLAYERS.remove(player.getUniqueId());
+                	GAMEPLAYERS.remove(player.getName());
+                }
                 Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
 
                 if (doAfter != null)
@@ -1513,7 +1519,7 @@ public class GameAPI {
 
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true,
                 doAfter -> GameAPI.handleLogout(player.getUniqueId(), true,
-                        consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName))
+                        consumer -> BungeeUtils.sendToServer(player.getName(), serverBungeeName), true, false)
         );
     }
 
@@ -2335,7 +2341,7 @@ public class GameAPI {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                     () -> BungeeUtils.sendToServer(player.getName(), shard.getPseudoName()), 10);
-        }));
+        }), true, false);
     }
 
     /**

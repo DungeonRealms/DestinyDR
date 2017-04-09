@@ -44,9 +44,13 @@ public class GuiNPCEditor extends GuiBase {
 					new GuiNPCEditor(player, npc);
 					return;
 				}
-				Quests.getInstance().npcStore.delete(npc);
-				npc.setName(event.getMessage());
-				player.sendMessage(ChatColor.GREEN + "Name updated to " + npc.getName() + ".");
+				
+				Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+					Quests.getInstance().npcStore.delete(npc);
+					npc.setName(event.getMessage());
+					player.sendMessage(ChatColor.GREEN + "Name updated to " + npc.getName() + ".");
+				});
+				
 				new GuiNPCEditor(player, npc);
 			}, p -> new GuiNPCEditor(player, npc));
 		});
@@ -54,8 +58,10 @@ public class GuiNPCEditor extends GuiBase {
 		this.setSlot(2, createNPCSkinSkull(npc), (evt) -> {
 			player.sendMessage(ChatColor.YELLOW + "Please enter the username of the skin you'd like to apply.");
 			Chat.listenForMessage(player, (event) -> {
-				npc.setSkin(event.getMessage());
-				player.sendMessage(ChatColor.GREEN + "Skin updated to " + npc.getSkinOwner() + ".");
+				Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+					npc.setSkin(event.getMessage());
+					player.sendMessage(ChatColor.GREEN + "Skin updated to " + npc.getSkinOwner() + ".");
+				});
 				new GuiNPCEditor(player, npc);
 			}, p -> new GuiNPCEditor(player, npc));
 		});
@@ -71,10 +77,12 @@ public class GuiNPCEditor extends GuiBase {
 		});
 		
 		this.setSlot(6, Material.CARROT_STICK, ChatColor.GREEN + "Set Location", new String[] {"Click here to move this NPC."}, (evt) -> {
-			player.sendMessage(ChatColor.YELLOW + "Please go to the new location and type \"Yes\".");
+			player.sendMessage(ChatColor.YELLOW + "Please go to the new location and type \"confirm\".");
 			Chat.promptPlayerConfirmation(player, () -> {
-				npc.setLocation(player.getLocation().clone());
-				player.sendMessage(ChatColor.GREEN + "Location Set.");
+				Bukkit.getScheduler().runTask(DungeonRealms.getInstance(), () -> {
+					npc.setLocation(player.getLocation().clone());
+					player.sendMessage(ChatColor.GREEN + "Location Set.");
+				});
 				new GuiNPCEditor(player, npc);
 			}, () -> new GuiNPCEditor(player, npc));
 		});
