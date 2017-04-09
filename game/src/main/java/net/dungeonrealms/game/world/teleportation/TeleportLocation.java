@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public enum TeleportLocation {
 
-	STARTER("Tutorial", null, -1, -726.533, 78, 350.849, -18.9F, -4.2F, false),
+	STARTER("Tutorial", null, -1, 817.5, 47, -101.818, -179.7F, 6.2F, false),
 	EVENT_AREA("Event Area", null, -1, -378, 85, 341, false),
 	CYRENNICA("Cyrennica", WorldRegion.CYRENNICA, 1000, -378, 85, 357),
 	HARRISON_FIELD("Harrison Field", WorldRegion.HARRISON, 1500, -594, 59, 687, 92.0F, 1F),

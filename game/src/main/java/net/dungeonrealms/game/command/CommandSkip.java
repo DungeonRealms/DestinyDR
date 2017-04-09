@@ -6,9 +6,9 @@ import net.dungeonrealms.common.game.command.BaseCommand;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -43,7 +43,7 @@ public class CommandSkip extends BaseCommand {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        player.teleport(new Location(Bukkit.getWorlds().get(0), -465.484, 73, 390.453));
+                        player.teleport(TeleportLocation.CYRENNICA.getLocation());
                         ItemManager.giveStarter(player);
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

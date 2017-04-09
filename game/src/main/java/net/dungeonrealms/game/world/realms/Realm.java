@@ -213,7 +213,7 @@ public class Realm {
             return false;
         }
 
-        if (GameAPI.getRegionName(player.getLocation()).equalsIgnoreCase("tutorial")) {
+        if (GameAPI.getRegionName(player.getLocation()).equalsIgnoreCase("tutorial_island")) {
             player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED
                     + " open a portal to your realm until you have left the tutorial.");
             return false;
