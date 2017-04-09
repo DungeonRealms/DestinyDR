@@ -34,10 +34,10 @@ public class ItemMount extends FunctionalItem {
 	@Getter @Setter
 	private boolean mule;
 	
-	public ItemMount(boolean isMule) {
+	public ItemMount() {
 		super(ItemType.MOUNT);
 		setUntradeable(true);
-		setMule(isMule);
+		setMule(false);
 	}
 	
 	public ItemMount(ItemStack item) {

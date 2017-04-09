@@ -15,12 +15,12 @@ import org.bukkit.inventory.ItemStack;
 public class ItemPickaxe extends ProfessionItem {
 
 	public ItemPickaxe() {
-		super(ItemType.PICKAXE);
+		this(1);
 	}
 	
-	public ItemPickaxe(int tier) {
-		this();
-		this.setLevel(tier * 20);
+	public ItemPickaxe(int level) {
+		super(ItemType.PICKAXE);
+		this.setLevel(level);
 	}
 	
 	public ItemPickaxe(ItemStack item) {

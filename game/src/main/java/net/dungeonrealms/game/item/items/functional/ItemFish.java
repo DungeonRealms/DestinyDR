@@ -6,6 +6,7 @@ import java.util.Random;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.item.ItemType;
 import net.dungeonrealms.game.item.ItemUsage;
 import net.dungeonrealms.game.item.event.ItemClickEvent;
@@ -17,7 +18,11 @@ import net.dungeonrealms.game.profession.Fishing.EnumFish;
 import net.dungeonrealms.game.profession.fishing.FishBuff;
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Furnace;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemFish extends FunctionalItem {
@@ -67,8 +72,35 @@ public class ItemFish extends FunctionalItem {
 
 	@Override
 	public void onClick(ItemClickEvent evt) {
+		Player p = evt.getPlayer();
+		
+		//  Cook.
+		if (!isCooked() && evt.hasBlock() && isCookable(evt.getClickedBlock().getType())) {
+			if (evt.getClickedBlock().getState() instanceof Furnace) //Activate the furnace. (Cosmetic)
+                ((Furnace) evt.getClickedBlock().getState()).setBurnTime((short) 20);
+            p.playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1);
+			setCooked(true);
+			evt.setResultItem(generateItem());
+			return;
+		}
+		
+		if (!isCooked()) {
+			p.sendMessage(ChatColor.RED + "You must cook this fish before you can eat it!");
+			return;
+		}
+		
 		evt.setUsed(true);
-		getFishBuff().applyBuff(evt.getPlayer());
+		if (getFishBuff() != null)
+			getFishBuff().applyBuff(evt.getPlayer());
+		
+		p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1F);
+        Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_BURP, 1F, 1.5F), 4L);
+	}
+	
+	public boolean isCookable(Material m) {
+		return m == Material.FURNACE || m == Material.BURNING_FURNACE
+				|| m == Material.FIRE || m == Material.LAVA
+				|| m == Material.STATIONARY_LAVA || m == Material.TORCH;
 	}
 
 	@Override

@@ -80,22 +80,6 @@ public class RestrictionListener implements Listener {
             }
         }
     }
-
-    public static int getLevelToUseTier(int tier) {
-        switch (tier) {
-            case 1:
-                return 1;
-            case 2:
-                return 5;
-            case 3:
-                return 10;
-            case 4:
-                return 20;
-            case 5:
-                return 25;
-        }
-        return 1;
-    }
     
     public static boolean canPlayerUseItem(Player p, ItemStack item) {
     	if(!ItemGear.isCustomTool(item))

@@ -11,7 +11,6 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.item.Item.ItemTier;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 import org.bukkit.Material;

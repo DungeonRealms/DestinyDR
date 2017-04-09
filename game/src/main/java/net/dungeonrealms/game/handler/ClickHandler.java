@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.handler;
 
+import lombok.Getter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
@@ -9,9 +10,18 @@ import net.dungeonrealms.common.game.database.player.rank.Rank;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
+import net.dungeonrealms.game.item.items.core.ItemFishingPole;
+import net.dungeonrealms.game.item.items.core.ItemPickaxe;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.functional.ItemBuff;
+import net.dungeonrealms.game.item.items.functional.ItemGemNote;
 import net.dungeonrealms.game.item.items.functional.ItemHealingFood;
 import net.dungeonrealms.game.item.items.functional.ItemProtectionScroll;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemGlobalMessager;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemMount;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemParticleTrail;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemPet;
 import net.dungeonrealms.game.item.items.functional.ecash.ItemRetrainingBook;
 import net.dungeonrealms.game.listener.inventory.ShopListener;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -19,6 +29,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.PlayerManager;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.TradeCalculator;
 import net.dungeonrealms.game.player.banks.BankMechanics;
@@ -60,17 +71,13 @@ import java.util.UUID;
 
 /**
  * Created by Nick on 10/2/2015.
+ * 
+ * TODO: Convert to new recode.
  */
 public class ClickHandler {
 
-    static ClickHandler instance = null;
-
-    public static ClickHandler getInstance() {
-        if (instance == null) {
-            instance = new ClickHandler();
-        }
-        return instance;
-    }
+	@Getter
+    private static ClickHandler instance = new ClickHandler();
 
     public void doClick(InventoryClickEvent event) {
         String name = event.getInventory().getName();
@@ -102,7 +109,7 @@ public class ClickHandler {
                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, mount.getRawName(), true);
                                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.MOUNT_OWNER);
                                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mount")) {
-                                        player.getInventory().addItem(ItemManager.getPlayerMountItem());
+                                        player.getInventory().addItem(new ItemMount().generateItem());
                                     }
                                 } else {
                                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "mule")) {
@@ -117,7 +124,7 @@ public class ClickHandler {
                                             System.out.println("Invalid mule tier!");
                                             return;
                                         }
-                                        player.getInventory().addItem(ItemManager.getPlayerMuleItem(tier));
+                                        player.getInventory().addItem(new ItemMuleMount().generateItem());
                                     }
                                 }
                                 player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount.");
@@ -142,15 +149,15 @@ public class ClickHandler {
                 event.setCancelled(true);
                 if (slot > 9) return;
                 if (event.getCurrentItem().getType() != Material.AIR) {
-                    if (BankMechanics.getInstance().takeGemsFromInventory(100, player)) {
+                    if (BankMechanics.takeGemsFromInventory(player, 100)) {
                         switch (slot) {
                             case 0:
-                                player.getInventory().addItem(ItemManager.createPickaxe(1));
+                                player.getInventory().addItem(new ItemPickaxe().generateItem());
                                 player.sendMessage(ChatColor.GREEN + "Transaction successful.");
                                 player.closeInventory();
                                 break;
                             case 1:
-                                player.getInventory().addItem(ItemManager.createFishingPole(1));
+                                player.getInventory().addItem(new ItemFishingPole().generateItem());
                                 player.sendMessage(ChatColor.GREEN + "Transaction successful.");
                                 player.closeInventory();
                                 break;
@@ -219,7 +226,7 @@ public class ClickHandler {
                             return;
                         } else {
                             if (TeleportLocation.valueOf(nmsStack.getTag().getString("hearthstoneLocation").toUpperCase()).canSetHearthstone(player)) {
-                                if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player)) {
+                                if (BankMechanics.takeGemsFromInventory(player, nmsStack.getTag().getInt("gemCost"))) {
                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true);
                                     player.sendMessage(ChatColor.GREEN + "Hearthstone set to " + nmsStack.getTag().getString("hearthstoneLocation") + ".");
                                     player.closeInventory();
@@ -418,7 +425,7 @@ public class ClickHandler {
                                 continue;
                             }
                             if (itemStack.getType() == Material.EMERALD) {
-                                itemStack = BankMechanics.createBankNote(itemStack.getAmount(), player);
+                            	itemStack = new ItemGemNote(player.getName(), itemStack.getAmount()).generateItem();
                             }
                             player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
                         }
@@ -468,7 +475,7 @@ public class ClickHandler {
                                 player.getInventory().addItem(muleUpgrade);
                             } else {
                                 //Give them their scroll.
-                                player.getInventory().addItem(new ItemProtectionScroll(ItemTier.getByTier(nmsStack.getTag().getInt("shardTier"))).createItem());
+                                player.getInventory().addItem(new ItemProtectionScroll(ItemTier.getByTier(nmsStack.getTag().getInt("shardTier"))).generateItem());
                             }
                             return;
                         } else {
@@ -858,9 +865,11 @@ public class ClickHandler {
                 }
                 int price = nms.getTag().getInt("worth");
                 if (player.getInventory().firstEmpty() != -1) {
-                    if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
-                         ItemStack copy = ShopListener.removePriceLore(stack.clone());
-                         player.getInventory().addItem(AntiDuplication.getInstance().applyAntiDupe(copy));
+                    if (BankMechanics.takeGemsFromInventory(player, price)) {
+                    	VanillaItem vi = new VanillaItem(stack);
+                    	vi.removePrice();
+                    	vi.setAntiDupe(true);
+                    	player.getInventory().addItem(vi.generateItem());
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
                     }
@@ -889,8 +898,8 @@ public class ClickHandler {
                 }
                 price = nms.getTag().getInt("worth");
                 if (player.getInventory().firstEmpty() != -1) {
-                    if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
-                        player.getInventory().addItem(new ItemHealingFood(ItemHealingFood.EnumHealingFood.get(tier, rarity)).createItem());
+                    if (BankMechanics.takeGemsFromInventory(player, price)) {
+                        player.getInventory().addItem(new ItemHealingFood(ItemHealingFood.EnumHealingFood.get(tier, rarity)).generateItem());
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + price + ChatColor.RED + " Gem(s)");
                     }
@@ -1708,7 +1717,7 @@ public class ClickHandler {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, petType, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + pets.getDisplayName() + " pet.");
                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "pet")) {
-                        player.getInventory().addItem(ItemManager.getPlayerPetItem());
+                        player.getInventory().addItem(new ItemPet().generateItem());
                     }
                     player.closeInventory();
                 } else {
@@ -1745,7 +1754,7 @@ public class ClickHandler {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, effectType, true);
                     player.sendMessage(ChatColor.GREEN + "You have purchased the " + effect.getDisplayName() + " effect.");
                     if (!PlayerManager.hasItem(event.getWhoClicked().getInventory(), "trail")) {
-                        player.getInventory().addItem(ItemManager.getPlayerTrailItem());
+                        player.getInventory().addItem(new ItemParticleTrail().generateItem());
                     }
                     player.closeInventory();
                 } else {
@@ -1805,7 +1814,7 @@ public class ClickHandler {
                     if (player.getInventory().firstEmpty() != -1) {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
                             player.sendMessage(ChatColor.GREEN + "You have purchased a retraining book.");
-                            player.getInventory().addItem(new ItemRetrainingBook().createItem());
+                            player.getInventory().addItem(new ItemRetrainingBook().generateItem());
                             player.closeInventory();
                         } else {
                             player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
@@ -1819,7 +1828,7 @@ public class ClickHandler {
                     if (player.getInventory().firstEmpty() != -1) {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
                             player.sendMessage(ChatColor.GREEN + "You have purchased a global messenger.");
-                            player.getInventory().addItem(new ItemGlobalMessager().createItem());
+                            player.getInventory().addItem(new ItemGlobalMessager().generateItem());
                             player.closeInventory();
                         } else {
                             player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
@@ -1831,52 +1840,22 @@ public class ClickHandler {
                 if (nmsStack.getTag().hasKey("buff")) {
                     eCashCost = nmsStack.getTag().getInt("eCash");
                     final String buffType = nmsStack.getTag().getString("buff");
-                    switch (buffType) {
-                        case "loot":
-                            if (player.getInventory().firstEmpty() != -1) {
-                                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                                    player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + "Global Loot Buff.");
+                    int duration = nmsStack.getTag().getInt("duration");
+                    int bonus = nmsStack.getTag().getInt("bonusAmount");
+                    EnumBuff buff = EnumBuff.valueOf(buffType.toUpperCase());
+                    
+                    if (player.getInventory().firstEmpty() != -1) {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
+                            player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + buff.getFriendlyName() + ".");
 
-                                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
-                                    player.getInventory().addItem(ItemManager.createLootBuff(nmsStack.getTag().getInt("duration"), nmsStack.getTag().getInt("bonusAmount")));
-                                    player.closeInventory();
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                                }
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
-                            }
-                            break;
-                        case "profession":
-                            if (player.getInventory().firstEmpty() != -1) {
-                                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                                    player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + "Global Profession Buff.");
-
-                                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
-                                    player.getInventory().addItem(ItemManager.createProfessionBuff(nmsStack.getTag().getInt("duration"), nmsStack.getTag().getInt("bonusAmount")));
-                                    player.closeInventory();
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                                }
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
-                            }
-                            break;
-                        case "level":
-                            if (player.getInventory().firstEmpty() != -1) {
-                                if (DonationEffects.getInstance().removeECashFromPlayer(player, eCashCost)) {
-                                    player.sendMessage(ChatColor.GREEN + "You have purchased a " + ChatColor.BOLD + "Global Level XP Buff.");
-
-                                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
-                                    player.getInventory().addItem(ItemManager.createLevelBuff(nmsStack.getTag().getInt("duration"), nmsStack.getTag().getInt("bonusAmount")));
-                                    player.closeInventory();
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
-                                }
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
-                            }
-                            break;
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
+                            player.getInventory().addItem(new ItemBuff(buff, duration, bonus).generateItem());
+                            player.closeInventory();
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + ChatColor.UNDERLINE + eCashCost + ChatColor.RED + " E-Cash");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have enough inventory space to purchase this item.");
                     }
                 }
                 break;

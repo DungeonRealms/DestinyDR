@@ -452,7 +452,7 @@ public class DungeonListener implements Listener {
                     player1.removePotionEffect(PotionEffectType.WITHER);
                     player1.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (90 * 20L), 0));
                     player1.playSound(player1.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 5F, 1.5F);
-                    player1.sendMessage(ChatColor.YELLOW + "Debuff timer refreshed, " + ChatColor.UNDERLINE + HealthHandler.getInstance().getPlayerMaxHPLive(player1)
+                    player1.sendMessage(ChatColor.YELLOW + "Debuff timer refreshed, " + ChatColor.UNDERLINE + HealthHandler.getPlayerMaxHP(player1)
                             + " DMG " + ChatColor.YELLOW + "will be inflicted in 90s unless another beacon is activated.");
                 }
                 event.getEntity().remove();
@@ -521,7 +521,7 @@ public class DungeonListener implements Listener {
                 player1.removePotionEffect(PotionEffectType.WITHER);
                 player1.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (90 * 20L), 0));
                 player1.playSound(player1.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 5F, 1.5F);
-                player1.sendMessage(ChatColor.YELLOW + "Debuff timer refreshed, " + ChatColor.UNDERLINE + HealthHandler.getInstance().getPlayerMaxHPLive(player1)
+                player1.sendMessage(ChatColor.YELLOW + "Debuff timer refreshed, " + ChatColor.UNDERLINE + HealthHandler.getInstance().getPlayerMaxHP(player1)
                         + " DMG " + ChatColor.YELLOW + "will be inflicted in 90s unless another beacon is activated.");
             }
         }

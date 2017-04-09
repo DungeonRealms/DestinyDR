@@ -12,7 +12,6 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.item.Item;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.Banner;

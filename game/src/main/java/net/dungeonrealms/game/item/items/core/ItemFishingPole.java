@@ -15,12 +15,12 @@ import org.bukkit.inventory.ItemStack;
 public class ItemFishingPole extends ProfessionItem {
 
 	public ItemFishingPole() {
-		super(ItemType.FISHING_POLE);
+		this(1);
 	}
 	
-	public ItemFishingPole(int tier) {
-		this();
-		this.setLevel(tier * 20);
+	public ItemFishingPole(int level) {
+		super(ItemType.FISHING_POLE);
+		this.setLevel(level);
 	}
 	
 	public ItemFishingPole(ItemStack item) {

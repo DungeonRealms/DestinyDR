@@ -1,14 +1,11 @@
 package net.dungeonrealms.game.listener.inventory;
 
-import net.dungeonrealms.GameAPI;
-import net.dungeonrealms.common.game.database.player.rank.Rank;
-import net.dungeonrealms.game.mechanic.ItemManager;
+import net.dungeonrealms.game.item.items.functional.ItemScrap;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.CurrencyTab;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,7 +18,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class CurrencyTabListener implements Listener {
@@ -33,7 +29,7 @@ public class CurrencyTabListener implements Listener {
             boolean clickedTheirInventory = event.getRawSlot() >= event.getInventory().getSize() - 1;
             ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType() == Material.AIR) {
-                if (clickedTheirInventory && event.getCursor() != null && RepairAPI.isItemArmorScrap(event.getCursor()))
+                if (clickedTheirInventory && event.getCursor() != null && ItemScrap.isScrap(event.getCursor()))
                     return;
 
                 event.setCancelled(true);
@@ -53,19 +49,18 @@ public class CurrencyTabListener implements Listener {
 
             if (clickedTheirInventory) {
                 //In their inventory?
-                if (ItemManager.isScrap(clicked)) {
+                if (ItemScrap.isScrap(clicked)) {
                     //Add the scrap to their max inventory.
-                    CurrencyTab tab = BankMechanics.getInstance().getCurrencyTab().get(player.getUniqueId());
+                    CurrencyTab tab = BankMechanics.getCurrencyTab(player.getUniqueId());
 
                     if (tab == null) {
                         player.closeInventory();
                         return;
                     }
+                    ItemScrap scrapObj = new ItemScrap(clicked);
+                    if (scrapObj.getTier().getTier() > 0) {
 
-                    int scrapTier = RepairAPI.getScrapTier(clicked);
-                    if (scrapTier > 0) {
-
-                        ScrapTier tier = ScrapTier.getScrapTier(scrapTier);
+                        ScrapTier tier = scrapObj.getTier();
                         if (tier == null) return;
                         //Add this?
                         int amountToAdd = clicked.getAmount();
@@ -171,7 +166,7 @@ public class CurrencyTabListener implements Listener {
                                 }
 
                                 tab.withdrawScrap(scrap, toWithdraw);
-                                ItemStack item = ItemManager.createArmorScrap(scrap.getTier());
+                                ItemStack item = new ItemScrap(ScrapTier.getScrapTier(scrap.getTier())).generateItem();
 
                                 if (item != null) {
                                     item.setAmount(toWithdraw);
@@ -203,7 +198,7 @@ public class CurrencyTabListener implements Listener {
                     tab.updateWindowTitle(player);
                     player.updateInventory();
 
-                    ItemStack is = ItemManager.createArmorScrap(scrap.getTier());
+                    ItemStack is = new ItemScrap(ScrapTier.getScrapTier(scrap.getTier())).generateItem();
                     is.setAmount(toGive);
                     player.setItemOnCursor(is);
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_TOUCH, 1, .8F);

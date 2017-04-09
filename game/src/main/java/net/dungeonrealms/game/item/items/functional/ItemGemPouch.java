@@ -58,17 +58,27 @@ public class ItemGemPouch extends ItemMoney {
 	
 	@Override
 	public void onInventoryClick(ItemInventoryEvent evt) {
-		//Lets players take gems from pouches.
-		//TODO: Allow putting gems into pouches.
-		if(!evt.getEvent().isRightClick())
-			return;
-		
-		evt.setCancelled(true);
-		int withdrawGems = Math.max(getGemValue(), 64);
-		setGemValue(getGemValue() - withdrawGems);
-		evt.setSwappedItem(new ItemGem(withdrawGems).generateItem());
-		evt.setResultItem(generateItem());
-        evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+		if(evt.getEvent().isRightClick() && evt.getSwappedItem() == null) {
+			//Lets players take gems from pouches.
+			evt.setCancelled(true);
+			int withdrawGems = Math.max(getGemValue(), 64);
+			setGemValue(getGemValue() - withdrawGems);
+			evt.setSwappedItem(new ItemGem(withdrawGems).generateItem());
+			evt.setResultItem(generateItem());
+			evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+		} else if (ItemGem.isGem(evt.getSwappedItem())) {
+			//Deposit gems.
+			evt.setCancelled(true);
+			ItemGem gem = new ItemGem(evt.getSwappedItem());
+			int oldGemValue = getGemValue();
+			
+			setGemValue(Math.max(getGemValue() + gem.getGemValue(), getMaxStorage()));
+			evt.setResultItem(generateItem());
+			
+			gem.setGemValue(gem.getGemValue() - (getGemValue() - oldGemValue));
+			evt.setSwappedItem(gem.generateItem());
+			evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+		}
 	}
 
 	@Override

@@ -181,14 +181,14 @@ public class CommandStore extends BaseCommand {
                         case "mine":
                         case "pick":
                         case "pickaxe":
-                        	items.add(new ItemPickaxe(tier).generateItem());
+                        	items.add(new ItemPickaxe(tier * 20).generateItem());
                             break;
                         case "fishing":
                         case "fish":
                         case "rod":
                         case "fishingrod":
                         case "fishing_rod":
-                        	items.add(new ItemFishingPole(tier).generateItem());
+                        	items.add(new ItemFishingPole(tier * 20).generateItem());
                             break;
                         default:
                             sender.sendMessage(ChatColor.RED + "Invalid usage! Invalid profession item.");

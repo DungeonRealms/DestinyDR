@@ -10,8 +10,12 @@ import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.core.CombatItem;
+import net.dungeonrealms.game.item.items.core.ProfessionItem;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
+import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.generic.EnumPriority;
 import net.dungeonrealms.game.mechanic.generic.GenericMechanic;
 import net.dungeonrealms.game.profession.Fishing;
@@ -21,7 +25,6 @@ import net.dungeonrealms.game.world.entity.EntityMechanics;
 import net.dungeonrealms.game.world.entity.EnumEntityType;
 import net.dungeonrealms.game.world.entity.type.monster.type.melee.MeleeZombie;
 import net.dungeonrealms.game.world.entity.util.EntityAPI;
-import net.dungeonrealms.game.world.item.repairing.RepairAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportLocation;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.DataWatcherObject;
@@ -96,7 +99,7 @@ public class CombatLog implements GenericMechanic {
                             // Don't drop the journal/realm star
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
                                 // We don't want to drop a pickaxe/fishing rod
-                                if (!Mining.isDRPickaxe(itemStack) && !Fishing.isDRFishingPole(itemStack) && !GameAPI.isItemSoulbound(itemStack)) {
+                                if (!ItemManager.isItemSoulbound(itemStack) && !ProfessionItem.isProfessionItem(itemStack)) {
                                     // We don't want to drop the storedItem
                                     if (!itemStack.equals(storedItem)) {
                                         player.getWorld().dropItem(player.getLocation(), itemStack);
@@ -113,9 +116,8 @@ public class CombatLog implements GenericMechanic {
                     for (ItemStack itemStack : player.getInventory().getContents()) {
                         if (itemStack != null) {
                             if (itemStack.getType() != Material.WRITTEN_BOOK && itemStack.getType() != Material.NETHER_STAR) {
-                                if (!GameAPI.isItemSoulbound(itemStack)) {
+                                if (!ItemManager.isItemSoulbound(itemStack))
                                     player.getWorld().dropItem(player.getLocation(), itemStack);
-                                }
                                 player.getInventory().remove(itemStack);
                             }
                         }
@@ -133,14 +135,12 @@ public class CombatLog implements GenericMechanic {
     }
 
     public void damageAndReturn(Player player, ItemStack itemStack, List<ItemStack> list) {
-        if (GameAPI.isArmor(itemStack) || GameAPI.isWeapon(itemStack)) {
+        if (CombatItem.isCombatItem(itemStack)) {
             // Damage by 30% of current durability
-            double durability = RepairAPI.getCustomDurability(itemStack);
-            double toSubstract = (durability / 100) * 30; // 30% of current durability
-            RepairAPI.subtractCustomDurability(player, itemStack, toSubstract);
-            if (list != null) {
-                list.add(itemStack);
-            }
+        	CombatItem ci = (CombatItem)PersistentItem.constructItem(itemStack);
+        	ci.damageItem(player, (int) (ci.getDurability() / 3.33333D));
+            if (list != null)
+                list.add(ci.generateItem());
         }
     }
 
@@ -325,8 +325,8 @@ public class CombatLog implements GenericMechanic {
         combatNPC.setCustomName(ChatColor.AQUA + "[Lvl. " + lvl + "]" + ChatColor.RED + " " + player.getName());
         combatNPC.setCustomNameVisible(true);
         MetadataUtils.registerEntityMetadata(((CraftEntity) combatNPC).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
-        HealthHandler.getInstance().setMonsterHPLive(combatNPC, HealthHandler.getInstance().getPlayerHPLive(player));
-        combatNPC.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getPlayerMaxHPLive(player)));
+        HealthHandler.setMonsterHP(combatNPC, HealthHandler.getPlayerHP(player));
+        combatNPC.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getPlayerMaxHP(player)));
         combatNPC.setMetadata("combatlog", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
         combatNPC.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), player.getUniqueId().toString()));
         combatLogger.setArmorToDrop(armorToDrop);
@@ -384,7 +384,7 @@ public class CombatLog implements GenericMechanic {
             if (combatLogger.getLoggerNPC().isDead()) {
                 combatLogger.handleNPCDeath();
             } else {
-                HealthHandler.getInstance().setPlayerHPLive(Bukkit.getPlayer(uuid), HealthHandler.getInstance().getMonsterHPLive(combatLogger.getLoggerNPC()));
+                HealthHandler.setPlayerHP(Bukkit.getPlayer(uuid), HealthHandler.getMonsterHP(combatLogger.getLoggerNPC()));
                 combatLogger.handleTimeOut();
             }
 

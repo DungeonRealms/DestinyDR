@@ -207,7 +207,7 @@ public class DungeonManager implements GenericMechanic {
                     for (Player pl : Bukkit.getServer().getWorld(worldName).getPlayers()) {
                     	if(pl.getGameMode() == GameMode.SURVIVAL){
                     		pl.setHealth(1);
-                        	HealthHandler.getInstance().setPlayerHPLive(pl, 1);
+                        	HealthHandler.setPlayerHP(pl, 1);
                         	pl.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
                         	pl.playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 2, 1.3F);
                         	pl.removePotionEffect(PotionEffectType.WITHER);

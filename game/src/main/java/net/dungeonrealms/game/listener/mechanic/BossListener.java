@@ -6,15 +6,14 @@ import java.util.Random;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.GameAPI;
+import net.dungeonrealms.game.item.items.functional.ItemGemNote;
+import net.dungeonrealms.game.item.items.core.VanillaItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanic.DungeonManager;
-import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.mechanic.DungeonManager.DungeonObject;
-import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.entity.type.monster.boss.DungeonBoss;
-import net.dungeonrealms.game.world.entity.type.monster.type.EnumDungeonBoss;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -99,8 +98,12 @@ public class BossListener implements Listener {
             weapon.setItemMeta(im);
             possible_drops.add(weapon);
 
-            ItemStack reward = ItemManager.makeSoulBound(possible_drops.get(random.nextInt(possible_drops.size())));
-            reward = ItemManager.addPartyMemberSoulboundBypass(reward, 60 * 5, livingEntity.getWorld().getPlayers());
+            VanillaItem item = new VanillaItem(possible_drops.get(random.nextInt(possible_drops.size())));
+            item.setSoulbound(true);
+            for (Player p : livingEntity.getWorld().getPlayers())
+            	item.addSoulboundBypass(p, 60 * 5);
+            ItemStack reward = item.generateItem();
+            
             livingEntity.getWorld().dropItem(livingEntity.getLocation(), reward);
 
             List<String> hoveredChat = new ArrayList<>();
@@ -132,13 +135,8 @@ public class BossListener implements Listener {
                 partyMembers += player.getName() + ", ";
 
                 if (groupSize > 0) {
-                    ItemStack banknote = BankMechanics.createBankNote(perPlayerDrop, boss.getEnumBoss().getName());
-                    if (player.getInventory().firstEmpty() == -1) {
-                        player.getWorld().dropItem(player.getLocation(), banknote);
-                        player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");
-                    } else {
-                        player.getInventory().addItem(banknote);
-                    }
+                	ItemStack bankNote = new ItemGemNote(boss.getEnumBoss().getName(), perPlayerDrop).generateItem();
+                	GameAPI.giveOrDropItem(player, bankNote);
                     GameAPI.getGamePlayer(player).addExperience(boss.getXPDrop(), false, true);
                 }
             }

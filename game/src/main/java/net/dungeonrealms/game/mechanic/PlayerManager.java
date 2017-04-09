@@ -3,16 +3,16 @@ package net.dungeonrealms.game.mechanic;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bukkit.Bukkit;
+import net.dungeonrealms.game.item.ItemType;
+import net.dungeonrealms.game.item.PersistentItem;
+import net.dungeonrealms.game.item.items.functional.ItemPlayerJournal;
+import net.dungeonrealms.game.item.items.functional.ItemPortalRune;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-
-import java.util.UUID;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -26,17 +26,13 @@ public class PlayerManager {
      * @param uuid
      * @since 1.0
      */
-    public static void checkInventory(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null || !player.isOnline()) return;
+    public static void checkInventory(Player player) {
+    	
+        if (!hasItem(player.getInventory(), ItemType.PORTAL_RUNE) && isSlotFree(player.getInventory(), 7))
+            player.getInventory().setItem(7, new ItemPortalRune(player).generateItem());
 
-        if (!hasItem(player.getInventory(), "realmPortalRune") && isSlotFree(player.getInventory(), 7)) {
-            player.getInventory().setItem(7, ItemManager.createRealmPortalRune(uuid));
-        }
-
-        if (!hasItem(player.getInventory(), "journal") && isSlotFree(player.getInventory(), 8)) {
-            player.getInventory().setItem(8, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
-        }
+        if (!hasItem(player.getInventory(), ItemType.PLAYER_JOURNAL) && isSlotFree(player.getInventory(), 8))
+        	player.getInventory().setItem(8, new ItemPlayerJournal().generateItem());
     }
 
     public static boolean isSlotFree(PlayerInventory inv, int slot) {
@@ -44,17 +40,10 @@ public class PlayerManager {
         return (item == null || item.getType() == null || item.getType() == Material.AIR);
     }
 
-    public static boolean hasItem(PlayerInventory inv, String type) {
-        for (ItemStack item : inv.getContents()) {
-            if (item == null || item.getType() == null || item.getType() == Material.AIR) continue;
-            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-            NBTTagCompound tag = nmsStack.getTag();
-            if (tag == null) continue;
-            if (!tag.hasKey(type)) continue;
-            if (tag.getString(type).equalsIgnoreCase("true")) {
-                return true;
-            }
-        }
+    public static boolean hasItem(PlayerInventory inv, ItemType type) {
+        for (ItemStack item : inv.getContents())
+            if (PersistentItem.isType(item, type))
+            	return true;
         return false;
     }
 

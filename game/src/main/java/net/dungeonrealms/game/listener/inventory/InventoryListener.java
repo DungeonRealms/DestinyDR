@@ -15,10 +15,12 @@ import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.item.PersistentItem;
 import net.dungeonrealms.game.item.items.core.ItemArmor;
 import net.dungeonrealms.game.item.items.core.VanillaItem;
+import net.dungeonrealms.game.item.items.functional.ecash.ItemMuleMount;
 import net.dungeonrealms.game.listener.mechanic.RestrictionListener;
 import net.dungeonrealms.game.mastery.AttributeList;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.mastery.Stats;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.NBTWrapper;
@@ -27,6 +29,7 @@ import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.stats.PlayerStats;
+import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
@@ -541,47 +544,6 @@ public class InventoryListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerAddToGemPouch(InventoryClickEvent event) {
-        if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
-        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
-        if (event.getCursor().getType() != Material.EMERALD || event.getCurrentItem().getType() != Material.INK_SACK)
-            return;
-        ItemStack cursorItem = event.getCursor();
-        net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
-        ItemStack slotItem = event.getCurrentItem();
-        net.minecraft.server.v1_9_R2.ItemStack nmsSlot = CraftItemStack.asNMSCopy(slotItem);
-        Player player = (Player) event.getWhoClicked();
-        if (!nmsSlot.hasTag() || !nmsCursor.hasTag()) return;
-        if (!nmsSlot.getTag().hasKey("type") || !nmsSlot.getTag().getString("type").equalsIgnoreCase("money"))
-            return;
-        if (!nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("money"))
-            return;
-
-        int amount = cursorItem.getAmount();
-        int pouchAmount = nmsSlot.getTag().getInt("worth");
-        int tier = nmsSlot.getTag().getInt("tier");
-        int pouchMax = BankMechanics.getInstance().getPouchMax(tier);
-
-        if (pouchAmount < pouchMax) {
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-            if (pouchAmount + amount > pouchMax) {
-                amount = (pouchMax - (pouchAmount + amount)) * -1;
-                event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchMax));
-                event.setCursor(BankMechanics.getInstance().createGems(amount));
-            } else {
-                event.setCursor(null);
-                event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchAmount + amount));
-            }
-        } else {
-            player.sendMessage(ChatColor.RED + "That gem pouch is full!");
-        }
-
-
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerClickStatsInventory(InventoryClickEvent event) {
         if (GameAPI.isShop(event.getInventory())) return;
         if (event.getInventory().getTitle().contains("Stat Points")) {
@@ -594,19 +556,18 @@ public class InventoryListener implements Listener {
             if (event.getCurrentItem() != null && slot >= 2 && slot < 6) {
                 final Inventory inv = event.getInventory();
                 int amount = event.isShiftClick() ? 3 : 1;
-                String[] statNames = new String[]{"", "", "str", "dex", "int", "vit"};
-                String stat = statNames[slot];
+                Stats stat = Stats.values()[slot - 2];
 
                 if (event.getClick() == ClickType.MIDDLE) {
 
                     p.sendMessage(ChatColor.GREEN + "Type a custom allocated amount.");
                     stats.reset = false;
 
-                    int currentFreePoints = GameAPI.getGamePlayer(p).getStats().tempFreePoints;
+                    int currentFreePoints = GameAPI.getGamePlayer(p).getStats().getFreePoints();
 
                     Chat.listenForNumber(p, 0, currentFreePoints, num -> {
                         for (int i = 0; i < num; i++)
-                            stats.allocatePoint(stat, p, inv);
+                            stats.allocatePoint(stat, inv);
                         p.openInventory(inv);
                     }, () -> {
                         p.sendMessage(ChatColor.RED + "CUSTOM STAT - " + ChatColor.BOLD + "CANCELLED");
@@ -616,23 +577,15 @@ public class InventoryListener implements Listener {
                 } else {
                     for (int i = 0; i < amount; i++) {
                         if (event.isRightClick())
-                            stats.removePoint(stat, p, inv);
+                            stats.removePoint(stat, inv);
                         if (event.isLeftClick())
-                            stats.allocatePoint(stat, p, inv);
+                            stats.allocatePoint(stat, inv);
                     }
                 }
             }
 
             if (slot == 6) {
-                stats.dexPoints += stats.tempdexPoints;
-                stats.vitPoints += stats.tempvitPoints;
-                stats.strPoints += stats.tempstrPoints;
-                stats.intPoints += stats.tempintPoints;
-                stats.dexPoints += stats.tempdexPoints;
-                stats.freePoints = stats.tempFreePoints;
-                stats.reset = false;
-                stats.resetTemp();
-                stats.updateDatabase(false);
+                stats.confirmStats();
                 p.closeInventory();
             }
         }
@@ -663,33 +616,6 @@ public class InventoryListener implements Listener {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
             }*/
-        }
-    }
-
-    /**
-     * Handles the accepting and denying for repairing items.
-     *
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void playerClickRepairInv(InventoryClickEvent event) {
-        if (!event.getInventory().getTitle().contains("Repair your item for")) return;
-        event.setCancelled(true);
-        if (event.getRawSlot() == 3) {
-            String string = event.getInventory().getTitle().substring(event.getInventory().getTitle().indexOf(ChatColor.BOLD.toString()) + 2);
-            string = string.replace("g?", "");
-            int cost = Integer.parseInt(string);
-            if (BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())) {
-                ItemStack stack = event.getWhoClicked().getEquipment().getItemInMainHand();
-                RepairAPI.setCustomItemDurability(stack, 1500);
-                event.getWhoClicked().getEquipment().setItemInMainHand(stack);
-                event.getWhoClicked().closeInventory();
-            } else {
-                event.getWhoClicked().sendMessage(ChatColor.RED + "You do not have " + cost + " gems!");
-                event.getWhoClicked().closeInventory();
-            }
-        } else if (event.getRawSlot() == 5) {
-            event.getWhoClicked().closeInventory();
         }
     }
 
@@ -838,7 +764,7 @@ public class InventoryListener implements Listener {
                                 }
                             }
 
-                            ItemStack newMule = ItemManager.getPlayerMuleItem(newTier);
+                            ItemStack newMule = new ItemMuleMount().generateItem();
 
                             ItemStack[] contents = pl.getInventory().getContents();
                             contents[event.getSlot()] = newMule;

@@ -20,7 +20,11 @@ public enum EnumBuff {
 	
 	
 	public String getItemName() {
-		return ChatColor.GOLD + "Global " + getName() + " Buff";
+		return ChatColor.GOLD + getFriendlyName();
+	}
+	
+	public String getFriendlyName() {
+		return "Global " + getName() + " Buff";
 	}
 	
 	public String getDatabaseTag() {

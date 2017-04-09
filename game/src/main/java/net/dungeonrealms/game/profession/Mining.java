@@ -134,6 +134,9 @@ public class Mining implements GenericMechanic, Listener {
     		return;
         }
         
+        pickaxe.addExperience(p, xpGain);
+        p.getEquipment().setItemInMainHand(pickaxe.generateItem());
+        
         //  DOUBLE ORE  //
         if (pickaxe.getAttributes().getAttribute(PickaxeAttributeType.DOUBLE_ORE).getValue() >= rand.nextInt(100) + 1) {
         	oreToAdd *= 2;

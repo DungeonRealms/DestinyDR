@@ -12,11 +12,12 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.affair.Affair;
 import net.dungeonrealms.game.anticheat.AntiDuplication;
 import net.dungeonrealms.game.donation.DonationEffects;
-import net.dungeonrealms.game.donation.buffs.LevelBuff;
+import net.dungeonrealms.game.donation.buffs.Buff;
 import net.dungeonrealms.game.handler.HealthHandler;
 import net.dungeonrealms.game.handler.KarmaHandler;
 import net.dungeonrealms.game.handler.ProtectionHandler;
 import net.dungeonrealms.game.handler.ScoreboardHandler;
+import net.dungeonrealms.game.mechanic.data.EnumBuff;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.statistics.PlayerStatistics;
@@ -292,9 +293,10 @@ public class GamePlayer {
 
         int futureExperience = experience + experienceToAdd + expBonus;
         int levelBuffBonus = 0;
-        final LevelBuff activeLevelBuff = DonationEffects.getInstance().getActiveLevelBuff();
-        if (activeLevelBuff != null) {
-            levelBuffBonus = Math.round(experienceToAdd * (activeLevelBuff.getBonusAmount() / 100f));
+        
+        if (DonationEffects.getInstance().hasBuff(EnumBuff.LEVEL)) {
+        	Buff levelBuff = DonationEffects.getInstance().getBuff(EnumBuff.LEVEL);
+            levelBuffBonus = Math.round(experienceToAdd * (levelBuff.getBonusAmount() / 100f));
             experienceToAdd += levelBuffBonus;
         }
         int xpNeeded = getEXPNeeded(level);

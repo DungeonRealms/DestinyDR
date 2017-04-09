@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.common.game.database.DatabaseAPI;
 import net.dungeonrealms.common.game.database.data.EnumData;
 import net.dungeonrealms.common.game.database.data.EnumOperators;
+import net.dungeonrealms.game.item.items.functional.ItemScrap;
 import net.dungeonrealms.game.mechanic.ItemManager;
 import net.dungeonrealms.game.mechanic.data.ScrapTier;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
@@ -113,7 +114,7 @@ public class CurrencyTab {
         int slot = 9;
         for (ScrapTier tier : ScrapTier.values()) {
 
-            ItemStack scrapPiece = ItemManager.createArmorScrap(tier.getTier());
+            ItemStack scrapPiece = new ItemScrap(tier).generateItem();
 
             int scrapCount = getScrapCount(tier);
             int scrap = Math.max(1, scrapCount);

@@ -776,7 +776,7 @@ public class GameAPI {
             if (gp != null) {
                 operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.EXPERIENCE.getKey(), gp.getPlayerEXP()))));
                 gp.getPlayerStatistics().updatePlayerStatistics();
-                gp.getStats().updateDatabase(false);
+                gp.getStats().updateDatabase();
             }
         }
 

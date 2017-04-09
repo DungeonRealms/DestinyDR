@@ -169,7 +169,7 @@ public class PlayerStats {
      * Called to sync database with players server stats
      */
 
-    public void updateDatabase(boolean logout) {
+    public void updateDatabase() {
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, true);
         for (Stats s : Stats.values())
         	DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, s.getData(), getStat(s), true);
@@ -184,6 +184,14 @@ public class PlayerStats {
         for (Stats s : Stats.values())
         	setTempStat(s, 0);
     }
+    
+    public void confirmStats() {
+    	for(Stats s : Stats.values()) {
+    		setStat(s, getStat(s) + getTempStat(s));
+    		setTempStat(s, 0);
+    	}
+    	updateDatabase();
+    }
 
     /**
      * Resets the player stats.
@@ -192,13 +200,10 @@ public class PlayerStats {
      */
     public void unallocateAllPoints() {
         resetTemp();
-        updateDatabase(false);
+        updateDatabase();
         GameAPI.getGamePlayer(Bukkit.getPlayer(playerUUID)).calculateAllAttributes();
     }
 
-    /**
-     * @return
-     */
     public int getLevel() {
         return level;
     }
